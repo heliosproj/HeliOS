@@ -15,7 +15,7 @@ The HeliOS scheduler implements two types of multitasking: cooperative and event
 ## Arduino
 Because HeliOS is compliant with the Arduino 1.5 (rev. 2.2) Library Specifications, getting up and running is quick and easy. HeliOS can be installed directly from the Arduino Library Manager or downloaded and installed manually. Both options are described [here](https://www.arduino.cc/en/Guide/Libraries#toc3). Once up and running, check out one of the example schetches or the documentation in the Documentation section.
 ## Other Microcontrollers
-While built-in support currently exists for the Arduino AVR, SAM and SAMD architectures exists, HeliOS is easily ported to a variety of other microcontrollers.
+While built-in support currently exists for the Arduino AVR, SAM and SAMD architectures, HeliOS is easily ported to a variety of other microcontrollers.
 # Documentation
 Documentation is a work in progress. What is available today can be found [here](/extras). If you are interested in contributing to HeliOS's documentation, please see the Contributing section for details on how to contribute.
 # Example
