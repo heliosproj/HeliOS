@@ -13,11 +13,11 @@ HeliOS is an embedded operating system that is free for anyone to use. While cal
 The HeliOS scheduler implements two types of multitasking: cooperative and event driven. Unlike many cooperative multitasking embeded operating systems, which use a round-robin scheduling strategy. HeliOS's scheduler implements a runtime balanced strategy which ensures tasks with shorter runtimes are scheduled for execution more frequently than tasks with longer runtimes. This way all running tasks receive approximately equal total runtime without using context switching. The other option in HeliOS is event driven multitasking, which uses the wait/notify and timer interfaces. Mixing cooperative and event driven tasks is not a problem.
 # Getting Started
 ## Arduino
-Because HeliOS is compliant with the Arduino 1.5 (rev. 2.2) Library Specifications, getting up and running is quick and easy. HeliOS can be installed directly from the Arduino Library Manager or downloaded and installed manually. Both options are described [here](https://www.arduino.cc/en/Guide/Libraries#toc3). Once up and running, check out one of the example schetches or the documentation in the Documentation section.
+Because HeliOS is compliant with the Arduino 1.5 (rev. 2.2) Library Specifications, getting up and running is quick and easy. HeliOS can be installed directly from the Arduino Library Manager or downloaded and installed manually. Both options are described [here](https://www.arduino.cc/en/Guide/Libraries#toc3). Once up and running, check out one of the example schetches or refer to the HeliOS Programmer's Guide in the Documentation section.
 ## Other Microcontrollers
 While built-in support currently exists for the Arduino AVR, SAM and SAMD architectures, HeliOS is easily ported to a variety of other microcontrollers.
 # Documentation
-Documentation is a work in progress. What is available today can be found [here](/extras). If you are interested in contributing to HeliOS's documentation, please see the Contributing section for details on how to contribute.
+The HeliOS Programmer's Guide is a work in progress. What is available today can be found [here](/extras/HeliOS Programmers Guide.md). If you are interested in contributing to the HeliOS Programmer's Guide, please see the Contributing section for details.
 # Example
 Many embedded projects on microcontrollers implement what is called a "super loop". A super loop is a loop that never exits (i.e while(1){}) and contains most of the code executed by the microcontroller. The problem with super loops is they can grow out of control and become difficult to manage. This becomes especially challenging given the relatively few options for controling timing (e.g. delay()). Unfortunately the use of delay() to control timing also means the microcontroller is unable to perform other operations (at least without the help of an ISR) until delay() returns. Below is an example of how easy it is to leverage the event driven multitasking capabilities within HeliOS.
 ## Arduino "Blink" Example
@@ -70,10 +70,10 @@ All releases, including the current release, can be found [here](https://github.
 * 0.2.1 - The first official release.
 # Contributing
 While all contributions are welcome, contributions are needed most in the following areas:
-* Documentation
-* Performance
-* Stability
-* Test
+* HeliOS Programmer's Guide
+* Performance Enhancements
+* Stability Enhancements
+* Testing
 
 Please contact the author through GitHub if you are interested in contributing.
 # License
