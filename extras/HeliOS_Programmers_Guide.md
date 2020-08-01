@@ -1,5 +1,5 @@
-# Overview
-This markdown file contains documentation of the HeliOS Application Programming Interface (API). This is a work in progress.
+# HeliOS Programmer's Guide
+This guide contains documentation of HeliOS and its Application Programming Interface (API). This is a work in progress.
 # Multitasking
 ## Cooperative Multitasking
 ## Event Driven Multitasking
