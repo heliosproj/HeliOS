@@ -75,7 +75,7 @@ While all contributions are welcome, contributions are needed most in the follow
 * Stability Enhancements
 * Testing
 
-Please contact the author through GitHub if you are interested in contributing.
+To contribute, please create an issue and indicate how you would like to contribute. Please fork from the **develop** branch as **master** is kept even with the current release.
 # License
 HeliOS is copyrighted open source software licensed under the Free Software Foundation's GNU General Public License Version 3. The license can be found [here](/LICENSE.md).
 # Important

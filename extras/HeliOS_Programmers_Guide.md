@@ -1,7 +1,9 @@
 # HeliOS Programmer's Guide
 This guide contains documentation of HeliOS and its Application Programming Interface (API). This is a work in progress.
 # Multitasking
+HeliOS provides two types of multitasking: cooperative and event driven multitasking. Both types can be used together. This section provides an explanation of and how to use each.
 ## Cooperative Multitasking
+The simplest type of multitasking in HeliOS is cooperative. The HeliOS scheduler executes the **running** task with the least total runtime. Any task that has been started using the **xTaskStart()** function call is considered to be in a **running** state. The total runtime of a task can be obtained using the **xTaskGetInfo()** function call and inspecting the **totalRuntime** member of the **xTaskGetInfoResult** structure.
 ## Event Driven Multitasking
 # Notification & Timers
 ## Notification
