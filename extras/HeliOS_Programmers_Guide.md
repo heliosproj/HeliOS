@@ -3,10 +3,18 @@ This guide contains documentation of HeliOS and its Application Programming Inte
 # Multitasking
 HeliOS provides two types of multitasking: cooperative and event driven multitasking. Both types can be used together. This section provides an explanation of and how to use each.
 ## Cooperative Multitasking
-The most straightforward type of multitasking in HeliOS is cooperative multitasking. Any task with a state of **running** is scheduled cooperatively by the HeliOS scheduler. The **xTaskStart()** function call sets the state of any task, provided it is not in an **errored** state, to **running**. However, just because a task is in a **running** state, does not guarantee the scheduler will schedule the task for execution. A task in a **running** state will only be scheduled for execution if (1) it is the only task in a **running** state, or (2) it is the task with the least total run-time.
+The most straightforward type of multitasking in HeliOS is cooperative multitasking. Cooperative multitasking is best used in cases where continuous polling of a sensor or other device is required.
+
+Any task with a state of **running** is scheduled cooperatively by the HeliOS scheduler. The **xTaskStart()** function call sets the state of any task, provided it is not in an **errored** state, to **running**. However, just because a task is in a **running** state, does not guarantee the scheduler will schedule the task for execution. A task in a **running** state will only be scheduled for execution if (1) it is the only task in a **running** state, or (2) it is the task with the least total run-time.
+
 This cooperative multitasking strategy is called **balanced run-time**. This strategy allows the HeliOS scheduler to ensure that all tasks in a **running** state will receive approximately the same amount of run-time within any given period. The total run-time of a task can be obtained using the **xTaskGetInfo()** function call and inspecting the **totalRuntime** member of the **xTaskGetInfoResult** structure.
+
 As a practical example of how the balanced run-time strategy works, imagine a microcontroller with two tasks. Both tasks are in a **running** state and each task's run-time differs from the other. Task "A" has a 5 microsecond run-time and task "B" has a 50 microsecond run-time. Assuming each task's run-time remains constant, Task "A" will be executed 10 times for every one time task "B" executed. This ensures that task "A" receives approximately the same total run-time as task "B" without using priorities or context switching.
-If the run-time of either task "A" or "B" were to change during run-time, the HeliOS scheduler would dynamically adjust the schedule to ensure the total run-times of both tasks would remain approximately equal. It is important to note that the use of function calls like **delay()** must be avoided. If specific timing requirements exists, then event driven multitasking must be used. See the section on **Event Driven Multitasking** for further details.
+
+If the run-time of either task "A" or "B" were to change during run-time, the HeliOS scheduler would dynamically adjust the schedule to ensure the total run-times of both tasks would remain approximately equal.
+
+It is important to note that the use of function calls like **delay()** must be avoided. If specific timing requirements exists, then event driven multitasking must be used. See the section on **Event Driven Multitasking** for further details.
+
 Below is an Arduino example of how two tasks are added to HeliOS and scheduled cooperatively.
 ```C
 #include <HeliOS_Arduino.h>
@@ -74,6 +82,7 @@ void loop() {
   xHeliOSLoop();
 }
 ```
+
 ## Event Driven Multitasking
 # Notification & Timers
 ## Notification
