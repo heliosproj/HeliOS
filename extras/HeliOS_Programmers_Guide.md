@@ -84,9 +84,9 @@ void loop() {
 ```
 
 ## Event Driven Multitasking
-The other type of multitasking supported by HeliOS is event drive multitasking. Event driven works as its name suggests. The HeliOS schedule will only schedule an even driven task for execution when an event is raised. Any tasking in a **waiting** state is considered to be using event driven multitasking. To place a task in the **waiting** state, the **xTaskWait()** function call must be called. The HeliOS scheduler supports two types of events. The first is notification and the second is timer. Both types are covered in more detail below.
-*** Notification
-A notification occurs when the **xTaskNotify()** function call occurs. All tasks in the **waiting** state will respond to notification events, even tasks configured with a timer. Calling the **xTaskNotify()** function call on tasks in a **stopped** or **running** state has no affect. When calling **xTaskNotify()** a notification value and notification bytes must be specified along with the id of the receiving task. A notification value is a small character buffer (default size is 16 bytes). The notification bytes is the size of the notification value. For example, **xTaskNotify(3, 5, "ABCDE")** would send task 3 a 5 byte notification value of "ABCDE". When task 3 receives the notification, it will use the notification bytes to determine the number of bytes to read from the notification value. It is the task notification bytes and value feature of HeliOS that allows inter-task messaging as part of the wait/notify functionality.
+The other type of multitasking supported by HeliOS is event driven multitasking. Event driven works as its name suggests. The HeliOS scheduler will only schedule an event driven task for execution when an event is raised. Any tasking in a **waiting** state is considered to be using event driven multitasking. To place a task in the **waiting** state, the **xTaskWait()** function call must be called. The HeliOS scheduler supports two types of events. The first is notification and the second is timer. Both types are covered in more detail below.
+### Notification
+A notification occurs when the **xTaskNotify()** function call occurs. All tasks in the **waiting** state will respond to notification events, even tasks configured with a timer. Calling the **xTaskNotify()** function call on tasks in a **stopped** or **running** state has no affect. When calling **xTaskNotify()** the notification bytes and value must be specified along with the id of the receiving task. A notification value is a small character buffer (default size is 16 bytes). The notification bytes is the size of the notification value contained in the character buffer (or notification value). For example, **xTaskNotify(3, 5, "ABCDE")** would send task 3 a 5 byte notification value of "ABCDE". When task 3 receives the notification, it will use the notification bytes to determine the number of bytes to read from the notification value. It is the task notification bytes and value feature of HeliOS that allows inter-task messaging as part of the wait/notify functionality.
 
 Below is an Arduino example of two tasks. The first task continuously polls a GPIO pin and the second task waits for a notification that the pin his high.
 
@@ -122,8 +122,8 @@ void taskB(int id_) {
    */
   if(res) {
     /*
-     * res->notificationValue contains the notification value
      * res->notificationBytes contains the notification bytes
+     * res->notificationValue contains the notification value
      */
   }
   /* Always call xMemFree() to free the managed memory allocated by
