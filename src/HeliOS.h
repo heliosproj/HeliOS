@@ -73,6 +73,11 @@ struct xTaskGetInfoResult {
 	unsigned long timerStartTime;
 };
 
+struct xTaskGetNotifResult {
+	int notifyBytes;
+	char notifyValue[NOTIFYVALUESIZE];
+};
+
 struct xHeliOSGetInfoResult {
 	int tasks;
 	char productName[PRODUCTNAMESIZE];

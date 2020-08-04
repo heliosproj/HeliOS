@@ -115,12 +115,14 @@ int xTaskGetId(const char* name_) {
 
 void xTaskNotify(int id_, int notifyBytes_, char* notifyValue_) {
 	struct Task* task = NULL;
-	if (TaskListSeek(id_)) {
-		task = TaskListGet();
-		if (task) {
-			if (task->state != TaskStateErrored) {
-				task->notifyBytes = notifyBytes_;
-				memcpy_(task->notifyValue, notifyValue_, NOTIFYVALUESIZE);
+	if(notifyBytes_ > 0 && notifyBytes_ <= NOTIFYVALUESIZE && notifyValue_) {
+		if (TaskListSeek(id_)) {
+			task = TaskListGet();
+			if (task) {
+				if (task->state != TaskStateErrored) {
+					task->notifyBytes = notifyBytes_;
+					memcpy_(task->notifyValue, notifyValue_, NOTIFYVALUESIZE);
+				}
 			}
 		}
 	}
@@ -137,6 +139,22 @@ void xTaskNotifyClear(int id_) {
 			}
 		}
 	}
+}
+
+struct xTaskGetNotifResult* xTaskGetNotif(int id_) {
+	struct Task* task = NULL;
+	struct xTaskGetNotifResult* taskGetNotifResult = NULL;
+	if (TaskListSeek(id_)) {
+		task = TaskListGet();
+		if (task) {
+			taskGetNotifResult = (struct xTaskGetNotifResult*)xMemAlloc(sizeof(struct xTaskGetNotifResult));
+			if (taskGetNotifResult) {
+				taskGetNotifResult->notifyBytes = task->notifyBytes;
+				memcpy_(taskGetNotifResult->notifyValue, task->notifyValue, NOTIFYVALUESIZE);
+			}
+		}
+	}
+	return taskGetNotifResult;
 }
 
 struct xTaskGetInfoResult* xTaskGetInfo(int id_) {
