@@ -16,6 +16,7 @@ If the run-time of either task "A" or "B" were to change during run-time, the He
 It is important to note that the use of function calls like **delay()** must be avoided. If specific timing requirements exists, then event driven multitasking must be used. See the section on **Event Driven Multitasking** for further details.
 
 Below is an Arduino example of how two tasks are added to HeliOS and scheduled cooperatively.
+
 ```C
 #include <HeliOS_Arduino.h>
 
@@ -89,6 +90,7 @@ The other type of multitasking supported by HeliOS is event driven multitasking.
 A notification occurs when the **xTaskNotify()** function call occurs. All tasks in the **waiting** state will respond to notification events, even tasks configured with a timer. Calling the **xTaskNotify()** function call on tasks in a **stopped** or **running** state has no affect. When calling **xTaskNotify()** the notification bytes and value must be specified along with the id of the receiving task. A notification value is a small character buffer (default size is 16 bytes). The notification bytes is the size of the notification value contained in the character buffer (or notification value). For example, **xTaskNotify(3, 5, "ABCDE")** would send task 3 a 5 byte notification value of "ABCDE". When task 3 receives the notification, it will use the notification bytes to determine the number of bytes to read from the notification value. It is the task notification bytes and value feature of HeliOS that allows inter-task messaging as part of the wait/notify functionality.
 
 Below is an Arduino example of two tasks. Task "A" continuously sends notifications to task "B".
+
 ```C
 #include <HeliOS_Arduino.h>
 
@@ -181,11 +183,61 @@ void loop() {
 }
 ```
 
+### Timer
+The other event type is a timer event. It functions like an egg timer for tasks. After a certain duration has passed, the HeliOS scheduler schedules the task for execution. Like all tasks using event driven multitasking, the task state must be **waiting**. To configure a task's timer, the **xTaskSetTimer()** function call must be called which specifies the duration, in microseconds, that must elapse before HeliOS executes the task. HeliOS will automatically reset the timer every time it elapses. The timer can also be reset by calling the **xTaskresetTimer()** function call. Task timers are recommended over free running tasks that are cooperatively scheduled because they offer greater control over the timing of microcontroller operations. Below is an example of an event driven task on Arduino. In this example, task "A" will be executed every 1,000,000 microseconds (1 second).
 
+```C
+#include <HeliOS_Arduino.h>
 
-# Notification & Timers
-## Notification
-## Timers
+/*
+ * Create the first task "A"
+ */
+void taskA(int id_) {
+  // DO SOMETHING
+}
+
+void setup() {
+    /*
+     * xHeliOSSetup() must be the first function call
+     * made to initialize HeliOS and its data structures
+     */
+    xHeliOSSetup();
+
+    /*
+     * Declare and initialize an int to temporarily hold the
+     * task id.
+     */
+    int id = 0;
+
+    /*
+     * Pass the task friendly name and function to xTaskAdd()
+     * to add the task to HeliOS. xTaskAdd() will return a
+     * task id greater than zero if the task is added unsuccessfully.
+     */
+    id = xTaskAdd("TASKA", &taskA);
+
+    /*
+     * Pass the task id of the task to set its state from stopped
+     * to waiting.
+     */
+    xTaskWait(id);
+
+    /*
+     * Set the timer on the task to 1,000,000 microseconds.
+     */
+    xTaskSetTimer(id, 1000000);
+}
+
+void loop() {
+  /*
+   * Pass control to the the HeliOS scheduler. xHeliOSLoop() should
+   * be the only code inside the microcontroller project's
+   * main loop.
+   */
+  xHeliOSLoop();
+}
+```
+
 # Critical Blocking
 HeliOS implements cricitcal blocking which prevents some functions from being called that may alter the state of HeliOS during critical operations. Critical blocking is in effect while the scheduler is running and prevents functions like xTaskAdd() and xTaskRemove() from altering the state of the HeliOS. Thus, you cannot, for example, remove a task using xTaskRemove() while inside a running task. Functions that do not alter the state of HeliOS may be called during critical blocking. For example, function calls like xTaskGetInfo() may be called during critical blocking as they do not update the state of HeliOS.
 # Data Types
