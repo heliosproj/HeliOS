@@ -1,5 +1,5 @@
 # HeliOS Programmer's Guide
-This guide contains documentation of HeliOS and its Application Programming Interface (API). This is a work in progress.
+This guide contains documentation of HeliOS and its Application Programming Interface (API). This guide a work in progress.
 # Multitasking
 HeliOS provides two types of multitasking: cooperative and event driven multitasking. Both types can be used together. This section provides an explanation of and how to use each.
 ## Cooperative Multitasking
@@ -84,6 +84,106 @@ void loop() {
 ```
 
 ## Event Driven Multitasking
+The other type of multitasking supported by HeliOS is event drive multitasking. Event driven works as its name suggests. The HeliOS schedule will only schedule an even driven task for execution when an event is raised. Any tasking in a **waiting** state is considered to be using event driven multitasking. To place a task in the **waiting** state, the **xTaskWait()** function call must be called. The HeliOS scheduler supports two types of events. The first is notification and the second is timer. Both types are covered in more detail below.
+*** Notification
+A notification occurs when the **xTaskNotify()** function call occurs. All tasks in the **waiting** state will respond to notification events, even tasks configured with a timer. Calling the **xTaskNotify()** function call on tasks in a **stopped** or **running** state has no affect. When calling **xTaskNotify()** a notification value and notification bytes must be specified along with the id of the receiving task. A notification value is a small character buffer (default size is 16 bytes). The notification bytes is the size of the notification value. For example, **xTaskNotify(3, 5, "ABCDE")** would send task 3 a 5 byte notification value of "ABCDE". When task 3 receives the notification, it will use the notification bytes to determine the number of bytes to read from the notification value. It is the task notification bytes and value feature of HeliOS that allows inter-task messaging as part of the wait/notify functionality.
+
+Below is an Arduino example of two tasks. The first task continuously polls a GPIO pin and the second task waits for a notification that the pin his high.
+
+```C
+#include <HeliOS_Arduino.h>
+
+/*
+ * Create the first task "A"
+ */
+void taskA(int id_) {
+  /*
+   * Obtain the task id of task "B" using its friendly name
+   * since it should not be assumed that task "B" will always
+   * have a task id of 2. Then pass then send a 5 byte notification
+   * value with "HELLO" in the character buffer.
+   */
+  xTaskNotify(xTaskGetId("TASKB"), 5, "HELLO");
+}
+
+/*
+ * Create the second task "B"
+ */
+void taskB(int id_) {
+  /*
+   * Obtain the notification bytes and value from the xTaskGetInfoResult
+   * structure by first making a call to the xTaskGetInfo() function call
+   * using the task's id stored in id_.
+   */
+  struct xTaskGetInfoResult* res = xTaskGetInfo(id_);
+  /* Because xTaskInfo() can return a null pointer, always check
+   * that the structure's pointer is not null before accessing
+   * its members.
+   */
+  if(res) {
+    /*
+     * res->notificationValue contains the notification value
+     * res->notificationBytes contains the notification bytes
+     */
+  }
+  /* Always call xMemFree() to free the managed memory allocated by
+   * xTaskGetInfo();
+   */
+  xMemFree(res);
+}
+
+void setup() {
+    /*
+     * xHeliOSSetup() must be the first function call
+     * made to initialize HeliOS and its data structures
+     */
+    xHeliOSSetup();
+
+    /*
+     * Declare and initialize an int to temporarily hold the
+     * task id.
+     */
+    int id = 0;
+
+    /*
+     * Pass the task friendly name and function to xTaskAdd()
+     * to add the task to HeliOS. xTaskAdd() will return a
+     * task id greater than zero if the task is added unsuccessfully.
+     */
+    id = xTaskAdd("TASKA", &taskA);
+
+    /*
+     * Pass the task id of the task to set its state from stopped
+     * to running.
+     */
+    xTaskSart(id);
+
+    /*
+     * Pass the task friendly name and function to xTaskAdd()
+     * to add the task to HeliOS. xTaskAdd() will return a
+     * task id greater than zero if the task is added unsuccessfully.
+     */
+    id = xTaskAdd("TASKB", &taskB);
+
+    /*
+     * Pass the task id of the task to set its state from stopped
+     * to waiting.
+     */
+    xTaskWait(id);
+}
+
+void loop() {
+  /*
+   * Pass control to the the HeliOS scheduler. xHeliOSLoop() should
+   * be the only code inside the microcontroller project's
+   * main loop.
+   */
+  xHeliOSLoop();
+}
+```
+
+
+
 # Notification & Timers
 ## Notification
 ## Timers
