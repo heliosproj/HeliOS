@@ -49,7 +49,7 @@
 #define PRODUCTNAMESIZE 16
 #define MAJORVERSION 0
 #define MINORVERSION 2
-#define PATCHVERSION 1
+#define PATCHVERSION 2
 #define PRODUCTNAME "HeliOS"
 #define MEMALLOCTABLESIZE 50
 #define WAITINGTASKSIZE 8
@@ -71,6 +71,11 @@ struct xTaskGetInfoResult {
 	unsigned long totalRuntime;
 	unsigned long timerInterval;
 	unsigned long timerStartTime;
+};
+
+struct xTaskGetNotifResult {
+	int notifyBytes;
+	char notifyValue[NOTIFYVALUESIZE];
 };
 
 struct xHeliOSGetInfoResult {

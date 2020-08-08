@@ -6,40 +6,42 @@
 # Datatypes (KEYWORD1)
 #######################################
 
-xTaskState				KEYWORD1
+xTaskState	KEYWORD1
 
 #######################################
 # Functions (KEYWORD2)
 #######################################
 
-xHeliOSGetInfo			KEYWORD2
-xHeliOSLoop				KEYWORD2
-xHeliOSSetup			KEYWORD2
-xMemAlloc				KEYWORD2
-xMemFree				KEYWORD2
-xMemGetSize				KEYWORD2
-xMemGetUsed				KEYWORD2
-xTaskAdd				KEYWORD2
-xTaskClear				KEYWORD2
-xTaskGetId				KEYWORD2
-xTaskGetInfo			KEYWORD2
-xTaskGetList			KEYWORD2
-xTaskNotify				KEYWORD2
-xTaskNotifyClear		KEYWORD2
-xTaskRemove				KEYWORD2
-xTaskResetTimer			KEYWORD2
-xTaskSetTimer			KEYWORD2
-xTaskStart				KEYWORD2
-xTaskStop				KEYWORD2
-xTaskWait				KEYWORD2
+xHeliOSGetInfo	KEYWORD2
+xHeliOSLoop	KEYWORD2
+xHeliOSSetup	KEYWORD2
+xMemAlloc	KEYWORD2
+xMemFree	KEYWORD2
+xMemGetSize	KEYWORD2
+xMemGetUsed	KEYWORD2
+xTaskAdd	KEYWORD2
+xTaskClear	KEYWORD2
+xTaskGetId	KEYWORD2
+xTaskGetInfo	KEYWORD2
+xTaskGetList	KEYWORD2
+xTaskGetNotif	KEYWORD2
+xTaskNotify	KEYWORD2
+xTaskNotifyClear	KEYWORD2
+xTaskRemove	KEYWORD2
+xTaskResetTimer	KEYWORD2
+xTaskSetTimer	KEYWORD2
+xTaskStart	KEYWORD2
+xTaskStop	KEYWORD2
+xTaskWait	KEYWORD2
 
 #######################################
 # Structures (KEYWORD3)
 #######################################
 
 xHeliOSGetInfoResult	KEYWORD3
-xTaskGetInfoResult		KEYWORD3
-xTaskGetListResult		KEYWORD3
+xTaskGetInfoResult	KEYWORD3
+xTaskGetListResult	KEYWORD3
+xTaskGetNotifResult	KEYWORD3
 
 #######################################
 # Constants (LITERAL1)
