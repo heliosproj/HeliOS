@@ -13,6 +13,8 @@ HeliOS is an embedded operating system that is free for anyone to use. While cal
 As noted in the key features, HeliOS supports two types of multitasking: cooperative and event driven. Cooperative multitasking embedded operating systems and task schedulers often use a round-robin scheduling strategy. However, HeliOS uses a run-time balanced strategy which ensures tasks with shorter run-times are prioritized over tasks with longer run-times. This ensures all running tasks receive approximately equal total run-time without using context switching. The other multitasking option available in HeliOS is event driven multitasking, which uses the wait/notify and timer interfaces. Mixing cooperative and event driven tasks in HeliOS is not a problem.
 # Why HeliOS?
 There are already so many great and proven RTOS and scheduler options available, then why HeliOS? That is certainly a valid question. HeliOS was never intended to replace or compete with the other options already available today (if you have not checked out FreeRTOS - you should, it is nothing short of an amazing RTOS for embedded and is more accessible today than ever before through the Arduino Library Manager). HeliOS, however, due to its size and simplicity, is intended to play in the space between RTOS's and task schedulers. HeliOS is tiny (smaller than FreeRTOS), easy to use and a great place to start for enthusiasts, hobbyists and researchers.
+# What's Happening
+HeliOS is an active project and is eing continuously improved. Development is currently occurring over one to two week sprints resulting in a new release at the conclusion of each sprint. This pace of development will continue until a substantial portion of the development backlog is addressed. The development backlog includes improvements to the HeliOS Programmer's Guide, code documentation, additional example sketches and testing. If you are interested in contributing to HeliOS, please refer to the Contributing section.
 # Getting Started
 ## Arduino
 Because HeliOS is compliant with the Arduino 1.5 (rev. 2.2) Library Specification, getting up and running is quick and easy. HeliOS can be installed directly from the Arduino Library Manager or downloaded and installed manually. Both options are described [here](https://www.arduino.cc/en/Guide/Libraries#toc3). Once up and running, check out one of the example sketches or refer to the HeliOS Programmer's Guide in the Documentation section.
@@ -74,8 +76,8 @@ All releases, including the current release, can be found [here](https://github.
 # Contributing
 While all contributions are welcome, contributions are needed most in the following areas:
 * HeliOS Programmer's Guide
-* Performance Enhancements
-* Stability Enhancements
+* Code Documentation
+* Example Sketches
 * Testing
 
 To contribute, please create an issue and indicate how you would like to contribute. Please fork from the **develop** branch as **master** is kept even with the current release.
