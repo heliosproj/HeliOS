@@ -28,16 +28,18 @@
 
 /*
  * The task definition for taskSerial() which will
- * be executed up by HeliOS when digital GPIO pin 2
+ * be executed by HeliOS when digital GPIO pin 2
  * or 3 change state to HIGH.
  */
 void taskSerial(int id_) {
+
   /*
    * Call xTaskGetNotif() to obtain the task notification
    * bytes and value by passing xTaskGetNotif() the task
    * id of the active task.
    */
   xTaskGetNotifResult* res = xTaskGetNotif(id_);
+
   /*
    * Check the pointer to the xTaskGetNotifResult
    * structure before accessing any of its members
@@ -46,6 +48,7 @@ void taskSerial(int id_) {
    * to reserve the required managed memory.
    */
   if(res) {
+
     /*
      * Declare and initialize a String object to
      * hold the message which will be written
@@ -53,6 +56,7 @@ void taskSerial(int id_) {
      * pin 2 or 3 changes state to HIGH.
      */
     String str = "taskSerial(): GPIO pin ";
+
     /*
      * Append the notification value to the
      * message. In this example, the notifiation
@@ -61,15 +65,18 @@ void taskSerial(int id_) {
      * changes state to HIGH.
      */
     str += res->notifyValue;
+
     /* Close the message which will be written
      * to the serial bus.
      */
     str += " changed state to HIGH.";
+
     /*
      * Print the message to the serial bus.
      */
     Serial.println(str);
   }
+
   /*
    * Free the managed memory allocated by the xTaskGetInfo()
    * function call. If xMemFree() is not called, HeliOS
@@ -84,6 +91,7 @@ void taskSerial(int id_) {
  * for digital GPIO pin 2.
  */
 void D2ISR() {
+
   /*
    * Send 2 byte notification value of "D2" to
    * taskSerial() by first calling xTaskGetId()
@@ -105,6 +113,7 @@ void D2ISR() {
  * for digital GPIO pin 3.
  */
 void D3ISR() {
+
   /*
    * Send 2 byte notification value of "D3" to
    * taskSerial() by first calling xTaskGetId()
@@ -122,6 +131,7 @@ void D3ISR() {
 }
 
 void setup() {
+
   /*
    * Declare and initialize an int to hold the
    * task id.
@@ -171,6 +181,7 @@ void setup() {
 }
 
 void loop() {
+
   /*
    * Momentarily pass control to HeliOS by calling the
    * xHeliOSLoop() function call. xHeliOSLoop() should be
