@@ -44,32 +44,32 @@ void taskBlink(int id_) {
 	 * 1 or HIGH. Likewise, if the state is 1 or HIGH
 	 * then set the state to LOW.
 	 */
-	if(ledState) {
+	 if(ledState) {
 
 		/*
 		 * Set the state of the digital GPIO pin associated
 		 * with the built-in LED to LOW.
 		 */
-		digitalWrite(LED_BUILTIN, LOW);
+		 digitalWrite(LED_BUILTIN, LOW);
 
 		/*
 		 * Update the int containing the state of the build-in
 		 * LED accordingly.
 		 */
-		ledState = 0;
+		 ledState = 0;
 	} else {
 
 		/*
 		 * Set the state of the digital GPIO pin associated
 		 * with the built-in LED to HIGH.
 		 */
-		digitalWrite(LED_BUILTIN, HIGH);
+		 digitalWrite(LED_BUILTIN, HIGH);
 
 		/*
 		 * Update the int containing the state of the built-in
 		 * LED accordingly.
 		 */
-		ledState = 1;
+		 ledState = 1;
 	}
 }
 
@@ -79,41 +79,41 @@ void setup() {
    * Declare and initialize an int to hold the
    * task id.
    */
-  int id = 0;
+	 int id = 0;
 
 	/*
 	 * Call xHeliOSSetup() to initialize HeliOS and
 	 * its data structures. xHeliOSSetup() must be
 	 * called before any other HeliOS function call.
 	 */
-	xHeliOSSetup();
+	 xHeliOSSetup();
 
 	/*
 	 * Set the mode of the digital GPIO pin associated
 	 * with the built-in LED to OUTPUT only.
 	 */
-	pinMode(LED_BUILTIN, OUTPUT);
+	 pinMode(LED_BUILTIN, OUTPUT);
 
 	/*
    * Add the task taskBlink() to HeliOS by passing
    * xTaskAdd() the friendly name of the task as well
    * as a callback pointer to the task function.
    */
-	id = xTaskAdd("TASKBLINK", &taskBlink);
+	 id = xTaskAdd("TASKBLINK", &taskBlink);
 
 	/*
 	 * Call xTaskWait() to place taskBlink() into a wait
 	 * state by passing xTaskWait() the task id. A task
 	 * must be in a wait state to respond to timer events.
 	 */
-	xTaskWait(id);
+	 xTaskWait(id);
 
 	/*
 	 * Set the timer interval for taskBlink() to 1,000,000 microseconds
 	 * (1 second). HeliOS automatically begins incrementing
 	 * the timer for the task once the timer interval is set.
 	 */
-	xTaskSetTimer(id, 1000000);
+	 xTaskSetTimer(id, 1000000);
 }
 
 void loop() {
@@ -123,5 +123,5 @@ void loop() {
 	 * xHeliOSLoop() function call. xHeliOSLoop() should be
 	 * the only code inside of the sketch's loop() function.
 	 */
-	xHeliOSLoop();
+	 xHeliOSLoop();
 }

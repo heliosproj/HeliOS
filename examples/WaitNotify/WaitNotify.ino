@@ -38,7 +38,7 @@ void taskSerial(int id_) {
    * bytes and value by passing xTaskGetNotif() the task
    * id of the active task.
    */
-  xTaskGetNotifResult* res = xTaskGetNotif(id_);
+   xTaskGetNotifResult* res = xTaskGetNotif(id_);
 
   /*
    * Check the pointer to the xTaskGetNotifResult
@@ -47,7 +47,7 @@ void taskSerial(int id_) {
    * task id does not exist or HeliOS is unable
    * to reserve the required managed memory.
    */
-  if(res) {
+   if(res) {
 
     /*
      * Declare and initialize a String object to
@@ -55,7 +55,7 @@ void taskSerial(int id_) {
      * to the serial bus when digital GPIO
      * pin 2 or 3 changes state to HIGH.
      */
-    String str = "taskSerial(): GPIO pin ";
+     String str = "taskSerial(): GPIO pin ";
 
     /*
      * Append the notification value to the
@@ -64,17 +64,17 @@ void taskSerial(int id_) {
      * depending on which digital GPIO pin
      * changes state to HIGH.
      */
-    str += res->notifyValue;
+     str += res->notifyValue;
 
     /* Close the message which will be written
      * to the serial bus.
      */
-    str += " changed state to HIGH.";
+     str += " changed state to HIGH.";
 
     /*
      * Print the message to the serial bus.
      */
-    Serial.println(str);
+     Serial.println(str);
   }
 
   /*
@@ -83,7 +83,7 @@ void taskSerial(int id_) {
    * may exhaust its available managed memory through
    * subsequent calls to xTaskGetInfo().
    */
-  xMemFree(res);
+   xMemFree(res);
 }
 
 /*
@@ -105,7 +105,7 @@ void D2ISR() {
    * the notification value to (char*). This is
    * only done to avoid compiler warnings in C++.
    */
-  xTaskNotify(xTaskGetId("TASKSERIAL"), 2, (char*)"D2");
+   xTaskNotify(xTaskGetId("TASKSERIAL"), 2, (char*)"D2");
 }
 
 /*
@@ -127,7 +127,7 @@ void D3ISR() {
    * the notification value to (char*). This is
    * only done to avoid compiler warnings in C++.
    */
-  xTaskNotify(xTaskGetId("TASKSERIAL"), 2, (char*)"D3");
+   xTaskNotify(xTaskGetId("TASKSERIAL"), 2, (char*)"D3");
 }
 
 void setup() {
@@ -136,48 +136,48 @@ void setup() {
    * Declare and initialize an int to hold the
    * task id.
    */
-  int id = 0;
+   int id = 0;
 
   /*
    * Call xHeliOSSetup() to initialize HeliOS and
    * its data structures. xHeliOSSetup() must be
    * called before any other HeliOS function call.
    */
-	xHeliOSSetup();
+   xHeliOSSetup();
 
   /*
    * Set the serial data rate and begin serial
    * communication.
    */
-  Serial.begin(9600);
+   Serial.begin(9600);
 
   /*
    * Set digital GPIO pins 2 and 3 to input only.
    */
-  pinMode(2, INPUT);
-  pinMode(3, INPUT);
+   pinMode(2, INPUT);
+   pinMode(3, INPUT);
 
   /*
    * Attach the interrupt service routines D2ISR()
    * and D3ISR() to the interrupts for digital GPIO
    * pins 2 and 3.
    */
-  attachInterrupt(digitalPinToInterrupt(2), D2ISR, RISING);
-  attachInterrupt(digitalPinToInterrupt(3), D3ISR, RISING);
+   attachInterrupt(digitalPinToInterrupt(2), D2ISR, RISING);
+   attachInterrupt(digitalPinToInterrupt(3), D3ISR, RISING);
 
   /*
    * Add the task taskSerial() to HeliOS by passing
    * xTaskAdd() the friendly name of the task as well
    * as a callback pointer to the task function.
    */
-	id = xTaskAdd("TASKSERIAL", &taskSerial);
+   id = xTaskAdd("TASKSERIAL", &taskSerial);
 
   /*
    * Call xTaskWait() to place taskSerial() into a wait
    * state by passing xTaskWait() the task id. A task
    * must be in a wait state to receive notifications.
    */
-	xTaskWait(id);
+   xTaskWait(id);
 }
 
 void loop() {
@@ -187,5 +187,5 @@ void loop() {
    * xHeliOSLoop() function call. xHeliOSLoop() should be
    * the only code inside of the sketch's loop() function.
    */
-	xHeliOSLoop();
+   xHeliOSLoop();
 }
