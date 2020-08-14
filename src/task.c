@@ -105,7 +105,7 @@ int xTaskGetId(const char* name_) {
 	do {
 		task = TaskListGet();
 		if (task) {
-			if (strncmp_(task->name, name_, TASKNAMESIZE)) {
+			if (strncmp_(task->name, name_, TASKNAMESIZE) == 0) {
 				return task->id;
 			}
 		}
