@@ -88,6 +88,16 @@ void taskSerial(int id_) {
    * subsequent calls to xTaskGetInfo().
    */
    xMemFree(res);
+
+   /*
+    * HeliOS will automatically set the notification bytes
+    * back to zero after the task returns control to HeliOS.
+    * However, you can optionally call xTaskNotifyClear() to
+    * ensure the notifiation value itself is also cleared. The
+    * xTaskNotifyClear() function call sets all bytes of the
+    * notifiation value to zero.
+    */
+   xTaskNotifyClear(id_);
 }
 
 /*
