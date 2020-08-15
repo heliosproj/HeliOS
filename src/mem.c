@@ -14,7 +14,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*/
+ */
 
 #include "HeliOS.h"
 #include "list.h"
@@ -25,65 +25,65 @@
 volatile struct MemAllocRecord memAllocTable[MEMALLOCTABLESIZE];
 
 void MemInit() {
-	memset_(&memAllocTable, 0, MEMALLOCTABLESIZE * sizeof(struct MemAllocRecord));
+  memset_(&memAllocTable, 0, MEMALLOCTABLESIZE * sizeof(struct MemAllocRecord));
 }
 
 void* xMemAlloc(size_t size_) {
-	void* ptr = NULL;
-	if(size_ > 0) {
-		for (int i = 0; i < MEMALLOCTABLESIZE; i++) {
-			if (!memAllocTable[i].ptr) {
-				ptr = calloc(1, size_);
-				if (ptr) {
-					memAllocTable[i].size = size_;
-					memAllocTable[i].ptr = ptr;
-					return ptr;
-				}
-			}
-		}
-	}
-	return NULL;
+  void* ptr = NULL;
+  if(size_ > 0) {
+    for (int i = 0; i < MEMALLOCTABLESIZE; i++) {
+      if (!memAllocTable[i].ptr) {
+        ptr = calloc(1, size_);
+        if (ptr) {
+          memAllocTable[i].size = size_;
+          memAllocTable[i].ptr = ptr;
+          return ptr;
+        }
+      }
+    }
+  }
+  return NULL;
 }
 
 void xMemFree(void* ptr_) {
-	if (ptr_) {
-		for (int i = 0; i < MEMALLOCTABLESIZE; i++) {
-			if (memAllocTable[i].ptr == ptr_) {
-				free(memAllocTable[i].ptr);
-				memAllocTable[i].size = 0;
-				memAllocTable[i].ptr = NULL;
-			}
-		}
-	}
+  if (ptr_) {
+    for (int i = 0; i < MEMALLOCTABLESIZE; i++) {
+      if (memAllocTable[i].ptr == ptr_) {
+        free(memAllocTable[i].ptr);
+        memAllocTable[i].size = 0;
+        memAllocTable[i].ptr = NULL;
+      }
+    }
+  }
 }
 
 int xMemGetUsed() {
-	int used = 0;
-	for (int i = 0; i < MEMALLOCTABLESIZE; i++) {
-		if (memAllocTable[i].ptr) {
-			used += (int) memAllocTable[i].size;
-		}
-	}
-	return used;
+  int used = 0;
+  for (int i = 0; i < MEMALLOCTABLESIZE; i++) {
+    if (memAllocTable[i].ptr) {
+      used += (int) memAllocTable[i].size;
+    }
+  }
+  return used;
 }
 
 int xMemGetSize(void* ptr_) {
-	if (ptr_) {
-		for (int i = 0; i < MEMALLOCTABLESIZE; i++) {
-			if (memAllocTable[i].ptr == ptr_) {
-				return memAllocTable[i].size;
-			}
-		}
-	}
-	return 0;
+  if (ptr_) {
+    for (int i = 0; i < MEMALLOCTABLESIZE; i++) {
+      if (memAllocTable[i].ptr == ptr_) {
+        return memAllocTable[i].size;
+      }
+    }
+  }
+  return 0;
 }
 
 void MemClear() {
-	for (int i = 0; i < MEMALLOCTABLESIZE; i++) {
-		if (memAllocTable[i].ptr) {
-			free(memAllocTable[i].ptr);
-			memAllocTable[i].size = 0;
-			memAllocTable[i].ptr = NULL;
-		}
-	}
+  for (int i = 0; i < MEMALLOCTABLESIZE; i++) {
+    if (memAllocTable[i].ptr) {
+      free(memAllocTable[i].ptr);
+      memAllocTable[i].size = 0;
+      memAllocTable[i].ptr = NULL;
+    }
+  }
 }

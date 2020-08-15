@@ -14,7 +14,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*/
+ */
 
 #include "HeliOS.h"
 #include "list.h"
@@ -24,12 +24,12 @@
 
 unsigned long TimerGetNow() {
 #if defined(ARDUINO_ARCH_AVR)
-	return micros();
+  return micros();
 #elif defined(ARDUINO_ARCH_SAM)
-	return micros();
+  return micros();
 #elif defined(ARDUINO_ARCH_SAMD)
-	return micros();
+  return micros();
 #else
-	#error “HeliOS is currently supported on the Arduino AVR, SAM and SAMD architectures. Other architectures may require porting of HeliOS.”
+        #error “HeliOS is currently supported on the Arduino AVR, SAM and SAMD architectures. Other architectures may require porting of HeliOS.”
 #endif
 }

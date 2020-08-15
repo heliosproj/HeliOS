@@ -14,7 +14,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*/
+ */
 
 /*
  * Additional documentation on HeliOS and its Application
@@ -37,161 +37,161 @@
  */
 void taskSerial(int id_) {
 
-	/*
-	 * Declare and initialize a string object to
-	 * hold the text which will be written to the
-	 * serial bus every 1,000,000 microseconds
-	 * (1 second).
-	 */
-	 String str = "";
+  /*
+   * Declare and initialize a string object to
+   * hold the text which will be written to the
+   * serial bus every 1,000,000 microseconds
+   * (1 second).
+   */
+  String str = "";
 
-	 /*
-    * Call xTaskGetInfo() to obtain the task information
-    * by passing xTaskGetInfo() the task id of the active
-    * task.
-    */
-	 struct xTaskGetInfoResult* tres = xTaskGetInfo(id_);
+  /*
+   * Call xTaskGetInfo() to obtain the task information
+   * by passing xTaskGetInfo() the task id of the active
+   * task.
+   */
+  struct xTaskGetInfoResult* tres = xTaskGetInfo(id_);
 
-	 /*
-    * Check the pointer to the xTaskGetInfoResult
-    * structure before accessing any of its members
-    * since xTaskGetInfo() can return null if the
-    * task id does not exist or HeliOS is unable
-    * to reserve the required managed memory.
-    */
-	 if(tres) {
+  /*
+   * Check the pointer to the xTaskGetInfoResult
+   * structure before accessing any of its members
+   * since xTaskGetInfo() can return null if the
+   * task id does not exist or HeliOS is unable
+   * to reserve the required managed memory.
+   */
+  if(tres) {
 
-		 /*
-		  * Append all of the members of the xTaskGetInfoResult
-		  * structure to the string.
-		  */
-		 str += "taskSerial(): id = ";
-		 str += tres->id;
-		 str += ", name = ";
-		 str += tres->name;
-		 str += ", state = ";
-		 str += tres->state;
-		 str += ", nbytes = ";
-		 str += tres->notifyBytes;
-		 str += ", nvalue = ";
-		 str += tres->notifyValue;
-		 str += ", ltime = ";
-		 str += tres->lastRuntime;
-		 str += ", ttime = ";
-		 str += tres->totalRuntime;
-		 str += ", tinterval = ";
-		 str += tres->timerInterval;
-		 str += ", tstart = ";
-		 str += tres->timerStartTime;
+    /*
+     * Append all of the members of the xTaskGetInfoResult
+     * structure to the string.
+     */
+    str += "taskSerial(): id = ";
+    str += tres->id;
+    str += ", name = ";
+    str += tres->name;
+    str += ", state = ";
+    str += tres->state;
+    str += ", nbytes = ";
+    str += tres->notifyBytes;
+    str += ", nvalue = ";
+    str += tres->notifyValue;
+    str += ", ltime = ";
+    str += tres->lastRuntime;
+    str += ", ttime = ";
+    str += tres->totalRuntime;
+    str += ", tinterval = ";
+    str += tres->timerInterval;
+    str += ", tstart = ";
+    str += tres->timerStartTime;
 
-			/*
-			 * Print the string to the serial bus.
-			 */
-			 Serial.println(str);
-	 }
+    /*
+     * Print the string to the serial bus.
+     */
+    Serial.println(str);
+  }
 
-	 /*
-    * Free the managed memory allocated by the xTaskGetInfo()
-    * function call. If xMemFree() is not called, HeliOS
-    * may exhaust its available managed memory through
-    * subsequent calls to xTaskGetInfo().
-    */
-	 xMemFree(tres);
+  /*
+   * Free the managed memory allocated by the xTaskGetInfo()
+   * function call. If xMemFree() is not called, HeliOS
+   * may exhaust its available managed memory through
+   * subsequent calls to xTaskGetInfo().
+   */
+  xMemFree(tres);
 
-	 /*
-	  * Clear the string.
-	  */
-	 str = "";
+  /*
+   * Clear the string.
+   */
+  str = "";
 
-	 /*
-    * Call xHeliOSGetInfo() to obtain the system information.
-    */
-	 struct xHeliOSGetInfoResult* hres = xHeliOSGetInfo();
+  /*
+   * Call xHeliOSGetInfo() to obtain the system information.
+   */
+  struct xHeliOSGetInfoResult* hres = xHeliOSGetInfo();
 
-	 /*
-		 * Check the pointer to the xHeliOSGetInfoResult
-		 * structure before accessing any of its members
-		 * since xHeliOSGetInfo() can return null if the
-		 * task id does not exist or HeliOS is unable
-		 * to reserve the required managed memory.
-		 */
-	 if(hres) {
-		 str += "taskSerial(): ";
-		 str += hres->productName;
-		 str += " ";
-		 str += hres->majorVersion;
-		 str += ".";
-		 str += hres->minorVersion;
-		 str += ".";
-		 str += hres->patchVersion;
-		 str += " has ";
-		 str += hres->tasks;
-		 str += " task.";
+  /*
+   * Check the pointer to the xHeliOSGetInfoResult
+   * structure before accessing any of its members
+   * since xHeliOSGetInfo() can return null if the
+   * task id does not exist or HeliOS is unable
+   * to reserve the required managed memory.
+   */
+  if(hres) {
+    str += "taskSerial(): ";
+    str += hres->productName;
+    str += " ";
+    str += hres->majorVersion;
+    str += ".";
+    str += hres->minorVersion;
+    str += ".";
+    str += hres->patchVersion;
+    str += " has ";
+    str += hres->tasks;
+    str += " task.";
 
-			/*
-			 * Print the string to the serial bus.
-			 */
-			 Serial.println(str);
-	 }
+    /*
+     * Print the string to the serial bus.
+     */
+    Serial.println(str);
+  }
 
-	 /*
-    * Free the managed memory allocated by the xHeliOSGetInfo()
-    * function call. If xMemFree() is not called, HeliOS
-    * may exhaust its available managed memory through
-    * subsequent calls to xHeliOSGetInfo().
-    */
-	 xMemFree(hres);
+  /*
+   * Free the managed memory allocated by the xHeliOSGetInfo()
+   * function call. If xMemFree() is not called, HeliOS
+   * may exhaust its available managed memory through
+   * subsequent calls to xHeliOSGetInfo().
+   */
+  xMemFree(hres);
 }
 
 void setup() {
 
-	/*
+  /*
    * Declare and initialize an int to hold the
    * task id.
    */
-	 int id = 0;
+  int id = 0;
 
-	/*
-	 * Call xHeliOSSetup() to initialize HeliOS and
-	 * its data structures. xHeliOSSetup() must be
-	 * called before any other HeliOS function call.
-	 */
-	 xHeliOSSetup();
+  /*
+   * Call xHeliOSSetup() to initialize HeliOS and
+   * its data structures. xHeliOSSetup() must be
+   * called before any other HeliOS function call.
+   */
+  xHeliOSSetup();
 
-	 /*
-    * Set the serial data rate and begin serial
-    * communication.
-    */
-		Serial.begin(9600);
+  /*
+   * Set the serial data rate and begin serial
+   * communication.
+   */
+  Serial.begin(9600);
 
-	/*
+  /*
    * Add the task taskSerial() to HeliOS by passing
    * xTaskAdd() the friendly name of the task as well
    * as a callback pointer to the task function.
    */
-	 id = xTaskAdd("TASKSERIAL", &taskSerial);
+  id = xTaskAdd("TASKSERIAL", &taskSerial);
 
-	/*
-	 * Call xTaskWait() to place taskSerial() into a wait
-	 * state by passing xTaskWait() the task id. A task
-	 * must be in a wait state to respond to timer events.
-	 */
-	 xTaskWait(id);
+  /*
+   * Call xTaskWait() to place taskSerial() into a wait
+   * state by passing xTaskWait() the task id. A task
+   * must be in a wait state to respond to timer events.
+   */
+  xTaskWait(id);
 
-	/*
-	 * Set the timer interval for taskSerial() to 1,000,000 microseconds
-	 * (1 second). HeliOS automatically begins incrementing
-	 * the timer for the task once the timer interval is set.
-	 */
-	 xTaskSetTimer(id, 1000000);
+  /*
+   * Set the timer interval for taskSerial() to 1,000,000 microseconds
+   * (1 second). HeliOS automatically begins incrementing
+   * the timer for the task once the timer interval is set.
+   */
+  xTaskSetTimer(id, 1000000);
 }
 
 void loop() {
 
-	/*
-	 * Momentarily pass control to HeliOS by calling the
-	 * xHeliOSLoop() function call. xHeliOSLoop() should be
-	 * the only code inside of the sketch's loop() function.
-	 */
-	 xHeliOSLoop();
+  /*
+   * Momentarily pass control to HeliOS by calling the
+   * xHeliOSLoop() function call. xHeliOSLoop() should be
+   * the only code inside of the sketch's loop() function.
+   */
+  xHeliOSLoop();
 }

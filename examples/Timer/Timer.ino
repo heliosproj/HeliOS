@@ -14,7 +14,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*/
+ */
 
 /*
  * Additional documentation on HeliOS and its Application
@@ -37,69 +37,69 @@
  */
 void taskSerial(int id_) {
 
-	/*
-	 * Declare and initialize a String object to
-	 * hold the message which will be written
-	 * to the serial bus every 1,000,000 microseconds
-	 * (1 second).
-	 */
-	 String str = "taskSerial(): one second has passed.";
+  /*
+   * Declare and initialize a String object to
+   * hold the message which will be written
+   * to the serial bus every 1,000,000 microseconds
+   * (1 second).
+   */
+  String str = "taskSerial(): one second has passed.";
 
-	/*
-	 * Print the message to the serial bus.
-	 */
-	 Serial.println(str);
+  /*
+   * Print the message to the serial bus.
+   */
+  Serial.println(str);
 }
 
 void setup() {
 
-	/*
+  /*
    * Declare and initialize an int to hold the
    * task id.
    */
-	 int id = 0;
+  int id = 0;
 
-	/*
-	 * Call xHeliOSSetup() to initialize HeliOS and
-	 * its data structures. xHeliOSSetup() must be
-	 * called before any other HeliOS function call.
-	 */
-	 xHeliOSSetup();
+  /*
+   * Call xHeliOSSetup() to initialize HeliOS and
+   * its data structures. xHeliOSSetup() must be
+   * called before any other HeliOS function call.
+   */
+  xHeliOSSetup();
 
-	 /*
-    * Set the serial data rate and begin serial
-    * communication.
-    */
-		Serial.begin(9600);
+  /*
+   * Set the serial data rate and begin serial
+   * communication.
+   */
+  Serial.begin(9600);
 
-	/*
+  /*
    * Add the task taskSerial() to HeliOS by passing
    * xTaskAdd() the friendly name of the task as well
    * as a callback pointer to the task function.
    */
-	 id = xTaskAdd("TASKSERIAL", &taskSerial);
+  id = xTaskAdd("TASKSERIAL", &taskSerial);
 
-	/*
-	 * Call xTaskWait() to place taskSerial() into a wait
-	 * state by passing xTaskWait() the task id. A task
-	 * must be in a wait state to respond to timer events.
-	 */
-	 xTaskWait(id);
+  /*
+   * Call xTaskWait() to place taskSerial() into a wait
+   * state by passing xTaskWait() the task id. A task
+   * must be in a wait state to respond to timer events.
+   */
+  xTaskWait(id);
 
-	/*
-	 * Set the timer interval for taskSerial() to 1,000,000 microseconds
-	 * (1 second). HeliOS automatically begins incrementing
-	 * the timer for the task once the timer interval is set.
-	 */
-	 xTaskSetTimer(id, 1000000);
+  /*
+   * Set the timer interval for taskSerial() to 1,000,000 microseconds
+   * (1 second). HeliOS automatically begins incrementing
+   * the timer for the task once the timer interval is set.
+   */
+  xTaskSetTimer(id, 1000000);
 }
 
 void loop() {
 
-	/*
-	 * Momentarily pass control to HeliOS by calling the
-	 * xHeliOSLoop() function call. xHeliOSLoop() should be
-	 * the only code inside of the sketch's loop() function.
-	 */
-	 xHeliOSLoop();
+  /*
+   * Momentarily pass control to HeliOS by calling the
+   * xHeliOSLoop() function call. xHeliOSLoop() should be
+   * the only code inside of the sketch's loop() function.
+   */
+  xHeliOSLoop();
 }

@@ -14,34 +14,34 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*/
+ */
 
 #include <stdlib.h>
 #include <limits.h>
 
 #if defined(ARDUINO_ARCH_AVR)
-	#include <Arduino.h>
-	#define NOW() micros()
+        #include <Arduino.h>
+        #define NOW() micros()
 #elif defined(ARDUINO_ARCH_SAM)
-	#include <Arduino.h>
-	#define NOW() micros()
+        #include <Arduino.h>
+        #define NOW() micros()
 #elif defined(ARDUINO_ARCH_SAMD)
-	#include <Arduino.h>
-	#define NOW() micros()
+        #include <Arduino.h>
+        #define NOW() micros()
 #else
-	#error “HeliOS is currently supported on the Arduino AVR, SAM and SAMD architectures. Other architectures may require porting of HeliOS.”
+        #error “HeliOS is currently supported on the Arduino AVR, SAM and SAMD architectures. Other architectures may require porting of HeliOS.”
 #endif
 
 #ifndef NULL
-	#define NULL 0
+        #define NULL 0
 #endif
 
 #ifndef FALSE
-	#define FALSE (1 != 1)
+        #define FALSE (1 != 1)
 #endif
 
 #ifndef TRUE
-	#define TRUE (!FALSE)
+        #define TRUE (!FALSE)
 #endif
 
 #define TASKNAMESIZE 16
@@ -55,67 +55,67 @@
 #define WAITINGTASKSIZE 8
 
 enum xTaskState {
-	TaskStateErrored,
-	TaskStateStopped,
-	TaskStateRunning,
-	TaskStateWaiting
+  TaskStateErrored,
+  TaskStateStopped,
+  TaskStateRunning,
+  TaskStateWaiting
 };
 
 struct xTaskGetInfoResult {
-	int id;
-	char name[TASKNAMESIZE];
-	enum xTaskState state;
-	int notifyBytes;
-	char notifyValue[NOTIFYVALUESIZE];
-	unsigned long lastRuntime;
-	unsigned long totalRuntime;
-	unsigned long timerInterval;
-	unsigned long timerStartTime;
+  int id;
+  char name[TASKNAMESIZE];
+  enum xTaskState state;
+  int notifyBytes;
+  char notifyValue[NOTIFYVALUESIZE];
+  unsigned long lastRuntime;
+  unsigned long totalRuntime;
+  unsigned long timerInterval;
+  unsigned long timerStartTime;
 };
 
 struct xTaskGetNotifResult {
-	int notifyBytes;
-	char notifyValue[NOTIFYVALUESIZE];
+  int notifyBytes;
+  char notifyValue[NOTIFYVALUESIZE];
 };
 
 struct xHeliOSGetInfoResult {
-	int tasks;
-	char productName[PRODUCTNAMESIZE];
-	int majorVersion;
-	int minorVersion;
-	int patchVersion;
+  int tasks;
+  char productName[PRODUCTNAMESIZE];
+  int majorVersion;
+  int minorVersion;
+  int patchVersion;
 };
 
 struct xTaskGetListResult {
-	int id;
-	char name[TASKNAMESIZE];
-	enum xTaskState state;
-	unsigned long lastRuntime;
-	unsigned long totalRuntime;
+  int id;
+  char name[TASKNAMESIZE];
+  enum xTaskState state;
+  unsigned long lastRuntime;
+  unsigned long totalRuntime;
 };
 
 struct Task {
-	int id;
-	char name[TASKNAMESIZE];
-	enum xTaskState state;
-	void (*callback)(int);
-	int notifyBytes;
-	char notifyValue[NOTIFYVALUESIZE];
-	unsigned long lastRuntime;
-	unsigned long totalRuntime;
-	unsigned long timerInterval;
-	unsigned long timerStartTime;
-	struct TaskListItem* next;
+  int id;
+  char name[TASKNAMESIZE];
+  enum xTaskState state;
+  void (*callback)(int);
+  int notifyBytes;
+  char notifyValue[NOTIFYVALUESIZE];
+  unsigned long lastRuntime;
+  unsigned long totalRuntime;
+  unsigned long timerInterval;
+  unsigned long timerStartTime;
+  struct TaskListItem* next;
 };
 
 struct TaskListItem {
-	struct Task* task;
-	struct TaskListItem* next;
+  struct Task* task;
+  struct TaskListItem* next;
 };
 
 struct MemAllocRecord {
-	size_t size;
-	void* ptr;
+  size_t size;
+  void* ptr;
 };
 
 #ifdef __cplusplus
