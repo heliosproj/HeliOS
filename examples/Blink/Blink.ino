@@ -16,8 +16,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <HeliOS_Arduino.h>
-
 /*
  * Additional documentation on HeliOS and its Application
  * Programming Interface (API) is available in the
@@ -25,6 +23,12 @@
  *
  * https://github.com/MannyPeterson/HeliOS/blob/master/extras/HeliOS_Programmers_Guide.md
  */
+
+/*
+ * Include the standard HeliOS header for Arduino sketches. This header
+ * includes the required HeliOS header files automatically.
+ */
+#include <HeliOS_Arduino.h>
 
 /*
  * Declare and initialize an into to maintain the state of
