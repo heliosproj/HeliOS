@@ -38,15 +38,33 @@
 void taskSerial(int id_) {
 
 	/*
-	 * Declare and initialize a String object to
-	 * hold the message which will be written
-	 * to the serial bus every 1,000,000 microseconds
+	 * Declare and initialize a string object to
+	 * hold the text which will be written to the
+	 * serial bus every 1,000,000 microseconds
 	 * (1 second).
 	 */
 	 String str = "";
 
+	 /*
+    * Call xTaskGetInfo() to obtain the task information
+    * by passing xTaskGetInfo() the task id of the active
+    * task.
+    */
 	 struct xTaskGetInfoResult* tres = xTaskGetInfo(id_);
+
+	 /*
+    * Check the pointer to the xTaskGetInfoResult
+    * structure before accessing any of its members
+    * since xTaskGetInfo() can return null if the
+    * task id does not exist or HeliOS is unable
+    * to reserve the required managed memory.
+    */
 	 if(tres) {
+
+		 /*
+		  * Append all of the members of the xTaskGetInfoResult
+		  * structure to the string.
+		  */
 		 str += "taskSerial(): id = ";
 		 str += tres->id;
 		 str += ", name = ";
@@ -67,16 +85,36 @@ void taskSerial(int id_) {
 		 str += tres->timerStartTime;
 
 			/*
-			 * Print the message to the serial bus.
+			 * Print the string to the serial bus.
 			 */
 			 Serial.println(str);
 	 }
 
+	 /*
+    * Free the managed memory allocated by the xTaskGetInfo()
+    * function call. If xMemFree() is not called, HeliOS
+    * may exhaust its available managed memory through
+    * subsequent calls to xTaskGetInfo().
+    */
 	 xMemFree(tres);
 
+	 /*
+	  * Clear the string.
+	  */
 	 str = "";
 
+	 /*
+    * Call xHeliOSGetInfo() to obtain the system information.
+    */
 	 struct xHeliOSGetInfoResult* hres = xHeliOSGetInfo();
+
+	 /*
+		 * Check the pointer to the xHeliOSGetInfoResult
+		 * structure before accessing any of its members
+		 * since xHeliOSGetInfo() can return null if the
+		 * task id does not exist or HeliOS is unable
+		 * to reserve the required managed memory.
+		 */
 	 if(hres) {
 		 str += "taskSerial(): ";
 		 str += hres->productName;
@@ -91,11 +129,17 @@ void taskSerial(int id_) {
 		 str += " task.";
 
 			/*
-			 * Print the message to the serial bus.
+			 * Print the string to the serial bus.
 			 */
 			 Serial.println(str);
 	 }
 
+	 /*
+    * Free the managed memory allocated by the xHeliOSGetInfo()
+    * function call. If xMemFree() is not called, HeliOS
+    * may exhaust its available managed memory through
+    * subsequent calls to xHeliOSGetInfo().
+    */
 	 xMemFree(hres);
 }
 

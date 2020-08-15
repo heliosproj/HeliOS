@@ -54,8 +54,8 @@ void taskSerial(int id_) {
    if(nres) {
 
     /*
-     * Declare and initialize a String object to
-     * hold the message which will be written
+     * Declare and initialize a string object to
+     * hold the text which will be written
      * to the serial bus when digital GPIO
      * pin 2 or 3 changes state to HIGH.
      */
@@ -63,29 +63,29 @@ void taskSerial(int id_) {
 
     /*
      * Append the notification value to the
-     * message. In this example, the notifiation
+     * string. In this example, the notifiation
      * value will contain either "D2" or "D3"
      * depending on which digital GPIO pin
      * changes state to HIGH.
      */
      str += nres->notifyValue;
 
-    /* Close the message which will be written
+    /* Close the string which will be written
      * to the serial bus.
      */
      str += " changed state to HIGH.";
 
     /*
-     * Print the message to the serial bus.
+     * Print the string to the serial bus.
      */
      Serial.println(str);
   }
 
   /*
-   * Free the managed memory allocated by the xTaskGetInfo()
+   * Free the managed memory allocated by the xTaskGetNotif()
    * function call. If xMemFree() is not called, HeliOS
    * may exhaust its available managed memory through
-   * subsequent calls to xTaskGetInfo().
+   * subsequent calls to xTaskGetNotif().
    */
    xMemFree(nres);
 
