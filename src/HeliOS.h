@@ -36,12 +36,12 @@
 	#define NULL 0
 #endif
 
-#ifndef FALSE
-	#define FALSE (1 != 1)
+#ifndef TRUE
+	#define TRUE 1
 #endif
 
-#ifndef TRUE
-	#define TRUE (!FALSE)
+#ifndef FALSE
+	#define FALSE 0
 #endif
 
 #define TASKNAMESIZE 16
