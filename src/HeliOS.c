@@ -22,8 +22,8 @@
 #include "task.h"
 #include "timer.h"
 
-int heliOSSetupCalled = FALSE;
-int heliOSCriticalBlocking = FALSE;
+volatile int heliOSSetupCalled = FALSE;
+volatile int heliOSCriticalBlocking = FALSE;
 
 void xHeliOSSetup() {
 	if(!heliOSSetupCalled) {
@@ -31,7 +31,7 @@ void xHeliOSSetup() {
 		TaskListInit();
 		TaskInit();
 		heliOSSetupCalled = TRUE;
-	}		
+	}
 }
 
 void xHeliOSLoop() {

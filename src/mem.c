@@ -22,7 +22,7 @@
 #include "task.h"
 #include "timer.h"
 
-struct MemAllocRecord memAllocTable[MEMALLOCTABLESIZE];
+volatile struct MemAllocRecord memAllocTable[MEMALLOCTABLESIZE];
 
 void MemInit() {
 	memset_(&memAllocTable, 0, MEMALLOCTABLESIZE * sizeof(struct MemAllocRecord));
@@ -54,7 +54,7 @@ void xMemFree(void* ptr_) {
 				memAllocTable[i].ptr = NULL;
 			}
 		}
-	}		
+	}
 }
 
 int xMemGetUsed() {

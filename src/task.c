@@ -22,7 +22,7 @@
 #include "task.h"
 #include "timer.h"
 
-int taskNextId;
+volatile int taskNextId;
 
 void TaskInit() {
 	taskNextId = 1;

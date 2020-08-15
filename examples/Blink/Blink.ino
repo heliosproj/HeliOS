@@ -30,7 +30,7 @@
  * Declare and initialize an into to maintain the state of
  * the built-in LED.
  */
-int ledState = 0;
+volatile int ledState = 0;
 
 /*
  * The task definition for taskBlink() which will

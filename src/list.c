@@ -22,10 +22,10 @@
 #include "task.h"
 #include "timer.h"
 
-struct TaskListItem* taskListHead;
-struct TaskListItem* taskListTail;
-struct TaskListItem* taskListPrev;
-struct TaskListItem* taskListCurr;
+volatile struct TaskListItem* taskListHead;
+volatile struct TaskListItem* taskListTail;
+volatile struct TaskListItem* taskListPrev;
+volatile struct TaskListItem* taskListCurr;
 
 void TaskListInit() {
 	taskListHead = NULL;
