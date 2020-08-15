@@ -31,50 +31,24 @@
 #include <HeliOS_Arduino.h>
 
 /*
- * Declare and initialize an int to maintain the state of
- * the built-in LED.
- */
-volatile int ledState = 0;
-
-/*
- * The task definition for taskBlink() which will
+ * The task definition for taskSerial() which will
  * be executed by HeliOS every 1,000,000 microseconds
  * (1 second).
  */
-void taskBlink(int id_) {
+void taskSerial(int id_) {
 
   /*
-   * If the state is 0 or LOW then set the state to
-   * 1 or HIGH. Likewise, if the state is 1 or HIGH
-   * then set the state to LOW.
+   * Declare and initialize a String object to
+   * hold the message which will be written
+   * to the serial bus every 1,000,000 microseconds
+   * (1 second).
    */
-  if(ledState) {
+  String str = "taskSerial(): one second has passed.";
 
-    /*
-     * Set the state of the digital GPIO pin associated
-     * with the built-in LED to LOW.
-     */
-    digitalWrite(LED_BUILTIN, LOW);
-
-    /*
-     * Update the int containing the state of the build-in
-     * LED accordingly.
-     */
-    ledState = 0;
-  } else {
-
-    /*
-     * Set the state of the digital GPIO pin associated
-     * with the built-in LED to HIGH.
-     */
-    digitalWrite(LED_BUILTIN, HIGH);
-
-    /*
-     * Update the int containing the state of the built-in
-     * LED accordingly.
-     */
-    ledState = 1;
-  }
+  /*
+   * Print the message to the serial bus.
+   */
+  Serial.println(str);
 }
 
 void setup() {
@@ -93,27 +67,27 @@ void setup() {
   xHeliOSSetup();
 
   /*
-   * Set the mode of the digital GPIO pin associated
-   * with the built-in LED to OUTPUT only.
+   * Set the serial data rate and begin serial
+   * communication.
    */
-  pinMode(LED_BUILTIN, OUTPUT);
+  Serial.begin(9600);
 
   /*
-   * Add the task taskBlink() to HeliOS by passing
+   * Add the task taskSerial() to HeliOS by passing
    * xTaskAdd() the friendly name of the task as well
    * as a callback pointer to the task function.
    */
-  id = xTaskAdd("TASKBLINK", &taskBlink);
+  id = xTaskAdd("TASKSERIAL", &taskSerial);
 
   /*
-   * Call xTaskWait() to place taskBlink() into a wait
+   * Call xTaskWait() to place taskSerial() into a wait
    * state by passing xTaskWait() the task id. A task
    * must be in a wait state to respond to timer events.
    */
   xTaskWait(id);
 
   /*
-   * Set the timer interval for taskBlink() to 1,000,000 microseconds
+   * Set the timer interval for taskSerial() to 1,000,000 microseconds
    * (1 second). HeliOS automatically begins incrementing
    * the timer for the task once the timer interval is set.
    */
