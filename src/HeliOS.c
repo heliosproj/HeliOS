@@ -150,10 +150,10 @@ int strncmp_(const char* str1_, const char* str2_, size_t n) {
 	const char* str1 = str1_;
 	while (*str1 && n--) {
 		if (*str1 != *str2) {
-			return FALSE;
+			return *str1 - *str2;
 		}
 		str1++;
 		str2++;
 	}
-	return TRUE;
+	return 0;
 }
