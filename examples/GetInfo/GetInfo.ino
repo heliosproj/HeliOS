@@ -47,16 +47,24 @@ void taskSerial(int id_) {
 
 	 struct xTaskGetInfoResult* tres = xTaskGetInfo(id_);
 	 if(tres) {
-		 sprintf(str, "taskSerial(): id = %d, name = %s, state = %d, nbytes = %d, nvalue = %s, lruntime = %u, truntime = %u, interval = %u, start = %u",
-		 	tres->id,
-			tres->name,
-			tres->state,
-			tres->notifyBytes,
-			tres->notifyValue,
-			tres->lastRuntime,
-			tres->totalRuntime,
-			tres->timerInterval,
-			tres->timerStartTime);
+		 str += "taskSerial(): id = ";
+		 str += tres->id;
+		 str += ", name = ";
+		 str += tres->name;
+		 str += ", state = "
+		 str += tres->state;
+		 str += ", nbytes = ";
+		 str += tres->notifyBytes;
+		 str += ", nvalue = ";
+		 str += tres->notifyValue;
+		 str += ", ltime = ";
+		 str += tres->lastRuntime;
+		 str += ", ttime = ";
+		 str += tres->totalRuntime;
+		 str += ", tinterval = ";
+		 str += tres->timerInterval;
+		 str += ", tstart = ";
+		 str += tres->timerStartTime;
 
 			/*
 			 * Print the message to the serial bus.
@@ -70,12 +78,17 @@ void taskSerial(int id_) {
 
 	 struct xHelIOSGetInfoResult* hres = xHelIOSGetInfo();
 	 if(hres) {
-		 sprintf(str, "taskSerial(): %s %d.%d.%d has %d task.",
-	 		hres->productName,
-			hres->majorVersion,
-			hres->minorVersion,
-			hres->patchVersion,
-			hres->tasks);
+		 str += "taskSerial(): ";
+		 str += hres->productName;
+		 str += " ";
+		 str += hres->majorVersion;
+		 str += ".";
+		 str += hres->minorVersion;
+		 str += ".";
+		 str += hres->patchVersion;
+		 str += " has ";
+		 str += hres->tasks;
+		 str += " task.";
 
 			/*
 			 * Print the message to the serial bus.
