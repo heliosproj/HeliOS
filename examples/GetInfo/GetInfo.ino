@@ -43,12 +43,47 @@ void taskSerial(int id_) {
 	 * to the serial bus every 1,000,000 microseconds
 	 * (1 second).
 	 */
-	 String str = "taskSerial(): one second has passed.";
+	 String str = "";
 
-	/*
-	 * Print the message to the serial bus.
-	 */
-	 Serial.println(str);
+	 struct xTaskGetInfoResult* tres = xTaskGetInfo(id_);
+	 if(tres) {
+		 sprintf(str, "taskSerial(): id = %d, name = %s, state = %d, nbytes = %d, nvalue = %s, lruntime = %u, truntime = %u, interval = %u, start = %u",
+		 	tres->id,
+			tres->name,
+			tres->state,
+			tres->notifyBytes,
+			tres->notifyValue,
+			tres->lastRuntime,
+			tres->totalRuntime,
+			tres->timerInterval,
+			tres->timerStartTime);
+
+			/*
+			 * Print the message to the serial bus.
+			 */
+			 Serial.println(str);
+	 }
+
+	 xMemFree(tres);
+
+	 str = "":
+
+	 struct xHelIOSGetInfoResult* hres = xHelIOSGetInfo();
+	 if(hres) {
+		 sprintf(str, "taskSerial(): %s %d.%d.%d has %d task.",
+	 		hres->productName,
+			hres->majorVersion,
+			hres->minorVersion,
+			hres->patchVersion,
+			hres->tasks);
+
+			/*
+			 * Print the message to the serial bus.
+			 */
+			 Serial.println(str);
+	 }
+
+	 xMemFree(hres);
 }
 
 void setup() {

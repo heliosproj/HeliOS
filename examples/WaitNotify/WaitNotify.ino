@@ -42,7 +42,7 @@ void taskSerial(int id_) {
    * bytes and value by passing xTaskGetNotif() the task
    * id of the active task.
    */
-   xTaskGetNotifResult* res = xTaskGetNotif(id_);
+   struct xTaskGetNotifResult* nres = xTaskGetNotif(id_);
 
   /*
    * Check the pointer to the xTaskGetNotifResult
@@ -51,7 +51,7 @@ void taskSerial(int id_) {
    * task id does not exist or HeliOS is unable
    * to reserve the required managed memory.
    */
-   if(res) {
+   if(nres) {
 
     /*
      * Declare and initialize a String object to
@@ -68,7 +68,7 @@ void taskSerial(int id_) {
      * depending on which digital GPIO pin
      * changes state to HIGH.
      */
-     str += res->notifyValue;
+     str += nres->notifyValue;
 
     /* Close the message which will be written
      * to the serial bus.
@@ -87,7 +87,7 @@ void taskSerial(int id_) {
    * may exhaust its available managed memory through
    * subsequent calls to xTaskGetInfo().
    */
-   xMemFree(res);
+   xMemFree(nres);
 
    /*
     * HeliOS will automatically set the notification bytes
