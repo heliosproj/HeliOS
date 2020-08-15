@@ -60,91 +60,91 @@ volatile int ledState = 0;
  */
 void taskBlink(int id_) {
 
-	/*
-	 * If the state is 0 or LOW then set the state to
-	 * 1 or HIGH. Likewise, if the state is 1 or HIGH
-	 * then set the state to LOW.
-	 */
-	 if(ledState) {
+  /*
+   * If the state is 0 or LOW then set the state to
+   * 1 or HIGH. Likewise, if the state is 1 or HIGH
+   * then set the state to LOW.
+   */
+  if(ledState) {
 
-		/*
-		 * Set the state of the digital GPIO pin associated
-		 * with the built-in LED to LOW.
-		 */
-		 digitalWrite(LED_BUILTIN, LOW);
+    /*
+     * Set the state of the digital GPIO pin associated
+     * with the built-in LED to LOW.
+     */
+    digitalWrite(LED_BUILTIN, LOW);
 
-		/*
-		 * Update the int containing the state of the build-in
-		 * LED accordingly.
-		 */
-		 ledState = 0;
-	} else {
+    /*
+     * Update the int containing the state of the build-in
+     * LED accordingly.
+     */
+    ledState = 0;
+  } else {
 
-		/*
-		 * Set the state of the digital GPIO pin associated
-		 * with the built-in LED to HIGH.
-		 */
-		 digitalWrite(LED_BUILTIN, HIGH);
+    /*
+     * Set the state of the digital GPIO pin associated
+     * with the built-in LED to HIGH.
+     */
+    digitalWrite(LED_BUILTIN, HIGH);
 
-		/*
-		 * Update the int containing the state of the built-in
-		 * LED accordingly.
-		 */
-		 ledState = 1;
-	}
+    /*
+     * Update the int containing the state of the built-in
+     * LED accordingly.
+     */
+    ledState = 1;
+  }
 }
 
 void setup() {
 
-	/*
+  /*
    * Declare and initialize an int to hold the
    * task id.
    */
-	 int id = 0;
+  int id = 0;
 
-	/*
-	 * Call xHeliOSSetup() to initialize HeliOS and
-	 * its data structures. xHeliOSSetup() must be
-	 * called before any other HeliOS function call.
-	 */
-	 xHeliOSSetup();
+  /*
+   * Call xHeliOSSetup() to initialize HeliOS and
+   * its data structures. xHeliOSSetup() must be
+   * called before any other HeliOS function call.
+   */
+  xHeliOSSetup();
 
-	/*
-	 * Set the mode of the digital GPIO pin associated
-	 * with the built-in LED to OUTPUT only.
-	 */
-	 pinMode(LED_BUILTIN, OUTPUT);
+  /*
+   * Set the mode of the digital GPIO pin associated
+   * with the built-in LED to OUTPUT only.
+   */
+  pinMode(LED_BUILTIN, OUTPUT);
 
-	/*
+  /*
    * Add the task taskBlink() to HeliOS by passing
    * xTaskAdd() the friendly name of the task as well
    * as a callback pointer to the task function.
    */
-	 id = xTaskAdd("TASKBLINK", &taskBlink);
+  id = xTaskAdd("TASKBLINK", &taskBlink);
 
-	/*
-	 * Call xTaskWait() to place taskBlink() into a wait
-	 * state by passing xTaskWait() the task id. A task
-	 * must be in a wait state to respond to timer events.
-	 */
-	 xTaskWait(id);
+  /*
+   * Call xTaskWait() to place taskBlink() into a wait
+   * state by passing xTaskWait() the task id. A task
+   * must be in a wait state to respond to timer events.
+   */
+  xTaskWait(id);
 
-	/*
-	 * Set the timer interval for taskBlink() to 1,000,000 microseconds
-	 * (1 second). HeliOS automatically begins incrementing
-	 * the timer for the task once the timer interval is set.
-	 */
-	 xTaskSetTimer(id, 1000000);
+  /*
+   * Set the timer interval for taskBlink() to 1,000,000 microseconds
+   * (1 second). HeliOS automatically begins incrementing
+   * the timer for the task once the timer interval is set.
+   */
+  xTaskSetTimer(id, 1000000);
 }
 
 void loop() {
 
-	/*
-	 * Momentarily pass control to HeliOS by calling the
-	 * xHeliOSLoop() function call. xHeliOSLoop() should be
-	 * the only code inside of the sketch's loop() function.
-	 */
-	 xHeliOSLoop();
+  /*
+   * Momentarily pass control to HeliOS by calling the
+   * xHeliOSLoop() function call. xHeliOSLoop() should be
+   * the only code inside of the sketch's loop() function.
+   */
+  xHeliOSLoop();
 }
 ```
 # Releases
