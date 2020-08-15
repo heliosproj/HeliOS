@@ -76,7 +76,7 @@ All releases, including the current release, can be found [here](https://github.
 # Contributing
 While all contributions are welcome, contributions are needed most in the following areas:
 * HeliOS Programmer's Guide
-* Code Documentation
+* Code Documentation, Readability and Maintainability
 * Example Sketches
 * Testing
 
