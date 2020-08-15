@@ -31,7 +31,7 @@
 #include <HeliOS_Arduino.h>
 
 /*
- * Declare and initialize an into to maintain the state of
+ * Declare and initialize an int to maintain the state of
  * the built-in LED.
  */
 volatile int ledState = 0;
