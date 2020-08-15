@@ -80,7 +80,11 @@ While all contributions are welcome, contributions are needed most in the follow
 * Example Sketches
 * Testing
 
-To contribute, please create an issue and indicate how you would like to contribute. Please fork from the **develop** branch as **master** is kept even with the current release.
+To contribute, simply create a pull request with your changes. Please fork from the **develop** branch as **master** is kept even with the current release. Pull requests are typically responded to within 48 hours.
+# Thank you
+No free and open source software project has been successful without the contributions of many. This space is reserved for recognizing people who have made meaningful contributions to HeliOS. All contributors are listed in alphabetical order.
+* [Stig Bjorlykke](https://github.com/stigbjorlykke)
+
 # License
 HeliOS is copyrighted open source software licensed under the Free Software Foundation's GNU General Public License Version 3. The license can be found [here](/LICENSE.md).
 # Important
