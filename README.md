@@ -83,6 +83,7 @@ While all contributions are welcome, contributions are needed most in the follow
 To contribute, simply create a pull request with your changes. Please fork from the **develop** branch as **master** is kept even with the current release. Pull requests are typically responded to within 48 hours.
 # Thank you
 No free and open source software project has been successful without the contributions of many. This space is reserved for recognizing people who have made meaningful contributions to HeliOS. All contributors are listed in alphabetical order.
+* [Konidem](https://github.com/Konidem)
 * [Stig Bjorlykke](https://github.com/stigbjorlykke)
 
 # License
