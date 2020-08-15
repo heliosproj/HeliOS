@@ -51,7 +51,7 @@ void taskSerial(int id_) {
 		 str += tres->id;
 		 str += ", name = ";
 		 str += tres->name;
-		 str += ", state = "
+		 str += ", state = ";
 		 str += tres->state;
 		 str += ", nbytes = ";
 		 str += tres->notifyBytes;
@@ -74,9 +74,9 @@ void taskSerial(int id_) {
 
 	 xMemFree(tres);
 
-	 str = "":
+	 str = "";
 
-	 struct xHelIOSGetInfoResult* hres = xHelIOSGetInfo();
+	 struct xHeliOSGetInfoResult* hres = xHeliOSGetInfo();
 	 if(hres) {
 		 str += "taskSerial(): ";
 		 str += hres->productName;
