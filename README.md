@@ -166,6 +166,7 @@ No free and open source software project has been successful without the contrib
 * [Konidem](https://github.com/Konidem)
 * [Stig Bjorlykke](https://github.com/stigbjorlykke)
 
+Also, special thanks to [Gil Maimon](https://github.com/gilmaimon) for the super-cool website [ArduBadge](https://www.ardu-badge.com/).
 # License
 HeliOS is copyrighted open source software licensed under the Free Software Foundation's GNU General Public License Version 3. The license can be found [here](/LICENSE.md).
 # Important
