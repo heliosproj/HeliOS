@@ -22,12 +22,18 @@
 #if defined(ARDUINO_ARCH_AVR)
         #include <Arduino.h>
         #define NOW() micros()
+        #define DISABLE() noInterrupts()
+        #define ENABLE() interrupts()
 #elif defined(ARDUINO_ARCH_SAM)
         #include <Arduino.h>
         #define NOW() micros()
+        #define DISABLE() noInterrupts()
+        #define ENABLE() interrupts()
 #elif defined(ARDUINO_ARCH_SAMD)
         #include <Arduino.h>
         #define NOW() micros()
+        #define DISABLE() noInterrupts()
+        #define ENABLE() interrupts()
 #else
         #error “HeliOS is currently supported on the Arduino AVR, SAM and SAMD architectures. Other architectures may require porting of HeliOS.”
 #endif

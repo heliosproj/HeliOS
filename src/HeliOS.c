@@ -46,15 +46,7 @@ void xHeliOSLoop() {
   /*
    * Disable interrupts while scheduler runs.
    */
-#if defined(ARDUINO_ARCH_AVR)
-  noInterrupts();
-#elif defined(ARDUINO_ARCH_SAM)
-  noInterrupts();
-#elif defined(ARDUINO_ARCH_SAMD)
-  noInterrupts();
-#else
-        #error “HeliOS is currently supported on the Arduino AVR, SAM and SAMD architectures. Other architectures may require porting of HeliOS.”
-#endif
+  DISABLE();
   TaskListRewind();
   do {
     task = TaskListGet();
@@ -74,15 +66,7 @@ void xHeliOSLoop() {
   /*
    * Re-enable interrupts after sceduler runs.
    */
-#if defined(ARDUINO_ARCH_AVR)
-  interrupts();
-#elif defined(ARDUINO_ARCH_SAM)
-  interrupts();
-#elif defined(ARDUINO_ARCH_SAMD)
-  interrupts();
-#else
-        #error “HeliOS is currently supported on the Arduino AVR, SAM and SAMD architectures. Other architectures may require porting of HeliOS.”
-#endif
+  ENABLE();
   for(int i = 0; i < waiting; i++) {
     if (waitingTask[i]->notifyBytes > 0) {
       taskStartTime = NOW();
