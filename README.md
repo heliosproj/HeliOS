@@ -149,6 +149,7 @@ void loop() {
 ```
 # Releases
 All releases, including the current release, can be found [here](https://github.com/MannyPeterson/HeliOS/releases).
+* 0.2.4 - TBD
 * 0.2.3 - Improved protection of system state, new examples, improved code documentation and some maintainability enhancements
 * 0.2.2 - Additional function calls, minor fixes and documentation enhancements
 * 0.2.1 - The first official release
