@@ -30,10 +30,10 @@ void xTaskWait(int);
 int xTaskGetId(const char*);
 void xTaskNotify(int, int, char*);
 void xTaskNotifyClear(int);
-struct xTaskGetNotifResult* xTaskGetNotif(int);
-struct xTaskGetInfoResult* xTaskGetInfo(int);
+xTaskGetNotifResult* xTaskGetNotif(int);
+xTaskGetInfoResult* xTaskGetInfo(int);
 int TaskListSeek(int);
-struct xTaskGetListResult* xTaskGetList(int*);
+xTaskGetListResult* xTaskGetList(int*);
 void xTaskSetTimer(int, unsigned long);
 void xTaskResetTimer(int);
 

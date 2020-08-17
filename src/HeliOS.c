@@ -36,9 +36,9 @@ void xHeliOSSetup() {
 
 void xHeliOSLoop() {
   int waiting = 0;
-  struct Task* waitingTask[WAITINGTASKSIZE];
-  struct Task* runningTask = NULL;
-  struct Task* task = NULL;
+  Task* waitingTask[WAITINGTASKSIZE];
+  Task* runningTask = NULL;
+  Task* task = NULL;
   unsigned long taskStartTime = 0;
   unsigned long leastRuntime = ULONG_MAX;
   heliOSCriticalBlocking = TRUE;
@@ -93,10 +93,10 @@ void xHeliOSLoop() {
   heliOSCriticalBlocking = FALSE;
 }
 
-struct xHeliOSGetInfoResult* xHeliOSGetInfo() {
+xHeliOSGetInfoResult* xHeliOSGetInfo() {
   int tasks = 0;
-  struct Task* task = NULL;
-  struct xHeliOSGetInfoResult* heliOSGetInfoResult = NULL;
+  Task* task = NULL;
+  xHeliOSGetInfoResult* heliOSGetInfoResult = NULL;
   TaskListRewind();
   do {
     task = TaskListGet();
@@ -104,7 +104,7 @@ struct xHeliOSGetInfoResult* xHeliOSGetInfo() {
       tasks++;
     }
   } while (TaskListMoveNext());
-  heliOSGetInfoResult = (struct xHeliOSGetInfoResult*)xMemAlloc(sizeof(struct xHeliOSGetInfoResult));
+  heliOSGetInfoResult = (xHeliOSGetInfoResult*)xMemAlloc(sizeof(xHeliOSGetInfoResult));
   if (heliOSGetInfoResult) {
     heliOSGetInfoResult->tasks = tasks;
     strncpy_(heliOSGetInfoResult->productName, PRODUCTNAME, PRODUCTNAMESIZE);

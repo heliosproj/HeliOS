@@ -30,7 +30,7 @@ void TaskInit() {
 
 int xTaskAdd(const char* name_, void (*callback_)(int)) {
   if(!HeliOSIsCriticalBlocking()) {
-    struct Task* task = (struct Task*)xMemAlloc(sizeof(struct Task));
+    Task* task = (Task*)xMemAlloc(sizeof(Task));
     if (task) {
       task->id = taskNextId;
       taskNextId++;
@@ -64,7 +64,7 @@ void xTaskClear() {
 }
 
 void xTaskStart(int id_) {
-  struct Task* task = NULL;
+  Task* task = NULL;
   if (TaskListSeek(id_)) {
     task = TaskListGet();
     if (task) {
@@ -76,7 +76,7 @@ void xTaskStart(int id_) {
 }
 
 void xTaskStop(int id_) {
-  struct Task* task = NULL;
+  Task* task = NULL;
   if (TaskListSeek(id_)) {
     task = TaskListGet();
     if (task) {
@@ -88,7 +88,7 @@ void xTaskStop(int id_) {
 }
 
 void xTaskWait(int id_) {
-  struct Task* task = NULL;
+  Task* task = NULL;
   if (TaskListSeek(id_)) {
     task = TaskListGet();
     if (task) {
@@ -100,7 +100,7 @@ void xTaskWait(int id_) {
 }
 
 int xTaskGetId(const char* name_) {
-  struct Task* task = NULL;
+  Task* task = NULL;
   TaskListRewind();
   do {
     task = TaskListGet();
@@ -114,7 +114,7 @@ int xTaskGetId(const char* name_) {
 }
 
 void xTaskNotify(int id_, int notifyBytes_, char* notifyValue_) {
-  struct Task* task = NULL;
+  Task* task = NULL;
   if(notifyBytes_ > 0 && notifyBytes_ <= NOTIFYVALUESIZE && notifyValue_) {
     if (TaskListSeek(id_)) {
       task = TaskListGet();
@@ -129,7 +129,7 @@ void xTaskNotify(int id_, int notifyBytes_, char* notifyValue_) {
 }
 
 void xTaskNotifyClear(int id_) {
-  struct Task* task = NULL;
+  Task* task = NULL;
   if (TaskListSeek(id_)) {
     task = TaskListGet();
     if (task) {
@@ -141,13 +141,13 @@ void xTaskNotifyClear(int id_) {
   }
 }
 
-struct xTaskGetNotifResult* xTaskGetNotif(int id_) {
-  struct Task* task = NULL;
-  struct xTaskGetNotifResult* taskGetNotifResult = NULL;
+xTaskGetNotifResult* xTaskGetNotif(int id_) {
+  Task* task = NULL;
+  xTaskGetNotifResult* taskGetNotifResult = NULL;
   if (TaskListSeek(id_)) {
     task = TaskListGet();
     if (task) {
-      taskGetNotifResult = (struct xTaskGetNotifResult*)xMemAlloc(sizeof(struct xTaskGetNotifResult));
+      taskGetNotifResult = (xTaskGetNotifResult*)xMemAlloc(sizeof(xTaskGetNotifResult));
       if (taskGetNotifResult) {
         taskGetNotifResult->notifyBytes = task->notifyBytes;
         memcpy_(taskGetNotifResult->notifyValue, task->notifyValue, NOTIFYVALUESIZE);
@@ -157,13 +157,13 @@ struct xTaskGetNotifResult* xTaskGetNotif(int id_) {
   return taskGetNotifResult;
 }
 
-struct xTaskGetInfoResult* xTaskGetInfo(int id_) {
-  struct Task* task = NULL;
-  struct xTaskGetInfoResult* taskGetInfoResult = NULL;
+xTaskGetInfoResult* xTaskGetInfo(int id_) {
+  Task* task = NULL;
+  xTaskGetInfoResult* taskGetInfoResult = NULL;
   if (TaskListSeek(id_)) {
     task = TaskListGet();
     if (task) {
-      taskGetInfoResult = (struct xTaskGetInfoResult*)xMemAlloc(sizeof(struct xTaskGetInfoResult));
+      taskGetInfoResult = (xTaskGetInfoResult*)xMemAlloc(sizeof(xTaskGetInfoResult));
       if (taskGetInfoResult) {
         taskGetInfoResult->id = task->id;
         memcpy_(taskGetInfoResult->name, task->name, TASKNAMESIZE);
@@ -181,7 +181,7 @@ struct xTaskGetInfoResult* xTaskGetInfo(int id_) {
 }
 
 int TaskListSeek(int id_) {
-  struct Task* task = NULL;
+  Task* task = NULL;
   TaskListRewind();
   do {
     task = TaskListGet();
@@ -194,11 +194,11 @@ int TaskListSeek(int id_) {
   return FALSE;
 }
 
-struct xTaskGetListResult* xTaskGetList(int* tasks_) {
+xTaskGetListResult* xTaskGetList(int* tasks_) {
   int i = 0;
   int tasks = 0;
-  struct Task* task = NULL;
-  struct xTaskGetListResult* taskGetListResult = NULL;
+  Task* task = NULL;
+  xTaskGetListResult* taskGetListResult = NULL;
   *tasks_ = 0;
   TaskListRewind();
   do {
@@ -208,7 +208,7 @@ struct xTaskGetListResult* xTaskGetList(int* tasks_) {
     }
   } while (TaskListMoveNext());
   if (tasks > 0) {
-    taskGetListResult = (struct xTaskGetListResult*)xMemAlloc(tasks * sizeof(struct xTaskGetListResult));
+    taskGetListResult = (xTaskGetListResult*)xMemAlloc(tasks * sizeof(xTaskGetListResult));
     if (taskGetListResult) {
       TaskListRewind();
       do {
@@ -229,7 +229,7 @@ struct xTaskGetListResult* xTaskGetList(int* tasks_) {
 }
 
 void xTaskSetTimer(int id_, unsigned long timerInterval_) {
-  struct Task* task = NULL;
+  Task* task = NULL;
   if (TaskListSeek(id_)) {
     task = TaskListGet();
     if (task) {
@@ -242,7 +242,7 @@ void xTaskSetTimer(int id_, unsigned long timerInterval_) {
 }
 
 void xTaskResetTimer(int id_) {
-  struct Task* task = NULL;
+  Task* task = NULL;
   if (TaskListSeek(id_)) {
     task = TaskListGet();
     if (task) {
