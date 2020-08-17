@@ -54,50 +54,52 @@
 #define MEMALLOCTABLESIZE 50
 #define WAITINGTASKSIZE 8
 
-enum xTaskState {
+typedef enum {
   TaskStateErrored,
   TaskStateStopped,
   TaskStateRunning,
   TaskStateWaiting
-};
+} xTaskState;
 
-struct xTaskGetInfoResult {
+typedef struct {
   int id;
   char name[TASKNAMESIZE];
-  enum xTaskState state;
+  xTaskState state;
   int notifyBytes;
   char notifyValue[NOTIFYVALUESIZE];
   unsigned long lastRuntime;
   unsigned long totalRuntime;
   unsigned long timerInterval;
   unsigned long timerStartTime;
-};
+} xTaskGetInfoResult;
 
-struct xTaskGetNotifResult {
+typedef struct {
   int notifyBytes;
   char notifyValue[NOTIFYVALUESIZE];
-};
+} xTaskGetNotifResult;
 
-struct xHeliOSGetInfoResult {
+typedef struct {
   int tasks;
   char productName[PRODUCTNAMESIZE];
   int majorVersion;
   int minorVersion;
   int patchVersion;
-};
+} xHeliOSGetInfoResult;
 
-struct xTaskGetListResult {
+typedef struct {
   int id;
   char name[TASKNAMESIZE];
-  enum xTaskState state;
+  xTaskState state;
   unsigned long lastRuntime;
   unsigned long totalRuntime;
-};
+} xTaskGetListResult;
 
-struct Task {
+struct tasklistitem_s;
+
+typedef struct {
   int id;
   char name[TASKNAMESIZE];
-  enum xTaskState state;
+  xTaskState state;
   void (*callback)(int);
   int notifyBytes;
   char notifyValue[NOTIFYVALUESIZE];
@@ -105,18 +107,18 @@ struct Task {
   unsigned long totalRuntime;
   unsigned long timerInterval;
   unsigned long timerStartTime;
-  struct TaskListItem* next;
-};
+  struct tasklistitem_s* next;
+} Task;
 
-struct TaskListItem {
-  struct Task* task;
-  struct TaskListItem* next;
-};
+typedef struct tasklistitem_s {
+  Task* task;
+  struct tasklistitem_s* next;
+} TaskListItem;
 
-struct MemAllocRecord {
+typedef struct {
   size_t size;
   void* ptr;
-};
+} MemAllocRecord;
 
 #ifdef __cplusplus
 extern "C" {
@@ -124,7 +126,7 @@ extern "C" {
 
 void xHeliOSSetup();
 void xHeliOSLoop();
-struct xHeliOSGetInfoResult* xHeliOSGetInfo();
+xHeliOSGetInfoResult* xHeliOSGetInfo();
 int HeliOSIsCriticalBlocking();
 void HeliOSReset();
 void memcpy_(void*, void*, size_t);

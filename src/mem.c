@@ -22,10 +22,10 @@
 #include "task.h"
 #include "timer.h"
 
-volatile struct MemAllocRecord memAllocTable[MEMALLOCTABLESIZE];
+volatile MemAllocRecord memAllocTable[MEMALLOCTABLESIZE];
 
 void MemInit() {
-  memset_(&memAllocTable, 0, MEMALLOCTABLESIZE * sizeof(struct MemAllocRecord));
+  memset_(&memAllocTable, 0, MEMALLOCTABLESIZE * sizeof(MemAllocRecord));
 }
 
 void* xMemAlloc(size_t size_) {

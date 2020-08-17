@@ -22,10 +22,10 @@
 #include "task.h"
 #include "timer.h"
 
-volatile struct TaskListItem* taskListHead;
-volatile struct TaskListItem* taskListTail;
-volatile struct TaskListItem* taskListPrev;
-volatile struct TaskListItem* taskListCurr;
+volatile TaskListItem* taskListHead;
+volatile TaskListItem* taskListTail;
+volatile TaskListItem* taskListPrev;
+volatile TaskListItem* taskListCurr;
 
 void TaskListInit() {
   taskListHead = NULL;
@@ -41,8 +41,8 @@ void TaskListClear() {
   }
 }
 
-void TaskListAdd(struct Task* task_) {
-  struct TaskListItem* item = (struct TaskListItem*)xMemAlloc(sizeof(struct TaskListItem));
+void TaskListAdd(Task* task_) {
+  TaskListItem* item = (TaskListItem*)xMemAlloc(sizeof(TaskListItem));
   if (item && task_) {
     item->task = task_;
     item->next = NULL;
@@ -61,25 +61,25 @@ void TaskListAdd(struct Task* task_) {
 void TaskListRemove() {
   if (taskListCurr) {
     if (taskListCurr == taskListHead && taskListCurr == taskListTail) {
-      struct TaskListItem* item = taskListHead;
+      TaskListItem* item = taskListHead;
       TaskListInit();
       xMemFree(item->task);
       xMemFree(item);
     } else if (taskListCurr == taskListHead) {
-      struct TaskListItem* item = taskListHead;
+      TaskListItem* item = taskListHead;
       taskListHead = taskListHead->next;
       TaskListRewind();
       xMemFree(item->task);
       xMemFree(item);
     } else if (taskListCurr == taskListTail) {
-      struct TaskListItem* item = taskListTail;
+      TaskListItem* item = taskListTail;
       taskListTail = taskListPrev;
       taskListPrev->next = NULL;
       TaskListRewind();
       xMemFree(item->task);
       xMemFree(item);
     } else {
-      struct TaskListItem* item = taskListCurr;
+      TaskListItem* item = taskListCurr;
       taskListPrev->next = taskListCurr->next;
       TaskListRewind();
       xMemFree(item->task);
@@ -88,7 +88,7 @@ void TaskListRemove() {
   }
 }
 
-struct Task* TaskListGet() {
+Task* TaskListGet() {
   if (taskListCurr) {
     return taskListCurr->task;
   }
