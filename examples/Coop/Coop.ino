@@ -38,7 +38,7 @@
 void taskShort(int id_) {
   float a = 0.0f;
 
-  for (int i = 0; i < 100 000; i++)
+  for (int i = 0; i < 100000; i++)
     a *= 3.14f;
 }
 
@@ -50,7 +50,7 @@ void taskShort(int id_) {
 void taskLong(int id_) {
   float a = 0.0f;
 
-  for (int i = 0; i < 1 000 000; i++)
+  for (int i = 0; i < 1000000; i++)
     a *= 3.14f;
 }
 
