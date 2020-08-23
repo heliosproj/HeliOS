@@ -45,56 +45,21 @@ void taskSerial(int id_) {
   String str = "";
 
   /*
-   * Call xTaskGetInfo() to obtain the task information
-   * by passing xTaskGetInfo() the task id of the active
-   * task.
+   * Print to serial bus how much HeliOS managed
+   * memory is in use.
    */
-  xTaskGetInfoResult *tres = xTaskGetInfo(id_);
+  str += "taskSerial(): ";
+  str += xMemGetUsed();
+  str += " bytes of managed memory in use.";
+  Serial.println(str);
 
   /*
-   * Check the pointer to the xTaskGetInfoResult
-   * structure before accessing any of its members
-   * since xTaskGetInfo() can return null if the
-   * task id does not exist or HeliOS is unable
-   * to reserve the required managed memory.
+   * Call xTaskGetInfo() three times to allocate
+   * some HeliOS managed memory.
    */
-  if (tres) {
-    /*
-     * Append all of the members of the xTaskGetInfoResult
-     * structure to the string.
-     */
-    str += "taskSerial(): id = ";
-    str += tres->id;
-    str += ", name = ";
-    str += tres->name;
-    str += ", state = ";
-    str += tres->state;
-    str += ", nbytes = ";
-    str += tres->notifyBytes;
-    str += ", nvalue = ";
-    str += tres->notifyValue;
-    str += ", ltime = ";
-    str += tres->lastRuntime;
-    str += ", ttime = ";
-    str += tres->totalRuntime;
-    str += ", tinterval = ";
-    str += tres->timerInterval;
-    str += ", tstart = ";
-    str += tres->timerStartTime;
-
-    /*
-     * Print the string to the serial bus.
-     */
-    Serial.println(str);
-  }
-
-  /*
-   * Free the managed memory allocated by the xTaskGetInfo()
-   * function call. If xMemFree() is not called, HeliOS
-   * may exhaust its available managed memory through
-   * subsequent calls to xTaskGetInfo().
-   */
-  xMemFree(tres);
+  xTaskGetInfoResult *tres1 = xTaskGetInfo(id_);
+  xTaskGetInfoResult *tres2 = xTaskGetInfo(id_);
+  xTaskGetInfoResult *tres3 = xTaskGetInfo(id_);
 
   /*
    * Clear the string.
@@ -102,43 +67,49 @@ void taskSerial(int id_) {
   str = "";
 
   /*
-   * Call xHeliOSGetInfo() to obtain the system information.
+   * Print to serial bus how much HeliOS managed
+   * memory is in use.
    */
-  xHeliOSGetInfoResult *hres = xHeliOSGetInfo();
+  str += "taskSerial(): xTaskGetInforesult is using ";
+  str += xMemGetSize(tres1);
+  str += " bytes of managed memory.";
+  Serial.println(str);
 
   /*
-   * Check the pointer to the xHeliOSGetInfoResult
-   * structure before accessing any of its members
-   * since xHeliOSGetInfo() can return null if the
-   * task id does not exist or HeliOS is unable
-   * to reserve the required managed memory.
+   * Clear the string.
    */
-  if (hres) {
-    str += "taskSerial(): ";
-    str += hres->productName;
-    str += " ";
-    str += hres->majorVersion;
-    str += ".";
-    str += hres->minorVersion;
-    str += ".";
-    str += hres->patchVersion;
-    str += " has ";
-    str += hres->tasks;
-    str += " task.";
-
-    /*
-     * Print the string to the serial bus.
-     */
-    Serial.println(str);
-  }
+  str = "";
 
   /*
-   * Free the managed memory allocated by the xHeliOSGetInfo()
-   * function call. If xMemFree() is not called, HeliOS
-   * may exhaust its available managed memory through
-   * subsequent calls to xHeliOSGetInfo().
+   * Print to serial bus how much HeliOS managed
+   * memory is in use.
    */
-  xMemFree(hres);
+  str += "taskSerial(): ";
+  str += xMemGetUsed();
+  str += " bytes of managed memory in use.";
+  Serial.println(str);
+
+  /*
+   * Call xMemFree() three times to free the
+   * HeliOS managed memory allocated by xTaskGetInfo().
+   */
+  xMemFree(tres1);
+  xMemFree(tres2);
+  xMemFree(tres3);
+
+  /*
+   * Clear the string.
+   */
+  str = "";
+
+  /*
+   * Print to serial bus how much HeliOS managed
+   * memory is in use.
+   */
+  str += "taskSerial(): ";
+  str += xMemGetUsed();
+  str += " bytes of managed memory in use.";
+  Serial.println(str);
 }
 
 void setup() {

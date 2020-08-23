@@ -36,7 +36,6 @@
  * (1 second).
  */
 void taskSerial(int id_) {
-
   /*
    * Declare and initialize a String object to
    * hold the message which will be written
@@ -52,7 +51,6 @@ void taskSerial(int id_) {
 }
 
 void setup() {
-
   /*
    * Declare and initialize an int to hold the
    * task id.
@@ -95,7 +93,6 @@ void setup() {
 }
 
 void loop() {
-
   /*
    * Momentarily pass control to HeliOS by calling the
    * xHeliOSLoop() function call. xHeliOSLoop() should be

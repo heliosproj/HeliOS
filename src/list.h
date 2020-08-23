@@ -22,9 +22,9 @@ extern "C" {
 
 void TaskListInit();
 void TaskListClear();
-void TaskListAdd(struct Task*);
+void TaskListAdd(Task *);
 void TaskListRemove();
-struct Task* TaskListGet();
+Task *TaskListGet();
 int TaskListMoveNext();
 void TaskListRewind();
 

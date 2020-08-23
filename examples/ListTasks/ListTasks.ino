@@ -45,47 +45,58 @@ void taskSerial(int id_) {
   String str = "";
 
   /*
+   * Declare and initialize and int to store the number
+   * of tasks in the task list. This will get populated
+   * by xTaskGetList().
+   */
+  int tasks = 0;
+
+  /*
    * Call xTaskGetInfo() to obtain the task information
    * by passing xTaskGetInfo() the task id of the active
    * task.
    */
-  xTaskGetInfoResult *tres = xTaskGetInfo(id_);
+  xTaskGetListResult *tres = xTaskGetList(&tasks);
 
   /*
-   * Check the pointer to the xTaskGetInfoResult
+   * Check the pointer to the xTaskGetListResult
    * structure before accessing any of its members
-   * since xTaskGetInfo() can return null if the
+   * since xTaskGetList() can return null if the
    * task id does not exist or HeliOS is unable
    * to reserve the required managed memory.
    */
   if (tres) {
     /*
-     * Append all of the members of the xTaskGetInfoResult
-     * structure to the string.
+     * Loop through the xTaskGetListResult array
+     * for the number of times specified by
+     * the int task.
      */
-    str += "taskSerial(): id = ";
-    str += tres->id;
-    str += ", name = ";
-    str += tres->name;
-    str += ", state = ";
-    str += tres->state;
-    str += ", nbytes = ";
-    str += tres->notifyBytes;
-    str += ", nvalue = ";
-    str += tres->notifyValue;
-    str += ", ltime = ";
-    str += tres->lastRuntime;
-    str += ", ttime = ";
-    str += tres->totalRuntime;
-    str += ", tinterval = ";
-    str += tres->timerInterval;
-    str += ", tstart = ";
-    str += tres->timerStartTime;
+    for (int i = 0; i < tasks; i++) {
+      /*
+       * Clear the string.
+       */
+      str = "";
 
-    /*
-     * Print the string to the serial bus.
-     */
-    Serial.println(str);
+      /*
+       * Append all of the members of the xTaskGetListResult
+       * structure to the string.
+       */
+      str += "taskSerial(): id = ";
+      str += tres->id;
+      str += ", name = ";
+      str += tres->name;
+      str += ", state = ";
+      str += tres->state;
+      str += ", ltime = ";
+      str += tres->lastRuntime;
+      str += ", ttime = ";
+      str += tres->totalRuntime;
+
+      /*
+       * Print the string to the serial bus.
+       */
+      Serial.println(str);
+    }
   }
 
   /*
@@ -95,50 +106,6 @@ void taskSerial(int id_) {
    * subsequent calls to xTaskGetInfo().
    */
   xMemFree(tres);
-
-  /*
-   * Clear the string.
-   */
-  str = "";
-
-  /*
-   * Call xHeliOSGetInfo() to obtain the system information.
-   */
-  xHeliOSGetInfoResult *hres = xHeliOSGetInfo();
-
-  /*
-   * Check the pointer to the xHeliOSGetInfoResult
-   * structure before accessing any of its members
-   * since xHeliOSGetInfo() can return null if the
-   * task id does not exist or HeliOS is unable
-   * to reserve the required managed memory.
-   */
-  if (hres) {
-    str += "taskSerial(): ";
-    str += hres->productName;
-    str += " ";
-    str += hres->majorVersion;
-    str += ".";
-    str += hres->minorVersion;
-    str += ".";
-    str += hres->patchVersion;
-    str += " has ";
-    str += hres->tasks;
-    str += " task.";
-
-    /*
-     * Print the string to the serial bus.
-     */
-    Serial.println(str);
-  }
-
-  /*
-   * Free the managed memory allocated by the xHeliOSGetInfo()
-   * function call. If xMemFree() is not called, HeliOS
-   * may exhaust its available managed memory through
-   * subsequent calls to xHeliOSGetInfo().
-   */
-  xMemFree(hres);
 }
 
 void setup() {

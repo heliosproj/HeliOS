@@ -22,15 +22,16 @@
 #include "task.h"
 #include "timer.h"
 
-volatile struct MemAllocRecord memAllocTable[MEMALLOCTABLESIZE];
+volatile MemAllocRecord memAllocTable[MEMALLOCTABLESIZE];
 
 void MemInit() {
-  memset_(&memAllocTable, 0, MEMALLOCTABLESIZE * sizeof(struct MemAllocRecord));
+  memset_(&memAllocTable, 0, MEMALLOCTABLESIZE * sizeof(MemAllocRecord));
 }
 
-void* xMemAlloc(size_t size_) {
-  void* ptr = NULL;
-  if(size_ > 0) {
+void *xMemAlloc(size_t size_) {
+  void *ptr = NULL;
+
+  if (size_ > 0) {
     for (int i = 0; i < MEMALLOCTABLESIZE; i++) {
       if (!memAllocTable[i].ptr) {
         ptr = calloc(1, size_);
@@ -45,7 +46,7 @@ void* xMemAlloc(size_t size_) {
   return NULL;
 }
 
-void xMemFree(void* ptr_) {
+void xMemFree(void *ptr_) {
   if (ptr_) {
     for (int i = 0; i < MEMALLOCTABLESIZE; i++) {
       if (memAllocTable[i].ptr == ptr_) {
@@ -59,21 +60,18 @@ void xMemFree(void* ptr_) {
 
 int xMemGetUsed() {
   int used = 0;
-  for (int i = 0; i < MEMALLOCTABLESIZE; i++) {
-    if (memAllocTable[i].ptr) {
-      used += (int) memAllocTable[i].size;
-    }
-  }
+
+  for (int i = 0; i < MEMALLOCTABLESIZE; i++)
+    if (memAllocTable[i].ptr)
+      used += (int)memAllocTable[i].size;
   return used;
 }
 
-int xMemGetSize(void* ptr_) {
+int xMemGetSize(void *ptr_) {
   if (ptr_) {
-    for (int i = 0; i < MEMALLOCTABLESIZE; i++) {
-      if (memAllocTable[i].ptr == ptr_) {
+    for (int i = 0; i < MEMALLOCTABLESIZE; i++)
+      if (memAllocTable[i].ptr == ptr_)
         return memAllocTable[i].size;
-      }
-    }
   }
   return 0;
 }

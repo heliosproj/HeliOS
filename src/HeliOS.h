@@ -20,28 +20,34 @@
 #include <limits.h>
 
 #if defined(ARDUINO_ARCH_AVR)
-        #include <Arduino.h>
-        #define NOW() micros()
+#include <Arduino.h>
+#define NOW() micros()
+#define DISABLE() noInterrupts()
+#define ENABLE() interrupts()
 #elif defined(ARDUINO_ARCH_SAM)
-        #include <Arduino.h>
-        #define NOW() micros()
+#include <Arduino.h>
+#define NOW() micros()
+#define DISABLE() noInterrupts()
+#define ENABLE() interrupts()
 #elif defined(ARDUINO_ARCH_SAMD)
-        #include <Arduino.h>
-        #define NOW() micros()
+#include <Arduino.h>
+#define NOW() micros()
+#define DISABLE() noInterrupts()
+#define ENABLE() interrupts()
 #else
-        #error “HeliOS is currently supported on the Arduino AVR, SAM and SAMD architectures. Other architectures may require porting of HeliOS.”
+#error “HeliOS is currently supported on the Arduino AVR, SAM and SAMD architectures. Other architectures may require porting of HeliOS.”
 #endif
 
 #ifndef NULL
-        #define NULL 0
+#define NULL 0
 #endif
 
 #ifndef FALSE
-        #define FALSE (1 != 1)
+#define FALSE (1 != 1)
 #endif
 
 #ifndef TRUE
-        #define TRUE (!FALSE)
+#define TRUE (!FALSE)
 #endif
 
 #define TASKNAMESIZE 16
@@ -49,74 +55,76 @@
 #define PRODUCTNAMESIZE 16
 #define MAJORVERSION 0
 #define MINORVERSION 2
-#define PATCHVERSION 3
+#define PATCHVERSION 4
 #define PRODUCTNAME "HeliOS"
 #define MEMALLOCTABLESIZE 50
 #define WAITINGTASKSIZE 8
 
-enum xTaskState {
+typedef enum {
   TaskStateErrored,
   TaskStateStopped,
   TaskStateRunning,
   TaskStateWaiting
-};
+} xTaskState;
 
-struct xTaskGetInfoResult {
-  int id;
-  char name[TASKNAMESIZE];
-  enum xTaskState state;
-  int notifyBytes;
-  char notifyValue[NOTIFYVALUESIZE];
+typedef struct {
+  int		id;
+  char		name[TASKNAMESIZE];
+  xTaskState	state;
+  int		notifyBytes;
+  char		notifyValue[NOTIFYVALUESIZE];
   unsigned long lastRuntime;
   unsigned long totalRuntime;
   unsigned long timerInterval;
   unsigned long timerStartTime;
-};
+} xTaskGetInfoResult;
 
-struct xTaskGetNotifResult {
-  int notifyBytes;
-  char notifyValue[NOTIFYVALUESIZE];
-};
+typedef struct {
+  int	notifyBytes;
+  char	notifyValue[NOTIFYVALUESIZE];
+} xTaskGetNotifResult;
 
-struct xHeliOSGetInfoResult {
-  int tasks;
-  char productName[PRODUCTNAMESIZE];
-  int majorVersion;
-  int minorVersion;
-  int patchVersion;
-};
+typedef struct {
+  int	tasks;
+  char	productName[PRODUCTNAMESIZE];
+  int	majorVersion;
+  int	minorVersion;
+  int	patchVersion;
+} xHeliOSGetInfoResult;
 
-struct xTaskGetListResult {
-  int id;
-  char name[TASKNAMESIZE];
-  enum xTaskState state;
+typedef struct {
+  int		id;
+  char		name[TASKNAMESIZE];
+  xTaskState	state;
   unsigned long lastRuntime;
   unsigned long totalRuntime;
-};
+} xTaskGetListResult;
 
-struct Task {
-  int id;
-  char name[TASKNAMESIZE];
-  enum xTaskState state;
+struct tasklistitem_s;
+
+typedef struct {
+  int				id;
+  char				name[TASKNAMESIZE];
+  xTaskState			state;
   void (*callback)(int);
-  int notifyBytes;
-  char notifyValue[NOTIFYVALUESIZE];
-  unsigned long lastRuntime;
-  unsigned long totalRuntime;
-  unsigned long timerInterval;
-  unsigned long timerStartTime;
-  struct TaskListItem* next;
-};
+  int				notifyBytes;
+  char				notifyValue[NOTIFYVALUESIZE];
+  unsigned long			lastRuntime;
+  unsigned long			totalRuntime;
+  unsigned long			timerInterval;
+  unsigned long			timerStartTime;
+  struct tasklistitem_s *	next;
+} Task;
 
-struct TaskListItem {
-  struct Task* task;
-  struct TaskListItem* next;
-};
+typedef struct tasklistitem_s {
+  Task *			task;
+  struct tasklistitem_s *	next;
+} TaskListItem;
 
-struct MemAllocRecord {
-  size_t size;
-  void* ptr;
-};
+typedef struct {
+  size_t	size;
+  void *	ptr;
+} MemAllocRecord;
 
 #ifdef __cplusplus
 extern "C" {
@@ -124,13 +132,13 @@ extern "C" {
 
 void xHeliOSSetup();
 void xHeliOSLoop();
-struct xHeliOSGetInfoResult* xHeliOSGetInfo();
+xHeliOSGetInfoResult *xHeliOSGetInfo();
 int HeliOSIsCriticalBlocking();
 void HeliOSReset();
-void memcpy_(void*, void*, size_t);
-void memset_(void*, int, size_t);
-char* strncpy_(char*, const char*, size_t);
-int strncmp_(const char*, const char*, size_t n);
+void memcpy_(void *, void *, size_t);
+void memset_(void *, int, size_t);
+char *strncpy_(char *, const char *, size_t);
+int strncmp_(const char *, const char *, size_t n);
 
 #ifdef __cplusplus
 } // extern "C" {

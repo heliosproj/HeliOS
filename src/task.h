@@ -21,19 +21,19 @@ extern "C" {
 #endif
 
 void TaskInit();
-int xTaskAdd(const char*, void (*)(int));
+int xTaskAdd(const char *, void (*)(int));
 void xTaskRemove(int);
 void xTaskClear();
 void xTaskStart(int);
 void xTaskStop(int);
 void xTaskWait(int);
-int xTaskGetId(const char*);
-void xTaskNotify(int, int, char*);
+int xTaskGetId(const char *);
+void xTaskNotify(int, int, char *);
 void xTaskNotifyClear(int);
-struct xTaskGetNotifResult* xTaskGetNotif(int);
-struct xTaskGetInfoResult* xTaskGetInfo(int);
+xTaskGetNotifResult *xTaskGetNotif(int);
+xTaskGetInfoResult *xTaskGetInfo(int);
 int TaskListSeek(int);
-struct xTaskGetListResult* xTaskGetList(int*);
+xTaskGetListResult *xTaskGetList(int *);
 void xTaskSetTimer(int, unsigned long);
 void xTaskResetTimer(int);
 

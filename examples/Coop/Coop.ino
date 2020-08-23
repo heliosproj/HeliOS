@@ -31,47 +31,27 @@
 #include <HeliOS_Arduino.h>
 
 /*
- * Declare and initialize an int to maintain the state of
- * the built-in LED.
+ * The task definition for taskShort() which
+ * will perform 100,000 arbitrary floating point
+ * operations.
  */
-volatile int ledState = 0;
+void taskShort(int id_) {
+  float a = 0.0f;
+
+  for (int i = 0; i < 100000; i++)
+    a *= 3.14f;
+}
 
 /*
- * The task definition for taskBlink() which will
- * be executed by HeliOS every 1,000,000 microseconds
- * (1 second).
+ * The task definition for taskLong() which
+ * will perform 1,000,000 arbitrary floating point
+ * operations.
  */
-void taskBlink(int id_) {
-  /*
-   * If the state is 0 or LOW then set the state to
-   * 1 or HIGH. Likewise, if the state is 1 or HIGH
-   * then set the state to LOW.
-   */
-  if (ledState) {
-    /*
-     * Set the state of the digital GPIO pin associated
-     * with the built-in LED to LOW.
-     */
-    digitalWrite(LED_BUILTIN, LOW);
+void taskLong(int id_) {
+  float a = 0.0f;
 
-    /*
-     * Update the int containing the state of the build-in
-     * LED accordingly.
-     */
-    ledState = 0;
-  } else {
-    /*
-     * Set the state of the digital GPIO pin associated
-     * with the built-in LED to HIGH.
-     */
-    digitalWrite(LED_BUILTIN, HIGH);
-
-    /*
-     * Update the int containing the state of the built-in
-     * LED accordingly.
-     */
-    ledState = 1;
-  }
+  for (int i = 0; i < 1000000; i++)
+    a *= 3.14f;
 }
 
 void setup() {
@@ -89,31 +69,30 @@ void setup() {
   xHeliOSSetup();
 
   /*
-   * Set the mode of the digital GPIO pin associated
-   * with the built-in LED to OUTPUT only.
-   */
-  pinMode(LED_BUILTIN, OUTPUT);
-
-  /*
-   * Add the task taskBlink() to HeliOS by passing
+   * Add the task taskShort() to HeliOS by passing
    * xTaskAdd() the friendly name of the task as well
    * as a callback pointer to the task function.
    */
-  id = xTaskAdd("TASKBLINK", &taskBlink);
+  id = xTaskAdd("TASKSHORT", &taskShort);
 
   /*
-   * Call xTaskWait() to place taskBlink() into a wait
-   * state by passing xTaskWait() the task id. A task
-   * must be in a wait state to respond to timer events.
+   * Call xTaskStart() to start taskShort() by passing
+   * xTaskStart() the id of the task to start.
    */
-  xTaskWait(id);
+  xTaskStart(id);
 
   /*
-   * Set the timer interval for taskBlink() to 1,000,000 microseconds
-   * (1 second). HeliOS automatically begins incrementing
-   * the timer for the task once the timer interval is set.
+   * Add the task taskShort() to HeliOS by passing
+   * xTaskAdd() the friendly name of the task as well
+   * as a callback pointer to the task function.
    */
-  xTaskSetTimer(id, 1000000);
+  id = xTaskAdd("TASKLONG", &taskLong);
+
+  /*
+   * Call xTaskStart() to start taskLong() by passing
+   * xTaskStart() the id of the task to start.
+   */
+  xTaskStart(id);
 }
 
 void loop() {
