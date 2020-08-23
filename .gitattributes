@@ -2,11 +2,10 @@
 # git config --global core.eol lf
 # git config --global core.autocrlf false
 
-* text eol=lf
-*.c text
-*.h text
-*.ino text
-*.md text
-keywords.txt text
-library.properties text
+*.c text eol=lf
+*.h text eol=lf
+*.ino text eol=lf
+*.md text eol=lf
+keywords.txt text eol=lf
+library.properties text eol=lf
 *.png binary
