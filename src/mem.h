@@ -21,10 +21,10 @@ extern "C" {
 #endif
 
 void MemInit();
-void* xMemAlloc(size_t);
-void xMemFree(void*);
+void *xMemAlloc(size_t);
+void xMemFree(void *);
 int xMemGetUsed();
-int xMemGetSize(void*);
+int xMemGetSize(void *);
 void MemClear();
 
 #ifdef __cplusplus

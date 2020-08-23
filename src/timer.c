@@ -30,6 +30,6 @@ unsigned long TimerGetNow() {
 #elif defined(ARDUINO_ARCH_SAMD)
   return micros();
 #else
-        #error “HeliOS is currently supported on the Arduino AVR, SAM and SAMD architectures. Other architectures may require porting of HeliOS.”
+#error “HeliOS is currently supported on the Arduino AVR, SAM and SAMD architectures. Other architectures may require porting of HeliOS.”
 #endif
 }

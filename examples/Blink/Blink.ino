@@ -42,14 +42,12 @@ volatile int ledState = 0;
  * (1 second).
  */
 void taskBlink(int id_) {
-
   /*
    * If the state is 0 or LOW then set the state to
    * 1 or HIGH. Likewise, if the state is 1 or HIGH
    * then set the state to LOW.
    */
-  if(ledState) {
-
+  if (ledState) {
     /*
      * Set the state of the digital GPIO pin associated
      * with the built-in LED to LOW.
@@ -62,7 +60,6 @@ void taskBlink(int id_) {
      */
     ledState = 0;
   } else {
-
     /*
      * Set the state of the digital GPIO pin associated
      * with the built-in LED to HIGH.
@@ -78,7 +75,6 @@ void taskBlink(int id_) {
 }
 
 void setup() {
-
   /*
    * Declare and initialize an int to hold the
    * task id.
@@ -121,7 +117,6 @@ void setup() {
 }
 
 void loop() {
-
   /*
    * Momentarily pass control to HeliOS by calling the
    * xHeliOSLoop() function call. xHeliOSLoop() should be

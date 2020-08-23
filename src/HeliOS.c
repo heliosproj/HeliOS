@@ -26,7 +26,7 @@ volatile int heliOSSetupCalled = FALSE;
 volatile int heliOSCriticalBlocking = FALSE;
 
 void xHeliOSSetup() {
-  if(!heliOSSetupCalled) {
+  if (!heliOSSetupCalled) {
     MemInit();
     TaskListInit();
     TaskInit();
@@ -36,11 +36,12 @@ void xHeliOSSetup() {
 
 void xHeliOSLoop() {
   int waiting = 0;
-  Task* waitingTask[WAITINGTASKSIZE];
-  Task* runningTask = NULL;
-  Task* task = NULL;
+  Task *waitingTask[WAITINGTASKSIZE];
+  Task *runningTask = NULL;
+  Task *task = NULL;
   unsigned long taskStartTime = 0;
   unsigned long leastRuntime = ULONG_MAX;
+
   heliOSCriticalBlocking = TRUE;
 
   /*
@@ -55,7 +56,7 @@ void xHeliOSLoop() {
         leastRuntime = task->totalRuntime;
         runningTask = task;
       } else if (task->state == TaskStateWaiting) {
-        if(waiting < WAITINGTASKSIZE) {
+        if (waiting < WAITINGTASKSIZE) {
           waitingTask[waiting] = task;
           waiting++;
         }
@@ -67,7 +68,7 @@ void xHeliOSLoop() {
    * Re-enable interrupts after sceduler runs.
    */
   ENABLE();
-  for(int i = 0; i < waiting; i++) {
+  for (int i = 0; i < waiting; i++) {
     if (waitingTask[i]->notifyBytes > 0) {
       taskStartTime = NOW();
       (*waitingTask[i]->callback)(waitingTask[i]->id);
@@ -84,7 +85,7 @@ void xHeliOSLoop() {
       }
     }
   }
-  if(runningTask) {
+  if (runningTask) {
     taskStartTime = NOW();
     (*runningTask->callback)(runningTask->id);
     runningTask->lastRuntime = NOW() - taskStartTime;
@@ -93,18 +94,18 @@ void xHeliOSLoop() {
   heliOSCriticalBlocking = FALSE;
 }
 
-xHeliOSGetInfoResult* xHeliOSGetInfo() {
+xHeliOSGetInfoResult *xHeliOSGetInfo() {
   int tasks = 0;
-  Task* task = NULL;
-  xHeliOSGetInfoResult* heliOSGetInfoResult = NULL;
+  Task *task = NULL;
+  xHeliOSGetInfoResult *heliOSGetInfoResult = NULL;
+
   TaskListRewind();
   do {
     task = TaskListGet();
-    if (task) {
+    if (task)
       tasks++;
-    }
   } while (TaskListMoveNext());
-  heliOSGetInfoResult = (xHeliOSGetInfoResult*)xMemAlloc(sizeof(xHeliOSGetInfoResult));
+  heliOSGetInfoResult = (xHeliOSGetInfoResult *)xMemAlloc(sizeof(xHeliOSGetInfoResult));
   if (heliOSGetInfoResult) {
     heliOSGetInfoResult->tasks = tasks;
     strncpy_(heliOSGetInfoResult->productName, PRODUCTNAME, PRODUCTNAMESIZE);
@@ -128,24 +129,25 @@ void HeliOSReset() {
   heliOSCriticalBlocking = FALSE;
 }
 
-void memcpy_(void* dest_, void* src_, size_t n_) {
-  char* src = (char*)src_;
-  char* dest = (char*)dest_;
-  for (unsigned int i = 0; i < n_; i++) {
+void memcpy_(void *dest_, void *src_, size_t n_) {
+  char *src = (char *)src_;
+  char *dest = (char *)dest_;
+
+  for (unsigned int i = 0; i < n_; i++)
     dest[i] = src[i];
-  }
 }
 
-void memset_(void* dest_, int val_, size_t n_) {
-  char* dest = (char*)dest_;
-  for (unsigned int i = 0; i < n_; i++) {
+void memset_(void *dest_, int val_, size_t n_) {
+  char *dest = (char *)dest_;
+
+  for (unsigned int i = 0; i < n_; i++)
     dest[i] = val_;
-  }
 }
 
-char* strncpy_(char* dest_, const char* src_, size_t n_) {
-  const char* src = src_;
-  char* dest = dest_;
+char *strncpy_(char *dest_, const char *src_, size_t n_) {
+  const char *src = src_;
+  char *dest = dest_;
+
   while (*src && n_--) {
     *dest = *src;
     dest++;
@@ -155,13 +157,13 @@ char* strncpy_(char* dest_, const char* src_, size_t n_) {
   return dest_;
 }
 
-int strncmp_(const char* str1_, const char* str2_, size_t n_) {
-  const char* str2 = str2_;
-  const char* str1 = str1_;
+int strncmp_(const char *str1_, const char *str2_, size_t n_) {
+  const char *str2 = str2_;
+  const char *str1 = str1_;
+
   while (*str1 && n_--) {
-    if (*str1 != *str2) {
+    if (*str1 != *str2)
       return *str1 - *str2;
-    }
     str1++;
     str2++;
   }

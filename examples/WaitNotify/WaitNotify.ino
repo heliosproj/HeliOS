@@ -36,13 +36,12 @@
  * or 3 change state to HIGH.
  */
 void taskSerial(int id_) {
-
   /*
    * Call xTaskGetNotif() to obtain the task notification
    * bytes and value by passing xTaskGetNotif() the task
    * id of the active task.
    */
-  xTaskGetNotifResult* nres = xTaskGetNotif(id_);
+  xTaskGetNotifResult *nres = xTaskGetNotif(id_);
 
   /*
    * Check the pointer to the xTaskGetNotifResult
@@ -51,8 +50,7 @@ void taskSerial(int id_) {
    * task id does not exist or HeliOS is unable
    * to reserve the required managed memory.
    */
-  if(nres) {
-
+  if (nres) {
     /*
      * Declare and initialize a string object to
      * hold the text which will be written
@@ -105,7 +103,6 @@ void taskSerial(int id_) {
  * for digital GPIO pin 2.
  */
 void D2ISR() {
-
   /*
    * Send 2 byte notification value of "D2" to
    * taskSerial() by first calling xTaskGetId()
@@ -119,7 +116,7 @@ void D2ISR() {
    * the notification value to (char*). This is
    * only done to avoid compiler warnings in C++.
    */
-  xTaskNotify(xTaskGetId("TASKSERIAL"), 2, (char*)"D2");
+  xTaskNotify(xTaskGetId("TASKSERIAL"), 2, (char *)"D2");
 }
 
 /*
@@ -127,7 +124,6 @@ void D2ISR() {
  * for digital GPIO pin 3.
  */
 void D3ISR() {
-
   /*
    * Send 2 byte notification value of "D3" to
    * taskSerial() by first calling xTaskGetId()
@@ -141,11 +137,10 @@ void D3ISR() {
    * the notification value to (char*). This is
    * only done to avoid compiler warnings in C++.
    */
-  xTaskNotify(xTaskGetId("TASKSERIAL"), 2, (char*)"D3");
+  xTaskNotify(xTaskGetId("TASKSERIAL"), 2, (char *)"D3");
 }
 
 void setup() {
-
   /*
    * Declare and initialize an int to hold the
    * task id.
@@ -195,7 +190,6 @@ void setup() {
 }
 
 void loop() {
-
   /*
    * Momentarily pass control to HeliOS by calling the
    * xHeliOSLoop() function call. xHeliOSLoop() should be

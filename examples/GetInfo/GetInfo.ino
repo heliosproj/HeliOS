@@ -36,7 +36,6 @@
  * (1 second).
  */
 void taskSerial(int id_) {
-
   /*
    * Declare and initialize a string object to
    * hold the text which will be written to the
@@ -50,7 +49,7 @@ void taskSerial(int id_) {
    * by passing xTaskGetInfo() the task id of the active
    * task.
    */
-  xTaskGetInfoResult* tres = xTaskGetInfo(id_);
+  xTaskGetInfoResult *tres = xTaskGetInfo(id_);
 
   /*
    * Check the pointer to the xTaskGetInfoResult
@@ -59,8 +58,7 @@ void taskSerial(int id_) {
    * task id does not exist or HeliOS is unable
    * to reserve the required managed memory.
    */
-  if(tres) {
-
+  if (tres) {
     /*
      * Append all of the members of the xTaskGetInfoResult
      * structure to the string.
@@ -106,7 +104,7 @@ void taskSerial(int id_) {
   /*
    * Call xHeliOSGetInfo() to obtain the system information.
    */
-  xHeliOSGetInfoResult* hres = xHeliOSGetInfo();
+  xHeliOSGetInfoResult *hres = xHeliOSGetInfo();
 
   /*
    * Check the pointer to the xHeliOSGetInfoResult
@@ -115,7 +113,7 @@ void taskSerial(int id_) {
    * task id does not exist or HeliOS is unable
    * to reserve the required managed memory.
    */
-  if(hres) {
+  if (hres) {
     str += "taskSerial(): ";
     str += hres->productName;
     str += " ";
@@ -144,7 +142,6 @@ void taskSerial(int id_) {
 }
 
 void setup() {
-
   /*
    * Declare and initialize an int to hold the
    * task id.
@@ -187,7 +184,6 @@ void setup() {
 }
 
 void loop() {
-
   /*
    * Momentarily pass control to HeliOS by calling the
    * xHeliOSLoop() function call. xHeliOSLoop() should be

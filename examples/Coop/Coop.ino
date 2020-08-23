@@ -38,9 +38,8 @@
 void taskShort(int id_) {
   float a = 0.0f;
 
-  for(int i = 0; i < 100 000; i++) {
+  for (int i = 0; i < 100 000; i++)
     a *= 3.14f;
-  }
 }
 
 /*
@@ -51,13 +50,11 @@ void taskShort(int id_) {
 void taskLong(int id_) {
   float a = 0.0f;
 
-  for(int i = 0; i < 1 000 000; i++) {
+  for (int i = 0; i < 1 000 000; i++)
     a *= 3.14f;
-  }
 }
 
 void setup() {
-
   /*
    * Declare and initialize an int to hold the
    * task id.
@@ -99,7 +96,6 @@ void setup() {
 }
 
 void loop() {
-
   /*
    * Momentarily pass control to HeliOS by calling the
    * xHeliOSLoop() function call. xHeliOSLoop() should be

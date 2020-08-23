@@ -20,34 +20,34 @@
 #include <limits.h>
 
 #if defined(ARDUINO_ARCH_AVR)
-        #include <Arduino.h>
-        #define NOW() micros()
-        #define DISABLE() noInterrupts()
-        #define ENABLE() interrupts()
+#include <Arduino.h>
+#define NOW() micros()
+#define DISABLE() noInterrupts()
+#define ENABLE() interrupts()
 #elif defined(ARDUINO_ARCH_SAM)
-        #include <Arduino.h>
-        #define NOW() micros()
-        #define DISABLE() noInterrupts()
-        #define ENABLE() interrupts()
+#include <Arduino.h>
+#define NOW() micros()
+#define DISABLE() noInterrupts()
+#define ENABLE() interrupts()
 #elif defined(ARDUINO_ARCH_SAMD)
-        #include <Arduino.h>
-        #define NOW() micros()
-        #define DISABLE() noInterrupts()
-        #define ENABLE() interrupts()
+#include <Arduino.h>
+#define NOW() micros()
+#define DISABLE() noInterrupts()
+#define ENABLE() interrupts()
 #else
-        #error “HeliOS is currently supported on the Arduino AVR, SAM and SAMD architectures. Other architectures may require porting of HeliOS.”
+#error “HeliOS is currently supported on the Arduino AVR, SAM and SAMD architectures. Other architectures may require porting of HeliOS.”
 #endif
 
 #ifndef NULL
-        #define NULL 0
+#define NULL 0
 #endif
 
 #ifndef FALSE
-        #define FALSE (1 != 1)
+#define FALSE (1 != 1)
 #endif
 
 #ifndef TRUE
-        #define TRUE (!FALSE)
+#define TRUE (!FALSE)
 #endif
 
 #define TASKNAMESIZE 16
@@ -68,11 +68,11 @@ typedef enum {
 } xTaskState;
 
 typedef struct {
-  int id;
-  char name[TASKNAMESIZE];
-  xTaskState state;
-  int notifyBytes;
-  char notifyValue[NOTIFYVALUESIZE];
+  int		id;
+  char		name[TASKNAMESIZE];
+  xTaskState	state;
+  int		notifyBytes;
+  char		notifyValue[NOTIFYVALUESIZE];
   unsigned long lastRuntime;
   unsigned long totalRuntime;
   unsigned long timerInterval;
@@ -80,22 +80,22 @@ typedef struct {
 } xTaskGetInfoResult;
 
 typedef struct {
-  int notifyBytes;
-  char notifyValue[NOTIFYVALUESIZE];
+  int	notifyBytes;
+  char	notifyValue[NOTIFYVALUESIZE];
 } xTaskGetNotifResult;
 
 typedef struct {
-  int tasks;
-  char productName[PRODUCTNAMESIZE];
-  int majorVersion;
-  int minorVersion;
-  int patchVersion;
+  int	tasks;
+  char	productName[PRODUCTNAMESIZE];
+  int	majorVersion;
+  int	minorVersion;
+  int	patchVersion;
 } xHeliOSGetInfoResult;
 
 typedef struct {
-  int id;
-  char name[TASKNAMESIZE];
-  xTaskState state;
+  int		id;
+  char		name[TASKNAMESIZE];
+  xTaskState	state;
   unsigned long lastRuntime;
   unsigned long totalRuntime;
 } xTaskGetListResult;
@@ -103,27 +103,27 @@ typedef struct {
 struct tasklistitem_s;
 
 typedef struct {
-  int id;
-  char name[TASKNAMESIZE];
-  xTaskState state;
+  int				id;
+  char				name[TASKNAMESIZE];
+  xTaskState			state;
   void (*callback)(int);
-  int notifyBytes;
-  char notifyValue[NOTIFYVALUESIZE];
-  unsigned long lastRuntime;
-  unsigned long totalRuntime;
-  unsigned long timerInterval;
-  unsigned long timerStartTime;
-  struct tasklistitem_s* next;
+  int				notifyBytes;
+  char				notifyValue[NOTIFYVALUESIZE];
+  unsigned long			lastRuntime;
+  unsigned long			totalRuntime;
+  unsigned long			timerInterval;
+  unsigned long			timerStartTime;
+  struct tasklistitem_s *	next;
 } Task;
 
 typedef struct tasklistitem_s {
-  Task* task;
-  struct tasklistitem_s* next;
+  Task *			task;
+  struct tasklistitem_s *	next;
 } TaskListItem;
 
 typedef struct {
-  size_t size;
-  void* ptr;
+  size_t	size;
+  void *	ptr;
 } MemAllocRecord;
 
 #ifdef __cplusplus
@@ -132,13 +132,13 @@ extern "C" {
 
 void xHeliOSSetup();
 void xHeliOSLoop();
-xHeliOSGetInfoResult* xHeliOSGetInfo();
+xHeliOSGetInfoResult *xHeliOSGetInfo();
 int HeliOSIsCriticalBlocking();
 void HeliOSReset();
-void memcpy_(void*, void*, size_t);
-void memset_(void*, int, size_t);
-char* strncpy_(char*, const char*, size_t);
-int strncmp_(const char*, const char*, size_t n);
+void memcpy_(void *, void *, size_t);
+void memset_(void *, int, size_t);
+char *strncpy_(char *, const char *, size_t);
+int strncmp_(const char *, const char *, size_t n);
 
 #ifdef __cplusplus
 } // extern "C" {

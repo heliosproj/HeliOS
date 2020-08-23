@@ -36,7 +36,6 @@
  * (1 second).
  */
 void taskSerial(int id_) {
-
   /*
    * Declare and initialize a string object to
    * hold the text which will be written to the
@@ -57,7 +56,7 @@ void taskSerial(int id_) {
    * by passing xTaskGetInfo() the task id of the active
    * task.
    */
-  xTaskGetListResult* tres = xTaskGetList(&tasks);
+  xTaskGetListResult *tres = xTaskGetList(&tasks);
 
   /*
    * Check the pointer to the xTaskGetListResult
@@ -66,14 +65,13 @@ void taskSerial(int id_) {
    * task id does not exist or HeliOS is unable
    * to reserve the required managed memory.
    */
-  if(tres) {
-
+  if (tres) {
     /*
      * Loop through the xTaskGetListResult array
      * for the number of times specified by
      * the int task.
      */
-    for(int i = 0; i < tasks; i++) {
+    for (int i = 0; i < tasks; i++) {
       /*
        * Clear the string.
        */
@@ -99,7 +97,6 @@ void taskSerial(int id_) {
        */
       Serial.println(str);
     }
-
   }
 
   /*
@@ -112,7 +109,6 @@ void taskSerial(int id_) {
 }
 
 void setup() {
-
   /*
    * Declare and initialize an int to hold the
    * task id.
@@ -155,7 +151,6 @@ void setup() {
 }
 
 void loop() {
-
   /*
    * Momentarily pass control to HeliOS by calling the
    * xHeliOSLoop() function call. xHeliOSLoop() should be

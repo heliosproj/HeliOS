@@ -35,8 +35,7 @@
  * be executed by HeliOS every 1,000,000 microseconds
  * (1 second).
  */
-void taskSerial(int id_)
-{
+void taskSerial(int id_) {
   /*
    * Declare and initialize a string object to
    * hold the text which will be written to the
@@ -113,8 +112,7 @@ void taskSerial(int id_)
   Serial.println(str);
 }
 
-void setup()
-{
+void setup() {
   /*
    * Declare and initialize an int to hold the
    * task id.
@@ -156,8 +154,7 @@ void setup()
   xTaskSetTimer(id, 1000000);
 }
 
-void loop()
-{
+void loop() {
   /*
    * Momentarily pass control to HeliOS by calling the
    * xHeliOSLoop() function call. xHeliOSLoop() should be

@@ -22,10 +22,10 @@
 #include "task.h"
 #include "timer.h"
 
-volatile TaskListItem* taskListHead;
-volatile TaskListItem* taskListTail;
-volatile TaskListItem* taskListPrev;
-volatile TaskListItem* taskListCurr;
+volatile TaskListItem *taskListHead;
+volatile TaskListItem *taskListTail;
+volatile TaskListItem *taskListPrev;
+volatile TaskListItem *taskListCurr;
 
 void TaskListInit() {
   taskListHead = NULL;
@@ -36,13 +36,13 @@ void TaskListInit() {
 }
 
 void TaskListClear() {
-  while (taskListHead) {
+  while (taskListHead)
     TaskListRemove();
-  }
 }
 
-void TaskListAdd(Task* task_) {
-  TaskListItem* item = (TaskListItem*)xMemAlloc(sizeof(TaskListItem));
+void TaskListAdd(Task *task_) {
+  TaskListItem *item = (TaskListItem *)xMemAlloc(sizeof(TaskListItem));
+
   if (item && task_) {
     item->task = task_;
     item->next = NULL;
@@ -61,25 +61,25 @@ void TaskListAdd(Task* task_) {
 void TaskListRemove() {
   if (taskListCurr) {
     if (taskListCurr == taskListHead && taskListCurr == taskListTail) {
-      TaskListItem* item = taskListHead;
+      TaskListItem *item = taskListHead;
       TaskListInit();
       xMemFree(item->task);
       xMemFree(item);
     } else if (taskListCurr == taskListHead) {
-      TaskListItem* item = taskListHead;
+      TaskListItem *item = taskListHead;
       taskListHead = taskListHead->next;
       TaskListRewind();
       xMemFree(item->task);
       xMemFree(item);
     } else if (taskListCurr == taskListTail) {
-      TaskListItem* item = taskListTail;
+      TaskListItem *item = taskListTail;
       taskListTail = taskListPrev;
       taskListPrev->next = NULL;
       TaskListRewind();
       xMemFree(item->task);
       xMemFree(item);
     } else {
-      TaskListItem* item = taskListCurr;
+      TaskListItem *item = taskListCurr;
       taskListPrev->next = taskListCurr->next;
       TaskListRewind();
       xMemFree(item->task);
@@ -88,10 +88,9 @@ void TaskListRemove() {
   }
 }
 
-Task* TaskListGet() {
-  if (taskListCurr) {
+Task *TaskListGet() {
+  if (taskListCurr)
     return taskListCurr->task;
-  }
   return NULL;
 }
 
