@@ -1,0 +1,12 @@
+# Run the following to set default EOL to UNIX-style line endings.
+# git config --global core.eol lf
+# git config --global core.autocrlf false
+
+* text eol=lf
+*.c text
+*.h text
+*.ino text
+*.md text
+keywords.txt text
+library.properties text
+*.png binary
