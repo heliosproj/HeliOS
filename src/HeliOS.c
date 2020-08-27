@@ -150,6 +150,8 @@ inline void HeliOSRunTask(Task *task_) {
 }
 
 void HeliOSResetRuntime() {
+  Task *task = NULL;
+
   TaskListRewind();
   do {
     task = TaskListGet();
