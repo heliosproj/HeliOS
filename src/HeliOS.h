@@ -26,54 +26,52 @@
   #define DISABLE() noInterrupts()
   #define ENABLE() interrupts()
   typedef unsigned long Time_t;
-  #define TIMEMAX ULONG_MAX
+  #define TIME_T_MAX ULONG_MAX
 #elif defined(ARDUINO_ARCH_SAM)
   #include <Arduino.h>
   #define NOW() micros()
   #define DISABLE() noInterrupts()
   #define ENABLE() interrupts()
   typedef unsigned long Time_t;
-  #define TIMEMAX ULONG_MAX
+  #define TIME_T_MAX ULONG_MAX
 #elif defined(ARDUINO_ARCH_SAMD)
   #include <Arduino.h>
   #define NOW() micros()
   #define DISABLE() noInterrupts()
   #define ENABLE() interrupts()
   typedef unsigned long Time_t;
-  #define TIMEMAX ULONG_MAX
+  #define TIME_T_MAX ULONG_MAX
+#elif defined(OTHER_ARCH_WINDOWS)
+  #include <Windows.h>
+  #define NOW() CurrentTime()
+  #define DISABLE()
+  #define ENABLE()
+  typedef uint64_t Time_t;
+  #define TIME_T_MAX UINT64_MAX
+#elif defined(OTHER_ARCH_LINUX)
+  #include <time.h>
+  #define NOW() CurrentTime()
+  #define DISABLE()
+  #define ENABLE()
+  typedef uint64_t Time_t;
+  #define TIME_T_MAX UINT64_MAX
 #else
-  #if defined(OTHER_ARCH_WINDOWS)
-    #include <Windows.h>
-    #define NOW() CurrentTime()
-    #define DISABLE()
-    #define ENABLE()
-    typedef uint64_t Time_t;
-    #define TIMEMAX UINT64_MAX
-  #elif defined(OTHER_ARCH_LINUX)
-    #include <time.h>
-    #define NOW() CurrentTime()
-    #define DISABLE()
-    #define ENABLE()
-    typedef uint64_t Time_t;
-    #define TIMEMAX UINT64_MAX
-  #else
-    #error "This architecture is currently unsupported by HeliOS."
-  #endif
+  #error "This architecture is currently unsupported by HeliOS."
 #endif
 
-#ifndef NULL
-  #define NULL 0x0
+#if defined(null)
+  #define null 0x0
 #endif
 
-#define TASKNAMESIZE 16
-#define NOTIFYVALUESIZE 16
-#define PRODUCTNAMESIZE 16
-#define MAJORVERSION 0
-#define MINORVERSION 2
-#define PATCHVERSION 4
-#define PRODUCTNAME "HeliOS"
-#define MEMALLOCTABLESIZE 50
-#define WAITINGTASKSIZE 8
+#define TASKNAME_SIZE 16
+#define WAITINGTASK_SIZE 8
+#define PRODUCTNAME_SIZE 16
+#define TNOTIFYVALUE_SIZE 16
+#define MEMALLOCTABLE_SIZE 50
+#define PRODUCT_NAME "HeliOS"
+#define MAJOR_VERSION_NO 0
+#define MINOR_VERSION_NO 2
+#define PATCH_VERSION_NO 4
 
 typedef enum {
   TaskStateErrored,
@@ -84,10 +82,10 @@ typedef enum {
 
 typedef struct {
   int		id;
-  char		name[TASKNAMESIZE];
+  char		name[TASKNAME_SIZE];
   xTaskState	state;
   int		notifyBytes;
-  char		notifyValue[NOTIFYVALUESIZE];
+  char		notifyValue[TNOTIFYVALUE_SIZE];
   Time_t	lastRuntime;
   Time_t	totalRuntime;
   Time_t	timerInterval;
@@ -96,12 +94,12 @@ typedef struct {
 
 typedef struct {
   int	notifyBytes;
-  char	notifyValue[NOTIFYVALUESIZE];
+  char	notifyValue[TNOTIFYVALUE_SIZE];
 } xTaskGetNotifResult;
 
 typedef struct {
   int	tasks;
-  char	productName[PRODUCTNAMESIZE];
+  char	productName[PRODUCTNAME_SIZE];
   int	majorVersion;
   int	minorVersion;
   int	patchVersion;
@@ -109,7 +107,7 @@ typedef struct {
 
 typedef struct {
   int		id;
-  char		name[TASKNAMESIZE];
+  char		name[TASKNAME_SIZE];
   xTaskState	state;
   Time_t	lastRuntime;
   Time_t	totalRuntime;
@@ -119,11 +117,11 @@ struct TaskListItem_s;
 
 typedef struct {
   int				id;
-  char				name[TASKNAMESIZE];
+  char				name[TASKNAME_SIZE];
   xTaskState			state;
   void (*callback)(int);
   int				notifyBytes;
-  char				notifyValue[NOTIFYVALUESIZE];
+  char				notifyValue[TNOTIFYVALUE_SIZE];
   Time_t			lastRuntime;
   Time_t			totalRuntime;
   Time_t			timerInterval;

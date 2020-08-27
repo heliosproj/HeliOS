@@ -20,7 +20,6 @@
 #include "list.h"
 #include "mem.h"
 #include "task.h"
-#include "timer.h"
 
 volatile TaskListItem_t *taskListHead;
 volatile TaskListItem_t *taskListTail;
@@ -28,10 +27,10 @@ volatile TaskListItem_t *taskListPrev;
 volatile TaskListItem_t *taskListCurr;
 
 void TaskListInit() {
-  taskListHead = NULL;
-  taskListTail = NULL;
-  taskListPrev = NULL;
-  taskListCurr = NULL;
+  taskListHead = null;
+  taskListTail = null;
+  taskListPrev = null;
+  taskListCurr = null;
   TaskListRewind();
 }
 
@@ -45,7 +44,7 @@ void TaskListAdd(Task_t *task_) {
 
   if (item && task_) {
     item->task = task_;
-    item->next = NULL;
+    item->next = null;
     if (taskListHead) {
       taskListTail->next = item;
       taskListTail = item;
@@ -74,7 +73,7 @@ void TaskListRemove() {
     } else if (taskListCurr == taskListTail) {
       TaskListItem_t *item = taskListTail;
       taskListTail = taskListPrev;
-      taskListPrev->next = NULL;
+      taskListPrev->next = null;
       TaskListRewind();
       xMemFree(item->task);
       xMemFree(item);
@@ -91,7 +90,7 @@ void TaskListRemove() {
 Task_t *TaskListGet() {
   if (taskListCurr)
     return taskListCurr->task;
-  return NULL;
+  return null;
 }
 
 bool TaskListMoveNext() {
@@ -106,6 +105,6 @@ bool TaskListMoveNext() {
 }
 
 void TaskListRewind() {
-  taskListPrev = NULL;
+  taskListPrev = null;
   taskListCurr = taskListHead;
 }

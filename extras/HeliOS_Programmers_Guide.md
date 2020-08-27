@@ -254,10 +254,10 @@ HeliOS implements cricitcal blocking which prevents some functions from being ca
 | Member | Type | Description |
 | --- | --- | --- |
 | id | int | Task identification number |
-| name | char[TASKNAMESIZE] | Friendly name of the task |
+| name | char[TASKNAME_SIZE] | Friendly name of the task |
 | state | enum TaskState | State of the task - see TaskState |
 | notifyBytes| int | Number of notification bytes in notification value |
-| notifyValue| char[NOTIFYVALUESIZE] | Notification value |
+| notifyValue| char[TNOTIFYVALUE_SIZE] | Notification value |
 | lastRuntime| unsigned long | Last runtime duration in microseconds |
 | totalRuntime | unsigned long | Total runtime duraiton in microseconds |
 | timerInterval | unsigned long | The timer interval in microseconds |
@@ -266,14 +266,14 @@ HeliOS implements cricitcal blocking which prevents some functions from being ca
 | Member | Type | Description |
 | --- | --- | --- |
 | tasks | int | The current number of tasks regardless of task state |
-| productName | char[PRODUCTNAMESIZE] | The name of the operating system |
+| productName | char[PRODUCTNAME_SIZE] | The name of the operating system |
 | majorVersion | int | The major version number of the product |
 | minorVersion | int | The minor version number of the product |
 #### xTaskGetListResult
 | Member | Type | Description |
 | --- | --- | --- |
 | id | int | Task identification number |
-| name | char[TASKNAMESIZE] | Friendly name of the task |
+| name | char[TASKNAME_SIZE] | Friendly name of the task |
 | state | enum TaskState | State of the task - see TaskState |
 | lastRuntime| unsigned long | Last runtime duration in microseconds |
 | totalRuntime | unsigned long | Total runtime duraiton in microseconds |

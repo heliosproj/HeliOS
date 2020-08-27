@@ -20,7 +20,6 @@
 #include "list.h"
 #include "mem.h"
 #include "task.h"
-#include "timer.h"
 
 volatile Flags_t flags = {
   .setupCalled		= false,
@@ -39,10 +38,10 @@ void xHeliOSSetup() {
 
 void xHeliOSLoop() {
   int waiting = 0;
-  Task_t *waitingTask[WAITINGTASKSIZE];
-  Task_t *runningTask = NULL;
-  Task_t *task = NULL;
-  Time_t leastRuntime = TIMEMAX;
+  Task_t *waitingTask[WAITINGTASK_SIZE];
+  Task_t *runningTask = null;
+  Task_t *task = null;
+  Time_t leastRuntime = TIME_T_MAX;
 
   flags.critBlocking = true;
 
@@ -61,7 +60,7 @@ void xHeliOSLoop() {
         leastRuntime = task->totalRuntime;
         runningTask = task;
       } else if (task->state == TaskStateWaiting) {
-        if (waiting < WAITINGTASKSIZE) {
+        if (waiting < WAITINGTASK_SIZE) {
           waitingTask[waiting] = task;
           waiting++;
         }
@@ -91,8 +90,8 @@ void xHeliOSLoop() {
 
 xHeliOSGetInfoResult *xHeliOSGetInfo() {
   int tasks = 0;
-  Task_t *task = NULL;
-  xHeliOSGetInfoResult *heliOSGetInfoResult = NULL;
+  Task_t *task = null;
+  xHeliOSGetInfoResult *heliOSGetInfoResult = null;
 
   TaskListRewind();
   do {
@@ -103,10 +102,10 @@ xHeliOSGetInfoResult *xHeliOSGetInfo() {
   heliOSGetInfoResult = (xHeliOSGetInfoResult *)xMemAlloc(sizeof(xHeliOSGetInfoResult));
   if (heliOSGetInfoResult) {
     heliOSGetInfoResult->tasks = tasks;
-    strncpy_(heliOSGetInfoResult->productName, PRODUCTNAME, PRODUCTNAMESIZE);
-    heliOSGetInfoResult->majorVersion = MAJORVERSION;
-    heliOSGetInfoResult->minorVersion = MINORVERSION;
-    heliOSGetInfoResult->patchVersion = PATCHVERSION;
+    strncpy_(heliOSGetInfoResult->productName, PRODUCT_NAME, PRODUCTNAME_SIZE);
+    heliOSGetInfoResult->majorVersion = MAJOR_VERSION_NO;
+    heliOSGetInfoResult->minorVersion = MINOR_VERSION_NO;
+    heliOSGetInfoResult->patchVersion = PATCH_VERSION_NO;
   }
   return heliOSGetInfoResult;
 }
@@ -136,7 +135,7 @@ inline Time_t CurrentTime() {
      * Get time from Linux. Need to implement and test.
      */
     struct timeval tv;
-    gettimeofday(&tv, NULL);
+    gettimeofday(&tv, null);
     return tv.tv_usec;
 #else
     return 0;
@@ -157,7 +156,7 @@ inline void TaskRun(Task_t *task_) {
 }
 
 inline void RuntimeReset() {
-  Task_t *task = NULL;
+  Task_t *task = null;
 
   TaskListRewind();
   do {
