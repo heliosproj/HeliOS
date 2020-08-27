@@ -39,7 +39,6 @@ void xHeliOSLoop() {
   Task *waitingTask[WAITINGTASKSIZE];
   Task *runningTask = NULL;
   Task *task = NULL;
-  unsigned long taskStartTime = 0;
   unsigned long leastRuntime = ULONG_MAX;
 
   heliOSCriticalBlocking = TRUE;
@@ -70,27 +69,17 @@ void xHeliOSLoop() {
   ENABLE();
   for (int i = 0; i < waiting; i++) {
     if (waitingTask[i]->notifyBytes > 0) {
-      taskStartTime = NOW();
-      (*waitingTask[i]->callback)(waitingTask[i]->id);
-      waitingTask[i]->lastRuntime = NOW() - taskStartTime;
-      waitingTask[i]->totalRuntime += waitingTask[i]->lastRuntime;
+      HeliOSRunTask(waitingTask[i]);
       waitingTask[i]->notifyBytes = 0;
     } else if (waitingTask[i]->timerInterval > 0) {
       if (NOW() - waitingTask[i]->timerStartTime > waitingTask[i]->timerInterval) {
-        taskStartTime = NOW();
-        (*waitingTask[i]->callback)(waitingTask[i]->id);
-        waitingTask[i]->lastRuntime = NOW() - taskStartTime;
-        waitingTask[i]->totalRuntime += waitingTask[i]->lastRuntime;
+        HeliOSRunTask(waitingTask[i]);
         waitingTask[i]->timerStartTime = NOW();
       }
     }
   }
-  if (runningTask) {
-    taskStartTime = NOW();
-    (*runningTask->callback)(runningTask->id);
-    runningTask->lastRuntime = NOW() - taskStartTime;
-    runningTask->totalRuntime += runningTask->lastRuntime;
-  }
+  if (runningTask)
+    HeliOSRunTask(runningTask);
   heliOSCriticalBlocking = FALSE;
 }
 
@@ -127,6 +116,30 @@ void HeliOSReset() {
   TaskInit();
   heliOSSetupCalled = FALSE;
   heliOSCriticalBlocking = FALSE;
+}
+
+inline HeliOSTime HeliOSCurrTime() {
+#if defined(OTHER_ARCH_WINDOWS)
+    /*
+     * Get time from Linux.
+     */
+    return 0;
+#elif defined(OTHER_ARCH_LINUX)
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    return tv.tv_usec;
+#else
+    return 0;
+#endif
+}
+
+inline void HeliOSRunTask(Task *task_) {
+  HeliOSTime taskStartTime = 0;
+
+  taskStartTime = NOW();
+  (*task_->callback)(task_->id);
+  task_->lastRuntime = NOW() - taskStartTime;
+  task_->totalRuntime += task_->lastRuntime;
 }
 
 void memcpy_(void *dest_, void *src_, size_t n_) {

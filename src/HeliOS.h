@@ -20,34 +20,56 @@
 #include <limits.h>
 
 #if defined(ARDUINO_ARCH_AVR)
-#include <Arduino.h>
-#define NOW() micros()
-#define DISABLE() noInterrupts()
-#define ENABLE() interrupts()
+  #include <Arduino.h>
+  #define NOW() micros()
+  #define DISABLE() noInterrupts()
+  #define ENABLE() interrupts()
+  typedef unsigned long HeliOSTime;
+  #define HELIOSTIMEMAX ULONG_MAX
 #elif defined(ARDUINO_ARCH_SAM)
-#include <Arduino.h>
-#define NOW() micros()
-#define DISABLE() noInterrupts()
-#define ENABLE() interrupts()
+  #include <Arduino.h>
+  #define NOW() micros()
+  #define DISABLE() noInterrupts()
+  #define ENABLE() interrupts()
+  typedef unsigned long HeliOSTime;
+  #define HELIOSTIMEMAX ULONG_MAX
 #elif defined(ARDUINO_ARCH_SAMD)
-#include <Arduino.h>
-#define NOW() micros()
-#define DISABLE() noInterrupts()
-#define ENABLE() interrupts()
+  #include <Arduino.h>
+  #define NOW() micros()
+  #define DISABLE() noInterrupts()
+  #define ENABLE() interrupts()
+  typedef unsigned long HeliOSTime;
+  #define HELIOSTIMEMAX ULONG_MAX
 #else
-#error “HeliOS is currently supported on the Arduino AVR, SAM and SAMD architectures. Other architectures may require porting of HeliOS.”
+  #if defined(OTHER_ARCH_WINDOWS)
+    #include <Windows.h>
+    #define NOW() HeliOSCurrTime()
+    #define DISABLE()
+    #define ENABLE()
+    typedef uint64_t HeliOSTime;
+    #define HELIOSTIMEMAX UINT64_MAX
+  #elif defined(OTHER_ARCH_LINUX)
+    #include <time.h>
+    #define NOW() HeliOSCurrTime()
+    #define DISABLE()
+    #define ENABLE()
+    typedef uint64_t HeliOSTime;
+    #define HELIOSTIMEMAX UINT64_MAX
+  #else
+    #error "This architecture is currently unsupported by HeliOS."
+  #endif
 #endif
 
 #ifndef NULL
-#define NULL 0
+  #define NULL 0
 #endif
 
 #ifndef FALSE
-#define FALSE (1 != 1)
+  #define FALSE (1 != 1)
 #endif
 
 #ifndef TRUE
-#define TRUE (!FALSE)
+  #define TRUE (!FALSE)
 #endif
 
 #define TASKNAMESIZE 16
@@ -100,7 +122,7 @@ typedef struct {
   unsigned long totalRuntime;
 } xTaskGetListResult;
 
-struct tasklistitem_s;
+struct TaskListItem_s;
 
 typedef struct {
   int				id;
@@ -113,12 +135,12 @@ typedef struct {
   unsigned long			totalRuntime;
   unsigned long			timerInterval;
   unsigned long			timerStartTime;
-  struct tasklistitem_s *	next;
+  struct TaskListItem_s *	next;
 } Task;
 
-typedef struct tasklistitem_s {
+typedef struct TaskListItem_s {
   Task *			task;
-  struct tasklistitem_s *	next;
+  struct TaskListItem_s *	next;
 } TaskListItem;
 
 typedef struct {
@@ -127,7 +149,7 @@ typedef struct {
 } MemAllocRecord;
 
 #ifdef __cplusplus
-extern "C" {
+  extern "C" {
 #endif
 
 void xHeliOSSetup();
@@ -135,6 +157,8 @@ void xHeliOSLoop();
 xHeliOSGetInfoResult *xHeliOSGetInfo();
 int HeliOSIsCriticalBlocking();
 void HeliOSReset();
+HeliOSTime HeliOSCurrTime();
+void HeliOSRunTask(Task *);
 void memcpy_(void *, void *, size_t);
 void memset_(void *, int, size_t);
 char *strncpy_(char *, const char *, size_t);
