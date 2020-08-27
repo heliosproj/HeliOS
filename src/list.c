@@ -94,15 +94,15 @@ Task *TaskListGet() {
   return NULL;
 }
 
-int TaskListMoveNext() {
+bool TaskListMoveNext() {
   if (taskListCurr) {
     if (taskListCurr->next) {
       taskListPrev = taskListCurr;
       taskListCurr = taskListCurr->next;
-      return TRUE;
+      return true;
     }
   }
-  return FALSE;
+  return false;
 }
 
 void TaskListRewind() {

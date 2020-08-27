@@ -22,16 +22,18 @@
 #include "task.h"
 #include "timer.h"
 
-volatile int heliOSSetupCalled = FALSE;
-volatile int heliOSCriticalBlocking = FALSE;
-volatile int heliOSTimerOverfow = FALSE;
+volatile Flags flags = {
+  .setupCalled		= false,
+  .critBlocking		= false,
+  .runtimeOverflow	= false
+};
 
 void xHeliOSSetup() {
-  if (!heliOSSetupCalled) {
+  if (!flags.setupCalled) {
     MemInit();
     TaskListInit();
     TaskInit();
-    heliOSSetupCalled = TRUE;
+    flags.setupCalled = true;
   }
 }
 
@@ -42,9 +44,9 @@ void xHeliOSLoop() {
   Task *task = NULL;
   unsigned long leastRuntime = ULONG_MAX;
 
-  heliOSCriticalBlocking = TRUE;
+  flags.critBlocking = true;
 
-  if (heliOSTimerOverfow)
+  if (flags.runtimeOverflow)
     HeliOSResetRuntime();
 
   /*
@@ -84,7 +86,7 @@ void xHeliOSLoop() {
   }
   if (runningTask)
     HeliOSRunTask(runningTask);
-  heliOSCriticalBlocking = FALSE;
+  flags.critBlocking = false;
 }
 
 xHeliOSGetInfoResult *xHeliOSGetInfo() {
@@ -109,8 +111,8 @@ xHeliOSGetInfoResult *xHeliOSGetInfo() {
   return heliOSGetInfoResult;
 }
 
-int HeliOSIsCriticalBlocking() {
-  return heliOSCriticalBlocking;
+bool HeliOSIsCriticalBlocking() {
+  return flags.critBlocking;
 }
 
 void HeliOSReset() {
@@ -118,11 +120,12 @@ void HeliOSReset() {
   MemInit();
   TaskListInit();
   TaskInit();
-  heliOSSetupCalled = FALSE;
-  heliOSCriticalBlocking = FALSE;
+  flags.setupCalled = false;
+  flags.critBlocking = false;
+  flags.runtimeOverflow = false;
 }
 
-inline HeliOSTime HeliOSCurrTime() {
+inline Time HeliOSCurrTime() {
 #if defined(OTHER_ARCH_WINDOWS)
     /*
      * Get time from Linux.
@@ -138,15 +141,16 @@ inline HeliOSTime HeliOSCurrTime() {
 }
 
 inline void HeliOSRunTask(Task *task_) {
-  HeliOSTime taskStartTime = 0;
+  Time taskStartTime = 0;
+  Time prevTotalRuntime = 0;
 
-  task_->prevTotalRuntime = task_->totalRuntime;
+  prevTotalRuntime = task_->totalRuntime;
   taskStartTime = NOW();
   (*task_->callback)(task_->id);
   task_->lastRuntime = NOW() - taskStartTime;
   task_->totalRuntime += task_->lastRuntime;
-  if (task_->totalRuntime < task_->prevTotalRuntime)
-    heliOSTimerOverfow = TRUE;
+  if (task_->totalRuntime < prevTotalRuntime)
+    flags.runtimeOverflow = true;
 }
 
 void HeliOSResetRuntime() {
@@ -155,12 +159,10 @@ void HeliOSResetRuntime() {
   TaskListRewind();
   do {
     task = TaskListGet();
-    if (task) {
+    if (task)
       task->totalRuntime = task->lastRuntime;
-      task->prevTotalRuntime = 0;
-    }
   } while (TaskListMoveNext());
-  heliOSTimerOverfow = FALSE;
+  flags.runtimeOverflow = false;
 }
 
 void memcpy_(void *dest_, void *src_, size_t n_) {

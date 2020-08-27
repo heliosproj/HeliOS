@@ -17,7 +17,7 @@
  */
 
 #ifdef __cplusplus
-extern "C" {
+  extern "C" {
 #endif
 
 void TaskListInit();
@@ -25,7 +25,7 @@ void TaskListClear();
 void TaskListAdd(Task *);
 void TaskListRemove();
 Task *TaskListGet();
-int TaskListMoveNext();
+bool TaskListMoveNext();
 void TaskListRewind();
 
 #ifdef __cplusplus

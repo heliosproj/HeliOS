@@ -17,7 +17,7 @@
  */
 
 #ifdef __cplusplus
-extern "C" {
+  extern "C" {
 #endif
 
 void TaskInit();
@@ -32,7 +32,7 @@ void xTaskNotify(int, int, char *);
 void xTaskNotifyClear(int);
 xTaskGetNotifResult *xTaskGetNotif(int);
 xTaskGetInfoResult *xTaskGetInfo(int);
-int TaskListSeek(int);
+bool TaskListSeek(int);
 xTaskGetListResult *xTaskGetList(int *);
 void xTaskSetTimer(int, unsigned long);
 void xTaskResetTimer(int);

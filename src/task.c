@@ -50,10 +50,9 @@ int xTaskAdd(const char *name_, void (*callback_)(int)) {
 }
 
 void xTaskRemove(int id_) {
-  if (!HeliOSIsCriticalBlocking()) {
+  if (!HeliOSIsCriticalBlocking())
     if (TaskListSeek(id_))
       TaskListRemove();
-  }
 }
 
 void xTaskClear() {
@@ -66,10 +65,9 @@ void xTaskStart(int id_) {
 
   if (TaskListSeek(id_)) {
     task = TaskListGet();
-    if (task) {
+    if (task)
       if (task->state != TaskStateErrored)
         task->state = TaskStateRunning;
-    }
   }
 }
 
@@ -78,10 +76,9 @@ void xTaskStop(int id_) {
 
   if (TaskListSeek(id_)) {
     task = TaskListGet();
-    if (task) {
+    if (task)
       if (task->state != TaskStateErrored)
         task->state = TaskStateStopped;
-    }
   }
 }
 
@@ -90,10 +87,9 @@ void xTaskWait(int id_) {
 
   if (TaskListSeek(id_)) {
     task = TaskListGet();
-    if (task) {
+    if (task)
       if (task->state != TaskStateErrored)
         task->state = TaskStateWaiting;
-    }
   }
 }
 
@@ -103,10 +99,9 @@ int xTaskGetId(const char *name_) {
   TaskListRewind();
   do {
     task = TaskListGet();
-    if (task) {
+    if (task)
       if (strncmp_(task->name, name_, TASKNAMESIZE) == 0)
         return task->id;
-    }
   } while (TaskListMoveNext());
   return 0;
 }
@@ -182,18 +177,17 @@ xTaskGetInfoResult *xTaskGetInfo(int id_) {
   return taskGetInfoResult;
 }
 
-int TaskListSeek(int id_) {
+bool TaskListSeek(int id_) {
   Task *task = NULL;
 
   TaskListRewind();
   do {
     task = TaskListGet();
-    if (task) {
+    if (task)
       if (task->id == id_)
-        return TRUE;
-    }
+        return true;
   } while (TaskListMoveNext());
-  return FALSE;
+  return false;
 }
 
 xTaskGetListResult *xTaskGetList(int *tasks_) {
@@ -249,9 +243,8 @@ void xTaskResetTimer(int id_) {
 
   if (TaskListSeek(id_)) {
     task = TaskListGet();
-    if (task) {
+    if (task)
       if (task->state != TaskStateErrored)
         task->timerStartTime = NOW();
-    }
   }
 }

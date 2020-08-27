@@ -18,27 +18,28 @@
 
 #include <stdlib.h>
 #include <limits.h>
+#include <stdbool.h>
 
 #if defined(ARDUINO_ARCH_AVR)
   #include <Arduino.h>
   #define NOW() micros()
   #define DISABLE() noInterrupts()
   #define ENABLE() interrupts()
-  typedef unsigned long HeliOSTime;
+  typedef unsigned long Time;
   #define HELIOSTIMEMAX ULONG_MAX
 #elif defined(ARDUINO_ARCH_SAM)
   #include <Arduino.h>
   #define NOW() micros()
   #define DISABLE() noInterrupts()
   #define ENABLE() interrupts()
-  typedef unsigned long HeliOSTime;
+  typedef unsigned long Time;
   #define HELIOSTIMEMAX ULONG_MAX
 #elif defined(ARDUINO_ARCH_SAMD)
   #include <Arduino.h>
   #define NOW() micros()
   #define DISABLE() noInterrupts()
   #define ENABLE() interrupts()
-  typedef unsigned long HeliOSTime;
+  typedef unsigned long Time;
   #define HELIOSTIMEMAX ULONG_MAX
 #else
   #if defined(OTHER_ARCH_WINDOWS)
@@ -46,14 +47,14 @@
     #define NOW() HeliOSCurrTime()
     #define DISABLE()
     #define ENABLE()
-    typedef uint64_t HeliOSTime;
+    typedef uint64_t Time;
     #define HELIOSTIMEMAX UINT64_MAX
   #elif defined(OTHER_ARCH_LINUX)
     #include <time.h>
     #define NOW() HeliOSCurrTime()
     #define DISABLE()
     #define ENABLE()
-    typedef uint64_t HeliOSTime;
+    typedef uint64_t Time;
     #define HELIOSTIMEMAX UINT64_MAX
   #else
     #error "This architecture is currently unsupported by HeliOS."
@@ -61,15 +62,7 @@
 #endif
 
 #ifndef NULL
-  #define NULL 0
-#endif
-
-#ifndef FALSE
-  #define FALSE (1 != 1)
-#endif
-
-#ifndef TRUE
-  #define TRUE (!FALSE)
+  #define NULL 0x0
 #endif
 
 #define TASKNAMESIZE 16
@@ -95,10 +88,10 @@ typedef struct {
   xTaskState	state;
   int		notifyBytes;
   char		notifyValue[NOTIFYVALUESIZE];
-  unsigned long lastRuntime;
-  unsigned long totalRuntime;
-  unsigned long timerInterval;
-  unsigned long timerStartTime;
+  Time		lastRuntime;
+  Time		totalRuntime;
+  Time		timerInterval;
+  Time		timerStartTime;
 } xTaskGetInfoResult;
 
 typedef struct {
@@ -118,8 +111,8 @@ typedef struct {
   int		id;
   char		name[TASKNAMESIZE];
   xTaskState	state;
-  unsigned long lastRuntime;
-  unsigned long totalRuntime;
+  Time		lastRuntime;
+  Time		totalRuntime;
 } xTaskGetListResult;
 
 struct TaskListItem_s;
@@ -131,11 +124,10 @@ typedef struct {
   void (*callback)(int);
   int				notifyBytes;
   char				notifyValue[NOTIFYVALUESIZE];
-  unsigned long			lastRuntime;
-  unsigned long			totalRuntime;
-  unsigned long			prevTotalRuntime;
-  unsigned long			timerInterval;
-  unsigned long			timerStartTime;
+  Time				lastRuntime;
+  Time				totalRuntime;
+  Time				timerInterval;
+  Time				timerStartTime;
   struct TaskListItem_s *	next;
 } Task;
 
@@ -149,6 +141,12 @@ typedef struct {
   void *	ptr;
 } MemAllocRecord;
 
+typedef struct {
+  bool	setupCalled;
+  bool	critBlocking;
+  bool	runtimeOverflow;
+} Flags;
+
 #ifdef __cplusplus
   extern "C" {
 #endif
@@ -156,9 +154,9 @@ typedef struct {
 void xHeliOSSetup();
 void xHeliOSLoop();
 xHeliOSGetInfoResult *xHeliOSGetInfo();
-int HeliOSIsCriticalBlocking();
+bool HeliOSIsCriticalBlocking();
 void HeliOSReset();
-HeliOSTime HeliOSCurrTime();
+Time HeliOSCurrTime();
 void HeliOSRunTask(Task *);
 void HeliOSResetRuntime();
 void memcpy_(void *, void *, size_t);
