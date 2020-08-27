@@ -128,10 +128,13 @@ void HeliOSReset() {
 inline Time HeliOSCurrTime() {
 #if defined(OTHER_ARCH_WINDOWS)
     /*
-     * Get time from Linux.
+     * Get time from Windows. Need to implement and test.
      */
     return 0;
 #elif defined(OTHER_ARCH_LINUX)
+    /*
+     * Get time from Linux. Need to implement and test.
+     */
     struct timeval tv;
     gettimeofday(&tv, NULL);
     return tv.tv_usec;
