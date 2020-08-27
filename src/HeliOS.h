@@ -26,21 +26,21 @@
   #define DISABLE() noInterrupts()
   #define ENABLE() interrupts()
   typedef unsigned long Time_t;
-  #define HELIOSTIMEMAX ULONG_MAX
+  #define TIMEMAX ULONG_MAX
 #elif defined(ARDUINO_ARCH_SAM)
   #include <Arduino.h>
   #define NOW() micros()
   #define DISABLE() noInterrupts()
   #define ENABLE() interrupts()
   typedef unsigned long Time_t;
-  #define HELIOSTIMEMAX ULONG_MAX
+  #define TIMEMAX ULONG_MAX
 #elif defined(ARDUINO_ARCH_SAMD)
   #include <Arduino.h>
   #define NOW() micros()
   #define DISABLE() noInterrupts()
   #define ENABLE() interrupts()
   typedef unsigned long Time_t;
-  #define HELIOSTIMEMAX ULONG_MAX
+  #define TIMEMAX ULONG_MAX
 #else
   #if defined(OTHER_ARCH_WINDOWS)
     #include <Windows.h>
@@ -48,14 +48,14 @@
     #define DISABLE()
     #define ENABLE()
     typedef uint64_t Time_t;
-    #define HELIOSTIMEMAX UINT64_MAX
+    #define TIMEMAX UINT64_MAX
   #elif defined(OTHER_ARCH_LINUX)
     #include <time.h>
     #define NOW() HeliOSCurrTime()
     #define DISABLE()
     #define ENABLE()
     typedef uint64_t Time_t;
-    #define HELIOSTIMEMAX UINT64_MAX
+    #define TIMEMAX UINT64_MAX
   #else
     #error "This architecture is currently unsupported by HeliOS."
   #endif

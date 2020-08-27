@@ -42,7 +42,7 @@ void xHeliOSLoop() {
   Task_t *waitingTask[WAITINGTASKSIZE];
   Task_t *runningTask = NULL;
   Task_t *task = NULL;
-  unsigned long leastRuntime = ULONG_MAX;
+  Time_t leastRuntime = TIMEMAX;
 
   flags.critBlocking = true;
 

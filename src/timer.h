@@ -17,10 +17,10 @@
  */
 
 #ifdef __cplusplus
-extern "C" {
+  extern "C" {
 #endif
 
-unsigned long TimerGetNow();
+Time_t TimerGetNow();
 
 #ifdef __cplusplus
 } // extern "C" {

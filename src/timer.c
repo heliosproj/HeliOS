@@ -22,14 +22,14 @@
 #include "task.h"
 #include "timer.h"
 
-unsigned long TimerGetNow() {
+Timer_t TimerGetNow() {
 #if defined(ARDUINO_ARCH_AVR)
-  return micros();
+    return micros();
 #elif defined(ARDUINO_ARCH_SAM)
-  return micros();
+    return micros();
 #elif defined(ARDUINO_ARCH_SAMD)
-  return micros();
+    return micros();
 #else
-#error “HeliOS is currently supported on the Arduino AVR, SAM and SAMD architectures. Other architectures may require porting of HeliOS.”
+  #error “HeliOS is currently supported on the Arduino AVR, SAM and SAMD architectures. Other architectures may require porting of HeliOS.”
 #endif
 }
