@@ -22,9 +22,9 @@
 
 void TaskListInit();
 void TaskListClear();
-void TaskListAdd(Task *);
+void TaskListAdd(Task_t *);
 void TaskListRemove();
-Task *TaskListGet();
+Task_t *TaskListGet();
 bool TaskListMoveNext();
 void TaskListRewind();
 

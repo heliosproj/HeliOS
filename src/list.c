@@ -22,10 +22,10 @@
 #include "task.h"
 #include "timer.h"
 
-volatile TaskListItem *taskListHead;
-volatile TaskListItem *taskListTail;
-volatile TaskListItem *taskListPrev;
-volatile TaskListItem *taskListCurr;
+volatile TaskListItem_t *taskListHead;
+volatile TaskListItem_t *taskListTail;
+volatile TaskListItem_t *taskListPrev;
+volatile TaskListItem_t *taskListCurr;
 
 void TaskListInit() {
   taskListHead = NULL;
@@ -40,8 +40,8 @@ void TaskListClear() {
     TaskListRemove();
 }
 
-void TaskListAdd(Task *task_) {
-  TaskListItem *item = (TaskListItem *)xMemAlloc(sizeof(TaskListItem));
+void TaskListAdd(Task_t *task_) {
+  TaskListItem_t *item = (TaskListItem_t *)xMemAlloc(sizeof(TaskListItem_t));
 
   if (item && task_) {
     item->task = task_;
@@ -61,25 +61,25 @@ void TaskListAdd(Task *task_) {
 void TaskListRemove() {
   if (taskListCurr) {
     if (taskListCurr == taskListHead && taskListCurr == taskListTail) {
-      TaskListItem *item = taskListHead;
+      TaskListItem_t *item = taskListHead;
       TaskListInit();
       xMemFree(item->task);
       xMemFree(item);
     } else if (taskListCurr == taskListHead) {
-      TaskListItem *item = taskListHead;
+      TaskListItem_t *item = taskListHead;
       taskListHead = taskListHead->next;
       TaskListRewind();
       xMemFree(item->task);
       xMemFree(item);
     } else if (taskListCurr == taskListTail) {
-      TaskListItem *item = taskListTail;
+      TaskListItem_t *item = taskListTail;
       taskListTail = taskListPrev;
       taskListPrev->next = NULL;
       TaskListRewind();
       xMemFree(item->task);
       xMemFree(item);
     } else {
-      TaskListItem *item = taskListCurr;
+      TaskListItem_t *item = taskListCurr;
       taskListPrev->next = taskListCurr->next;
       TaskListRewind();
       xMemFree(item->task);
@@ -88,7 +88,7 @@ void TaskListRemove() {
   }
 }
 
-Task *TaskListGet() {
+Task_t *TaskListGet() {
   if (taskListCurr)
     return taskListCurr->task;
   return NULL;

@@ -34,7 +34,7 @@ xTaskGetNotifResult *xTaskGetNotif(int);
 xTaskGetInfoResult *xTaskGetInfo(int);
 bool TaskListSeek(int);
 xTaskGetListResult *xTaskGetList(int *);
-void xTaskSetTimer(int, unsigned long);
+void xTaskSetTimer(int, Time_t);
 void xTaskResetTimer(int);
 
 #ifdef __cplusplus

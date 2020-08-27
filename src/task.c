@@ -30,7 +30,7 @@ void TaskInit() {
 
 int xTaskAdd(const char *name_, void (*callback_)(int)) {
   if (!HeliOSIsCriticalBlocking()) {
-    Task *task = (Task *)xMemAlloc(sizeof(Task));
+    Task_t *task = (Task_t *)xMemAlloc(sizeof(Task_t));
     if (task) {
       task->id = taskNextId;
       taskNextId++;
@@ -61,7 +61,7 @@ void xTaskClear() {
 }
 
 void xTaskStart(int id_) {
-  Task *task = NULL;
+  Task_t *task = NULL;
 
   if (TaskListSeek(id_)) {
     task = TaskListGet();
@@ -72,7 +72,7 @@ void xTaskStart(int id_) {
 }
 
 void xTaskStop(int id_) {
-  Task *task = NULL;
+  Task_t *task = NULL;
 
   if (TaskListSeek(id_)) {
     task = TaskListGet();
@@ -83,7 +83,7 @@ void xTaskStop(int id_) {
 }
 
 void xTaskWait(int id_) {
-  Task *task = NULL;
+  Task_t *task = NULL;
 
   if (TaskListSeek(id_)) {
     task = TaskListGet();
@@ -94,7 +94,7 @@ void xTaskWait(int id_) {
 }
 
 int xTaskGetId(const char *name_) {
-  Task *task = NULL;
+  Task_t *task = NULL;
 
   TaskListRewind();
   do {
@@ -107,7 +107,7 @@ int xTaskGetId(const char *name_) {
 }
 
 void xTaskNotify(int id_, int notifyBytes_, char *notifyValue_) {
-  Task *task = NULL;
+  Task_t *task = NULL;
 
   if (notifyBytes_ > 0 && notifyBytes_ <= NOTIFYVALUESIZE && notifyValue_) {
     if (TaskListSeek(id_)) {
@@ -123,7 +123,7 @@ void xTaskNotify(int id_, int notifyBytes_, char *notifyValue_) {
 }
 
 void xTaskNotifyClear(int id_) {
-  Task *task = NULL;
+  Task_t *task = NULL;
 
   if (TaskListSeek(id_)) {
     task = TaskListGet();
@@ -137,7 +137,7 @@ void xTaskNotifyClear(int id_) {
 }
 
 xTaskGetNotifResult *xTaskGetNotif(int id_) {
-  Task *task = NULL;
+  Task_t *task = NULL;
   xTaskGetNotifResult *taskGetNotifResult = NULL;
 
   if (TaskListSeek(id_)) {
@@ -154,7 +154,7 @@ xTaskGetNotifResult *xTaskGetNotif(int id_) {
 }
 
 xTaskGetInfoResult *xTaskGetInfo(int id_) {
-  Task *task = NULL;
+  Task_t *task = NULL;
   xTaskGetInfoResult *taskGetInfoResult = NULL;
 
   if (TaskListSeek(id_)) {
@@ -178,7 +178,7 @@ xTaskGetInfoResult *xTaskGetInfo(int id_) {
 }
 
 bool TaskListSeek(int id_) {
-  Task *task = NULL;
+  Task_t *task = NULL;
 
   TaskListRewind();
   do {
@@ -193,7 +193,7 @@ bool TaskListSeek(int id_) {
 xTaskGetListResult *xTaskGetList(int *tasks_) {
   int i = 0;
   int tasks = 0;
-  Task *task = NULL;
+  Task_t *task = NULL;
   xTaskGetListResult *taskGetListResult = NULL;
 
   *tasks_ = 0;
@@ -224,8 +224,8 @@ xTaskGetListResult *xTaskGetList(int *tasks_) {
   return taskGetListResult;
 }
 
-void xTaskSetTimer(int id_, unsigned long timerInterval_) {
-  Task *task = NULL;
+void xTaskSetTimer(int id_, Time_t timerInterval_) {
+  Task_t *task = NULL;
 
   if (TaskListSeek(id_)) {
     task = TaskListGet();
@@ -239,7 +239,7 @@ void xTaskSetTimer(int id_, unsigned long timerInterval_) {
 }
 
 void xTaskResetTimer(int id_) {
-  Task *task = NULL;
+  Task_t *task = NULL;
 
   if (TaskListSeek(id_)) {
     task = TaskListGet();

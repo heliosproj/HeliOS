@@ -22,7 +22,7 @@
 #include "task.h"
 #include "timer.h"
 
-volatile Flags flags = {
+volatile Flags_t flags = {
   .setupCalled		= false,
   .critBlocking		= false,
   .runtimeOverflow	= false
@@ -39,9 +39,9 @@ void xHeliOSSetup() {
 
 void xHeliOSLoop() {
   int waiting = 0;
-  Task *waitingTask[WAITINGTASKSIZE];
-  Task *runningTask = NULL;
-  Task *task = NULL;
+  Task_t *waitingTask[WAITINGTASKSIZE];
+  Task_t *runningTask = NULL;
+  Task_t *task = NULL;
   unsigned long leastRuntime = ULONG_MAX;
 
   flags.critBlocking = true;
@@ -91,7 +91,7 @@ void xHeliOSLoop() {
 
 xHeliOSGetInfoResult *xHeliOSGetInfo() {
   int tasks = 0;
-  Task *task = NULL;
+  Task_t *task = NULL;
   xHeliOSGetInfoResult *heliOSGetInfoResult = NULL;
 
   TaskListRewind();
@@ -125,7 +125,7 @@ void HeliOSReset() {
   flags.runtimeOverflow = false;
 }
 
-inline Time HeliOSCurrTime() {
+inline Time_t HeliOSCurrTime() {
 #if defined(OTHER_ARCH_WINDOWS)
     /*
      * Get time from Windows. Need to implement and test.
@@ -143,9 +143,9 @@ inline Time HeliOSCurrTime() {
 #endif
 }
 
-inline void HeliOSRunTask(Task *task_) {
-  Time taskStartTime = 0;
-  Time prevTotalRuntime = 0;
+inline void HeliOSRunTask(Task_t *task_) {
+  Time_t taskStartTime = 0;
+  Time_t prevTotalRuntime = 0;
 
   prevTotalRuntime = task_->totalRuntime;
   taskStartTime = NOW();
@@ -157,7 +157,7 @@ inline void HeliOSRunTask(Task *task_) {
 }
 
 void HeliOSResetRuntime() {
-  Task *task = NULL;
+  Task_t *task = NULL;
 
   TaskListRewind();
   do {
