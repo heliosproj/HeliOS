@@ -44,14 +44,14 @@
 #else
   #if defined(OTHER_ARCH_WINDOWS)
     #include <Windows.h>
-    #define NOW() HeliOSCurrTime()
+    #define NOW() CurrentTime()
     #define DISABLE()
     #define ENABLE()
     typedef uint64_t Time_t;
     #define TIMEMAX UINT64_MAX
   #elif defined(OTHER_ARCH_LINUX)
     #include <time.h>
-    #define NOW() HeliOSCurrTime()
+    #define NOW() CurrentTime()
     #define DISABLE()
     #define ENABLE()
     typedef uint64_t Time_t;
@@ -154,11 +154,11 @@ typedef struct {
 void xHeliOSSetup();
 void xHeliOSLoop();
 xHeliOSGetInfoResult *xHeliOSGetInfo();
-bool HeliOSIsCriticalBlocking();
+bool IsCriticalBlocking();
 void HeliOSReset();
-Time_t HeliOSCurrTime();
-void HeliOSRunTask(Task_t *);
-void HeliOSResetRuntime();
+Time_t CurrentTime();
+void TaskRun(Task_t *);
+void RuntimeReset();
 void memcpy_(void *, void *, size_t);
 void memset_(void *, int, size_t);
 char *strncpy_(char *, const char *, size_t);

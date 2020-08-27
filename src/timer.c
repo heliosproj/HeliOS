@@ -22,7 +22,7 @@
 #include "task.h"
 #include "timer.h"
 
-Timer_t TimerGetNow() {
+Time_t TimerGetNow() {
 #if defined(ARDUINO_ARCH_AVR)
     return micros();
 #elif defined(ARDUINO_ARCH_SAM)

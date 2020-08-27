@@ -47,7 +47,7 @@ void xHeliOSLoop() {
   flags.critBlocking = true;
 
   if (flags.runtimeOverflow)
-    HeliOSResetRuntime();
+    RuntimeReset();
 
   /*
    * Disable interrupts while scheduler runs.
@@ -75,17 +75,17 @@ void xHeliOSLoop() {
   ENABLE();
   for (int i = 0; i < waiting; i++) {
     if (waitingTask[i]->notifyBytes > 0) {
-      HeliOSRunTask(waitingTask[i]);
+      TaskRun(waitingTask[i]);
       waitingTask[i]->notifyBytes = 0;
     } else if (waitingTask[i]->timerInterval > 0) {
       if (NOW() - waitingTask[i]->timerStartTime > waitingTask[i]->timerInterval) {
-        HeliOSRunTask(waitingTask[i]);
+        TaskRun(waitingTask[i]);
         waitingTask[i]->timerStartTime = NOW();
       }
     }
   }
   if (runningTask)
-    HeliOSRunTask(runningTask);
+    TaskRun(runningTask);
   flags.critBlocking = false;
 }
 
@@ -111,7 +111,7 @@ xHeliOSGetInfoResult *xHeliOSGetInfo() {
   return heliOSGetInfoResult;
 }
 
-bool HeliOSIsCriticalBlocking() {
+bool IsCriticalBlocking() {
   return flags.critBlocking;
 }
 
@@ -125,7 +125,7 @@ void HeliOSReset() {
   flags.runtimeOverflow = false;
 }
 
-inline Time_t HeliOSCurrTime() {
+inline Time_t CurrentTime() {
 #if defined(OTHER_ARCH_WINDOWS)
     /*
      * Get time from Windows. Need to implement and test.
@@ -143,7 +143,7 @@ inline Time_t HeliOSCurrTime() {
 #endif
 }
 
-inline void HeliOSRunTask(Task_t *task_) {
+inline void TaskRun(Task_t *task_) {
   Time_t taskStartTime = 0;
   Time_t prevTotalRuntime = 0;
 
@@ -156,7 +156,7 @@ inline void HeliOSRunTask(Task_t *task_) {
     flags.runtimeOverflow = true;
 }
 
-inline void HeliOSResetRuntime() {
+inline void RuntimeReset() {
   Task_t *task = NULL;
 
   TaskListRewind();
