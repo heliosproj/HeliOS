@@ -29,7 +29,7 @@ void TaskInit() {
 }
 
 int xTaskAdd(const char *name_, void (*callback_)(int)) {
-  if (!IsCriticalBlocking()) {
+  if (!IsCritBlocking()) {
     Task_t *task = (Task_t *)xMemAlloc(sizeof(Task_t));
     if (task) {
       task->id = taskNextId;
@@ -50,13 +50,13 @@ int xTaskAdd(const char *name_, void (*callback_)(int)) {
 }
 
 void xTaskRemove(int id_) {
-  if (!IsCriticalBlocking())
+  if (!IsCritBlocking())
     if (TaskListSeek(id_))
       TaskListRemove();
 }
 
 void xTaskClear() {
-  if (!IsCriticalBlocking())
+  if (!IsCritBlocking())
     TaskListClear();
 }
 

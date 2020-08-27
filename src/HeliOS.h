@@ -154,7 +154,7 @@ typedef struct {
 void xHeliOSSetup();
 void xHeliOSLoop();
 xHeliOSGetInfoResult *xHeliOSGetInfo();
-bool IsCriticalBlocking();
+bool IsCritBlocking();
 void HeliOSReset();
 Time_t CurrentTime();
 void TaskRun(Task_t *);

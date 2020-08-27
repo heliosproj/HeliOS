@@ -111,7 +111,7 @@ xHeliOSGetInfoResult *xHeliOSGetInfo() {
   return heliOSGetInfoResult;
 }
 
-bool IsCriticalBlocking() {
+bool IsCritBlocking() {
   return flags.critBlocking;
 }
 
