@@ -24,6 +24,7 @@
 
 volatile int heliOSSetupCalled = FALSE;
 volatile int heliOSCriticalBlocking = FALSE;
+volatile int heliOSTimerOverfow = FALSE;
 
 void xHeliOSSetup() {
   if (!heliOSSetupCalled) {
@@ -42,6 +43,9 @@ void xHeliOSLoop() {
   unsigned long leastRuntime = ULONG_MAX;
 
   heliOSCriticalBlocking = TRUE;
+
+  if (heliOSTimerOverfow)
+    HeliOSResetRuntime();
 
   /*
    * Disable interrupts while scheduler runs.
@@ -136,10 +140,25 @@ inline HeliOSTime HeliOSCurrTime() {
 inline void HeliOSRunTask(Task *task_) {
   HeliOSTime taskStartTime = 0;
 
+  task_->prevTotalRuntime = task_->totalRuntime;
   taskStartTime = NOW();
   (*task_->callback)(task_->id);
   task_->lastRuntime = NOW() - taskStartTime;
   task_->totalRuntime += task_->lastRuntime;
+  if (task_->totalRuntime < task_->prevTotalRuntime)
+    heliOSTimerOverfow = TRUE;
+}
+
+void HeliOSResetRuntime() {
+  TaskListRewind();
+  do {
+    task = TaskListGet();
+    if (task) {
+      task->totalRuntime = task->lastRuntime;
+      task->prevTotalRuntime = 0;
+    }
+  } while (TaskListMoveNext());
+  heliOSTimerOverfow = FALSE;
 }
 
 void memcpy_(void *dest_, void *src_, size_t n_) {

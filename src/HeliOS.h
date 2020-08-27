@@ -133,6 +133,7 @@ typedef struct {
   char				notifyValue[NOTIFYVALUESIZE];
   unsigned long			lastRuntime;
   unsigned long			totalRuntime;
+  unsigned long			prevTotalRuntime;
   unsigned long			timerInterval;
   unsigned long			timerStartTime;
   struct TaskListItem_s *	next;
@@ -159,6 +160,7 @@ int HeliOSIsCriticalBlocking();
 void HeliOSReset();
 HeliOSTime HeliOSCurrTime();
 void HeliOSRunTask(Task *);
+void HeliOSResetRuntime();
 void memcpy_(void *, void *, size_t);
 void memset_(void *, int, size_t);
 char *strncpy_(char *, const char *, size_t);
