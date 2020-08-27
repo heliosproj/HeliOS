@@ -156,7 +156,7 @@ inline void HeliOSRunTask(Task_t *task_) {
     flags.runtimeOverflow = true;
 }
 
-void HeliOSResetRuntime() {
+inline void HeliOSResetRuntime() {
   Task_t *task = NULL;
 
   TaskListRewind();
