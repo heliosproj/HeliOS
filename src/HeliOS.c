@@ -131,12 +131,9 @@ inline Time_t CurrentTime() {
      */
     return 0;
 #elif defined(OTHER_ARCH_LINUX)
-    /*
-     * Get time from Linux. Need to implement and test.
-     */
-    struct timeval tv;
-    gettimeofday(&tv, null);
-    return tv.tv_usec;
+    struct timespec t;
+    clock_gettime(CLOCK_MONOTONIC_RAW, &t);
+    return t.tv_nsec / 1000;
 #else
     return 0;
 #endif

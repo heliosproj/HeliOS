@@ -20,6 +20,12 @@
 #include <limits.h>
 #include <stdbool.h>
 
+/*
+ * Uncomment to compile on Linux or Windows.
+ * #define OTHER_ARCH_LINUX
+ * #define OTHER_ARCH_WINDOWS
+ */
+
 #if defined(ARDUINO_ARCH_AVR)
   #include <Arduino.h>
   #define NOW() micros()
@@ -41,15 +47,16 @@
   #define ENABLE() interrupts()
   typedef unsigned long Time_t;
   #define TIME_T_MAX ULONG_MAX
-#elif defined(OTHER_ARCH_WINDOWS)
-  #include <Windows.h>
+#elif defined(OTHER_ARCH_LINUX)
+  #include <time.h>
+  #include <stdint.h>
   #define NOW() CurrentTime()
   #define DISABLE()
   #define ENABLE()
   typedef uint64_t Time_t;
   #define TIME_T_MAX UINT64_MAX
-#elif defined(OTHER_ARCH_LINUX)
-  #include <time.h>
+#elif defined(OTHER_ARCH_WINDOWS)
+  #include <Windows.h>
   #define NOW() CurrentTime()
   #define DISABLE()
   #define ENABLE()
