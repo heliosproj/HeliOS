@@ -20,6 +20,15 @@ HeliOS is continuously being improved. Development is currently occurring in wee
 Because HeliOS is compliant with the Arduino 1.5 (rev. 2.2) Library Specification, getting up and running is quick and easy. HeliOS can be installed directly from the Arduino Library Manager or downloaded and installed manually. Both options are described [here](https://www.arduino.cc/en/Guide/Libraries#toc3). You can also refer to the auto-generated instructions from ArduBadge [here](https://www.ardu-badge.com/HeliOS). Once up and running, check out one of the example sketches or refer to the HeliOS Programmer's Guide in the Documentation section.
 ## Other Microcontrollers
 While built-in support currently exists for the Arduino AVR, SAM and SAMD architectures, HeliOS is easily ported to a variety of other microcontrollers. Because the project is currently focused on supporting the Arduino community, adding built-in support for additional microcontrollers and tool-chains is not currently planned.
+## Linux/Windows User-land
+Built-in support exists for building and running HeliOS in user-land on Linux and Windows. When running in user-land, HeliOS acts like a threading library for applications. To target Linux or Windows, simply un-comment the appropriate C preprocessor directive statement in the header file HeliOS.h
+```C
+/*
+ * Un-comment to compile on Linux or Windows.
+ * #define OTHER_ARCH_LINUX
+ * #define OTHER_ARCH_WINDOWS
+ */
+```
 # Documentation
 The HeliOS Programmer's Guide is a work in progress. What is available today can be found [here](/extras/HeliOS_Programmers_Guide.md). If you are interested in contributing to the HeliOS Programmer's Guide, please see the Contributing section for details.
 # Example
@@ -164,6 +173,7 @@ While all contributions are welcome, contributions are needed most in the follow
 To contribute, simply create a pull request with your changes. Please fork from the **develop** branch as **master** is kept even with the current release. Pull requests are typically responded to within 48 hours.
 # Thank you
 No free and open source software project has been successful without the contributions of many. This space is reserved for recognizing people who have made meaningful contributions to HeliOS. All contributors are listed in alphabetical order.
+* [Julien Peyregne](https://github.com/JuPrgn)
 * [Konidem](https://github.com/Konidem)
 * [Stig Bjorlykke](https://github.com/stigbjorlykke)
 
