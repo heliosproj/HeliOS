@@ -59,7 +59,7 @@
   #error "This architecture is currently unsupported by HeliOS."
 #endif
 
-#if defined(null)
+#if !defined(null)
   #define null 0x0
 #endif
 
