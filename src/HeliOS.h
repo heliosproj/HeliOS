@@ -57,6 +57,7 @@
   #define TIME_T_MAX UINT64_MAX
 #elif defined(OTHER_ARCH_WINDOWS)
   #include <Windows.h>
+  #include <stdint.h>
   #define NOW() CurrentTime()
   #define DISABLE()
   #define ENABLE()
