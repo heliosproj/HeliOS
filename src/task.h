@@ -20,22 +20,25 @@
   extern "C" {
 #endif
 
+#include <stdbool.h>
+#include <stdint.h>
+
 void TaskInit();
-int xTaskAdd(const char *, void (*)(int));
-void xTaskRemove(int);
+int16_t xTaskAdd(const char *, void (*)(int16_t));
+void xTaskRemove(int16_t);
 void xTaskClear();
-void xTaskStart(int);
-void xTaskStop(int);
-void xTaskWait(int);
-int xTaskGetId(const char *);
-void xTaskNotify(int, int, char *);
-void xTaskNotifyClear(int);
-xTaskGetNotifResult *xTaskGetNotif(int);
-xTaskGetInfoResult *xTaskGetInfo(int);
-bool TaskListSeek(int);
-xTaskGetListResult *xTaskGetList(int *);
-void xTaskSetTimer(int, Time_t);
-void xTaskResetTimer(int);
+void xTaskStart(int16_t);
+void xTaskStop(int16_t);
+void xTaskWait(int16_t);
+int16_t xTaskGetId(const char *);
+void xTaskNotify(int16_t, int16_t, char *);
+void xTaskNotifyClear(int16_t);
+xTaskGetNotifResult *xTaskGetNotif(int16_t);
+xTaskGetInfoResult *xTaskGetInfo(int16_t);
+bool TaskListSeek(int16_t);
+xTaskGetListResult *xTaskGetList(int16_t *);
+void xTaskSetTimer(int16_t, Time_t);
+void xTaskResetTimer(int16_t);
 
 #ifdef __cplusplus
 } // extern "C" {

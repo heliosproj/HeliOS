@@ -20,6 +20,9 @@
   extern "C" {
 #endif
 
+#include <stdbool.h>
+#include <stdint.h>
+
 void TaskListInit();
 void TaskListClear();
 void TaskListAdd(Task_t *);

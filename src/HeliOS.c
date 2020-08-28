@@ -37,7 +37,7 @@ void xHeliOSSetup() {
 }
 
 void xHeliOSLoop() {
-  int waiting = 0;
+  int16_t waiting = 0;
   Task_t *waitingTask[WAITINGTASK_SIZE];
   Task_t *runningTask = null;
   Task_t *task = null;
@@ -72,7 +72,7 @@ void xHeliOSLoop() {
    * Re-enable interrupts after sceduler runs.
    */
   ENABLE();
-  for (int i = 0; i < waiting; i++) {
+  for (int16_t i = 0; i < waiting; i++) {
     if (waitingTask[i]->notifyBytes > 0) {
       TaskRun(waitingTask[i]);
       waitingTask[i]->notifyBytes = 0;
@@ -89,7 +89,7 @@ void xHeliOSLoop() {
 }
 
 xHeliOSGetInfoResult *xHeliOSGetInfo() {
-  int tasks = 0;
+  int16_t tasks = 0;
   Task_t *task = null;
   xHeliOSGetInfoResult *heliOSGetInfoResult = null;
 
@@ -168,14 +168,14 @@ void memcpy_(void *dest_, void *src_, size_t n_) {
   char *src = (char *)src_;
   char *dest = (char *)dest_;
 
-  for (unsigned int i = 0; i < n_; i++)
+  for (uint16_t i = 0; i < n_; i++)
     dest[i] = src[i];
 }
 
-void memset_(void *dest_, int val_, size_t n_) {
+void memset_(void *dest_, int16_t val_, size_t n_) {
   char *dest = (char *)dest_;
 
-  for (unsigned int i = 0; i < n_; i++)
+  for (uint16_t i = 0; i < n_; i++)
     dest[i] = val_;
 }
 
@@ -192,7 +192,7 @@ char *strncpy_(char *dest_, const char *src_, size_t n_) {
   return dest_;
 }
 
-int strncmp_(const char *str1_, const char *str2_, size_t n_) {
+int16_t strncmp_(const char *str1_, const char *str2_, size_t n_) {
   const char *str2 = str2_;
   const char *str1 = str1_;
 
