@@ -19,6 +19,7 @@
 #include <stdlib.h>
 #include <limits.h>
 #include <stdbool.h>
+#include <stdint.h>
 
 /*
  * Uncomment to compile on Linux or Windows.
@@ -31,22 +32,22 @@
   #define NOW() micros()
   #define DISABLE() noInterrupts()
   #define ENABLE() interrupts()
-  typedef unsigned long Time_t;
-  #define TIME_T_MAX ULONG_MAX
+  typedef uint32_t Time_t;
+  #define TIME_T_MAX UINT32_MAX
 #elif defined(ARDUINO_ARCH_SAM)
   #include <Arduino.h>
   #define NOW() micros()
   #define DISABLE() noInterrupts()
   #define ENABLE() interrupts()
-  typedef unsigned long Time_t;
-  #define TIME_T_MAX ULONG_MAX
+  typedef uint32_t Time_t;
+  #define TIME_T_MAX UINT32_MAX
 #elif defined(ARDUINO_ARCH_SAMD)
   #include <Arduino.h>
   #define NOW() micros()
   #define DISABLE() noInterrupts()
   #define ENABLE() interrupts()
-  typedef unsigned long Time_t;
-  #define TIME_T_MAX ULONG_MAX
+  typedef uint32_t Time_t;
+  #define TIME_T_MAX UINT32_MAX
 #elif defined(OTHER_ARCH_LINUX)
   #include <time.h>
   #include <stdint.h>
@@ -89,68 +90,68 @@ typedef enum {
 } TaskState_t;
 
 typedef struct {
-  int		id;
-  char		name[TASKNAME_SIZE];
-  TaskState_t	state;
-  int		notifyBytes;
-  char		notifyValue[TNOTIFYVALUE_SIZE];
-  Time_t	lastRuntime;
-  Time_t	totalRuntime;
-  Time_t	timerInterval;
-  Time_t	timerStartTime;
+  int16_t id;
+  char name[TASKNAME_SIZE];
+  TaskState_t state;
+  int16_t notifyBytes;
+  char notifyValue[TNOTIFYVALUE_SIZE];
+  Time_t lastRuntime;
+  Time_t totalRuntime;
+  Time_t timerInterval;
+  Time_t timerStartTime;
 } xTaskGetInfoResult;
 
 typedef struct {
-  int	notifyBytes;
-  char	notifyValue[TNOTIFYVALUE_SIZE];
+  int16_t notifyBytes;
+  char notifyValue[TNOTIFYVALUE_SIZE];
 } xTaskGetNotifResult;
 
 typedef struct {
-  int	tasks;
-  char	productName[PRODUCTNAME_SIZE];
-  int	majorVersion;
-  int	minorVersion;
-  int	patchVersion;
+  int16_t tasks;
+  char productName[PRODUCTNAME_SIZE];
+  int16_t majorVersion;
+  int16_t minorVersion;
+  int16_t patchVersion;
 } xHeliOSGetInfoResult;
 
 typedef struct {
-  int		id;
-  char		name[TASKNAME_SIZE];
-  TaskState_t	state;
-  Time_t	lastRuntime;
-  Time_t	totalRuntime;
+  int16_t id;
+  char name[TASKNAME_SIZE];
+  TaskState_t state;
+  Time_t lastRuntime;
+  Time_t totalRuntime;
 } xTaskGetListResult;
 
 struct TaskListItem_s;
 
 typedef struct {
-  int				id;
-  char				name[TASKNAME_SIZE];
-  TaskState_t			state;
-  void (*callback)(int);
-  int				notifyBytes;
-  char				notifyValue[TNOTIFYVALUE_SIZE];
-  Time_t			lastRuntime;
-  Time_t			totalRuntime;
-  Time_t			timerInterval;
-  Time_t			timerStartTime;
-  struct TaskListItem_s *	next;
+  int16_t id;
+  char name[TASKNAME_SIZE];
+  TaskState_t state;
+  void (*callback)(int16_t);
+  int16_t notifyBytes;
+  char notifyValue[TNOTIFYVALUE_SIZE];
+  Time_t lastRuntime;
+  Time_t totalRuntime;
+  Time_t timerInterval;
+  Time_t timerStartTime;
+  struct TaskListItem_s * next;
 } Task_t;
 
 typedef struct TaskListItem_s {
-  Task_t *			task;
-  struct TaskListItem_s *	next;
+  Task_t * task;
+  struct TaskListItem_s * next;
 } TaskListItem_t;
 
 typedef struct {
-  size_t	size;
-  void *	ptr;
+  size_t size;
+  void * ptr;
 } MemAllocRecord_t;
 
 typedef struct {
-  bool	setupCalled;
-  bool	critBlocking;
-  bool	runtimeOverflow;
+  bool setupCalled;
+  bool critBlocking;
+  bool runtimeOverflow;
 } Flags_t;
 
 #ifdef __cplusplus
@@ -166,9 +167,9 @@ Time_t CurrentTime();
 void TaskRun(Task_t *);
 void RuntimeReset();
 void memcpy_(void *, void *, size_t);
-void memset_(void *, int, size_t);
+void memset_(void *, int16_t, size_t);
 char *strncpy_(char *, const char *, size_t);
-int strncmp_(const char *, const char *, size_t n);
+int16_t strncmp_(const char *, const char *, size_t n);
 
 #ifdef __cplusplus
 } // extern "C" {
