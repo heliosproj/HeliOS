@@ -74,7 +74,7 @@
 #define PATCH_VERSION_NO 4
 
 typedef enum {
-  TaskStateErrored,
+  TaskStateInvalid,
   TaskStateStopped,
   TaskStateRunning,
   TaskStateWaiting

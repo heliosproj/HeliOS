@@ -245,7 +245,7 @@ HeliOS implements cricitcal blocking which prevents some functions from being ca
 ### TaskState_t
 | Member | Type | Description |
 | --- | --- | --- |
-| TaskStateErrored | N/A | The task is in an error state and cannot be run - tasks in this state cannot be started or placed in a wait state |
+| TaskStateInvalid | N/A | The task is in an error state and cannot be run - tasks in this state cannot be started or placed in a wait state |
 | TaskStateStopped | N/A | The task is stopped and will not be executed until started or placed in a wait state |
 | TaskStateRunning | N/A | The task is running and will be executed |
 | TaskStateWaiting | N/A | The task is waiting either for a notification or, if set, a timer to elapse |

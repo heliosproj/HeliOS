@@ -38,7 +38,7 @@ int xTaskAdd(const char *name_, void (*callback_)(int)) {
         task->state = TaskStateStopped;
       } else {
         strncpy_(task->name, "__NOTASK__", TASKNAME_SIZE);
-        task->state = TaskStateErrored;
+        task->state = TaskStateInvalid;
       }
       task->callback = callback_;
       TaskListAdd(task);
@@ -65,7 +65,7 @@ void xTaskStart(int id_) {
   if (TaskListSeek(id_)) {
     task = TaskListGet();
     if (task)
-      if (task->state != TaskStateErrored)
+      if (task->state != TaskStateInvalid)
         task->state = TaskStateRunning;
   }
 }
@@ -76,7 +76,7 @@ void xTaskStop(int id_) {
   if (TaskListSeek(id_)) {
     task = TaskListGet();
     if (task)
-      if (task->state != TaskStateErrored)
+      if (task->state != TaskStateInvalid)
         task->state = TaskStateStopped;
   }
 }
@@ -87,7 +87,7 @@ void xTaskWait(int id_) {
   if (TaskListSeek(id_)) {
     task = TaskListGet();
     if (task)
-      if (task->state != TaskStateErrored)
+      if (task->state != TaskStateInvalid)
         task->state = TaskStateWaiting;
   }
 }
@@ -112,7 +112,7 @@ void xTaskNotify(int id_, int notifyBytes_, char *notifyValue_) {
     if (TaskListSeek(id_)) {
       task = TaskListGet();
       if (task) {
-        if (task->state != TaskStateErrored) {
+        if (task->state != TaskStateInvalid) {
           task->notifyBytes = notifyBytes_;
           memcpy_(task->notifyValue, notifyValue_, TNOTIFYVALUE_SIZE);
         }
@@ -127,7 +127,7 @@ void xTaskNotifyClear(int id_) {
   if (TaskListSeek(id_)) {
     task = TaskListGet();
     if (task) {
-      if (task->state != TaskStateErrored) {
+      if (task->state != TaskStateInvalid) {
         task->notifyBytes = 0;
         memset_(task->notifyValue, 0, TNOTIFYVALUE_SIZE);
       }
@@ -229,7 +229,7 @@ void xTaskSetTimer(int id_, Time_t timerInterval_) {
   if (TaskListSeek(id_)) {
     task = TaskListGet();
     if (task) {
-      if (task->state != TaskStateErrored) {
+      if (task->state != TaskStateInvalid) {
         task->timerInterval = timerInterval_;
         task->timerStartTime = NOW();
       }
@@ -243,7 +243,7 @@ void xTaskResetTimer(int id_) {
   if (TaskListSeek(id_)) {
     task = TaskListGet();
     if (task)
-      if (task->state != TaskStateErrored)
+      if (task->state != TaskStateInvalid)
         task->timerStartTime = NOW();
   }
 }
