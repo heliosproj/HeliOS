@@ -130,7 +130,7 @@ inline Time_t CurrentTime() {
     LARGE_INTEGER pc;
     QueryPerformanceFrequency(&pf);
     QueryPerformanceCounter(&pc);
-    return pc * double(pf.QuadPart) / 1000000.0
+    return pc.QuadPart;
 #elif defined(OTHER_ARCH_LINUX)
     struct timespec t;
     clock_gettime(CLOCK_MONOTONIC_RAW, &t);
