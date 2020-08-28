@@ -20,8 +20,8 @@ HeliOS is continuously being improved. Development is currently occurring in wee
 Because HeliOS is compliant with the Arduino 1.5 (rev. 2.2) Library Specification, getting up and running is quick and easy. HeliOS can be installed directly from the Arduino Library Manager or downloaded and installed manually. Both options are described [here](https://www.arduino.cc/en/Guide/Libraries#toc3). You can also refer to the auto-generated instructions from ArduBadge [here](https://www.ardu-badge.com/HeliOS). Once up and running, check out one of the example sketches or refer to the HeliOS Programmer's Guide in the Documentation section.
 ## Other Microcontrollers
 While built-in support currently exists for the Arduino AVR, SAM and SAMD architectures, HeliOS is easily ported to a variety of other microcontrollers. Because the project is currently focused on supporting the Arduino community, adding built-in support for additional microcontrollers and tool-chains is not currently planned.
-## Linux/Windows User-land
-Built-in support exists for building and running HeliOS in user-land on Linux and Windows. When running in user-land, HeliOS acts like a threading library for applications. To target Linux or Windows, simply un-comment the appropriate C preprocessor directive statement in the header file HeliOS.h and build using GCC or Microsoft Visual C++. A Makefile and main() template will be added in a future release.
+## User-land
+Built-in support exists for building and running HeliOS in user-land on Linux and Microsoft Windows. When running in user-land, HeliOS acts like a threading library for applications. To target Linux or Microsoft Windows, simply un-comment the appropriate C preprocessor directive in the header file HeliOS.h and build using GCC or Microsoft Visual C++. A Makefile and main() file template is planned for a future release.
 ```C
 /*
  * Un-comment to compile on Linux or Windows.
@@ -180,5 +180,7 @@ No free and open source software project has been successful without the contrib
 Also, special thanks to [Gil Maimon](https://github.com/gilmaimon) for the super-cool website [ArduBadge](https://www.ardu-badge.com/).
 # License
 HeliOS is copyrighted open source software licensed under the Free Software Foundation's GNU General Public License Version 3. The license can be found [here](/LICENSE.md).
+
+Microsoft Windows and Microsoft Visual C++ are registered trademarks of Microsoft Corporation in the United States and/or other countries.
 # Important
 HeliOS is **not** certified for use in safety-critical applications. The HeliOS source code, whether in full or in part, must **never** be used in applications where a risk to life exists.

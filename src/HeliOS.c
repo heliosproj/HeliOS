@@ -126,15 +126,20 @@ void HeliOSReset() {
 
 inline Time_t CurrentTime() {
 #if defined(OTHER_ARCH_WINDOWS)
-    /*
-     * Get time from Windows. Need to implement and test.
-     */
-    return 0;
+    LARGE_INTEGER pf;
+    LARGE_INTEGER pc;
+    QueryPerformanceFrequency(&pf);
+    QueryPerformanceCounter(&pc);
+    return pc * double(pf.QuadPart) / 1000000.0
 #elif defined(OTHER_ARCH_LINUX)
     struct timespec t;
     clock_gettime(CLOCK_MONOTONIC_RAW, &t);
     return t.tv_sec * 1000000 + t.tv_nsec / 1000;
 #else
+    /*
+     * Since CurrentTime() is not defined for NOW() on
+     * the Arduino architectures, just return zero.
+     */
     return 0;
 #endif
 }
