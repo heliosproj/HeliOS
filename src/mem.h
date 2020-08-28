@@ -20,14 +20,11 @@
   extern "C" {
 #endif
 
-#include <stdbool.h>
-#include <stdint.h>
-
 void MemInit();
 void *xMemAlloc(size_t);
 void xMemFree(void *);
-int16_t xMemGetUsed();
-int16_t xMemGetSize(void *);
+size_t xMemGetUsed();
+size_t xMemGetSize(void *);
 void MemClear();
 
 #ifdef __cplusplus
