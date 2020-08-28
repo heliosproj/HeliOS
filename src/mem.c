@@ -31,7 +31,7 @@ void *xMemAlloc(size_t size_) {
   void *ptr = null;
 
   if (size_ > 0) {
-    for (int16_t i = 0; i < MEMALLOCTABLE_SIZE; i++) {
+    for (size_t i = 0; i < MEMALLOCTABLE_SIZE; i++) {
       if (!memAllocTable[i].ptr) {
         ptr = calloc(1, size_);
         if (ptr) {
@@ -47,7 +47,7 @@ void *xMemAlloc(size_t size_) {
 
 void xMemFree(void *ptr_) {
   if (ptr_) {
-    for (int16_t i = 0; i < MEMALLOCTABLE_SIZE; i++) {
+    for (size_t i = 0; i < MEMALLOCTABLE_SIZE; i++) {
       if (memAllocTable[i].ptr == ptr_) {
         free(memAllocTable[i].ptr);
         memAllocTable[i].size = 0;
@@ -57,18 +57,18 @@ void xMemFree(void *ptr_) {
   }
 }
 
-int16_t xMemGetUsed() {
-  int16_t used = 0;
+size_t xMemGetUsed() {
+  size_t used = 0;
 
-  for (int16_t i = 0; i < MEMALLOCTABLE_SIZE; i++)
+  for (size_t i = 0; i < MEMALLOCTABLE_SIZE; i++)
     if (memAllocTable[i].ptr)
-      used += (int16_t)memAllocTable[i].size;
+      used += memAllocTable[i].size;
   return used;
 }
 
-int16_t xMemGetSize(void *ptr_) {
+size_t xMemGetSize(void *ptr_) {
   if (ptr_) {
-    for (int16_t i = 0; i < MEMALLOCTABLE_SIZE; i++)
+    for (size_t i = 0; i < MEMALLOCTABLE_SIZE; i++)
       if (memAllocTable[i].ptr == ptr_)
         return memAllocTable[i].size;
   }
@@ -76,7 +76,7 @@ int16_t xMemGetSize(void *ptr_) {
 }
 
 void MemClear() {
-  for (int16_t i = 0; i < MEMALLOCTABLE_SIZE; i++) {
+  for (size_t i = 0; i < MEMALLOCTABLE_SIZE; i++) {
     if (memAllocTable[i].ptr) {
       free(memAllocTable[i].ptr);
       memAllocTable[i].size = 0;

@@ -60,8 +60,8 @@
   #define NOW() CurrentTime()
   #define DISABLE()
   #define ENABLE()
-  typedef uint64_t Time_t;
-  #define TIME_T_MAX UINT64_MAX
+  typedef int64_t Time_t;
+  #define TIME_T_MAX INT64_MAX
 #else
   #error "This architecture is currently unsupported by HeliOS."
 #endif

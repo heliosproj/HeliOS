@@ -130,7 +130,7 @@ inline Time_t CurrentTime() {
     LARGE_INTEGER pc;
     QueryPerformanceFrequency(&pf);
     QueryPerformanceCounter(&pc);
-    return pc * double(pf.QuadPart) / 1000000.0
+    return pc.QuadPart;
 #elif defined(OTHER_ARCH_LINUX)
     struct timespec t;
     clock_gettime(CLOCK_MONOTONIC_RAW, &t);
@@ -173,15 +173,15 @@ void memcpy_(void *dest_, void *src_, size_t n_) {
   char *src = (char *)src_;
   char *dest = (char *)dest_;
 
-  for (uint16_t i = 0; i < n_; i++)
+  for (size_t i = 0; i < n_; i++)
     dest[i] = src[i];
 }
 
 void memset_(void *dest_, int16_t val_, size_t n_) {
   char *dest = (char *)dest_;
 
-  for (uint16_t i = 0; i < n_; i++)
-    dest[i] = val_;
+  for (size_t i = 0; i < n_; i++)
+    dest[i] = (char)val_;
 }
 
 char *strncpy_(char *dest_, const char *src_, size_t n_) {
