@@ -133,7 +133,7 @@ inline Time_t CurrentTime() {
 #elif defined(OTHER_ARCH_LINUX)
     struct timespec t;
     clock_gettime(CLOCK_MONOTONIC_RAW, &t);
-    return t.tv_nsec / 1000;
+    return t.tv_sec * 1000000 + t.tv_nsec / 1000;
 #else
     return 0;
 #endif
