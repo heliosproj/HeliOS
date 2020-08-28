@@ -242,7 +242,7 @@ void loop() {
 HeliOS implements cricitcal blocking which prevents some functions from being called that may alter the state of HeliOS during critical operations. Critical blocking is in effect while the scheduler is running and prevents functions like xTaskAdd() and xTaskRemove() from altering the state of the HeliOS. Thus, you cannot, for example, remove a task using xTaskRemove() while inside a running task. Functions that do not alter the state of HeliOS may be called during critical blocking. For example, function calls like xTaskGetInfo() may be called during critical blocking as they do not update the state of HeliOS.
 # Data Types
 ## Enumerations
-### xTaskState
+### TaskState_t
 | Member | Type | Description |
 | --- | --- | --- |
 | TaskStateErrored | N/A | The task is in an error state and cannot be run - tasks in this state cannot be started or placed in a wait state |

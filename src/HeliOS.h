@@ -78,12 +78,12 @@ typedef enum {
   TaskStateStopped,
   TaskStateRunning,
   TaskStateWaiting
-} xTaskState;
+} TaskState_t;
 
 typedef struct {
   int		id;
   char		name[TASKNAME_SIZE];
-  xTaskState	state;
+  TaskState_t	state;
   int		notifyBytes;
   char		notifyValue[TNOTIFYVALUE_SIZE];
   Time_t	lastRuntime;
@@ -108,7 +108,7 @@ typedef struct {
 typedef struct {
   int		id;
   char		name[TASKNAME_SIZE];
-  xTaskState	state;
+  TaskState_t	state;
   Time_t	lastRuntime;
   Time_t	totalRuntime;
 } xTaskGetListResult;
@@ -118,7 +118,7 @@ struct TaskListItem_s;
 typedef struct {
   int				id;
   char				name[TASKNAME_SIZE];
-  xTaskState			state;
+  TaskState_t			state;
   void (*callback)(int);
   int				notifyBytes;
   char				notifyValue[TNOTIFYVALUE_SIZE];
