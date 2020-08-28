@@ -173,14 +173,14 @@ void memcpy_(void *dest_, void *src_, size_t n_) {
   char *src = (char *)src_;
   char *dest = (char *)dest_;
 
-  for (uint16_t i = 0; i < n_; i++)
+  for (size_t i = 0; i < n_; i++)
     dest[i] = src[i];
 }
 
 void memset_(void *dest_, int16_t val_, size_t n_) {
   char *dest = (char *)dest_;
 
-  for (uint16_t i = 0; i < n_; i++)
+  for (size_t i = 0; i < n_; i++)
     dest[i] = val_;
 }
 
