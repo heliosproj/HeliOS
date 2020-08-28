@@ -181,7 +181,7 @@ void memset_(void *dest_, int16_t val_, size_t n_) {
   char *dest = (char *)dest_;
 
   for (size_t i = 0; i < n_; i++)
-    dest[i] = val_;
+    dest[i] = (char)val_;
 }
 
 char *strncpy_(char *dest_, const char *src_, size_t n_) {
