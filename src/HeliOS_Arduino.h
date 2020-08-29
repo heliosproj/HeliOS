@@ -20,4 +20,3 @@
 #include "list.h"
 #include "mem.h"
 #include "task.h"
-#include "timer.h"

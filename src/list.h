@@ -17,15 +17,18 @@
  */
 
 #ifdef __cplusplus
-extern "C" {
+  extern "C" {
 #endif
+
+#include <stdbool.h>
+#include <stdint.h>
 
 void TaskListInit();
 void TaskListClear();
-void TaskListAdd(Task *);
+void TaskListAdd(Task_t *);
 void TaskListRemove();
-Task *TaskListGet();
-int TaskListMoveNext();
+Task_t *TaskListGet();
+bool TaskListMoveNext();
 void TaskListRewind();
 
 #ifdef __cplusplus

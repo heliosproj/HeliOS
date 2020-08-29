@@ -242,10 +242,10 @@ void loop() {
 HeliOS implements cricitcal blocking which prevents some functions from being called that may alter the state of HeliOS during critical operations. Critical blocking is in effect while the scheduler is running and prevents functions like xTaskAdd() and xTaskRemove() from altering the state of the HeliOS. Thus, you cannot, for example, remove a task using xTaskRemove() while inside a running task. Functions that do not alter the state of HeliOS may be called during critical blocking. For example, function calls like xTaskGetInfo() may be called during critical blocking as they do not update the state of HeliOS.
 # Data Types
 ## Enumerations
-### xTaskState
+### TaskState_t
 | Member | Type | Description |
 | --- | --- | --- |
-| TaskStateErrored | N/A | The task is in an error state and cannot be run - tasks in this state cannot be started or placed in a wait state |
+| TaskStateInvalid | N/A | The task is in an error state and cannot be run - tasks in this state cannot be started or placed in a wait state |
 | TaskStateStopped | N/A | The task is stopped and will not be executed until started or placed in a wait state |
 | TaskStateRunning | N/A | The task is running and will be executed |
 | TaskStateWaiting | N/A | The task is waiting either for a notification or, if set, a timer to elapse |
@@ -254,10 +254,10 @@ HeliOS implements cricitcal blocking which prevents some functions from being ca
 | Member | Type | Description |
 | --- | --- | --- |
 | id | int | Task identification number |
-| name | char[TASKNAMESIZE] | Friendly name of the task |
+| name | char[TASKNAME_SIZE] | Friendly name of the task |
 | state | enum TaskState | State of the task - see TaskState |
 | notifyBytes| int | Number of notification bytes in notification value |
-| notifyValue| char[NOTIFYVALUESIZE] | Notification value |
+| notifyValue| char[TNOTIFYVALUE_SIZE] | Notification value |
 | lastRuntime| unsigned long | Last runtime duration in microseconds |
 | totalRuntime | unsigned long | Total runtime duraiton in microseconds |
 | timerInterval | unsigned long | The timer interval in microseconds |
@@ -266,14 +266,14 @@ HeliOS implements cricitcal blocking which prevents some functions from being ca
 | Member | Type | Description |
 | --- | --- | --- |
 | tasks | int | The current number of tasks regardless of task state |
-| productName | char[PRODUCTNAMESIZE] | The name of the operating system |
+| productName | char[PRODUCTNAME_SIZE] | The name of the operating system |
 | majorVersion | int | The major version number of the product |
 | minorVersion | int | The minor version number of the product |
 #### xTaskGetListResult
 | Member | Type | Description |
 | --- | --- | --- |
 | id | int | Task identification number |
-| name | char[TASKNAMESIZE] | Friendly name of the task |
+| name | char[TASKNAME_SIZE] | Friendly name of the task |
 | state | enum TaskState | State of the task - see TaskState |
 | lastRuntime| unsigned long | Last runtime duration in microseconds |
 | totalRuntime | unsigned long | Total runtime duraiton in microseconds |

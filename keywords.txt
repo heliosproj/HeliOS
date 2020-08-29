@@ -6,7 +6,7 @@
 # Datatypes (KEYWORD1)
 #######################################
 
-xTaskState	KEYWORD1
+xTaskId	KEYWORD1
 
 #######################################
 # Functions (KEYWORD2)

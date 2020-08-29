@@ -32,34 +32,42 @@
 
 /*
  * The task definition for taskShort() which
- * will perform 100,000 arbitrary floating point
+ * will perform 1,000 arbitrary floating point
  * operations.
  */
-void taskShort(int id_) {
-  float a = 0.0f;
+void taskShort(xTaskId id_) {
+  volatile float a = 0.0f, b = 0.0f;
 
-  for (int i = 0; i < 100000; i++)
-    a *= 3.14f;
+  for (int i = 0; i < 1000; i++)
+    a += i;
+
+  b = a;
+
+  Serial.print("S");
 }
 
 /*
  * The task definition for taskLong() which
- * will perform 1,000,000 arbitrary floating point
+ * will perform 10,000 arbitrary floating point
  * operations.
  */
-void taskLong(int id_) {
-  float a = 0.0f;
+void taskLong(xTaskId id_) {
+  volatile float a = 0.0f, b = 0.0f;
 
-  for (int i = 0; i < 1000000; i++)
-    a *= 3.14f;
+  for (int i = 0; i < 10000; i++)
+    a += i;
+
+  b = a;
+
+  Serial.println("L");
 }
 
 void setup() {
   /*
-   * Declare and initialize an int to hold the
-   * task id.
+   * Declare an xTaskId to hold the the task id
+   * and initialize.
    */
-  int id = 0;
+  xTaskId id = 0;
 
   /*
    * Call xHeliOSSetup() to initialize HeliOS and
@@ -67,6 +75,12 @@ void setup() {
    * called before any other HeliOS function call.
    */
   xHeliOSSetup();
+
+  /*
+   * Set the serial data rate and begin serial
+   * communication.
+   */
+  Serial.begin(9600);
 
   /*
    * Add the task taskShort() to HeliOS by passing

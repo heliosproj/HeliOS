@@ -20,29 +20,33 @@
 #include "list.h"
 #include "mem.h"
 #include "task.h"
-#include "timer.h"
 
-volatile int heliOSSetupCalled = FALSE;
-volatile int heliOSCriticalBlocking = FALSE;
+volatile Flags_t flags = {
+  .setupCalled		= false,
+  .critBlocking		= false,
+  .runtimeOverflow	= false
+};
 
 void xHeliOSSetup() {
-  if (!heliOSSetupCalled) {
+  if (!flags.setupCalled) {
     MemInit();
     TaskListInit();
     TaskInit();
-    heliOSSetupCalled = TRUE;
+    flags.setupCalled = true;
   }
 }
 
 void xHeliOSLoop() {
-  int waiting = 0;
-  Task *waitingTask[WAITINGTASKSIZE];
-  Task *runningTask = NULL;
-  Task *task = NULL;
-  unsigned long taskStartTime = 0;
-  unsigned long leastRuntime = ULONG_MAX;
+  int16_t waiting = 0;
+  Task_t *waitingTask[WAITINGTASK_SIZE];
+  Task_t *runningTask = null;
+  Task_t *task = null;
+  Time_t leastRuntime = TIME_T_MAX;
 
-  heliOSCriticalBlocking = TRUE;
+  flags.critBlocking = true;
+
+  if (flags.runtimeOverflow)
+    RuntimeReset();
 
   /*
    * Disable interrupts while scheduler runs.
@@ -56,7 +60,7 @@ void xHeliOSLoop() {
         leastRuntime = task->totalRuntime;
         runningTask = task;
       } else if (task->state == TaskStateWaiting) {
-        if (waiting < WAITINGTASKSIZE) {
+        if (waiting < WAITINGTASK_SIZE) {
           waitingTask[waiting] = task;
           waiting++;
         }
@@ -68,36 +72,26 @@ void xHeliOSLoop() {
    * Re-enable interrupts after sceduler runs.
    */
   ENABLE();
-  for (int i = 0; i < waiting; i++) {
+  for (int16_t i = 0; i < waiting; i++) {
     if (waitingTask[i]->notifyBytes > 0) {
-      taskStartTime = NOW();
-      (*waitingTask[i]->callback)(waitingTask[i]->id);
-      waitingTask[i]->lastRuntime = NOW() - taskStartTime;
-      waitingTask[i]->totalRuntime += waitingTask[i]->lastRuntime;
+      TaskRun(waitingTask[i]);
       waitingTask[i]->notifyBytes = 0;
     } else if (waitingTask[i]->timerInterval > 0) {
       if (NOW() - waitingTask[i]->timerStartTime > waitingTask[i]->timerInterval) {
-        taskStartTime = NOW();
-        (*waitingTask[i]->callback)(waitingTask[i]->id);
-        waitingTask[i]->lastRuntime = NOW() - taskStartTime;
-        waitingTask[i]->totalRuntime += waitingTask[i]->lastRuntime;
+        TaskRun(waitingTask[i]);
         waitingTask[i]->timerStartTime = NOW();
       }
     }
   }
-  if (runningTask) {
-    taskStartTime = NOW();
-    (*runningTask->callback)(runningTask->id);
-    runningTask->lastRuntime = NOW() - taskStartTime;
-    runningTask->totalRuntime += runningTask->lastRuntime;
-  }
-  heliOSCriticalBlocking = FALSE;
+  if (runningTask)
+    TaskRun(runningTask);
+  flags.critBlocking = false;
 }
 
-xHeliOSGetInfoResult *xHeliOSGetInfo() {
-  int tasks = 0;
-  Task *task = NULL;
-  xHeliOSGetInfoResult *heliOSGetInfoResult = NULL;
+HeliOSGetInfoResult_t *xHeliOSGetInfo() {
+  int16_t tasks = 0;
+  Task_t *task = null;
+  HeliOSGetInfoResult_t *heliOSGetInfoResult = null;
 
   TaskListRewind();
   do {
@@ -105,19 +99,19 @@ xHeliOSGetInfoResult *xHeliOSGetInfo() {
     if (task)
       tasks++;
   } while (TaskListMoveNext());
-  heliOSGetInfoResult = (xHeliOSGetInfoResult *)xMemAlloc(sizeof(xHeliOSGetInfoResult));
+  heliOSGetInfoResult = (HeliOSGetInfoResult_t *)xMemAlloc(sizeof(HeliOSGetInfoResult_t));
   if (heliOSGetInfoResult) {
     heliOSGetInfoResult->tasks = tasks;
-    strncpy_(heliOSGetInfoResult->productName, PRODUCTNAME, PRODUCTNAMESIZE);
-    heliOSGetInfoResult->majorVersion = MAJORVERSION;
-    heliOSGetInfoResult->minorVersion = MINORVERSION;
-    heliOSGetInfoResult->patchVersion = PATCHVERSION;
+    strncpy_(heliOSGetInfoResult->productName, PRODUCT_NAME, PRODUCTNAME_SIZE);
+    heliOSGetInfoResult->majorVersion = MAJOR_VERSION_NO;
+    heliOSGetInfoResult->minorVersion = MINOR_VERSION_NO;
+    heliOSGetInfoResult->patchVersion = PATCH_VERSION_NO;
   }
   return heliOSGetInfoResult;
 }
 
-int HeliOSIsCriticalBlocking() {
-  return heliOSCriticalBlocking;
+bool IsCritBlocking() {
+  return flags.critBlocking;
 }
 
 void HeliOSReset() {
@@ -125,23 +119,69 @@ void HeliOSReset() {
   MemInit();
   TaskListInit();
   TaskInit();
-  heliOSSetupCalled = FALSE;
-  heliOSCriticalBlocking = FALSE;
+  flags.setupCalled = false;
+  flags.critBlocking = false;
+  flags.runtimeOverflow = false;
+}
+
+inline Time_t CurrentTime() {
+#if defined(OTHER_ARCH_WINDOWS)
+    LARGE_INTEGER pf;
+    LARGE_INTEGER pc;
+    QueryPerformanceFrequency(&pf);
+    QueryPerformanceCounter(&pc);
+    return pc.QuadPart;
+#elif defined(OTHER_ARCH_LINUX)
+    struct timespec t;
+    clock_gettime(CLOCK_MONOTONIC_RAW, &t);
+    return t.tv_sec * 1000000 + t.tv_nsec / 1000;
+#else
+    /*
+     * Since CurrentTime() is not defined for NOW() on
+     * the Arduino architectures, just return zero.
+     */
+    return 0;
+#endif
+}
+
+inline void TaskRun(Task_t *task_) {
+  Time_t taskStartTime = 0;
+  Time_t prevTotalRuntime = 0;
+
+  prevTotalRuntime = task_->totalRuntime;
+  taskStartTime = NOW();
+  (*task_->callback)(task_->id);
+  task_->lastRuntime = NOW() - taskStartTime;
+  task_->totalRuntime += task_->lastRuntime;
+  if (task_->totalRuntime < prevTotalRuntime)
+    flags.runtimeOverflow = true;
+}
+
+inline void RuntimeReset() {
+  Task_t *task = null;
+
+  TaskListRewind();
+  do {
+    task = TaskListGet();
+    if (task)
+      task->totalRuntime = task->lastRuntime;
+  } while (TaskListMoveNext());
+  flags.runtimeOverflow = false;
 }
 
 void memcpy_(void *dest_, void *src_, size_t n_) {
   char *src = (char *)src_;
   char *dest = (char *)dest_;
 
-  for (unsigned int i = 0; i < n_; i++)
+  for (size_t i = 0; i < n_; i++)
     dest[i] = src[i];
 }
 
-void memset_(void *dest_, int val_, size_t n_) {
+void memset_(void *dest_, int16_t val_, size_t n_) {
   char *dest = (char *)dest_;
 
-  for (unsigned int i = 0; i < n_; i++)
-    dest[i] = val_;
+  for (size_t i = 0; i < n_; i++)
+    dest[i] = (char)val_;
 }
 
 char *strncpy_(char *dest_, const char *src_, size_t n_) {
@@ -157,7 +197,7 @@ char *strncpy_(char *dest_, const char *src_, size_t n_) {
   return dest_;
 }
 
-int strncmp_(const char *str1_, const char *str2_, size_t n_) {
+int16_t strncmp_(const char *str1_, const char *str2_, size_t n_) {
   const char *str2 = str2_;
   const char *str1 = str1_;
 

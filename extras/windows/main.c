@@ -24,33 +24,48 @@
  * https://github.com/MannyPeterson/HeliOS/blob/master/extras/HeliOS_Programmers_Guide.md
  */
 
+#include <stdio.h>
 /*
- * Include the standard HeliOS header for Arduino sketches. This header
- * includes the required HeliOS header files automatically.
+ * Include the standard HeliOS header files.
  */
-#include <HeliOS_Arduino.h>
+#include "HeliOS.h"
+#include "list.h"
+#include "mem.h"
+#include "task.h"
 
 /*
- * The task definition for taskSerial() which will
- * be executed by HeliOS every 1,000,000 microseconds
- * (1 second).
+ * The task definition for taskShort() which
+ * will perform 1,000 arbitrary floating point
+ * operations.
  */
-void taskSerial(xTaskId id_) {
-  /*
-   * Declare and initialize a String object to
-   * hold the message which will be written
-   * to the serial bus every 1,000,000 microseconds
-   * (1 second).
-   */
-  String str = "taskSerial(): one second has passed.";
+void taskShort(xTaskId id_) {
+  volatile float a = 0.0f, b = 0.0f;
 
-  /*
-   * Print the message to the serial bus.
-   */
-  Serial.println(str);
+  for (int i = 0; i < 1000; i++)
+    a += i;
+
+  b = a;
+
+  printf("S");
 }
 
-void setup() {
+/*
+ * The task definition for taskLong() which
+ * will perform 10,000 arbitrary floating point
+ * operations.
+ */
+void taskLong(xTaskId id_) {
+  volatile float a = 0.0f, b = 0.0f;
+
+  for (int i = 0; i < 10000; i++)
+    a += i;
+
+  b = a;
+
+  printf("L\n");
+}
+
+int main(int argc, char *argv[]) {
   /*
    * Declare an xTaskId to hold the the task id
    * and initialize.
@@ -65,38 +80,38 @@ void setup() {
   xHeliOSSetup();
 
   /*
-   * Set the serial data rate and begin serial
-   * communication.
-   */
-  Serial.begin(9600);
-
-  /*
-   * Add the task taskSerial() to HeliOS by passing
+   * Add the task taskShort() to HeliOS by passing
    * xTaskAdd() the friendly name of the task as well
    * as a callback pointer to the task function.
    */
-  id = xTaskAdd("TASKSERIAL", &taskSerial);
+  id = xTaskAdd("TASKSHORT", &taskShort);
 
   /*
-   * Call xTaskWait() to place taskSerial() into a wait
-   * state by passing xTaskWait() the task id. A task
-   * must be in a wait state to respond to timer events.
+   * Call xTaskStart() to start taskShort() by passing
+   * xTaskStart() the id of the task to start.
    */
-  xTaskWait(id);
+  xTaskStart(id);
 
   /*
-   * Set the timer interval for taskSerial() to 1,000,000 microseconds
-   * (1 second). HeliOS automatically begins incrementing
-   * the timer for the task once the timer interval is set.
+   * Add the task taskShort() to HeliOS by passing
+   * xTaskAdd() the friendly name of the task as well
+   * as a callback pointer to the task function.
    */
-  xTaskSetTimer(id, 1000000);
-}
+  id = xTaskAdd("TASKLONG", &taskLong);
 
-void loop() {
   /*
-   * Momentarily pass control to HeliOS by calling the
-   * xHeliOSLoop() function call. xHeliOSLoop() should be
-   * the only code inside of the sketch's loop() function.
+   * Call xTaskStart() to start taskLong() by passing
+   * xTaskStart() the id of the task to start.
    */
-  xHeliOSLoop();
+  xTaskStart(id);
+
+  while (1)
+    /*
+     * Momentarily pass control to HeliOS by calling the
+     * xHeliOSLoop() function call. xHeliOSLoop() should be
+     * the only code inside of the sketch's loop() function.
+     */
+    xHeliOSLoop();
+
+  return 0;
 }

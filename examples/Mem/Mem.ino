@@ -35,7 +35,7 @@
  * be executed by HeliOS every 1,000,000 microseconds
  * (1 second).
  */
-void taskSerial(int id_) {
+void taskSerial(xTaskId id_) {
   /*
    * Declare and initialize a string object to
    * hold the text which will be written to the
@@ -57,9 +57,9 @@ void taskSerial(int id_) {
    * Call xTaskGetInfo() three times to allocate
    * some HeliOS managed memory.
    */
-  xTaskGetInfoResult *tres1 = xTaskGetInfo(id_);
-  xTaskGetInfoResult *tres2 = xTaskGetInfo(id_);
-  xTaskGetInfoResult *tres3 = xTaskGetInfo(id_);
+  xTaskGetInfoResult tres1 = xTaskGetInfo(id_);
+  xTaskGetInfoResult tres2 = xTaskGetInfo(id_);
+  xTaskGetInfoResult tres3 = xTaskGetInfo(id_);
 
   /*
    * Clear the string.
@@ -114,10 +114,10 @@ void taskSerial(int id_) {
 
 void setup() {
   /*
-   * Declare and initialize an int to hold the
-   * task id.
+   * Declare an xTaskId to hold the the task id
+   * and initialize.
    */
-  int id = 0;
+  xTaskId id = 0;
 
   /*
    * Call xHeliOSSetup() to initialize HeliOS and

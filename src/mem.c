@@ -20,19 +20,18 @@
 #include "list.h"
 #include "mem.h"
 #include "task.h"
-#include "timer.h"
 
-volatile MemAllocRecord memAllocTable[MEMALLOCTABLESIZE];
+volatile MemAllocRecord_t memAllocTable[MEMALLOCTABLE_SIZE];
 
 void MemInit() {
-  memset_(&memAllocTable, 0, MEMALLOCTABLESIZE * sizeof(MemAllocRecord));
+  memset_(&memAllocTable, 0, MEMALLOCTABLE_SIZE * sizeof(MemAllocRecord_t));
 }
 
 void *xMemAlloc(size_t size_) {
-  void *ptr = NULL;
+  void *ptr = null;
 
   if (size_ > 0) {
-    for (int i = 0; i < MEMALLOCTABLESIZE; i++) {
+    for (size_t i = 0; i < MEMALLOCTABLE_SIZE; i++) {
       if (!memAllocTable[i].ptr) {
         ptr = calloc(1, size_);
         if (ptr) {
@@ -43,33 +42,33 @@ void *xMemAlloc(size_t size_) {
       }
     }
   }
-  return NULL;
+  return null;
 }
 
 void xMemFree(void *ptr_) {
   if (ptr_) {
-    for (int i = 0; i < MEMALLOCTABLESIZE; i++) {
+    for (size_t i = 0; i < MEMALLOCTABLE_SIZE; i++) {
       if (memAllocTable[i].ptr == ptr_) {
         free(memAllocTable[i].ptr);
         memAllocTable[i].size = 0;
-        memAllocTable[i].ptr = NULL;
+        memAllocTable[i].ptr = null;
       }
     }
   }
 }
 
-int xMemGetUsed() {
-  int used = 0;
+size_t xMemGetUsed() {
+  size_t used = 0;
 
-  for (int i = 0; i < MEMALLOCTABLESIZE; i++)
+  for (size_t i = 0; i < MEMALLOCTABLE_SIZE; i++)
     if (memAllocTable[i].ptr)
-      used += (int)memAllocTable[i].size;
+      used += memAllocTable[i].size;
   return used;
 }
 
-int xMemGetSize(void *ptr_) {
+size_t xMemGetSize(void *ptr_) {
   if (ptr_) {
-    for (int i = 0; i < MEMALLOCTABLESIZE; i++)
+    for (size_t i = 0; i < MEMALLOCTABLE_SIZE; i++)
       if (memAllocTable[i].ptr == ptr_)
         return memAllocTable[i].size;
   }
@@ -77,11 +76,11 @@ int xMemGetSize(void *ptr_) {
 }
 
 void MemClear() {
-  for (int i = 0; i < MEMALLOCTABLESIZE; i++) {
+  for (size_t i = 0; i < MEMALLOCTABLE_SIZE; i++) {
     if (memAllocTable[i].ptr) {
       free(memAllocTable[i].ptr);
       memAllocTable[i].size = 0;
-      memAllocTable[i].ptr = NULL;
+      memAllocTable[i].ptr = null;
     }
   }
 }
