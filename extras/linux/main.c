@@ -38,7 +38,7 @@
  * will perform 1,000 arbitrary floating point
  * operations.
  */
-void taskShort(int id_) {
+void taskShort(xTaskId id_) {
   volatile float a = 0.0f, b = 0.0f;
 
   for (int i = 0; i < 1000; i++)
@@ -54,7 +54,7 @@ void taskShort(int id_) {
  * will perform 10,000 arbitrary floating point
  * operations.
  */
-void taskLong(int id_) {
+void taskLong(xTaskId id_) {
   volatile float a = 0.0f, b = 0.0f;
 
   for (int i = 0; i < 10000; i++)
@@ -70,7 +70,7 @@ int main(int argc, char *argv[]) {
    * Declare and initialize an int to hold the
    * task id.
    */
-  int id = 0;
+  xTaskId id = 0;
 
   /*
    * Call xHeliOSSetup() to initialize HeliOS and
