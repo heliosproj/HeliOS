@@ -135,14 +135,14 @@ void xTaskNotifyClear(TaskId_t id_) {
   }
 }
 
-xTaskGetNotifResult *xTaskGetNotif(TaskId_t id_) {
+TaskGetNotifResult_t *xTaskGetNotif(TaskId_t id_) {
   Task_t *task = null;
-  xTaskGetNotifResult *taskGetNotifResult = null;
+  TaskGetNotifResult_t *taskGetNotifResult = null;
 
   if (TaskListSeek(id_)) {
     task = TaskListGet();
     if (task) {
-      taskGetNotifResult = (xTaskGetNotifResult *)xMemAlloc(sizeof(xTaskGetNotifResult));
+      taskGetNotifResult = (TaskGetNotifResult_t *)xMemAlloc(sizeof(TaskGetNotifResult_t));
       if (taskGetNotifResult) {
         taskGetNotifResult->notifyBytes = task->notifyBytes;
         memcpy_(taskGetNotifResult->notifyValue, task->notifyValue, TNOTIFYVALUE_SIZE);
@@ -152,14 +152,14 @@ xTaskGetNotifResult *xTaskGetNotif(TaskId_t id_) {
   return taskGetNotifResult;
 }
 
-xTaskGetInfoResult *xTaskGetInfo(TaskId_t id_) {
+TaskGetInfoResult_t *xTaskGetInfo(TaskId_t id_) {
   Task_t *task = null;
-  xTaskGetInfoResult *taskGetInfoResult = null;
+  TaskGetInfoResult_t *taskGetInfoResult = null;
 
   if (TaskListSeek(id_)) {
     task = TaskListGet();
     if (task) {
-      taskGetInfoResult = (xTaskGetInfoResult *)xMemAlloc(sizeof(xTaskGetInfoResult));
+      taskGetInfoResult = (TaskGetInfoResult_t *)xMemAlloc(sizeof(TaskGetInfoResult_t));
       if (taskGetInfoResult) {
         taskGetInfoResult->id = task->id;
         memcpy_(taskGetInfoResult->name, task->name, TASKNAME_SIZE);
@@ -189,11 +189,11 @@ bool TaskListSeek(TaskId_t id_) {
   return false;
 }
 
-xTaskGetListResult *xTaskGetList(int16_t *tasks_) {
+TaskGetListResult_t *xTaskGetList(int16_t *tasks_) {
   int16_t i = 0;
   int16_t tasks = 0;
   Task_t *task = null;
-  xTaskGetListResult *taskGetListResult = null;
+  TaskGetListResult_t *taskGetListResult = null;
 
   *tasks_ = 0;
   TaskListRewind();
@@ -203,7 +203,7 @@ xTaskGetListResult *xTaskGetList(int16_t *tasks_) {
       tasks++;
   } while (TaskListMoveNext());
   if (tasks > 0) {
-    taskGetListResult = (xTaskGetListResult *)xMemAlloc(tasks * sizeof(xTaskGetListResult));
+    taskGetListResult = (TaskGetListResult_t *)xMemAlloc(tasks * sizeof(TaskGetListResult_t));
     if (taskGetListResult) {
       TaskListRewind();
       do {

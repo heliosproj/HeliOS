@@ -88,10 +88,10 @@ void xHeliOSLoop() {
   flags.critBlocking = false;
 }
 
-xHeliOSGetInfoResult *xHeliOSGetInfo() {
+HeliOSGetInfoResult_t *xHeliOSGetInfo() {
   int16_t tasks = 0;
   Task_t *task = null;
-  xHeliOSGetInfoResult *heliOSGetInfoResult = null;
+  HeliOSGetInfoResult_t *heliOSGetInfoResult = null;
 
   TaskListRewind();
   do {
@@ -99,7 +99,7 @@ xHeliOSGetInfoResult *xHeliOSGetInfo() {
     if (task)
       tasks++;
   } while (TaskListMoveNext());
-  heliOSGetInfoResult = (xHeliOSGetInfoResult *)xMemAlloc(sizeof(xHeliOSGetInfoResult));
+  heliOSGetInfoResult = (HeliOSGetInfoResult_t *)xMemAlloc(sizeof(HeliOSGetInfoResult_t));
   if (heliOSGetInfoResult) {
     heliOSGetInfoResult->tasks = tasks;
     strncpy_(heliOSGetInfoResult->productName, PRODUCT_NAME, PRODUCTNAME_SIZE);

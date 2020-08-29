@@ -49,7 +49,7 @@ void taskSerial(xTaskId id_) {
    * by passing xTaskGetInfo() the task id of the active
    * task.
    */
-  xTaskGetInfoResult *tres = xTaskGetInfo(id_);
+  xTaskGetInfoResult tres = xTaskGetInfo(id_);
 
   /*
    * Check the pointer to the xTaskGetInfoResult
@@ -104,7 +104,7 @@ void taskSerial(xTaskId id_) {
   /*
    * Call xHeliOSGetInfo() to obtain the system information.
    */
-  xHeliOSGetInfoResult *hres = xHeliOSGetInfo();
+  xHeliOSGetInfoResult hres = xHeliOSGetInfo();
 
   /*
    * Check the pointer to the xHeliOSGetInfoResult

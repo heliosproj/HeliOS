@@ -89,7 +89,6 @@ typedef enum {
 } TaskState_t;
 
 typedef int16_t TaskId_t;
-typedef int16_t xTaskId;
 
 typedef struct {
   TaskId_t	id;
@@ -101,12 +100,12 @@ typedef struct {
   Time_t	totalRuntime;
   Time_t	timerInterval;
   Time_t	timerStartTime;
-} xTaskGetInfoResult;
+} TaskGetInfoResult_t;
 
 typedef struct {
   int16_t	notifyBytes;
   char		notifyValue[TNOTIFYVALUE_SIZE];
-} xTaskGetNotifResult;
+} TaskGetNotifResult_t;
 
 typedef struct {
   int16_t	tasks;
@@ -114,7 +113,7 @@ typedef struct {
   int16_t	majorVersion;
   int16_t	minorVersion;
   int16_t	patchVersion;
-} xHeliOSGetInfoResult;
+} HeliOSGetInfoResult_t;
 
 typedef struct {
   TaskId_t	id;
@@ -122,7 +121,7 @@ typedef struct {
   TaskState_t	state;
   Time_t	lastRuntime;
   Time_t	totalRuntime;
-} xTaskGetListResult;
+} TaskGetListResult_t;
 
 struct TaskListItem_s;
 
@@ -156,13 +155,20 @@ typedef struct {
   bool	runtimeOverflow;
 } Flags_t;
 
+
+typedef TaskId_t xTaskId;
+typedef TaskGetInfoResult_t *xTaskGetInfoResult;
+typedef TaskGetNotifResult_t *xTaskGetNotifResult;
+typedef HeliOSGetInfoResult_t *xHeliOSGetInfoResult;
+typedef TaskGetListResult_t *xTaskGetListResult;
+
 #ifdef __cplusplus
   extern "C" {
 #endif
 
 void xHeliOSSetup();
 void xHeliOSLoop();
-xHeliOSGetInfoResult *xHeliOSGetInfo();
+HeliOSGetInfoResult_t *xHeliOSGetInfo();
 bool IsCritBlocking();
 void HeliOSReset();
 Time_t CurrentTime();

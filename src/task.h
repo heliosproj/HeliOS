@@ -33,10 +33,10 @@ void xTaskWait(TaskId_t);
 TaskId_t xTaskGetId(const char *);
 void xTaskNotify(TaskId_t, int16_t, char *);
 void xTaskNotifyClear(TaskId_t);
-xTaskGetNotifResult *xTaskGetNotif(TaskId_t);
-xTaskGetInfoResult *xTaskGetInfo(TaskId_t);
+TaskGetNotifResult_t *xTaskGetNotif(TaskId_t);
+TaskGetInfoResult_t *xTaskGetInfo(TaskId_t);
 bool TaskListSeek(TaskId_t);
-xTaskGetListResult *xTaskGetList(int16_t *);
+TaskGetListResult_t *xTaskGetList(int16_t *);
 void xTaskSetTimer(TaskId_t, Time_t);
 void xTaskResetTimer(TaskId_t);
 

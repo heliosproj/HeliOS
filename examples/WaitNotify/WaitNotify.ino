@@ -41,7 +41,7 @@ void taskSerial(xTaskId id_) {
    * bytes and value by passing xTaskGetNotif() the task
    * id of the active task.
    */
-  xTaskGetNotifResult *nres = xTaskGetNotif(id_);
+  xTaskGetNotifResult nres = xTaskGetNotif(id_);
 
   /*
    * Check the pointer to the xTaskGetNotifResult
