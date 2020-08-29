@@ -56,7 +56,7 @@ void taskSerial(xTaskId id_) {
    * by passing xTaskGetInfo() the task id of the active
    * task.
    */
-  xTaskGetListResult *tres = xTaskGetList(&tasks);
+  xTaskGetListResult tres = xTaskGetList(&tasks);
 
   /*
    * Check the pointer to the xTaskGetListResult
