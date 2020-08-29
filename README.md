@@ -174,7 +174,7 @@ No free and open source software project has been successful without the contrib
 * [Stig Bjorlykke](https://github.com/stigbjorlykke)
 
 Also, special thanks to [Gil Maimon](https://github.com/gilmaimon) for the super-cool website [ArduBadge](https://www.ardu-badge.com/).
-# License
+# License & Trademarks
 HeliOS is copyrighted open source software licensed under the Free Software Foundation's GNU General Public License Version 3. The license can be found [here](/LICENSE.md).
 
 Microsoft Windows and Microsoft Visual C++ are registered trademarks of Microsoft Corporation in the United States and/or other countries.
