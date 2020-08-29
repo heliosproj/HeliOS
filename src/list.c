@@ -60,25 +60,25 @@ void TaskListAdd(Task_t *task_) {
 void TaskListRemove() {
   if (taskListCurr) {
     if (taskListCurr == taskListHead && taskListCurr == taskListTail) {
-      TaskListItem_t *item = taskListHead;
+      TaskListItem_t *item = (TaskListItem_t*)taskListHead;
       TaskListInit();
       xMemFree(item->task);
       xMemFree(item);
     } else if (taskListCurr == taskListHead) {
-      TaskListItem_t *item = taskListHead;
+      TaskListItem_t *item = (TaskListItem_t*)taskListHead;
       taskListHead = taskListHead->next;
       TaskListRewind();
       xMemFree(item->task);
       xMemFree(item);
     } else if (taskListCurr == taskListTail) {
-      TaskListItem_t *item = taskListTail;
+      TaskListItem_t *item = (TaskListItem_t*)taskListTail;
       taskListTail = taskListPrev;
       taskListPrev->next = null;
       TaskListRewind();
       xMemFree(item->task);
       xMemFree(item);
     } else {
-      TaskListItem_t *item = taskListCurr;
+      TaskListItem_t *item = (TaskListItem_t*)taskListCurr;
       taskListPrev->next = taskListCurr->next;
       TaskListRewind();
       xMemFree(item->task);

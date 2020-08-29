@@ -30,35 +30,42 @@
 
 #if defined(ARDUINO_ARCH_AVR)
   #include <Arduino.h>
-  #define NOW() micros()
+  #define SYS_NOW() micros()
   #define DISABLE() noInterrupts()
   #define ENABLE() interrupts()
   typedef uint32_t Time_t;
   #define TIME_T_MAX UINT32_MAX
 #elif defined(ARDUINO_ARCH_SAM)
   #include <Arduino.h>
-  #define NOW() micros()
+  #define SYS_NOW() micros()
   #define DISABLE() noInterrupts()
   #define ENABLE() interrupts()
   typedef uint32_t Time_t;
   #define TIME_T_MAX UINT32_MAX
 #elif defined(ARDUINO_ARCH_SAMD)
   #include <Arduino.h>
-  #define NOW() micros()
+  #define SYS_NOW() micros()
+  #define DISABLE() noInterrupts()
+  #define ENABLE() interrupts()
+  typedef uint32_t Time_t;
+  #define TIME_T_MAX UINT32_MAX
+#elif defined(ARDUINO_ARCH_ESP8266)
+  #include <Arduino.h>
+  #define SYS_NOW() micros()
   #define DISABLE() noInterrupts()
   #define ENABLE() interrupts()
   typedef uint32_t Time_t;
   #define TIME_T_MAX UINT32_MAX
 #elif defined(OTHER_ARCH_LINUX)
   #include <time.h>
-  #define NOW() CurrentTime()
+  #define SYS_NOW() CurrentTime()
   #define DISABLE()
   #define ENABLE()
   typedef uint64_t Time_t;
   #define TIME_T_MAX UINT64_MAX
 #elif defined(OTHER_ARCH_WINDOWS)
   #include <Windows.h>
-  #define NOW() CurrentTime()
+  #define SYS_NOW() CurrentTime()
   #define DISABLE()
   #define ENABLE()
   typedef int64_t Time_t;
