@@ -130,7 +130,7 @@ typedef struct {
   TaskId_t			id;
   char				name[TASKNAME_SIZE];
   TaskState_t			state;
-  void (*callback)(int16_t);
+  void (*callback)(TaskId_t);
   int16_t			notifyBytes;
   char				notifyValue[TNOTIFYVALUE_SIZE];
   Time_t			lastRuntime;
