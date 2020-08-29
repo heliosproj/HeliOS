@@ -20,8 +20,8 @@ HeliOS is continuously being improved. Development is currently occurring in wee
 Because HeliOS is compliant with the Arduino 1.5 (rev. 2.2) Library Specification, getting up and running is quick and easy. HeliOS can be installed directly from the Arduino Library Manager or downloaded and installed manually. Both options are described [here](https://www.arduino.cc/en/Guide/Libraries#toc3). You can also refer to the auto-generated instructions from ArduBadge [here](https://www.ardu-badge.com/HeliOS). Once up and running, check out one of the example sketches or refer to the HeliOS Programmer's Guide in the Documentation section.
 ## Other Microcontrollers
 While built-in support currently exists for the Arduino AVR, SAM and SAMD architectures, HeliOS is easily ported to a variety of other microcontrollers. Because the project is currently focused on supporting the Arduino community, adding built-in support for additional microcontrollers and tool-chains is not currently planned.
-## User-land
-Built-in support exists for building and running HeliOS in user-land on Linux and Microsoft Windows. When running in user-land, HeliOS acts like a threading library for applications. To target Linux or Microsoft Windows, simply un-comment the appropriate C preprocessor directive in the header file HeliOS.h and build using GCC or Microsoft Visual C++. The required files to build and run HeliOS in user-land on Linux and Microsoft Windows can be found in extras/linux and extras/windows.
+## Linux & Microsoft Windows
+Built-in support exists for building and running HeliOS in user-land on Linux and Microsoft Windows. When running in user-land, HeliOS acts like a threading library for applications. To target Linux or Microsoft Windows, (as shown below) simply un-comment the appropriate C preprocessor directive in the header file HeliOS.h and build using GCC or Microsoft Visual C++. The files needed to build HeliOS in user-land on Linux and Microsoft Windows can be found in extras/linux and extras/windows directories respectively.
 ```C
 /*
  * Un-comment to compile on Linux or Microsoft
@@ -69,14 +69,12 @@ volatile int ledState = 0;
  * (1 second).
  */
 void taskBlink(int id_) {
-
   /*
    * If the state is 0 or LOW then set the state to
    * 1 or HIGH. Likewise, if the state is 1 or HIGH
    * then set the state to LOW.
    */
-  if(ledState) {
-
+  if (ledState) {
     /*
      * Set the state of the digital GPIO pin associated
      * with the built-in LED to LOW.
@@ -89,7 +87,6 @@ void taskBlink(int id_) {
      */
     ledState = 0;
   } else {
-
     /*
      * Set the state of the digital GPIO pin associated
      * with the built-in LED to HIGH.
@@ -105,7 +102,6 @@ void taskBlink(int id_) {
 }
 
 void setup() {
-
   /*
    * Declare and initialize an int to hold the
    * task id.
@@ -148,7 +144,6 @@ void setup() {
 }
 
 void loop() {
-
   /*
    * Momentarily pass control to HeliOS by calling the
    * xHeliOSLoop() function call. xHeliOSLoop() should be
