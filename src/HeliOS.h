@@ -64,7 +64,7 @@
   typedef int64_t Time_t;
   #define TIME_T_MAX INT64_MAX
 #else
-  #error "This architecture is currently unsupported by HeliOS."
+  #error "This architecture is currently unsupported by HeliOS. If building on Linux or Microsoft Windows, make sure to un-comment OTHER_ARCH_LINUX or OTHER_ARCH_WINDOWS in HeliOS.h."
 #endif
 
 #if !defined(null)
