@@ -68,7 +68,7 @@ volatile int ledState = 0;
  * be executed by HeliOS every 1,000,000 microseconds
  * (1 second).
  */
-void taskBlink(int id_) {
+void taskBlink(xTaskId id_) {
   /*
    * If the state is 0 or LOW then set the state to
    * 1 or HIGH. Likewise, if the state is 1 or HIGH
@@ -103,10 +103,10 @@ void taskBlink(int id_) {
 
 void setup() {
   /*
-   * Declare and initialize an int to hold the
+   * Declare and initialize id to hold the
    * task id.
    */
-  int id = 0;
+  xTaskId id = 0;
 
   /*
    * Call xHeliOSSetup() to initialize HeliOS and
