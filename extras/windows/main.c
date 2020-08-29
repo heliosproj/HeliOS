@@ -67,8 +67,8 @@ void taskLong(xTaskId id_) {
 
 int main(int argc, char *argv[]) {
   /*
-   * Declare and initialize an int to hold the
-   * task id.
+   * Declare an xTaskId to hold the the task id
+   * and initialize.
    */
   xTaskId id = 0;
 

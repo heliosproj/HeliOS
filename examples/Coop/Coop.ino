@@ -64,8 +64,8 @@ void taskLong(xTaskId id_) {
 
 void setup() {
   /*
-   * Declare and initialize id to hold the
-   * task id.
+   * Declare an xTaskId to hold the the task id
+   * and initialize.
    */
   xTaskId id = 0;
 
