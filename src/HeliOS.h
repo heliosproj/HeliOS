@@ -22,7 +22,8 @@
 #include <stdint.h>
 
 /*
- * Un-comment to compile on Linux or Windows.
+ * Un-comment to compile on Linux or Microsoft
+ * Windows.
  * #define OTHER_ARCH_LINUX
  * #define OTHER_ARCH_WINDOWS
  */

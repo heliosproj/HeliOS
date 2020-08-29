@@ -24,7 +24,8 @@ While built-in support currently exists for the Arduino AVR, SAM and SAMD archit
 Built-in support exists for building and running HeliOS in user-land on Linux and Microsoft Windows. When running in user-land, HeliOS acts like a threading library for applications. To target Linux or Microsoft Windows, simply un-comment the appropriate C preprocessor directive in the header file HeliOS.h and build using GCC or Microsoft Visual C++. The required files to build and run HeliOS in user-land on Linux and Microsoft Windows can be found in extras/linux and extras/windows.
 ```C
 /*
- * Un-comment to compile on Linux or Windows.
+ * Un-comment to compile on Linux or Microsoft
+ * Windows.
  * #define OTHER_ARCH_LINUX
  * #define OTHER_ARCH_WINDOWS
  */
