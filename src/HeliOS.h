@@ -155,7 +155,6 @@ typedef struct {
   bool	runtimeOverflow;
 } Flags_t;
 
-
 typedef TaskId_t xTaskId;
 typedef TaskGetInfoResult_t *xTaskGetInfoResult;
 typedef TaskGetNotifResult_t *xTaskGetNotifResult;
