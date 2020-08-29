@@ -8,4 +8,5 @@
 *.md text eol=lf
 keywords.txt text eol=lf
 library.properties text eol=lf
+Makefile text eol-lf
 *.png binary
