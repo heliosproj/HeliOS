@@ -16,28 +16,101 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/*
+ * Additional documentation on HeliOS and its Application
+ * Programming Interface (API) is available in the
+ * HeliOS Programmer's Guide which can be found here:
+ *
+ * https://github.com/MannyPeterson/HeliOS/blob/master/extras/HeliOS_Programmers_Guide.md
+ */
+
 #include <stdio.h>
+/*
+ * Include the standard HeliOS header files.
+ */
 #include "HeliOS.h"
 #include "list.h"
 #include "mem.h"
 #include "task.h"
 
-void task(int id_) {
-  printf("task() ran.\n");
+/*
+ * The task definition for taskShort() which
+ * will perform 1,000 arbitrary floating point
+ * operations.
+ */
+void taskShort(int id_) {
+  volatile float a = 0.0f, b = 0.0f;
+
+  for (int i = 0; i < 1000; i++)
+    a += i;
+
+  b = a;
+
+  printf("S");
 }
 
+/*
+ * The task definition for taskLong() which
+ * will perform 10,000 arbitrary floating point
+ * operations.
+ */
+void taskLong(int id_) {
+  volatile float a = 0.0f, b = 0.0f;
+
+  for (int i = 0; i < 10000; i++)
+    a += i;
+
+  b = a;
+
+  printf("L\n");
+}
 
 int main(int argc, char *argv[]) {
-  xHeliOSSetup();
-
+  /*
+   * Declare and initialize an int to hold the
+   * task id.
+   */
   int id = 0;
 
-  id = xTaskAdd("TASK", &task);
-  xTaskWait(id);
+  /*
+   * Call xHeliOSSetup() to initialize HeliOS and
+   * its data structures. xHeliOSSetup() must be
+   * called before any other HeliOS function call.
+   */
+  xHeliOSSetup();
 
-  xTaskSetTimer(id, 1000000);
+  /*
+   * Add the task taskShort() to HeliOS by passing
+   * xTaskAdd() the friendly name of the task as well
+   * as a callback pointer to the task function.
+   */
+  id = xTaskAdd("TASKSHORT", &taskShort);
+
+  /*
+   * Call xTaskStart() to start taskShort() by passing
+   * xTaskStart() the id of the task to start.
+   */
+  xTaskStart(id);
+
+  /*
+   * Add the task taskShort() to HeliOS by passing
+   * xTaskAdd() the friendly name of the task as well
+   * as a callback pointer to the task function.
+   */
+  id = xTaskAdd("TASKLONG", &taskLong);
+
+  /*
+   * Call xTaskStart() to start taskLong() by passing
+   * xTaskStart() the id of the task to start.
+   */
+  xTaskStart(id);
 
   while (1)
+    /*
+     * Momentarily pass control to HeliOS by calling the
+     * xHeliOSLoop() function call. xHeliOSLoop() should be
+     * the only code inside of the sketch's loop() function.
+     */
     xHeliOSLoop();
 
   return 0;
