@@ -90,7 +90,7 @@ void taskSerial(xTaskId id_) {
       str += ", ltime = ";
       str += tres->lastRuntime;
       str += ", ttime = ";
-      str += (int16_t)tres->totalRuntime;
+      str += tres->totalRuntime;
 
       /*
        * Print the string to the serial bus.
