@@ -35,7 +35,7 @@
  * be executed by HeliOS when digital GPIO pin 2
  * or 3 change state to HIGH.
  */
-void taskSerial(int id_) {
+void taskSerial(xTaskId id_) {
   /*
    * Call xTaskGetNotif() to obtain the task notification
    * bytes and value by passing xTaskGetNotif() the task
@@ -142,10 +142,10 @@ void D3ISR() {
 
 void setup() {
   /*
-   * Declare and initialize an int to hold the
+   * Declare and initialize id to hold the
    * task id.
    */
-  int id = 0;
+  xTaskId id = 0;
 
   /*
    * Call xHeliOSSetup() to initialize HeliOS and

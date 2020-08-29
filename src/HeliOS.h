@@ -40,15 +40,15 @@
   #define NOW() micros()
   #define DISABLE() noInterrupts()
   #define ENABLE() interrupts()
-  typedef uint64_t Time_t;
-  #define TIME_T_MAX UINT64_MAX
+  typedef uint32_t Time_t;
+  #define TIME_T_MAX UINT32_MAX
 #elif defined(ARDUINO_ARCH_SAMD)
   #include <Arduino.h>
   #define NOW() micros()
   #define DISABLE() noInterrupts()
   #define ENABLE() interrupts()
-  typedef uint64_t Time_t;
-  #define TIME_T_MAX UINT64_MAX
+  typedef uint32_t Time_t;
+  #define TIME_T_MAX UINT32_MAX
 #elif defined(OTHER_ARCH_LINUX)
   #include <time.h>
   #define NOW() CurrentTime()
@@ -88,8 +88,11 @@ typedef enum {
   TaskStateWaiting
 } TaskState_t;
 
+typedef int16_t TaskId_t;
+typedef int16_t xTaskId;
+
 typedef struct {
-  int16_t	id;
+  TaskId_t	id;
   char		name[TASKNAME_SIZE];
   TaskState_t	state;
   int16_t	notifyBytes;
@@ -114,7 +117,7 @@ typedef struct {
 } xHeliOSGetInfoResult;
 
 typedef struct {
-  int16_t	id;
+  TaskId_t	id;
   char		name[TASKNAME_SIZE];
   TaskState_t	state;
   Time_t	lastRuntime;
@@ -124,7 +127,7 @@ typedef struct {
 struct TaskListItem_s;
 
 typedef struct {
-  int16_t			id;
+  TaskId_t			id;
   char				name[TASKNAME_SIZE];
   TaskState_t			state;
   void (*callback)(int16_t);
@@ -168,7 +171,7 @@ void RuntimeReset();
 void memcpy_(void *, void *, size_t);
 void memset_(void *, int16_t, size_t);
 char *strncpy_(char *, const char *, size_t);
-int16_t strncmp_(const char *, const char *, size_t n);
+int16_t strncmp_(const char *, const char *, size_t);
 
 #ifdef __cplusplus
 } // extern "C" {

@@ -21,13 +21,13 @@
 #include "mem.h"
 #include "task.h"
 
-volatile int16_t taskNextId;
+volatile TaskId_t taskNextId;
 
 void TaskInit() {
   taskNextId = 1;
 }
 
-int16_t xTaskAdd(const char *name_, void (*callback_)(int16_t)) {
+TaskId_t xTaskAdd(const char *name_, void (*callback_)(TaskId_t)) {
   if (!IsCritBlocking()) {
     Task_t *task = (Task_t *)xMemAlloc(sizeof(Task_t));
     if (task) {
@@ -48,7 +48,7 @@ int16_t xTaskAdd(const char *name_, void (*callback_)(int16_t)) {
   return 0;
 }
 
-void xTaskRemove(int16_t id_) {
+void xTaskRemove(TaskId_t id_) {
   if (!IsCritBlocking())
     if (TaskListSeek(id_))
       TaskListRemove();
@@ -59,7 +59,7 @@ void xTaskClear() {
     TaskListClear();
 }
 
-void xTaskStart(int16_t id_) {
+void xTaskStart(TaskId_t id_) {
   Task_t *task = null;
 
   if (TaskListSeek(id_)) {
@@ -70,7 +70,7 @@ void xTaskStart(int16_t id_) {
   }
 }
 
-void xTaskStop(int16_t id_) {
+void xTaskStop(TaskId_t id_) {
   Task_t *task = null;
 
   if (TaskListSeek(id_)) {
@@ -81,7 +81,7 @@ void xTaskStop(int16_t id_) {
   }
 }
 
-void xTaskWait(int16_t id_) {
+void xTaskWait(TaskId_t id_) {
   Task_t *task = null;
 
   if (TaskListSeek(id_)) {
@@ -92,7 +92,7 @@ void xTaskWait(int16_t id_) {
   }
 }
 
-int16_t xTaskGetId(const char *name_) {
+TaskId_t xTaskGetId(const char *name_) {
   Task_t *task = null;
 
   TaskListRewind();
@@ -105,7 +105,7 @@ int16_t xTaskGetId(const char *name_) {
   return 0;
 }
 
-void xTaskNotify(int16_t id_, int16_t notifyBytes_, char *notifyValue_) {
+void xTaskNotify(TaskId_t id_, int16_t notifyBytes_, char *notifyValue_) {
   Task_t *task = null;
 
   if (notifyBytes_ > 0 && notifyBytes_ <= TNOTIFYVALUE_SIZE && notifyValue_) {
@@ -121,7 +121,7 @@ void xTaskNotify(int16_t id_, int16_t notifyBytes_, char *notifyValue_) {
   }
 }
 
-void xTaskNotifyClear(int16_t id_) {
+void xTaskNotifyClear(TaskId_t id_) {
   Task_t *task = null;
 
   if (TaskListSeek(id_)) {
@@ -135,7 +135,7 @@ void xTaskNotifyClear(int16_t id_) {
   }
 }
 
-xTaskGetNotifResult *xTaskGetNotif(int16_t id_) {
+xTaskGetNotifResult *xTaskGetNotif(TaskId_t id_) {
   Task_t *task = null;
   xTaskGetNotifResult *taskGetNotifResult = null;
 
@@ -152,7 +152,7 @@ xTaskGetNotifResult *xTaskGetNotif(int16_t id_) {
   return taskGetNotifResult;
 }
 
-xTaskGetInfoResult *xTaskGetInfo(int16_t id_) {
+xTaskGetInfoResult *xTaskGetInfo(TaskId_t id_) {
   Task_t *task = null;
   xTaskGetInfoResult *taskGetInfoResult = null;
 
@@ -176,7 +176,7 @@ xTaskGetInfoResult *xTaskGetInfo(int16_t id_) {
   return taskGetInfoResult;
 }
 
-bool TaskListSeek(int16_t id_) {
+bool TaskListSeek(TaskId_t id_) {
   Task_t *task = null;
 
   TaskListRewind();
@@ -223,7 +223,7 @@ xTaskGetListResult *xTaskGetList(int16_t *tasks_) {
   return taskGetListResult;
 }
 
-void xTaskSetTimer(int16_t id_, Time_t timerInterval_) {
+void xTaskSetTimer(TaskId_t id_, Time_t timerInterval_) {
   Task_t *task = null;
 
   if (TaskListSeek(id_)) {
@@ -237,7 +237,7 @@ void xTaskSetTimer(int16_t id_, Time_t timerInterval_) {
   }
 }
 
-void xTaskResetTimer(int16_t id_) {
+void xTaskResetTimer(TaskId_t id_) {
   Task_t *task = null;
 
   if (TaskListSeek(id_)) {

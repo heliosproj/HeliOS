@@ -35,7 +35,7 @@
  * be executed by HeliOS every 1,000,000 microseconds
  * (1 second).
  */
-void taskSerial(int id_) {
+void taskSerial(xTaskId id_) {
   /*
    * Declare and initialize a String object to
    * hold the message which will be written
@@ -52,10 +52,10 @@ void taskSerial(int id_) {
 
 void setup() {
   /*
-   * Declare and initialize an int to hold the
+   * Declare and initialize id to hold the
    * task id.
    */
-  int id = 0;
+  xTaskId id = 0;
 
   /*
    * Call xHeliOSSetup() to initialize HeliOS and
