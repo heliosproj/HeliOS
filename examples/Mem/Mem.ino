@@ -57,9 +57,9 @@ void taskSerial(xTaskId id_) {
    * Call xTaskGetInfo() three times to allocate
    * some HeliOS managed memory.
    */
-  xTaskGetInfoResult *tres1 = xTaskGetInfo(id_);
-  xTaskGetInfoResult *tres2 = xTaskGetInfo(id_);
-  xTaskGetInfoResult *tres3 = xTaskGetInfo(id_);
+  xTaskGetInfoResult tres1 = xTaskGetInfo(id_);
+  xTaskGetInfoResult tres2 = xTaskGetInfo(id_);
+  xTaskGetInfoResult tres3 = xTaskGetInfo(id_);
 
   /*
    * Clear the string.
