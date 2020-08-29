@@ -21,7 +21,7 @@ Because HeliOS is compliant with the Arduino 1.5 (rev. 2.2) Library Specificatio
 ## Other Microcontrollers
 While built-in support currently exists for the Arduino AVR, SAM and SAMD architectures, HeliOS is easily ported to a variety of other microcontrollers. Because the project is currently focused on supporting the Arduino community, adding built-in support for additional microcontrollers and tool-chains is not currently planned.
 ## User-land
-Built-in support exists for building and running HeliOS in user-land on Linux and Microsoft Windows. When running in user-land, HeliOS acts like a threading library for applications. To target Linux or Microsoft Windows, simply un-comment the appropriate C preprocessor directive in the header file HeliOS.h and build using GCC or Microsoft Visual C++. A Makefile and main() file template is planned for a future release.
+Built-in support exists for building and running HeliOS in user-land on Linux and Microsoft Windows. When running in user-land, HeliOS acts like a threading library for applications. To target Linux or Microsoft Windows, simply un-comment the appropriate C preprocessor directive in the header file HeliOS.h and build using GCC or Microsoft Visual C++. The required files to build and run HeliOS in user-land on Linux and Microsoft Windows can be found in extras/linux and extras/windows.
 ```C
 /*
  * Un-comment to compile on Linux or Windows.
