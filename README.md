@@ -171,6 +171,7 @@ To contribute, simply create a pull request with your changes. Please fork from 
 No free and open source software project has been successful without the contributions of many. This space is reserved for recognizing people who have made meaningful contributions to HeliOS. All contributors are listed in alphabetical order.
 * [Jakub Rakus](https://github.com/JakubRakus)
 * [Julien Peyregne](https://github.com/JuPrgn)
+* [Kai Wurtz](https://github.com/kwrtz)
 * [Konidem](https://github.com/Konidem)
 * [Stig Bjorlykke](https://github.com/stigbjorlykke)
 * [Thomas Hornschuh](https://github.com/ThomasHornschuh)
