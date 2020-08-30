@@ -231,7 +231,7 @@ void xTaskSetTimer(TaskId_t id_, Time_t timerInterval_) {
     if (task) {
       if (task->state != TaskStateInvalid) {
         task->timerInterval = timerInterval_;
-        task->timerStartTime = SYS_NOW();
+        task->timerStartTime = CURRENTTIME();
       }
     }
   }
@@ -244,6 +244,6 @@ void xTaskResetTimer(TaskId_t id_) {
     task = TaskListGet();
     if (task)
       if (task->state != TaskStateInvalid)
-        task->timerStartTime = SYS_NOW();
+        task->timerStartTime = CURRENTTIME();
   }
 }

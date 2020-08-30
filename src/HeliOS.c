@@ -77,9 +77,9 @@ void xHeliOSLoop() {
       TaskRun(waitingTask[i]);
       waitingTask[i]->notifyBytes = 0;
     } else if (waitingTask[i]->timerInterval > 0) {
-      if (SYS_NOW() - waitingTask[i]->timerStartTime > waitingTask[i]->timerInterval) {
+      if (CURRENTTIME() - waitingTask[i]->timerStartTime > waitingTask[i]->timerInterval) {
         TaskRun(waitingTask[i]);
-        waitingTask[i]->timerStartTime = SYS_NOW();
+        waitingTask[i]->timerStartTime = CURRENTTIME();
       }
     }
   }
@@ -137,7 +137,7 @@ inline Time_t CurrentTime() {
     return t.tv_sec * 1000000 + t.tv_nsec / 1000;
 #else
     /*
-     * Since CurrentTime() is not defined for SYS_NOW() on
+     * Since CurrentTime() is not defined for CURRENTTIME() on
      * the Arduino architectures, just return zero.
      */
     return 0;
@@ -149,9 +149,9 @@ inline void TaskRun(Task_t *task_) {
   Time_t prevTotalRuntime = 0;
 
   prevTotalRuntime = task_->totalRuntime;
-  taskStartTime = SYS_NOW();
+  taskStartTime = CURRENTTIME();
   (*task_->callback)(task_->id);
-  task_->lastRuntime = SYS_NOW() - taskStartTime;
+  task_->lastRuntime = CURRENTTIME() - taskStartTime;
   task_->totalRuntime += task_->lastRuntime;
   if (task_->totalRuntime < prevTotalRuntime)
     flags.runtimeOverflow = true;
