@@ -154,6 +154,7 @@ void loop() {
 ```
 # Releases
 All releases, including the current release, can be found [here](https://github.com/MannyPeterson/HeliOS/releases).
+* 0.2.6 - minor internal updates
 * 0.2.5 - numerous internal enhancements including improved time precision and scheduler now gracefully handles overflow of run-time timer
 * 0.2.4 - additional example Arduino sketches and other code improvements
 * 0.2.3 - Improved protection of system state, new examples, improved code documentation and some maintainability enhancements
@@ -169,11 +170,14 @@ While all contributions are welcome, contributions are needed most in the follow
 To contribute, simply create a pull request with your changes. Please fork from the **develop** branch as **master** is kept even with the current release. Pull requests are typically responded to within 48 hours.
 # Thank you
 No free and open source software project has been successful without the contributions of many. This space is reserved for recognizing people who have made meaningful contributions to HeliOS. All contributors are listed in alphabetical order.
+* [Jakub Rakus](https://github.com/JakubRakus)
 * [Julien Peyregne](https://github.com/JuPrgn)
+* [Kai Wurtz](https://github.com/kwrtz)
 * [Konidem](https://github.com/Konidem)
 * [Stig Bjorlykke](https://github.com/stigbjorlykke)
+* [Thomas Hornschuh](https://github.com/ThomasHornschuh)
 
-Also, special thanks to [Gil Maimon](https://github.com/gilmaimon) for the super-cool website [ArduBadge](https://www.ardu-badge.com/).
+Also, special thanks to [Gil Maimon](https://github.com/gilmaimon) for the great website [ArduBadge](https://www.ardu-badge.com/).
 # License & Trademarks
 HeliOS is copyrighted open source software licensed under the Free Software Foundation's GNU General Public License Version 3. The license can be found [here](/LICENSE.md).
 

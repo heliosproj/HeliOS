@@ -16,12 +16,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <stdbool.h>
+#include <stdint.h>
+
 #ifdef __cplusplus
   extern "C" {
 #endif
-
-#include <stdbool.h>
-#include <stdint.h>
 
 void TaskInit();
 TaskId_t xTaskAdd(const char *, void (*)(TaskId_t));

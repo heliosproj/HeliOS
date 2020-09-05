@@ -30,35 +30,42 @@
 
 #if defined(ARDUINO_ARCH_AVR)
   #include <Arduino.h>
-  #define NOW() micros()
+  #define CURRENTTIME() micros()
   #define DISABLE() noInterrupts()
   #define ENABLE() interrupts()
   typedef uint32_t Time_t;
   #define TIME_T_MAX UINT32_MAX
 #elif defined(ARDUINO_ARCH_SAM)
   #include <Arduino.h>
-  #define NOW() micros()
+  #define CURRENTTIME() micros()
   #define DISABLE() noInterrupts()
   #define ENABLE() interrupts()
   typedef uint32_t Time_t;
   #define TIME_T_MAX UINT32_MAX
 #elif defined(ARDUINO_ARCH_SAMD)
   #include <Arduino.h>
-  #define NOW() micros()
+  #define CURRENTTIME() micros()
+  #define DISABLE() noInterrupts()
+  #define ENABLE() interrupts()
+  typedef uint32_t Time_t;
+  #define TIME_T_MAX UINT32_MAX
+#elif defined(ARDUINO_ARCH_ESP8266)
+  #include <Arduino.h>
+  #define CURRENTTIME() micros()
   #define DISABLE() noInterrupts()
   #define ENABLE() interrupts()
   typedef uint32_t Time_t;
   #define TIME_T_MAX UINT32_MAX
 #elif defined(OTHER_ARCH_LINUX)
   #include <time.h>
-  #define NOW() CurrentTime()
+  #define CURRENTTIME() CurrentTime()
   #define DISABLE()
   #define ENABLE()
   typedef uint64_t Time_t;
   #define TIME_T_MAX UINT64_MAX
 #elif defined(OTHER_ARCH_WINDOWS)
   #include <Windows.h>
-  #define NOW() CurrentTime()
+  #define CURRENTTIME() CurrentTime()
   #define DISABLE()
   #define ENABLE()
   typedef int64_t Time_t;
@@ -79,7 +86,7 @@
 #define PRODUCT_NAME "HeliOS"
 #define MAJOR_VERSION_NO 0
 #define MINOR_VERSION_NO 2
-#define PATCH_VERSION_NO 5
+#define PATCH_VERSION_NO 6
 
 typedef enum {
   TaskStateInvalid,
