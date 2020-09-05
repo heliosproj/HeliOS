@@ -86,7 +86,7 @@
 #define PRODUCT_NAME "HeliOS"
 #define MAJOR_VERSION_NO 0
 #define MINOR_VERSION_NO 2
-#define PATCH_VERSION_NO 5
+#define PATCH_VERSION_NO 6
 
 typedef enum {
   TaskStateInvalid,
