@@ -30,6 +30,12 @@
  */
 #include <HeliOS_Arduino.h>
 
+/*
+ * Define Serial speed and timers
+ */
+#define SERIAL_SPEED 9600
+#define TASKSERIAL_TIMER 5000
+#define OTHERTASK_TIMER 2000
 
 /*
  * The task definition for taskSerial() which will
@@ -137,7 +143,7 @@ void setup() {
    * Set the serial data rate and begin serial
    * communication.
    */
-  Serial.begin(9600);
+  Serial.begin(SERIAL_SPEED);
 
   /*
    * Add the task taskSerial() to HeliOS by passing
@@ -158,7 +164,7 @@ void setup() {
    * (5 second). HeliOS automatically begins incrementing
    * the timer for the task once the timer interval is set.
    */
-  xTaskSetTimer(id, 5000000);
+  xTaskSetTimer(id, TASKSERIAL_TIMER);
   
   /*
    * Add the second task otherTask() to HeliOS by passing
@@ -179,7 +185,7 @@ void setup() {
    * (2 second). HeliOS automatically begins incrementing
    * the timer for the task once the timer interval is set.
    */
-  xTaskSetTimer(id, 2000000);
+  xTaskSetTimer(id, OTHERTASK_TIMER);
 }
 
 void loop() {
