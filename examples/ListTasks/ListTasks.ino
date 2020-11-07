@@ -30,6 +30,7 @@
  */
 #include <HeliOS_Arduino.h>
 
+
 /*
  * The task definition for taskSerial() which will
  * be executed by HeliOS every 1,000,000 microseconds
@@ -81,16 +82,16 @@ void taskSerial(xTaskId id_) {
        * Append all of the members of the xTaskGetListResult
        * structure to the string.
        */
-      str += "taskSerial(): id = ";
-      str += tres->id;
+      str += "task : id = ";
+      str += tres[i].id;
       str += ", name = ";
-      str += tres->name;
+      str += tres[i].name;
       str += ", state = ";
-      str += tres->state;
+      str += tres[i].state;
       str += ", ltime = ";
-      str += tres->lastRuntime;
+      str += tres[i].lastRuntime;
       str += ", ttime = ";
-      str += tres->totalRuntime;
+      str += tres[i].totalRuntime;
 
       /*
        * Print the string to the serial bus.
@@ -105,6 +106,16 @@ void taskSerial(xTaskId id_) {
    * may exhaust its available managed memory through
    * subsequent calls to xTaskGetInfo().
    */
+  xMemFree(tres);
+}
+
+/*
+ * The task definition for otherTask() which will
+ * be executed by HeliOS every 2,000,000 microseconds
+ * (2 second).
+ */
+void otherTask(xTaskId id_) {
+  xTaskGetInfoResult tres = xTaskGetInfo(id_);
   xMemFree(tres);
 }
 
@@ -143,11 +154,32 @@ void setup() {
   xTaskWait(id);
 
   /*
-   * Set the timer interval for taskSerial() to 1,000,000 microseconds
-   * (1 second). HeliOS automatically begins incrementing
+   * Set the timer interval for taskSerial() to 5,000,000 microseconds
+   * (5 second). HeliOS automatically begins incrementing
    * the timer for the task once the timer interval is set.
    */
-  xTaskSetTimer(id, 1000000);
+  xTaskSetTimer(id, 5000000);
+  
+  /*
+   * Add the second task otherTask() to HeliOS by passing
+   * xTaskAdd() the friendly name of the task as well
+   * as a callback pointer to the task function.
+   */
+  id = xTaskAdd("OTHERTASK", &otherTask);
+
+  /*
+   * Call xTaskWait() to place taskSerial2() into a wait
+   * state by passing xTaskWait() the task id. A task
+   * must be in a wait state to respond to timer events.
+   */
+  xTaskWait(id);
+
+  /*
+   * Set the timer interval for otherTask() to 2,000,000 microseconds
+   * (2 second). HeliOS automatically begins incrementing
+   * the timer for the task once the timer interval is set.
+   */
+  xTaskSetTimer(id, 2000000);
 }
 
 void loop() {
