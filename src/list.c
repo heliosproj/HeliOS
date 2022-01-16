@@ -103,7 +103,7 @@ Task_t *TaskListGet() {
   return null;
 }
 
-Task_t *TaskListGePriv() {
+Task_t *TaskListGetPriv() {
   if (taskListCurrPriv)
     return taskListCurrPriv->task;
   return null;

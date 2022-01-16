@@ -35,32 +35,28 @@
 
 /*
  * The task definition for taskShort() which
- * will perform 1,000 arbitrary floating point
+ * will perform 10,000 arbitrary floating point
  * operations.
  */
 void taskShort(xTaskId id_) {
-  volatile float a = 0.0f, b = 0.0f;
+  volatile float a = 0.0f;
 
-  for (int i = 0; i < 1000; i++)
+  for (int i = 0; i < 10000; i++)
     a += i;
-
-  b = a;
 
   printf("S");
 }
 
 /*
  * The task definition for taskLong() which
- * will perform 10,000 arbitrary floating point
+ * will perform 1,000,000 arbitrary floating point
  * operations.
  */
 void taskLong(xTaskId id_) {
-  volatile float a = 0.0f, b = 0.0f;
+  volatile float a = 0.0f;
 
-  for (int i = 0; i < 10000; i++)
+  for (int i = 0; i < 1000000; i++)
     a += i;
-
-  b = a;
 
   printf("L\n");
 }

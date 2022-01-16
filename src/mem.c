@@ -24,7 +24,7 @@
 volatile MemAllocRecord_t memAllocTable[MEMALLOCTABLE_SIZE];
 
 void MemInit() {
-  memset_(&memAllocTable, 0, MEMALLOCTABLE_SIZE * sizeof(MemAllocRecord_t));
+  memset_((void *) &memAllocTable, 0, MEMALLOCTABLE_SIZE * sizeof(MemAllocRecord_t));
 }
 
 void *xMemAlloc(size_t size_) {

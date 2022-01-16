@@ -37,8 +37,6 @@ void xHeliOSSetup() {
 }
 
 void xHeliOSLoop() {
-  int16_t waiting = 0;
-  Task_t *waitingTask[WAITINGTASK_SIZE];
   Task_t *runningTask = null;
   Task_t *task = null;
   Time_t leastRuntime = TIME_T_MAX;
@@ -142,12 +140,12 @@ inline void TaskRun(Task_t *task_) {
 inline void RuntimeReset() {
   Task_t *task = null;
 
-  TaskListRewind();
+  TaskListRewindPriv();
   do {
-    task = TaskListGet();
+    task = TaskListGetPriv();
     if (task)
       task->totalRuntime = task->lastRuntime;
-  } while (TaskListMoveNext());
+  } while (TaskListMoveNextPriv());
   flags.runtimeOverflow = false;
 }
 
