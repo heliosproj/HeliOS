@@ -78,7 +78,13 @@
   typedef uint32_t Time_t;
   #define TIME_T_MAX UINT32_MAX
 #else
-  #error "This architecture is currently unsupported by HeliOS. If targeting Linux or Microsoft Windows, make sure to un-comment OTHER_ARCH_LINUX or OTHER_ARCH_WINDOWS in HeliOS.h."
+  #pragma message("WARNING: This architecture is currently unsupported by HeliOS. If targeting Linux or Microsoft Windows, make sure to un-comment OTHER_ARCH_LINUX or OTHER_ARCH_WINDOWS in HeliOS.h.")
+  #include <Arduino.h>
+  #define CURRENTTIME() micros()
+  #define DISABLE() noInterrupts()
+  #define ENABLE() interrupts()
+  typedef uint32_t Time_t;
+  #define TIME_T_MAX UINT32_MAX
 #endif
 
 #if !defined(null)
