@@ -70,8 +70,15 @@
   #define ENABLE()
   typedef int64_t Time_t;
   #define TIME_T_MAX INT64_MAX
+#elif defined(ARDUINO_TEENSY40) || defined(ARDUINO_TEENSY41) || defined(ARDUINO_TEENSY_MICROMOD) || defined(KINETISK)
+  #include <Arduino.h>
+  #define CURRENTTIME() micros()
+  #define DISABLE() noInterrupts()
+  #define ENABLE() interrupts()
+  typedef uint32_t Time_t;
+  #define TIME_T_MAX UINT32_MAX
 #else
-  #error "This architecture is currently unsupported by HeliOS. If building for Linux or Microsoft Windows, make sure to un-comment OTHER_ARCH_LINUX or OTHER_ARCH_WINDOWS in HeliOS.h."
+  #error "This architecture is currently unsupported by HeliOS. If targeting Linux or Microsoft Windows, make sure to un-comment OTHER_ARCH_LINUX or OTHER_ARCH_WINDOWS in HeliOS.h."
 #endif
 
 #if !defined(null)
