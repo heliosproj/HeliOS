@@ -48,43 +48,25 @@ void xHeliOSLoop() {
   if (flags.runtimeOverflow)
     RuntimeReset();
 
-  /*
-   * Disable interrupts while scheduler runs.
-   */
-  DISABLE();
-  TaskListRewind();
+  TaskListRewindPriv();
   do {
-    task = TaskListGet();
+    task = TaskListGetPriv();
     if (task) {
-      if (task->state == TaskStateRunning && task->totalRuntime < leastRuntime) {
+      if((task->state == TaskStateStopped || task->state == TaskStateWaiting) && task->notifyBytes > 0) {
+        TaskRun(task);
+      } else if (task->state == TaskStateWaiting && CURRENTTIME() - task->timerStartTime > task->timerInterval) {
+        TaskRun(task);
+        task->timerStartTime = CURRENTTIME();
+      } else if (task->state == TaskStateRunning && task->totalRuntime < leastRuntime) {
         leastRuntime = task->totalRuntime;
         runningTask = task;
-      } else if (task->state == TaskStateWaiting) {
-        if (waiting < WAITINGTASK_SIZE) {
-          waitingTask[waiting] = task;
-          waiting++;
-        }
       }
     }
-  } while (TaskListMoveNext());
+  } while (TaskListMoveNextPriv());
 
-  /*
-   * Re-enable interrupts after sceduler runs.
-   */
-  ENABLE();
-  for (int16_t i = 0; i < waiting; i++) {
-    if (waitingTask[i]->notifyBytes > 0) {
-      TaskRun(waitingTask[i]);
-      waitingTask[i]->notifyBytes = 0;
-    } else if (waitingTask[i]->timerInterval > 0) {
-      if (CURRENTTIME() - waitingTask[i]->timerStartTime > waitingTask[i]->timerInterval) {
-        TaskRun(waitingTask[i]);
-        waitingTask[i]->timerStartTime = CURRENTTIME();
-      }
-    }
-  }
   if (runningTask)
     TaskRun(runningTask);
+
   flags.critBlocking = false;
 }
 

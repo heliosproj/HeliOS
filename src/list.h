@@ -29,8 +29,11 @@ void TaskListClear();
 void TaskListAdd(Task_t *);
 void TaskListRemove();
 Task_t *TaskListGet();
+Task_t *TaskListGetPriv();
 bool TaskListMoveNext();
+bool TaskListMoveNextPriv();
 void TaskListRewind();
+void TaskListRewindPriv();
 
 #ifdef __cplusplus
 } // extern "C" {

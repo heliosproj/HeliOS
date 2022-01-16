@@ -25,13 +25,18 @@ volatile TaskListItem_t *taskListHead;
 volatile TaskListItem_t *taskListTail;
 volatile TaskListItem_t *taskListPrev;
 volatile TaskListItem_t *taskListCurr;
+volatile TaskListItem_t *taskListPrevPriv;
+volatile TaskListItem_t *taskListCurrPriv;
 
 void TaskListInit() {
   taskListHead = null;
   taskListTail = null;
   taskListPrev = null;
   taskListCurr = null;
+  taskListPrevPriv = null;
+  taskListCurrPriv = null;
   TaskListRewind();
+  TaskListRewindPriv();
 }
 
 void TaskListClear() {
@@ -49,10 +54,12 @@ void TaskListAdd(Task_t *task_) {
       taskListTail->next = item;
       taskListTail = item;
       TaskListRewind();
+      TaskListRewindPriv();
     } else {
       taskListHead = item;
       taskListTail = item;
       TaskListRewind();
+      TaskListRewindPriv();
     }
   }
 }
@@ -68,6 +75,7 @@ void TaskListRemove() {
       TaskListItem_t *item = (TaskListItem_t *)taskListHead;
       taskListHead = taskListHead->next;
       TaskListRewind();
+      TaskListRewindPriv();
       xMemFree(item->task);
       xMemFree(item);
     } else if (taskListCurr == taskListTail) {
@@ -75,12 +83,14 @@ void TaskListRemove() {
       taskListTail = taskListPrev;
       taskListPrev->next = null;
       TaskListRewind();
+      TaskListRewindPriv();
       xMemFree(item->task);
       xMemFree(item);
     } else {
       TaskListItem_t *item = (TaskListItem_t *)taskListCurr;
       taskListPrev->next = taskListCurr->next;
       TaskListRewind();
+      TaskListRewindPriv();
       xMemFree(item->task);
       xMemFree(item);
     }
@@ -90,6 +100,12 @@ void TaskListRemove() {
 Task_t *TaskListGet() {
   if (taskListCurr)
     return taskListCurr->task;
+  return null;
+}
+
+Task_t *TaskListGePriv() {
+  if (taskListCurrPriv)
+    return taskListCurrPriv->task;
   return null;
 }
 
@@ -104,7 +120,23 @@ bool TaskListMoveNext() {
   return false;
 }
 
+bool TaskListMoveNextPriv() {
+  if (taskListCurrPriv) {
+    if (taskListCurrPriv->next) {
+      taskListPrevPriv = taskListCurrPriv;
+      taskListCurrPriv = taskListCurrPriv->next;
+      return true;
+    }
+  }
+  return false;
+}
+
 void TaskListRewind() {
   taskListPrev = null;
   taskListCurr = taskListHead;
+}
+
+void TaskListRewindPriv() {
+  taskListPrevPriv= null;
+  taskListCurrPriv = taskListHead;
 }

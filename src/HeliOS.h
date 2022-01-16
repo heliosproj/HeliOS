@@ -22,7 +22,7 @@
 #include <stdint.h>
 
 /*
- * Un-comment to compile on Linux or Microsoft
+ * Un-comment to target Linux or Microsoft
  * Windows.
  * #define OTHER_ARCH_LINUX
  * #define OTHER_ARCH_WINDOWS
@@ -86,7 +86,7 @@
 #define PRODUCT_NAME "HeliOS"
 #define MAJOR_VERSION_NO 0
 #define MINOR_VERSION_NO 2
-#define PATCH_VERSION_NO 6
+#define PATCH_VERSION_NO 7
 
 typedef enum {
   TaskStateInvalid,
