@@ -14,7 +14,7 @@ As noted in the key features, HeliOS supports two types of multitasking: coopera
 # Why HeliOS
 There are already so many great and proven RTOS and scheduler options available, then why HeliOS? HeliOS was never intended to replace or compete with the other options already available today (if you have not checked out FreeRTOS - you should). HeliOS, however, due to its size and simplicity, is intended to play in the space between RTOS's and task schedulers. HeliOS is tiny, easy to use and a great place to start for enthusiasts, hobbyists and researchers alike.
 # What's Happening
-HeliOS is continuously being improved. Development is currently focused on improvements to the HeliOS Programmer's Guide, code documentation, additional example sketches and testing. If you are looking to check-out the latest developments in HeliOS, clone the **develop** branch. But remember that the source code and documentation in the **develop** branch is under active development and may contain errors. In the meantime, don't forget to **star** and **watch** the HeliOS repository so you don't miss out on new releases.
+HeliOS is continuously being improved. Development is currently focused on improvements to the scheduler, adding features, adding additional microcontroller support, code documentation, additional example sketches and testing. If you are looking to check-out the latest developments in HeliOS, clone the **develop** branch. But remember that the source code and documentation in the **develop** branch is under active development and may contain errors. In the meantime, don't forget to **star** and **watch** the HeliOS repository so you don't miss out on new releases.
 # Getting Started
 ## Arduino
 Because HeliOS is compliant with the Arduino 1.5 (rev. 2.2) Library Specification, getting up and running is quick and easy. HeliOS can be installed directly from the Arduino Library Manager or downloaded and installed manually. Both options are described [here](https://www.arduino.cc/en/Guide/Libraries#toc3). You can also refer to the auto-generated instructions from ArduBadge [here](https://www.ardu-badge.com/HeliOS). Once up and running, check out one of the example sketches or refer to the HeliOS Programmer's Guide in the Documentation section.
@@ -23,6 +23,7 @@ Built-in support currently exists for:
 * AVR
 * SAM/SAMD
 * ESP8266
+* Teensy 3/4
 Other microcontrollers will be added as time permits.
 ## Linux & Microsoft Windows
 Built-in support exists for building and running HeliOS in user-land on Linux and Microsoft Windows. When running in user-land, HeliOS acts like a threading library for applications. To target Linux or Microsoft Windows, (as shown below) simply un-comment the appropriate C preprocessor directive in the header file HeliOS.h and build using GCC or Microsoft Visual C++. The files needed to build HeliOS in user-land on Linux and Microsoft Windows can be found in extras/linux and extras/windows directories respectively.
@@ -158,7 +159,7 @@ void loop() {
 ```
 # Releases
 All releases, including the current release, can be found [here](https://github.com/MannyPeterson/HeliOS/releases).
-* 0.2.7 - added a contributed example and privatized the list pointers for scheduler
+* 0.2.7 - added a contributed example, privatized the list pointers for scheduler and added support for Teensy 3/4
 * 0.2.6 - added built-in support for ESP8266 and minor internal updates
 * 0.2.5 - numerous internal enhancements including improved time precision and scheduler now gracefully handles overflow of run-time timer
 * 0.2.4 - additional example Arduino sketches and other code improvements
@@ -167,12 +168,13 @@ All releases, including the current release, can be found [here](https://github.
 * 0.2.1 - The first official release
 # Contributing
 While all contributions are welcome, contributions are needed most in the following areas:
-* HeliOS Programmer's Guide
+* Testing, Testing and More Testing
 * Code Documentation, Readability and Maintainability
+* Additional Microcontroller Support
 * Example Sketches
-* Testing
+* HeliOS Programmer's Guide
 
-To contribute, simply create a pull request with your changes. Please fork from the **develop** branch as **master** is kept even with the current release. Pull requests are typically responded to within 48 hours.
+To contribute, simply create a pull request with your changes. Please fork from the **develop** branch as **master** is kept even with the current release. Pull requests are typically responded to as quickly as possible.
 # Thank you
 No free and open source software project has been successful without the contributions of many. This space is reserved for recognizing people who have made meaningful contributions to HeliOS. All contributors are listed in alphabetical order.
 * [Jakub Rakus](https://github.com/JakubRakus)
