@@ -37,7 +37,7 @@ void xHeliOSSetup() {
 }
 
 void xHeliOSLoop() {
-  Task_t *runningTask = null;
+  Task_t *runTask = null;
   Task_t *task = null;
   Time_t leastRuntime = TIME_T_MAX;
 
@@ -50,20 +50,20 @@ void xHeliOSLoop() {
   do {
     task = TaskListGetPriv();
     if (task) {
-      if((task->state == TaskStateStopped || task->state == TaskStateWaiting) && task->notifyBytes > 0) {
+      if(task->state == TaskStateWaiting && task->notifyBytes > 0) {
         TaskRun(task);
-      } else if (task->state == TaskStateWaiting && CURRENTTIME() - task->timerStartTime > task->timerInterval) {
+      } else if (task->state == TaskStateWaiting && task->timerInterval > 0 && CURRENTTIME() - task->timerStartTime > task->timerInterval) {
         TaskRun(task);
         task->timerStartTime = CURRENTTIME();
       } else if (task->state == TaskStateRunning && task->totalRuntime < leastRuntime) {
         leastRuntime = task->totalRuntime;
-        runningTask = task;
+        runTask = task;
       }
     }
   } while (TaskListMoveNextPriv());
 
-  if (runningTask)
-    TaskRun(runningTask);
+  if (runTask)
+    TaskRun(runTask);
 
   flags.critBlocking = false;
 }
