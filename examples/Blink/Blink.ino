@@ -55,7 +55,7 @@ void taskBlink(xTaskId id_) {
     digitalWrite(LED_BUILTIN, LOW);
 
     /*
-     * Update the int containing the state of the build-in
+     * Update the int containing the state of the built-in
      * LED accordingly.
      */
     ledState = 0;

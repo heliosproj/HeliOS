@@ -40,7 +40,7 @@ Built-in support exists for compiling and running HeliOS in user-land on Linux a
 # Documentation
 The HeliOS Programmer's Guide is a work in progress. What is available today can be found [here](/extras/HeliOS_Programmers_Guide.md). If you are interested in contributing to the HeliOS Programmer's Guide, please see the Contributing section for details.
 # Example
-Many embedded projects on microcontrollers implement what is called a "super loop". A super loop is a loop that never exits (i.e while(1){}) and contains most of the code executed by the microcontroller. The problem with super loops is they can grow out of control and become difficult to manage. This becomes especially challenging given the relatively few options for controling timing (e.g. delay()). Unfortunately the use of delay() to control timing also means the microcontroller is unable to perform other operations (at least without the help of an ISR) until delay() returns. Below is an example of how easy it is to leverage the event driven multitasking capabilities within HeliOS.
+Many embedded projects on microcontrollers implement what is called a "super loop". A super loop is a loop that never exits (i.e., while(1){}) and contains most of the code executed by the microcontroller. The problem with super loops is they can grow out of control and become difficult to manage. This becomes especially challenging given the relatively few options for controling timing (e.g., delay()). Unfortunately the use of delay() to control timing also means the microcontroller is unable to perform other operations (at least without the help of an ISR) until delay() returns. Below is an example of how easy it is to leverage the event driven multitasking capabilities within HeliOS.
 ## Arduino "Blink" Example
 Below is a copy of the traditional Arduino "Blink" example code.
 ```C
@@ -89,7 +89,7 @@ void taskBlink(xTaskId id_) {
     digitalWrite(LED_BUILTIN, LOW);
 
     /*
-     * Update the int containing the state of the build-in
+     * Update the int containing the state of the built-in
      * LED accordingly.
      */
     ledState = 0;
