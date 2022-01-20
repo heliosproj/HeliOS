@@ -171,6 +171,7 @@ All releases, including the current release, can be found [here](https://github.
 While all contributions are welcome, contributions are needed most in the following areas:
 * Testing, Testing and More Testing
 * Code Documentation, Readability and Maintainability
+* New Features
 * Additional Microcontroller Support
 * Example Sketches
 * HeliOS Programmer's Guide
