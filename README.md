@@ -19,13 +19,14 @@ HeliOS is always being improved. Development is currently focused on improvement
 ## Arduino
 Because HeliOS is compliant with the Arduino 1.5 (rev. 2.2) Library Specification, getting up and running is quick and easy. HeliOS can be installed directly from the Arduino Library Manager or downloaded and installed manually. Both options are described [here](https://www.arduino.cc/en/Guide/Libraries#toc3). You can also refer to the auto-generated instructions from ArduBadge [here](https://www.ardu-badge.com/HeliOS). Once up and running, check out one of the example sketches or refer to the HeliOS Programmer's Guide in the Documentation section.
 ## Other Microcontrollers
-Built-in support currently exists for the following microcontrollers:
+Built-in (tested) support currently exists for the following microcontrollers:
 * AVR
 * SAM/SAMD
 * ESP8266
-* Teensy 3/4
+* ESP32
+* Teensy
 
-HeliOS can be built for other microcontrollers. However, results may vary. If you wish to add support for your favorite microcontroller, please see the Contributing section for details on how to contribute code.
+HeliOS can be built for other microcontrollers as well. However, your mileage may vary. If you wish to add support for your favorite microcontroller, please see the Contributing section for details on how to contribute code.
 ## Linux & Microsoft Windows
 Built-in support exists for building and running HeliOS in user-land on Linux and Microsoft Windows. When running in user-land, HeliOS acts like a threading library for applications. To target Linux or Microsoft Windows, (as shown below) simply un-comment the appropriate C preprocessor directive in the header file HeliOS.h and build using GCC or Microsoft Visual C++. The files needed to build HeliOS in user-land on Linux and Microsoft Windows can be found in extras/linux and extras/windows directories respectively.
 ```C

@@ -70,7 +70,14 @@
   #define ENABLE()
   typedef int64_t Time_t;
   #define TIME_T_MAX INT64_MAX
-#elif defined(ARDUINO_TEENSY40) || defined(ARDUINO_TEENSY41) || defined(ARDUINO_TEENSY_MICROMOD) || defined(KINETISK)
+#elif defined(ARDUINO_TEENSY_MICROMOD) || defined(ARDUINO_TEENSY40) || defined(ARDUINO_TEENSY41) || defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY35) ||  defined(ARDUINO_TEENSY31) || defined(ARDUINO_TEENSY32) || defined(ARDUINO_TEENSY30) || defined(ARDUINO_TEENSYLC)
+  #include <Arduino.h>
+  #define CURRENTTIME() micros()
+  #define DISABLE() noInterrupts()
+  #define ENABLE() interrupts()
+  typedef uint32_t Time_t;
+  #define TIME_T_MAX UINT32_MAX
+#elif defined(ESP32)
   #include <Arduino.h>
   #define CURRENTTIME() micros()
   #define DISABLE() noInterrupts()
