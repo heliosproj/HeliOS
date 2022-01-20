@@ -1,6 +1,6 @@
 /*
  * HeliOS Embedded Operating System
- * Copyright (C) 2020 Manny Peterson <me@mannypeterson.com>
+ * Copyright (C) 2020-2022 Manny Peterson <mannymsp@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@
 #include <stdint.h>
 
 /*
- * Un-comment to compile on Linux or Microsoft
+ * Un-comment to compile for Linux or Microsoft
  * Windows.
  * #define OTHER_ARCH_LINUX
  * #define OTHER_ARCH_WINDOWS
@@ -70,8 +70,28 @@
   #define ENABLE()
   typedef int64_t Time_t;
   #define TIME_T_MAX INT64_MAX
+#elif defined(ARDUINO_TEENSY_MICROMOD) || defined(ARDUINO_TEENSY40) || defined(ARDUINO_TEENSY41) || defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY35) ||  defined(ARDUINO_TEENSY31) || defined(ARDUINO_TEENSY32) || defined(ARDUINO_TEENSY30) || defined(ARDUINO_TEENSYLC)
+  #include <Arduino.h>
+  #define CURRENTTIME() micros()
+  #define DISABLE() noInterrupts()
+  #define ENABLE() interrupts()
+  typedef uint32_t Time_t;
+  #define TIME_T_MAX UINT32_MAX
+#elif defined(ESP32)
+  #include <Arduino.h>
+  #define CURRENTTIME() micros()
+  #define DISABLE() noInterrupts()
+  #define ENABLE() interrupts()
+  typedef uint32_t Time_t;
+  #define TIME_T_MAX UINT32_MAX
 #else
-  #error "This architecture is currently unsupported by HeliOS. If building for Linux or Microsoft Windows, make sure to un-comment OTHER_ARCH_LINUX or OTHER_ARCH_WINDOWS in HeliOS.h."
+  #pragma message("WARNING: This architecture is currently unsupported by HeliOS. If targeting Linux or Microsoft Windows, make sure to un-comment OTHER_ARCH_LINUX or OTHER_ARCH_WINDOWS in HeliOS.h.")
+  #include <Arduino.h>
+  #define CURRENTTIME() micros()
+  #define DISABLE() noInterrupts()
+  #define ENABLE() interrupts()
+  typedef uint32_t Time_t;
+  #define TIME_T_MAX UINT32_MAX
 #endif
 
 #if !defined(null)
@@ -79,14 +99,13 @@
 #endif
 
 #define TASKNAME_SIZE 16
-#define WAITINGTASK_SIZE 8
 #define PRODUCTNAME_SIZE 16
 #define TNOTIFYVALUE_SIZE 16
-#define MEMALLOCTABLE_SIZE 50
+#define MEMALLOCTABLE_SIZE 100
 #define PRODUCT_NAME "HeliOS"
 #define MAJOR_VERSION_NO 0
 #define MINOR_VERSION_NO 2
-#define PATCH_VERSION_NO 6
+#define PATCH_VERSION_NO 7
 
 typedef enum {
   TaskStateInvalid,

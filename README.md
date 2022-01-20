@@ -2,7 +2,7 @@
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://github.com/MannyPeterson/HeliOS/blob/master/LICENSE.md) ![GitHub last commit](https://img.shields.io/github/last-commit/MannyPeterson/HeliOS) ![GitHub release (latest by date)](https://img.shields.io/github/v/release/MannyPeterson/HeliOS) [![arduino-library-badge](https://www.ardu-badge.com/badge/HeliOS.svg?)](https://www.ardu-badge.com/HeliOS) ![GitHub stars](https://img.shields.io/github/stars/MannyPeterson/HeliOS?style=social) ![GitHub watchers](https://img.shields.io/github/watchers/MannyPeterson/HeliOS?style=social)
 # Overview
-HeliOS is an embedded operating system that is free for anyone to use. While called an operating system for simplicity, HeliOS is better described as a multitasking kernel for embedded systems. HeliOS is very small. In fact, it is small enough to run on most 8-bit microcontrollers including the popular AVR based Arduino Uno. Written entirely in C, HeliOS runs on a variety of microcontrollers and integrates easily into any project. HeliOS is also easy to learn with an Application Programming Interface (API) consisting of only 21 function calls. HeliOS contains the following key features:
+HeliOS is an embedded operating system that is free for everyone to use. While called an operating system for simplicity, HeliOS is better described as a multitasking kernel for embedded systems. HeliOS is very small. In fact, it is small enough to run on most 8-bit microcontrollers including the popular AVR based Arduino Uno. Written entirely in C, HeliOS runs on a variety of microcontrollers and integrates easily into any project. HeliOS is also easy to learn with an Application Programming Interface (API) consisting of only 21 function calls. HeliOS contains the following key features:
 * Cooperative Multitasking (Run-time Balanced)
 * Event Driven Multitasking
 * Task Notification/Messaging
@@ -12,19 +12,26 @@ HeliOS is an embedded operating system that is free for anyone to use. While cal
 
 As noted in the key features, HeliOS supports two types of multitasking: cooperative and event driven. Cooperative multitasking embedded operating systems and task schedulers often use a round-robin scheduling strategy. However, HeliOS uses a run-time balanced strategy which ensures tasks with shorter run-times are prioritized over tasks with longer run-times. This ensures all running tasks receive approximately equal total run-time without using context switching. The other multitasking option available in HeliOS is event driven multitasking, which uses the wait/notify and timer interfaces. Mixing cooperative and event driven tasks in HeliOS is not a problem.
 # Why HeliOS
-There are already so many great and proven RTOS and scheduler options available, then why HeliOS? That is certainly a valid question. HeliOS was never intended to replace or compete with the other options already available today (if you have not checked out FreeRTOS - you should, it is nothing short of an amazing RTOS for embedded and is more accessible today than ever before through the Arduino Library Manager). HeliOS, however, due to its size and simplicity, is intended to play in the space between RTOS's and task schedulers. HeliOS is tiny (smaller than FreeRTOS), easy to use and a great place to start for enthusiasts, hobbyists and researchers.
+There are already so many great and proven RTOS and scheduler options available, then why HeliOS? HeliOS was never intended to replace or compete with the other options already available today (e.g., FreeRTOS). HeliOS, however, due to its size and simplicity, is intended to play in the space between RTOS's and task schedulers. HeliOS is tiny, easy to use and a great place to start for enthusiasts, hobbyists and researchers alike.
 # What's Happening
-HeliOS is continuously being improved. Development is currently occurring in weekly sprints resulting in a new release at the end of each sprint. This schedule will continue until a substantial portion of the development backlog, which includes improvements to the HeliOS Programmer's Guide, code documentation, additional example sketches and testing, is complete. If you are looking to check-out the latest developments in HeliOS, clone the **develop** branch. But remember that the source code and documentation in the **develop** branch is under active development and may contain errors. In the meantime, don't forget to **star** or **watch** the HeliOS repository and check back frequently.
+HeliOS is always being improved. Development is currently focused on improvements to the scheduler, adding features, adding additional microcontroller support, code documentation, additional example sketches and testing. If you are looking to check-out the latest developments in HeliOS, clone the **develop** branch. But remember that the source code and documentation in the **develop** branch is under active development and may or may not compile. In the meantime, don't forget to **star** and **watch** the HeliOS repository so you don't miss out on new releases.
 # Getting Started
 ## Arduino
 Because HeliOS is compliant with the Arduino 1.5 (rev. 2.2) Library Specification, getting up and running is quick and easy. HeliOS can be installed directly from the Arduino Library Manager or downloaded and installed manually. Both options are described [here](https://www.arduino.cc/en/Guide/Libraries#toc3). You can also refer to the auto-generated instructions from ArduBadge [here](https://www.ardu-badge.com/HeliOS). Once up and running, check out one of the example sketches or refer to the HeliOS Programmer's Guide in the Documentation section.
 ## Other Microcontrollers
-While built-in support currently only exists for the Arduino AVR, SAM and SAMD architectures, HeliOS is easily ported to a variety of other microcontrollers. Because the project is currently focused on supporting the Arduino community, no plans currently exist for adding built-in support for additional microcontrollers and tool-chains.
+Built-in (tested) support currently exists for the following microcontrollers:
+* AVR
+* SAM/SAMD
+* ESP8266
+* ESP32
+* Teensy
+
+HeliOS can be compiled for other microcontrollers as well. However, your mileage may vary. If you wish to add support for your favorite microcontroller, please see the Contributing section for details on how to contribute code.
 ## Linux & Microsoft Windows
-Built-in support exists for building and running HeliOS in user-land on Linux and Microsoft Windows. When running in user-land, HeliOS acts like a threading library for applications. To target Linux or Microsoft Windows, (as shown below) simply un-comment the appropriate C preprocessor directive in the header file HeliOS.h and build using GCC or Microsoft Visual C++. The files needed to build HeliOS in user-land on Linux and Microsoft Windows can be found in extras/linux and extras/windows directories respectively.
+Built-in support exists for compiling and running HeliOS in user-land on Linux and Microsoft Windows. When running in user-land, HeliOS acts like a threading library for applications. To compile for Linux or Microsoft Windows, simply un-comment the appropriate C preprocessor directive in the header file HeliOS.h (as shown below) and compile using GCC or Microsoft Visual C++. The files needed to compile uild HeliOS for user-land on Linux and Microsoft Windows can be found in extras/linux and extras/windows directories respectively.
 ```C
 /*
- * Un-comment to compile on Linux or Microsoft
+ * Un-comment to compile for Linux or Microsoft
  * Windows.
  * #define OTHER_ARCH_LINUX
  * #define OTHER_ARCH_WINDOWS
@@ -33,7 +40,7 @@ Built-in support exists for building and running HeliOS in user-land on Linux an
 # Documentation
 The HeliOS Programmer's Guide is a work in progress. What is available today can be found [here](/extras/HeliOS_Programmers_Guide.md). If you are interested in contributing to the HeliOS Programmer's Guide, please see the Contributing section for details.
 # Example
-Many embedded projects on microcontrollers implement what is called a "super loop". A super loop is a loop that never exits (i.e while(1){}) and contains most of the code executed by the microcontroller. The problem with super loops is they can grow out of control and become difficult to manage. This becomes especially challenging given the relatively few options for controling timing (e.g. delay()). Unfortunately the use of delay() to control timing also means the microcontroller is unable to perform other operations (at least without the help of an ISR) until delay() returns. Below is an example of how easy it is to leverage the event driven multitasking capabilities within HeliOS.
+Many embedded projects on microcontrollers implement what is called a "super loop". A super loop is a loop that never exits (i.e., while(1){}) and contains most of the code executed by the microcontroller. The problem with super loops is they can grow out of control and become difficult to manage. This becomes especially challenging given the relatively few options for controling timing (e.g., delay()). Unfortunately the use of delay() to control timing also means the microcontroller is unable to perform other operations (at least without the help of an ISR) until delay() returns. Below is an example of how easy it is to leverage the event driven multitasking capabilities within HeliOS.
 ## Arduino "Blink" Example
 Below is a copy of the traditional Arduino "Blink" example code.
 ```C
@@ -82,7 +89,7 @@ void taskBlink(xTaskId id_) {
     digitalWrite(LED_BUILTIN, LOW);
 
     /*
-     * Update the int containing the state of the build-in
+     * Update the int containing the state of the built-in
      * LED accordingly.
      */
     ledState = 0;
@@ -154,6 +161,7 @@ void loop() {
 ```
 # Releases
 All releases, including the current release, can be found [here](https://github.com/MannyPeterson/HeliOS/releases).
+* 0.2.7 - added a contributed example, privatized the list pointers for scheduler and added support for Teensy 3/4
 * 0.2.6 - added built-in support for ESP8266 and minor internal updates
 * 0.2.5 - numerous internal enhancements including improved time precision and scheduler now gracefully handles overflow of run-time timer
 * 0.2.4 - additional example Arduino sketches and other code improvements
@@ -162,12 +170,14 @@ All releases, including the current release, can be found [here](https://github.
 * 0.2.1 - The first official release
 # Contributing
 While all contributions are welcome, contributions are needed most in the following areas:
-* HeliOS Programmer's Guide
+* Testing, Testing and More Testing
 * Code Documentation, Readability and Maintainability
+* New Features
+* Additional Microcontroller Support
 * Example Sketches
-* Testing
+* HeliOS Programmer's Guide
 
-To contribute, simply create a pull request with your changes. Please fork from the **develop** branch as **master** is kept even with the current release. Pull requests are typically responded to within 48 hours.
+To contribute, simply create a pull request with your changes. Please fork from the **develop** branch as **master** is kept even with the current release. Pull requests are typically responded to as quickly as possible.
 # Thank you
 No free and open source software project has been successful without the contributions of many. This space is reserved for recognizing people who have made meaningful contributions to HeliOS. All contributors are listed in alphabetical order.
 * [Jakub Rakus](https://github.com/JakubRakus)
@@ -176,6 +186,8 @@ No free and open source software project has been successful without the contrib
 * [Konidem](https://github.com/Konidem)
 * [Stig Bjorlykke](https://github.com/stigbjorlykke)
 * [Thomas Hornschuh](https://github.com/ThomasHornschuh)
+* [XXIITEAM](https://github.com/IIXXTEAM)
+* [Mats Tage Axelsson](https://github.com/matstage)
 
 Also, special thanks to [Gil Maimon](https://github.com/gilmaimon) for the great website [ArduBadge](https://www.ardu-badge.com/).
 # License & Trademarks

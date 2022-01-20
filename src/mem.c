@@ -1,6 +1,6 @@
 /*
  * HeliOS Embedded Operating System
- * Copyright (C) 2020 Manny Peterson <me@mannypeterson.com>
+ * Copyright (C) 2020-2022 Manny Peterson <mannymsp@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@
 volatile MemAllocRecord_t memAllocTable[MEMALLOCTABLE_SIZE];
 
 void MemInit() {
-  memset_(&memAllocTable, 0, MEMALLOCTABLE_SIZE * sizeof(MemAllocRecord_t));
+  memset_((void *) &memAllocTable, 0, MEMALLOCTABLE_SIZE * sizeof(MemAllocRecord_t));
 }
 
 void *xMemAlloc(size_t size_) {

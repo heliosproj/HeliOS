@@ -1,6 +1,6 @@
 /*
  * HeliOS Embedded Operating System
- * Copyright (C) 2020 Manny Peterson <me@mannypeterson.com>
+ * Copyright (C) 2020-2022 Manny Peterson <mannymsp@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,7 +55,7 @@ void taskBlink(xTaskId id_) {
     digitalWrite(LED_BUILTIN, LOW);
 
     /*
-     * Update the int containing the state of the build-in
+     * Update the int containing the state of the built-in
      * LED accordingly.
      */
     ledState = 0;

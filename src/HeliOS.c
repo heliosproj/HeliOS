@@ -1,6 +1,6 @@
 /*
  * HeliOS Embedded Operating System
- * Copyright (C) 2020 Manny Peterson <me@mannypeterson.com>
+ * Copyright (C) 2020-2022 Manny Peterson <mannymsp@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,9 +37,7 @@ void xHeliOSSetup() {
 }
 
 void xHeliOSLoop() {
-  int16_t waiting = 0;
-  Task_t *waitingTask[WAITINGTASK_SIZE];
-  Task_t *runningTask = null;
+  Task_t *runTask = null;
   Task_t *task = null;
   Time_t leastRuntime = TIME_T_MAX;
 
@@ -48,43 +46,25 @@ void xHeliOSLoop() {
   if (flags.runtimeOverflow)
     RuntimeReset();
 
-  /*
-   * Disable interrupts while scheduler runs.
-   */
-  DISABLE();
-  TaskListRewind();
+  TaskListRewindPriv();
   do {
-    task = TaskListGet();
+    task = TaskListGetPriv();
     if (task) {
-      if (task->state == TaskStateRunning && task->totalRuntime < leastRuntime) {
+      if(task->state == TaskStateWaiting && task->notifyBytes > 0) {
+        TaskRun(task);
+      } else if (task->state == TaskStateWaiting && task->timerInterval > 0 && CURRENTTIME() - task->timerStartTime > task->timerInterval) {
+        TaskRun(task);
+        task->timerStartTime = CURRENTTIME();
+      } else if (task->state == TaskStateRunning && task->totalRuntime < leastRuntime) {
         leastRuntime = task->totalRuntime;
-        runningTask = task;
-      } else if (task->state == TaskStateWaiting) {
-        if (waiting < WAITINGTASK_SIZE) {
-          waitingTask[waiting] = task;
-          waiting++;
-        }
+        runTask = task;
       }
     }
-  } while (TaskListMoveNext());
+  } while (TaskListMoveNextPriv());
 
-  /*
-   * Re-enable interrupts after sceduler runs.
-   */
-  ENABLE();
-  for (int16_t i = 0; i < waiting; i++) {
-    if (waitingTask[i]->notifyBytes > 0) {
-      TaskRun(waitingTask[i]);
-      waitingTask[i]->notifyBytes = 0;
-    } else if (waitingTask[i]->timerInterval > 0) {
-      if (CURRENTTIME() - waitingTask[i]->timerStartTime > waitingTask[i]->timerInterval) {
-        TaskRun(waitingTask[i]);
-        waitingTask[i]->timerStartTime = CURRENTTIME();
-      }
-    }
-  }
-  if (runningTask)
-    TaskRun(runningTask);
+  if (runTask)
+    TaskRun(runTask);
+
   flags.critBlocking = false;
 }
 
@@ -160,12 +140,12 @@ inline void TaskRun(Task_t *task_) {
 inline void RuntimeReset() {
   Task_t *task = null;
 
-  TaskListRewind();
+  TaskListRewindPriv();
   do {
-    task = TaskListGet();
+    task = TaskListGetPriv();
     if (task)
       task->totalRuntime = task->lastRuntime;
-  } while (TaskListMoveNext());
+  } while (TaskListMoveNextPriv());
   flags.runtimeOverflow = false;
 }
 

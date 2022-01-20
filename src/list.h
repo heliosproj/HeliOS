@@ -1,6 +1,6 @@
 /*
  * HeliOS Embedded Operating System
- * Copyright (C) 2020 Manny Peterson <me@mannypeterson.com>
+ * Copyright (C) 2020-2022 Manny Peterson <mannymsp@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,8 +29,11 @@ void TaskListClear();
 void TaskListAdd(Task_t *);
 void TaskListRemove();
 Task_t *TaskListGet();
+Task_t *TaskListGetPriv();
 bool TaskListMoveNext();
+bool TaskListMoveNextPriv();
 void TaskListRewind();
+void TaskListRewindPriv();
 
 #ifdef __cplusplus
 } // extern "C" {
