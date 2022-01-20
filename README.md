@@ -2,7 +2,7 @@
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://github.com/MannyPeterson/HeliOS/blob/master/LICENSE.md) ![GitHub last commit](https://img.shields.io/github/last-commit/MannyPeterson/HeliOS) ![GitHub release (latest by date)](https://img.shields.io/github/v/release/MannyPeterson/HeliOS) [![arduino-library-badge](https://www.ardu-badge.com/badge/HeliOS.svg?)](https://www.ardu-badge.com/HeliOS) ![GitHub stars](https://img.shields.io/github/stars/MannyPeterson/HeliOS?style=social) ![GitHub watchers](https://img.shields.io/github/watchers/MannyPeterson/HeliOS?style=social)
 # Overview
-HeliOS is an embedded operating system that is free for anyone to use. While called an operating system for simplicity, HeliOS is better described as a multitasking kernel for embedded systems. HeliOS is very small. In fact, it is small enough to run on most 8-bit microcontrollers including the popular AVR based Arduino Uno. Written entirely in C, HeliOS runs on a variety of microcontrollers and integrates easily into any project. HeliOS is also easy to learn with an Application Programming Interface (API) consisting of only 21 function calls. HeliOS contains the following key features:
+HeliOS is an embedded operating system that is free for everyone to use. While called an operating system for simplicity, HeliOS is better described as a multitasking kernel for embedded systems. HeliOS is very small. In fact, it is small enough to run on most 8-bit microcontrollers including the popular AVR based Arduino Uno. Written entirely in C, HeliOS runs on a variety of microcontrollers and integrates easily into any project. HeliOS is also easy to learn with an Application Programming Interface (API) consisting of only 21 function calls. HeliOS contains the following key features:
 * Cooperative Multitasking (Run-time Balanced)
 * Event Driven Multitasking
 * Task Notification/Messaging
@@ -12,9 +12,9 @@ HeliOS is an embedded operating system that is free for anyone to use. While cal
 
 As noted in the key features, HeliOS supports two types of multitasking: cooperative and event driven. Cooperative multitasking embedded operating systems and task schedulers often use a round-robin scheduling strategy. However, HeliOS uses a run-time balanced strategy which ensures tasks with shorter run-times are prioritized over tasks with longer run-times. This ensures all running tasks receive approximately equal total run-time without using context switching. The other multitasking option available in HeliOS is event driven multitasking, which uses the wait/notify and timer interfaces. Mixing cooperative and event driven tasks in HeliOS is not a problem.
 # Why HeliOS
-There are already so many great and proven RTOS and scheduler options available, then why HeliOS? HeliOS was never intended to replace or compete with the other options already available today (if you have not checked out FreeRTOS - you should). HeliOS, however, due to its size and simplicity, is intended to play in the space between RTOS's and task schedulers. HeliOS is tiny, easy to use and a great place to start for enthusiasts, hobbyists and researchers alike.
+There are already so many great and proven RTOS and scheduler options available, then why HeliOS? HeliOS was never intended to replace or compete with the other options already available today (e.g., FreeRTOS). HeliOS, however, due to its size and simplicity, is intended to play in the space between RTOS's and task schedulers. HeliOS is tiny, easy to use and a great place to start for enthusiasts, hobbyists and researchers alike.
 # What's Happening
-HeliOS is always being improved. Development is currently focused on improvements to the scheduler, adding features, adding additional microcontroller support, code documentation, additional example sketches and testing. If you are looking to check-out the latest developments in HeliOS, clone the **develop** branch. But remember that the source code and documentation in the **develop** branch is under active development and may contain errors. In the meantime, don't forget to **star** and **watch** the HeliOS repository so you don't miss out on new releases.
+HeliOS is always being improved. Development is currently focused on improvements to the scheduler, adding features, adding additional microcontroller support, code documentation, additional example sketches and testing. If you are looking to check-out the latest developments in HeliOS, clone the **develop** branch. But remember that the source code and documentation in the **develop** branch is under active development and may or may not compile. In the meantime, don't forget to **star** and **watch** the HeliOS repository so you don't miss out on new releases.
 # Getting Started
 ## Arduino
 Because HeliOS is compliant with the Arduino 1.5 (rev. 2.2) Library Specification, getting up and running is quick and easy. HeliOS can be installed directly from the Arduino Library Manager or downloaded and installed manually. Both options are described [here](https://www.arduino.cc/en/Guide/Libraries#toc3). You can also refer to the auto-generated instructions from ArduBadge [here](https://www.ardu-badge.com/HeliOS). Once up and running, check out one of the example sketches or refer to the HeliOS Programmer's Guide in the Documentation section.
@@ -26,12 +26,12 @@ Built-in (tested) support currently exists for the following microcontrollers:
 * ESP32
 * Teensy
 
-HeliOS can be built for other microcontrollers as well. However, your mileage may vary. If you wish to add support for your favorite microcontroller, please see the Contributing section for details on how to contribute code.
+HeliOS can be compiled for other microcontrollers as well. However, your mileage may vary. If you wish to add support for your favorite microcontroller, please see the Contributing section for details on how to contribute code.
 ## Linux & Microsoft Windows
-Built-in support exists for building and running HeliOS in user-land on Linux and Microsoft Windows. When running in user-land, HeliOS acts like a threading library for applications. To target Linux or Microsoft Windows, (as shown below) simply un-comment the appropriate C preprocessor directive in the header file HeliOS.h and build using GCC or Microsoft Visual C++. The files needed to build HeliOS in user-land on Linux and Microsoft Windows can be found in extras/linux and extras/windows directories respectively.
+Built-in support exists for compiling and running HeliOS in user-land on Linux and Microsoft Windows. When running in user-land, HeliOS acts like a threading library for applications. To compile for Linux or Microsoft Windows, simply un-comment the appropriate C preprocessor directive in the header file HeliOS.h (as shown below) and compile using GCC or Microsoft Visual C++. The files needed to compile uild HeliOS for user-land on Linux and Microsoft Windows can be found in extras/linux and extras/windows directories respectively.
 ```C
 /*
- * Un-comment to target Linux or Microsoft
+ * Un-comment to compile for Linux or Microsoft
  * Windows.
  * #define OTHER_ARCH_LINUX
  * #define OTHER_ARCH_WINDOWS
