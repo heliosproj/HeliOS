@@ -7,6 +7,7 @@ HeliOS is an embedded operating system that is free for everyone to use. While c
 * Event Driven Multitasking
 * Task Notification/Messaging
 * Timers
+* Queues
 * Managed Memory
 * Non-Preemptive (no mutexs! no deadlocks! no race conditions! no headaches!)
 
@@ -161,6 +162,7 @@ void loop() {
 ```
 # Releases
 All releases, including the current release, can be found [here](https://github.com/MannyPeterson/HeliOS/releases).
+* 0.2.8 - added xTaskSetTimerWOReset(), added task a task parameter, improved headers and added support for queues
 * 0.2.7 - added a contributed example, privatized the list pointers for scheduler and added support for Teensy 3/4
 * 0.2.6 - added built-in support for ESP8266 and minor internal updates
 * 0.2.5 - numerous internal enhancements including improved time precision and scheduler now gracefully handles overflow of run-time timer

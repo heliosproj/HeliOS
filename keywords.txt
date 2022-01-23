@@ -7,6 +7,7 @@
 #######################################
 
 xTaskId	KEYWORD1
+xTaskParm   KEYWORD1
 
 #######################################
 # Functions (KEYWORD2)
@@ -30,6 +31,7 @@ xTaskNotifyClear	KEYWORD2
 xTaskRemove	KEYWORD2
 xTaskResetTimer	KEYWORD2
 xTaskSetTimer	KEYWORD2
+xTaskSetTimerWOReset    KEYWORD2
 xTaskStart	KEYWORD2
 xTaskStop	KEYWORD2
 xTaskWait	KEYWORD2

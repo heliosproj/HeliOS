@@ -108,7 +108,7 @@ typedef uint32_t Time_t;
 #define PRODUCT_NAME "HeliOS"
 #define MAJOR_VERSION_NO 0
 #define MINOR_VERSION_NO 2
-#define PATCH_VERSION_NO 7
+#define PATCH_VERSION_NO 8
 
 typedef enum {
   TaskStateInvalid,
