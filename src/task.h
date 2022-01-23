@@ -38,6 +38,7 @@ TaskGetInfoResult_t *xTaskGetInfo(TaskId_t);
 bool TaskListSeek(TaskId_t);
 TaskGetListResult_t *xTaskGetList(int16_t *);
 void xTaskSetTimer(TaskId_t, Time_t);
+void xTaskSetTimerWOReset(TaskId_t, Time_t);
 void xTaskResetTimer(TaskId_t);
 
 #ifdef __cplusplus

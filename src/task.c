@@ -237,6 +237,17 @@ void xTaskSetTimer(TaskId_t id_, Time_t timerInterval_) {
   }
 }
 
+void xTaskSetTimerWOReset(TaskId_t id_, Time_t timerInterval_) {
+  Task_t *task = null;
+
+  if (TaskListSeek(id_)) {
+    task = TaskListGet();
+    if (task)
+      if (task->state != TaskStateInvalid)
+        task->timerInterval = timerInterval_;
+  }
+}
+
 void xTaskResetTimer(TaskId_t id_) {
   Task_t *task = null;
 
