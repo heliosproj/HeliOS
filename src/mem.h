@@ -15,6 +15,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+#ifndef MEM_H_
+#define MEM_H_
+#include "HeliOS.h"
+#include "list.h"
+#include "task.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -29,4 +34,5 @@ void MemClear();
 
 #ifdef __cplusplus
 }  // extern "C" {
+#endif
 #endif

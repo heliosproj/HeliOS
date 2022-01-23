@@ -15,7 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
+#ifndef HELIOS_H_
+#define HELIOS_H_
 #include <limits.h>
 #include <stdbool.h>
 #include <stdint.h>
@@ -220,4 +221,5 @@ int16_t strncmp_(const char *, const char *, size_t);
 
 #ifdef __cplusplus
 }  // extern "C" {
+#endif
 #endif

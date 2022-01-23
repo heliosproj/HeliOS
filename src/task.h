@@ -15,9 +15,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
+#ifndef TASK_H_
+#define TASK_H_
 #include <stdbool.h>
 #include <stdint.h>
+
+#include "HeliOS.h"
+#include "list.h"
+#include "mem.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -47,4 +52,5 @@ void xTaskResetTimer(TaskId_t);
 
 #ifdef __cplusplus
 }  // extern "C" {
+#endif
 #endif

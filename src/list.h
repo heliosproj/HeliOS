@@ -15,9 +15,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
+#ifndef LIST_H_
+#define LIST_H_
 #include <stdbool.h>
 #include <stdint.h>
+
+#include "HeliOS.h"
+#include "mem.h"
+#include "task.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -36,4 +41,5 @@ void TaskListRewindPriv();
 
 #ifdef __cplusplus
 }  // extern "C" {
+#endif
 #endif

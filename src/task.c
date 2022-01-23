@@ -18,10 +18,6 @@
 
 #include "task.h"
 
-#include "HeliOS.h"
-#include "list.h"
-#include "mem.h"
-
 volatile TaskId_t taskNextId;
 
 void TaskInit() {

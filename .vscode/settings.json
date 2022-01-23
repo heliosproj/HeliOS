@@ -1,5 +1,6 @@
 {
     "files.associations": {
-        "helios.h": "c"
+        "helios.h": "c",
+        "task.h": "c"
     }
 }

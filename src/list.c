@@ -18,10 +18,6 @@
 
 #include "list.h"
 
-#include "HeliOS.h"
-#include "mem.h"
-#include "task.h"
-
 volatile TaskListItem_t *taskListHead;
 volatile TaskListItem_t *taskListTail;
 volatile TaskListItem_t *taskListPrev;

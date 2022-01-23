@@ -18,10 +18,6 @@
 
 #include "mem.h"
 
-#include "HeliOS.h"
-#include "list.h"
-#include "task.h"
-
 volatile MemAllocRecord_t memAllocTable[MEMALLOCTABLE_SIZE];
 
 void MemInit() {
