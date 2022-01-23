@@ -17,9 +17,6 @@
  */
 #ifndef LIST_H_
 #define LIST_H_
-#include <stdbool.h>
-#include <stdint.h>
-
 #include "HeliOS.h"
 #include "mem.h"
 #include "task.h"
