@@ -16,10 +16,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "task.h"
+
 #include "HeliOS.h"
 #include "list.h"
 #include "mem.h"
-#include "task.h"
 
 volatile TaskId_t taskNextId;
 
@@ -27,13 +28,21 @@ void TaskInit() {
   taskNextId = 1;
 }
 
+#if defined(ENABLE_TASK_PARAMETER)
+TaskId_t xTaskAdd(const char *name_, void (*callback_)(TaskId_t, TaskParm_t), TaskParm_t taskParameter_) {
+#else
 TaskId_t xTaskAdd(const char *name_, void (*callback_)(TaskId_t)) {
+#endif
   if (!IsCritBlocking()) {
     Task_t *task = (Task_t *)xMemAlloc(sizeof(Task_t));
     if (task) {
       task->id = taskNextId;
       taskNextId++;
+#if defined(ENABLE_TASK_PARAMETER)
+      if (name_ && callback_ && taskParameter_) {
+#else
       if (name_ && callback_) {
+#endif
         strncpy_(task->name, name_, TASKNAME_SIZE);
         task->state = TaskStateStopped;
       } else {

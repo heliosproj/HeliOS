@@ -16,8 +16,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "HeliOS.h"
 #include "list.h"
+
+#include "HeliOS.h"
 #include "mem.h"
 #include "task.h"
 
@@ -137,6 +138,6 @@ void TaskListRewind() {
 }
 
 void TaskListRewindPriv() {
-  taskListPrevPriv= null;
+  taskListPrevPriv = null;
   taskListCurrPriv = taskListHead;
 }

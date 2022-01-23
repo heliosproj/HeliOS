@@ -17,15 +17,15 @@
  */
 
 #include "HeliOS.h"
+
 #include "list.h"
 #include "mem.h"
 #include "task.h"
 
 volatile Flags_t flags = {
-  .setupCalled		= false,
-  .critBlocking		= false,
-  .runtimeOverflow	= false
-};
+    .setupCalled = false,
+    .critBlocking = false,
+    .runtimeOverflow = false};
 
 void xHeliOSSetup() {
   if (!flags.setupCalled) {
@@ -50,7 +50,7 @@ void xHeliOSLoop() {
   do {
     task = TaskListGetPriv();
     if (task) {
-      if(task->state == TaskStateWaiting && task->notifyBytes > 0) {
+      if (task->state == TaskStateWaiting && task->notifyBytes > 0) {
         TaskRun(task);
       } else if (task->state == TaskStateWaiting && task->timerInterval > 0 && CURRENTTIME() - task->timerStartTime > task->timerInterval) {
         TaskRun(task);
@@ -106,21 +106,21 @@ void HeliOSReset() {
 
 inline Time_t CurrentTime() {
 #if defined(OTHER_ARCH_WINDOWS)
-    LARGE_INTEGER pf;
-    LARGE_INTEGER pc;
-    QueryPerformanceFrequency(&pf);
-    QueryPerformanceCounter(&pc);
-    return pc.QuadPart;
+  LARGE_INTEGER pf;
+  LARGE_INTEGER pc;
+  QueryPerformanceFrequency(&pf);
+  QueryPerformanceCounter(&pc);
+  return pc.QuadPart;
 #elif defined(OTHER_ARCH_LINUX)
-    struct timespec t;
-    clock_gettime(CLOCK_MONOTONIC_RAW, &t);
-    return t.tv_sec * 1000000 + t.tv_nsec / 1000;
+  struct timespec t;
+  clock_gettime(CLOCK_MONOTONIC_RAW, &t);
+  return t.tv_sec * 1000000 + t.tv_nsec / 1000;
 #else
-    /*
+  /*
      * Since CurrentTime() is not defined for CURRENTTIME() on
      * the Arduino architectures, just return zero.
      */
-    return 0;
+  return 0;
 #endif
 }
 
@@ -130,7 +130,11 @@ inline void TaskRun(Task_t *task_) {
 
   prevTotalRuntime = task_->totalRuntime;
   taskStartTime = CURRENTTIME();
+#if defined(ENABLE_TASK_PARAMETER)
+  (*task_->callback)(task_->id, task_->taskParameter);
+#else
   (*task_->callback)(task_->id);
+#endif
   task_->lastRuntime = CURRENTTIME() - taskStartTime;
   task_->totalRuntime += task_->lastRuntime;
   if (task_->totalRuntime < prevTotalRuntime)

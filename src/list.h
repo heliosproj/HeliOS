@@ -19,9 +19,8 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-
 #ifdef __cplusplus
-  extern "C" {
+extern "C" {
 #endif
 
 void TaskListInit();
@@ -36,5 +35,5 @@ void TaskListRewind();
 void TaskListRewindPriv();
 
 #ifdef __cplusplus
-} // extern "C" {
+}  // extern "C" {
 #endif

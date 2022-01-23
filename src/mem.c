@@ -16,15 +16,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "mem.h"
+
 #include "HeliOS.h"
 #include "list.h"
-#include "mem.h"
 #include "task.h"
 
 volatile MemAllocRecord_t memAllocTable[MEMALLOCTABLE_SIZE];
 
 void MemInit() {
-  memset_((void *) &memAllocTable, 0, MEMALLOCTABLE_SIZE * sizeof(MemAllocRecord_t));
+  memset_((void *)&memAllocTable, 0, MEMALLOCTABLE_SIZE * sizeof(MemAllocRecord_t));
 }
 
 void *xMemAlloc(size_t size_) {

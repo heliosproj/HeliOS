@@ -16,10 +16,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <stdlib.h>
 #include <limits.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdlib.h>
+
+#define ENABLE_TASK_PARAMETER
 
 /*
  * Un-comment to compile for Linux or Microsoft
@@ -29,73 +31,73 @@
  */
 
 #if defined(ARDUINO_ARCH_AVR)
-  #include <Arduino.h>
-  #define CURRENTTIME() micros()
-  #define DISABLE() noInterrupts()
-  #define ENABLE() interrupts()
-  typedef uint32_t Time_t;
-  #define TIME_T_MAX UINT32_MAX
+#include <Arduino.h>
+#define CURRENTTIME() micros()
+#define DISABLE() noInterrupts()
+#define ENABLE() interrupts()
+typedef uint32_t Time_t;
+#define TIME_T_MAX UINT32_MAX
 #elif defined(ARDUINO_ARCH_SAM)
-  #include <Arduino.h>
-  #define CURRENTTIME() micros()
-  #define DISABLE() noInterrupts()
-  #define ENABLE() interrupts()
-  typedef uint32_t Time_t;
-  #define TIME_T_MAX UINT32_MAX
+#include <Arduino.h>
+#define CURRENTTIME() micros()
+#define DISABLE() noInterrupts()
+#define ENABLE() interrupts()
+typedef uint32_t Time_t;
+#define TIME_T_MAX UINT32_MAX
 #elif defined(ARDUINO_ARCH_SAMD)
-  #include <Arduino.h>
-  #define CURRENTTIME() micros()
-  #define DISABLE() noInterrupts()
-  #define ENABLE() interrupts()
-  typedef uint32_t Time_t;
-  #define TIME_T_MAX UINT32_MAX
+#include <Arduino.h>
+#define CURRENTTIME() micros()
+#define DISABLE() noInterrupts()
+#define ENABLE() interrupts()
+typedef uint32_t Time_t;
+#define TIME_T_MAX UINT32_MAX
 #elif defined(ARDUINO_ARCH_ESP8266)
-  #include <Arduino.h>
-  #define CURRENTTIME() micros()
-  #define DISABLE() noInterrupts()
-  #define ENABLE() interrupts()
-  typedef uint32_t Time_t;
-  #define TIME_T_MAX UINT32_MAX
+#include <Arduino.h>
+#define CURRENTTIME() micros()
+#define DISABLE() noInterrupts()
+#define ENABLE() interrupts()
+typedef uint32_t Time_t;
+#define TIME_T_MAX UINT32_MAX
 #elif defined(OTHER_ARCH_LINUX)
-  #include <time.h>
-  #define CURRENTTIME() CurrentTime()
-  #define DISABLE()
-  #define ENABLE()
-  typedef uint64_t Time_t;
-  #define TIME_T_MAX UINT64_MAX
+#include <time.h>
+#define CURRENTTIME() CurrentTime()
+#define DISABLE()
+#define ENABLE()
+typedef uint64_t Time_t;
+#define TIME_T_MAX UINT64_MAX
 #elif defined(OTHER_ARCH_WINDOWS)
-  #include <Windows.h>
-  #define CURRENTTIME() CurrentTime()
-  #define DISABLE()
-  #define ENABLE()
-  typedef int64_t Time_t;
-  #define TIME_T_MAX INT64_MAX
-#elif defined(ARDUINO_TEENSY_MICROMOD) || defined(ARDUINO_TEENSY40) || defined(ARDUINO_TEENSY41) || defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY35) ||  defined(ARDUINO_TEENSY31) || defined(ARDUINO_TEENSY32) || defined(ARDUINO_TEENSY30) || defined(ARDUINO_TEENSYLC)
-  #include <Arduino.h>
-  #define CURRENTTIME() micros()
-  #define DISABLE() noInterrupts()
-  #define ENABLE() interrupts()
-  typedef uint32_t Time_t;
-  #define TIME_T_MAX UINT32_MAX
+#include <Windows.h>
+#define CURRENTTIME() CurrentTime()
+#define DISABLE()
+#define ENABLE()
+typedef int64_t Time_t;
+#define TIME_T_MAX INT64_MAX
+#elif defined(ARDUINO_TEENSY_MICROMOD) || defined(ARDUINO_TEENSY40) || defined(ARDUINO_TEENSY41) || defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY35) || defined(ARDUINO_TEENSY31) || defined(ARDUINO_TEENSY32) || defined(ARDUINO_TEENSY30) || defined(ARDUINO_TEENSYLC)
+#include <Arduino.h>
+#define CURRENTTIME() micros()
+#define DISABLE() noInterrupts()
+#define ENABLE() interrupts()
+typedef uint32_t Time_t;
+#define TIME_T_MAX UINT32_MAX
 #elif defined(ESP32)
-  #include <Arduino.h>
-  #define CURRENTTIME() micros()
-  #define DISABLE() noInterrupts()
-  #define ENABLE() interrupts()
-  typedef uint32_t Time_t;
-  #define TIME_T_MAX UINT32_MAX
+#include <Arduino.h>
+#define CURRENTTIME() micros()
+#define DISABLE() noInterrupts()
+#define ENABLE() interrupts()
+typedef uint32_t Time_t;
+#define TIME_T_MAX UINT32_MAX
 #else
-  #pragma message("WARNING: This architecture is currently unsupported by HeliOS. If targeting Linux or Microsoft Windows, make sure to un-comment OTHER_ARCH_LINUX or OTHER_ARCH_WINDOWS in HeliOS.h.")
-  #include <Arduino.h>
-  #define CURRENTTIME() micros()
-  #define DISABLE() noInterrupts()
-  #define ENABLE() interrupts()
-  typedef uint32_t Time_t;
-  #define TIME_T_MAX UINT32_MAX
+#pragma message("WARNING: This architecture is currently unsupported by HeliOS. If targeting Linux or Microsoft Windows, make sure to un-comment OTHER_ARCH_LINUX or OTHER_ARCH_WINDOWS in HeliOS.h.")
+#include <Arduino.h>
+#define CURRENTTIME() micros()
+#define DISABLE() noInterrupts()
+#define ENABLE() interrupts()
+typedef uint32_t Time_t;
+#define TIME_T_MAX UINT32_MAX
 #endif
 
 #if !defined(null)
-  #define null 0x0
+#define null 0x0
 #endif
 
 #define TASKNAME_SIZE 16
@@ -116,79 +118,91 @@ typedef enum {
 
 typedef int16_t TaskId_t;
 
+#if defined(ENABLE_TASK_PARAMETER)
+typedef void *TaskParm_t;
+#endif
+
 typedef struct {
-  TaskId_t	id;
-  char		name[TASKNAME_SIZE];
-  TaskState_t	state;
-  int16_t	notifyBytes;
-  char		notifyValue[TNOTIFYVALUE_SIZE];
-  Time_t	lastRuntime;
-  Time_t	totalRuntime;
-  Time_t	timerInterval;
-  Time_t	timerStartTime;
+  TaskId_t id;
+  char name[TASKNAME_SIZE];
+  TaskState_t state;
+  int16_t notifyBytes;
+  char notifyValue[TNOTIFYVALUE_SIZE];
+  Time_t lastRuntime;
+  Time_t totalRuntime;
+  Time_t timerInterval;
+  Time_t timerStartTime;
 } TaskGetInfoResult_t;
 
 typedef struct {
-  int16_t	notifyBytes;
-  char		notifyValue[TNOTIFYVALUE_SIZE];
+  int16_t notifyBytes;
+  char notifyValue[TNOTIFYVALUE_SIZE];
 } TaskGetNotifResult_t;
 
 typedef struct {
-  int16_t	tasks;
-  char		productName[PRODUCTNAME_SIZE];
-  int16_t	majorVersion;
-  int16_t	minorVersion;
-  int16_t	patchVersion;
+  int16_t tasks;
+  char productName[PRODUCTNAME_SIZE];
+  int16_t majorVersion;
+  int16_t minorVersion;
+  int16_t patchVersion;
 } HeliOSGetInfoResult_t;
 
 typedef struct {
-  TaskId_t	id;
-  char		name[TASKNAME_SIZE];
-  TaskState_t	state;
-  Time_t	lastRuntime;
-  Time_t	totalRuntime;
+  TaskId_t id;
+  char name[TASKNAME_SIZE];
+  TaskState_t state;
+  Time_t lastRuntime;
+  Time_t totalRuntime;
 } TaskGetListResult_t;
 
 struct TaskListItem_s;
 
 typedef struct {
-  TaskId_t			id;
-  char				name[TASKNAME_SIZE];
-  TaskState_t			state;
+  TaskId_t id;
+  char name[TASKNAME_SIZE];
+  TaskState_t state;
+#if defined(ENABLE_TASK_PARAMETER)
+  TaskParm_t taskParameter;
+  void (*callback)(TaskId_t, TaskParm_t);
+#else
   void (*callback)(TaskId_t);
-  int16_t			notifyBytes;
-  char				notifyValue[TNOTIFYVALUE_SIZE];
-  Time_t			lastRuntime;
-  Time_t			totalRuntime;
-  Time_t			timerInterval;
-  Time_t			timerStartTime;
-  struct TaskListItem_s *	next;
+#endif
+  int16_t notifyBytes;
+  char notifyValue[TNOTIFYVALUE_SIZE];
+  Time_t lastRuntime;
+  Time_t totalRuntime;
+  Time_t timerInterval;
+  Time_t timerStartTime;
+  struct TaskListItem_s *next;
 } Task_t;
 
 typedef struct TaskListItem_s {
-  Task_t *			task;
-  struct TaskListItem_s *	next;
+  Task_t *task;
+  struct TaskListItem_s *next;
 } TaskListItem_t;
 
 typedef struct {
-  size_t	size;
-  void *	ptr;
+  size_t size;
+  void *ptr;
 } MemAllocRecord_t;
 
 typedef struct {
-  bool	setupCalled;
-  bool	critBlocking;
-  bool	runtimeOverflow;
+  bool setupCalled;
+  bool critBlocking;
+  bool runtimeOverflow;
 } Flags_t;
 
 typedef TaskId_t xTaskId;
+#if defined(ENABLE_TASK_PARAMETER)
+typedef TaskParm_t xTaskParm;
+#endif
 typedef TaskGetInfoResult_t *xTaskGetInfoResult;
 typedef TaskGetNotifResult_t *xTaskGetNotifResult;
 typedef HeliOSGetInfoResult_t *xHeliOSGetInfoResult;
 typedef TaskGetListResult_t *xTaskGetListResult;
 
 #ifdef __cplusplus
-  extern "C" {
+extern "C" {
 #endif
 
 void xHeliOSSetup();
@@ -205,5 +219,5 @@ char *strncpy_(char *, const char *, size_t);
 int16_t strncmp_(const char *, const char *, size_t);
 
 #ifdef __cplusplus
-} // extern "C" {
+}  // extern "C" {
 #endif

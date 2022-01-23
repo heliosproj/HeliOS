@@ -17,7 +17,7 @@
  */
 
 #ifdef __cplusplus
-  extern "C" {
+extern "C" {
 #endif
 
 void MemInit();
@@ -28,5 +28,5 @@ size_t xMemGetSize(void *);
 void MemClear();
 
 #ifdef __cplusplus
-} // extern "C" {
+}  // extern "C" {
 #endif

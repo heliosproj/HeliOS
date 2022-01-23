@@ -20,11 +20,15 @@
 #include <stdint.h>
 
 #ifdef __cplusplus
-  extern "C" {
+extern "C" {
 #endif
 
 void TaskInit();
+#if defined(ENABLE_TASK_PARAMETER)
+TaskId_t xTaskAdd(const char *, void (*)(TaskId_t, TaskParm_t), TaskParm_t);
+#else
 TaskId_t xTaskAdd(const char *, void (*)(TaskId_t));
+#endif
 void xTaskRemove(TaskId_t);
 void xTaskClear();
 void xTaskStart(TaskId_t);
@@ -42,5 +46,5 @@ void xTaskSetTimerWOReset(TaskId_t, Time_t);
 void xTaskResetTimer(TaskId_t);
 
 #ifdef __cplusplus
-} // extern "C" {
+}  // extern "C" {
 #endif
