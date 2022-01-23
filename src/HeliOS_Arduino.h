@@ -15,10 +15,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+#ifndef HELIOS_ARDUINO_H_
+#define HELIOS_ARDUINO_H_
 
 #include "HeliOS.h"
 #include "list.h"
 #include "mem.h"
+#include "sched.h"
 #include "task.h"
 
-#pragma once
+#endif

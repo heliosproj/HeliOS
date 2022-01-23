@@ -17,12 +17,11 @@
  */
 #ifndef TASK_H_
 #define TASK_H_
-#include <stdbool.h>
-#include <stdint.h>
 
 #include "HeliOS.h"
 #include "list.h"
 #include "mem.h"
+#include "sched.h"
 
 #ifdef __cplusplus
 extern "C" {

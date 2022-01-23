@@ -201,25 +201,4 @@ typedef TaskGetInfoResult_t *xTaskGetInfoResult;
 typedef TaskGetNotifResult_t *xTaskGetNotifResult;
 typedef HeliOSGetInfoResult_t *xHeliOSGetInfoResult;
 typedef TaskGetListResult_t *xTaskGetListResult;
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-void xHeliOSSetup();
-void xHeliOSLoop();
-HeliOSGetInfoResult_t *xHeliOSGetInfo();
-bool IsCritBlocking();
-void HeliOSReset();
-Time_t CurrentTime();
-void TaskRun(Task_t *);
-void RuntimeReset();
-void memcpy_(void *, void *, size_t);
-void memset_(void *, int16_t, size_t);
-char *strncpy_(char *, const char *, size_t);
-int16_t strncmp_(const char *, const char *, size_t);
-
-#ifdef __cplusplus
-}  // extern "C" {
-#endif
 #endif

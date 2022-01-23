@@ -17,8 +17,10 @@
  */
 #ifndef MEM_H_
 #define MEM_H_
+
 #include "HeliOS.h"
 #include "list.h"
+#include "sched.h"
 #include "task.h"
 
 #ifdef __cplusplus

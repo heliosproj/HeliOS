@@ -15,28 +15,30 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-#ifndef LIST_H_
-#define LIST_H_
+#ifndef SCHED_H_
+#define SCHED_H_
 
 #include "HeliOS.h"
+#include "list.h"
 #include "mem.h"
-#include "sched.h"
 #include "task.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-void TaskListInit();
-void TaskListClear();
-void TaskListAdd(Task_t *);
-void TaskListRemove();
-Task_t *TaskListGet();
-Task_t *TaskListGetPriv();
-bool TaskListMoveNext();
-bool TaskListMoveNextPriv();
-void TaskListRewind();
-void TaskListRewindPriv();
+void xHeliOSSetup();
+void xHeliOSLoop();
+HeliOSGetInfoResult_t *xHeliOSGetInfo();
+bool IsCritBlocking();
+void HeliOSReset();
+Time_t CurrentTime();
+void TaskRun(Task_t *);
+void RuntimeReset();
+void memcpy_(void *, void *, size_t);
+void memset_(void *, int16_t, size_t);
+char *strncpy_(char *, const char *, size_t);
+int16_t strncmp_(const char *, const char *, size_t);
 
 #ifdef __cplusplus
 }  // extern "C" {

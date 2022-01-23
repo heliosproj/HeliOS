@@ -16,11 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "HeliOS.h"
-
-#include "list.h"
-#include "mem.h"
-#include "task.h"
+#include "sched.h"
 
 volatile Flags_t flags = {
     .setupCalled = false,
