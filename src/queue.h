@@ -15,40 +15,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-#ifndef TASK_H_
-#define TASK_H_
+#ifndef QUEUE_H_
+#define QUEUE_H_
 
 #include "HeliOS.h"
 #include "list.h"
 #include "mem.h"
-#include "queue.h"
 #include "sched.h"
+#include "task.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-void TaskInit();
-#if defined(ENABLE_TASK_PARAMETER)
-TaskId_t xTaskAdd(const char *, void (*)(TaskId_t, TaskParm_t), TaskParm_t);
-#else
-TaskId_t xTaskAdd(const char *, void (*)(TaskId_t));
-#endif
-void xTaskRemove(TaskId_t);
-void xTaskClear();
-void xTaskStart(TaskId_t);
-void xTaskStop(TaskId_t);
-void xTaskWait(TaskId_t);
-TaskId_t xTaskGetId(const char *);
-void xTaskNotify(TaskId_t, int16_t, char *);
-void xTaskNotifyClear(TaskId_t);
-TaskGetNotifResult_t *xTaskGetNotif(TaskId_t);
-TaskGetInfoResult_t *xTaskGetInfo(TaskId_t);
-bool TaskListSeek(TaskId_t);
-TaskGetListResult_t *xTaskGetList(int16_t *);
-void xTaskSetTimer(TaskId_t, Time_t);
-void xTaskSetTimerWOReset(TaskId_t, Time_t);
-void xTaskResetTimer(TaskId_t);
+// QUEUE STUFF GOES HERE :)
 
 #ifdef __cplusplus
 }  // extern "C" {

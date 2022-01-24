@@ -15,27 +15,5 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-#ifndef MEM_H_
-#define MEM_H_
 
-#include "HeliOS.h"
-#include "list.h"
 #include "queue.h"
-#include "sched.h"
-#include "task.h"
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-void MemInit();
-void *xMemAlloc(size_t);
-void xMemFree(void *);
-size_t xMemGetUsed();
-size_t xMemGetSize(void *);
-void MemClear();
-
-#ifdef __cplusplus
-}  // extern "C" {
-#endif
-#endif

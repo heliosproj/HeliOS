@@ -21,6 +21,7 @@
 #include "HeliOS.h"
 #include "list.h"
 #include "mem.h"
+#include "queue.h"
 #include "task.h"
 
 #ifdef __cplusplus
