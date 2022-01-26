@@ -28,7 +28,13 @@
 extern "C" {
 #endif
 
-// QUEUE STUFF GOES HERE :)
+Queue_t *xQueueCreate();
+Queue_t *xQueueDestroy(Queue_t *);
+QueueItem_t *xQueuePeek(Queue_t *);
+void xQueueGive(Queue_t *, int16_t, char *);
+void xQueueDrop(Queue_t *);
+QueueItem_t *xQueueTake(Queue_t *);
+int16_t xQueueGetLength(Queue_t *);
 
 #ifdef __cplusplus
 }  // extern "C" {

@@ -193,10 +193,26 @@ typedef struct {
   bool runtimeOverflow;
 } Flags_t;
 
+typedef struct QueueItem_s {
+  int16_t messageBytes;
+  char messageValue[TNOTIFYVALUE_SIZE];
+  struct QueueItem_s *next;
+} QueueItem_t;
+
+typedef struct Queue_s {
+  int16_t length;
+  QueueItem_t *head;
+  QueueItem_t *tail;
+} Queue_t;
+
+typedef Queue_t *xQueue;
+typedef QueueItem_t *xQueueItem;
+
 typedef TaskId_t xTaskId;
 #if defined(ENABLE_TASK_PARAMETER)
 typedef TaskParm_t xTaskParm;
 #endif
+
 typedef TaskGetInfoResult_t *xTaskGetInfoResult;
 typedef TaskGetNotifResult_t *xTaskGetNotifResult;
 typedef HeliOSGetInfoResult_t *xHeliOSGetInfoResult;
