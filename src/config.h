@@ -15,30 +15,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-#ifndef QUEUE_H_
-#define QUEUE_H_
+#ifndef CONFIG_H_
+#define CONFIG_H_
 
-#include "HeliOS.h"
-#include "config.h"
-#include "list.h"
-#include "mem.h"
-#include "queue.h"
-#include "sched.h"
-#include "task.h"
+#define ENABLE_TASK_PARAMETER
+#define TASKNAME_SIZE 16
+#define TNOTIFYVALUE_SIZE 16
+#define MEMALLOCTABLE_SIZE 100
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+/*
+ * Un-comment to compile for Linux or Microsoft
+ * Windows.
+ * #define OTHER_ARCH_LINUX
+ * #define OTHER_ARCH_WINDOWS
+ */
 
-Queue_t *xQueueCreate();
-Queue_t *xQueueDestroy(Queue_t *);
-QueueMessage_t *xQueuePeek(Queue_t *);
-void xQueueGive(Queue_t *, int16_t, char *);
-void xQueueDrop(Queue_t *);
-QueueMessage_t *xQueueTake(Queue_t *);
-int16_t xQueueGetLength(Queue_t *);
-
-#ifdef __cplusplus
-}  // extern "C" {
-#endif
 #endif

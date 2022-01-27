@@ -19,9 +19,11 @@
 #define SCHED_H_
 
 #include "HeliOS.h"
+#include "config.h"
 #include "list.h"
 #include "mem.h"
 #include "queue.h"
+#include "sched.h"
 #include "task.h"
 
 #ifdef __cplusplus
@@ -31,11 +33,12 @@ extern "C" {
 void xHeliOSSetup();
 void xHeliOSLoop();
 HeliOSGetInfoResult_t *xHeliOSGetInfo();
-bool IsCritBlocking();
+inline Flag_t IsCritBlocking();
+inline Flag_t IsNotCritBlocking()
 void HeliOSReset();
-Time_t CurrentTime();
-void TaskRun(Task_t *);
-void RuntimeReset();
+inline Time_t CurrentTime();
+inline void TaskRun(Task_t *);
+inline void RuntimeReset();
 void memcpy_(void *, void *, size_t);
 void memset_(void *, int16_t, size_t);
 char *strncpy_(char *, const char *, size_t);

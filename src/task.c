@@ -18,40 +18,71 @@
 
 #include "task.h"
 
-volatile TaskId_t taskNextId;
+TaskId_t nextTaskId = 1;
+Task_t *taskHead = null;
+Task_t *taskTail = null;
 
-void TaskInit() {
-  taskNextId = 1;
-}
-
-#if defined(ENABLE_TASK_PARAMETER)
-TaskId_t xTaskAdd(const char *name_, void (*callback_)(TaskId_t, TaskParm_t), TaskParm_t taskParameter_) {
-#else
-TaskId_t xTaskAdd(const char *name_, void (*callback_)(TaskId_t)) {
-#endif
-  if (!IsCritBlocking()) {
-    Task_t *task = (Task_t *)xMemAlloc(sizeof(Task_t));
+Task_t *xTaskCreate(const char *name_, void (*callback_)(TaskId_t, TaskParm_t), TaskParm_t taskParameter_) {
+  Task_t *task = null;
+  if (IsNotCritBlocking() && name_ && callback_) {
+    task = (Task_t *)xMemAlloc(sizeof(Task_t));
     if (task) {
       task->id = taskNextId;
-      taskNextId++;
-#if defined(ENABLE_TASK_PARAMETER)
-      if (name_ && callback_ && taskParameter_) {
-#else
-      if (name_ && callback_) {
-#endif
-        strncpy_(task->name, name_, TASKNAME_SIZE);
-        task->state = TaskStateStopped;
-      } else {
-        strncpy_(task->name, "__NOTASK__", TASKNAME_SIZE);
-        task->state = TaskStateInvalid;
-      }
+      strncpy_(task->name, name_, TASKNAME_SIZE);
+      task->state = TaskStateStopped;
       task->callback = callback_;
-      TaskListAdd(task);
-      return task->id;
+      task->next = null;
+      if (taskTail) {
+        taskTail->next = task;
+        taskTail = task;
+      } else {
+        taskHead = task;
+        taskTail = task;
+      }
+      taskNextId++;
     }
   }
-  return 0;
+  return task;
 }
+
+Task_t *xTaskDestroy(Task_t *task_) {
+  if (IsNotCritBlocking() && task_) {
+    if(taskTail == task_ && taskHead == task_) {
+
+    }
+  }
+}
+
+  if (taskListCurr) {
+    if (taskListCurr == taskListHead && taskListCurr == taskListTail) {
+      TaskListItem_t *item = (TaskListItem_t *)taskListHead;
+      TaskListInit();
+      xMemFree(item->task);
+      xMemFree(item);
+    } else if (taskListCurr == taskListHead) {
+      TaskListItem_t *item = (TaskListItem_t *)taskListHead;
+      taskListHead = taskListHead->next;
+      TaskListRewind();
+      TaskListRewindPriv();
+      xMemFree(item->task);
+      xMemFree(item);
+    } else if (taskListCurr == taskListTail) {
+      TaskListItem_t *item = (TaskListItem_t *)taskListTail;
+      taskListTail = taskListPrev;
+      taskListPrev->next = null;
+      TaskListRewind();
+      TaskListRewindPriv();
+      xMemFree(item->task);
+      xMemFree(item);
+    } else {
+      TaskListItem_t *item = (TaskListItem_t *)taskListCurr;
+      taskListPrev->next = taskListCurr->next;
+      TaskListRewind();
+      TaskListRewindPriv();
+      xMemFree(item->task);
+      xMemFree(item);
+    }
+  }
 
 void xTaskRemove(TaskId_t id_) {
   if (!IsCritBlocking())

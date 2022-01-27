@@ -18,7 +18,7 @@
 
 #include "sched.h"
 
-volatile Flags_t flags = {
+Flags_t flags = {
     .setupCalled = false,
     .critBlocking = false,
     .runtimeOverflow = false};
@@ -86,8 +86,12 @@ HeliOSGetInfoResult_t *xHeliOSGetInfo() {
   return heliOSGetInfoResult;
 }
 
-bool IsCritBlocking() {
+inline Flag_t IsCritBlocking() {
   return flags.critBlocking;
+}
+
+inline Flag_t IsNotCritBlocking() {
+  return !flags.critBlocking;
 }
 
 void HeliOSReset() {

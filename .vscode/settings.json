@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "helios.h": "c",
-        "task.h": "c"
+        "task.h": "c",
+        "limits.h": "c"
     }
 }

@@ -17,19 +17,10 @@
  */
 #ifndef HELIOS_H_
 #define HELIOS_H_
+
 #include <limits.h>
-#include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
-
-#define ENABLE_TASK_PARAMETER
-
-/*
- * Un-comment to compile for Linux or Microsoft
- * Windows.
- * #define OTHER_ARCH_LINUX
- * #define OTHER_ARCH_WINDOWS
- */
 
 #if defined(ARDUINO_ARCH_AVR)
 #include <Arduino.h>
@@ -101,10 +92,7 @@ typedef uint32_t Time_t;
 #define null 0x0
 #endif
 
-#define TASKNAME_SIZE 16
 #define PRODUCTNAME_SIZE 16
-#define TNOTIFYVALUE_SIZE 16
-#define MEMALLOCTABLE_SIZE 100
 #define PRODUCT_NAME "HeliOS"
 #define MAJOR_VERSION_NO 0
 #define MINOR_VERSION_NO 2
@@ -117,13 +105,7 @@ typedef enum {
   TaskStateWaiting
 } TaskState_t;
 
-typedef int16_t TaskId_t;
-
-#if defined(ENABLE_TASK_PARAMETER)
-typedef void *TaskParm_t;
-#endif
-
-typedef struct {
+typedef struct TaskInfo_s {
   TaskId_t id;
   char name[TASKNAME_SIZE];
   TaskState_t state;
@@ -133,20 +115,15 @@ typedef struct {
   Time_t totalRuntime;
   Time_t timerInterval;
   Time_t timerStartTime;
-} TaskGetInfoResult_t;
+} TaskInfo_t;
 
-typedef struct {
-  int16_t notifyBytes;
-  char notifyValue[TNOTIFYVALUE_SIZE];
-} TaskGetNotifResult_t;
-
-typedef struct {
+typedef struct HeliOSInfo_s {
   int16_t tasks;
   char productName[PRODUCTNAME_SIZE];
   int16_t majorVersion;
   int16_t minorVersion;
   int16_t patchVersion;
-} HeliOSGetInfoResult_t;
+} HeliOSInfo_t;
 
 typedef struct {
   TaskId_t id;
@@ -154,12 +131,23 @@ typedef struct {
   TaskState_t state;
   Time_t lastRuntime;
   Time_t totalRuntime;
-} TaskGetListResult_t;
+} TaskList_t;
 
-struct TaskListItem_s;
+typedef struct MemAllocRecord_s {
+  size_t size;
+  void *ptr;
+} MemAllocRecord_t;
 
-typedef struct {
-  TaskId_t id;
+typedef int16_t Flag_t;
+
+typedef struct Flags_s {
+  Flag_t setupCalled;
+  Flag_t critBlocking;
+  Flag_t runtimeOverflow;
+} Flags_t;
+
+typedef struct Task_s {
+  int16_t id;
   char name[TASKNAME_SIZE];
   TaskState_t state;
 #if defined(ENABLE_TASK_PARAMETER)
@@ -174,45 +162,37 @@ typedef struct {
   Time_t totalRuntime;
   Time_t timerInterval;
   Time_t timerStartTime;
-  struct TaskListItem_s *next;
+  struct Task_s *next;
 } Task_t;
 
-typedef struct TaskListItem_s {
-  Task_t *task;
-  struct TaskListItem_s *next;
-} TaskListItem_t;
+typedef struct TaskNotification_s {
+  int16_t notifyBytes;
+  char notifyValue[TNOTIFYVALUE_SIZE];
+} TaskNotification_t;
 
-typedef struct {
-  size_t size;
-  void *ptr;
-} MemAllocRecord_t;
-
-typedef struct {
-  bool setupCalled;
-  bool critBlocking;
-  bool runtimeOverflow;
-} Flags_t;
-
-typedef struct QueueItem_s {
+typedef struct QueueMessage_s {
   int16_t messageBytes;
   char messageValue[TNOTIFYVALUE_SIZE];
-  struct QueueItem_s *next;
-} QueueItem_t;
+  struct QueueMessage_s *next;
+} QueueMessage_t;
 
 typedef struct Queue_s {
   int16_t length;
-  QueueItem_t *head;
-  QueueItem_t *tail;
+  QueueMessage_t *head;
+  QueueMessage_t *tail;
 } Queue_t;
 
-typedef Queue_t *xQueue;
-typedef QueueItem_t *xQueueItem;
+#if defined(ENABLE_TASK_PARAMETER)
+typedef void *TaskParm_t;
+#endif
+typedef int16_t TaskId_t;
 
+typedef Queue_t *xQueue;
+typedef QueueMessage_t *xQueueItem;
 typedef TaskId_t xTaskId;
 #if defined(ENABLE_TASK_PARAMETER)
 typedef TaskParm_t xTaskParm;
 #endif
-
 typedef TaskGetInfoResult_t *xTaskGetInfoResult;
 typedef TaskGetNotifResult_t *xTaskGetNotifResult;
 typedef HeliOSGetInfoResult_t *xHeliOSGetInfoResult;

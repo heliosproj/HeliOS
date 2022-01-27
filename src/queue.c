@@ -47,54 +47,54 @@ int16_t xQueueGetLength(Queue_t *queue_) {
 }
 
 void xQueueGive(Queue_t *queue_, int16_t messageBytes_, char *messageValue_) {
-  QueueItem_t *item = null;
+  QueueMessage_t *message = null;
   if (queue_ && messageBytes_ > 0 && messageValue_) {
-    item = (QueueItem_t *)xMemAlloc(sizeof(QueueItem_t));
-    if (item) {
-      item->messageBytes = messageBytes_;
-      memcpy_(item->messageValue, messageValue_, TNOTIFYVALUE_SIZE);
-      if (!queue_->tail) {
-        queue_->head = item;
-        queue_->tail = item;
-        queue_->length++;
-        return;
+    message = (QueueMessage_t *)xMemAlloc(sizeof(QueueMessage_t));
+    if (message) {
+      message->messageBytes = messageBytes_;
+      memcpy_(message->messageValue, messageValue_, TNOTIFYVALUE_SIZE);
+      message->next = null;
+      if (queue_->tail) {
+        queue_->tail->next = message;
+        queue_->tail = message;
+      } else {
+        queue_->head = message;
+        queue_->tail = message;
       }
-      queue_->tail->next = item;
-      queue_->tail = item;
       queue_->length++;
     }
   }
 }
 
-QueueItem_t *xQueuePeek(Queue_t *queue_) {
-  QueueItem_t *item = null;
+QueueMessage_t *xQueuePeek(Queue_t *queue_) {
+  QueueMessage_t *message = null;
   if (queue_->head) {
-    item = (QueueItem_t *)xMemAlloc(sizeof(QueueItem_t));
-    if (item) {
-      memcpy_(item, queue_->head, sizeof(QueueItem_t));
+    message = (QueueMessage_t *)xMemAlloc(sizeof(QueueMessage_t));
+    if (message) {
+      memcpy_(message, queue_->head, sizeof(QueueMessage_t));
     }
   }
-  return item;
+  return message;
 }
 
 void xQueueDrop(Queue_t *queue_) {
-  QueueItem_t *item = null;
+  QueueMessage_t *message = null;
   if (!queue_->head)
     return;
-  item = (QueueItem_t *)queue_->head;
+  message = (QueueMessage_t *)queue_->head;
   queue_->head = queue_->head->next;
   if (!queue_->head)
     queue_->tail = null;
   queue_->length--;
-  xMemFree(item);
+  xMemFree(message);
 }
 
-QueueItem_t *xQueueTake(Queue_t *queue_) {
-  QueueItem_t *item = null;
-  item = xQueuePeek(queue_);
-  if (item) {
+QueueMessage_t *xQueueTake(Queue_t *queue_) {
+  QueueMessage_t *message = null;
+  message = xQueuePeek(queue_);
+  if (message) {
     xQueueDrop(queue_);
-    return item;
+    return message;
   }
   return null;
 }

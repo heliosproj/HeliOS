@@ -19,10 +19,12 @@
 #define TASK_H_
 
 #include "HeliOS.h"
+#include "config.h"
 #include "list.h"
 #include "mem.h"
 #include "queue.h"
 #include "sched.h"
+#include "task.h"
 
 #ifdef __cplusplus
 extern "C" {
