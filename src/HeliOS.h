@@ -193,5 +193,6 @@ typedef struct {
 typedef Queue_t *xQueue;
 typedef QueueMessage_t *xQueueItem;
 typedef Task_t *xTask;
+typedef TaskParm_t *xTaskParameter;
 typedef TaskId_t xTaskId;
 #endif

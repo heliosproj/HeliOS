@@ -56,6 +56,7 @@ Task_t *xTaskDestroy(Task_t *task_) {
   Task_t *taskPrevious = null;
   if (IsNotCritBlocking() && task_) {
     taskCursor = taskList->head;
+    taskPrevious = taskList->head;
     while (taskCursor && taskCursor != task_) {
       taskPrevious = taskCursor;
       taskCursor = taskCursor->next;
