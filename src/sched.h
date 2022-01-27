@@ -29,7 +29,6 @@ extern "C" {
 #endif
 
 void xHeliOSLoop();
-HeliOSGetInfoResult_t *xHeliOSGetInfo();
 inline Flag_t IsNotCritBlocking()
 inline Time_t CurrentTime();
 inline void TaskRun(Task_t *);

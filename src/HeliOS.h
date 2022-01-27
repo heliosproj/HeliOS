@@ -140,18 +140,19 @@ typedef struct MemAllocRecord_s {
 typedef int16_t Flag_t;
 
 typedef struct Flags_s {
+  Flag_t schedulerRunning;
   Flag_t critBlocking;
   Flag_t runtimeOverflow;
 } Flags_t;
 
-typedef void *TaskParm_t;
+typedef void TaskParm_t;
 
 typedef struct Task_s {
   int16_t id;
   char name[TASKNAME_SIZE];
   TaskState_t state;
   TaskParm_t taskParameter;
-  void (*callback)(TaskId_t, TaskParm_t);
+  void (*callback)(Task_t *, TaskParm_t *);
   int16_t notifyBytes;
   char notifyValue[TNOTIFYVALUE_SIZE];
   Time_t lastRuntime;

@@ -19,6 +19,7 @@
 #include "sched.h"
 
 Flags_t flags = {
+    .schedulerRunning = true,
     .critBlocking = false,
     .runtimeOverflow = false};
 
@@ -30,29 +31,31 @@ void xHeliOSLoop() {
 
   flags.critBlocking = true;
 
-  if (flags.runtimeOverflow)
-    RuntimeReset();
+  while (flags.schedulerRunning) {
+    if (flags.runtimeOverflow)
+      RuntimeReset();
 
-  taskList = TaskListGet();
-  if (TaskList) {
-    taskCursor = taskList->head;
-    while (taskCursor) {
-      if (taskCursor->state == TaskStateWaiting && taskCursor->notifyBytes > 0) {
-        TaskRun(taskCursor);
-      } else if (taskCursor->state == TaskStateWaiting && taskCursor->timerInterval > 0 && CURRENTTIME() - taskCursor->timerStartTime > taskCursor->timerInterval) {
-        TaskRun(taskCursor);
-        taskCursor->timerStartTime = CURRENTTIME();
-      } else if (taskCursor->state == TaskStateRunning && taskCursor->totalRuntime < leastRuntime) {
-        leastRuntime = taskCursor->totalRuntime;
-        runTask = taskCursor;
+    taskList = TaskListGet();
+    if (TaskList) {
+      taskCursor = taskList->head;
+      while (taskCursor) {
+        if (taskCursor->state == TaskStateWaiting && taskCursor->notifyBytes > 0) {
+          TaskRun(taskCursor);
+        } else if (taskCursor->state == TaskStateWaiting && taskCursor->timerInterval > 0 && CURRENTTIME() - taskCursor->timerStartTime > taskCursor->timerInterval) {
+          TaskRun(taskCursor);
+          taskCursor->timerStartTime = CURRENTTIME();
+        } else if (taskCursor->state == TaskStateRunning && taskCursor->totalRuntime < leastRuntime) {
+          leastRuntime = taskCursor->totalRuntime;
+          runTask = taskCursor;
+        }
+        taskCursor = taskCursor->next;
       }
-      taskCursor = taskCursor->next;
+      flags.runtimeOverflow = false;
     }
-    flags.runtimeOverflow = false;
-  }
 
-  if (runTask)
-    TaskRun(runTask);
+    if (runTask)
+      TaskRun(runTask);
+  }
 
   flags.critBlocking = false;
 }

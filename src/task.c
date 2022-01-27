@@ -21,7 +21,7 @@
 TaskList_t *taskList = null;
 TaskId_t nextTaskId = 1;
 
-Task_t *xTaskCreate(const char *name_, void (*callback_)(TaskId_t, TaskParm_t), TaskParm_t taskParameter_) {
+Task_t *xTaskCreate(const char *name_, void (*callback_)(Task_t *, TaskParm_t *), TaskParm_t *taskParameter_) {
   Task_t *task = null;
   if (IsNotCritBlocking() && name_ && callback_) {
     if (!taskList) {

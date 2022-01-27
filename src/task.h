@@ -28,27 +28,10 @@
 extern "C" {
 #endif
 
-void TaskInit();
-#if defined(ENABLE_TASK_PARAMETER)
-TaskId_t xTaskAdd(const char *, void (*)(TaskId_t, TaskParm_t), TaskParm_t);
-#else
-TaskId_t xTaskAdd(const char *, void (*)(TaskId_t));
-#endif
-void xTaskRemove(TaskId_t);
-void xTaskClear();
-void xTaskStart(TaskId_t);
-void xTaskStop(TaskId_t);
-void xTaskWait(TaskId_t);
-TaskId_t xTaskGetId(const char *);
-void xTaskNotify(TaskId_t, int16_t, char *);
-void xTaskNotifyClear(TaskId_t);
-TaskGetNotifResult_t *xTaskGetNotif(TaskId_t);
-TaskGetInfoResult_t *xTaskGetInfo(TaskId_t);
-bool TaskListSeek(TaskId_t);
-TaskGetListResult_t *xTaskGetList(int16_t *);
-void xTaskSetTimer(TaskId_t, Time_t);
-void xTaskSetTimerWOReset(TaskId_t, Time_t);
-void xTaskResetTimer(TaskId_t);
+Task_t *xTaskCreate(const char *, void (*callback_)(Task_t *, TaskParm_t *), TaskParm_t *);
+Task_t *xTaskDestroy(Task_t *);
+void xTaskChangeState(Task_t *, TaskState_t);
+TaskList_t *TaskListGet();
 
 #ifdef __cplusplus
 }  // extern "C" {
