@@ -29,10 +29,10 @@ extern "C" {
 #endif
 
 void xHeliOSLoop();
-inline Flag_t IsNotCritBlocking()
-inline Time_t CurrentTime();
-inline void TaskRun(Task_t *);
-inline void RuntimeReset();
+Flag_t IsNotCritBlocking();
+void RuntimeReset();
+Time_t CurrentTime();
+void TaskRun(Task_t *task_);
 void memcpy_(void *, void *, size_t);
 void memset_(void *, int16_t, size_t);
 char *strncpy_(char *, const char *, size_t);

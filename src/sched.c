@@ -36,7 +36,7 @@ void xHeliOSLoop() {
       RuntimeReset();
 
     taskList = TaskListGet();
-    if (TaskList) {
+    if (taskList) {
       taskCursor = taskList->head;
       while (taskCursor) {
         if (taskCursor->state == TaskStateWaiting && taskCursor->notifyBytes > 0) {
@@ -60,11 +60,26 @@ void xHeliOSLoop() {
   flags.critBlocking = false;
 }
 
-inline Flag_t IsNotCritBlocking() {
+Flag_t IsNotCritBlocking() {
   return !flags.critBlocking;
 }
 
-inline Time_t CurrentTime() {
+void RuntimeReset() {
+  Task_t *taskCursor = null;
+  TaskList_t *taskList = null;
+
+  taskList = TaskListGet();
+  if (taskList) {
+    taskCursor = taskList->head;
+    while (taskCursor) {
+      taskCursor->totalRuntime = taskCursor->lastRuntime;
+      taskCursor = taskCursor->next;
+    }
+    flags.runtimeOverflow = false;
+  }
+}
+
+Time_t CurrentTime() {
 #if defined(OTHER_ARCH_WINDOWS)
   LARGE_INTEGER pf;
   LARGE_INTEGER pc;
@@ -80,32 +95,17 @@ inline Time_t CurrentTime() {
 #endif
 }
 
-inline void TaskRun(Task_t *task_) {
+void TaskRun(Task_t *task_) {
   Time_t taskStartTime = 0;
   Time_t prevTotalRuntime = 0;
 
   prevTotalRuntime = task_->totalRuntime;
   taskStartTime = CURRENTTIME();
-  (*task_->callback)(task_->id, task_->taskParameter);
+  (*task_->callback)(task_, task_->taskParameter);
   task_->lastRuntime = CURRENTTIME() - taskStartTime;
   task_->totalRuntime += task_->lastRuntime;
   if (task_->totalRuntime < prevTotalRuntime)
     flags.runtimeOverflow = true;
-}
-
-inline void RuntimeReset() {
-  Task_t *taskCursor = null;
-  TaskList_t *taskList = null;
-
-  taskList = TaskListGet();
-  if (TaskList) {
-    taskCursor = taskList->head;
-    while (taskCursor) {
-      taskCursor->totalRuntime = taskCursor->lastRuntime;
-      taskCursor = taskCursor->next;
-    }
-    flags.runtimeOverflow = false;
-  }
 }
 
 void memcpy_(void *dest_, void *src_, size_t n_) {

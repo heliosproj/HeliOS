@@ -22,6 +22,8 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+#include "config.h"
+
 #if defined(ARDUINO_ARCH_AVR)
 #include <Arduino.h>
 #define CURRENTTIME() micros()
@@ -92,6 +94,14 @@ typedef uint32_t Time_t;
 #define null 0x0
 #endif
 
+#if !defined(true)
+#define true 0x1
+#endif
+
+#if !defined(false)
+#define false 0x0
+#endif
+
 #define PRODUCTNAME_SIZE 16
 #define PRODUCT_NAME "HeliOS"
 #define MAJOR_VERSION_NO 0
@@ -104,7 +114,9 @@ typedef enum {
   TaskStateWaiting
 } TaskState_t;
 
-typedef struct TaskInfo_s {
+typedef int16_t TaskId_t;
+
+typedef struct {
   TaskId_t id;
   char name[TASKNAME_SIZE];
   TaskState_t state;
@@ -116,7 +128,7 @@ typedef struct TaskInfo_s {
   Time_t timerStartTime;
 } TaskInfo_t;
 
-typedef struct HeliOSInfo_s {
+typedef struct {
   int16_t tasks;
   char productName[PRODUCTNAME_SIZE];
   int16_t majorVersion;
@@ -125,21 +137,13 @@ typedef struct HeliOSInfo_s {
 } HeliOSInfo_t;
 
 typedef struct {
-  TaskId_t id;
-  char name[TASKNAME_SIZE];
-  TaskState_t state;
-  Time_t lastRuntime;
-  Time_t totalRuntime;
-} TaskList_t;
-
-typedef struct MemAllocRecord_s {
   size_t size;
   void *ptr;
 } MemAllocRecord_t;
 
 typedef int16_t Flag_t;
 
-typedef struct Flags_s {
+typedef struct {
   Flag_t schedulerRunning;
   Flag_t critBlocking;
   Flag_t runtimeOverflow;
@@ -151,8 +155,8 @@ typedef struct Task_s {
   int16_t id;
   char name[TASKNAME_SIZE];
   TaskState_t state;
-  TaskParm_t taskParameter;
-  void (*callback)(Task_t *, TaskParm_t *);
+  TaskParm_t *taskParameter;
+  void (*callback)(struct Task_s *, TaskParm_t *);
   int16_t notifyBytes;
   char notifyValue[TNOTIFYVALUE_SIZE];
   Time_t lastRuntime;
@@ -162,13 +166,14 @@ typedef struct Task_s {
   struct Task_s *next;
 } Task_t;
 
-typedef struct TaskList_s {
+typedef struct {
+  int16_t nextId;
   int16_t length;
   Task_t *head;
   Task_t *tail;
 } TaskList_t;
 
-typedef struct TaskNotification_s {
+typedef struct {
   int16_t notifyBytes;
   char notifyValue[TNOTIFYVALUE_SIZE];
 } TaskNotification_t;
@@ -179,19 +184,14 @@ typedef struct QueueMessage_s {
   struct QueueMessage_s *next;
 } QueueMessage_t;
 
-typedef struct Queue_s {
+typedef struct {
   int16_t length;
   QueueMessage_t *head;
   QueueMessage_t *tail;
 } Queue_t;
 
-typedef int16_t TaskId_t;
 typedef Queue_t *xQueue;
 typedef QueueMessage_t *xQueueItem;
-typedef Taxk_t *xTask;
+typedef Task_t *xTask;
 typedef TaskId_t xTaskId;
-typedef TaskGetInfoResult_t *xTaskGetInfoResult;
-typedef TaskGetNotifResult_t *xTaskGetNotifResult;
-typedef HeliOSGetInfoResult_t *xHeliOSGetInfoResult;
-typedef TaskGetListResult_t *xTaskGetListResult;
 #endif

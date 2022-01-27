@@ -19,7 +19,6 @@
 #include "task.h"
 
 TaskList_t *taskList = null;
-TaskId_t nextTaskId = 1;
 
 Task_t *xTaskCreate(const char *name_, void (*callback_)(Task_t *, TaskParm_t *), TaskParm_t *taskParameter_) {
   Task_t *task = null;
@@ -32,7 +31,8 @@ Task_t *xTaskCreate(const char *name_, void (*callback_)(Task_t *, TaskParm_t *)
     }
     task = (Task_t *)xMemAlloc(sizeof(Task_t));
     if (task) {
-      task->id = taskNextId;
+      taskList->nextId++;
+      task->id = taskList->nextId;
       strncpy_(task->name, name_, TASKNAME_SIZE);
       task->state = TaskStateStopped;
       task->callback = callback_;
@@ -46,7 +46,6 @@ Task_t *xTaskCreate(const char *name_, void (*callback_)(Task_t *, TaskParm_t *)
         taskList->tail = task;
       }
       taskList->length++;
-      taskNextId++;
     }
   }
   return task;
@@ -71,7 +70,7 @@ Task_t *xTaskDestroy(Task_t *task_) {
   return task_;
 }
 
-void xTaskChangeState(Task_t *task, TaskState_t state_) {
+void xTaskChangeState(Task_t *task_, TaskState_t state_) {
   Task_t *taskCursor = null;
   if (IsNotCritBlocking() && task_) {
     taskCursor = taskList->head;
@@ -80,7 +79,7 @@ void xTaskChangeState(Task_t *task, TaskState_t state_) {
     }
     if (!taskCursor)
       return;
-    taskCursor->state = state_
+    taskCursor->state = state_;
   }
 }
 
