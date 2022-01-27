@@ -20,8 +20,6 @@
 
 #include "HeliOS.h"
 #include "config.h"
-#include "list.h"
-#include "mem.h"
 #include "queue.h"
 #include "sched.h"
 #include "task.h"
@@ -30,12 +28,10 @@
 extern "C" {
 #endif
 
-void MemInit();
 void *xMemAlloc(size_t);
 void xMemFree(void *);
 size_t xMemGetUsed();
 size_t xMemGetSize(void *);
-void MemClear();
 
 #ifdef __cplusplus
 }  // extern "C" {

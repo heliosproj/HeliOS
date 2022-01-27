@@ -18,27 +18,34 @@
 
 #include "task.h"
 
+TaskList_t *taskList = null;
 TaskId_t nextTaskId = 1;
-Task_t *taskHead = null;
-Task_t *taskTail = null;
 
 Task_t *xTaskCreate(const char *name_, void (*callback_)(TaskId_t, TaskParm_t), TaskParm_t taskParameter_) {
   Task_t *task = null;
   if (IsNotCritBlocking() && name_ && callback_) {
+    if (!taskList) {
+      taskList = (TaskList_t *)xMemAlloc(sizeof(TaskList_t));
+      if (!taskList) {
+        return task;
+      }
+    }
     task = (Task_t *)xMemAlloc(sizeof(Task_t));
     if (task) {
       task->id = taskNextId;
       strncpy_(task->name, name_, TASKNAME_SIZE);
       task->state = TaskStateStopped;
       task->callback = callback_;
+      task->taskParameter = taskParameter_;
       task->next = null;
-      if (taskTail) {
-        taskTail->next = task;
-        taskTail = task;
+      if (taskList->tail) {
+        taskList->tail->next = task;
+        taskList->tail = task;
       } else {
-        taskHead = task;
-        taskTail = task;
+        taskList->head = task;
+        taskList->tail = task;
       }
+      taskList->length++;
       taskNextId++;
     }
   }
@@ -46,88 +53,42 @@ Task_t *xTaskCreate(const char *name_, void (*callback_)(TaskId_t, TaskParm_t), 
 }
 
 Task_t *xTaskDestroy(Task_t *task_) {
+  Task_t *taskCursor = null;
+  Task_t *taskPrevious = null;
   if (IsNotCritBlocking() && task_) {
-    if(taskTail == task_ && taskHead == task_) {
-
+    taskCursor = taskList->head;
+    while (taskCursor && taskCursor != task_) {
+      taskPrevious = taskCursor;
+      taskCursor = taskCursor->next;
     }
+    if (!taskCursor)
+      return task_;
+    taskPrevious->next = taskCursor->next;
+    xMemFree(taskCursor);
+    taskList->length--;
+    task_ = null;
   }
+  return task_;
 }
 
-  if (taskListCurr) {
-    if (taskListCurr == taskListHead && taskListCurr == taskListTail) {
-      TaskListItem_t *item = (TaskListItem_t *)taskListHead;
-      TaskListInit();
-      xMemFree(item->task);
-      xMemFree(item);
-    } else if (taskListCurr == taskListHead) {
-      TaskListItem_t *item = (TaskListItem_t *)taskListHead;
-      taskListHead = taskListHead->next;
-      TaskListRewind();
-      TaskListRewindPriv();
-      xMemFree(item->task);
-      xMemFree(item);
-    } else if (taskListCurr == taskListTail) {
-      TaskListItem_t *item = (TaskListItem_t *)taskListTail;
-      taskListTail = taskListPrev;
-      taskListPrev->next = null;
-      TaskListRewind();
-      TaskListRewindPriv();
-      xMemFree(item->task);
-      xMemFree(item);
-    } else {
-      TaskListItem_t *item = (TaskListItem_t *)taskListCurr;
-      taskListPrev->next = taskListCurr->next;
-      TaskListRewind();
-      TaskListRewindPriv();
-      xMemFree(item->task);
-      xMemFree(item);
+void xTaskChangeState(Task_t *task, TaskState_t state_) {
+  Task_t *taskCursor = null;
+  if (IsNotCritBlocking() && task_) {
+    taskCursor = taskList->head;
+    while (taskCursor && taskCursor != task_) {
+      taskCursor = taskCursor->next;
     }
-  }
-
-void xTaskRemove(TaskId_t id_) {
-  if (!IsCritBlocking())
-    if (TaskListSeek(id_))
-      TaskListRemove();
-}
-
-void xTaskClear() {
-  if (!IsCritBlocking())
-    TaskListClear();
-}
-
-void xTaskStart(TaskId_t id_) {
-  Task_t *task = null;
-
-  if (TaskListSeek(id_)) {
-    task = TaskListGet();
-    if (task)
-      if (task->state != TaskStateInvalid)
-        task->state = TaskStateRunning;
+    if (!taskCursor)
+      return;
+    taskCursor->state = state_
   }
 }
 
-void xTaskStop(TaskId_t id_) {
-  Task_t *task = null;
-
-  if (TaskListSeek(id_)) {
-    task = TaskListGet();
-    if (task)
-      if (task->state != TaskStateInvalid)
-        task->state = TaskStateStopped;
-  }
+TaskList_t *TaskListGet() {
+  return taskList;
 }
 
-void xTaskWait(TaskId_t id_) {
-  Task_t *task = null;
-
-  if (TaskListSeek(id_)) {
-    task = TaskListGet();
-    if (task)
-      if (task->state != TaskStateInvalid)
-        task->state = TaskStateWaiting;
-  }
-}
-
+/*
 TaskId_t xTaskGetId(const char *name_) {
   Task_t *task = null;
 
@@ -294,3 +255,5 @@ void xTaskResetTimer(TaskId_t id_) {
         task->timerStartTime = CURRENTTIME();
   }
 }
+
+*/

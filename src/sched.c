@@ -19,22 +19,13 @@
 #include "sched.h"
 
 Flags_t flags = {
-    .setupCalled = false,
     .critBlocking = false,
     .runtimeOverflow = false};
 
-void xHeliOSSetup() {
-  if (!flags.setupCalled) {
-    MemInit();
-    TaskListInit();
-    TaskInit();
-    flags.setupCalled = true;
-  }
-}
-
 void xHeliOSLoop() {
   Task_t *runTask = null;
-  Task_t *task = null;
+  Task_t *taskCursor = null;
+  TaskList_t *taskList = null;
   Time_t leastRuntime = TIME_T_MAX;
 
   flags.critBlocking = true;
@@ -42,21 +33,23 @@ void xHeliOSLoop() {
   if (flags.runtimeOverflow)
     RuntimeReset();
 
-  TaskListRewindPriv();
-  do {
-    task = TaskListGetPriv();
-    if (task) {
-      if (task->state == TaskStateWaiting && task->notifyBytes > 0) {
-        TaskRun(task);
-      } else if (task->state == TaskStateWaiting && task->timerInterval > 0 && CURRENTTIME() - task->timerStartTime > task->timerInterval) {
-        TaskRun(task);
-        task->timerStartTime = CURRENTTIME();
-      } else if (task->state == TaskStateRunning && task->totalRuntime < leastRuntime) {
-        leastRuntime = task->totalRuntime;
-        runTask = task;
+  taskList = TaskListGet();
+  if (TaskList) {
+    taskCursor = taskList->head;
+    while (taskCursor) {
+      if (taskCursor->state == TaskStateWaiting && taskCursor->notifyBytes > 0) {
+        TaskRun(taskCursor);
+      } else if (taskCursor->state == TaskStateWaiting && taskCursor->timerInterval > 0 && CURRENTTIME() - taskCursor->timerStartTime > taskCursor->timerInterval) {
+        TaskRun(taskCursor);
+        taskCursor->timerStartTime = CURRENTTIME();
+      } else if (taskCursor->state == TaskStateRunning && taskCursor->totalRuntime < leastRuntime) {
+        leastRuntime = taskCursor->totalRuntime;
+        runTask = taskCursor;
       }
+      taskCursor = taskCursor->next;
     }
-  } while (TaskListMoveNextPriv());
+    flags.runtimeOverflow = false;
+  }
 
   if (runTask)
     TaskRun(runTask);
@@ -64,44 +57,8 @@ void xHeliOSLoop() {
   flags.critBlocking = false;
 }
 
-HeliOSGetInfoResult_t *xHeliOSGetInfo() {
-  int16_t tasks = 0;
-  Task_t *task = null;
-  HeliOSGetInfoResult_t *heliOSGetInfoResult = null;
-
-  TaskListRewind();
-  do {
-    task = TaskListGet();
-    if (task)
-      tasks++;
-  } while (TaskListMoveNext());
-  heliOSGetInfoResult = (HeliOSGetInfoResult_t *)xMemAlloc(sizeof(HeliOSGetInfoResult_t));
-  if (heliOSGetInfoResult) {
-    heliOSGetInfoResult->tasks = tasks;
-    strncpy_(heliOSGetInfoResult->productName, PRODUCT_NAME, PRODUCTNAME_SIZE);
-    heliOSGetInfoResult->majorVersion = MAJOR_VERSION_NO;
-    heliOSGetInfoResult->minorVersion = MINOR_VERSION_NO;
-    heliOSGetInfoResult->patchVersion = PATCH_VERSION_NO;
-  }
-  return heliOSGetInfoResult;
-}
-
-inline Flag_t IsCritBlocking() {
-  return flags.critBlocking;
-}
-
 inline Flag_t IsNotCritBlocking() {
   return !flags.critBlocking;
-}
-
-void HeliOSReset() {
-  MemClear();
-  MemInit();
-  TaskListInit();
-  TaskInit();
-  flags.setupCalled = false;
-  flags.critBlocking = false;
-  flags.runtimeOverflow = false;
 }
 
 inline Time_t CurrentTime() {
@@ -116,10 +73,6 @@ inline Time_t CurrentTime() {
   clock_gettime(CLOCK_MONOTONIC_RAW, &t);
   return t.tv_sec * 1000000 + t.tv_nsec / 1000;
 #else
-  /*
-     * Since CurrentTime() is not defined for CURRENTTIME() on
-     * the Arduino architectures, just return zero.
-     */
   return 0;
 #endif
 }
@@ -130,11 +83,7 @@ inline void TaskRun(Task_t *task_) {
 
   prevTotalRuntime = task_->totalRuntime;
   taskStartTime = CURRENTTIME();
-#if defined(ENABLE_TASK_PARAMETER)
   (*task_->callback)(task_->id, task_->taskParameter);
-#else
-  (*task_->callback)(task_->id);
-#endif
   task_->lastRuntime = CURRENTTIME() - taskStartTime;
   task_->totalRuntime += task_->lastRuntime;
   if (task_->totalRuntime < prevTotalRuntime)
@@ -142,15 +91,18 @@ inline void TaskRun(Task_t *task_) {
 }
 
 inline void RuntimeReset() {
-  Task_t *task = null;
+  Task_t *taskCursor = null;
+  TaskList_t *taskList = null;
 
-  TaskListRewindPriv();
-  do {
-    task = TaskListGetPriv();
-    if (task)
-      task->totalRuntime = task->lastRuntime;
-  } while (TaskListMoveNextPriv());
-  flags.runtimeOverflow = false;
+  taskList = TaskListGet();
+  if (TaskList) {
+    taskCursor = taskList->head;
+    while (taskCursor) {
+      taskCursor->totalRuntime = taskCursor->lastRuntime;
+      taskCursor = taskCursor->next;
+    }
+    flags.runtimeOverflow = false;
+  }
 }
 
 void memcpy_(void *dest_, void *src_, size_t n_) {

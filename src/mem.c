@@ -18,11 +18,7 @@
 
 #include "mem.h"
 
-volatile MemAllocRecord_t memAllocTable[MEMALLOCTABLE_SIZE];
-
-void MemInit() {
-  memset_((void *)&memAllocTable, 0, MEMALLOCTABLE_SIZE * sizeof(MemAllocRecord_t));
-}
+MemAllocRecord_t memAllocTable[MEMALLOCTABLE_SIZE];
 
 void *xMemAlloc(size_t size_) {
   void *ptr = null;
@@ -70,14 +66,4 @@ size_t xMemGetSize(void *ptr_) {
         return memAllocTable[i].size;
   }
   return 0;
-}
-
-void MemClear() {
-  for (size_t i = 0; i < MEMALLOCTABLE_SIZE; i++) {
-    if (memAllocTable[i].ptr) {
-      free(memAllocTable[i].ptr);
-      memAllocTable[i].size = 0;
-      memAllocTable[i].ptr = null;
-    }
-  }
 }

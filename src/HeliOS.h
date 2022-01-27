@@ -99,7 +99,6 @@ typedef uint32_t Time_t;
 #define PATCH_VERSION_NO 8
 
 typedef enum {
-  TaskStateInvalid,
   TaskStateStopped,
   TaskStateRunning,
   TaskStateWaiting
@@ -141,21 +140,18 @@ typedef struct MemAllocRecord_s {
 typedef int16_t Flag_t;
 
 typedef struct Flags_s {
-  Flag_t setupCalled;
   Flag_t critBlocking;
   Flag_t runtimeOverflow;
 } Flags_t;
+
+typedef void *TaskParm_t;
 
 typedef struct Task_s {
   int16_t id;
   char name[TASKNAME_SIZE];
   TaskState_t state;
-#if defined(ENABLE_TASK_PARAMETER)
   TaskParm_t taskParameter;
   void (*callback)(TaskId_t, TaskParm_t);
-#else
-  void (*callback)(TaskId_t);
-#endif
   int16_t notifyBytes;
   char notifyValue[TNOTIFYVALUE_SIZE];
   Time_t lastRuntime;
@@ -164,6 +160,12 @@ typedef struct Task_s {
   Time_t timerStartTime;
   struct Task_s *next;
 } Task_t;
+
+typedef struct TaskList_s {
+  int16_t length;
+  Task_t *head;
+  Task_t *tail;
+} TaskList_t;
 
 typedef struct TaskNotification_s {
   int16_t notifyBytes;
@@ -182,17 +184,11 @@ typedef struct Queue_s {
   QueueMessage_t *tail;
 } Queue_t;
 
-#if defined(ENABLE_TASK_PARAMETER)
-typedef void *TaskParm_t;
-#endif
 typedef int16_t TaskId_t;
-
 typedef Queue_t *xQueue;
 typedef QueueMessage_t *xQueueItem;
+typedef Taxk_t *xTask;
 typedef TaskId_t xTaskId;
-#if defined(ENABLE_TASK_PARAMETER)
-typedef TaskParm_t xTaskParm;
-#endif
 typedef TaskGetInfoResult_t *xTaskGetInfoResult;
 typedef TaskGetNotifResult_t *xTaskGetNotifResult;
 typedef HeliOSGetInfoResult_t *xHeliOSGetInfoResult;

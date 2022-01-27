@@ -20,22 +20,17 @@
 
 #include "HeliOS.h"
 #include "config.h"
-#include "list.h"
 #include "mem.h"
 #include "queue.h"
-#include "sched.h"
 #include "task.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-void xHeliOSSetup();
 void xHeliOSLoop();
 HeliOSGetInfoResult_t *xHeliOSGetInfo();
-inline Flag_t IsCritBlocking();
 inline Flag_t IsNotCritBlocking()
-void HeliOSReset();
 inline Time_t CurrentTime();
 inline void TaskRun(Task_t *);
 inline void RuntimeReset();
