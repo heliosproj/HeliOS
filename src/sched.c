@@ -26,7 +26,6 @@ Flags_t flags = {
 void xHeliOSLoop() {
   Task_t *runTask = null;
   Task_t *taskCursor = null;
-  Task_t *taskPrevious = null;
   TaskList_t *taskList = null;
   Time_t leastRuntime = TIME_T_MAX;
 
@@ -39,7 +38,6 @@ void xHeliOSLoop() {
     taskList = TaskListGet();
     if (taskList) {
       taskCursor = taskList->head;
-      taskPrevious = taskList->head;
       while (taskCursor) {
         if (taskCursor->state == TaskStateWaiting && taskCursor->notifyBytes > 0) {
           TaskRun(taskCursor);
@@ -68,13 +66,11 @@ Flag_t IsNotCritBlocking() {
 
 void RuntimeReset() {
   Task_t *taskCursor = null;
-  Task_t *taskPrevious = null;
   TaskList_t *taskList = null;
 
   taskList = TaskListGet();
   if (taskList) {
     taskCursor = taskList->head;
-    taskPrevious = taskList->head;
     while (taskCursor) {
       taskCursor->totalRuntime = taskCursor->lastRuntime;
       taskCursor = taskCursor->next;

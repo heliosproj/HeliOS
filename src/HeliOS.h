@@ -116,7 +116,7 @@ typedef enum {
 
 typedef int16_t TaskId_t;
 
-typedef struct {
+typedef struct TaskInfo_s {
   TaskId_t id;
   char name[TASKNAME_SIZE];
   TaskState_t state;
@@ -128,7 +128,7 @@ typedef struct {
   Time_t timerStartTime;
 } TaskInfo_t;
 
-typedef struct {
+typedef struct HeliOSInfo_s {
   int16_t tasks;
   char productName[PRODUCTNAME_SIZE];
   int16_t majorVersion;
@@ -136,14 +136,14 @@ typedef struct {
   int16_t patchVersion;
 } HeliOSInfo_t;
 
-typedef struct {
+typedef struct MemAllocRecord_s {
   size_t size;
   void *ptr;
 } MemAllocRecord_t;
 
 typedef int16_t Flag_t;
 
-typedef struct {
+typedef struct Flags_s {
   Flag_t schedulerRunning;
   Flag_t critBlocking;
   Flag_t runtimeOverflow;
@@ -166,14 +166,13 @@ typedef struct Task_s {
   struct Task_s *next;
 } Task_t;
 
-typedef struct {
+typedef struct TaskList_s {
   int16_t nextId;
   int16_t length;
   Task_t *head;
-  Task_t *tail;
 } TaskList_t;
 
-typedef struct {
+typedef struct TaskNotification_s {
   int16_t notifyBytes;
   char notifyValue[TNOTIFYVALUE_SIZE];
 } TaskNotification_t;
@@ -184,7 +183,7 @@ typedef struct QueueMessage_s {
   struct QueueMessage_s *next;
 } QueueMessage_t;
 
-typedef struct {
+typedef struct Queue_s {
   int16_t length;
   QueueMessage_t *head;
   QueueMessage_t *tail;

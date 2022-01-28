@@ -22,6 +22,7 @@ TaskList_t *taskList = null;
 
 Task_t *xTaskCreate(const char *name_, void (*callback_)(Task_t *, TaskParm_t *), TaskParm_t *taskParameter_) {
   Task_t *task = null;
+  Task_t *taskCursor = null;
   if (IsNotCritBlocking() && name_ && callback_) {
     if (!taskList) {
       taskList = (TaskList_t *)xMemAlloc(sizeof(TaskList_t));
@@ -38,12 +39,14 @@ Task_t *xTaskCreate(const char *name_, void (*callback_)(Task_t *, TaskParm_t *)
       task->callback = callback_;
       task->taskParameter = taskParameter_;
       task->next = null;
-      if (taskList->tail) {
-        taskList->tail->next = task;
-        taskList->tail = task;
+      taskCursor = taskList->head;
+      if (taskList->head) {
+        while (taskCursor->next) {
+          taskCursor = taskCursor->next;
+        }
+        taskCursor->next = task;
       } else {
         taskList->head = task;
-        taskList->tail = task;
       }
       taskList->length++;
     }
@@ -56,17 +59,24 @@ Task_t *xTaskDestroy(Task_t *task_) {
   Task_t *taskPrevious = null;
   if (IsNotCritBlocking() && task_) {
     taskCursor = taskList->head;
-    taskPrevious = taskList->head;
-    while (taskCursor && taskCursor != task_) {
-      taskPrevious = taskCursor;
-      taskCursor = taskCursor->next;
+    taskPrevious = null;
+    if (taskCursor && taskCursor == task_) {
+      taskList->head = taskCursor->next;
+      xMemFree(taskCursor);
+      taskList->length--;
+      task_ = null;
+    } else {
+      while (taskCursor && taskCursor != task_) {
+        taskPrevious = taskCursor;
+        taskCursor = taskCursor->next;
+      }
+      if (!taskCursor)
+        return task_;
+      taskPrevious->next = taskCursor->next;
+      xMemFree(taskCursor);
+      taskList->length--;
+      task_ = null;
     }
-    if (!taskCursor)
-      return task_;
-    taskPrevious->next = taskCursor->next;
-    xMemFree(taskCursor);
-    taskList->length--;
-    task_ = null;
   }
   return task_;
 }
