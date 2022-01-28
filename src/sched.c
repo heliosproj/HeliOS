@@ -50,11 +50,10 @@ void xHeliOSLoop() {
         }
         taskCursor = taskCursor->next;
       }
-      flags.runtimeOverflow = false;
+      if (runTask)
+        TaskRun(runTask);
+      leastRuntime = TIME_T_MAX;
     }
-
-    if (runTask)
-      TaskRun(runTask);
   }
 
   flags.critBlocking = false;
