@@ -29,6 +29,7 @@ void xHeliOSLoop() {
   TaskList_t *taskList = null;
   Time_t leastRuntime = TIME_T_MAX;
 
+  DISABLE_INTERRUPTS();
   flags.critBlocking = true;
 
   while (flags.schedulerRunning) {
@@ -57,6 +58,7 @@ void xHeliOSLoop() {
   }
 
   flags.critBlocking = false;
+  ENABLE_INTERRUPTS();
 }
 
 Flag_t IsNotCritBlocking() {
@@ -100,7 +102,9 @@ void TaskRun(Task_t *task_) {
 
   prevTotalRuntime = task_->totalRuntime;
   taskStartTime = CURRENTTIME();
+  ENABLE_INTERRUPTS();
   (*task_->callback)(task_, task_->taskParameter);
+  DISABLE_INTERRUPTS();
   task_->lastRuntime = CURRENTTIME() - taskStartTime;
   task_->totalRuntime += task_->lastRuntime;
   if (task_->totalRuntime < prevTotalRuntime)
