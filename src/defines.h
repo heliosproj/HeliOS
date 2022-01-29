@@ -17,7 +17,7 @@
  */
 #ifndef DEFINES_H_
 #define DEFINES_H_
-
+#define OTHER_ARCH_LINUX // TEMPORARY REMOVE LATER!!!!!
 #if defined(ARDUINO_ARCH_AVR)
 #include <Arduino.h>
 #define CURRENTTIME() micros()
@@ -53,13 +53,6 @@ typedef uint32_t Time_t;
 #define ENABLE_INTERRUPTS()
 typedef uint64_t Time_t;
 #define TIME_T_MAX UINT64_MAX
-#elif defined(OTHER_ARCH_WINDOWS)
-#include <Windows.h>
-#define CURRENTTIME() CurrentTime()
-#define DISABLE_INTERRUPTS()
-#define ENABLE_INTERRUPTS()
-typedef int64_t Time_t;
-#define TIME_T_MAX INT64_MAX
 #elif defined(ARDUINO_TEENSY_MICROMOD) || defined(ARDUINO_TEENSY40) || defined(ARDUINO_TEENSY41) || defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY35) || defined(ARDUINO_TEENSY31) || defined(ARDUINO_TEENSY32) || defined(ARDUINO_TEENSY30) || defined(ARDUINO_TEENSYLC)
 #include <Arduino.h>
 #define CURRENTTIME() micros()
@@ -111,7 +104,6 @@ typedef uint32_t Time_t;
 #if !defined(PATCH_VERSION_NO)
 #define PATCH_VERSION_NO 0
 #endif
-
 #if !defined(ENTER_CRITICAL)
 #define ENTER_CRITICAL() flags.critBlocking = true;
 #endif

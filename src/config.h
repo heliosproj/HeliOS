@@ -22,12 +22,5 @@
 #define TNOTIFYVALUE_SIZE 16
 #define MEMALLOCTABLE_SIZE 100
 #define QUEUE_MINIMUM_LIMIT 5
-#define OTHER_ARCH_LINUX
-/*
- * Un-comment to compile for Linux or Microsoft
- * Windows.
- * #define OTHER_ARCH_LINUX
- * #define OTHER_ARCH_WINDOWS
- */
 
 #endif

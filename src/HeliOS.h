@@ -18,17 +18,9 @@
 #ifndef HELIOS_H_
 #define HELIOS_H_
 
-#if !defined(null)
-#define null 0x0
-#endif
-
-#if !defined(true)
-#define true 0x1
-#endif
-
-#if !defined(false)
-#define false 0x0
-#endif
+#include <stdint.h>
+#include "config.h"
+#include "defines.h"
 
 typedef enum {
   TaskStateSuspended,
@@ -56,7 +48,11 @@ typedef struct TaskNotification_s {
 
 typedef void Task_t;
 typedef void TaskParm_t;
+typedef void Queue_t;
+typedef void QueueMessage_t;
 
+typedef Queue_t *xQueue;
+typedef QueueMessage_t *xQueueMessage;
 typedef TaskNotification_t *xTaskNotification;
 typedef TaskInfo_t *xTaskInfo;
 typedef TaskRunTimeStats_t *xTaskRunTimeStats;
@@ -71,7 +67,7 @@ void xTaskStartScheduler();
 Task_t *xTaskCreate(const char *, void (*callback_)(Task_t *, TaskParm_t *), TaskParm_t *);
 void xTaskDelete(Task_t *);
 Task_t *xTaskGetHandleByName(const char *);
-Task_t *xTaskGetHandleById(TaskId_t id_);
+Task_t *xTaskGetHandleById(Task_t *);
 TaskRunTimeStats_t *xTaskGetAllRunTimeStats();
 TaskRunTimeStats_t *xTaskGetTaskRunTimeStats(Task_t *);
 int16_t xTaskGetNumberOfTasks();

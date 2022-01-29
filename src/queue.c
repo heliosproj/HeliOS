@@ -122,7 +122,7 @@ QueueMessage_t *xQueueReceive(Queue_t *queue_) {
   QueueMessage_t *message = null;
   message = xQueuePeek(queue_);
   if (message) {
-    xQueueDrop(queue_);
+    xQueueDropMessage(queue_);
     return message;
   }
   return null;
