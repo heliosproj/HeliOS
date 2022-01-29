@@ -30,7 +30,7 @@ Timer_t *xTimerCreate(Time_t timerPeriod_) {
         return null;
       }
     }
-    timer = (Task_t *)xMemAlloc(sizeof(Task_t));
+    timer = (Timer_t *)xMemAlloc(sizeof(Task_t));
     if (timer) {
       DISABLE_INTERRUPTS();
       timer->state = TimerStateStopped;

@@ -17,7 +17,9 @@
  */
 #ifndef DEFINES_H_
 #define DEFINES_H_
-#define OTHER_ARCH_LINUX // TEMPORARY REMOVE LATER!!!!!
+
+// TO-DO: REMOVE THE LINUX SUPPORT!!
+#define OTHER_ARCH_LINUX
 #if defined(ARDUINO_ARCH_AVR)
 #include <Arduino.h>
 #define CURRENTTIME() micros()

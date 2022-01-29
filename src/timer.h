@@ -42,7 +42,7 @@ int16_t xTimerIsActive(Timer_t *);
 int16_t xTimerHasElapsed(Timer_t *);
 void xTimerReset(Timer_t *);
 void xTimerStart(Timer_t *);
-void xTimerStop(Timer_t *)
+void xTimerStop(Timer_t *);
 
 #ifdef __cplusplus
 }  // extern "C" {

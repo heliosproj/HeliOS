@@ -56,7 +56,7 @@ typedef struct TaskNotification_s {
 typedef struct QueueMessage_s {
   int16_t messageBytes;
   char messageValue[TNOTIFYVALUE_SIZE];
-  struct void *next;
+  void *next;
 } QueueMessage_t;
 
 typedef void Task_t;
@@ -77,6 +77,7 @@ typedef TaskParm_t *xTaskParm;
 extern "C" {
 #endif
 
+// TO-DO: REPLACE ALL OF THE PRIVATE TYPES WITH THE PUBLIC TYPES!!!
 void xTaskStartScheduler();
 Task_t *xTaskCreate(const char *, void (*callback_)(Task_t *, TaskParm_t *), TaskParm_t *);
 void xTaskDelete(Task_t *);
@@ -110,6 +111,15 @@ int16_t xQueueSend(Queue_t *, int16_t, char *);
 QueueMessage_t *xQueuePeek(Queue_t *);
 void xQueueDropMessage(Queue_t *);
 QueueMessage_t *xQueueReceive(Queue_t *); 
+Timer_t *xTimerCreate(Time_t);
+void xTimerDelete(Timer_t *);
+void xTimerChangePeriod(Timer_t *, Time_t);
+Time_t xTimerGetPeriod(Timer_t *);
+int16_t xTimerIsActive(Timer_t *);
+int16_t xTimerHasElapsed(Timer_t *);
+void xTimerReset(Timer_t *);
+void xTimerStart(Timer_t *);
+void xTimerStop(Timer_t *);
 
 #ifdef __cplusplus
 }  // extern "C" {
