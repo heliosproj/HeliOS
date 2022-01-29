@@ -90,6 +90,16 @@ void xTaskWait(Task_t *);
 void xTaskSetTimer(Task_t *, Time_t);
 void xTaskSetTimerWOReset(Task_t *, Time_t);
 void xTaskResetTimer(Task_t *);
+Queue_t *xQueueCreate(int16_t);
+void xQueueDelete(Queue_t *);
+int16_t xQueueGetLength(Queue_t *);
+int16_t xQueueIsQueueEmpty(Queue_t *);
+int16_t xQueueIsQueueFull(Queue_t *);
+int16_t xQueueMessagesWaiting(Queue_t *);
+int16_t xQueueSend(Queue_t *, int16_t, char *);
+QueueMessage_t *xQueuePeek(Queue_t *);
+void xQueueDropMessage(Queue_t *);
+QueueMessage_t *xQueueReceive(Queue_t *); 
 
 #ifdef __cplusplus
 }  // extern "C" {

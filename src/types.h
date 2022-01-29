@@ -83,6 +83,7 @@ typedef struct QueueMessage_s {
 
 typedef struct Queue_s {
   int16_t length;
+  int16_t limit;
   QueueMessage_t *head;
   QueueMessage_t *tail;
 } Queue_t;

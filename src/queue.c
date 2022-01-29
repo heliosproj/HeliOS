@@ -18,26 +18,30 @@
 
 #include "queue.h"
 
-Queue_t *xQueueCreate() {
+Queue_t *xQueueCreate(int16_t limit_) {
   Queue_t *queue = null;
-  queue = (Queue_t *)xMemAlloc(sizeof(Queue_t));
-  if (queue) {
-    queue->length = 0;
-    queue->head = null;
-    queue->tail = null;
+  if (limit_ >= QUEUE_MINIMUM_LIMIT) {
+    queue = (Queue_t *)xMemAlloc(sizeof(Queue_t));
+    if (queue) {
+      queue->length = 0;
+      queue->limit = limit_;
+      queue->head = null;
+      queue->tail = null;
+      return queue;
+    }
   }
-  return queue;
+  return null;
 }
 
-Queue_t *xQueueDestroy(Queue_t *queue_) {
+void xQueueDelete(Queue_t *queue_) {
   if (queue_) {
     while (queue_->head) {
-      xQueueDrop(queue_);
+      xQueueDropMessage(queue_);
     }
     xMemFree(queue_);
     queue_ = null;
   }
-  return queue_;
+  return;
 }
 
 int16_t xQueueGetLength(Queue_t *queue_) {
@@ -46,24 +50,49 @@ int16_t xQueueGetLength(Queue_t *queue_) {
   return 0;
 }
 
-void xQueueGive(Queue_t *queue_, int16_t messageBytes_, char *messageValue_) {
+int16_t xQueueIsQueueEmpty(Queue_t *queue_) {
+  if (queue_)
+    if (queue_->length)
+      return false;
+  return true;
+}
+
+int16_t xQueueIsQueueFull(Queue_t *queue_) {
+  if (queue_)
+    if (queue_->length < queue_->limit)
+      return false;
+  return true;
+}
+
+int16_t xQueueMessagesWaiting(Queue_t *queue_) {
+  if (queue_)
+    if (queue_->length == 0)
+      return false;
+  return true;
+}
+
+int16_t xQueueSend(Queue_t *queue_, int16_t messageBytes_, char *messageValue_) {
   QueueMessage_t *message = null;
   if (queue_ && messageBytes_ > 0 && messageValue_) {
-    message = (QueueMessage_t *)xMemAlloc(sizeof(QueueMessage_t));
-    if (message) {
-      message->messageBytes = messageBytes_;
-      memcpy_(message->messageValue, messageValue_, TNOTIFYVALUE_SIZE);
-      message->next = null;
-      if (queue_->tail) {
-        queue_->tail->next = message;
-        queue_->tail = message;
-      } else {
-        queue_->head = message;
-        queue_->tail = message;
+    if (queue_->length < queue_->limit) {
+      message = (QueueMessage_t *)xMemAlloc(sizeof(QueueMessage_t));
+      if (message) {
+        message->messageBytes = messageBytes_;
+        memcpy_(message->messageValue, messageValue_, TNOTIFYVALUE_SIZE);
+        message->next = null;
+        if (queue_->tail) {
+          queue_->tail->next = message;
+          queue_->tail = message;
+        } else {
+          queue_->head = message;
+          queue_->tail = message;
+        }
+        queue_->length++;
+        return true;
       }
-      queue_->length++;
     }
   }
+  return false;
 }
 
 QueueMessage_t *xQueuePeek(Queue_t *queue_) {
@@ -77,7 +106,7 @@ QueueMessage_t *xQueuePeek(Queue_t *queue_) {
   return message;
 }
 
-void xQueueDrop(Queue_t *queue_) {
+void xQueueDropMessage(Queue_t *queue_) {
   QueueMessage_t *message = null;
   if (!queue_->head)
     return;
@@ -89,7 +118,7 @@ void xQueueDrop(Queue_t *queue_) {
   xMemFree(message);
 }
 
-QueueMessage_t *xQueueTake(Queue_t *queue_) {
+QueueMessage_t *xQueueReceive(Queue_t *queue_) {
   QueueMessage_t *message = null;
   message = xQueuePeek(queue_);
   if (message) {
