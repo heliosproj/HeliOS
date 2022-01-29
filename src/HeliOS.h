@@ -18,180 +18,28 @@
 #ifndef HELIOS_H_
 #define HELIOS_H_
 
-#include <limits.h>
-#include <stdint.h>
-#include <stdlib.h>
-
-#include "config.h"
-
-#if defined(ARDUINO_ARCH_AVR)
-#include <Arduino.h>
-#define CURRENTTIME() micros()
-#define DISABLE() noInterrupts()
-#define ENABLE() interrupts()
-typedef uint32_t Time_t;
-#define TIME_T_MAX UINT32_MAX
-#elif defined(ARDUINO_ARCH_SAM)
-#include <Arduino.h>
-#define CURRENTTIME() micros()
-#define DISABLE() noInterrupts()
-#define ENABLE() interrupts()
-typedef uint32_t Time_t;
-#define TIME_T_MAX UINT32_MAX
-#elif defined(ARDUINO_ARCH_SAMD)
-#include <Arduino.h>
-#define CURRENTTIME() micros()
-#define DISABLE() noInterrupts()
-#define ENABLE() interrupts()
-typedef uint32_t Time_t;
-#define TIME_T_MAX UINT32_MAX
-#elif defined(ARDUINO_ARCH_ESP8266)
-#include <Arduino.h>
-#define CURRENTTIME() micros()
-#define DISABLE() noInterrupts()
-#define ENABLE() interrupts()
-typedef uint32_t Time_t;
-#define TIME_T_MAX UINT32_MAX
-#elif defined(OTHER_ARCH_LINUX)
-#include <time.h>
-#define CURRENTTIME() CurrentTime()
-#define DISABLE()
-#define ENABLE()
-typedef uint64_t Time_t;
-#define TIME_T_MAX UINT64_MAX
-#elif defined(OTHER_ARCH_WINDOWS)
-#include <Windows.h>
-#define CURRENTTIME() CurrentTime()
-#define DISABLE()
-#define ENABLE()
-typedef int64_t Time_t;
-#define TIME_T_MAX INT64_MAX
-#elif defined(ARDUINO_TEENSY_MICROMOD) || defined(ARDUINO_TEENSY40) || defined(ARDUINO_TEENSY41) || defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY35) || defined(ARDUINO_TEENSY31) || defined(ARDUINO_TEENSY32) || defined(ARDUINO_TEENSY30) || defined(ARDUINO_TEENSYLC)
-#include <Arduino.h>
-#define CURRENTTIME() micros()
-#define DISABLE() noInterrupts()
-#define ENABLE() interrupts()
-typedef uint32_t Time_t;
-#define TIME_T_MAX UINT32_MAX
-#elif defined(ESP32)
-#include <Arduino.h>
-#define CURRENTTIME() micros()
-#define DISABLE() noInterrupts()
-#define ENABLE() interrupts()
-typedef uint32_t Time_t;
-#define TIME_T_MAX UINT32_MAX
-#else
-#pragma message("WARNING: This architecture is currently unsupported by HeliOS. If targeting Linux or Microsoft Windows, make sure to un-comment OTHER_ARCH_LINUX or OTHER_ARCH_WINDOWS in HeliOS.h.")
-#include <Arduino.h>
-#define CURRENTTIME() micros()
-#define DISABLE() noInterrupts()
-#define ENABLE() interrupts()
-typedef uint32_t Time_t;
-#define TIME_T_MAX UINT32_MAX
-#endif
-
-#if !defined(null)
-#define null 0x0
-#endif
-
-#if !defined(true)
-#define true 0x1
-#endif
-
-#if !defined(false)
-#define false 0x0
-#endif
-
-#define PRODUCTNAME_SIZE 16
-#define PRODUCT_NAME "HeliOS"
-#define MAJOR_VERSION_NO 0
-#define MINOR_VERSION_NO 2
-#define PATCH_VERSION_NO 8
-
 typedef enum {
   TaskStateStopped,
   TaskStateRunning,
   TaskStateWaiting
 } TaskState_t;
 
-typedef int16_t TaskId_t;
-
-typedef struct TaskInfo_s {
-  TaskId_t id;
-  char name[TASKNAME_SIZE];
-  TaskState_t state;
-  int16_t notifyBytes;
-  char notifyValue[TNOTIFYVALUE_SIZE];
-  Time_t lastRuntime;
-  Time_t totalRuntime;
-  Time_t timerInterval;
-  Time_t timerStartTime;
-} TaskInfo_t;
-
-typedef struct HeliOSInfo_s {
-  int16_t tasks;
-  char productName[PRODUCTNAME_SIZE];
-  int16_t majorVersion;
-  int16_t minorVersion;
-  int16_t patchVersion;
-} HeliOSInfo_t;
-
-typedef struct MemAllocRecord_s {
-  size_t size;
-  void *ptr;
-} MemAllocRecord_t;
-
-typedef int16_t Flag_t;
-
-typedef struct Flags_s {
-  Flag_t schedulerRunning;
-  Flag_t critBlocking;
-  Flag_t runtimeOverflow;
-} Flags_t;
-
-typedef void TaskParm_t;
-
-typedef struct Task_s {
-  int16_t id;
-  char name[TASKNAME_SIZE];
-  TaskState_t state;
-  TaskParm_t *taskParameter;
-  void (*callback)(struct Task_s *, TaskParm_t *);
-  int16_t notifyBytes;
-  char notifyValue[TNOTIFYVALUE_SIZE];
-  Time_t lastRuntime;
-  Time_t totalRuntime;
-  Time_t timerInterval;
-  Time_t timerStartTime;
-  struct Task_s *next;
-} Task_t;
-
-typedef struct TaskList_s {
-  int16_t nextId;
-  int16_t length;
-  Task_t *head;
-} TaskList_t;
-
-typedef struct TaskNotification_s {
-  int16_t notifyBytes;
-  char notifyValue[TNOTIFYVALUE_SIZE];
-} TaskNotification_t;
-
-typedef struct QueueMessage_s {
-  int16_t messageBytes;
-  char messageValue[TNOTIFYVALUE_SIZE];
-  struct QueueMessage_s *next;
-} QueueMessage_t;
-
-typedef struct Queue_s {
-  int16_t length;
-  QueueMessage_t *head;
-  QueueMessage_t *tail;
-} Queue_t;
-
-typedef Queue_t *xQueue;
-typedef QueueMessage_t *xQueueItem;
+typedef void Task_t;
 typedef Task_t *xTask;
-typedef TaskParm_t *xTaskParameter;
-typedef TaskId_t xTaskId;
+typedef void TaskParm_t;
+typedef TaskParm_t *xTaskParm;
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+void xHeliOSLoop();
+Task_t *xTaskCreate(const char *, void (*callback_)(Task_t *, TaskParm_t *), TaskParm_t *);
+Task_t *xTaskDestroy(Task_t *);
+void xTaskChangeState(Task_t *, TaskState_t);
+
+#ifdef __cplusplus
+}  // extern "C" {
+#endif
+
 #endif

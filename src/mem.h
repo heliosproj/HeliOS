@@ -18,8 +18,13 @@
 #ifndef MEM_H_
 #define MEM_H_
 
-#include "HeliOS.h"
+#include <limits.h>
+#include <stdint.h>
+#include <stdlib.h>
+
 #include "config.h"
+#include "defines.h"
+#include "types.h"
 #include "queue.h"
 #include "sched.h"
 #include "task.h"

@@ -18,8 +18,13 @@
 #ifndef SCHED_H_
 #define SCHED_H_
 
-#include "HeliOS.h"
+#include <limits.h>
+#include <stdint.h>
+#include <stdlib.h>
+
 #include "config.h"
+#include "defines.h"
+#include "types.h"
 #include "mem.h"
 #include "queue.h"
 #include "task.h"
@@ -32,7 +37,7 @@ void xHeliOSLoop();
 Flag_t IsNotCritBlocking();
 void RuntimeReset();
 Time_t CurrentTime();
-void TaskRun(Task_t *task_);
+void TaskRun(Task_t *);
 void memcpy_(void *, void *, size_t);
 void memset_(void *, int16_t, size_t);
 char *strncpy_(char *, const char *, size_t);
