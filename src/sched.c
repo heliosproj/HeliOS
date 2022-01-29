@@ -21,10 +21,9 @@
 Flags_t flags = {
     .schedulerRunning = true,
     .critBlocking = false,
-    .runTimeOverflow = false
-};
+    .runTimeOverflow = false};
 
-void xHeliOSLoop() {
+void xTaskStartScheduler() {
   Task_t *runTask = null;
   Task_t *taskCursor = null;
   TaskList_t *taskList = null;
@@ -110,6 +109,14 @@ void TaskRun(Task_t *task_) {
   task_->totalRunTime += task_->lastRunTime;
   if (task_->totalRunTime < prevTotalRunTime)
     flags.runTimeOverflow = true;
+}
+
+void xTaskResumeAll() {
+  flags.schedulerRunning = true;
+}
+
+void xTaskSuspendAll() {
+  flags.schedulerRunning = false;
 }
 
 void memcpy_(void *dest_, void *src_, size_t n_) {

@@ -67,7 +67,7 @@ typedef TaskParm_t *xTaskParm;
 extern "C" {
 #endif
 
-void xHeliOSLoop();
+void xTaskStartScheduler();
 Task_t *xTaskCreate(const char *, void (*callback_)(Task_t *, TaskParm_t *), TaskParm_t *);
 void xTaskDelete(Task_t *);
 Task_t *xTaskGetHandleByName(const char *);
@@ -81,7 +81,11 @@ char * xTaskGetName(Task_t *);
 char *xTaskList();
 void xTaskNotifyGive(Task_t *task_, int16_t, char *);
 TaskNotification_t *xTaskNotifyTake(Task_t *);
-
+void xTaskNotifyStateClear(Task_t *);
+void xTaskResume(Task_t *);
+void xTaskResumeAll();
+void xTaskSuspendAll();
+void xTaskSuspend(Task_t *);
 
 #ifdef __cplusplus
 }  // extern "C" {

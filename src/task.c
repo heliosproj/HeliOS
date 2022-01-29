@@ -232,6 +232,38 @@ void xTaskNotifyGive(Task_t *task_, int16_t notificationBytes_, char *notificati
       return;
     if (taskCursor->notificationBytes == 0) {
       taskCursor->notificationBytes = notificationBytes_;
+      memcpy_(taskCursor->notificationValue, notificationValue_, TNOTIFYVALUE_SIZE);
+    }
+  }
+  return;
+}
+
+void xTaskNotifyStateClear(Task_t *task_) {
+  Task_t *taskCursor = null;
+  taskCursor = taskList->head;
+  while (taskCursor && taskCursor != task_) {
+    taskCursor = taskCursor->next;
+  }
+  if (!taskCursor)
+    return;
+  if (taskCursor->notificationBytes > 0) {
+    taskCursor->notificationBytes = 0;
+    memset_(taskCursor->notificationValue, 0, TNOTIFYVALUE_SIZE);
+  }
+  return;
+}
+
+void xTaskNotifyGive(Task_t *task_, int16_t notificationBytes_, char *notificationValue_) {
+  Task_t *taskCursor = null;
+  if (notificationBytes_ > 0 && notificationBytes_ < TNOTIFYVALUE_SIZE && notificationValue_) {
+    taskCursor = taskList->head;
+    while (taskCursor && taskCursor != task_) {
+      taskCursor = taskCursor->next;
+    }
+    if (!taskCursor)
+      return;
+    if (taskCursor->notificationBytes == 0) {
+      taskCursor->notificationBytes = notificationBytes_;
       memcpy_(taskCursor->notificationBytes, notificationBytes_, TNOTIFYVALUE_SIZE);
     }
   }
@@ -249,7 +281,7 @@ TaskNotification_t *xTaskNotifyTake(Task_t *task_) {
     return null;
   if (taskCursor->notificationBytes > 0) {
     taskNotification = (TaskNotification_t *)xMemAlloc(sizeof(TaskNotification_t));
-    if(taskNotification) {
+    if (taskNotification) {
       taskNotification->notificationBytes = taskCursor->notificationBytes;
       memcpy_(taskNotification->notificationValue, taskCursor->notificationValue, TNOTIFYVALUE_SIZE);
       return taskNotification;
@@ -261,6 +293,29 @@ TaskNotification_t *xTaskNotifyTake(Task_t *task_) {
 TaskList_t *TaskListGet() {
   return taskList;
 }
+
+void xTaskResume(Task_t *task_) {
+  Task_t *taskCursor = null;
+  taskCursor = taskList->head;
+  while (taskCursor && taskCursor != task_) {
+    taskCursor = taskCursor->next;
+  }
+  if (!taskCursor)
+    return;
+  taskCursor->state = TaskStateRunning;
+}
+
+void xTaskSuspend(Task_t *task_) {
+  Task_t *taskCursor = null;
+  taskCursor = taskList->head;
+  while (taskCursor && taskCursor != task_) {
+    taskCursor = taskCursor->next;
+  }
+  if (!taskCursor)
+    return;
+  taskCursor->state = TaskStateSuspended;
+}
+
 
 /*
 TaskId_t xTaskGetId(const char *name_) {

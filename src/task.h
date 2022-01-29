@@ -47,6 +47,9 @@ char *xTaskList();
 void xTaskNotifyGive(Task_t *task_, int16_t, char *); 
 TaskNotification_t *xTaskNotifyTake(Task_t *);
 TaskList_t *TaskListGet();
+void xTaskNotifyStateClear(Task_t *);
+void xTaskResume(Task_t *);
+void xTaskSuspend(Task_t *);
 
 #ifdef __cplusplus
 }  // extern "C" {
