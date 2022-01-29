@@ -19,7 +19,7 @@
 #define TYPES_H_
 
 typedef enum {
-  TaskStateStopped,
+  TaskStateSuspended,
   TaskStateRunning,
   TaskStateWaiting
 } TaskState_t;
@@ -29,8 +29,8 @@ typedef void TaskParm_t;
 typedef int16_t TaskId_t;
 
 typedef struct TaskNotification_s {
-  int16_t notifyBytes;
-  char notifyValue[TNOTIFYVALUE_SIZE];
+  int16_t notificationBytes;
+  char notificationValue[TNOTIFYVALUE_SIZE];
 } TaskNotification_t;
 
 typedef struct Task_s {
@@ -39,8 +39,8 @@ typedef struct Task_s {
   TaskState_t state;
   TaskParm_t *taskParameter;
   void (*callback)(struct Task_s *, TaskParm_t *);
-  int16_t notifyBytes;
-  char notifyValue[TNOTIFYVALUE_SIZE];
+  int16_t notificationBytes;
+  char notificationValue[TNOTIFYVALUE_SIZE];
   Time_t lastRunTime;
   Time_t totalRunTime;
   Time_t timerInterval;

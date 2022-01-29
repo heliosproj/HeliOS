@@ -44,8 +44,8 @@ TaskState_t xTaskGetTaskState(Task_t *);
 TaskInfo_t *xTaskGetTaskInfo(Task_t *);
 char * xTaskGetName(Task_t *); 
 char *xTaskList();
-
-void xTaskChangeState(Task_t *, TaskState_t);
+void xTaskNotifyGive(Task_t *task_, int16_t, char *); 
+TaskNotification_t *xTaskNotifyTake(Task_t *);
 TaskList_t *TaskListGet();
 
 #ifdef __cplusplus

@@ -41,7 +41,7 @@ void xHeliOSLoop() {
     if (taskList) {
       taskCursor = taskList->head;
       while (taskCursor) {
-        if (taskCursor->state == TaskStateWaiting && taskCursor->notifyBytes > 0) {
+        if (taskCursor->state == TaskStateWaiting && taskCursor->notificationBytes > 0) {
           TaskRun(taskCursor);
         } else if (taskCursor->state == TaskStateWaiting && taskCursor->timerInterval > 0 && CURRENTTIME() - taskCursor->timerStartTime > taskCursor->timerInterval) {
           TaskRun(taskCursor);

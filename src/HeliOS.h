@@ -31,7 +31,7 @@
 #endif
 
 typedef enum {
-  TaskStateStopped,
+  TaskStateSuspended,
   TaskStateRunning,
   TaskStateWaiting
 } TaskState_t;
@@ -49,9 +49,15 @@ typedef struct TaskInfo_s {
   Time_t totalRunTime;
 } TaskInfo_t;
 
+typedef struct TaskNotification_s {
+  int16_t notificationBytes;
+  char notificationValue[TNOTIFYVALUE_SIZE];
+} TaskNotification_t;
+
 typedef void Task_t;
 typedef void TaskParm_t;
 
+typedef TaskNotification_t *xTaskNotification;
 typedef TaskInfo_t *xTaskInfo;
 typedef TaskRunTimeStats_t *xTaskRunTimeStats;
 typedef Task_t *xTask;
@@ -73,9 +79,9 @@ TaskState_t xTaskGetTaskState(Task_t *task_);
 TaskInfo_t *xTaskGetTaskInfo(Task_t *);
 char * xTaskGetName(Task_t *); 
 char *xTaskList();
+void xTaskNotifyGive(Task_t *task_, int16_t, char *);
+TaskNotification_t *xTaskNotifyTake(Task_t *);
 
-
-void xTaskChangeState(Task_t *, TaskState_t);
 
 #ifdef __cplusplus
 }  // extern "C" {

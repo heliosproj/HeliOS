@@ -36,7 +36,7 @@ Task_t *xTaskCreate(const char *name_, void (*callback_)(Task_t *, TaskParm_t *)
       taskList->nextId++;
       task->id = taskList->nextId;
       strncpy_(task->name, name_, TASKNAME_SIZE);
-      task->state = TaskStateStopped;
+      task->state = TaskStateSuspended;
       task->callback = callback_;
       task->taskParameter = taskParameter_;
       task->next = null;
@@ -221,15 +221,41 @@ char *xTaskList() {
   return null;
 }
 
-void xTaskChangeState(Task_t *task_, TaskState_t state_) {
+void xTaskNotifyGive(Task_t *task_, int16_t notificationBytes_, char *notificationValue_) {
   Task_t *taskCursor = null;
+  if (notificationBytes_ > 0 && notificationBytes_ < TNOTIFYVALUE_SIZE && notificationValue_) {
+    taskCursor = taskList->head;
+    while (taskCursor && taskCursor != task_) {
+      taskCursor = taskCursor->next;
+    }
+    if (!taskCursor)
+      return;
+    if (taskCursor->notificationBytes == 0) {
+      taskCursor->notificationBytes = notificationBytes_;
+      memcpy_(taskCursor->notificationBytes, notificationBytes_, TNOTIFYVALUE_SIZE);
+    }
+  }
+  return;
+}
+
+TaskNotification_t *xTaskNotifyTake(Task_t *task_) {
+  Task_t *taskCursor = null;
+  TaskNotification_t *taskNotification = null;
   taskCursor = taskList->head;
   while (taskCursor && taskCursor != task_) {
     taskCursor = taskCursor->next;
   }
   if (!taskCursor)
-    return;
-  taskCursor->state = state_;
+    return null;
+  if (taskCursor->notificationBytes > 0) {
+    taskNotification = (TaskNotification_t *)xMemAlloc(sizeof(TaskNotification_t));
+    if(taskNotification) {
+      taskNotification->notificationBytes = taskCursor->notificationBytes;
+      memcpy_(taskNotification->notificationValue, taskCursor->notificationValue, TNOTIFYVALUE_SIZE);
+      return taskNotification;
+    }
+  }
+  return null;
 }
 
 TaskList_t *TaskListGet() {
