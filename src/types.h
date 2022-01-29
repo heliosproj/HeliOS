@@ -43,7 +43,7 @@ typedef struct Task_s {
   char notificationValue[TNOTIFYVALUE_SIZE];
   Time_t lastRunTime;
   Time_t totalRunTime;
-  Time_t timerInterval;
+  Time_t timerPeriod;
   Time_t timerStartTime;
   struct Task_s *next;
 } Task_t;

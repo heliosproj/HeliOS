@@ -50,6 +50,10 @@ TaskList_t *TaskListGet();
 void xTaskNotifyStateClear(Task_t *);
 void xTaskResume(Task_t *);
 void xTaskSuspend(Task_t *);
+void xTaskWait(Task_t *);
+void xTaskSetTimer(Task_t *, Time_t);
+void xTaskSetTimerWOReset(Task_t *, Time_t);
+void xTaskResetTimer(Task_t *);
 
 #ifdef __cplusplus
 }  // extern "C" {

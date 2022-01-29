@@ -42,7 +42,7 @@ void xTaskStartScheduler() {
       while (taskCursor) {
         if (taskCursor->state == TaskStateWaiting && taskCursor->notificationBytes > 0) {
           TaskRun(taskCursor);
-        } else if (taskCursor->state == TaskStateWaiting && taskCursor->timerInterval > 0 && CURRENTTIME() - taskCursor->timerStartTime > taskCursor->timerInterval) {
+        } else if (taskCursor->state == TaskStateWaiting && taskCursor->timerPeriod > 0 && CURRENTTIME() - taskCursor->timerStartTime > taskCursor->timerPeriod) {
           TaskRun(taskCursor);
           taskCursor->timerStartTime = CURRENTTIME();
         } else if (taskCursor->state == TaskStateRunning && taskCursor->totalRunTime < leastRunTime) {
