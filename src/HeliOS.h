@@ -53,5 +53,4 @@ void xTaskChangeState(Task_t *, TaskState_t);
 #ifdef __cplusplus
 }  // extern "C" {
 #endif
-
 #endif
