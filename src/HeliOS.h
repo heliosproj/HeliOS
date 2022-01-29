@@ -18,6 +18,18 @@
 #ifndef HELIOS_H_
 #define HELIOS_H_
 
+#if !defined(null)
+#define null 0x0
+#endif
+
+#if !defined(true)
+#define true 0x1
+#endif
+
+#if !defined(false)
+#define false 0x0
+#endif
+
 typedef enum {
   TaskStateStopped,
   TaskStateRunning,
