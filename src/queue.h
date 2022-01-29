@@ -28,6 +28,7 @@
 #include "mem.h"
 #include "sched.h"
 #include "task.h"
+#include "timer.h"
 
 #ifdef __cplusplus
 extern "C" {

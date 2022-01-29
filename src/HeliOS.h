@@ -46,11 +46,23 @@ typedef struct TaskNotification_s {
   char notificationValue[TNOTIFYVALUE_SIZE];
 } TaskNotification_t;
 
+typedef struct Timer_s {
+  Time_t timerPeriod;
+  Time_t timerStartTime;
+  struct void *next;
+} Timer_t;
+
+typedef struct QueueMessage_s {
+  int16_t messageBytes;
+  char messageValue[TNOTIFYVALUE_SIZE];
+  struct void *next;
+} QueueMessage_t;
+
 typedef void Task_t;
 typedef void TaskParm_t;
 typedef void Queue_t;
-typedef void QueueMessage_t;
 
+typedef Timer_t *xTimer;
 typedef Queue_t *xQueue;
 typedef QueueMessage_t *xQueueMessage;
 typedef TaskNotification_t *xTaskNotification;

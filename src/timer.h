@@ -15,8 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-#ifndef TASK_H_
-#define TASK_H_
+#ifndef TIMER_H_
+#define TIMER_H_
 
 #include <limits.h>
 #include <stdint.h>
@@ -28,33 +28,11 @@
 #include "mem.h"
 #include "queue.h"
 #include "sched.h"
-#include "timer.h"
+#include "task.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-Task_t *xTaskCreate(const char *, void (*callback_)(Task_t *, TaskParm_t *), TaskParm_t *);
-void xTaskDelete(Task_t *);
-Task_t *xTaskGetHandleByName(const char *);
-Task_t *xTaskGetHandleById(Task_t *);
-TaskRunTimeStats_t *xTaskGetAllRunTimeStats();
-TaskRunTimeStats_t *xTaskGetTaskRunTimeStats(Task_t *);
-int16_t xTaskGetNumberOfTasks();
-TaskState_t xTaskGetTaskState(Task_t *);
-TaskInfo_t *xTaskGetTaskInfo(Task_t *);
-char * xTaskGetName(Task_t *); 
-char *xTaskList();
-void xTaskNotifyGive(Task_t *task_, int16_t, char *); 
-TaskNotification_t *xTaskNotifyTake(Task_t *);
-TaskList_t *TaskListGet();
-void xTaskNotifyStateClear(Task_t *);
-void xTaskResume(Task_t *);
-void xTaskSuspend(Task_t *);
-void xTaskWait(Task_t *);
-void xTaskSetTimer(Task_t *, Time_t);
-void xTaskSetTimerWOReset(Task_t *, Time_t);
-void xTaskResetTimer(Task_t *);
 
 #ifdef __cplusplus
 }  // extern "C" {

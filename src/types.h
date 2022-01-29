@@ -67,6 +67,17 @@ typedef struct TaskList_s {
   Task_t *head;
 } TaskList_t;
 
+typedef struct Timer_s {
+  Time_t timerPeriod;
+  Time_t timerStartTime;
+  struct Timer_s *next;
+} Timer_t;
+
+typedef struct TimerList_s {
+  int16_t length;
+  Timer_t *head;
+} TimerList_t;
+
 typedef int16_t Flag_t;
 
 typedef struct Flags_s {
