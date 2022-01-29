@@ -37,16 +37,24 @@ typedef enum {
 } TaskState_t;
 
 typedef struct TaskRunTimeStats_s {
-  int16_t id;
-  char name[TASKNAME_SIZE];
   Time_t lastRunTime;
   Time_t totalRunTime;
 } TaskRunTimeStats_t;
 
-typedef TaskRunTimeStats_t *xTaskRunTimeStats;
+typedef struct TaskInfo_s {
+  int16_t id;
+  char name[TASKNAME_SIZE];
+  TaskState_t state;
+  Time_t lastRunTime;
+  Time_t totalRunTime;
+} TaskInfo_t;
+
 typedef void Task_t;
-typedef Task_t *xTask;
 typedef void TaskParm_t;
+
+typedef TaskInfo_t *xTaskInfo;
+typedef TaskRunTimeStats_t *xTaskRunTimeStats;
+typedef Task_t *xTask;
 typedef TaskParm_t *xTaskParm;
 
 #ifdef __cplusplus
@@ -60,6 +68,12 @@ Task_t *xTaskGetHandleByName(const char *);
 Task_t *xTaskGetHandleById(TaskId_t id_);
 TaskRunTimeStats_t *xTaskGetAllRunTimeStats();
 TaskRunTimeStats_t *xTaskGetTaskRunTimeStats(Task_t *);
+int16_t xTaskGetNumberOfTasks();
+TaskState_t xTaskGetTaskState(Task_t *task_);
+TaskInfo_t *xTaskGetTaskInfo(Task_t *);
+char * xTaskGetName(Task_t *); 
+char *xTaskList();
+
 
 void xTaskChangeState(Task_t *, TaskState_t);
 

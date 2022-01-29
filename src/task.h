@@ -39,6 +39,11 @@ Task_t *xTaskGetHandleByName(const char *);
 Task_t *xTaskGetHandleById(TaskId_t id_);
 TaskRunTimeStats_t *xTaskGetAllRunTimeStats();
 TaskRunTimeStats_t *xTaskGetTaskRunTimeStats(Task_t *);
+int16_t xTaskGetNumberOfTasks();
+TaskState_t xTaskGetTaskState(Task_t *);
+TaskInfo_t *xTaskGetTaskInfo(Task_t *);
+char * xTaskGetName(Task_t *); 
+char *xTaskList();
 
 void xTaskChangeState(Task_t *, TaskState_t);
 TaskList_t *TaskListGet();

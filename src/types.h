@@ -49,11 +49,17 @@ typedef struct Task_s {
 } Task_t;
 
 typedef struct TaskRunTimeStats_s {
-  int16_t id;
-  char name[TASKNAME_SIZE];
   Time_t lastRunTime;
   Time_t totalRunTime;
 } TaskRunTimeStats_t;
+
+typedef struct TaskInfo_s {
+  int16_t id;
+  char name[TASKNAME_SIZE];
+  TaskState_t state;
+  Time_t lastRunTime;
+  Time_t totalRunTime;
+} TaskInfo_t;
 
 typedef struct TaskList_s {
   int16_t nextId;
