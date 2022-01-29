@@ -20,36 +20,33 @@
 
 TimerList_t *timerList = null;
 
-Timer_t *xTaskCreate() {
+Timer_t *xTimerCreate(Time_t timerPeriod_) {
   Timer_t *timer = null;
-  Timer_t *taskCursor = null;
-  if (IsNotCritBlocking() && name_ && callback_) {
-    if (!taskList) {
-      taskList = (TaskList_t *)xMemAlloc(sizeof(TaskList_t));
-      if (!taskList) {
+  Timer_t *timerCursor = null;
+  if (IsNotCritBlocking() && timerPeriod_ > 0) {
+    if (!timerList) {
+      timerList = (TimerList_t *)xMemAlloc(sizeof(TimerList_t));
+      if (!timerList) {
         return null;
       }
     }
     timer = (Task_t *)xMemAlloc(sizeof(Task_t));
     if (timer) {
       DISABLE_INTERRUPTS();
-      taskList->nextId++;
-      timer->id = taskList->nextId;
-      strncpy_(timer->name, name_, TASKNAME_SIZE);
-      timer->state = TaskStateSuspended;
-      timer->callback = callback_;
-      timer->taskParameter = taskParameter_;
+      timer->state = TimerStateStopped;
+      timer->timerPeriod = timerPeriod_;
+      timer->timerStartTime = CURRENTTIME();
       timer->next = null;
-      taskCursor = taskList->head;
-      if (taskList->head) {
-        while (taskCursor->next) {
-          taskCursor = taskCursor->next;
+      timerCursor = timerList->head;
+      if (timerList->head) {
+        while (timerCursor->next) {
+          timerCursor = timerCursor->next;
         }
-        taskCursor->next = timer;
+        timerCursor->next = timer;
       } else {
-        taskList->head = timer;
+        timerList->head = timer;
       }
-      taskList->length++;
+      timerList->length++;
       ENABLE_INTERRUPTS();
       return timer;
     }
@@ -57,31 +54,118 @@ Timer_t *xTaskCreate() {
   return null;
 }
 
-void xTaskDelete(Task_t *task_) {
-  Task_t *taskCursor = null;
-  Task_t *taskPrevious = null;
-  if (IsNotCritBlocking() && task_) {
+void xTimerDelete(Timer_t *timer_) {
+  Timer_t *timerCursor = null;
+  Timer_t *timerPrevious = null;
+  if (IsNotCritBlocking() && timer_) {
     DISABLE_INTERRUPTS();
-    taskCursor = taskList->head;
-    taskPrevious = null;
-    if (taskCursor && taskCursor == task_) {
-      taskList->head = taskCursor->next;
-      xMemFree(taskCursor);
-      taskList->length--;
-      task_ = null;
+    timerCursor = timerList->head;
+    timerPrevious = null;
+    if (timerCursor && timerCursor == timer_) {
+      timerList->head = timerCursor->next;
+      xMemFree(timerCursor);
+      timerList->length--;
+      timer_ = null;
     } else {
-      while (taskCursor && taskCursor != task_) {
-        taskPrevious = taskCursor;
-        taskCursor = taskCursor->next;
+      while (timerCursor && timerCursor != timer_) {
+        timerPrevious = timerCursor;
+        timerCursor = timerCursor->next;
       }
-      if (!taskCursor)
+      if (!timerCursor)
         return;
-      taskPrevious->next = taskCursor->next;
-      xMemFree(taskCursor);
-      taskList->length--;
-      task_ = null;
+      timerPrevious->next = timerCursor->next;
+      xMemFree(timerCursor);
+      timerList->length--;
+      timer_ = null;
       ENABLE_INTERRUPTS();
     }
   }
+  return;
+}
+
+void xTimerChangePeriod(Timer_t *timer_, Time_t timerPeriod_) {
+  Timer_t *timerCursor = null;
+  timerCursor = timerList->head;
+  while (timerCursor && timerCursor != timer_) {
+    timerCursor = timerCursor->next;
+  }
+  if (!timerCursor)
+    return;
+  timerCursor->timerPeriod = timerPeriod_;
+  return;
+}
+
+Time_t xTimerGetPeriod(Timer_t *timer_) {
+  Timer_t *timerCursor = null;
+  timerCursor = timerList->head;
+  while (timerCursor && timerCursor != timer_) {
+    timerCursor = timerCursor->next;
+  }
+  if (!timerCursor)
+    return 0;
+  return timerCursor->timerPeriod;
+}
+
+int16_t xTimerIsActive(Timer_t *timer_) {
+  Timer_t *timerCursor = null;
+  timerCursor = timerList->head;
+  while (timerCursor && timerCursor != timer_) {
+    timerCursor = timerCursor->next;
+  }
+  if (!timerCursor)
+    return false;
+  if (timerCursor->state == TimerStateRunning) {
+    return true;
+  }
+  return false;
+}
+
+int16_t xTimerHasElapsed(Timer_t *timer_) {
+  Timer_t *timerCursor = null;
+  timerCursor = timerList->head;
+  while (timerCursor && timerCursor != timer_) {
+    timerCursor = timerCursor->next;
+  }
+  if (!timerCursor)
+    return false;
+  if (timerCursor->state == TimerStateRunning && CURRENTTIME() - timerCursor->timerStartTime > timerCursor->timerPeriod) {
+    return true;
+  }
+  return false;
+}
+
+void xTimerReset(Timer_t *timer_) {
+  Timer_t *timerCursor = null;
+  timerCursor = timerList->head;
+  while (timerCursor && timerCursor != timer_) {
+    timerCursor = timerCursor->next;
+  }
+  if (!timerCursor)
+    return;
+  timerCursor->timerStartTime = CURRENTTIME();
+  return;
+}
+
+void xTimerStart(Timer_t *timer_) {
+  Timer_t *timerCursor = null;
+  timerCursor = timerList->head;
+  while (timerCursor && timerCursor != timer_) {
+    timerCursor = timerCursor->next;
+  }
+  if (!timerCursor)
+    return;
+  timerCursor->state = TimerStateRunning;
+  return;
+}
+
+void xTimerStop(Timer_t *timer_) {
+  Timer_t *timerCursor = null;
+  timerCursor = timerList->head;
+  while (timerCursor && timerCursor != timer_) {
+    timerCursor = timerCursor->next;
+  }
+  if (!timerCursor)
+    return;
+  timerCursor->state = TimerStateStopped;
   return;
 }

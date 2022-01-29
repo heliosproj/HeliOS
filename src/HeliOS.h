@@ -23,10 +23,17 @@
 #include "defines.h"
 
 typedef enum {
+  TaskStateNone,
   TaskStateSuspended,
   TaskStateRunning,
   TaskStateWaiting
 } TaskState_t;
+
+typedef enum {
+  TimerStateNone,
+  TimerStateStopped,
+  TimerStateRunning
+} TimerState_t;
 
 typedef struct TaskRunTimeStats_s {
   Time_t lastRunTime;
@@ -46,12 +53,6 @@ typedef struct TaskNotification_s {
   char notificationValue[TNOTIFYVALUE_SIZE];
 } TaskNotification_t;
 
-typedef struct Timer_s {
-  Time_t timerPeriod;
-  Time_t timerStartTime;
-  struct void *next;
-} Timer_t;
-
 typedef struct QueueMessage_s {
   int16_t messageBytes;
   char messageValue[TNOTIFYVALUE_SIZE];
@@ -61,6 +62,7 @@ typedef struct QueueMessage_s {
 typedef void Task_t;
 typedef void TaskParm_t;
 typedef void Queue_t;
+typedef void Timer_t;
 
 typedef Timer_t *xTimer;
 typedef Queue_t *xQueue;

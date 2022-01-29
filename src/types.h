@@ -19,10 +19,17 @@
 #define TYPES_H_
 
 typedef enum {
+  TaskStateNone,
   TaskStateSuspended,
   TaskStateRunning,
   TaskStateWaiting
 } TaskState_t;
+
+typedef enum {
+  TimerStateNone,
+  TimerStateStopped,
+  TimerStateRunning
+} TimerState_t;
 
 typedef void TaskParm_t;
 
@@ -68,6 +75,7 @@ typedef struct TaskList_s {
 } TaskList_t;
 
 typedef struct Timer_s {
+  TimerState_t state;
   Time_t timerPeriod;
   Time_t timerStartTime;
   struct Timer_s *next;

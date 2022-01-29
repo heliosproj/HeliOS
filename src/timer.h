@@ -34,6 +34,16 @@
 extern "C" {
 #endif
 
+Timer_t *xTimerCreate(Time_t);
+void xTimerDelete(Timer_t *);
+void xTimerChangePeriod(Timer_t *, Time_t);
+Time_t xTimerGetPeriod(Timer_t *);
+int16_t xTimerIsActive(Timer_t *);
+int16_t xTimerHasElapsed(Timer_t *);
+void xTimerReset(Timer_t *);
+void xTimerStart(Timer_t *);
+void xTimerStop(Timer_t *)
+
 #ifdef __cplusplus
 }  // extern "C" {
 #endif

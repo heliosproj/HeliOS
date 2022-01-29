@@ -185,7 +185,7 @@ TaskState_t xTaskGetTaskState(Task_t *task_) {
     taskCursor = taskCursor->next;
   }
   if (!taskCursor)
-    return 0;
+    return TaskStateNone;
   return taskCursor->state;
 }
 
