@@ -36,6 +36,14 @@ typedef enum {
   TaskStateWaiting
 } TaskState_t;
 
+typedef struct TaskRunTimeStats_s {
+  int16_t id;
+  char name[TASKNAME_SIZE];
+  Time_t lastRunTime;
+  Time_t totalRunTime;
+} TaskRunTimeStats_t;
+
+typedef TaskRunTimeStats_t *xTaskRunTimeStats;
 typedef void Task_t;
 typedef Task_t *xTask;
 typedef void TaskParm_t;
@@ -47,7 +55,12 @@ extern "C" {
 
 void xHeliOSLoop();
 Task_t *xTaskCreate(const char *, void (*callback_)(Task_t *, TaskParm_t *), TaskParm_t *);
-Task_t *xTaskDestroy(Task_t *);
+void xTaskDelete(Task_t *);
+Task_t *xTaskGetHandleByName(const char *);
+Task_t *xTaskGetHandleById(TaskId_t id_);
+TaskRunTimeStats_t *xTaskGetAllRunTimeStats();
+TaskRunTimeStats_t *xTaskGetTaskRunTimeStats(Task_t *);
+
 void xTaskChangeState(Task_t *, TaskState_t);
 
 #ifdef __cplusplus

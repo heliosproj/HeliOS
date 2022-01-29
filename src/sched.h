@@ -35,7 +35,7 @@ extern "C" {
 
 void xHeliOSLoop();
 Flag_t IsNotCritBlocking();
-void RuntimeReset();
+void RunTimeReset();
 Time_t CurrentTime();
 void TaskRun(Task_t *);
 void memcpy_(void *, void *, size_t);

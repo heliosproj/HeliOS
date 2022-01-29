@@ -111,4 +111,11 @@ typedef uint32_t Time_t;
 #if !defined(PATCH_VERSION_NO)
 #define PATCH_VERSION_NO 0
 #endif
+
+#if !defined(ENTER_CRITICAL)
+#define ENTER_CRITICAL() flags.critBlocking = true;
+#endif
+#if !defined(EXIT_CRITICAL)
+#define EXIT_CRITICAL() flags.critBlocking = false;
+#endif
 #endif

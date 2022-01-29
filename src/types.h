@@ -41,12 +41,19 @@ typedef struct Task_s {
   void (*callback)(struct Task_s *, TaskParm_t *);
   int16_t notifyBytes;
   char notifyValue[TNOTIFYVALUE_SIZE];
-  Time_t lastRuntime;
-  Time_t totalRuntime;
+  Time_t lastRunTime;
+  Time_t totalRunTime;
   Time_t timerInterval;
   Time_t timerStartTime;
   struct Task_s *next;
 } Task_t;
+
+typedef struct TaskRunTimeStats_s {
+  int16_t id;
+  char name[TASKNAME_SIZE];
+  Time_t lastRunTime;
+  Time_t totalRunTime;
+} TaskRunTimeStats_t;
 
 typedef struct TaskList_s {
   int16_t nextId;
@@ -59,7 +66,7 @@ typedef int16_t Flag_t;
 typedef struct Flags_s {
   Flag_t schedulerRunning;
   Flag_t critBlocking;
-  Flag_t runtimeOverflow;
+  Flag_t runTimeOverflow;
 } Flags_t;
 
 typedef struct QueueMessage_s {

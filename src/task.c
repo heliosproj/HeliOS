@@ -27,7 +27,7 @@ Task_t *xTaskCreate(const char *name_, void (*callback_)(Task_t *, TaskParm_t *)
     if (!taskList) {
       taskList = (TaskList_t *)xMemAlloc(sizeof(TaskList_t));
       if (!taskList) {
-        return task;
+        return null;
       }
     }
     task = (Task_t *)xMemAlloc(sizeof(Task_t));
@@ -49,12 +49,13 @@ Task_t *xTaskCreate(const char *name_, void (*callback_)(Task_t *, TaskParm_t *)
         taskList->head = task;
       }
       taskList->length++;
+      return task;
     }
   }
-  return task;
+  return null;
 }
 
-Task_t *xTaskDestroy(Task_t *task_) {
+void xTaskDelete(Task_t *task_) {
   Task_t *taskCursor = null;
   Task_t *taskPrevious = null;
   if (IsNotCritBlocking() && task_) {
@@ -71,27 +72,80 @@ Task_t *xTaskDestroy(Task_t *task_) {
         taskCursor = taskCursor->next;
       }
       if (!taskCursor)
-        return task_;
+        return;
       taskPrevious->next = taskCursor->next;
       xMemFree(taskCursor);
       taskList->length--;
       task_ = null;
     }
   }
-  return task_;
+  return;
+}
+
+Task_t *xTaskGetHandleByName(const char *name_) {
+  Task_t *taskCursor = null;
+  taskCursor = taskList->head;
+  while (taskCursor) {
+    if (strncmp_(taskCursor->name, name_, TASKNAME_SIZE) == 0)
+      return taskCursor;
+    taskCursor = taskCursor->next;
+  }
+  return null;
+}
+
+Task_t *xTaskGetHandleById(TaskId_t id_) {
+  Task_t *taskCursor = null;
+  taskCursor = taskList->head;
+  while (taskCursor) {
+    if (taskCursor->id == id_)
+      return taskCursor;
+    taskCursor = taskCursor->next;
+  }
+  return null;
+}
+
+TaskRunTimeStats_t *xTaskGetAllRunTimeStats() {
+  int16_t i = 0;
+  int16_t tasks = 0;
+  Task_t *taskCursor = null;
+  TaskRunTimeStats_t *taskRunTimeStats = null;
+  taskCursor = taskList->head;
+  while (taskCursor) {
+    tasks++;
+    taskCursor = taskCursor->next;
+  }
+  if (tasks > 0 && taskList->length == tasks) {
+    taskRunTimeStats = (TaskRunTimeStats_t *)xMemAlloc(tasks * sizeof(TaskRunTimeStats_t));
+    if (taskRunTimeStats) {
+      taskCursor = taskList->head;
+      while (taskCursor) {
+        taskRunTimeStats[i].id = taskCursor->id;
+        memcpy_(taskRunTimeStats->name, taskCursor->name, TASKNAME_SIZE);
+        taskRunTimeStats[i].lastRunTime = taskCursor->lastRunTime;
+        taskRunTimeStats[i].totalRunTime = taskCursor->totalRunTime;
+        taskCursor = taskCursor->next;
+        i++;
+      }
+      return taskRunTimeStats;
+    }
+    return null;
+  }
+
+  return null;
+}
+
+TaskRunTimeStats_t *xTaskGetTaskRunTimeStats(Task_t *task_) {
 }
 
 void xTaskChangeState(Task_t *task_, TaskState_t state_) {
   Task_t *taskCursor = null;
-  if (IsNotCritBlocking() && task_) {
-    taskCursor = taskList->head;
-    while (taskCursor && taskCursor != task_) {
-      taskCursor = taskCursor->next;
-    }
-    if (!taskCursor)
-      return;
-    taskCursor->state = state_;
+  taskCursor = taskList->head;
+  while (taskCursor && taskCursor != task_) {
+    taskCursor = taskCursor->next;
   }
+  if (!taskCursor)
+    return;
+  taskCursor->state = state_;
 }
 
 TaskList_t *TaskListGet() {

@@ -34,7 +34,12 @@ extern "C" {
 #endif
 
 Task_t *xTaskCreate(const char *, void (*callback_)(Task_t *, TaskParm_t *), TaskParm_t *);
-Task_t *xTaskDestroy(Task_t *);
+void xTaskDelete(Task_t *);
+Task_t *xTaskGetHandleByName(const char *);
+Task_t *xTaskGetHandleById(TaskId_t id_);
+TaskRunTimeStats_t *xTaskGetAllRunTimeStats();
+TaskRunTimeStats_t *xTaskGetTaskRunTimeStats(Task_t *);
+
 void xTaskChangeState(Task_t *, TaskState_t);
 TaskList_t *TaskListGet();
 

@@ -21,20 +21,21 @@
 Flags_t flags = {
     .schedulerRunning = true,
     .critBlocking = false,
-    .runtimeOverflow = false};
+    .runTimeOverflow = false
+};
 
 void xHeliOSLoop() {
   Task_t *runTask = null;
   Task_t *taskCursor = null;
   TaskList_t *taskList = null;
-  Time_t leastRuntime = TIME_T_MAX;
+  Time_t leastRunTime = TIME_T_MAX;
 
   DISABLE_INTERRUPTS();
-  flags.critBlocking = true;
+  ENTER_CRITICAL()
 
   while (flags.schedulerRunning) {
-    if (flags.runtimeOverflow)
-      RuntimeReset();
+    if (flags.runTimeOverflow)
+      RunTimeReset();
 
     taskList = TaskListGet();
     if (taskList) {
@@ -45,19 +46,19 @@ void xHeliOSLoop() {
         } else if (taskCursor->state == TaskStateWaiting && taskCursor->timerInterval > 0 && CURRENTTIME() - taskCursor->timerStartTime > taskCursor->timerInterval) {
           TaskRun(taskCursor);
           taskCursor->timerStartTime = CURRENTTIME();
-        } else if (taskCursor->state == TaskStateRunning && taskCursor->totalRuntime < leastRuntime) {
-          leastRuntime = taskCursor->totalRuntime;
+        } else if (taskCursor->state == TaskStateRunning && taskCursor->totalRunTime < leastRunTime) {
+          leastRunTime = taskCursor->totalRunTime;
           runTask = taskCursor;
         }
         taskCursor = taskCursor->next;
       }
       if (runTask)
         TaskRun(runTask);
-      leastRuntime = TIME_T_MAX;
+      leastRunTime = TIME_T_MAX;
     }
   }
 
-  flags.critBlocking = false;
+  EXIT_CRITICAL();
   ENABLE_INTERRUPTS();
 }
 
@@ -65,7 +66,7 @@ Flag_t IsNotCritBlocking() {
   return !flags.critBlocking;
 }
 
-void RuntimeReset() {
+void RunTimeReset() {
   Task_t *taskCursor = null;
   TaskList_t *taskList = null;
 
@@ -73,10 +74,10 @@ void RuntimeReset() {
   if (taskList) {
     taskCursor = taskList->head;
     while (taskCursor) {
-      taskCursor->totalRuntime = taskCursor->lastRuntime;
+      taskCursor->totalRunTime = taskCursor->lastRunTime;
       taskCursor = taskCursor->next;
     }
-    flags.runtimeOverflow = false;
+    flags.runTimeOverflow = false;
   }
 }
 
@@ -98,17 +99,17 @@ Time_t CurrentTime() {
 
 void TaskRun(Task_t *task_) {
   Time_t taskStartTime = 0;
-  Time_t prevTotalRuntime = 0;
+  Time_t prevTotalRunTime = 0;
 
-  prevTotalRuntime = task_->totalRuntime;
+  prevTotalRunTime = task_->totalRunTime;
   taskStartTime = CURRENTTIME();
   ENABLE_INTERRUPTS();
   (*task_->callback)(task_, task_->taskParameter);
   DISABLE_INTERRUPTS();
-  task_->lastRuntime = CURRENTTIME() - taskStartTime;
-  task_->totalRuntime += task_->lastRuntime;
-  if (task_->totalRuntime < prevTotalRuntime)
-    flags.runtimeOverflow = true;
+  task_->lastRunTime = CURRENTTIME() - taskStartTime;
+  task_->totalRunTime += task_->lastRunTime;
+  if (task_->totalRunTime < prevTotalRunTime)
+    flags.runTimeOverflow = true;
 }
 
 void memcpy_(void *dest_, void *src_, size_t n_) {
