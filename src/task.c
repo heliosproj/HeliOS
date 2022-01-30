@@ -97,11 +97,11 @@ Task_t *xTaskGetHandleByName(const char *name_) {
   return null;
 }
 
-Task_t *xTaskGetHandleById(Task_t *task_) {
+Task_t *xTaskGetHandleById(TaskId_t id_) {
   Task_t *taskCursor = null;
   taskCursor = taskList->head;
   while (taskCursor) {
-    if (taskCursor->id == task_->id)
+    if (taskCursor->id == id_)
       return taskCursor;
     taskCursor = taskCursor->next;
   }

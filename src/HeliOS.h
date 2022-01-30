@@ -63,7 +63,9 @@ typedef void Task_t;
 typedef void TaskParm_t;
 typedef void Queue_t;
 typedef void Timer_t;
+typedef int16_t TaskId_t;
 
+typedef TaskId_t xTaskId;
 typedef Timer_t *xTimer;
 typedef Queue_t *xQueue;
 typedef QueueMessage_t *xQueueMessage;
@@ -82,7 +84,7 @@ void xTaskStartScheduler();
 Task_t *xTaskCreate(const char *, void (*callback_)(Task_t *, TaskParm_t *), TaskParm_t *);
 void xTaskDelete(Task_t *);
 Task_t *xTaskGetHandleByName(const char *);
-Task_t *xTaskGetHandleById(Task_t *);
+Task_t *xTaskGetHandleById(TaskId_t);
 TaskRunTimeStats_t *xTaskGetAllRunTimeStats();
 TaskRunTimeStats_t *xTaskGetTaskRunTimeStats(Task_t *);
 int16_t xTaskGetNumberOfTasks();
