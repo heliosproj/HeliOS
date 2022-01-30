@@ -19,6 +19,7 @@
 #define HELIOS_H_
 
 #include <stdint.h>
+
 #include "config.h"
 #include "defines.h"
 
@@ -35,13 +36,16 @@ typedef enum {
   TimerStateRunning
 } TimerState_t;
 
+typedef int16_t TaskId_t;
+typedef int16_t Base_t;
+
 typedef struct TaskRunTimeStats_s {
   Time_t lastRunTime;
   Time_t totalRunTime;
 } TaskRunTimeStats_t;
 
 typedef struct TaskInfo_s {
-  int16_t id;
+  TaskId_t id;
   char name[TASKNAME_SIZE];
   TaskState_t state;
   Time_t lastRunTime;
@@ -63,8 +67,8 @@ typedef void Task_t;
 typedef void TaskParm_t;
 typedef void Queue_t;
 typedef void Timer_t;
-typedef int16_t TaskId_t;
 
+typedef Base_t xBase;
 typedef TaskId_t xTaskId;
 typedef Timer_t *xTimer;
 typedef Queue_t *xQueue;
@@ -74,54 +78,55 @@ typedef TaskInfo_t *xTaskInfo;
 typedef TaskRunTimeStats_t *xTaskRunTimeStats;
 typedef Task_t *xTask;
 typedef TaskParm_t *xTaskParm;
+typedef Time_t xTime;
+typedef TaskState_t xTaskState;
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-// TO-DO: REPLACE ALL OF THE PRIVATE TYPES WITH THE PUBLIC TYPES!!!
 void xTaskStartScheduler();
-Task_t *xTaskCreate(const char *, void (*callback_)(Task_t *, TaskParm_t *), TaskParm_t *);
-void xTaskDelete(Task_t *);
-Task_t *xTaskGetHandleByName(const char *);
-Task_t *xTaskGetHandleById(TaskId_t);
-TaskRunTimeStats_t *xTaskGetAllRunTimeStats();
-TaskRunTimeStats_t *xTaskGetTaskRunTimeStats(Task_t *);
-int16_t xTaskGetNumberOfTasks();
-TaskState_t xTaskGetTaskState(Task_t *task_);
-TaskInfo_t *xTaskGetTaskInfo(Task_t *);
-char * xTaskGetName(Task_t *); 
+xTask xTaskCreate(const char *, void (*)(xTask, xTaskParm), xTaskParm);
+void xTaskDelete(xTask);
+xTask xTaskGetHandleByName(const char *);
+xTask xTaskGetHandleById(TaskId_t);
+xTaskRunTimeStats xTaskGetAllRunTimeStats();
+xTaskRunTimeStats xTaskGetTaskRunTimeStats(xTask);
+xBase xTaskGetNumberOfTasks();
+xTaskState xTaskGetTaskState(xTask);
+xTaskInfo xTaskGetTaskInfo(xTask);
+char *xTaskGetName(xTask);
 char *xTaskList();
-void xTaskNotifyGive(Task_t *task_, int16_t, char *);
-TaskNotification_t *xTaskNotifyTake(Task_t *);
-void xTaskNotifyStateClear(Task_t *);
-void xTaskResume(Task_t *);
+void xTaskNotifyGive(xTask, xBase, char *);
+TaskNotification_t *xTaskNotifyTake(xTask);
+void xTaskNotifyStateClear(xTask);
+void xTaskResume(xTask);
 void xTaskResumeAll();
 void xTaskSuspendAll();
-void xTaskSuspend(Task_t *);
-void xTaskWait(Task_t *);
-void xTaskSetTimer(Task_t *, Time_t);
-void xTaskSetTimerWOReset(Task_t *, Time_t);
-void xTaskResetTimer(Task_t *);
-Queue_t *xQueueCreate(int16_t);
-void xQueueDelete(Queue_t *);
-int16_t xQueueGetLength(Queue_t *);
-int16_t xQueueIsQueueEmpty(Queue_t *);
-int16_t xQueueIsQueueFull(Queue_t *);
-int16_t xQueueMessagesWaiting(Queue_t *);
-int16_t xQueueSend(Queue_t *, int16_t, char *);
-QueueMessage_t *xQueuePeek(Queue_t *);
-void xQueueDropMessage(Queue_t *);
-QueueMessage_t *xQueueReceive(Queue_t *); 
-Timer_t *xTimerCreate(Time_t);
-void xTimerDelete(Timer_t *);
-void xTimerChangePeriod(Timer_t *, Time_t);
-Time_t xTimerGetPeriod(Timer_t *);
-int16_t xTimerIsActive(Timer_t *);
-int16_t xTimerHasElapsed(Timer_t *);
-void xTimerReset(Timer_t *);
-void xTimerStart(Timer_t *);
-void xTimerStop(Timer_t *);
+void xTaskSuspend(xTask);
+void xTaskWait(xTask);
+void xTaskSetTimer(xTask, xTime);
+void xTaskSetTimerWOReset(xTask, xTime);
+void xTaskResetTimer(xTask);
+xQueue xQueueCreate(xBase);
+void xQueueDelete(xQueue);
+xBase xQueueGetLength(xQueue);
+xBase xQueueIsQueueEmpty(xQueue);
+xBase xQueueIsQueueFull(xQueue);
+xBase xQueueMessagesWaiting(xQueue);
+xBase xQueueSend(xQueue, xBase, char *);
+xQueueMessage xQueuePeek(xQueue);
+void xQueueDropMessage(xQueue);
+xQueueMessage xQueueReceive(xQueue);
+xTimer xTimerCreate(xTime);
+void xTimerDelete(xTimer);
+void xTimerChangePeriod(xTimer, xTime);
+xTime xTimerGetPeriod(xTimer);
+xBase xTimerIsActive(xTimer);
+xBase xTimerHasElapsed(xTimer);
+void xTimerReset(xTimer);
+void xTimerStart(xTimer);
+void xTimerStop(xTimer);
 
 #ifdef __cplusplus
 }  // extern "C" {

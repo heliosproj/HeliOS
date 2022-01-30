@@ -32,8 +32,9 @@ typedef enum {
 } TimerState_t;
 
 typedef void TaskParm_t;
-
 typedef int16_t TaskId_t;
+typedef int16_t Flag_t;
+typedef int16_t Base_t;
 
 typedef struct TaskNotification_s {
   int16_t notificationBytes;
@@ -41,7 +42,7 @@ typedef struct TaskNotification_s {
 } TaskNotification_t;
 
 typedef struct Task_s {
-  int16_t id;
+  TaskId_t id;
   char name[TASKNAME_SIZE];
   TaskState_t state;
   TaskParm_t *taskParameter;
@@ -61,7 +62,7 @@ typedef struct TaskRunTimeStats_s {
 } TaskRunTimeStats_t;
 
 typedef struct TaskInfo_s {
-  int16_t id;
+  TaskId_t id;
   char name[TASKNAME_SIZE];
   TaskState_t state;
   Time_t lastRunTime;
@@ -86,8 +87,6 @@ typedef struct TimerList_s {
   Timer_t *head;
 } TimerList_t;
 
-typedef int16_t Flag_t;
-
 typedef struct Flags_s {
   Flag_t schedulerRunning;
   Flag_t critBlocking;
@@ -111,5 +110,4 @@ typedef struct MemAllocRecord_s {
   size_t size;
   void *ptr;
 } MemAllocRecord_t;
-
 #endif

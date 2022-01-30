@@ -34,7 +34,7 @@
 extern "C" {
 #endif
 
-Task_t *xTaskCreate(const char *, void (*callback_)(Task_t *, TaskParm_t *), TaskParm_t *);
+Task_t *xTaskCreate(const char *, void (*)(Task_t *, TaskParm_t *), TaskParm_t *);
 void xTaskDelete(Task_t *);
 Task_t *xTaskGetHandleByName(const char *);
 Task_t *xTaskGetHandleById(TaskId_t);
