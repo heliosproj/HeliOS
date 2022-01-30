@@ -1,7 +1,0 @@
-# Ignore rules to keep the hex files out.
-
-*.hex
-
-# I use Simulide, ignore the backup file.
-
-*_backup.simu
