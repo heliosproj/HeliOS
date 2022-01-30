@@ -41,7 +41,7 @@ Time_t CurrentTime();
 void TaskRun(Task_t *);
 void xTaskResumeAll();
 void xTaskSuspendAll();
-void memcpy_(void *, void *, size_t);
+void memcpy_(void *, const void *, size_t);
 void memset_(void *, int16_t, size_t);
 char *strncpy_(char *, const char *, size_t);
 int16_t strncmp_(const char *, const char *, size_t);

@@ -115,7 +115,7 @@ void xTaskSuspendAll() {
   flags.schedulerRunning = false;
 }
 
-void memcpy_(void *dest_, void *src_, size_t n_) {
+void memcpy_(void *dest_, const void *src_, size_t n_) {
   char *src = (char *)src_;
   char *dest = (char *)dest_;
 
