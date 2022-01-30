@@ -112,4 +112,7 @@ typedef uint32_t Time_t;
 #if !defined(EXIT_CRITICAL)
 #define EXIT_CRITICAL() flags.critBlocking = false;
 #endif
+#if !defined(DEREF_TASKPARM)
+#define DEREF_TASKPARM(t, p) *((t *) p)
+#endif
 #endif
