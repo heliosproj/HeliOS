@@ -21,18 +21,19 @@
 TaskList_t *taskList = null;
 
 Task_t *xTaskCreate(const char *name_, void (*callback_)(Task_t *, TaskParm_t *), TaskParm_t *taskParameter_) {
+  DISABLE_INTERRUPTS();
   Task_t *task = null;
   Task_t *taskCursor = null;
   if (IsNotCritBlocking() && name_ && callback_) {
     if (!taskList) {
       taskList = (TaskList_t *)xMemAlloc(sizeof(TaskList_t));
       if (!taskList) {
+        ENABLE_INTERRUPTS();
         return null;
       }
     }
     task = (Task_t *)xMemAlloc(sizeof(Task_t));
     if (task) {
-      DISABLE_INTERRUPTS();
       taskList->nextId++;
       task->id = taskList->nextId;
       strncpy_(task->name, name_, TASKNAME_SIZE);
@@ -54,14 +55,15 @@ Task_t *xTaskCreate(const char *name_, void (*callback_)(Task_t *, TaskParm_t *)
       return task;
     }
   }
+  ENABLE_INTERRUPTS();
   return null;
 }
 
 void xTaskDelete(Task_t *task_) {
+  DISABLE_INTERRUPTS();
   Task_t *taskCursor = null;
   Task_t *taskPrevious = null;
   if (IsNotCritBlocking() && task_) {
-    DISABLE_INTERRUPTS();
     taskCursor = taskList->head;
     taskPrevious = null;
     if (taskCursor && taskCursor == task_) {
@@ -74,15 +76,17 @@ void xTaskDelete(Task_t *task_) {
         taskPrevious = taskCursor;
         taskCursor = taskCursor->next;
       }
-      if (!taskCursor)
+      if (!taskCursor) {
+        ENABLE_INTERRUPTS();
         return;
+      }
       taskPrevious->next = taskCursor->next;
       xMemFree(taskCursor);
       taskList->length--;
       task_ = null;
-      ENABLE_INTERRUPTS();
     }
   }
+  ENABLE_INTERRUPTS();
   return;
 }
 

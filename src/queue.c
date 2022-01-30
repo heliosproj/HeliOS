@@ -19,6 +19,7 @@
 #include "queue.h"
 
 Queue_t *xQueueCreate(Base_t limit_) {
+  DISABLE_INTERRUPTS();
   Queue_t *queue = null;
   if (limit_ >= QUEUE_MINIMUM_LIMIT) {
     queue = (Queue_t *)xMemAlloc(sizeof(Queue_t));
@@ -27,9 +28,11 @@ Queue_t *xQueueCreate(Base_t limit_) {
       queue->limit = limit_;
       queue->head = null;
       queue->tail = null;
+      ENABLE_INTERRUPTS();
       return queue;
     }
   }
+  ENABLE_INTERRUPTS();
   return null;
 }
 
@@ -71,6 +74,7 @@ Base_t xQueueMessagesWaiting(Queue_t *queue_) {
 }
 
 Base_t xQueueSend(Queue_t *queue_, Base_t messageBytes_, const char *messageValue_) {
+  DISABLE_INTERRUPTS();
   Message_t *message = null;
   if (queue_ && messageBytes_ > 0 && messageValue_) {
     if (queue_->length < queue_->limit) {
@@ -87,10 +91,12 @@ Base_t xQueueSend(Queue_t *queue_, Base_t messageBytes_, const char *messageValu
           queue_->tail = message;
         }
         queue_->length++;
+        ENABLE_INTERRUPTS();
         return true;
       }
     }
   }
+  ENABLE_INTERRUPTS();
   return false;
 }
 
@@ -108,15 +114,21 @@ QueueMessage_t *xQueuePeek(Queue_t *queue_) {
 }
 
 void xQueueDropMessage(Queue_t *queue_) {
+  DISABLE_INTERRUPTS();
   QueueMessage_t *message = null;
-  if (!queue_->head)
+  if (!queue_->head) {
+    ENABLE_INTERRUPTS();
     return;
+  }
   message = (QueueMessage_t *)queue_->head;
   queue_->head = queue_->head->next;
-  if (!queue_->head)
+  if (!queue_->head) {
     queue_->tail = null;
+  }
   queue_->length--;
   xMemFree(message);
+  ENABLE_INTERRUPTS();
+  return;
 }
 
 QueueMessage_t *xQueueReceive(Queue_t *queue_) {

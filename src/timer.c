@@ -21,18 +21,19 @@
 TimerList_t *timerList = null;
 
 Timer_t *xTimerCreate(Time_t timerPeriod_) {
+  DISABLE_INTERRUPTS();
   Timer_t *timer = null;
   Timer_t *timerCursor = null;
   if (IsNotCritBlocking() && timerPeriod_ > 0) {
     if (!timerList) {
       timerList = (TimerList_t *)xMemAlloc(sizeof(TimerList_t));
       if (!timerList) {
+        ENABLE_INTERRUPTS();
         return null;
       }
     }
     timer = (Timer_t *)xMemAlloc(sizeof(Task_t));
     if (timer) {
-      DISABLE_INTERRUPTS();
       timer->state = TimerStateStopped;
       timer->timerPeriod = timerPeriod_;
       timer->timerStartTime = CURRENTTIME();
@@ -51,14 +52,15 @@ Timer_t *xTimerCreate(Time_t timerPeriod_) {
       return timer;
     }
   }
+  ENABLE_INTERRUPTS();
   return null;
 }
 
 void xTimerDelete(Timer_t *timer_) {
+  DISABLE_INTERRUPTS();
   Timer_t *timerCursor = null;
   Timer_t *timerPrevious = null;
   if (IsNotCritBlocking() && timer_) {
-    DISABLE_INTERRUPTS();
     timerCursor = timerList->head;
     timerPrevious = null;
     if (timerCursor && timerCursor == timer_) {
@@ -71,14 +73,16 @@ void xTimerDelete(Timer_t *timer_) {
         timerPrevious = timerCursor;
         timerCursor = timerCursor->next;
       }
-      if (!timerCursor)
+      if (!timerCursor) {
+        ENABLE_INTERRUPTS();
         return;
+      }
       timerPrevious->next = timerCursor->next;
       xMemFree(timerCursor);
       timerList->length--;
-      ENABLE_INTERRUPTS();
     }
   }
+  ENABLE_INTERRUPTS();
   return;
 }
 
