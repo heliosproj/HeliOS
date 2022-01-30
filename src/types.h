@@ -115,4 +115,12 @@ typedef struct MemAllocRecord_s {
   size_t size;
   void *ptr;
 } MemAllocRecord_t;
+
+typedef struct SystemInfo_s {
+  char productName[PRODUCTNAME_SIZE];
+  Base_t majorVersion;
+  Base_t minorVersion;
+  Base_t patchVersion;
+  Base_t numberOfTasks;
+} SystemInfo_t;
 #endif

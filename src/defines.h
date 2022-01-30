@@ -92,7 +92,7 @@ typedef uint32_t Time_t;
 #endif
 
 #if !defined(PRODUCTNAME_SIZE)
-#define PRODUCTNAME_SIZE 16
+#define PRODUCTNAME_SIZE 6
 #endif
 #if !defined(PRODUCT_NAME)
 #define PRODUCT_NAME "HeliOS"

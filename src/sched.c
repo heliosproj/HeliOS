@@ -115,6 +115,26 @@ void xTaskSuspendAll() {
   flags.schedulerRunning = false;
 }
 
+SystemInfo_t *xSystemGetSystemInfo() {
+  TaskList_t *taskList = null;
+  SystemInfo_t *systemInfo = null;
+  systemInfo = (SystemInfo_t *)xMemAlloc(sizeof(SystemInfo_t));
+  if (systemInfo) {
+    memcpy_(systemInfo->productName, PRODUCT_NAME, PRODUCTNAME_SIZE);
+    systemInfo->majorVersion = MAJOR_VERSION_NO;
+    systemInfo->minorVersion = MINOR_VERSION_NO;
+    systemInfo->patchVersion = PATCH_VERSION_NO;
+    taskList = TaskListGet();
+    if(taskList) {
+      systemInfo->numberOfTasks = taskList->length;
+    } else {
+      systemInfo->numberOfTasks = 0;
+    }
+    return systemInfo;
+  }
+  return null;
+}
+
 void memcpy_(void *dest_, const void *src_, size_t n_) {
   char *src = (char *)src_;
   char *dest = (char *)dest_;

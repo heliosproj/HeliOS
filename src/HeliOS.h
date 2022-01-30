@@ -56,6 +56,14 @@ typedef struct QueueMessage_s {
   char messageValue[TNOTIFYVALUE_SIZE];
 } QueueMessage_t;
 
+typedef struct SystemInfo_s {
+  char productName[PRODUCTNAME_SIZE];
+  Base_t majorVersion;
+  Base_t minorVersion;
+  Base_t patchVersion;
+  Base_t numberOfTasks;
+} SystemInfo_t;
+
 typedef void Task_t;
 typedef void TaskParm_t;
 typedef void Queue_t;
@@ -73,6 +81,7 @@ typedef Task_t *xTask;
 typedef TaskParm_t *xTaskParm;
 typedef Time_t xTime;
 typedef TaskState_t xTaskState;
+typedef SystemInfo_t *xSystemInfo;
 
 #ifdef __cplusplus
 extern "C" {
@@ -122,6 +131,7 @@ xBase xTimerHasElapsed(xTimer);
 void xTimerReset(xTimer);
 void xTimerStart(xTimer);
 void xTimerStop(xTimer);
+xSystemInfo xSystemGetSystemInfo();
 
 #ifdef __cplusplus
 }  // extern "C" {
