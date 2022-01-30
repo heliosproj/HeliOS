@@ -206,6 +206,17 @@ char *xTaskGetName(Task_t *task_) {
   return null;
 }
 
+TaskId_t xTaskGetId(Task_t *task_) {
+  Task_t *taskCursor = null;
+  taskCursor = taskList->head;
+  while (taskCursor && taskCursor != task_) {
+    taskCursor = taskCursor->next;
+  }
+  if (!taskCursor)
+    return null;
+  return taskCursor->id;
+}
+
 char *xTaskList() {
   return null;
 }
@@ -223,6 +234,20 @@ void xTaskNotifyStateClear(Task_t *task_) {
     memset_(taskCursor->notificationValue, 0, TNOTIFYVALUE_SIZE);
   }
   return;
+}
+
+Base_t xTaskNotificationWaiting(Task_t *task_) {
+  Task_t *taskCursor = null;
+  taskCursor = taskList->head;
+  while (taskCursor && taskCursor != task_) {
+    taskCursor = taskCursor->next;
+  }
+  if (!taskCursor)
+    return false;
+  if (taskCursor->notificationBytes > 0) {
+    return true;
+  }
+  return false;
 }
 
 void xTaskNotifyGive(Task_t *task_, Base_t notificationBytes_, char *notificationValue_) {

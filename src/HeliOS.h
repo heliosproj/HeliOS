@@ -60,7 +60,6 @@ typedef struct TaskNotification_s {
 typedef struct QueueMessage_s {
   Base_t messageBytes;
   char messageValue[TNOTIFYVALUE_SIZE];
-  void *next;
 } QueueMessage_t;
 
 typedef void Task_t;
@@ -89,14 +88,16 @@ void xTaskStartScheduler();
 xTask xTaskCreate(const char *, void (*)(xTask, xTaskParm), xTaskParm);
 void xTaskDelete(xTask);
 xTask xTaskGetHandleByName(const char *);
-xTask xTaskGetHandleById(TaskId_t);
+xTask xTaskGetHandleById(xTaskId);
 xTaskRunTimeStats xTaskGetAllRunTimeStats();
 xTaskRunTimeStats xTaskGetTaskRunTimeStats(xTask);
 xBase xTaskGetNumberOfTasks();
 xTaskState xTaskGetTaskState(xTask);
 xTaskInfo xTaskGetTaskInfo(xTask);
 char *xTaskGetName(xTask);
+xTaskId xTaskGetId(xTask);
 char *xTaskList();
+Base_t xTaskNotificationWaiting(xTask);
 void xTaskNotifyGive(xTask, xBase, char *);
 TaskNotification_t *xTaskNotifyTake(xTask);
 void xTaskNotifyStateClear(xTask);
