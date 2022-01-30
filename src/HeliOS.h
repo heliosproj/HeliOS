@@ -132,6 +132,10 @@ void xTimerReset(xTimer);
 void xTimerStart(xTimer);
 void xTimerStop(xTimer);
 xSystemInfo xSystemGetSystemInfo();
+void *xMemAlloc(size_t);
+void xMemFree(void *);
+size_t xMemGetUsed();
+size_t xMemGetSize(void *);
 
 #ifdef __cplusplus
 }  // extern "C" {
