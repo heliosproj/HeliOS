@@ -30,12 +30,6 @@ typedef enum {
   TaskStateWaiting
 } TaskState_t;
 
-typedef enum {
-  TimerStateNone,
-  TimerStateStopped,
-  TimerStateRunning
-} TimerState_t;
-
 typedef int16_t TaskId_t;
 typedef int16_t Base_t;
 
@@ -97,7 +91,7 @@ xTaskInfo xTaskGetTaskInfo(xTask);
 char *xTaskGetName(xTask);
 xTaskId xTaskGetId(xTask);
 char *xTaskList();
-Base_t xTaskNotificationIsWaiting(xTask);
+xBase xTaskNotificationIsWaiting(xTask);
 void xTaskNotifyGive(xTask, xBase, const char *);
 xTaskNotification xTaskNotifyTake(xTask);
 void xTaskNotifyStateClear(xTask);
