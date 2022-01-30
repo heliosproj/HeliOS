@@ -51,8 +51,10 @@ void xTaskStartScheduler() {
         }
         taskCursor = taskCursor->next;
       }
-      if (runTask)
+      if (runTask) {
         TaskRun(runTask);
+        runTask = null;
+      }
       leastRunTime = TIME_T_MAX;
     }
   }
@@ -81,13 +83,7 @@ void RunTimeReset() {
 }
 
 Time_t CurrentTime() {
-#if defined(OTHER_ARCH_WINDOWS)
-  LARGE_INTEGER pf;
-  LARGE_INTEGER pc;
-  QueryPerformanceFrequency(&pf);
-  QueryPerformanceCounter(&pc);
-  return pc.QuadPart;
-#elif defined(OTHER_ARCH_LINUX)
+#if defined(OTHER_ARCH_LINUX)
   struct timespec t;
   clock_gettime(CLOCK_MONOTONIC_RAW, &t);
   return t.tv_sec * 1000000 + t.tv_nsec / 1000;

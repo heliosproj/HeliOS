@@ -236,7 +236,7 @@ void xTaskNotifyStateClear(Task_t *task_) {
   return;
 }
 
-Base_t xTaskNotificationWaiting(Task_t *task_) {
+Base_t xTaskNotificationIsWaiting(Task_t *task_) {
   Task_t *taskCursor = null;
   taskCursor = taskList->head;
   while (taskCursor && taskCursor != task_) {
@@ -250,7 +250,7 @@ Base_t xTaskNotificationWaiting(Task_t *task_) {
   return false;
 }
 
-void xTaskNotifyGive(Task_t *task_, Base_t notificationBytes_, char *notificationValue_) {
+void xTaskNotifyGive(Task_t *task_, Base_t notificationBytes_, const char *notificationValue_) {
   Task_t *taskCursor = null;
   if (notificationBytes_ > 0 && notificationBytes_ < TNOTIFYVALUE_SIZE && notificationValue_) {
     taskCursor = taskList->head;
@@ -327,7 +327,7 @@ void xTaskWait(Task_t *task_) {
   return;
 }
 
-void xTaskSetTimer(Task_t *task_, Time_t timerPeriod_) {
+void xTaskChangePeriod(Task_t *task_, Time_t timerPeriod_) {
   Task_t *taskCursor = null;
   taskCursor = taskList->head;
   while (taskCursor && taskCursor != task_) {
@@ -336,20 +336,18 @@ void xTaskSetTimer(Task_t *task_, Time_t timerPeriod_) {
   if (!taskCursor)
     return;
   taskCursor->timerPeriod = timerPeriod_;
-  taskCursor->timerStartTime = CURRENTTIME();
   return;
 }
 
-void xTaskSetTimerWOReset(Task_t *task_, Time_t timerPeriod_) {
+Time_t xTaskGetPeriod(Task_t *task_) {
   Task_t *taskCursor = null;
   taskCursor = taskList->head;
   while (taskCursor && taskCursor != task_) {
     taskCursor = taskCursor->next;
   }
   if (!taskCursor)
-    return;
-  taskCursor->timerPeriod = timerPeriod_;
-  return;
+    return 0;
+  return taskCursor->timerPeriod;
 }
 
 void xTaskResetTimer(Task_t *task_) {

@@ -70,7 +70,7 @@ Base_t xQueueMessagesWaiting(Queue_t *queue_) {
   return true;
 }
 
-Base_t xQueueSend(Queue_t *queue_, Base_t messageBytes_, char *messageValue_) {
+Base_t xQueueSend(Queue_t *queue_, Base_t messageBytes_, const char *messageValue_) {
   Message_t *message = null;
   if (queue_ && messageBytes_ > 0 && messageValue_) {
     if (queue_->length < queue_->limit) {

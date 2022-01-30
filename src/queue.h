@@ -40,7 +40,7 @@ Base_t xQueueGetLength(Queue_t *);
 Base_t xQueueIsQueueEmpty(Queue_t *);
 Base_t xQueueIsQueueFull(Queue_t *);
 Base_t xQueueMessagesWaiting(Queue_t *);
-Base_t xQueueSend(Queue_t *, Base_t, char *);
+Base_t xQueueSend(Queue_t *, Base_t, const char *);
 QueueMessage_t *xQueuePeek(Queue_t *);
 void xQueueDropMessage(Queue_t *);
 QueueMessage_t *xQueueReceive(Queue_t *); 
