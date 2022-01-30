@@ -53,12 +53,12 @@ typedef struct TaskInfo_s {
 } TaskInfo_t;
 
 typedef struct TaskNotification_s {
-  int16_t notificationBytes;
+  Base_t notificationBytes;
   char notificationValue[TNOTIFYVALUE_SIZE];
 } TaskNotification_t;
 
 typedef struct QueueMessage_s {
-  int16_t messageBytes;
+  Base_t messageBytes;
   char messageValue[TNOTIFYVALUE_SIZE];
   void *next;
 } QueueMessage_t;

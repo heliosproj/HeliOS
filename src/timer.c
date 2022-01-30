@@ -106,7 +106,7 @@ Time_t xTimerGetPeriod(Timer_t *timer_) {
   return timerCursor->timerPeriod;
 }
 
-int16_t xTimerIsActive(Timer_t *timer_) {
+Base_t xTimerIsActive(Timer_t *timer_) {
   Timer_t *timerCursor = null;
   timerCursor = timerList->head;
   while (timerCursor && timerCursor != timer_) {
@@ -120,7 +120,7 @@ int16_t xTimerIsActive(Timer_t *timer_) {
   return false;
 }
 
-int16_t xTimerHasElapsed(Timer_t *timer_) {
+Base_t xTimerHasElapsed(Timer_t *timer_) {
   Timer_t *timerCursor = null;
   timerCursor = timerList->head;
   while (timerCursor && timerCursor != timer_) {

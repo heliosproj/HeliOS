@@ -18,7 +18,7 @@
 
 #include "queue.h"
 
-Queue_t *xQueueCreate(int16_t limit_) {
+Queue_t *xQueueCreate(Base_t limit_) {
   Queue_t *queue = null;
   if (limit_ >= QUEUE_MINIMUM_LIMIT) {
     queue = (Queue_t *)xMemAlloc(sizeof(Queue_t));
@@ -44,34 +44,34 @@ void xQueueDelete(Queue_t *queue_) {
   return;
 }
 
-int16_t xQueueGetLength(Queue_t *queue_) {
+Base_t xQueueGetLength(Queue_t *queue_) {
   if (queue_)
     return queue_->length;
   return 0;
 }
 
-int16_t xQueueIsQueueEmpty(Queue_t *queue_) {
+Base_t xQueueIsQueueEmpty(Queue_t *queue_) {
   if (queue_)
     if (queue_->length)
       return false;
   return true;
 }
 
-int16_t xQueueIsQueueFull(Queue_t *queue_) {
+Base_t xQueueIsQueueFull(Queue_t *queue_) {
   if (queue_)
     if (queue_->length < queue_->limit)
       return false;
   return true;
 }
 
-int16_t xQueueMessagesWaiting(Queue_t *queue_) {
+Base_t xQueueMessagesWaiting(Queue_t *queue_) {
   if (queue_)
     if (queue_->length == 0)
       return false;
   return true;
 }
 
-int16_t xQueueSend(Queue_t *queue_, int16_t messageBytes_, char *messageValue_) {
+Base_t xQueueSend(Queue_t *queue_, Base_t messageBytes_, char *messageValue_) {
   QueueMessage_t *message = null;
   if (queue_ && messageBytes_ > 0 && messageValue_) {
     if (queue_->length < queue_->limit) {

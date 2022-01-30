@@ -109,8 +109,8 @@ Task_t *xTaskGetHandleById(TaskId_t id_) {
 }
 
 TaskRunTimeStats_t *xTaskGetAllRunTimeStats() {
-  int16_t i = 0;
-  int16_t tasks = 0;
+  Base_t i = 0;
+  Base_t tasks = 0;
   Task_t *taskCursor = null;
   TaskRunTimeStats_t *taskRunTimeStats = null;
   taskCursor = taskList->head;
@@ -153,7 +153,7 @@ TaskRunTimeStats_t *xTaskGetTaskRunTimeStats(Task_t *task_) {
   return null;
 }
 
-int16_t xTaskGetNumberOfTasks() {
+Base_t xTaskGetNumberOfTasks() {
   return taskList->length;
 }
 
@@ -225,7 +225,7 @@ void xTaskNotifyStateClear(Task_t *task_) {
   return;
 }
 
-void xTaskNotifyGive(Task_t *task_, int16_t notificationBytes_, char *notificationValue_) {
+void xTaskNotifyGive(Task_t *task_, Base_t notificationBytes_, char *notificationValue_) {
   Task_t *taskCursor = null;
   if (notificationBytes_ > 0 && notificationBytes_ < TNOTIFYVALUE_SIZE && notificationValue_) {
     taskCursor = taskList->head;

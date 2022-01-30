@@ -34,13 +34,13 @@
 extern "C" {
 #endif
 
-Queue_t *xQueueCreate(int16_t);
+Queue_t *xQueueCreate(Base_t);
 void xQueueDelete(Queue_t *);
-int16_t xQueueGetLength(Queue_t *);
-int16_t xQueueIsQueueEmpty(Queue_t *);
-int16_t xQueueIsQueueFull(Queue_t *);
-int16_t xQueueMessagesWaiting(Queue_t *);
-int16_t xQueueSend(Queue_t *, int16_t, char *);
+Base_t xQueueGetLength(Queue_t *);
+Base_t xQueueIsQueueEmpty(Queue_t *);
+Base_t xQueueIsQueueFull(Queue_t *);
+Base_t xQueueMessagesWaiting(Queue_t *);
+Base_t xQueueSend(Queue_t *, Base_t, char *);
 QueueMessage_t *xQueuePeek(Queue_t *);
 void xQueueDropMessage(Queue_t *);
 QueueMessage_t *xQueueReceive(Queue_t *); 
