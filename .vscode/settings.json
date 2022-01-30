@@ -1,9 +1,0 @@
-{
-    "files.associations": {
-        "helios.h": "c",
-        "task.h": "c",
-        "limits.h": "c",
-        "mem.h": "c",
-        "queue.h": "c"
-    }
-}
