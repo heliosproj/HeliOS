@@ -96,14 +96,19 @@ typedef struct Flags_s {
 typedef struct QueueMessage_s {
   Base_t messageBytes;
   char messageValue[TNOTIFYVALUE_SIZE];
-  struct QueueMessage_s *next;
 } QueueMessage_t;
+
+typedef struct Message_s {
+  Base_t messageBytes;
+  char messageValue[TNOTIFYVALUE_SIZE];
+  struct Message_s *next;
+} Message_t;
 
 typedef struct Queue_s {
   Base_t length;
   Base_t limit;
-  QueueMessage_t *head;
-  QueueMessage_t *tail;
+  Message_t *head;
+  Message_t*tail;
 } Queue_t;
 
 typedef struct MemAllocRecord_s {

@@ -76,7 +76,6 @@ void xTimerDelete(Timer_t *timer_) {
       timerPrevious->next = timerCursor->next;
       xMemFree(timerCursor);
       timerList->length--;
-      timer_ = null;
       ENABLE_INTERRUPTS();
     }
   }

@@ -39,7 +39,6 @@ void xQueueDelete(Queue_t *queue_) {
       xQueueDropMessage(queue_);
     }
     xMemFree(queue_);
-    queue_ = null;
   }
   return;
 }
@@ -72,10 +71,10 @@ Base_t xQueueMessagesWaiting(Queue_t *queue_) {
 }
 
 Base_t xQueueSend(Queue_t *queue_, Base_t messageBytes_, char *messageValue_) {
-  QueueMessage_t *message = null;
+  Message_t *message = null;
   if (queue_ && messageBytes_ > 0 && messageValue_) {
     if (queue_->length < queue_->limit) {
-      message = (QueueMessage_t *)xMemAlloc(sizeof(QueueMessage_t));
+      message = (Message_t *)xMemAlloc(sizeof(Message_t));
       if (message) {
         message->messageBytes = messageBytes_;
         memcpy_(message->messageValue, messageValue_, TNOTIFYVALUE_SIZE);
@@ -100,10 +99,12 @@ QueueMessage_t *xQueuePeek(Queue_t *queue_) {
   if (queue_->head) {
     message = (QueueMessage_t *)xMemAlloc(sizeof(QueueMessage_t));
     if (message) {
-      memcpy_(message, queue_->head, sizeof(QueueMessage_t));
+      message->messageBytes = queue_->head->messageBytes;
+      memcpy_(message->messageValue, queue_->head->messageValue, TNOTIFYVALUE_SIZE);
+      return message;
     }
   }
-  return message;
+  return null;
 }
 
 void xQueueDropMessage(Queue_t *queue_) {
