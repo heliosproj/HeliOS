@@ -105,7 +105,7 @@ Time_t xTimerGetPeriod(Timer_t *timer_) {
   return timerCursor->timerPeriod;
 }
 
-Base_t xTimerIsActive(Timer_t *timer_) {
+Base_t xTimerIsTimerActive(Timer_t *timer_) {
   Timer_t *timerCursor = null;
   timerCursor = timerList->head;
   while (timerCursor && timerCursor != timer_) {
@@ -119,7 +119,7 @@ Base_t xTimerIsActive(Timer_t *timer_) {
   return false;
 }
 
-Base_t xTimerHasElapsed(Timer_t *timer_) {
+Base_t xTimerHasTimerExpired(Timer_t *timer_) {
   Timer_t *timerCursor = null;
   timerCursor = timerList->head;
   while (timerCursor && timerCursor != timer_) {
