@@ -60,7 +60,7 @@ void xTimerDelete(Timer_t *timer_) {
   DISABLE_INTERRUPTS();
   Timer_t *timerCursor = null;
   Timer_t *timerPrevious = null;
-  if (IsNotCritBlocking() && timer_) {
+  if (IsNotCritBlocking() && timerList && timer_) {
     timerCursor = timerList->head;
     timerPrevious = null;
     if (timerCursor && timerCursor == timer_) {
