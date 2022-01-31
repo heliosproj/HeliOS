@@ -116,12 +116,12 @@ Task_t *xTaskGetHandleById(TaskId_t id_) {
   return null;
 }
 
-TaskRunTimeStats_t *xTaskGetAllRunTimeStats() {
+TaskRunTimeStats_t *xTaskGetAllRunTimeStats(Base_t *tasks_) {
   Base_t i = 0;
   Base_t tasks = 0;
   Task_t *taskCursor = null;
   TaskRunTimeStats_t *taskRunTimeStats = null;
-  if (taskList) {
+  if (taskList && tasks_) {
     taskCursor = taskList->head;
     while (taskCursor) {
       tasks++;
@@ -137,10 +137,12 @@ TaskRunTimeStats_t *xTaskGetAllRunTimeStats() {
           taskCursor = taskCursor->next;
           i++;
         }
+        *tasks_ = tasks;
         return taskRunTimeStats;
       }
     }
   }
+  *tasks_ = 0;
   return null;
 }
 
