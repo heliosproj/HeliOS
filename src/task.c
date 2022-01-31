@@ -167,8 +167,17 @@ TaskRunTimeStats_t *xTaskGetTaskRunTimeStats(Task_t *task_) {
 }
 
 Base_t xTaskGetNumberOfTasks() {
+  Base_t tasks = 0;
+  Task_t *taskCursor = null;
   if (taskList) {
-    return taskList->length;
+    taskCursor = taskList->head;
+    while (taskCursor) {
+      tasks++;
+      taskCursor = taskCursor->next;
+    }
+    if (taskList->length == tasks) {
+      return tasks;
+    }
   }
   return 0;
 }
@@ -312,6 +321,8 @@ TaskNotification_t *xTaskNotifyTake(Task_t *task_) {
       if (taskNotification) {
         taskNotification->notificationBytes = taskCursor->notificationBytes;
         memcpy_(taskNotification->notificationValue, taskCursor->notificationValue, TNOTIFYVALUE_SIZE);
+        taskCursor->notificationBytes = 0;
+        memset_(taskCursor->notificationValue, 0, TNOTIFYVALUE_SIZE);
         return taskNotification;
       }
     }

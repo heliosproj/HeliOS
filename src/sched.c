@@ -116,7 +116,6 @@ void xTaskSuspendAll() {
 }
 
 SystemInfo_t *xSystemGetSystemInfo() {
-  TaskList_t *taskList = null;
   SystemInfo_t *systemInfo = null;
   systemInfo = (SystemInfo_t *)xMemAlloc(sizeof(SystemInfo_t));
   if (systemInfo) {
@@ -124,12 +123,7 @@ SystemInfo_t *xSystemGetSystemInfo() {
     systemInfo->majorVersion = MAJOR_VERSION_NO;
     systemInfo->minorVersion = MINOR_VERSION_NO;
     systemInfo->patchVersion = PATCH_VERSION_NO;
-    taskList = TaskListGet();
-    if(taskList) {
-      systemInfo->numberOfTasks = taskList->length;
-    } else {
-      systemInfo->numberOfTasks = 0;
-    }
+    systemInfo->numberOfTasks = xTaskGetNumberOfTasks();
     return systemInfo;
   }
   return null;

@@ -47,37 +47,81 @@ void xQueueDelete(Queue_t *queue_) {
 }
 
 Base_t xQueueGetLength(Queue_t *queue_) {
-  if (queue_)
-    return queue_->length;
+  Base_t messages = 0;
+  Message_t *messageCursor = null;
+  if (queue_) {
+    messageCursor = queue_->head;
+    while (messageCursor) {
+      messages++;
+      messageCursor = messageCursor->next;
+    }
+    if (queue_->length == messages) {
+      return messages;
+    }
+  }
   return 0;
 }
 
 Base_t xQueueIsQueueEmpty(Queue_t *queue_) {
-  if (queue_)
-    if (queue_->length)
-      return false;
-  return true;
+  Base_t messages = 0;
+  Message_t *messageCursor = null;
+  if (queue_) {
+    messageCursor = queue_->head;
+    while (messageCursor) {
+      messages++;
+      messageCursor = messageCursor->next;
+    }
+    if (messages == 0 && queue_->length == messages) {
+      return true;
+    }
+  }
+  return false;
 }
 
 Base_t xQueueIsQueueFull(Queue_t *queue_) {
-  if (queue_)
-    if (queue_->length < queue_->limit)
-      return false;
-  return true;
+  Base_t messages = 0;
+  Message_t *messageCursor = null;
+  if (queue_) {
+    messageCursor = queue_->head;
+    while (messageCursor) {
+      messages++;
+      messageCursor = messageCursor->next;
+    }
+    if (messages >= queue_->limit && queue_->length == messages) {
+      return true;
+    }
+  }
+  return false;
 }
 
 Base_t xQueueMessagesWaiting(Queue_t *queue_) {
-  if (queue_)
-    if (queue_->length == 0)
-      return false;
-  return true;
+  Base_t messages = 0;
+  Message_t *messageCursor = null;
+  if (queue_) {
+    messageCursor = queue_->head;
+    while (messageCursor) {
+      messages++;
+      messageCursor = messageCursor->next;
+    }
+    if (messages > 0 && queue_->length == messages) {
+      return true;
+    }
+  }
+  return false;
 }
 
 Base_t xQueueSend(Queue_t *queue_, Base_t messageBytes_, const char *messageValue_) {
   DISABLE_INTERRUPTS();
   Message_t *message = null;
+  Base_t messages = 0;
+  Message_t *messageCursor = null;
   if (queue_ && messageBytes_ > 0 && messageValue_) {
-    if (queue_->length < queue_->limit) {
+    messageCursor = queue_->head;
+    while (messageCursor) {
+      messages++;
+      messageCursor = messageCursor->next;
+    }
+    if (queue_->length < queue_->limit && queue_->length == messages) {
       message = (Message_t *)xMemAlloc(sizeof(Message_t));
       if (message) {
         message->messageBytes = messageBytes_;
