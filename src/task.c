@@ -63,7 +63,7 @@ void xTaskDelete(Task_t *task_) {
   DISABLE_INTERRUPTS();
   Task_t *taskCursor = null;
   Task_t *taskPrevious = null;
-  if (IsNotCritBlocking() && task_) {
+  if (IsNotCritBlocking() && taskList && task_) {
     taskCursor = taskList->head;
     taskPrevious = null;
     if (taskCursor && taskCursor == task_) {
@@ -92,22 +92,26 @@ void xTaskDelete(Task_t *task_) {
 
 Task_t *xTaskGetHandleByName(const char *name_) {
   Task_t *taskCursor = null;
-  taskCursor = taskList->head;
-  while (taskCursor) {
-    if (memcmp_(taskCursor->name, name_, TASKNAME_SIZE) == 0)
-      return taskCursor;
-    taskCursor = taskCursor->next;
+  if (taskList && name_) {
+    taskCursor = taskList->head;
+    while (taskCursor) {
+      if (memcmp_(taskCursor->name, name_, TASKNAME_SIZE) == 0)
+        return taskCursor;
+      taskCursor = taskCursor->next;
+    }
   }
   return null;
 }
 
 Task_t *xTaskGetHandleById(TaskId_t id_) {
   Task_t *taskCursor = null;
-  taskCursor = taskList->head;
-  while (taskCursor) {
-    if (taskCursor->id == id_)
-      return taskCursor;
-    taskCursor = taskCursor->next;
+  if (taskList && id_ > 0) {
+    taskCursor = taskList->head;
+    while (taskCursor) {
+      if (taskCursor->id == id_)
+        return taskCursor;
+      taskCursor = taskCursor->next;
+    }
   }
   return null;
 }
@@ -117,24 +121,25 @@ TaskRunTimeStats_t *xTaskGetAllRunTimeStats() {
   Base_t tasks = 0;
   Task_t *taskCursor = null;
   TaskRunTimeStats_t *taskRunTimeStats = null;
-  taskCursor = taskList->head;
-  while (taskCursor) {
-    tasks++;
-    taskCursor = taskCursor->next;
-  }
-  if (tasks > 0 && taskList->length == tasks) {
-    taskRunTimeStats = (TaskRunTimeStats_t *)xMemAlloc(tasks * sizeof(TaskRunTimeStats_t));
-    if (taskRunTimeStats) {
-      taskCursor = taskList->head;
-      while (taskCursor) {
-        taskRunTimeStats[i].lastRunTime = taskCursor->lastRunTime;
-        taskRunTimeStats[i].totalRunTime = taskCursor->totalRunTime;
-        taskCursor = taskCursor->next;
-        i++;
-      }
-      return taskRunTimeStats;
+  if (taskList) {
+    taskCursor = taskList->head;
+    while (taskCursor) {
+      tasks++;
+      taskCursor = taskCursor->next;
     }
-    return null;
+    if (tasks > 0 && taskList->length == tasks) {
+      taskRunTimeStats = (TaskRunTimeStats_t *)xMemAlloc(tasks * sizeof(TaskRunTimeStats_t));
+      if (taskRunTimeStats) {
+        taskCursor = taskList->head;
+        while (taskCursor) {
+          taskRunTimeStats[i].lastRunTime = taskCursor->lastRunTime;
+          taskRunTimeStats[i].totalRunTime = taskCursor->totalRunTime;
+          taskCursor = taskCursor->next;
+          i++;
+        }
+        return taskRunTimeStats;
+      }
+    }
   }
   return null;
 }
@@ -142,42 +147,49 @@ TaskRunTimeStats_t *xTaskGetAllRunTimeStats() {
 TaskRunTimeStats_t *xTaskGetTaskRunTimeStats(Task_t *task_) {
   Task_t *taskCursor = null;
   TaskRunTimeStats_t *taskRunTimeStats = null;
-  taskCursor = taskList->head;
-  while (taskCursor && taskCursor != task_) {
-    taskCursor = taskCursor->next;
-  }
-  if (!taskCursor)
-    return null;
-  taskRunTimeStats = (TaskRunTimeStats_t *)xMemAlloc(sizeof(TaskRunTimeStats_t));
-  if (taskRunTimeStats) {
-    taskRunTimeStats->lastRunTime = taskCursor->lastRunTime;
-    taskRunTimeStats->totalRunTime = taskCursor->totalRunTime;
-    return taskRunTimeStats;
+  if (taskList && task_) {
+    taskCursor = taskList->head;
+    while (taskCursor && taskCursor != task_) {
+      taskCursor = taskCursor->next;
+    }
+    if (!taskCursor)
+      return null;
+    taskRunTimeStats = (TaskRunTimeStats_t *)xMemAlloc(sizeof(TaskRunTimeStats_t));
+    if (taskRunTimeStats) {
+      taskRunTimeStats->lastRunTime = taskCursor->lastRunTime;
+      taskRunTimeStats->totalRunTime = taskCursor->totalRunTime;
+      return taskRunTimeStats;
+    }
   }
   return null;
 }
 
 Base_t xTaskGetNumberOfTasks() {
-  return taskList->length;
+  if (taskList) {
+    return taskList->length;
+  }
+  return 0;
 }
 
 TaskInfo_t *xTaskGetTaskInfo(Task_t *task_) {
   Task_t *taskCursor = null;
   TaskInfo_t *taskInfo = null;
-  taskCursor = taskList->head;
-  while (taskCursor && taskCursor != task_) {
-    taskCursor = taskCursor->next;
-  }
-  if (!taskCursor)
-    return null;
-  taskInfo = (TaskInfo_t *)xMemAlloc(sizeof(TaskInfo_t));
-  if (taskInfo) {
-    taskInfo->id = taskCursor->id;
-    taskInfo->state = taskCursor->state;
-    memcpy_(taskInfo->name, taskCursor->name, TASKNAME_SIZE);
-    taskInfo->lastRunTime = taskCursor->lastRunTime;
-    taskInfo->totalRunTime = taskCursor->totalRunTime;
-    return taskInfo;
+  if (taskList && task_) {
+    taskCursor = taskList->head;
+    while (taskCursor && taskCursor != task_) {
+      taskCursor = taskCursor->next;
+    }
+    if (!taskCursor)
+      return null;
+    taskInfo = (TaskInfo_t *)xMemAlloc(sizeof(TaskInfo_t));
+    if (taskInfo) {
+      taskInfo->id = taskCursor->id;
+      taskInfo->state = taskCursor->state;
+      memcpy_(taskInfo->name, taskCursor->name, TASKNAME_SIZE);
+      taskInfo->lastRunTime = taskCursor->lastRunTime;
+      taskInfo->totalRunTime = taskCursor->totalRunTime;
+      return taskInfo;
+    }
   }
   return null;
 }
@@ -185,40 +197,48 @@ TaskInfo_t *xTaskGetTaskInfo(Task_t *task_) {
 TaskState_t xTaskGetTaskState(Task_t *task_) {
   Task_t *taskCursor = null;
   taskCursor = taskList->head;
-  while (taskCursor && taskCursor != task_) {
-    taskCursor = taskCursor->next;
+  if (taskList && task_) {
+    while (taskCursor && taskCursor != task_) {
+      taskCursor = taskCursor->next;
+    }
+    if (!taskCursor)
+      return TaskStateNone;
+    return taskCursor->state;
   }
-  if (!taskCursor)
-    return TaskStateNone;
-  return taskCursor->state;
+  return TaskStateNone;
 }
 
 char *xTaskGetName(Task_t *task_) {
   char *name = null;
   Task_t *taskCursor = null;
-  taskCursor = taskList->head;
-  while (taskCursor && taskCursor != task_) {
-    taskCursor = taskCursor->next;
-  }
-  if (!taskCursor)
-    return null;
-  name = (char *)xMemAlloc(TASKNAME_SIZE);
-  if (name) {
-    memcpy_(name, taskCursor->name, TASKNAME_SIZE);
-    return name;
+  if (taskList && task_) {
+    taskCursor = taskList->head;
+    while (taskCursor && taskCursor != task_) {
+      taskCursor = taskCursor->next;
+    }
+    if (!taskCursor)
+      return null;
+    name = (char *)xMemAlloc(TASKNAME_SIZE);
+    if (name) {
+      memcpy_(name, taskCursor->name, TASKNAME_SIZE);
+      return name;
+    }
   }
   return null;
 }
 
 TaskId_t xTaskGetId(Task_t *task_) {
   Task_t *taskCursor = null;
-  taskCursor = taskList->head;
-  while (taskCursor && taskCursor != task_) {
-    taskCursor = taskCursor->next;
+  if (taskList && task_) {
+    taskCursor = taskList->head;
+    while (taskCursor && taskCursor != task_) {
+      taskCursor = taskCursor->next;
+    }
+    if (!taskCursor)
+      return 0;
+    return taskCursor->id;
   }
-  if (!taskCursor)
-    return null;
-  return taskCursor->id;
+  return 0;
 }
 
 char *xTaskList() {
@@ -227,36 +247,40 @@ char *xTaskList() {
 
 void xTaskNotifyStateClear(Task_t *task_) {
   Task_t *taskCursor = null;
-  taskCursor = taskList->head;
-  while (taskCursor && taskCursor != task_) {
-    taskCursor = taskCursor->next;
-  }
-  if (!taskCursor)
-    return;
-  if (taskCursor->notificationBytes > 0) {
-    taskCursor->notificationBytes = 0;
-    memset_(taskCursor->notificationValue, 0, TNOTIFYVALUE_SIZE);
+  if (taskList && task_) {
+    taskCursor = taskList->head;
+    while (taskCursor && taskCursor != task_) {
+      taskCursor = taskCursor->next;
+    }
+    if (!taskCursor)
+      return;
+    if (taskCursor->notificationBytes > 0) {
+      taskCursor->notificationBytes = 0;
+      memset_(taskCursor->notificationValue, 0, TNOTIFYVALUE_SIZE);
+    }
   }
   return;
 }
 
 Base_t xTaskNotificationIsWaiting(Task_t *task_) {
   Task_t *taskCursor = null;
-  taskCursor = taskList->head;
-  while (taskCursor && taskCursor != task_) {
-    taskCursor = taskCursor->next;
-  }
-  if (!taskCursor)
-    return false;
-  if (taskCursor->notificationBytes > 0) {
-    return true;
+  if (taskList && task_) {
+    taskCursor = taskList->head;
+    while (taskCursor && taskCursor != task_) {
+      taskCursor = taskCursor->next;
+    }
+    if (!taskCursor)
+      return false;
+    if (taskCursor->notificationBytes > 0) {
+      return true;
+    }
   }
   return false;
 }
 
 void xTaskNotifyGive(Task_t *task_, Base_t notificationBytes_, const char *notificationValue_) {
   Task_t *taskCursor = null;
-  if (notificationBytes_ > 0 && notificationBytes_ < TNOTIFYVALUE_SIZE && notificationValue_) {
+  if (taskList && task_ && notificationBytes_ > 0 && notificationBytes_ < TNOTIFYVALUE_SIZE && notificationValue_) {
     taskCursor = taskList->head;
     while (taskCursor && taskCursor != task_) {
       taskCursor = taskCursor->next;
@@ -274,18 +298,20 @@ void xTaskNotifyGive(Task_t *task_, Base_t notificationBytes_, const char *notif
 TaskNotification_t *xTaskNotifyTake(Task_t *task_) {
   Task_t *taskCursor = null;
   TaskNotification_t *taskNotification = null;
-  taskCursor = taskList->head;
-  while (taskCursor && taskCursor != task_) {
-    taskCursor = taskCursor->next;
-  }
-  if (!taskCursor)
-    return null;
-  if (taskCursor->notificationBytes > 0) {
-    taskNotification = (TaskNotification_t *)xMemAlloc(sizeof(TaskNotification_t));
-    if (taskNotification) {
-      taskNotification->notificationBytes = taskCursor->notificationBytes;
-      memcpy_(taskNotification->notificationValue, taskCursor->notificationValue, TNOTIFYVALUE_SIZE);
-      return taskNotification;
+  if (taskList && task_) {
+    taskCursor = taskList->head;
+    while (taskCursor && taskCursor != task_) {
+      taskCursor = taskCursor->next;
+    }
+    if (!taskCursor)
+      return null;
+    if (taskCursor->notificationBytes > 0) {
+      taskNotification = (TaskNotification_t *)xMemAlloc(sizeof(TaskNotification_t));
+      if (taskNotification) {
+        taskNotification->notificationBytes = taskCursor->notificationBytes;
+        memcpy_(taskNotification->notificationValue, taskCursor->notificationValue, TNOTIFYVALUE_SIZE);
+        return taskNotification;
+      }
     }
   }
   return null;
@@ -297,71 +323,84 @@ TaskList_t *TaskListGet() {
 
 void xTaskResume(Task_t *task_) {
   Task_t *taskCursor = null;
-  taskCursor = taskList->head;
-  while (taskCursor && taskCursor != task_) {
-    taskCursor = taskCursor->next;
+  if (taskList && task_) {
+    taskCursor = taskList->head;
+    while (taskCursor && taskCursor != task_) {
+      taskCursor = taskCursor->next;
+    }
+    if (!taskCursor)
+      return;
+    taskCursor->state = TaskStateRunning;
   }
-  if (!taskCursor)
-    return;
-  taskCursor->state = TaskStateRunning;
   return;
 }
 
 void xTaskSuspend(Task_t *task_) {
   Task_t *taskCursor = null;
-  taskCursor = taskList->head;
-  while (taskCursor && taskCursor != task_) {
-    taskCursor = taskCursor->next;
+  if (taskList && task_) {
+    taskCursor = taskList->head;
+    while (taskCursor && taskCursor != task_) {
+      taskCursor = taskCursor->next;
+    }
+    if (!taskCursor)
+      return;
+    taskCursor->state = TaskStateSuspended;
   }
-  if (!taskCursor)
-    return;
-  taskCursor->state = TaskStateSuspended;
   return;
 }
 
 void xTaskWait(Task_t *task_) {
   Task_t *taskCursor = null;
-  taskCursor = taskList->head;
-  while (taskCursor && taskCursor != task_) {
-    taskCursor = taskCursor->next;
+  if (taskList && task_) {
+    taskCursor = taskList->head;
+    while (taskCursor && taskCursor != task_) {
+      taskCursor = taskCursor->next;
+    }
+    if (!taskCursor)
+      return;
+    taskCursor->state = TaskStateWaiting;
   }
-  if (!taskCursor)
-    return;
-  taskCursor->state = TaskStateWaiting;
   return;
 }
 
 void xTaskChangePeriod(Task_t *task_, Time_t timerPeriod_) {
   Task_t *taskCursor = null;
-  taskCursor = taskList->head;
-  while (taskCursor && taskCursor != task_) {
-    taskCursor = taskCursor->next;
+  if (taskList && task_ && timerPeriod_ >= 0) {
+    taskCursor = taskList->head;
+    while (taskCursor && taskCursor != task_) {
+      taskCursor = taskCursor->next;
+    }
+    if (!taskCursor)
+      return;
+    taskCursor->timerPeriod = timerPeriod_;
   }
-  if (!taskCursor)
-    return;
-  taskCursor->timerPeriod = timerPeriod_;
   return;
 }
 
 Time_t xTaskGetPeriod(Task_t *task_) {
   Task_t *taskCursor = null;
-  taskCursor = taskList->head;
-  while (taskCursor && taskCursor != task_) {
-    taskCursor = taskCursor->next;
+  if (taskList && task_) {
+    taskCursor = taskList->head;
+    while (taskCursor && taskCursor != task_) {
+      taskCursor = taskCursor->next;
+    }
+    if (!taskCursor)
+      return 0;
+    return taskCursor->timerPeriod;
   }
-  if (!taskCursor)
-    return 0;
-  return taskCursor->timerPeriod;
+  return 0;
 }
 
 void xTaskResetTimer(Task_t *task_) {
   Task_t *taskCursor = null;
-  taskCursor = taskList->head;
-  while (taskCursor && taskCursor != task_) {
-    taskCursor = taskCursor->next;
+  if (taskList && task_) {
+    taskCursor = taskList->head;
+    while (taskCursor && taskCursor != task_) {
+      taskCursor = taskCursor->next;
+    }
+    if (!taskCursor)
+      return;
+    taskCursor->timerStartTime = CURRENTTIME();
   }
-  if (!taskCursor)
-    return;
-  taskCursor->timerStartTime = CURRENTTIME();
   return;
 }

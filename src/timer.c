@@ -24,7 +24,7 @@ Timer_t *xTimerCreate(Time_t timerPeriod_) {
   DISABLE_INTERRUPTS();
   Timer_t *timer = null;
   Timer_t *timerCursor = null;
-  if (IsNotCritBlocking() && timerPeriod_ > 0) {
+  if (IsNotCritBlocking() && timerPeriod_ >= 0) {
     if (!timerList) {
       timerList = (TimerList_t *)xMemAlloc(sizeof(TimerList_t));
       if (!timerList) {
@@ -88,87 +88,102 @@ void xTimerDelete(Timer_t *timer_) {
 
 void xTimerChangePeriod(Timer_t *timer_, Time_t timerPeriod_) {
   Timer_t *timerCursor = null;
-  timerCursor = timerList->head;
-  while (timerCursor && timerCursor != timer_) {
-    timerCursor = timerCursor->next;
+  if (timerList && timer_ && timerPeriod_ >= 0) {
+    timerCursor = timerList->head;
+    while (timerCursor && timerCursor != timer_) {
+      timerCursor = timerCursor->next;
+    }
+    if (!timerCursor)
+      return;
+    timerCursor->timerPeriod = timerPeriod_;
   }
-  if (!timerCursor)
-    return;
-  timerCursor->timerPeriod = timerPeriod_;
   return;
 }
 
 Time_t xTimerGetPeriod(Timer_t *timer_) {
   Timer_t *timerCursor = null;
-  timerCursor = timerList->head;
-  while (timerCursor && timerCursor != timer_) {
-    timerCursor = timerCursor->next;
+  if (timerList && timer_) {
+    timerCursor = timerList->head;
+    while (timerCursor && timerCursor != timer_) {
+      timerCursor = timerCursor->next;
+    }
+    if (!timerCursor)
+      return 0;
+    return timerCursor->timerPeriod;
   }
-  if (!timerCursor)
-    return 0;
-  return timerCursor->timerPeriod;
+  return 0;
 }
 
 Base_t xTimerIsTimerActive(Timer_t *timer_) {
   Timer_t *timerCursor = null;
-  timerCursor = timerList->head;
-  while (timerCursor && timerCursor != timer_) {
-    timerCursor = timerCursor->next;
-  }
-  if (!timerCursor)
-    return false;
-  if (timerCursor->state == TimerStateRunning) {
-    return true;
+  if (timerList && timer_) {
+    timerCursor = timerList->head;
+    while (timerCursor && timerCursor != timer_) {
+      timerCursor = timerCursor->next;
+    }
+    if (!timerCursor)
+      return false;
+    if (timerCursor->state == TimerStateRunning) {
+      return true;
+    }
   }
   return false;
 }
 
 Base_t xTimerHasTimerExpired(Timer_t *timer_) {
   Timer_t *timerCursor = null;
-  timerCursor = timerList->head;
-  while (timerCursor && timerCursor != timer_) {
-    timerCursor = timerCursor->next;
-  }
-  if (!timerCursor)
-    return false;
-  if (timerCursor->state == TimerStateRunning && CURRENTTIME() - timerCursor->timerStartTime > timerCursor->timerPeriod) {
-    return true;
+  if (timerList && timer_) {
+    timerCursor = timerList->head;
+    while (timerCursor && timerCursor != timer_) {
+      timerCursor = timerCursor->next;
+    }
+    if (!timerCursor)
+      return false;
+    if (timerCursor->state == TimerStateRunning && CURRENTTIME() - timerCursor->timerStartTime > timerCursor->timerPeriod) {
+      return true;
+    }
   }
   return false;
 }
 
 void xTimerReset(Timer_t *timer_) {
   Timer_t *timerCursor = null;
-  timerCursor = timerList->head;
-  while (timerCursor && timerCursor != timer_) {
-    timerCursor = timerCursor->next;
+  if (timerList && timer_) {
+    timerCursor = timerList->head;
+    while (timerCursor && timerCursor != timer_) {
+      timerCursor = timerCursor->next;
+    }
+    if (!timerCursor)
+      return;
+    timerCursor->timerStartTime = CURRENTTIME();
   }
-  if (!timerCursor)
-    return;
-  timerCursor->timerStartTime = CURRENTTIME();
   return;
 }
 
 void xTimerStart(Timer_t *timer_) {
   Timer_t *timerCursor = null;
-  timerCursor = timerList->head;
-  while (timerCursor && timerCursor != timer_) {
-    timerCursor = timerCursor->next;
+  if (timerList && timer_) {
+    timerCursor = timerList->head;
+    while (timerCursor && timerCursor != timer_) {
+      timerCursor = timerCursor->next;
+    }
+    if (!timerCursor)
+      return;
+    timerCursor->state = TimerStateRunning;
   }
-  if (!timerCursor)
-    return;
-  timerCursor->state = TimerStateRunning;
   return;
 }
 
 void xTimerStop(Timer_t *timer_) {
   Timer_t *timerCursor = null;
-  timerCursor = timerList->head;
-  while (timerCursor && timerCursor != timer_) {
-    timerCursor = timerCursor->next;
+  if (timerList && timer_) {
+    timerCursor = timerList->head;
+    while (timerCursor && timerCursor != timer_) {
+      timerCursor = timerCursor->next;
+    }
+    if (!timerCursor)
+      return;
+    timerCursor->state = TimerStateStopped;
   }
-  if (!timerCursor)
-    return;
-  timerCursor->state = TimerStateStopped;
   return;
 }
