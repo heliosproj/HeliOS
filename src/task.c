@@ -36,7 +36,7 @@ Task_t *xTaskCreate(const char *name_, void (*callback_)(Task_t *, TaskParm_t *)
     if (task) {
       taskList->nextId++;
       task->id = taskList->nextId;
-      strncpy_(task->name, name_, TASKNAME_SIZE);
+      memcpy_(task->name, name_, TASKNAME_SIZE);
       task->state = TaskStateSuspended;
       task->callback = callback_;
       task->taskParameter = taskParameter_;
@@ -94,7 +94,7 @@ Task_t *xTaskGetHandleByName(const char *name_) {
   Task_t *taskCursor = null;
   taskCursor = taskList->head;
   while (taskCursor) {
-    if (strncmp_(taskCursor->name, name_, TASKNAME_SIZE) == 0)
+    if (memcmp_(taskCursor->name, name_, TASKNAME_SIZE) == 0)
       return taskCursor;
     taskCursor = taskCursor->next;
   }

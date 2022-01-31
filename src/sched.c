@@ -150,28 +150,15 @@ void memset_(void *dest_, int16_t val_, size_t n_) {
     dest[i] = (char)val_;
 }
 
-char *strncpy_(char *dest_, const char *src_, size_t n_) {
-  const char *src = src_;
-  char *dest = dest_;
+int16_t memcmp_(const void *s1_, const void *s2_, size_t n_) {
+  char *s1 = (char *)s1_;
+  char *s2 = (char *)s2_;
 
-  while (*src && n_--) {
-    *dest = *src;
-    dest++;
-    src++;
-  }
-  *dest = 0;
-  return dest_;
-}
-
-int16_t strncmp_(const char *str1_, const char *str2_, size_t n_) {
-  const char *str2 = str2_;
-  const char *str1 = str1_;
-
-  while (*str1 && n_--) {
-    if (*str1 != *str2)
-      return *str1 - *str2;
-    str1++;
-    str2++;
+  for (size_t i = 0; i < n_; i++) {
+    if (*s1 != *s2)
+      return *s1 - *s2;
+    s1++;
+    s2++;
   }
   return 0;
 }
