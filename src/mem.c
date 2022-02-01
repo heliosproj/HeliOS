@@ -25,18 +25,18 @@
 
 #include "mem.h"
 
-MemAllocRecord_t memAllocTable[CONFIG_DYNAMIC_MEMORY_TABLE_ENTRIES];
+DynamicMemoryAllocEntry_t dynamicMemoryAllocTable[CONFIG_DYNAMIC_MEMORY_ALLOC_TABLE_ENTRIES];
 
 void *xMemAlloc(size_t size_) {
   void *ptr = null;
 
   if (size_ > 0) {
-    for (size_t i = 0; i < CONFIG_DYNAMIC_MEMORY_TABLE_ENTRIES; i++) {
-      if (!memAllocTable[i].ptr) {
+    for (size_t i = 0; i < CONFIG_DYNAMIC_MEMORY_ALLOC_TABLE_ENTRIES; i++) {
+      if (!dynamicMemoryAllocTable[i].ptr) {
         ptr = calloc(1, size_);
         if (ptr) {
-          memAllocTable[i].size = size_;
-          memAllocTable[i].ptr = ptr;
+          dynamicMemoryAllocTable[i].size = size_;
+          dynamicMemoryAllocTable[i].ptr = ptr;
           return ptr;
         }
       }
@@ -47,11 +47,11 @@ void *xMemAlloc(size_t size_) {
 
 void xMemFree(void *ptr_) {
   if (ptr_) {
-    for (size_t i = 0; i < CONFIG_DYNAMIC_MEMORY_TABLE_ENTRIES; i++) {
-      if (memAllocTable[i].ptr == ptr_) {
-        free(memAllocTable[i].ptr);
-        memAllocTable[i].size = 0;
-        memAllocTable[i].ptr = null;
+    for (size_t i = 0; i < CONFIG_DYNAMIC_MEMORY_ALLOC_TABLE_ENTRIES; i++) {
+      if (dynamicMemoryAllocTable[i].ptr == ptr_) {
+        free(dynamicMemoryAllocTable[i].ptr);
+        dynamicMemoryAllocTable[i].size = 0;
+        dynamicMemoryAllocTable[i].ptr = null;
       }
     }
   }
@@ -60,17 +60,17 @@ void xMemFree(void *ptr_) {
 size_t xMemGetUsed() {
   size_t used = 0;
 
-  for (size_t i = 0; i < CONFIG_DYNAMIC_MEMORY_TABLE_ENTRIES; i++)
-    if (memAllocTable[i].ptr)
-      used += memAllocTable[i].size;
+  for (size_t i = 0; i < CONFIG_DYNAMIC_MEMORY_ALLOC_TABLE_ENTRIES; i++)
+    if (dynamicMemoryAllocTable[i].ptr)
+      used += dynamicMemoryAllocTable[i].size;
   return used;
 }
 
 size_t xMemGetSize(void *ptr_) {
   if (ptr_) {
-    for (size_t i = 0; i < CONFIG_DYNAMIC_MEMORY_TABLE_ENTRIES; i++)
-      if (memAllocTable[i].ptr == ptr_)
-        return memAllocTable[i].size;
+    for (size_t i = 0; i < CONFIG_DYNAMIC_MEMORY_ALLOC_TABLE_ENTRIES; i++)
+      if (dynamicMemoryAllocTable[i].ptr == ptr_)
+        return dynamicMemoryAllocTable[i].size;
   }
   return 0;
 }

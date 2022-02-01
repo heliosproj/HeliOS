@@ -118,10 +118,10 @@ typedef struct Queue_s {
   Message_t*tail;
 } Queue_t;
 
-typedef struct MemAllocRecord_s {
+typedef struct DynamicMemoryAllocEntry_s {
   size_t size;
   void *ptr;
-} MemAllocRecord_t;
+} DynamicMemoryAllocEntry_t;
 
 typedef struct SystemInfo_s {
   char productName[PRODUCTNAME_SIZE];

@@ -38,9 +38,9 @@ to customize HeliOS for their specific use */
 #define CONFIG_TASK_NAME_BYTES 16
 
 /* Defined the number of entries in the dynamic memory allocation table */
-#define CONFIG_DYNAMIC_MEMORY_TABLE_ENTRIES 100
+#define CONFIG_DYNAMIC_MEMORY_ALLOC_TABLE_ENTRIES 100
 
-/* Define the mininum limit for messages in the message queue */
+/* Define the mininum limit on the length of the queue, when messages in the
+queue reachis this number the queue is considered full */
 #define CONFIG_QUEUE_MININUM_LIMIT 5
-
 #endif
