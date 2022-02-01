@@ -28,7 +28,7 @@
 Queue_t *xQueueCreate(Base_t limit_) {
   DISABLE_INTERRUPTS();
   Queue_t *queue = null;
-  if (limit_ >= QUEUE_MINIMUM_LIMIT) {
+  if (limit_ >= CONFIG_QUEUE_MININUM_LIMIT) {
     queue = (Queue_t *)xMemAlloc(sizeof(Queue_t));
     if (queue) {
       queue->length = 0;
@@ -132,7 +132,7 @@ Base_t xQueueSend(Queue_t *queue_, Base_t messageBytes_, const char *messageValu
       message = (Message_t *)xMemAlloc(sizeof(Message_t));
       if (message) {
         message->messageBytes = messageBytes_;
-        memcpy_(message->messageValue, messageValue_, TNOTIFYVALUE_SIZE);
+        memcpy_(message->messageValue, messageValue_, CONFIG_MESSAGE_VALUE_BYTES);
         message->next = null;
         if (queue_->tail) {
           queue_->tail->next = message;
@@ -158,7 +158,7 @@ QueueMessage_t *xQueuePeek(Queue_t *queue_) {
       message = (QueueMessage_t *)xMemAlloc(sizeof(QueueMessage_t));
       if (message) {
         message->messageBytes = queue_->head->messageBytes;
-        memcpy_(message->messageValue, queue_->head->messageValue, TNOTIFYVALUE_SIZE);
+        memcpy_(message->messageValue, queue_->head->messageValue, CONFIG_MESSAGE_VALUE_BYTES);
         return message;
       }
     }

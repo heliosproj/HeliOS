@@ -25,9 +25,22 @@
 #ifndef CONFIG_H_
 #define CONFIG_H_
 
-#define TASKNAME_SIZE 16
-#define TNOTIFYVALUE_SIZE 16
-#define MEMALLOCTABLE_SIZE 100
-#define QUEUE_MINIMUM_LIMIT 5
+/* The following configurable settings may be defined by the end-user
+to customize HeliOS for their specific use */
+
+/* Define the size in bytes of the queue message value */
+#define CONFIG_MESSAGE_VALUE_BYTES 16
+
+/* Define the size in bytes of the task notification value */
+#define CONFIG_NOTIFICATION_VALUE_BYTES 16
+
+/* Define the size in bytes of the task name */
+#define CONFIG_TASK_NAME_BYTES 16
+
+/* Defined the number of entries in the dynamic memory allocation table */
+#define CONFIG_DYNAMIC_MEMORY_TABLE_ENTRIES 100
+
+/* Define the mininum limit for messages in the message queue */
+#define CONFIG_QUEUE_MININUM_LIMIT 5
 
 #endif

@@ -45,17 +45,17 @@ typedef int16_t Base_t;
 
 typedef struct TaskNotification_s {
   Base_t notificationBytes;
-  char notificationValue[TNOTIFYVALUE_SIZE];
+  char notificationValue[CONFIG_NOTIFICATION_VALUE_BYTES];
 } TaskNotification_t;
 
 typedef struct Task_s {
   TaskId_t id;
-  char name[TASKNAME_SIZE];
+  char name[CONFIG_TASK_NAME_BYTES];
   TaskState_t state;
   TaskParm_t *taskParameter;
   void (*callback)(struct Task_s *, TaskParm_t *);
   Base_t notificationBytes;
-  char notificationValue[TNOTIFYVALUE_SIZE];
+  char notificationValue[CONFIG_NOTIFICATION_VALUE_BYTES];
   Time_t lastRunTime;
   Time_t totalRunTime;
   Time_t timerPeriod;
@@ -70,7 +70,7 @@ typedef struct TaskRunTimeStats_s {
 
 typedef struct TaskInfo_s {
   TaskId_t id;
-  char name[TASKNAME_SIZE];
+  char name[CONFIG_TASK_NAME_BYTES];
   TaskState_t state;
   Time_t lastRunTime;
   Time_t totalRunTime;
@@ -102,12 +102,12 @@ typedef struct Flags_s {
 
 typedef struct QueueMessage_s {
   Base_t messageBytes;
-  char messageValue[TNOTIFYVALUE_SIZE];
+  char messageValue[CONFIG_MESSAGE_VALUE_BYTES];
 } QueueMessage_t;
 
 typedef struct Message_s {
   Base_t messageBytes;
-  char messageValue[TNOTIFYVALUE_SIZE];
+  char messageValue[CONFIG_MESSAGE_VALUE_BYTES];
   struct Message_s *next;
 } Message_t;
 
