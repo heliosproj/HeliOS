@@ -25,22 +25,23 @@
 #ifndef CONFIG_H_
 #define CONFIG_H_
 
-/* The following configurable settings may be defined by the end-user
-to customize HeliOS for their specific use */
+/* The following configurable settings may be changed by the end-user
+to customize HeliOS for their specific use. */
 
-/* Define the size in bytes of the queue message value */
+/* Define the size in bytes of the queue message value. */
 #define CONFIG_MESSAGE_VALUE_BYTES 16
 
-/* Define the size in bytes of the task notification value */
+/* Define the size in bytes of the task notification value. */
 #define CONFIG_NOTIFICATION_VALUE_BYTES 16
 
-/* Define the size in bytes of the task name */
+/* Define the size in bytes of the task name. */
 #define CONFIG_TASK_NAME_BYTES 16
 
-/* Defined the number of entries in the dynamic memory allocation table */
+/* Define the number of entries in the dynamic memory allocation table. */
 #define CONFIG_DYNAMIC_MEMORY_ALLOC_TABLE_ENTRIES 100
 
-/* Define the mininum limit on the length of the queue, when messages in the
-queue reachis this number the queue is considered full */
+/* When the messages in a message queue reach the limit set when the queue is
+created, the queue is considered full. This defines the minimum value for
+"limit" when a queue is created. */
 #define CONFIG_QUEUE_MININUM_LIMIT 5
 #endif

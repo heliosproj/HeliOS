@@ -25,8 +25,23 @@
 #ifndef DEFINES_H_
 #define DEFINES_H_
 
-// TO-DO: REMOVE THE LINUX SUPPORT!!
+// TO-DO: REMOVE BEFORE RELEASE!!
 #define OTHER_ARCH_LINUX
+
+/* Definition blocks for embedded platform and/or tool-chain
+specific headers and functions to compile and run HeliOS. When a
+new embedded platform and/or tool-chain is added, the following
+defines and typedef must be included:
+
+* CURRENTTIME()
+* DISABLE_INTERRUPTS()
+* ENABLE_INTERRUPTS()
+* TIME_T_MAX
+* Time_t
+
+If no definition block for the embedded platform and/or tool-chain
+is matched, the "else" block will print a compiler warning and attempt
+to default to the Arduino platform. */
 #if defined(ARDUINO_ARCH_AVR)
 #include <Arduino.h>
 #define CURRENTTIME() micros()
@@ -77,7 +92,7 @@ typedef uint32_t Time_t;
 typedef uint32_t Time_t;
 #define TIME_T_MAX UINT32_MAX
 #else
-#pragma message("WARNING: This architecture is currently unsupported by HeliOS. If targeting Linux or Microsoft Windows, make sure to un-comment OTHER_ARCH_LINUX or OTHER_ARCH_WINDOWS in HeliOS.h.")
+#pragma message("WARNING: This embedded platform and/or tool-chain is not currently supported by HeliOS - proceed with caution.")
 #include <Arduino.h>
 #define CURRENTTIME() micros()
 #define DISABLE_INTERRUPTS() noInterrupts()
@@ -86,40 +101,77 @@ typedef uint32_t Time_t;
 #define TIME_T_MAX UINT32_MAX
 #endif
 
+/* Define *null* if not defined. */
 #if !defined(null)
-#define null 0x0
+#define null ((void *)0x0)
 #endif
 
+/* Define "true" if not defined. */
 #if !defined(true)
 #define true 0x1
 #endif
 
+/* Define "false" if not defined. */
 #if !defined(false)
 #define false 0x0
 #endif
 
+/* Define the size in bytes of the product name which is accessible through
+xSystemGetSystemInfo(). */
 #if !defined(PRODUCTNAME_SIZE)
 #define PRODUCTNAME_SIZE 6
 #endif
+
+/* Define the product name which is accessible through xSystemGetSystemInfo(). */
 #if !defined(PRODUCT_NAME)
 #define PRODUCT_NAME "HeliOS"
 #endif
+
+/* Define the product major version number which is accessible through
+xSystemGetSystemInfo(). */
 #if !defined(MAJOR_VERSION_NO)
 #define MAJOR_VERSION_NO 0
 #endif
+
+/* Define the product minor version number which is accessible through
+xSystemGetSystemInfo(). */
 #if !defined(MINOR_VERSION_NO)
 #define MINOR_VERSION_NO 3
 #endif
+
+/* Define the product patch version number which is accessible through
+xSystemGetSystemInfo(). */
 #if !defined(PATCH_VERSION_NO)
 #define PATCH_VERSION_NO 0
 #endif
+
+/* Define the macro which sets the critical blocking flag to true when
+entering a critical section of code. */
 #if !defined(ENTER_CRITICAL)
 #define ENTER_CRITICAL() flags.critBlocking = true;
 #endif
+
+/* Define the macro which sets the critical blocking flag to false when
+exiting a critical section of code. */
 #if !defined(EXIT_CRITICAL)
 #define EXIT_CRITICAL() flags.critBlocking = false;
 #endif
+
+/* Define a macro which simplifies casting and dereferencing the task
+paramater. */
 #if !defined(DEREF_TASKPARM)
 #define DEREF_TASKPARM(t, p) *((t *) p)
+#endif
+
+/* Define a marco which makes null pointer checks more readable and
+concise */
+#if !defined(ISNOTNULLPTR)
+#define ISNOTNULLPTR(p) null != p
+#endif
+
+/* Define a marco which makes null pointer checks more readable and
+concise */
+#if !defined(ISNULLPTR)
+#define ISNULLPTR(p) null == p
 #endif
 #endif

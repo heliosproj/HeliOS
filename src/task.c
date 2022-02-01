@@ -77,7 +77,6 @@ void xTaskDelete(Task_t *task_) {
       taskList->head = taskCursor->next;
       xMemFree(taskCursor);
       taskList->length--;
-      task_ = null;
     } else {
       while (taskCursor && taskCursor != task_) {
         taskPrevious = taskCursor;
@@ -90,7 +89,6 @@ void xTaskDelete(Task_t *task_) {
       taskPrevious->next = taskCursor->next;
       xMemFree(taskCursor);
       taskList->length--;
-      task_ = null;
     }
   }
   ENABLE_INTERRUPTS();
@@ -148,8 +146,8 @@ TaskRunTimeStats_t *xTaskGetAllRunTimeStats(Base_t *tasks_) {
         return taskRunTimeStats;
       }
     }
+    *tasks_ = 0;
   }
-  *tasks_ = 0;
   return null;
 }
 
