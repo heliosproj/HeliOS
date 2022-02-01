@@ -29,12 +29,11 @@ DynamicMemoryAllocEntry_t dynamicMemoryAllocTable[CONFIG_DYNAMIC_MEMORY_ALLOC_TA
 
 void *xMemAlloc(size_t size_) {
   void *ptr = null;
-
   if (size_ > 0) {
     for (size_t i = 0; i < CONFIG_DYNAMIC_MEMORY_ALLOC_TABLE_ENTRIES; i++) {
-      if (!dynamicMemoryAllocTable[i].ptr) {
+      if (ISNULLPTR(dynamicMemoryAllocTable[i].ptr)) {
         ptr = calloc(1, size_);
-        if (ptr) {
+        if (ISNOTNULLPTR(ptr)) {
           dynamicMemoryAllocTable[i].size = size_;
           dynamicMemoryAllocTable[i].ptr = ptr;
           return ptr;
@@ -46,7 +45,7 @@ void *xMemAlloc(size_t size_) {
 }
 
 void xMemFree(void *ptr_) {
-  if (ptr_) {
+  if (ISNOTNULLPTR(ptr_)) {
     for (size_t i = 0; i < CONFIG_DYNAMIC_MEMORY_ALLOC_TABLE_ENTRIES; i++) {
       if (dynamicMemoryAllocTable[i].ptr == ptr_) {
         free(dynamicMemoryAllocTable[i].ptr);
@@ -59,18 +58,21 @@ void xMemFree(void *ptr_) {
 
 size_t xMemGetUsed() {
   size_t used = 0;
-
-  for (size_t i = 0; i < CONFIG_DYNAMIC_MEMORY_ALLOC_TABLE_ENTRIES; i++)
-    if (dynamicMemoryAllocTable[i].ptr)
+  for (size_t i = 0; i < CONFIG_DYNAMIC_MEMORY_ALLOC_TABLE_ENTRIES; i++) {
+    if (ISNOTNULLPTR(dynamicMemoryAllocTable[i].ptr)) {
       used += dynamicMemoryAllocTable[i].size;
+    }
+  }
   return used;
 }
 
 size_t xMemGetSize(void *ptr_) {
-  if (ptr_) {
-    for (size_t i = 0; i < CONFIG_DYNAMIC_MEMORY_ALLOC_TABLE_ENTRIES; i++)
-      if (dynamicMemoryAllocTable[i].ptr == ptr_)
+  if (ISNOTNULLPTR(ptr_)) {
+    for (size_t i = 0; i < CONFIG_DYNAMIC_MEMORY_ALLOC_TABLE_ENTRIES; i++) {
+      if (dynamicMemoryAllocTable[i].ptr == ptr_) {
         return dynamicMemoryAllocTable[i].size;
+      }
+    }
   }
   return 0;
 }
