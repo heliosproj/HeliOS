@@ -31,16 +31,16 @@ Task_t *xTaskCreate(const char *name_, void (*callback_)(Task_t *, TaskParm_t *)
   DISABLE_INTERRUPTS();
   Task_t *task = null;
   Task_t *taskCursor = null;
-  if (IsNotCritBlocking() && name_ && callback_) {
-    if (!taskList) {
+  if (IsNotCritBlocking() && ISNOTNULLPTR(name_) && ISNOTNULLPTR(callback_)) {
+    if (ISNULLPTR(taskList)) {
       taskList = (TaskList_t *)xMemAlloc(sizeof(TaskList_t));
-      if (!taskList) {
+      if (ISNULLPTR(taskList)) {
         ENABLE_INTERRUPTS();
         return null;
       }
     }
     task = (Task_t *)xMemAlloc(sizeof(Task_t));
-    if (task) {
+    if (ISNOTNULLPTR(task)) {
       taskList->nextId++;
       task->id = taskList->nextId;
       memcpy_(task->name, name_, CONFIG_TASK_NAME_BYTES);
@@ -49,8 +49,8 @@ Task_t *xTaskCreate(const char *name_, void (*callback_)(Task_t *, TaskParm_t *)
       task->taskParameter = taskParameter_;
       task->next = null;
       taskCursor = taskList->head;
-      if (taskList->head) {
-        while (taskCursor->next) {
+      if (ISNOTNULLPTR(taskList->head)) {
+        while (ISNOTNULLPTR(taskCursor->next)) {
           taskCursor = taskCursor->next;
         }
         taskCursor->next = task;
@@ -70,19 +70,19 @@ void xTaskDelete(Task_t *task_) {
   DISABLE_INTERRUPTS();
   Task_t *taskCursor = null;
   Task_t *taskPrevious = null;
-  if (IsNotCritBlocking() && taskList && task_) {
+  if (IsNotCritBlocking() && ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_)) {
     taskCursor = taskList->head;
     taskPrevious = null;
-    if (taskCursor && taskCursor == task_) {
+    if (ISNOTNULLPTR(taskCursor) && taskCursor == task_) {
       taskList->head = taskCursor->next;
       xMemFree(taskCursor);
       taskList->length--;
     } else {
-      while (taskCursor && taskCursor != task_) {
+      while (ISNOTNULLPTR(taskCursor) && taskCursor != task_) {
         taskPrevious = taskCursor;
         taskCursor = taskCursor->next;
       }
-      if (!taskCursor) {
+      if (ISNULLPTR(taskCursor)) {
         ENABLE_INTERRUPTS();
         return;
       }
@@ -97,11 +97,12 @@ void xTaskDelete(Task_t *task_) {
 
 Task_t *xTaskGetHandleByName(const char *name_) {
   Task_t *taskCursor = null;
-  if (taskList && name_) {
+  if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(name_)) {
     taskCursor = taskList->head;
-    while (taskCursor) {
-      if (memcmp_(taskCursor->name, name_, CONFIG_TASK_NAME_BYTES) == 0)
+    while (ISNOTNULLPTR(taskCursor)) {
+      if (memcmp_(taskCursor->name, name_, CONFIG_TASK_NAME_BYTES) == 0) {
         return taskCursor;
+      }
       taskCursor = taskCursor->next;
     }
   }
@@ -110,11 +111,12 @@ Task_t *xTaskGetHandleByName(const char *name_) {
 
 Task_t *xTaskGetHandleById(TaskId_t id_) {
   Task_t *taskCursor = null;
-  if (taskList && id_ > 0) {
+  if (ISNOTNULLPTR(taskList) && id_ > 0) {
     taskCursor = taskList->head;
-    while (taskCursor) {
-      if (taskCursor->id == id_)
+    while (ISNOTNULLPTR(taskCursor)) {
+      if (taskCursor->id == id_) {
         return taskCursor;
+      }
       taskCursor = taskCursor->next;
     }
   }
@@ -126,17 +128,17 @@ TaskRunTimeStats_t *xTaskGetAllRunTimeStats(Base_t *tasks_) {
   Base_t tasks = 0;
   Task_t *taskCursor = null;
   TaskRunTimeStats_t *taskRunTimeStats = null;
-  if (taskList && tasks_) {
+  if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(tasks_)) {
     taskCursor = taskList->head;
-    while (taskCursor) {
+    while (ISNOTNULLPTR(taskCursor)) {
       tasks++;
       taskCursor = taskCursor->next;
     }
     if (tasks > 0 && taskList->length == tasks) {
       taskRunTimeStats = (TaskRunTimeStats_t *)xMemAlloc(tasks * sizeof(TaskRunTimeStats_t));
-      if (taskRunTimeStats) {
+      if (ISNOTNULLPTR(taskRunTimeStats)) {
         taskCursor = taskList->head;
-        while (taskCursor) {
+        while (ISNOTNULLPTR(taskCursor)) {
           taskRunTimeStats[i].lastRunTime = taskCursor->lastRunTime;
           taskRunTimeStats[i].totalRunTime = taskCursor->totalRunTime;
           taskCursor = taskCursor->next;
@@ -154,15 +156,16 @@ TaskRunTimeStats_t *xTaskGetAllRunTimeStats(Base_t *tasks_) {
 TaskRunTimeStats_t *xTaskGetTaskRunTimeStats(Task_t *task_) {
   Task_t *taskCursor = null;
   TaskRunTimeStats_t *taskRunTimeStats = null;
-  if (taskList && task_) {
+  if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_)) {
     taskCursor = taskList->head;
-    while (taskCursor && taskCursor != task_) {
+    while (ISNOTNULLPTR(taskCursor) && taskCursor != task_) {
       taskCursor = taskCursor->next;
     }
-    if (!taskCursor)
+    if (ISNULLPTR(taskCursor)) {
       return null;
+    }
     taskRunTimeStats = (TaskRunTimeStats_t *)xMemAlloc(sizeof(TaskRunTimeStats_t));
-    if (taskRunTimeStats) {
+    if (ISNOTNULLPTR(taskRunTimeStats)) {
       taskRunTimeStats->lastRunTime = taskCursor->lastRunTime;
       taskRunTimeStats->totalRunTime = taskCursor->totalRunTime;
       return taskRunTimeStats;
@@ -174,9 +177,9 @@ TaskRunTimeStats_t *xTaskGetTaskRunTimeStats(Task_t *task_) {
 Base_t xTaskGetNumberOfTasks() {
   Base_t tasks = 0;
   Task_t *taskCursor = null;
-  if (taskList) {
+  if (ISNOTNULLPTR(taskList)) {
     taskCursor = taskList->head;
-    while (taskCursor) {
+    while (ISNOTNULLPTR(taskCursor)) {
       tasks++;
       taskCursor = taskCursor->next;
     }
@@ -190,15 +193,16 @@ Base_t xTaskGetNumberOfTasks() {
 TaskInfo_t *xTaskGetTaskInfo(Task_t *task_) {
   Task_t *taskCursor = null;
   TaskInfo_t *taskInfo = null;
-  if (taskList && task_) {
+  if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_)) {
     taskCursor = taskList->head;
-    while (taskCursor && taskCursor != task_) {
+    while (ISNOTNULLPTR(taskCursor) && taskCursor != task_) {
       taskCursor = taskCursor->next;
     }
-    if (!taskCursor)
+    if (ISNULLPTR(taskCursor)) {
       return null;
+    }
     taskInfo = (TaskInfo_t *)xMemAlloc(sizeof(TaskInfo_t));
-    if (taskInfo) {
+    if (ISNOTNULLPTR(taskInfo)) {
       taskInfo->id = taskCursor->id;
       taskInfo->state = taskCursor->state;
       memcpy_(taskInfo->name, taskCursor->name, CONFIG_TASK_NAME_BYTES);
@@ -212,13 +216,14 @@ TaskInfo_t *xTaskGetTaskInfo(Task_t *task_) {
 
 TaskState_t xTaskGetTaskState(Task_t *task_) {
   Task_t *taskCursor = null;
-  if (taskList && task_) {
+  if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_)) {
     taskCursor = taskList->head;
-    while (taskCursor && taskCursor != task_) {
+    while (ISNOTNULLPTR(taskCursor) && taskCursor != task_) {
       taskCursor = taskCursor->next;
     }
-    if (!taskCursor)
+    if (ISNULLPTR(taskCursor)) {
       return TaskStateNone;
+    }
     return taskCursor->state;
   }
   return TaskStateNone;
@@ -227,15 +232,16 @@ TaskState_t xTaskGetTaskState(Task_t *task_) {
 char *xTaskGetName(Task_t *task_) {
   char *name = null;
   Task_t *taskCursor = null;
-  if (taskList && task_) {
+  if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_)) {
     taskCursor = taskList->head;
-    while (taskCursor && taskCursor != task_) {
+    while (ISNOTNULLPTR(taskCursor) && taskCursor != task_) {
       taskCursor = taskCursor->next;
     }
-    if (!taskCursor)
+    if (ISNULLPTR(taskCursor)) {
       return null;
+    }
     name = (char *)xMemAlloc(CONFIG_TASK_NAME_BYTES);
-    if (name) {
+    if (ISNOTNULLPTR(name)) {
       memcpy_(name, taskCursor->name, CONFIG_TASK_NAME_BYTES);
       return name;
     }
@@ -245,13 +251,14 @@ char *xTaskGetName(Task_t *task_) {
 
 TaskId_t xTaskGetId(Task_t *task_) {
   Task_t *taskCursor = null;
-  if (taskList && task_) {
+  if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_)) {
     taskCursor = taskList->head;
-    while (taskCursor && taskCursor != task_) {
+    while (ISNOTNULLPTR(taskCursor) && taskCursor != task_) {
       taskCursor = taskCursor->next;
     }
-    if (!taskCursor)
+    if (ISNULLPTR(taskCursor)) {
       return 0;
+    }
     return taskCursor->id;
   }
   return 0;
@@ -263,13 +270,14 @@ char *xTaskList() {
 
 void xTaskNotifyStateClear(Task_t *task_) {
   Task_t *taskCursor = null;
-  if (taskList && task_) {
+  if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_)) {
     taskCursor = taskList->head;
-    while (taskCursor && taskCursor != task_) {
+    while (ISNOTNULLPTR(taskCursor) && taskCursor != task_) {
       taskCursor = taskCursor->next;
     }
-    if (!taskCursor)
+    if (ISNULLPTR(taskCursor)) {
       return;
+    }
     if (taskCursor->notificationBytes > 0) {
       taskCursor->notificationBytes = 0;
       memset_(taskCursor->notificationValue, 0, CONFIG_NOTIFICATION_VALUE_BYTES);
@@ -280,13 +288,14 @@ void xTaskNotifyStateClear(Task_t *task_) {
 
 Base_t xTaskNotificationIsWaiting(Task_t *task_) {
   Task_t *taskCursor = null;
-  if (taskList && task_) {
+  if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_)) {
     taskCursor = taskList->head;
-    while (taskCursor && taskCursor != task_) {
+    while (ISNOTNULLPTR(taskCursor) && taskCursor != task_) {
       taskCursor = taskCursor->next;
     }
-    if (!taskCursor)
+    if (ISNULLPTR(taskCursor)) {
       return false;
+    }
     if (taskCursor->notificationBytes > 0) {
       return true;
     }
@@ -296,13 +305,14 @@ Base_t xTaskNotificationIsWaiting(Task_t *task_) {
 
 void xTaskNotifyGive(Task_t *task_, Base_t notificationBytes_, const char *notificationValue_) {
   Task_t *taskCursor = null;
-  if (taskList && task_ && notificationBytes_ > 0 && notificationBytes_ < CONFIG_NOTIFICATION_VALUE_BYTES && notificationValue_) {
+  if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_) && notificationBytes_ > 0 && notificationBytes_ < CONFIG_NOTIFICATION_VALUE_BYTES && ISNOTNULLPTR(notificationValue_)) {
     taskCursor = taskList->head;
-    while (taskCursor && taskCursor != task_) {
+    while (ISNOTNULLPTR(taskCursor) && taskCursor != task_) {
       taskCursor = taskCursor->next;
     }
-    if (!taskCursor)
+    if (ISNULLPTR(taskCursor)) {
       return;
+    }
     if (taskCursor->notificationBytes == 0) {
       taskCursor->notificationBytes = notificationBytes_;
       memcpy_(taskCursor->notificationValue, notificationValue_, CONFIG_NOTIFICATION_VALUE_BYTES);
@@ -314,16 +324,17 @@ void xTaskNotifyGive(Task_t *task_, Base_t notificationBytes_, const char *notif
 TaskNotification_t *xTaskNotifyTake(Task_t *task_) {
   Task_t *taskCursor = null;
   TaskNotification_t *taskNotification = null;
-  if (taskList && task_) {
+  if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_)) {
     taskCursor = taskList->head;
-    while (taskCursor && taskCursor != task_) {
+    while (ISNOTNULLPTR(taskCursor) && taskCursor != task_) {
       taskCursor = taskCursor->next;
     }
-    if (!taskCursor)
+    if (ISNULLPTR(taskCursor)) {
       return null;
+    }
     if (taskCursor->notificationBytes > 0) {
       taskNotification = (TaskNotification_t *)xMemAlloc(sizeof(TaskNotification_t));
-      if (taskNotification) {
+      if (ISNOTNULLPTR(taskNotification)) {
         taskNotification->notificationBytes = taskCursor->notificationBytes;
         memcpy_(taskNotification->notificationValue, taskCursor->notificationValue, CONFIG_NOTIFICATION_VALUE_BYTES);
         taskCursor->notificationBytes = 0;
@@ -341,13 +352,14 @@ TaskList_t *TaskListGet() {
 
 void xTaskResume(Task_t *task_) {
   Task_t *taskCursor = null;
-  if (taskList && task_) {
+  if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_)) {
     taskCursor = taskList->head;
-    while (taskCursor && taskCursor != task_) {
+    while (ISNOTNULLPTR(taskCursor) && taskCursor != task_) {
       taskCursor = taskCursor->next;
     }
-    if (!taskCursor)
+    if (ISNULLPTR(taskCursor)) {
       return;
+    }
     taskCursor->state = TaskStateRunning;
   }
   return;
