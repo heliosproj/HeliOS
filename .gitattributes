@@ -8,6 +8,6 @@
 *.ino text eol=lf
 *.md text eol=lf
 *.json text eof=lf
-keywords.txt text eol=lf
-library.properties text eol=lf
+*.txt text eol=lf
+*.properties text eol=lf
 *.png binary
