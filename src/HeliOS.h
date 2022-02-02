@@ -4,23 +4,23 @@
  * @brief Header file to be included in end-user code and contains all of the public data types and functions
  * @version 0.3.0
  * @date 2022-01-31
- * 
+ *
  * HeliOS Embedded Operating System
  * Copyright (C) 2020-2022 Manny Peterson <mannymsp@gmail.com>
- *  
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *  
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *  
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- * 
+ *
  */
 #ifndef HELIOS_H_
 #define HELIOS_H_
@@ -30,45 +30,85 @@
 #include "config.h"
 #include "defines.h"
 
+/**
+ * @brief Enumerated type for the four possible states a task
+ * can be in. A task's state can be set by xTaskResume(),
+ * xTaskSuspend() and xTaskWait(). It is also returned by
+ * xTaskGetTaskState().
+ *
+ */
 typedef enum {
-  TaskStateNone,
-  TaskStateSuspended,
-  TaskStateRunning,
-  TaskStateWaiting
+  TaskStateNone,      /**< No task. */
+  TaskStateSuspended, /**< State a task is in when it is first created by xTaskCreate() or suspended by xTaskSuspend(). */
+  TaskStateRunning,   /**< State a task is in after xTaskResume() is called. */
+  TaskStateWaiting    /**< State a task is in after xTaskWait() is called. */
 } TaskState_t;
 
+/**
+ * @brief Type definition for the task identifier in the task
+ * data structure.
+ *
+ */
 typedef int16_t TaskId_t;
+
+/**
+ * @brief Type definition for the base data type. This data type is
+ * used if not other data types are relevent.
+ *
+ */
 typedef int16_t Base_t;
 
+/**
+ * @brief The data structure for task runtime statistics. This type
+ * is returned by xTaskGetTaskRunTimeStats() and xTaskGetAllRunTimeStats().
+ *
+ */
 typedef struct TaskRunTimeStats_s {
-  Time_t lastRunTime;
-  Time_t totalRunTime;
+  Time_t lastRunTime;  /**< The runtime duration in microseconds the last time the task was executed by the scheduler. */
+  Time_t totalRunTime; /**< The total runtime duration in microseconds the task has been executed by the scheduler. */
 } TaskRunTimeStats_t;
 
+/**
+ * @brief The data structure for task information. This type is returned by
+ * xTaskGetTaskInfo().
+ *
+ */
 typedef struct TaskInfo_s {
-  TaskId_t id;
-  char name[CONFIG_TASK_NAME_BYTES];
-  TaskState_t state;
-  Time_t lastRunTime;
-  Time_t totalRunTime;
+  TaskId_t id;                       /**< The task identifier which is used by xTaskGetHandleById() to return the task handle. */
+  char name[CONFIG_TASK_NAME_BYTES]; /**< The name of the task which is used by xTaskGetHandleByName() to return the task handle. */
+  TaskState_t state;                 /**< The state the task is in which is one of four states specified in the TaskState_t enumerated data type. */
+  Time_t lastRunTime;                /**< The runtime duration in microseconds the last time the task was executed by the scheduler. */
+  Time_t totalRunTime;               /**< The total runtime duration in microseconds the task has been executed by the scheduler. */
 } TaskInfo_t;
 
+/**
+ * @brief The data structure for task notifications. This type is returned by xTaskNotifyTake().
+ *
+ */
 typedef struct TaskNotification_s {
-  Base_t notificationBytes;
-  char notificationValue[CONFIG_NOTIFICATION_VALUE_BYTES];
+  Base_t notificationBytes;                                /**< The number of bytes in the notificationValue member that makes up the notification value. This cannot exceed CONFIG_NOTIFICATION_VALUE_BYTES. */
+  char notificationValue[CONFIG_NOTIFICATION_VALUE_BYTES]; /**< The char array that contains the actual notification value. */
 } TaskNotification_t;
 
+/**
+ * @brief The data structure for queue messages. This type is returned by xQueueReceive() and xQueuePeek().
+ *
+ */
 typedef struct QueueMessage_s {
-  Base_t messageBytes;
-  char messageValue[CONFIG_MESSAGE_VALUE_BYTES];
+  Base_t messageBytes;                           /**< The number of bytes in the messageValue member that makes up the message value. This cannot exceed CONFIG_MESSAGE_VALUE_BYTES. */
+  char messageValue[CONFIG_MESSAGE_VALUE_BYTES]; /**< the char array that contains the actual message value. */
 } QueueMessage_t;
 
+/**
+ * @brief The data structure for system information. This type is returned by xSystemGetSystemInfo().
+ *
+ */
 typedef struct SystemInfo_s {
-  char productName[PRODUCTNAME_SIZE];
-  Base_t majorVersion;
-  Base_t minorVersion;
-  Base_t patchVersion;
-  Base_t numberOfTasks;
+  char productName[PRODUCTNAME_SIZE]; /**< The name of the operating system or product. This is always HeliOS. */
+  Base_t majorVersion;                /**< The major version number of HeliOS and is Symantec Versioning Specification (SemVer) compliant. */
+  Base_t minorVersion;                /**< The minor version number of HeliOS and is Symantec Versioning Specification (SemVer) compliant. */
+  Base_t patchVersion;                /**< The patch version number of HeliOS and is Symantec Versioning Specification (SemVer) compliant. */
+  Base_t numberOfTasks;               /**< The number of tasks presently in a suspended, running or waiting state. */
 } SystemInfo_t;
 
 typedef void Task_t;
