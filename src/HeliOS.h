@@ -59,7 +59,7 @@ typedef int16_t TaskId_t;
 typedef int16_t Base_t;
 
 /**
- * @brief The data structure for task runtime statistics. This type
+ * @brief The data structure for task runtime statistics. Should be declared as xTaskRunTimeStats. This type
  * is returned by xTaskGetTaskRunTimeStats() and xTaskGetAllRunTimeStats().
  *
  */
@@ -69,7 +69,7 @@ typedef struct TaskRunTimeStats_s {
 } TaskRunTimeStats_t;
 
 /**
- * @brief The data structure for task information. This type is returned by
+ * @brief The data structure for task information. Should be declared as xTaskInfo. This type is returned by
  * xTaskGetTaskInfo().
  *
  */
@@ -82,7 +82,8 @@ typedef struct TaskInfo_s {
 } TaskInfo_t;
 
 /**
- * @brief The data structure for task notifications. This type is returned by xTaskNotifyTake().
+ * @brief The data structure for task notifications. Should be declared as xTaskNotification. This type is
+ * returned by xTaskNotifyTake().
  *
  */
 typedef struct TaskNotification_s {
@@ -91,7 +92,8 @@ typedef struct TaskNotification_s {
 } TaskNotification_t;
 
 /**
- * @brief The data structure for queue messages. This type is returned by xQueueReceive() and xQueuePeek().
+ * @brief The data structure for queue messages. Should be declared as xQueueMessage. This type is
+ * returned by xQueueReceive() and xQueuePeek().
  *
  */
 typedef struct QueueMessage_s {
@@ -100,7 +102,8 @@ typedef struct QueueMessage_s {
 } QueueMessage_t;
 
 /**
- * @brief The data structure for system information. This type is returned by xSystemGetSystemInfo().
+ * @brief The data structure for system information. Should be declared as xSystemInfo. This type is returned
+ * by xSystemGetSystemInfo().
  *
  */
 typedef struct SystemInfo_s {
@@ -111,11 +114,14 @@ typedef struct SystemInfo_s {
   Base_t numberOfTasks;               /**< The number of tasks presently in a suspended, running or waiting state. */
 } SystemInfo_t;
 
+/* Stub type defines for private (internal) data structures. Should be declared using the *x* types
+(e.g., xTask, xQueue, etc). */
 typedef void Task_t;
 typedef void TaskParm_t;
 typedef void Queue_t;
 typedef void Timer_t;
 
+/* Type defines for all of the public types. */
 typedef Base_t xBase;
 typedef TaskId_t xTaskId;
 typedef Timer_t *xTimer;
@@ -134,6 +140,7 @@ typedef SystemInfo_t *xSystemInfo;
 extern "C" {
 #endif
 
+/* Declarations for the HeliOS API. */
 void xTaskStartScheduler();
 xTask xTaskCreate(const char *, void (*)(xTask, xTaskParm), xTaskParm);
 void xTaskDelete(xTask);
