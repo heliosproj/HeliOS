@@ -367,13 +367,14 @@ void xTaskResume(Task_t *task_) {
 
 void xTaskSuspend(Task_t *task_) {
   Task_t *taskCursor = null;
-  if (taskList && task_) {
+  if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_)) {
     taskCursor = taskList->head;
-    while (taskCursor && taskCursor != task_) {
+    while (ISNOTNULLPTR(taskCursor) && taskCursor != task_) {
       taskCursor = taskCursor->next;
     }
-    if (!taskCursor)
+    if (ISNULLPTR(taskCursor)) {
       return;
+    }
     taskCursor->state = TaskStateSuspended;
   }
   return;
@@ -381,13 +382,14 @@ void xTaskSuspend(Task_t *task_) {
 
 void xTaskWait(Task_t *task_) {
   Task_t *taskCursor = null;
-  if (taskList && task_) {
+  if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_)) {
     taskCursor = taskList->head;
-    while (taskCursor && taskCursor != task_) {
+    while (ISNOTNULLPTR(taskCursor) && taskCursor != task_) {
       taskCursor = taskCursor->next;
     }
-    if (!taskCursor)
+    if (ISNULLPTR(taskCursor)) {
       return;
+    }
     taskCursor->state = TaskStateWaiting;
   }
   return;
@@ -395,13 +397,14 @@ void xTaskWait(Task_t *task_) {
 
 void xTaskChangePeriod(Task_t *task_, Time_t timerPeriod_) {
   Task_t *taskCursor = null;
-  if (taskList && task_ && timerPeriod_ >= 0) {
+  if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_) && timerPeriod_ >= 0) {
     taskCursor = taskList->head;
-    while (taskCursor && taskCursor != task_) {
+    while (ISNOTNULLPTR(taskCursor) && taskCursor != task_) {
       taskCursor = taskCursor->next;
     }
-    if (!taskCursor)
+    if (ISNULLPTR(taskCursor)) {
       return;
+    }
     taskCursor->timerPeriod = timerPeriod_;
   }
   return;
@@ -409,13 +412,14 @@ void xTaskChangePeriod(Task_t *task_, Time_t timerPeriod_) {
 
 Time_t xTaskGetPeriod(Task_t *task_) {
   Task_t *taskCursor = null;
-  if (taskList && task_) {
+  if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_)) {
     taskCursor = taskList->head;
-    while (taskCursor && taskCursor != task_) {
+    while (ISNOTNULLPTR(taskCursor) && taskCursor != task_) {
       taskCursor = taskCursor->next;
     }
-    if (!taskCursor)
+    if (ISNULLPTR(taskCursor)) {
       return 0;
+    }
     return taskCursor->timerPeriod;
   }
   return 0;
@@ -423,13 +427,14 @@ Time_t xTaskGetPeriod(Task_t *task_) {
 
 void xTaskResetTimer(Task_t *task_) {
   Task_t *taskCursor = null;
-  if (taskList && task_) {
+  if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_)) {
     taskCursor = taskList->head;
-    while (taskCursor && taskCursor != task_) {
+    while (ISNOTNULLPTR(taskCursor) && taskCursor != task_) {
       taskCursor = taskCursor->next;
     }
-    if (!taskCursor)
+    if (ISNULLPTR(taskCursor)) {
       return;
+    }
     taskCursor->timerStartTime = CURRENTTIME();
   }
   return;
