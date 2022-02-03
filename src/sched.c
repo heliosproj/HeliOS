@@ -99,29 +99,43 @@ void xTaskStartScheduler() {
     }
   }
 
+  /* Enable interrupts and UNset the critical blocking flag before returning from the scheduler. */
   EXIT_CRITICAL();
 
   ENABLE_INTERRUPTS();
 }
 
+/* Check to see if HeliOS is blocking certain system calls from ENTER_CRITICAL(). */
 Flag_t IsNotCritBlocking() {
   return !flags.critBlocking;
 }
 
+/* If the runtime overflow flag is set, then RunTimeReset() is called to reset all of the
+total runtimes on tasks to their last runtime. */
 void RunTimeReset() {
   Task_t *taskCursor = null;
+
   TaskList_t *taskList = null;
+
   taskList = TaskListGet();
+
+  /* Check if TaskListGet() returned a good task list by checking it is not null before accessing it. */
   if (ISNOTNULLPTR(taskList)) {
     taskCursor = taskList->head;
+
+    /* While the task cursor is not null (i.e., there are further tasks in the task list). */
     while (ISNOTNULLPTR(taskCursor)) {
       taskCursor->totalRunTime = taskCursor->lastRunTime;
+
       taskCursor = taskCursor->next;
     }
+
     flags.runTimeOverflow = false;
   }
+  return;
 }
 
+/* Used only for when testing HeliOS on Linux, then get the time from clock_gettime(). */
 Time_t CurrentTime() {
 #if defined(OTHER_ARCH_LINUX)
   struct timespec t;
@@ -132,16 +146,36 @@ Time_t CurrentTime() {
 #endif
 }
 
+/* Called by the xTaskStartScheduler() system call, TaskRun() executes a task and updates all of its
+runtime statistics. */
 void TaskRun(Task_t *task_) {
   Time_t taskStartTime = 0;
+
   Time_t prevTotalRunTime = 0;
+
+  /* Record the total runtime before executing the task. */
   prevTotalRunTime = task_->totalRunTime;
+
+  /* Record the start time of the task. */
   taskStartTime = CURRENTTIME();
+
+  /* Enable interrupts for the task. */
   ENABLE_INTERRUPTS();
+
+  /* Call the task from its callback pointer. */
   (*task_->callback)(task_, task_->taskParameter);
+
+  /* Disable interrupts now that the task has returned. */
   DISABLE_INTERRUPTS();
+
+  /* Calculate the runtime and store it in last runtime. */
   task_->lastRunTime = CURRENTTIME() - taskStartTime;
+
+  /* Add last runtime to the total runtime. */
   task_->totalRunTime += task_->lastRunTime;
+
+  /* Check if the new total runtime is less than the previous total runtime,
+  if so an overflow has occurred so set the runtime over flow system flag. */
   if (task_->totalRunTime < prevTotalRunTime) {
     flags.runTimeOverflow = true;
   }
