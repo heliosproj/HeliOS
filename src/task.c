@@ -300,24 +300,47 @@ TaskRunTimeStats_t *xTaskGetAllRunTimeStats(Base_t *tasks_) {
   return null;
 }
 
+/**
+ * @brief The xTaskGetTaskRunTimeStats() system call returns the task runtime statistics for
+ * one task. The xTaskGetTaskRunTimeStats() system call returns the xTaskRunTimeStats type.
+ * The memory must be freed by calling xMemFree() after it is no longer needed.
+ *
+ * @param task_ The task to get the runtime statistics for.
+ * @return TaskRunTimeStats_t* The runtime stats returned by xTaskGetTaskRunTimeStats().
+ * xTaskGetTaskRunTimeStats() will return null of the task cannot be found.
+ */
 TaskRunTimeStats_t *xTaskGetTaskRunTimeStats(Task_t *task_) {
   Task_t *taskCursor = null;
+
   TaskRunTimeStats_t *taskRunTimeStats = null;
+
+  /* Check if the task list and the task parameter is not null. */
   if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_)) {
     taskCursor = taskList->head;
+
+    /* While the task cursor is not null and the task cursor is not equal to the
+    task being searched for. */
     while (ISNOTNULLPTR(taskCursor) && taskCursor != task_) {
       taskCursor = taskCursor->next;
     }
+
+    /* If the task cursor is null, the task could not be found so return null. */
     if (ISNULLPTR(taskCursor)) {
       return null;
     }
+
     taskRunTimeStats = (TaskRunTimeStats_t *)xMemAlloc(sizeof(TaskRunTimeStats_t));
+
+    /* Check if xMemAlloc() successfully allocated the memory. */
     if (ISNOTNULLPTR(taskRunTimeStats)) {
       taskRunTimeStats->lastRunTime = taskCursor->lastRunTime;
+
       taskRunTimeStats->totalRunTime = taskCursor->totalRunTime;
+
       return taskRunTimeStats;
     }
   }
+
   return null;
 }
 
