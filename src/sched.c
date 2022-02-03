@@ -25,49 +25,82 @@
 
 #include "sched.h"
 
+/* Declare and set the system flags to their default values. */
 Flags_t flags = {
     .schedulerRunning = true,
     .critBlocking = false,
     .runTimeOverflow = false};
 
+/**
+ * @brief The xTaskStartScheduler() system call passes control to the HeliOS scheduler. This system
+ * call will not return until xTaskSuspendAll() is called. If xTaskSuspendAll() is called, xTaskResumeAll()
+ * must be called before xTaskStartScheduler() can be called again.
+ *
+ */
 void xTaskStartScheduler() {
   Task_t *runTask = null;
+
   Task_t *taskCursor = null;
+
   TaskList_t *taskList = null;
+
   Time_t leastRunTime = TIME_T_MAX;
 
+  /* Disable interrupts and set the critical blocking flag before entering into the scheduler main
+  loop. */
   DISABLE_INTERRUPTS();
   ENTER_CRITICAL()
 
+  /* Continue to loop while the scheduler running flag is true. */
   while (flags.schedulerRunning) {
+    /* If the runtime overflow flag is true. Reset the runtimes on all of the tasks. */
     if (flags.runTimeOverflow) {
       RunTimeReset();
     }
 
     taskList = TaskListGet();
+
+    /* Check if the task list returned by TaskListGet() is not null before accessing it. */
     if (ISNOTNULLPTR(taskList)) {
       taskCursor = taskList->head;
+
+      /* While the task cursor is not null (i.e., there are further tasks in the task list). */
       while (ISNOTNULLPTR(taskCursor)) {
+        /* If the task pointed to by the task cursor is waiting and it has a notification waiting, then execute it. */
         if (taskCursor->state == TaskStateWaiting && taskCursor->notificationBytes > 0) {
           TaskRun(taskCursor);
+
+          /* If the task pointed to by the task cursor is waiting and its timer has expired, then execute it. */
         } else if (taskCursor->state == TaskStateWaiting && taskCursor->timerPeriod > 0 && CURRENTTIME() - taskCursor->timerStartTime > taskCursor->timerPeriod) {
           TaskRun(taskCursor);
+
           taskCursor->timerStartTime = CURRENTTIME();
+
+          /* If the task pointed to by the task cursor is running and it's total runtime is less than the
+          least runtime from previous tasks, then set the run task pointer to the task cursor. This logic
+          is used to achieve the runtime balancing. */
         } else if (taskCursor->state == TaskStateRunning && taskCursor->totalRunTime < leastRunTime) {
           leastRunTime = taskCursor->totalRunTime;
+
           runTask = taskCursor;
         }
+
         taskCursor = taskCursor->next;
       }
+
+      /* If the run task pointer is not null, then there is a running tasks to execute. */
       if (ISNOTNULLPTR(runTask)) {
         TaskRun(runTask);
+
         runTask = null;
       }
+
       leastRunTime = TIME_T_MAX;
     }
   }
 
   EXIT_CRITICAL();
+
   ENABLE_INTERRUPTS();
 }
 
@@ -120,6 +153,10 @@ void xTaskResumeAll() {
 
 void xTaskSuspendAll() {
   flags.schedulerRunning = false;
+}
+
+void xTaskStopScheduler() {
+  xTaskSuspendAll();
 }
 
 SystemInfo_t *xSystemGetSystemInfo() {
