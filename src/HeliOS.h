@@ -30,6 +30,8 @@
 #include "config.h"
 #include "defines.h"
 
+/* TO-DO: Look at some sort of printk() functionally. */
+
 /**
  * @brief Enumerated type for the four possible states a task
  * can be in. A task's state can be set by xTaskResume(),
