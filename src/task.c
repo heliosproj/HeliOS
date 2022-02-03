@@ -25,87 +25,186 @@
 
 #include "task.h"
 
+/* Declare and initialize the task list to null. */
 TaskList_t *taskList = null;
 
+/**
+ * @brief The xTaskCreate() system call will create a new task. The task will be created with its
+ * state set to suspended. The xTaskCreate() and xTaskDelete() system calls cannot be called within
+ * a task. They MUST be called outside of the scope of the HeliOS scheduler.
+ *
+ * @param name_ The ASCII name of the task which can be used by xTaskGetHandleByName() to obtain the task pointer. The
+ * length of the name is depended on the CONFIG_TASK_NAME_BYTES. The task name is NOT a null terminated char array.
+ * @param callback_ The callback pointer to the task main function. This is the function that will be invoked
+ * by the scheduler when a task is scheduled for execution.
+ * @param taskParameter_ A pointer to any type or structure that the end-user wants to pass into the task as
+ * a parameter. The task parameter is not required and may simply be set to null.
+ * @return Task_t* A pointer to the newly created task.
+ */
 Task_t *xTaskCreate(const char *name_, void (*callback_)(Task_t *, TaskParm_t *), TaskParm_t *taskParameter_) {
+  /* Disable interrupts while manipulating the task list to prevent corruption. */
   DISABLE_INTERRUPTS();
+
   Task_t *task = null;
+
   Task_t *taskCursor = null;
+
+  /* Check if HeliOS is blocking from CRITICAL_ENTER() and make sure the name and callback parameters
+  are not null. */
   if (IsNotCritBlocking() && ISNOTNULLPTR(name_) && ISNOTNULLPTR(callback_)) {
+    /* Check if the task list is null, if it is call xMemAlloc() to allocate
+    the dynamic memory for it. */
     if (ISNULLPTR(taskList)) {
       taskList = (TaskList_t *)xMemAlloc(sizeof(TaskList_t));
+
+      /* Check if the task list is still null in which case xMemAlloc() was unable to allocate
+      the required memory. Enable interrupts and return null. */
       if (ISNULLPTR(taskList)) {
         ENABLE_INTERRUPTS();
+
         return null;
       }
     }
+
     task = (Task_t *)xMemAlloc(sizeof(Task_t));
+
+    /* Check if the task is not null. If it is, then xMemAlloc() was unable to allocate the required
+    memory. */
     if (ISNOTNULLPTR(task)) {
       taskList->nextId++;
+
       task->id = taskList->nextId;
+
       memcpy_(task->name, name_, CONFIG_TASK_NAME_BYTES);
+
       task->state = TaskStateSuspended;
+
       task->callback = callback_;
+
       task->taskParameter = taskParameter_;
+
       task->next = null;
+
       taskCursor = taskList->head;
+
+      /* Check if the task list head is not null, if it is set it to the newly created task. If it
+      isn't null then append the newly created task to the task list. */
       if (ISNOTNULLPTR(taskList->head)) {
+        /* If the task cursor is not null, continue to traverse the list to find the end. */
         while (ISNOTNULLPTR(taskCursor->next)) {
           taskCursor = taskCursor->next;
         }
+
         taskCursor->next = task;
       } else {
         taskList->head = task;
       }
+
       taskList->length++;
+
       ENABLE_INTERRUPTS();
+
       return task;
     }
   }
+
   ENABLE_INTERRUPTS();
+
   return null;
 }
 
+/**
+ * @brief The xTaskDelete() system call will delete a task. The xTaskCreate() and xTaskDelete() system calls
+ * cannot be called within a task. They MUST be called outside of the scope of the HeliOS scheduler.
+ *
+ * @param task_ A pointer to the task to be deleted.
+ */
 void xTaskDelete(Task_t *task_) {
+  /* Disable interrupts while manipulating the task list to prevent corruption. */
   DISABLE_INTERRUPTS();
+
   Task_t *taskCursor = null;
+
   Task_t *taskPrevious = null;
+
+  /* Check if HeliOS is blocking from CRITICAL_ENTER() and make sure the task list is not null
+  and that the task parameter is also not null. */
   if (IsNotCritBlocking() && ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_)) {
     taskCursor = taskList->head;
+
     taskPrevious = null;
+
+    /* Check if the task cursor is not null and if the task cursor equals the task
+    to be deleted. */
     if (ISNOTNULLPTR(taskCursor) && taskCursor == task_) {
       taskList->head = taskCursor->next;
+
       xMemFree(taskCursor);
+
       taskList->length--;
+
     } else {
+      /* While the task cursor is not null and the task cursor is not equal to the
+      task to be deleted. */
       while (ISNOTNULLPTR(taskCursor) && taskCursor != task_) {
         taskPrevious = taskCursor;
+
         taskCursor = taskCursor->next;
       }
+
+      /* If the task cursor is null then return because the task was never found. */
       if (ISNULLPTR(taskCursor)) {
         ENABLE_INTERRUPTS();
+
         return;
       }
+
       taskPrevious->next = taskCursor->next;
+
       xMemFree(taskCursor);
+
       taskList->length--;
     }
   }
+
   ENABLE_INTERRUPTS();
+
   return;
 }
 
+
+/**
+ * @brief The xTaskGetHandleByName() system call will return the task handle pointer to the
+ * task specified by its ASCII name. The length of the task name is dependent on the
+ * CONFIG_TASK_NAME_BYTES setting. The name is compared byte-for-byte so the name is
+ * case sensitive.
+ * 
+ * @param name_ The ASCII name of the task to return the handle pointer for.
+ * @return Task_t* A pointer to the task handle. xTaskGetHandleByName() returns null if the
+ * name cannot be found.
+ */
 Task_t *xTaskGetHandleByName(const char *name_) {
+
   Task_t *taskCursor = null;
+  
+  /* Check if the task list is not null and the name parameter is also not null. */
   if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(name_)) {
+
     taskCursor = taskList->head;
+    
+    /* While the task cursor is not null, scan the task list for the task name. */
     while (ISNOTNULLPTR(taskCursor)) {
+
+      /* Compare the task name of the task pointed to by the task cursor against the
+      name parameter. */
       if (memcmp_(taskCursor->name, name_, CONFIG_TASK_NAME_BYTES) == 0) {
         return taskCursor;
       }
+
       taskCursor = taskCursor->next;
     }
   }
+  
   return null;
 }
 
