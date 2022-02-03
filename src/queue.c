@@ -100,6 +100,7 @@ void xQueueDelete(Queue_t *queue_) {
  */
 Base_t xQueueGetLength(Queue_t *queue_) {
   Base_t messages = 0;
+
   Message_t *messageCursor = null;
 
   /* Check if the queue parameter is not null. */
@@ -133,6 +134,7 @@ Base_t xQueueGetLength(Queue_t *queue_) {
  */
 Base_t xQueueIsQueueEmpty(Queue_t *queue_) {
   Base_t messages = 0;
+
   Message_t *messageCursor = null;
 
   /* Check if the queue pointer is not null. */
@@ -167,6 +169,7 @@ Base_t xQueueIsQueueEmpty(Queue_t *queue_) {
  */
 Base_t xQueueIsQueueFull(Queue_t *queue_) {
   Base_t messages = 0;
+
   Message_t *messageCursor = null;
 
   /* Check if the queue parameter is not null. */
@@ -179,49 +182,100 @@ Base_t xQueueIsQueueFull(Queue_t *queue_) {
 
       messageCursor = messageCursor->next;
     }
+
     /* Check to make sure the number of messages counted matches the length attribute of the queue
     and if the number of messages is greater than or equal to the queue length limit. */
     if (messages >= queue_->limit && queue_->length == messages) {
       return true;
     }
   }
-  
+
   return false;
 }
 
+/**
+ * @brief The xQueueMessageWaiting() system call returns true or false dependent on whether
+ * there is at least one message waiting. The queue does not have to be full to return true.
+ *
+ * @param queue_ The queue to determine whether one or more messages are waiting.
+ * @return Base_t True if one or more messages are waiting. False if there are no
+ * messages waiting of the queue parameter is invalid.
+ */
 Base_t xQueueMessagesWaiting(Queue_t *queue_) {
   Base_t messages = 0;
+
   Message_t *messageCursor = null;
+
+  /* Check if the queue parameter is not null. */
   if (ISNOTNULLPTR(queue_)) {
     messageCursor = queue_->head;
+
+    /* If the queue has a head, iterate through the queue and count the number of messages. */
     while (ISNOTNULLPTR(messageCursor)) {
       messages++;
+
       messageCursor = messageCursor->next;
     }
+
+    /* Check to make sure the number of messages counted matches the length attribute of the queue
+    and if the number of messages is greater than zero. */
     if (messages > 0 && queue_->length == messages) {
       return true;
     }
   }
+
   return false;
 }
 
+/**
+ * @brief The xQueueSend() system call will send a message to the queue. The size of the message
+ * value is passed in the message bytes parameter. The message value size in byes is dependent
+ * on the CONFIG_MESSAGE_VALUE_BYTES setting.
+ *
+ * @param queue_ The queue to send the message to.
+ * @param messageBytes_ The number of bytes contained in the message value. The number of bytes must be greater than
+ * zero and less than or equal to the setting CONFIG_MESSAGE_VALUE_BYTES.
+ * @param messageValue_ The message value. If the message value is greater than defined in CONFIG_MESSAGE_VALUE_BYTES,
+ * only the number of bytes defined in CONFIG_MESSAGE_VALUE_BYTES will be copied into the message value.
+ * @return Base_t xQueueSend() returns true if the message was sent to the queue successfully. Otherwise
+ * false if unsuccessful.
+ */
 Base_t xQueueSend(Queue_t *queue_, Base_t messageBytes_, const char *messageValue_) {
   DISABLE_INTERRUPTS();
+
   Message_t *message = null;
+
   Base_t messages = 0;
+
   Message_t *messageCursor = null;
-  if (ISNOTNULLPTR(queue_) && messageBytes_ > 0 && ISNOTNULLPTR(messageValue_)) {
+
+  /* Check if the queue paramter is not null, message bytes is between one and CONFIG_MESSAGE_VALUE_BYTES and the message value parameter
+  is not null. */
+  if (ISNOTNULLPTR(queue_) && messageBytes_ > 0 && messageBytes_ <= CONFIG_MESSAGE_VALUE_BYTES && ISNOTNULLPTR(messageValue_)) {
     messageCursor = queue_->head;
+
+    /* If the queue has a head, iterate through the queue and count the number of messages. */
     while (ISNOTNULLPTR(messageCursor)) {
       messages++;
+
       messageCursor = messageCursor->next;
     }
+
+    /* Check if the length of the queue is less than the limit and the length of the queue matches the number of messages
+    counted. */
     if (queue_->length < queue_->limit && queue_->length == messages) {
       message = (Message_t *)xMemAlloc(sizeof(Message_t));
+
+      /* Check if the message was successfully allocated by xMemAlloc(). */
       if (ISNOTNULLPTR(message)) {
         message->messageBytes = messageBytes_;
+
         memcpy_(message->messageValue, messageValue_, CONFIG_MESSAGE_VALUE_BYTES);
+
         message->next = null;
+
+        /* If the queue tail is not null then it already contains messages and append the new message, otherwise
+        set the head and tail to the new message. */
         if (ISNOTNULLPTR(queue_->tail)) {
           queue_->tail->next = message;
           queue_->tail = message;
@@ -229,28 +283,49 @@ Base_t xQueueSend(Queue_t *queue_, Base_t messageBytes_, const char *messageValu
           queue_->head = message;
           queue_->tail = message;
         }
+
         queue_->length++;
+
         ENABLE_INTERRUPTS();
+
         return true;
       }
     }
   }
+
   ENABLE_INTERRUPTS();
+
   return false;
 }
 
+/**
+ * @brief The xQueuePeek() system call will return the next message in the queue without
+ * dropping the message.
+ *
+ * @param queue_ The queue to return the next message from.
+ * @return QueueMessage_t* The next message in the queue. If the queue is empty or the queue
+ * parameter is invalid, xQueuePeek() will return null.
+ */
 QueueMessage_t *xQueuePeek(Queue_t *queue_) {
   QueueMessage_t *message = null;
+
+  /* Check if the queue parameter is not null. */
   if (ISNOTNULLPTR(queue_)) {
+        /* Check if the head of the queue is not null. */
     if (ISNOTNULLPTR(queue_->head)) {
       message = (QueueMessage_t *)xMemAlloc(sizeof(QueueMessage_t));
+
+      /* Check if a new message was successfully allocatd by xMemAlloc(). */
       if (ISNOTNULLPTR(message)) {
         message->messageBytes = queue_->head->messageBytes;
+
         memcpy_(message->messageValue, queue_->head->messageValue, CONFIG_MESSAGE_VALUE_BYTES);
+
         return message;
       }
     }
   }
+
   return null;
 }
 
