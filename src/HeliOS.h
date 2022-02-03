@@ -53,7 +53,7 @@ typedef int16_t TaskId_t;
 
 /**
  * @brief Type definition for the base data type. This data type is
- * used if not other data types are relevent.
+ * used if no other data types are relevent.
  *
  */
 typedef int16_t Base_t;
@@ -121,7 +121,7 @@ typedef void TaskParm_t;
 typedef void Queue_t;
 typedef void Timer_t;
 
-/* Type defines for all of the public types. */
+/* Type defines for the HeliOS API. */
 typedef Base_t xBase;
 typedef TaskId_t xTaskId;
 typedef Timer_t *xTimer;
@@ -140,7 +140,7 @@ typedef SystemInfo_t *xSystemInfo;
 extern "C" {
 #endif
 
-/* Declarations for the HeliOS API. */
+/* System calls for the HeliOS API. */
 void xTaskStartScheduler();
 xTask xTaskCreate(const char *, void (*)(xTask, xTaskParm), xTaskParm);
 void xTaskDelete(xTask);

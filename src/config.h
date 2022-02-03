@@ -43,5 +43,5 @@ to customize HeliOS for their specific use. */
 /* When the messages in a message queue reach the limit set when the queue is
 created, the queue is considered full. This defines the minimum value for
 "limit" when a queue is created. */
-#define CONFIG_QUEUE_MININUM_LIMIT 5
+#define CONFIG_QUEUE_MINIMUM_LIMIT 5
 #endif
