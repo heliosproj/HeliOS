@@ -181,32 +181,65 @@ void TaskRun(Task_t *task_) {
   }
 }
 
+/**
+ * @brief The xTaskResumeAll() system call will set the scheduler system flag so the next
+ * call to xTaskStartScheduler() will resume execute of all tasks. The state of each task
+ * is not altered by xTaskSuspendAll() or xTaskResumeAll().
+ *
+ */
 void xTaskResumeAll() {
   flags.schedulerRunning = true;
+  return;
 }
 
+/**
+ * @brief The xTaskSuspendAll() system call will set the scheduler system flag so the scheduler
+ * will stop and return. The state of each task is not altered by xTaskSuspendAll() or xTaskResumeAll().
+ *
+ */
 void xTaskSuspendAll() {
   flags.schedulerRunning = false;
+  return;
 }
 
+/* TO-DO: Implement xTaskStopScheduler(). */
 void xTaskStopScheduler() {
-  xTaskSuspendAll();
+  return;
 }
 
+/**
+ * @brief The xSystemGetSystemInfo() system call will return the type xSystemInfo containing
+ * information about the system including the OS (product) name, its version and how many tasks
+ * are currently in the running, suspended or waiting states.
+ *
+ * @return SystemInfo_t* The system info is returned if successful, otherwise null is
+ * returned if unsuccessful.
+ */
 SystemInfo_t *xSystemGetSystemInfo() {
   SystemInfo_t *systemInfo = null;
+
   systemInfo = (SystemInfo_t *)xMemAlloc(sizeof(SystemInfo_t));
+
+  /* Check if system info is not null to make sure xMemAlloc() successfully allocated
+  the memory. */
   if (ISNOTNULLPTR(systemInfo)) {
     memcpy_(systemInfo->productName, PRODUCT_NAME, PRODUCTNAME_SIZE);
+
     systemInfo->majorVersion = MAJOR_VERSION_NO;
+
     systemInfo->minorVersion = MINOR_VERSION_NO;
+
     systemInfo->patchVersion = PATCH_VERSION_NO;
+
     systemInfo->numberOfTasks = xTaskGetNumberOfTasks();
+
     return systemInfo;
   }
+
   return null;
 }
 
+/* The built-in utility function to copy memory between the source and destination pointers. */
 void memcpy_(void *dest_, const void *src_, size_t n_) {
   char *src = (char *)src_;
   char *dest = (char *)dest_;
@@ -216,6 +249,8 @@ void memcpy_(void *dest_, const void *src_, size_t n_) {
   }
 }
 
+/* The built-in utility function to set the memory pointed to by the destination pointer
+to the specified value. */
 void memset_(void *dest_, int16_t val_, size_t n_) {
   char *dest = (char *)dest_;
 
@@ -224,6 +259,8 @@ void memset_(void *dest_, int16_t val_, size_t n_) {
   }
 }
 
+/* The built-in utility function to compare the contents of memory at two locations pointed to by
+the pointers s1 and s2. */
 int16_t memcmp_(const void *s1_, const void *s2_, size_t n_) {
   char *s1 = (char *)s1_;
   char *s2 = (char *)s2_;
