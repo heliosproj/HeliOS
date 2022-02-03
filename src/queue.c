@@ -311,7 +311,7 @@ QueueMessage_t *xQueuePeek(Queue_t *queue_) {
 
   /* Check if the queue parameter is not null. */
   if (ISNOTNULLPTR(queue_)) {
-        /* Check if the head of the queue is not null. */
+    /* Check if the head of the queue is not null. */
     if (ISNOTNULLPTR(queue_->head)) {
       message = (QueueMessage_t *)xMemAlloc(sizeof(QueueMessage_t));
 
@@ -329,34 +329,72 @@ QueueMessage_t *xQueuePeek(Queue_t *queue_) {
   return null;
 }
 
+/**
+ * @brief The xQueueDropMessage() system call will drop the next message from the queue without
+ * returning the message.
+ *
+ * @param queue_ The queue to drop the next message from.
+ */
 void xQueueDropMessage(Queue_t *queue_) {
+  /* Interrupts are disabled while manipulating internal linked lists to prevent
+  corruption. */
   DISABLE_INTERRUPTS();
+
   QueueMessage_t *message = null;
+
+  /* Check if the queue parameter is not null. */
   if (ISNOTNULLPTR(queue_)) {
+    /* Check if the head of the queue is null, if so enable interrupts and
+    return because there is nothing to drop. */
     if (ISNULLPTR(queue_->head)) {
       ENABLE_INTERRUPTS();
+
       return;
     }
+
     message = (QueueMessage_t *)queue_->head;
+
     queue_->head = queue_->head->next;
+
+    /* Again check if the head of the queue is null, if so set the tail
+    of the queue to null. */
     if (ISNULLPTR(queue_->head)) {
       queue_->tail = null;
     }
+
     queue_->length--;
+
     xMemFree(message);
   }
+
   ENABLE_INTERRUPTS();
+
   return;
 }
 
+/**
+ * @brief The xQueueReceive() system call will return the next message in the queue and drop
+ * it from the queue.
+ *
+ * @param queue_ The queue to return the next message from.
+ * @return QueueMessage_t* The message returned from the queue. If the queue is empty
+ * of the queue parameter is invalid, xQueueReceive() will return null.
+ */
 QueueMessage_t *xQueueReceive(Queue_t *queue_) {
   QueueMessage_t *message = null;
+
+  /* Check if the queue parameter is not null. */
   if (ISNOTNULLPTR(queue_)) {
     message = xQueuePeek(queue_);
+
+    /* Check if the message returned from xQueuePeek() is not null. If so, drop the message from the
+    queue and return the message. */
     if (ISNOTNULLPTR(message)) {
       xQueueDropMessage(queue_);
+
       return message;
     }
   }
+
   return null;
 }
