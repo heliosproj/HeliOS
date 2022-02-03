@@ -172,29 +172,25 @@ void xTaskDelete(Task_t *task_) {
   return;
 }
 
-
 /**
  * @brief The xTaskGetHandleByName() system call will return the task handle pointer to the
  * task specified by its ASCII name. The length of the task name is dependent on the
  * CONFIG_TASK_NAME_BYTES setting. The name is compared byte-for-byte so the name is
  * case sensitive.
- * 
+ *
  * @param name_ The ASCII name of the task to return the handle pointer for.
  * @return Task_t* A pointer to the task handle. xTaskGetHandleByName() returns null if the
  * name cannot be found.
  */
 Task_t *xTaskGetHandleByName(const char *name_) {
-
   Task_t *taskCursor = null;
-  
+
   /* Check if the task list is not null and the name parameter is also not null. */
   if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(name_)) {
-
     taskCursor = taskList->head;
-    
+
     /* While the task cursor is not null, scan the task list for the task name. */
     while (ISNOTNULLPTR(taskCursor)) {
-
       /* Compare the task name of the task pointed to by the task cursor against the
       name parameter. */
       if (memcmp_(taskCursor->name, name_, CONFIG_TASK_NAME_BYTES) == 0) {
@@ -204,51 +200,103 @@ Task_t *xTaskGetHandleByName(const char *name_) {
       taskCursor = taskCursor->next;
     }
   }
-  
+
   return null;
 }
 
+/**
+ * @brief The xTaskGetHandleById() system call will return a pointer to the task handle
+ * specified by its identifier.
+ *
+ * @param id_ The identifier of the task to return the handle pointer for.
+ * @return Task_t* A  pointer to the task handle. xTaskGetHandleById() returns null if the
+ * the task identifier cannot be found.
+ */
 Task_t *xTaskGetHandleById(TaskId_t id_) {
   Task_t *taskCursor = null;
+
+  /* Check if the task list is not null and the identifier parameter is greater than
+  zero. */
   if (ISNOTNULLPTR(taskList) && id_ > 0) {
     taskCursor = taskList->head;
+
+    /* While the task cursor is not null, check the task pointed to by the task cursor
+    and compare its identifier against the identifier parameter being searched for. */
     while (ISNOTNULLPTR(taskCursor)) {
       if (taskCursor->id == id_) {
         return taskCursor;
       }
+
       taskCursor = taskCursor->next;
     }
   }
+
   return null;
 }
 
+/**
+ * @brief The xTaskGetAllRunTimeStats() system call will return the runtime statistics for all
+ * of the tasks regardless of their state. The xTaskGetAllRunTimeStats() system call returns
+ * the xTaskRunTimeStats type. An xBase variable must be passed by reference to xTaskGetAllRunTimeStats()
+ * which will contain the number of tasks so the end-user can iterate through the tasks. The
+ * xTaskRunTimeStats memory must be freed by xMemFree() after it is no longer needed.
+ *
+ * @param tasks_ An variable of type xBase passed by reference which will contain the number of tasks
+ * upon return. If no tasks currently exist, this variable will not be modified.
+ * @return TaskRunTimeStats_t* The runtime stats returned by xTaskGetAllRunTimeStats(). If there are
+ * currently no tasks then this will be null. This memory must be freed by xMemFree().
+ */
 TaskRunTimeStats_t *xTaskGetAllRunTimeStats(Base_t *tasks_) {
   Base_t i = 0;
+
   Base_t tasks = 0;
+
   Task_t *taskCursor = null;
+
   TaskRunTimeStats_t *taskRunTimeStats = null;
+
+  /* Check if the task list is not null and the tasks parameter is not null. */
   if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(tasks_)) {
     taskCursor = taskList->head;
+
+    /* While the task cursor is not null, continue to traverse the task list counting
+    the number of tasks in the list. */
     while (ISNOTNULLPTR(taskCursor)) {
       tasks++;
+
       taskCursor = taskCursor->next;
     }
+
+    /* Check if the number of tasks is greater than zero and the length of the task list equals
+    the number of tasks just counted (this is done as an integrity check). */
     if (tasks > 0 && taskList->length == tasks) {
       taskRunTimeStats = (TaskRunTimeStats_t *)xMemAlloc(tasks * sizeof(TaskRunTimeStats_t));
+
+      /* Check if xMemAlloc() successfully allocated the memory. */
       if (ISNOTNULLPTR(taskRunTimeStats)) {
         taskCursor = taskList->head;
+
+        /* While the task cursor is not null, continue to traverse the task list adding the
+        runtime statistics of each task to the runtime stats array to be returned. */
         while (ISNOTNULLPTR(taskCursor)) {
           taskRunTimeStats[i].lastRunTime = taskCursor->lastRunTime;
+
           taskRunTimeStats[i].totalRunTime = taskCursor->totalRunTime;
+
           taskCursor = taskCursor->next;
+
           i++;
         }
+
         *tasks_ = tasks;
+
         return taskRunTimeStats;
       }
     }
+
     *tasks_ = 0;
   }
+
   return null;
 }
 
