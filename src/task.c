@@ -344,43 +344,86 @@ TaskRunTimeStats_t *xTaskGetTaskRunTimeStats(Task_t *task_) {
   return null;
 }
 
+/**
+ * @brief The xTaskGetNumberOfTasks() system call returns the current number of tasks
+ * regardless of their state.
+ *
+ * @return Base_t The number of tasks.
+ */
 Base_t xTaskGetNumberOfTasks() {
   Base_t tasks = 0;
+
   Task_t *taskCursor = null;
+
+  /* Check if the task list is not null. */
   if (ISNOTNULLPTR(taskList)) {
     taskCursor = taskList->head;
+
+    /* While the task cursor is not null, continue to count the number of
+    tasks. */
     while (ISNOTNULLPTR(taskCursor)) {
       tasks++;
+
       taskCursor = taskCursor->next;
     }
+
+    /* Check if the length of the task list equals the number of tasks counted
+    (this is an integrity check). */
     if (taskList->length == tasks) {
       return tasks;
     }
   }
+
   return 0;
 }
 
+/**
+ * @brief The xTaskGetTaskInfo() system call returns the xTaskInfo structure containing
+ * the details of the task including its identifier, name, state and runtime statistics.
+ *
+ * @param task_ The task to return the details of.
+ * @return TaskInfo_t* The xTaskInfo structure containing the task details. xTaskGetTaskInfo()
+ * returns null if the task cannot be found.
+ */
 TaskInfo_t *xTaskGetTaskInfo(Task_t *task_) {
   Task_t *taskCursor = null;
+
   TaskInfo_t *taskInfo = null;
+
+  /* Check if the task list is not null and the task parameter is not null. */
   if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_)) {
     taskCursor = taskList->head;
+
+    /* While the task cursor is not null and the task cursor is not equal
+    to the task being searched for. */
     while (ISNOTNULLPTR(taskCursor) && taskCursor != task_) {
       taskCursor = taskCursor->next;
     }
+
+    /* Check if the task cursor is null, if so the task could not be found
+    so return null. */
     if (ISNULLPTR(taskCursor)) {
       return null;
     }
+
     taskInfo = (TaskInfo_t *)xMemAlloc(sizeof(TaskInfo_t));
+
+    /* Check if the task info memory has been allocated by xMemAlloc(). */
     if (ISNOTNULLPTR(taskInfo)) {
       taskInfo->id = taskCursor->id;
+
       taskInfo->state = taskCursor->state;
+
       memcpy_(taskInfo->name, taskCursor->name, CONFIG_TASK_NAME_BYTES);
+
       taskInfo->lastRunTime = taskCursor->lastRunTime;
+
       taskInfo->totalRunTime = taskCursor->totalRunTime;
+
       return taskInfo;
     }
   }
+
   return null;
 }
 
