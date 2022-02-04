@@ -815,43 +815,94 @@ void xTaskWait(Task_t *task_) {
   return;
 }
 
+/**
+ * @brief The xTaskChangePeriod() system call will change the period (microseconds) on the task timer
+ * for the specified task. The timer period must be greater than zero. To have any effect, the task
+ * must be in the waiting state set by calling xTaskWait() on the task. Once the timer period is set
+ * and the task is in the waiting state, the task will be executed every N microseconds based on the period.
+ * Changing the period to zero will prevent the task from being executed even if it is in the waiting state.
+ *
+ * @param task_ The task to change the timer period for.
+ * @param timerPeriod_ The timer period in microseconds.
+ */
 void xTaskChangePeriod(Task_t *task_, Time_t timerPeriod_) {
   Task_t *taskCursor = null;
+
+  /* Check if the task list is not null and the task parameter is not null. */
   if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_) && timerPeriod_ >= 0) {
     taskCursor = taskList->head;
+
+    /* While the task cursor is not null and the task cursor is not equal
+    to the task being searched for. */
     while (ISNOTNULLPTR(taskCursor) && taskCursor != task_) {
       taskCursor = taskCursor->next;
     }
+
+    /* Check if the task cursor is null, if so the task could not be found
+    so return null. */
     if (ISNULLPTR(taskCursor)) {
       return;
     }
+
     taskCursor->timerPeriod = timerPeriod_;
   }
+
   return;
 }
 
+/**
+ * @brief The xTaskGetPeriod() will return the period for the timer for the specified task. See
+ * xTaskChangePeriod() for more information on how the task timer works.
+ *
+ * @param task_ The task to return the timer period for.
+ * @return Time_t The timer period in microseconds. xTaskGetPeriod() will return zero
+ * if the timer period is zero or if the task could not be found.
+ */
 Time_t xTaskGetPeriod(Task_t *task_) {
   Task_t *taskCursor = null;
+
+  /* Check if the task list is not null and the task parameter is not null. */
   if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_)) {
     taskCursor = taskList->head;
+
+    /* While the task cursor is not null and the task cursor is not equal
+    to the task being searched for. */
     while (ISNOTNULLPTR(taskCursor) && taskCursor != task_) {
       taskCursor = taskCursor->next;
     }
+
+    /* Check if the task cursor is null, if so the task could not be found
+    so return null. */
     if (ISNULLPTR(taskCursor)) {
       return 0;
     }
     return taskCursor->timerPeriod;
   }
+
   return 0;
 }
 
+/**
+ * @brief The xTaskResetTimer() system call will reset the task timer. xTaskResetTimer() does not change
+ * the timer period or the task state when called. See xTaskChangePeriod() for more details on task timers.
+ *
+ * @param task_ The task to reset the task timer for.
+ */
 void xTaskResetTimer(Task_t *task_) {
   Task_t *taskCursor = null;
+
+  /* Check if the task list is not null and the task parameter is not null. */
   if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_)) {
     taskCursor = taskList->head;
+
+    /* While the task cursor is not null and the task cursor is not equal
+    to the task being searched for. */
     while (ISNOTNULLPTR(taskCursor) && taskCursor != task_) {
       taskCursor = taskCursor->next;
     }
+
+    /* Check if the task cursor is null, if so the task could not be found
+    so return null. */
     if (ISNULLPTR(taskCursor)) {
       return;
     }
