@@ -5,6 +5,7 @@
  * @version 0.3.0
  * @date 2022-01-31
  * 
+ * @copyright
  * HeliOS Embedded Operating System
  * Copyright (C) 2020-2022 Manny Peterson <mannymsp@gmail.com>
  *  
