@@ -645,7 +645,7 @@ void xTaskNotifyGive(Task_t *task_, Base_t notificationBytes_, const char *notif
       return;
     }
 
-    /* If the notificaiton bytes are zero then there is not a notificaiton already waiting,
+    /* If the notification bytes are zero then there is not a notification already waiting,
     so copy the notification value into the task and set the notification bytes. */
     if (taskCursor->notificationBytes == 0) {
       taskCursor->notificationBytes = notificationBytes_;
@@ -657,77 +657,161 @@ void xTaskNotifyGive(Task_t *task_, Base_t notificationBytes_, const char *notif
   return;
 }
 
+/**
+ * @brief The xTaskNotifyTake() system call will return the waiting task notification if there
+ * is one. The xTaskNotifyTake() system call will return an xTaskNotification structure containing
+ * the notification bytes and its value. The memory allocated by xTaskNotifyTake() must be freed
+ * by xMemFree().
+ *
+ * @param task_ The task to return a waiting task notification.
+ * @return TaskNotification_t* The xTaskNotification structure containing the notification bytes
+ * and value. xTaskNotifyTake() will return null if no waiting task notification exists or if
+ * the task cannot be found.
+ */
 TaskNotification_t *xTaskNotifyTake(Task_t *task_) {
   Task_t *taskCursor = null;
+
   TaskNotification_t *taskNotification = null;
+
+  /* Check if the task list is not null and the task parameter is not null. */
   if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_)) {
     taskCursor = taskList->head;
+
+    /* While the task cursor is not null and the task cursor is not equal
+    to the task being searched for. */
     while (ISNOTNULLPTR(taskCursor) && taskCursor != task_) {
       taskCursor = taskCursor->next;
     }
+
+    /* Check if the task cursor is null, if so the task could not be found
+    so return null. */
     if (ISNULLPTR(taskCursor)) {
       return null;
     }
+
+    /* Check if the notification bytes are greater than zero, if so there is a waiting task
+    notification. */
     if (taskCursor->notificationBytes > 0) {
       taskNotification = (TaskNotification_t *)xMemAlloc(sizeof(TaskNotification_t));
+
+      /* Check if xMemAlloc() successfully allocated the memory for the task notification
+      structure. */
       if (ISNOTNULLPTR(taskNotification)) {
         taskNotification->notificationBytes = taskCursor->notificationBytes;
+
         memcpy_(taskNotification->notificationValue, taskCursor->notificationValue, CONFIG_NOTIFICATION_VALUE_BYTES);
+
         taskCursor->notificationBytes = 0;
+
         memset_(taskCursor->notificationValue, 0, CONFIG_NOTIFICATION_VALUE_BYTES);
+
         return taskNotification;
       }
     }
   }
+
   return null;
 }
 
+/* Returns the task list. This function is predominantly used by the scheduler to access
+the tasks linked list. */
 TaskList_t *TaskListGet() {
   return taskList;
 }
 
+/**
+ * @brief The xTaskResume() system call will resume a suspended task. Tasks are suspended on creation
+ * so either xTaskResume() or xTaskWait() must be called to place the task in a state that the scheduler
+ * will execute.
+ *
+ * @param task_ The task to set its state to running.
+ */
 void xTaskResume(Task_t *task_) {
   Task_t *taskCursor = null;
+
+  /* Check if the task list is not null and the task parameter is not null. */
   if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_)) {
     taskCursor = taskList->head;
+
+    /* While the task cursor is not null and the task cursor is not equal
+    to the task being searched for. */
     while (ISNOTNULLPTR(taskCursor) && taskCursor != task_) {
       taskCursor = taskCursor->next;
     }
+
+    /* Check if the task cursor is null, if so the task could not be found
+    so return. */
     if (ISNULLPTR(taskCursor)) {
       return;
     }
+
     taskCursor->state = TaskStateRunning;
   }
+
   return;
 }
 
+/**
+ * @brief The xTaskSuspend() system call will suspend a task. A task that has been suspended
+ * will not be executed by the scheduler until xTaskResume() or xTaskWait() is called.
+ *
+ * @param task_ The task to suspend.
+ */
 void xTaskSuspend(Task_t *task_) {
   Task_t *taskCursor = null;
+
+  /* Check if the task list is not null and the task parameter is not null. */
   if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_)) {
     taskCursor = taskList->head;
+
+    /* While the task cursor is not null and the task cursor is not equal
+    to the task being searched for. */
     while (ISNOTNULLPTR(taskCursor) && taskCursor != task_) {
       taskCursor = taskCursor->next;
     }
+
+    /* Check if the task cursor is null, if so the task could not be found
+    so return. */
     if (ISNULLPTR(taskCursor)) {
       return;
     }
+
     taskCursor->state = TaskStateSuspended;
   }
+
   return;
 }
 
+/**
+ * @brief The xTaskWait() system call will place a task in the waiting state. A task must
+ * be in the waiting state for event driven multitasking with either direct to task
+ * notifications OR setting the period on the task timer with xTaskChangePeriod(). A task
+ * in the waiting state will not be executed by the scheduler until an event has occurred.
+ *
+ * @param task_ The task to place in the waiting state.
+ */
 void xTaskWait(Task_t *task_) {
   Task_t *taskCursor = null;
+
+  /* Check if the task list is not null and the task parameter is not null. */
   if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_)) {
     taskCursor = taskList->head;
+
+    /* While the task cursor is not null and the task cursor is not equal
+    to the task being searched for. */
     while (ISNOTNULLPTR(taskCursor) && taskCursor != task_) {
       taskCursor = taskCursor->next;
     }
+
+    /* Check if the task cursor is null, if so the task could not be found
+    so return null. */
     if (ISNULLPTR(taskCursor)) {
       return;
     }
+
     taskCursor->state = TaskStateWaiting;
   }
+
   return;
 }
 
