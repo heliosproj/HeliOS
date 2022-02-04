@@ -25,6 +25,8 @@
 
 #include "sched.h"
 
+/* You are not expected to understand this. :) */
+
 /* Declare and set the system flags to their default values. */
 Flags_t flags = {
     .schedulerRunning = true,
@@ -273,14 +275,3 @@ int16_t memcmp_(const void *s1_, const void *s2_, size_t n_) {
   }
   return 0;
 }
-
-/*
- * If the new process paused because it was
- * swapped out, set the stack level to the last call
- * to savu(u_ssav).  This means that the return
- * which is executed immediately after the call to aretu
- * actually returns from the last routine which did
- * the savu.
- *
- * You are not expected to understand this.
- */

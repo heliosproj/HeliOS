@@ -278,9 +278,12 @@ Base_t xQueueSend(Queue_t *queue_, Base_t messageBytes_, const char *messageValu
         set the head and tail to the new message. */
         if (ISNOTNULLPTR(queue_->tail)) {
           queue_->tail->next = message;
+
           queue_->tail = message;
+
         } else {
           queue_->head = message;
+
           queue_->tail = message;
         }
 
