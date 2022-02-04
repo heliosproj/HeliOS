@@ -427,53 +427,111 @@ TaskInfo_t *xTaskGetTaskInfo(Task_t *task_) {
   return null;
 }
 
+/**
+ * @brief The xTaskGetTaskState() system call will return the state of the task.
+ *
+ * @param task_ The task to return the state of.
+ * @return TaskState_t The xTaskState of the task. If the task cannot be found, xTaskGetTaskState()
+ * will return null.
+ */
 TaskState_t xTaskGetTaskState(Task_t *task_) {
   Task_t *taskCursor = null;
+
+  /* Check if the task list is not null and the task parameter is not null. */
   if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_)) {
     taskCursor = taskList->head;
+
+    /* While the task cursor is not null and the task cursor is not equal
+    to the task being searched for. */
     while (ISNOTNULLPTR(taskCursor) && taskCursor != task_) {
       taskCursor = taskCursor->next;
     }
+
+    /* Check if the task cursor is null, if so the task could not be found
+    so return null. */
     if (ISNULLPTR(taskCursor)) {
       return TaskStateNone;
     }
+
     return taskCursor->state;
   }
+
   return TaskStateNone;
 }
 
+/**
+ * @brief The xTaskGetName() system call returns the ASCII name of the task. The size of the
+ * task is dependent on the setting CONFIG_TASK_NAME_BYTES. The task name is NOT a null
+ * terminated char array. The memory allocated for the char array must be freed by
+ * xMemFree() when no longer needed.
+ *
+ * @param task_ The task to return the name of.
+ * @return char* A pointer to the char array containing the ASCII name of the task. The task name
+ * is NOT a null terminated char array. xTaskGetName() will return null if the task cannot be found.
+ */
 char *xTaskGetName(Task_t *task_) {
   char *name = null;
+
   Task_t *taskCursor = null;
+
+  /* Check if the task list is not null and the task parameter is not null. */
   if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_)) {
     taskCursor = taskList->head;
+
+    /* While the task cursor is not null and the task cursor is not equal
+    to the task being searched for. */
     while (ISNOTNULLPTR(taskCursor) && taskCursor != task_) {
       taskCursor = taskCursor->next;
     }
+
+    /* Check if the task cursor is null, if so the task could not be found
+    so return null. */
     if (ISNULLPTR(taskCursor)) {
       return null;
     }
+
     name = (char *)xMemAlloc(CONFIG_TASK_NAME_BYTES);
+
+    /* Check if the task info memory has been allocated by xMemAlloc(). */
     if (ISNOTNULLPTR(name)) {
       memcpy_(name, taskCursor->name, CONFIG_TASK_NAME_BYTES);
+
       return name;
     }
   }
+
   return null;
 }
 
+/**
+ * @brief The xTaskGetId() system call returns the task identifier for the task.
+ *
+ * @param task_ The task to return the identifier of.
+ * @return TaskId_t The identifier of the task. If the task cannot be found, xTaskGetId()
+ * returns zero (all tasks identifiers are 1 or greater).
+ */
 TaskId_t xTaskGetId(Task_t *task_) {
   Task_t *taskCursor = null;
+
+  /* Check if the task list is not null and the task parameter is not null. */
   if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_)) {
     taskCursor = taskList->head;
+
+    /* While the task cursor is not null and the task cursor is not equal
+    to the task being searched for. */
     while (ISNOTNULLPTR(taskCursor) && taskCursor != task_) {
       taskCursor = taskCursor->next;
     }
+
+    /* Check if the task cursor is null, if so the task could not be found
+    so return null. */
     if (ISNULLPTR(taskCursor)) {
       return 0;
     }
+
     return taskCursor->id;
   }
+
   return 0;
 }
 
@@ -482,38 +540,76 @@ char *xTaskList() {
   return null;
 }
 
+/**
+ * @brief The xTaskNotifyStateClear() system call will clear a waiting task notification if one
+ * exists without returning the notification.
+ *
+ * @param task_ The task to clear the notification for.
+ */
 void xTaskNotifyStateClear(Task_t *task_) {
   Task_t *taskCursor = null;
+
+  /* Check if the task list is not null and the task parameter is not null. */
   if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_)) {
     taskCursor = taskList->head;
+
+    /* While the task cursor is not null and the task cursor is not equal
+    to the task being searched for. */
     while (ISNOTNULLPTR(taskCursor) && taskCursor != task_) {
       taskCursor = taskCursor->next;
     }
+
+    /* Check if the task cursor is null, if so the task could not be found
+    so return. */
     if (ISNULLPTR(taskCursor)) {
       return;
     }
+
+    /* If the task notification bytes are greater than zero, then there is a notficiation
+    to clear. */
     if (taskCursor->notificationBytes > 0) {
       taskCursor->notificationBytes = 0;
       memset_(taskCursor->notificationValue, 0, CONFIG_NOTIFICATION_VALUE_BYTES);
     }
   }
+
   return;
 }
 
+/**
+ * @brief The xTaskNotificationIsWaiting() system call will return true or false depending
+ * on whether there is a task notification waiting for the task.
+ *
+ * @param task_ The task to check for a waiting task notification.
+ * @return Base_t Returns true if there is a task notification. False if there is no notification
+ * or if the task could not be found.
+ */
 Base_t xTaskNotificationIsWaiting(Task_t *task_) {
   Task_t *taskCursor = null;
+
+  /* Check if the task list is not null and the task parameter is not null. */
   if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_)) {
     taskCursor = taskList->head;
+
+    /* While the task cursor is not null and the task cursor is not equal
+    to the task being searched for. */
     while (ISNOTNULLPTR(taskCursor) && taskCursor != task_) {
       taskCursor = taskCursor->next;
     }
+
+    /* Check if the task cursor is null, if so the task could not be found
+    so return false. */
     if (ISNULLPTR(taskCursor)) {
       return false;
     }
+
+    /* Check if the notification bytes are greater than zero. If so, there is a notification
+    waiting so return true. */
     if (taskCursor->notificationBytes > 0) {
       return true;
     }
   }
+
   return false;
 }
 
