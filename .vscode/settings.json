@@ -11,6 +11,7 @@
   "doxdocgen.cpp.dtorText": "",
   "doxdocgen.cpp.tparamTemplate": "@tparam {param} ",
   "doxdocgen.file.copyrightTag": [
+    "@copyright",
     "HeliOS Embedded Operating System",
     "Copyright (C) 2020-2022 Manny Peterson <mannymsp@gmail.com>",
     " ",
