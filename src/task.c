@@ -613,21 +613,47 @@ Base_t xTaskNotificationIsWaiting(Task_t *task_) {
   return false;
 }
 
+/**
+ * @brief The xTaskNotifyGive() system call will send a task notification to the specified task. The
+ * task notification bytes is the number of bytes contained in the notification value. The number of
+ * notification bytes must be between one and the CONFIG_NOTIFICATION_VALUE_BYTES setting. The notification
+ * value must contain a pointer to a char array containing the notification value. If the task already
+ * has a waiting task notification, xTaskNotifyGive() will NOT overwrite the waiting task notification.
+ *
+ * @param task_ The task to send the task notification to.
+ * @param notificationBytes_ The number of bytes contained in the notification value. The number must be
+ * between one and the CONFIG_NOTIFICATION_VALUE_BYTES setting.
+ * @param notificationValue_ A char array containing the notification value.
+ */
 void xTaskNotifyGive(Task_t *task_, Base_t notificationBytes_, const char *notificationValue_) {
   Task_t *taskCursor = null;
+
+  /* Check if the task list is not null and the task parameter is not null, the notification bytes are between
+  one and CONFIG_NOTIFICATION_VALUE_BYTES and that the notification value char array pointer is not null. */
   if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_) && notificationBytes_ > 0 && notificationBytes_ < CONFIG_NOTIFICATION_VALUE_BYTES && ISNOTNULLPTR(notificationValue_)) {
     taskCursor = taskList->head;
+
+    /* While the task cursor is not null and the task cursor is not equal
+    to the task being searched for. */
     while (ISNOTNULLPTR(taskCursor) && taskCursor != task_) {
       taskCursor = taskCursor->next;
     }
+
+    /* Check if the task cursor is null, if so the task could not be found
+    so return null. */
     if (ISNULLPTR(taskCursor)) {
       return;
     }
+
+    /* If the notificaiton bytes are zero then there is not a notificaiton already waiting,
+    so copy the notification value into the task and set the notification bytes. */
     if (taskCursor->notificationBytes == 0) {
       taskCursor->notificationBytes = notificationBytes_;
+
       memcpy_(taskCursor->notificationValue, notificationValue_, CONFIG_NOTIFICATION_VALUE_BYTES);
     }
   }
+
   return;
 }
 
