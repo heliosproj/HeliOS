@@ -144,13 +144,6 @@ extern "C" {
 #endif
 
 /* System calls for the HeliOS API. */
-
-/**
- * @brief The xTaskStartScheduler() system call passes control to the HeliOS scheduler. This system
- * call will not return until xTaskSuspendAll() is called. If xTaskSuspendAll() is called, xTaskResumeAll()
- * must be called before xTaskStartScheduler() can be called again.
- *
- */
 void xTaskStartScheduler();
 xTask xTaskCreate(const char *, void (*)(xTask, xTaskParm), xTaskParm);
 void xTaskDelete(xTask);
