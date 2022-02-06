@@ -162,7 +162,7 @@ exiting a critical section of code. */
 paramater. */
 
 /**
- * @brief A C macro to simplify casting and referencing a task paramater.
+ * @brief A C macro to simplify casting and dereferencing a task paramater.
  * 
  * When a task paramater is passed to a task, it is passed as a pointer of
  * type void. To use the paramater it must first be casted to the correct type
