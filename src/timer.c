@@ -29,18 +29,12 @@
 /* Declare and initialize the task list to null. */
 TimerList_t *timerList = null;
 
-/**
- * @brief The xTimerCreate() system call will create a new timer. Timers differ from
- * task timers in that they do not create events that effect the scheduling of a task.
- * Timers can be used by tasks to initiate various task activities based on a specified
- * time period represented in microseconds. The memory allocated by xTimerCreate() must
- * be freed by xTimerDelete(). Unlike tasks, timers may be created and deleted within
- * tasks.
- *
- * @param timerPeriod_ The number of microseconds before the timer expires.
- * @return Timer_t* The newly created timer. If the timer period parameter is less than zero
- * or xTimerCreate() was unable to allocate the required memory, xTimerCreate() will return null.
- */
+/* The xTimerCreate() system call will create a new timer. Timers differ from
+ task timers in that they do not create events that effect the scheduling of a task.
+ Timers can be used by tasks to initiate various task activities based on a specified
+ time period represented in microseconds. The memory allocated by xTimerCreate() must
+ be freed by xTimerDelete(). Unlike tasks, timers may be created and deleted within
+ tasks. */
 Timer_t *xTimerCreate(Time_t timerPeriod_) {
   /* Disable interrupts while manipulating the timer linked list (this is done to preserve
   the integrity of the linked list). */
@@ -104,12 +98,8 @@ Timer_t *xTimerCreate(Time_t timerPeriod_) {
   return null;
 }
 
-/**
- * @brief The xTimerDelete() system call will delete a timer. For more information on timers see the
- * xTaskTimerCreat() system call.
- *
- * @param timer_ The timer to be deleted.
- */
+/* The xTimerDelete() system call will delete a timer. For more information on timers see the
+xTaskTimerCreate() system call. */
 void xTimerDelete(Timer_t *timer_) {
   /* Disable interrupts while manipulating the timer linked list (this is done to preserve
   the integrity of the linked list). */
@@ -165,15 +155,9 @@ void xTimerDelete(Timer_t *timer_) {
   return;
 }
 
-/**
- * @brief The xTimerChangePeriod() system call will change the period of the specified timer.
- * The timer period is measured in microseconds. If the timer period is zero, the xTimerHasTimerExpired()
- * system call will always return false.
- *
- *
- * @param timer_ The timer to change the period for.
- * @param timerPeriod_ The timer period in is microseconds. Timer period must be zero or greater.
- */
+/* The xTimerChangePeriod() system call will change the period of the specified timer.
+The timer period is measured in microseconds. If the timer period is zero, the xTimerHasTimerExpired()
+system call will always return false. */
 void xTimerChangePeriod(Timer_t *timer_, Time_t timerPeriod_) {
   Timer_t *timerCursor = null;
 
@@ -200,14 +184,8 @@ void xTimerChangePeriod(Timer_t *timer_, Time_t timerPeriod_) {
   return;
 }
 
-/**
- * @brief The xTimerGetPeriod() system call will return the current timer period
- * for the specified timer.
- *
- * @param timer_ The timer to get the timer period for.
- * @return Time_t The timer period. If the timer cannot be found, xTimerGetPeriod()
- * will return zero.
- */
+/* The xTimerGetPeriod() system call will return the current timer period
+for the specified timer. */
 Time_t xTimerGetPeriod(Timer_t *timer_) {
   Timer_t *timerCursor = null;
 
@@ -231,13 +209,8 @@ Time_t xTimerGetPeriod(Timer_t *timer_) {
   return 0;
 }
 
-/**
- * @brief The xTimerIsTimerActive() system call will return true of the timer has been
- * started with xTimerStart().
- *
- * @param timer_ The timer to check if active.
- * @return Base_t True if active, false if not active or if the timer could not be found.
- */
+/* The xTimerIsTimerActive() system call will return true of the timer has been
+started with xTimerStart(). */
 Base_t xTimerIsTimerActive(Timer_t *timer_) {
   Timer_t *timerCursor = null;
 
@@ -264,14 +237,9 @@ Base_t xTimerIsTimerActive(Timer_t *timer_) {
   return false;
 }
 
-/**
- * @brief The xTimerHasTimerExpired() system call will return true or false dependent on whether
- * the timer period for the specified timer has elapsed. xTimerHasTimerExpired() will NOT
- * reset the timer. Timers must be reset with xTimerReset().
- *
- * @param timer_ The timer to determine if the period has expired.
- * @return Base_t True if the timer has expired, false if the timer has not expired or could not be found.
- */
+/* The xTimerHasTimerExpired() system call will return true or false dependent on whether
+the timer period for the specified timer has elapsed. xTimerHasTimerExpired() will NOT
+reset the timer. Timers must be reset with xTimerReset(). */
 Base_t xTimerHasTimerExpired(Timer_t *timer_) {
   Timer_t *timerCursor = null;
 
@@ -301,11 +269,7 @@ Base_t xTimerHasTimerExpired(Timer_t *timer_) {
   return false;
 }
 
-/**
- * @brief The xTimerReset() system call will reset the start time of the timer to zero.
- *
- * @param timer_ The timer to be reset.
- */
+/* The xTimerReset() system call will reset the start time of the timer to zero. */
 void xTimerReset(Timer_t *timer_) {
   Timer_t *timerCursor = null;
 
@@ -331,12 +295,8 @@ void xTimerReset(Timer_t *timer_) {
   return;
 }
 
-/**
- * @brief The xTimerStart() system call will place the timer in the running state. Neither xTaskStart() nor
- * xTaskStop() will reset the timer. Timers can only be reset with xTimerReset().
- *
- * @param timer_ The timer to be started.
- */
+/* The xTimerStart() system call will place the timer in the running state. Neither xTaskStart() nor
+xTaskStop() will reset the timer. Timers can only be reset with xTimerReset(). */
 void xTimerStart(Timer_t *timer_) {
   Timer_t *timerCursor = null;
 
@@ -362,12 +322,8 @@ void xTimerStart(Timer_t *timer_) {
   return;
 }
 
-/**
- * @brief The xTimerStop() system call will place the timer in the stopped state. Neither xTaskStart() nor
- * xTaskStop() will reset the timer. Timers can only be reset with xTimerReset().
- *
- * @param timer_ The timer to be stopped.
- */
+/* The xTimerStop() system call will place the timer in the stopped state. Neither xTaskStart() nor
+xTaskStop() will reset the timer. Timers can only be reset with xTimerReset(). */
 void xTimerStop(Timer_t *timer_) {
   Timer_t *timerCursor = null;
 
