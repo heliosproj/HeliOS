@@ -870,7 +870,9 @@ char *xTaskGetName(xTask task_);
 xTaskId xTaskGetId(xTask task_);
 
 /**
- * @brief The xTaskNotifyStateClear() system call will clear a waiting task notification if one
+ * @brief System call to clear a waiting direct to task notification.
+ * 
+ * The xTaskNotifyStateClear() system call will clear a waiting direct to task notification if one
  * exists without returning the notification.
  *
  * @param task_ The task to clear the notification for.
@@ -878,8 +880,10 @@ xTaskId xTaskGetId(xTask task_);
 void xTaskNotifyStateClear(xTask task_);
 
 /**
- * @brief The xTaskNotificationIsWaiting() system call will return true or false depending
- * on whether there is a task notification waiting for the task.
+ * @brief System call to check if a direct to task notification is waiting.
+ * 
+ * The xTaskNotificationIsWaiting() system call will return true or false depending
+ * on whether there is a direct to task notification waiting for the task.
  *
  * @param task_ The task to check for a waiting task notification.
  * @return xBase Returns true if there is a task notification. False if there is no notification
@@ -888,11 +892,16 @@ void xTaskNotifyStateClear(xTask task_);
 xBase xTaskNotificationIsWaiting(xTask task_);
 
 /**
- * @brief The xTaskNotifyGive() system call will send a task notification to the specified task. The
+ * @brief System call to give another task a direct to task notification.
+ * 
+ * The xTaskNotifyGive() system call will give a direct to task notification to the specified task. The
  * task notification bytes is the number of bytes contained in the notification value. The number of
  * notification bytes must be between one and the CONFIG_NOTIFICATION_VALUE_BYTES setting. The notification
  * value must contain a pointer to a char array containing the notification value. If the task already
  * has a waiting task notification, xTaskNotifyGive() will NOT overwrite the waiting task notification.
+ * 
+ * @sa CONFIG_NOTIFICATION_VALUE_BYTES
+ * @sa xTaskNotifyTake()
  *
  * @param task_ The task to send the task notification to.
  * @param notificationBytes_ The number of bytes contained in the notification value. The number must be
@@ -902,51 +911,83 @@ xBase xTaskNotificationIsWaiting(xTask task_);
 void xTaskNotifyGive(xTask task_, xBase notificationBytes_, const char *notificationValue_);
 
 /**
- * @brief The xTaskNotifyTake() system call will return the waiting task notification if there
+ * @brief System call to take a direct to task notification from another task.
+ * 
+ * The xTaskNotifyTake() system call will return the waiting direct to task notification if there
  * is one. The xTaskNotifyTake() system call will return an xTaskNotification structure containing
  * the notification bytes and its value. The memory allocated by xTaskNotifyTake() must be freed
  * by xMemFree().
+ * 
+ * @sa xTaskNotification
+ * @sa xTaskNotifyGive()
+ * @sa xMemFree()
  *
  * @param task_ The task to return a waiting task notification.
  * @return xTaskNotification The xTaskNotification structure containing the notification bytes
  * and value. xTaskNotifyTake() will return null if no waiting task notification exists or if
  * the task cannot be found.
+ * 
+ * @warning The memory allocated by xTaskNotifyTake() must be freed by xMemFree().
  */
 xTaskNotification xTaskNotifyTake(xTask task_);
 
 /**
- * @brief The xTaskResume() system call will resume a suspended task. Tasks are suspended on creation
+ * @brief System call to resume a task.
+ * 
+ * The xTaskResume() system call will resume a suspended task. Tasks are suspended on creation
  * so either xTaskResume() or xTaskWait() must be called to place the task in a state that the scheduler
  * will execute.
+ * 
+ * @sa xTaskState
+ * @sa xTaskSuspend()
+ * @sa xTaskWait()
  *
  * @param task_ The task to set its state to running.
  */
 void xTaskResume(xTask task_);
 
 /**
- * @brief The xTaskSuspend() system call will suspend a task. A task that has been suspended
+ * @brief System call to suspend a task.
+ * 
+ * The xTaskSuspend() system call will suspend a task. A task that has been suspended
  * will not be executed by the scheduler until xTaskResume() or xTaskWait() is called.
+ * 
+ * @sa xTaskState
+ * @sa xTaskResume()
+ * @sa xTaskWait()
  *
  * @param task_ The task to suspend.
  */
 void xTaskSuspend(xTask task_);
 
 /**
- * @brief The xTaskWait() system call will place a task in the waiting state. A task must
+ * @brief System call to place a task in a waiting state.
+ * 
+ * The xTaskWait() system call will place a task in the waiting state. A task must
  * be in the waiting state for event driven multitasking with either direct to task
  * notifications OR setting the period on the task timer with xTaskChangePeriod(). A task
  * in the waiting state will not be executed by the scheduler until an event has occurred.
  *
+ * @sa xTaskState
+ * @sa xTaskResume()
+ * @sa xTaskSuspend()
+ * 
  * @param task_ The task to place in the waiting state.
  */
 void xTaskWait(xTask task_);
 
 /**
- * @brief The xTaskChangePeriod() system call will change the period (microseconds) on the task timer
+ * @brief System call to set the task timer period.
+ * 
+ * The xTaskChangePeriod() system call will change the period (microseconds) on the task timer
  * for the specified task. The timer period must be greater than zero. To have any effect, the task
  * must be in the waiting state set by calling xTaskWait() on the task. Once the timer period is set
  * and the task is in the waiting state, the task will be executed every N microseconds based on the period.
  * Changing the period to zero will prevent the task from being executed even if it is in the waiting state.
+ * 
+ * @sa xTaskWait()
+ * @sa xTaskGetPeriod()
+ * @sa xTaskResetTimer()
  *
  * @param task_ The task to change the timer period for.
  * @param timerPeriod_ The timer period in microseconds.
@@ -954,8 +995,14 @@ void xTaskWait(xTask task_);
 void xTaskChangePeriod(xTask task_, xTime timerPeriod_);
 
 /**
- * @brief The xTaskGetPeriod() will return the period for the timer for the specified task. See
+ * @brief System call to get the task timer period.
+ * 
+ * The xTaskGetPeriod() will return the period for the timer for the specified task. See
  * xTaskChangePeriod() for more information on how the task timer works.
+ * 
+ * @sa xTaskWait()
+ * @sa xTaskChangePeriod()
+ * @sa xTaskResetTimer()
  *
  * @param task_ The task to return the timer period for.
  * @return xTime The timer period in microseconds. xTaskGetPeriod() will return zero
@@ -964,9 +1011,15 @@ void xTaskChangePeriod(xTask task_, xTime timerPeriod_);
 xTime xTaskGetPeriod(xTask task_);
 
 /**
- * @brief The xTaskResetTimer() system call will reset the task timer. xTaskResetTimer() does not change
+ * @brief System call to reset the task timer.
+ * 
+ * The xTaskResetTimer() system call will reset the task timer. xTaskResetTimer() does not change
  * the timer period or the task state when called. See xTaskChangePeriod() for more details on task timers.
  *
+ * @sa xTaskWait()
+ * @sa xTaskChangePeriod()
+ * @sa xTaskGetPeriod()
+ * 
  * @param task_ The task to reset the task timer for.
  */
 void xTaskResetTimer(xTask task_);
