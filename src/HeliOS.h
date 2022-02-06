@@ -88,6 +88,7 @@ typedef int16_t Base_t;
  * @sa xTaskRunTimeStats
  * @sa xTaskGetTaskRunTimeStats()
  * @sa xTaskGetAllRunTimeStats()
+ * @sa xMemFree()
  * 
  * @warning The memory allocated for an instance of xTaskRunTimeStats must be freed
  * using xMemFree().
@@ -109,6 +110,7 @@ typedef struct TaskRunTimeStats_s {
  * 
  * @sa xTaskInfo
  * @sa xTaskGetTaskInfo()
+ * @sa xMemFree()
  * 
  * @warning The memory allocated for an instance of xTaskInfo must be freed using
  * xMemFree().
@@ -130,6 +132,7 @@ typedef struct TaskInfo_s {
  * 
  * @sa xTaskNotification
  * @sa xTaskNotifyTake()
+ * @sa xMemFree()
  * 
  * @warning The memory allocated for an instance of xTaskNotification must be freed using
  * xMemFree().
@@ -149,6 +152,7 @@ typedef struct TaskNotification_s {
  * @sa xQueueMessage
  * @sa xQueuePeek()
  * @sa xQueueReceive()
+ * @sa xMemFree()
  * 
  * @warning The memory allocated for an instance of xQueueMessage must be freed using xMemFree().
  * 
@@ -162,11 +166,12 @@ typedef struct QueueMessage_s {
  * @brief Data structure for system informaiton.
  * 
  * The SystemInfo_t data structure contains information about the HeliOS system and is returned
- * by xSystemGetSystemInfo(). The SystemInfo_t should be declared as xSystemInfo.
+ * by xSystemGetSystemInfo(). The SystemInfo_t type should be declared as xSystemInfo.
  * 
  * @sa xSystemInfo
  * @sa xSystemGetSystemInfo()
- * 
+ * @sa xMemFree()
+ *  
  * @warning The memory allocated for an instance of xSystemInfo must be freed using xMemFree().
  * 
  */
@@ -179,9 +184,68 @@ typedef struct SystemInfo_s {
 } SystemInfo_t;
 
 
+/**
+ * @brief Stub type definition for the task type.
+ * 
+ * The Task_t type is a stub type definition for the internal task data structure and is treated
+ * as a task handle by most of the task related system calls. The members of the data structure
+ * are not accessible. The Task_t type should be declared as xTask.
+ * 
+ * @sa xTask
+ * @sa xTaskDelete()
+ * 
+ * @warning The memory allocated for an instance of xTask must be freed by xTaskDelete()
+ * 
+ */
 typedef void Task_t;
+
+/**
+ * @brief Type definition for the task parameter.
+ * 
+ * The TaskParm_t type used to pass a parameter to a task at the time of creation using
+ * xTaskCreate(). A task parameter is a pointer of type void and can point to any number
+ * of intrinsic types, arrays and/or user defined structures which can be passed to a
+ * task. It is up the the end-user to manage allocate and free the memory related to
+ * these objects using xMemAlloc() and xMemFree(). The TaskParm_t should be declared
+ * as xTaskParm.
+ * 
+ * @sa xTaskParm
+ * @sa xMemAlloc()
+ * @sa xMemFree()
+ * 
+ * @warning The memory allocated for an instance of xTaskParm must be freed using xMemFree().
+ * 
+ */
 typedef void TaskParm_t;
+
+/**
+ * @brief Stub type definition for the message queue type.
+ * 
+ * The Queue_t type is a stub type definition for the internal message queue structure and is treated
+ * as a message queue handle by most of the message queue related system calls. The members of the data structure
+ * are not accessible. The Queue_t type should be declared as xQueue.
+ * 
+ * @sa xQueue
+ * @sa xQueueDelete()
+ * 
+ * @warning The memory allocated for an instance of xQueue must be freed using xQueueDelete().
+ * 
+ */
 typedef void Queue_t;
+
+/**
+ * @brief Stub type definition for the timer type.
+ * 
+ * The Timer_t type is a stub type definition for the internal timer data structure and is treated
+ * as a timer handle by most of the timer related system calls. The members of the data structure
+ * are not accessible. The Timer_t type should be declared as xTimer.
+ * 
+ * @sa xTimer
+ * @sa xTimerDelete()
+ * 
+ * @warning The memory allocated for an instance of xTimer must be freed using xTimerDelete().
+ * 
+ */
 typedef void Timer_t;
 
 /* Type defines for the HeliOS API. */

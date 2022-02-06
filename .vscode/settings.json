@@ -80,5 +80,9 @@
         "/#include.*/"
       ]
     }
+  ],
+  "cSpell.words": [
+    "datastructure",
+    "Manny"
   ]
 }
