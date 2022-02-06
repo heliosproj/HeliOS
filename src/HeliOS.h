@@ -190,9 +190,9 @@ size_t xMemGetSize(void *ptr_);
  * @param limit_ The message limit for the queue. When this number is reach, the queue
  * is considered full and xQueueSend() will fail. The minimum limit for queues is dependent
  * on the  setting CONFIG_QUEUE_MINIMUM_LIMIT.
- * @return Queue_t* A queue is returned if successful, otherwise null is returned if unsuccessful.
+ * @return xQueue A queue is returned if successful, otherwise null is returned if unsuccessful.
  */
-Queue_t *xQueueCreate(Base_t limit_);
+xQueue xQueueCreate(xBase limit_);
 
 /**
  * @brief The xQueueDelete() system call will delete a queue created by xQueueCreate(). xQueueDelete()
@@ -201,27 +201,27 @@ Queue_t *xQueueCreate(Base_t limit_);
  *
  * @param queue_ The queue to be deleted.
  */
-void xQueueDelete(Queue_t *queue_);
+void xQueueDelete(xQueue queue_);
 
 /**
  * @brief The xQueueGetLength() system call returns the length of the queue (the number of messages
  * the queue currently contains).
  *
  * @param queue_ The queue to return the length of.
- * @return Base_t The number of messages in the queue. If unsuccessful or if the queue is empty,
+ * @return xBase The number of messages in the queue. If unsuccessful or if the queue is empty,
  * xQueueGetLength() returns zero.
  */
-Base_t xQueueGetLength(Queue_t *queue_);
+xBase xQueueGetLength(xQueue queue_);
 
 /**
  * @brief The xQueueIsEmpty() system call will return a true or false dependent on whether the queue is
  * empty or contains one or more messages.
  *
  * @param queue_ The queue to determine whether it is empty.
- * @return Base_t True if the queue is empty. False if the queue has one or more messages. xQueueIsQueueEmpty()
+ * @return xBase True if the queue is empty. False if the queue has one or more messages. xQueueIsQueueEmpty()
  * will also return false if the queue parameter is invalid.
  */
-Base_t xQueueIsQueueEmpty(Queue_t *queue_);
+xBase xQueueIsQueueEmpty(xQueue queue_);
 
 /**
  * @brief The xQueueIsFull() system call will return a true or false dependent on whether the queue is
@@ -229,20 +229,20 @@ Base_t xQueueIsQueueEmpty(Queue_t *queue_);
  * is equal to the queue's length limit.
  *
  * @param queue_ The queue to determine whether it is full.
- * @return Base_t True if the queue is full. False if the queue has zero. xQueueIsQueueEmpty()
+ * @return xBase True if the queue is full. False if the queue has zero. xQueueIsQueueEmpty()
  * will also return false if the queue parameter is invalid.
  */
-Base_t xQueueIsQueueFull(Queue_t *queue_);
+xBase xQueueIsQueueFull(xQueue queue_);
 
 /**
  * @brief The xQueueMessageWaiting() system call returns true or false dependent on whether
  * there is at least one message waiting. The queue does not have to be full to return true.
  *
  * @param queue_ The queue to determine whether one or more messages are waiting.
- * @return Base_t True if one or more messages are waiting. False if there are no
+ * @return xBase True if one or more messages are waiting. False if there are no
  * messages waiting of the queue parameter is invalid.
  */
-Base_t xQueueMessagesWaiting(Queue_t *queue_);
+xBase xQueueMessagesWaiting(xQueue queue_);
 
 /**
  * @brief The xQueueSend() system call will send a message to the queue. The size of the message
@@ -254,20 +254,20 @@ Base_t xQueueMessagesWaiting(Queue_t *queue_);
  * zero and less than or equal to the setting CONFIG_MESSAGE_VALUE_BYTES.
  * @param messageValue_ The message value. If the message value is greater than defined in CONFIG_MESSAGE_VALUE_BYTES,
  * only the number of bytes defined in CONFIG_MESSAGE_VALUE_BYTES will be copied into the message value.
- * @return Base_t xQueueSend() returns true if the message was sent to the queue successfully. Otherwise
+ * @return xBase xQueueSend() returns true if the message was sent to the queue successfully. Otherwise
  * false if unsuccessful.
  */
-Base_t xQueueSend(Queue_t *queue_, Base_t messageBytes_, const char *messageValue_);
+xBase xQueueSend(xQueue queue_, xBase messageBytes_, const char *messageValue_);
 
 /**
  * @brief The xQueuePeek() system call will return the next message in the queue without
  * dropping the message.
  *
  * @param queue_ The queue to return the next message from.
- * @return QueueMessage_t* The next message in the queue. If the queue is empty or the queue
+ * @return xQueueMessage The next message in the queue. If the queue is empty or the queue
  * parameter is invalid, xQueuePeek() will return null.
  */
-QueueMessage_t *xQueuePeek(Queue_t *queue_);
+xQueueMessage xQueuePeek(xQueue queue_);
 
 /**
  * @brief The xQueueDropMessage() system call will drop the next message from the queue without
@@ -275,17 +275,17 @@ QueueMessage_t *xQueuePeek(Queue_t *queue_);
  *
  * @param queue_ The queue to drop the next message from.
  */
-void xQueueDropMessage(Queue_t *queue_);
+void xQueueDropMessage(xQueue queue_);
 
 /**
  * @brief The xQueueReceive() system call will return the next message in the queue and drop
  * it from the queue.
  *
  * @param queue_ The queue to return the next message from.
- * @return QueueMessage_t* The message returned from the queue. If the queue is empty
+ * @return xQueueMessage The message returned from the queue. If the queue is empty
  * of the queue parameter is invalid, xQueueReceive() will return null.
  */
-QueueMessage_t *xQueueReceive(Queue_t *queue_);
+xQueueMessage xQueueReceive(xQueue queue_);
 
 /**
  * @brief The xTaskStartScheduler() system call passes control to the HeliOS scheduler. This system
@@ -315,10 +315,10 @@ void xTaskSuspendAll();
  * information about the system including the OS (product) name, its version and how many tasks
  * are currently in the running, suspended or waiting states.
  *
- * @return SystemInfo_t* The system info is returned if successful, otherwise null is
+ * @return xSystemInfo The system info is returned if successful, otherwise null is
  * returned if unsuccessful.
  */
-SystemInfo_t *xSystemGetSystemInfo();
+xSystemInfo xSystemGetSystemInfo();
 
 /**
  * @brief The xTaskCreate() system call will create a new task. The task will be created with its
@@ -331,9 +331,9 @@ SystemInfo_t *xSystemGetSystemInfo();
  * by the scheduler when a task is scheduled for execution.
  * @param taskParameter_ A pointer to any type or structure that the end-user wants to pass into the task as
  * a parameter. The task parameter is not required and may simply be set to null.
- * @return Task_t* A pointer to the newly created task.
+ * @return xTask A pointer to the newly created task.
  */
-Task_t *xTaskCreate(const char *name_, void (*callback_)(Task_t *, TaskParm_t *), TaskParm_t *taskParameter_);
+xTask xTaskCreate(const char *name_, void (*callback_)(xTask, xTaskParm), xTaskParm taskParameter_);
 
 /**
  * @brief The xTaskDelete() system call will delete a task. The xTaskCreate() and xTaskDelete() system calls
@@ -341,7 +341,7 @@ Task_t *xTaskCreate(const char *name_, void (*callback_)(Task_t *, TaskParm_t *)
  *
  * @param task_ A pointer to the task to be deleted.
  */
-void xTaskDelete(Task_t *task_);
+void xTaskDelete(xTask task_);
 
 /**
  * @brief The xTaskGetHandleByName() system call will return the task handle pointer to the
@@ -350,20 +350,20 @@ void xTaskDelete(Task_t *task_);
  * case sensitive.
  *
  * @param name_ The ASCII name of the task to return the handle pointer for.
- * @return Task_t* A pointer to the task handle. xTaskGetHandleByName() returns null if the
+ * @return xTask A pointer to the task handle. xTaskGetHandleByName() returns null if the
  * name cannot be found.
  */
-Task_t *xTaskGetHandleByName(const char *name_);
+xTask xTaskGetHandleByName(const char *name_);
 
 /**
  * @brief The xTaskGetHandleById() system call will return a pointer to the task handle
  * specified by its identifier.
  *
  * @param id_ The identifier of the task to return the handle pointer for.
- * @return Task_t* A  pointer to the task handle. xTaskGetHandleById() returns null if the
+ * @return xTask A  pointer to the task handle. xTaskGetHandleById() returns null if the
  * the task identifier cannot be found.
  */
-Task_t *xTaskGetHandleById(TaskId_t id_);
+xTask xTaskGetHandleById(xTaskId id_);
 
 /**
  * @brief The xTaskGetAllRunTimeStats() system call will return the runtime statistics for all
@@ -374,10 +374,10 @@ Task_t *xTaskGetHandleById(TaskId_t id_);
  *
  * @param tasks_ An variable of type xBase passed by reference which will contain the number of tasks
  * upon return. If no tasks currently exist, this variable will not be modified.
- * @return TaskRunTimeStats_t* The runtime stats returned by xTaskGetAllRunTimeStats(). If there are
+ * @return xTaskRunTimeStats The runtime stats returned by xTaskGetAllRunTimeStats(). If there are
  * currently no tasks then this will be null. This memory must be freed by xMemFree().
  */
-TaskRunTimeStats_t *xTaskGetAllRunTimeStats(Base_t *tasks_);
+xTaskRunTimeStats xTaskGetAllRunTimeStats(xBase *tasks_);
 
 /**
  * @brief The xTaskGetTaskRunTimeStats() system call returns the task runtime statistics for
@@ -385,18 +385,18 @@ TaskRunTimeStats_t *xTaskGetAllRunTimeStats(Base_t *tasks_);
  * The memory must be freed by calling xMemFree() after it is no longer needed.
  *
  * @param task_ The task to get the runtime statistics for.
- * @return TaskRunTimeStats_t* The runtime stats returned by xTaskGetTaskRunTimeStats().
+ * @return xTaskRunTimeStats The runtime stats returned by xTaskGetTaskRunTimeStats().
  * xTaskGetTaskRunTimeStats() will return null of the task cannot be found.
  */
-TaskRunTimeStats_t *xTaskGetTaskRunTimeStats(Task_t *task_);
+xTaskRunTimeStats xTaskGetTaskRunTimeStats(xTask task_);
 
 /**
  * @brief The xTaskGetNumberOfTasks() system call returns the current number of tasks
  * regardless of their state.
  *
- * @return Base_t The number of tasks.
+ * @return xBase The number of tasks.
  */
-Base_t xTaskGetNumberOfTasks();
+xBase xTaskGetNumberOfTasks();
 
 /**
  * @brief The xTaskGetTaskInfo() system call returns the xTaskInfo structure containing
@@ -406,16 +406,16 @@ Base_t xTaskGetNumberOfTasks();
  * @return TaskInfo_t* The xTaskInfo structure containing the task details. xTaskGetTaskInfo()
  * returns null if the task cannot be found.
  */
-TaskInfo_t *xTaskGetTaskInfo(Task_t *task_);
+TaskInfo_t *xTaskGetTaskInfo(xTask task_);
 
 /**
  * @brief The xTaskGetTaskState() system call will return the state of the task.
  *
  * @param task_ The task to return the state of.
- * @return TaskState_t The xTaskState of the task. If the task cannot be found, xTaskGetTaskState()
+ * @return xTaskState The xTaskState of the task. If the task cannot be found, xTaskGetTaskState()
  * will return null.
  */
-TaskState_t xTaskGetTaskState(Task_t *task_);
+xTaskState xTaskGetTaskState(xTask task_);
 
 /**
  * @brief The xTaskGetName() system call returns the ASCII name of the task. The size of the
@@ -427,16 +427,16 @@ TaskState_t xTaskGetTaskState(Task_t *task_);
  * @return char* A pointer to the char array containing the ASCII name of the task. The task name
  * is NOT a null terminated char array. xTaskGetName() will return null if the task cannot be found.
  */
-char *xTaskGetName(Task_t *task_);
+char *xTaskGetName(xTask task_);
 
 /**
  * @brief The xTaskGetId() system call returns the task identifier for the task.
  *
  * @param task_ The task to return the identifier of.
- * @return TaskId_t The identifier of the task. If the task cannot be found, xTaskGetId()
+ * @return xTaskId The identifier of the task. If the task cannot be found, xTaskGetId()
  * returns zero (all tasks identifiers are 1 or greater).
  */
-TaskId_t xTaskGetId(Task_t *task_);
+xTaskId xTaskGetId(xTask task_);
 
 /**
  * @brief The xTaskNotifyStateClear() system call will clear a waiting task notification if one
@@ -444,17 +444,17 @@ TaskId_t xTaskGetId(Task_t *task_);
  *
  * @param task_ The task to clear the notification for.
  */
-void xTaskNotifyStateClear(Task_t *task_);
+void xTaskNotifyStateClear(xTask task_);
 
 /**
  * @brief The xTaskNotificationIsWaiting() system call will return true or false depending
  * on whether there is a task notification waiting for the task.
  *
  * @param task_ The task to check for a waiting task notification.
- * @return Base_t Returns true if there is a task notification. False if there is no notification
+ * @return xBase Returns true if there is a task notification. False if there is no notification
  * or if the task could not be found.
  */
-Base_t xTaskNotificationIsWaiting(Task_t *task_);
+xBase xTaskNotificationIsWaiting(xTask task_);
 
 /**
  * @brief The xTaskNotifyGive() system call will send a task notification to the specified task. The
@@ -468,7 +468,7 @@ Base_t xTaskNotificationIsWaiting(Task_t *task_);
  * between one and the CONFIG_NOTIFICATION_VALUE_BYTES setting.
  * @param notificationValue_ A char array containing the notification value.
  */
-void xTaskNotifyGive(Task_t *task_, Base_t notificationBytes_, const char *notificationValue_);
+void xTaskNotifyGive(xTask task_, xBase notificationBytes_, const char *notificationValue_);
 
 /**
  * @brief The xTaskNotifyTake() system call will return the waiting task notification if there
@@ -477,11 +477,11 @@ void xTaskNotifyGive(Task_t *task_, Base_t notificationBytes_, const char *notif
  * by xMemFree().
  *
  * @param task_ The task to return a waiting task notification.
- * @return TaskNotification_t* The xTaskNotification structure containing the notification bytes
+ * @return xTaskNotification The xTaskNotification structure containing the notification bytes
  * and value. xTaskNotifyTake() will return null if no waiting task notification exists or if
  * the task cannot be found.
  */
-TaskNotification_t *xTaskNotifyTake(Task_t *task_);
+xTaskNotification xTaskNotifyTake(xTask task_);
 
 /**
  * @brief The xTaskResume() system call will resume a suspended task. Tasks are suspended on creation
@@ -490,7 +490,7 @@ TaskNotification_t *xTaskNotifyTake(Task_t *task_);
  *
  * @param task_ The task to set its state to running.
  */
-void xTaskResume(Task_t *task_);
+void xTaskResume(xTask task_);
 
 /**
  * @brief The xTaskSuspend() system call will suspend a task. A task that has been suspended
@@ -498,7 +498,7 @@ void xTaskResume(Task_t *task_);
  *
  * @param task_ The task to suspend.
  */
-void xTaskSuspend(Task_t *task_);
+void xTaskSuspend(xTask task_);
 
 /**
  * @brief The xTaskWait() system call will place a task in the waiting state. A task must
@@ -508,7 +508,7 @@ void xTaskSuspend(Task_t *task_);
  *
  * @param task_ The task to place in the waiting state.
  */
-void xTaskWait(Task_t *task_);
+void xTaskWait(xTask task_);
 
 /**
  * @brief The xTaskChangePeriod() system call will change the period (microseconds) on the task timer
@@ -520,17 +520,17 @@ void xTaskWait(Task_t *task_);
  * @param task_ The task to change the timer period for.
  * @param timerPeriod_ The timer period in microseconds.
  */
-void xTaskChangePeriod(Task_t *task_, Time_t timerPeriod_);
+void xTaskChangePeriod(xTask task_, xTime timerPeriod_);
 
 /**
  * @brief The xTaskGetPeriod() will return the period for the timer for the specified task. See
  * xTaskChangePeriod() for more information on how the task timer works.
  *
  * @param task_ The task to return the timer period for.
- * @return Time_t The timer period in microseconds. xTaskGetPeriod() will return zero
+ * @return xTime The timer period in microseconds. xTaskGetPeriod() will return zero
  * if the timer period is zero or if the task could not be found.
  */
-Time_t xTaskGetPeriod(Task_t *task_);
+xTime xTaskGetPeriod(xTask task_);
 
 /**
  * @brief The xTaskResetTimer() system call will reset the task timer. xTaskResetTimer() does not change
@@ -538,7 +538,7 @@ Time_t xTaskGetPeriod(Task_t *task_);
  *
  * @param task_ The task to reset the task timer for.
  */
-void xTaskResetTimer(Task_t *task_);
+void xTaskResetTimer(xTask task_);
 
 /**
  * @brief The xTimerCreate() system call will create a new timer. Timers differ from
@@ -549,10 +549,10 @@ void xTaskResetTimer(Task_t *task_);
  * tasks.
  *
  * @param timerPeriod_ The number of microseconds before the timer expires.
- * @return Timer_t* The newly created timer. If the timer period parameter is less than zero
+ * @return xTimer The newly created timer. If the timer period parameter is less than zero
  * or xTimerCreate() was unable to allocate the required memory, xTimerCreate() will return null.
  */
-Timer_t *xTimerCreate(Time_t timerPeriod_);
+xTimer xTimerCreate(xTime timerPeriod_);
 
 /**
  * @brief The xTimerDelete() system call will delete a timer. For more information on timers see the
@@ -560,7 +560,7 @@ Timer_t *xTimerCreate(Time_t timerPeriod_);
  *
  * @param timer_ The timer to be deleted.
  */
-void xTimerDelete(Timer_t *timer_);
+void xTimerDelete(xTimer timer_);
 
 /**
  * @brief The xTimerChangePeriod() system call will change the period of the specified timer.
@@ -571,26 +571,26 @@ void xTimerDelete(Timer_t *timer_);
  * @param timer_ The timer to change the period for.
  * @param timerPeriod_ The timer period in is microseconds. Timer period must be zero or greater.
  */
-void xTimerChangePeriod(Timer_t *timer_, Time_t timerPeriod_);
+void xTimerChangePeriod(xTimer timer_, xTime timerPeriod_);
 
 /**
  * @brief The xTimerGetPeriod() system call will return the current timer period
  * for the specified timer.
  *
  * @param timer_ The timer to get the timer period for.
- * @return Time_t The timer period. If the timer cannot be found, xTimerGetPeriod()
+ * @return xTime The timer period. If the timer cannot be found, xTimerGetPeriod()
  * will return zero.
  */
-Time_t xTimerGetPeriod(Timer_t *timer_);
+xTime xTimerGetPeriod(xTimer timer_);
 
 /**
  * @brief The xTimerIsTimerActive() system call will return true of the timer has been
  * started with xTimerStart().
  *
  * @param timer_ The timer to check if active.
- * @return Base_t True if active, false if not active or if the timer could not be found.
+ * @return xBase True if active, false if not active or if the timer could not be found.
  */
-Base_t xTimerIsTimerActive(Timer_t *timer_);
+xBase xTimerIsTimerActive(xTimer timer_);
 
 /**
  * @brief The xTimerHasTimerExpired() system call will return true or false dependent on whether
@@ -598,16 +598,16 @@ Base_t xTimerIsTimerActive(Timer_t *timer_);
  * reset the timer. Timers must be reset with xTimerReset().
  *
  * @param timer_ The timer to determine if the period has expired.
- * @return Base_t True if the timer has expired, false if the timer has not expired or could not be found.
+ * @return xBase True if the timer has expired, false if the timer has not expired or could not be found.
  */
-Base_t xTimerHasTimerExpired(Timer_t *timer_);
+xBase xTimerHasTimerExpired(xTimer timer_);
 
 /**
  * @brief The xTimerReset() system call will reset the start time of the timer to zero.
  *
  * @param timer_ The timer to be reset.
  */
-void xTimerReset(Timer_t *timer_);
+void xTimerReset(xTimer timer_);
 
 /**
  * @brief The xTimerStart() system call will place the timer in the running state. Neither xTaskStart() nor
@@ -615,7 +615,7 @@ void xTimerReset(Timer_t *timer_);
  *
  * @param timer_ The timer to be started.
  */
-void xTimerStart(Timer_t *timer_);
+void xTimerStart(xTimer timer_);
 
 /**
  * @brief The xTimerStop() system call will place the timer in the stopped state. Neither xTaskStart() nor
@@ -623,7 +623,7 @@ void xTimerStart(Timer_t *timer_);
  *
  * @param timer_ The timer to be stopped.
  */
-void xTimerStop(Timer_t *timer_);
+void xTimerStop(xTimer timer_);
 
 #ifdef __cplusplus
 }  // extern "C" {
