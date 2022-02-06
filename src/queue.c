@@ -26,16 +26,8 @@
 
 #include "queue.h"
 
-/**
- * @brief The xQueueCreate() system call creates a message queue for inter-task
- * communication. The queue should only be deleted by xQueueDelete() and NOT
- * xMemFree().
- *
- * @param limit_ The message limit for the queue. When this number is reach, the queue
- * is considered full and xQueueSend() will fail. The minimum limit for queues is dependent
- * on the  setting CONFIG_QUEUE_MINIMUM_LIMIT.
- * @return Queue_t* A queue is returned if successful, otherwise null is returned if unsuccessful.
- */
+/* The xQueueCreate() system call creates a message queue for inter-task
+communication. */
 Queue_t *xQueueCreate(Base_t limit_) {
   /* Interrupts are disabled while manipulating internal linked lists to prevent
   corruption. */
@@ -69,13 +61,8 @@ Queue_t *xQueueCreate(Base_t limit_) {
   return null;
 }
 
-/**
- * @brief The xQueueDelete() system call will delete a queue created by xQueueCreate(). xQueueDelete()
- * will delete a queue regardless of how many messages the queue contains at the time xQueueDelete()
- * is called.
- *
- * @param queue_ The queue to be deleted.
- */
+/* The xQueueDelete() system call will delete a queue created by xQueueCreate(). xQueueDelete()
+will delete a queue regardless of how many messages the queue contains at the time xQueueDelete() is called. */
 void xQueueDelete(Queue_t *queue_) {
   /* Check if the queue parameter is null */
   if (ISNOTNULLPTR(queue_)) {
@@ -91,14 +78,8 @@ void xQueueDelete(Queue_t *queue_) {
   return;
 }
 
-/**
- * @brief The xQueueGetLength() system call returns the length of the queue (the number of messages
- * the queue currently contains).
- *
- * @param queue_ The queue to return the length of.
- * @return Base_t The number of messages in the queue. If unsuccessful or if the queue is empty,
- * xQueueGetLength() returns zero.
- */
+/* The xQueueGetLength() system call returns the length of the queue (the number of messages
+the queue currently contains). */
 Base_t xQueueGetLength(Queue_t *queue_) {
   Base_t messages = 0;
 
@@ -125,14 +106,8 @@ Base_t xQueueGetLength(Queue_t *queue_) {
   return 0;
 }
 
-/**
- * @brief The xQueueIsEmpty() system call will return a true or false dependent on whether the queue is
- * empty or contains one or more messages.
- *
- * @param queue_ The queue to determine whether it is empty.
- * @return Base_t True if the queue is empty. False if the queue has one or more messages. xQueueIsQueueEmpty()
- * will also return false if the queue parameter is invalid.
- */
+/* The xQueueIsEmpty() system call will return a true or false dependent on whether the queue is
+empty or contains one or more messages. */
 Base_t xQueueIsQueueEmpty(Queue_t *queue_) {
   Base_t messages = 0;
 
@@ -159,15 +134,9 @@ Base_t xQueueIsQueueEmpty(Queue_t *queue_) {
   return false;
 }
 
-/**
- * @brief The xQueueIsFull() system call will return a true or false dependent on whether the queue is
- * full or contains zero messages. A queue is considered full if the number of messages in the queue
- * is equal to the queue's length limit.
- *
- * @param queue_ The queue to determine whether it is full.
- * @return Base_t True if the queue is full. False if the queue has zero. xQueueIsQueueEmpty()
- * will also return false if the queue parameter is invalid.
- */
+/* The xQueueIsFull() system call will return a true or false dependent on whether the queue is
+full or contains zero messages. A queue is considered full if the number of messages in the queue
+is equal to the queue's length limit. */
 Base_t xQueueIsQueueFull(Queue_t *queue_) {
   Base_t messages = 0;
 
@@ -194,14 +163,8 @@ Base_t xQueueIsQueueFull(Queue_t *queue_) {
   return false;
 }
 
-/**
- * @brief The xQueueMessageWaiting() system call returns true or false dependent on whether
- * there is at least one message waiting. The queue does not have to be full to return true.
- *
- * @param queue_ The queue to determine whether one or more messages are waiting.
- * @return Base_t True if one or more messages are waiting. False if there are no
- * messages waiting of the queue parameter is invalid.
- */
+/* The xQueueMessageWaiting() system call returns true or false dependent on whether
+there is at least one message waiting. The queue does not have to be full to return true. */
 Base_t xQueueMessagesWaiting(Queue_t *queue_) {
   Base_t messages = 0;
 
@@ -228,19 +191,8 @@ Base_t xQueueMessagesWaiting(Queue_t *queue_) {
   return false;
 }
 
-/**
- * @brief The xQueueSend() system call will send a message to the queue. The size of the message
- * value is passed in the message bytes parameter. The message value size in byes is dependent
- * on the CONFIG_MESSAGE_VALUE_BYTES setting.
- *
- * @param queue_ The queue to send the message to.
- * @param messageBytes_ The number of bytes contained in the message value. The number of bytes must be greater than
- * zero and less than or equal to the setting CONFIG_MESSAGE_VALUE_BYTES.
- * @param messageValue_ The message value. If the message value is greater than defined in CONFIG_MESSAGE_VALUE_BYTES,
- * only the number of bytes defined in CONFIG_MESSAGE_VALUE_BYTES will be copied into the message value.
- * @return Base_t xQueueSend() returns true if the message was sent to the queue successfully. Otherwise
- * false if unsuccessful.
- */
+/* The xQueueSend() system call will send a message to the queue. The size of the message
+value is passed in the message bytes parameter. */
 Base_t xQueueSend(Queue_t *queue_, Base_t messageBytes_, const char *messageValue_) {
   DISABLE_INTERRUPTS();
 
@@ -250,7 +202,7 @@ Base_t xQueueSend(Queue_t *queue_, Base_t messageBytes_, const char *messageValu
 
   Message_t *messageCursor = null;
 
-  /* Check if the queue paramter is not null, message bytes is between one and CONFIG_MESSAGE_VALUE_BYTES and the message value parameter
+  /* Check if the queue parameter is not null, message bytes is between one and CONFIG_MESSAGE_VALUE_BYTES and the message value parameter
   is not null. */
   if (ISNOTNULLPTR(queue_) && messageBytes_ > 0 && messageBytes_ <= CONFIG_MESSAGE_VALUE_BYTES && ISNOTNULLPTR(messageValue_)) {
     messageCursor = queue_->head;
@@ -302,14 +254,8 @@ Base_t xQueueSend(Queue_t *queue_, Base_t messageBytes_, const char *messageValu
   return false;
 }
 
-/**
- * @brief The xQueuePeek() system call will return the next message in the queue without
- * dropping the message.
- *
- * @param queue_ The queue to return the next message from.
- * @return QueueMessage_t* The next message in the queue. If the queue is empty or the queue
- * parameter is invalid, xQueuePeek() will return null.
- */
+/* The xQueuePeek() system call will return the next message in the queue without
+dropping the message. */
 QueueMessage_t *xQueuePeek(Queue_t *queue_) {
   QueueMessage_t *message = null;
 
@@ -333,12 +279,8 @@ QueueMessage_t *xQueuePeek(Queue_t *queue_) {
   return null;
 }
 
-/**
- * @brief The xQueueDropMessage() system call will drop the next message from the queue without
- * returning the message.
- *
- * @param queue_ The queue to drop the next message from.
- */
+/* The xQueueDropMessage() system call will drop the next message from the queue without
+returning the message. */
 void xQueueDropMessage(Queue_t *queue_) {
   /* Interrupts are disabled while manipulating internal linked lists to prevent
   corruption. */
@@ -376,14 +318,8 @@ void xQueueDropMessage(Queue_t *queue_) {
   return;
 }
 
-/**
- * @brief The xQueueReceive() system call will return the next message in the queue and drop
- * it from the queue.
- *
- * @param queue_ The queue to return the next message from.
- * @return QueueMessage_t* The message returned from the queue. If the queue is empty
- * of the queue parameter is invalid, xQueueReceive() will return null.
- */
+/* The xQueueReceive() system call will return the next message in the queue and drop
+it from the queue. */
 QueueMessage_t *xQueueReceive(Queue_t *queue_) {
   QueueMessage_t *message = null;
 

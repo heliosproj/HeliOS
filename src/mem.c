@@ -31,15 +31,8 @@ the pointer and size of the memory allocated from the heap by xMemAlloc(). The
 size of the table is dependent on the setting CONFIG_DYNAMIC_MEMORY_ALLOC_TABLE_ENTRIES. */
 DynamicMemoryAllocEntry_t dynamicMemoryAllocTable[CONFIG_DYNAMIC_MEMORY_ALLOC_TABLE_ENTRIES];
 
-/**
- * @brief The xMemAlloc() system call will dynamically allocate memory for HeliOS
- * system calls and end-user tasks. The number of concurrently allocated pointers
- * is dependent on the setting CONFIG_DYNAMIC_MEMORY_ALLOC_TABLE_ENTRIES.
- *
- * @param size_ The amount (size) of the memory to be dynamically allocated in bytes.
- * @return void* If successful, xMemAlloc() returns a pointer to the dynamically
- * allocated memory. If unsuccessful, the system call will return null.
- */
+/* The xMemAlloc() system call will dynamically allocate memory for HeliOS
+system calls and end-user tasks. */
 void *xMemAlloc(size_t size_) {
   void *ptr = null;
 
@@ -66,12 +59,8 @@ void *xMemAlloc(size_t size_) {
   return null;
 }
 
-/**
- * @brief The xMemFree() system call will free memory dynamically allocated by
- * xMemAlloc() and other HeliOS system calls such as xSystemGetSystemInfo().
- *
- * @param ptr_ The pointer to the dynamically allocated memory to be freed.
- */
+/* The xMemFree() system call will free memory dynamically allocated by
+xMemAlloc() and other HeliOS system calls such as xSystemGetSystemInfo(). */
 void xMemFree(void *ptr_) {
   /* Check to make sure the pointer passed to xMemFree() is not null. */
   if (ISNOTNULLPTR(ptr_)) {
@@ -90,14 +79,8 @@ void xMemFree(void *ptr_) {
   }
 }
 
-/**
- * @brief The xMemGetUsed() system call returns the amount of memory in bytes
- * that is currently allocated. Calls to xMemAlloc() increases and xMemFree()
- * decreases the amount.
- *
- * @return size_t The amount of memory currently allocated in bytes. If no dynamic
- * memory is currently allocated, xMemGetUsed() will return zero.
- */
+/* The xMemGetUsed() system call returns the amount of memory in bytes
+that is currently allocated. */
 size_t xMemGetUsed() {
   size_t used = 0;
 
@@ -112,16 +95,8 @@ size_t xMemGetUsed() {
   return used;
 }
 
-/**
- * @brief The xMemGetSize() system call returns the amount of memory in bytes that
- * is currently allocated to a specific pointer. If the pointer is null or invalid,
- * xMemGetSize() will return zero bytes.
- *
- * @param ptr_ The pointer to the dynamically allocated memory to obtain the size of the
- * memory that is allocated.
- * @return size_t The amount of memory currently allocated to the specific pointer in bytes. If
- * the pointer is invalid or null, xMemGetSize() will return zero.
- */
+/* The xMemGetSize() system call returns the amount of memory in bytes that
+is currently allocated to a specific pointer. */
 size_t xMemGetSize(void *ptr_) {
   /* Check to see if the pointer paramater is null, if it is not null, then search the
   table for the pointer and return the size. */
