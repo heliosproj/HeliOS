@@ -451,12 +451,13 @@ extern "C" {
 #endif
 
 /**
- * @brief System call to dynamically allocates memory for HeliOS
+ * @brief System call to dynamically allocate memory
  * The xMemAlloc() system call will dynamically allocate memory for HeliOS system calls and
  * end-user tasks. The number of concurrently allocated pointers is dependent on
  * the setting CONFIG_DYNAMIC_MEMORY_ALLOC_TABLE_ENTRIES.
  *
  * @sa CONFIG_DYNAMIC_MEMORY_ALLOC_TABLE_ENTRIES
+ * @sa xMemFree()
  * 
  * @param size_ The amount (size) of the memory to be dynamically allocated in bytes.
  * @return void* If successful, xMemAlloc() returns a pointer to the dynamically
@@ -465,15 +466,25 @@ extern "C" {
 void *xMemAlloc(size_t size_);
 
 /**
- * @brief The xMemFree() system call will free memory dynamically allocated by
+ * @brief System call to free dynamically allocated memory
+ * 
+ * The xMemFree() system call will free memory dynamically allocated by
  * xMemAlloc() and other HeliOS system calls such as xSystemGetSystemInfo().
+ * 
+ * @sa xMemAlloc()
  *
  * @param ptr_ The pointer to the dynamically allocated memory to be freed.
+ * 
+ * @warning xMemFree() should NOT be used to free memory allocated by xTaskCreate(),
+ * xTimerCreate() or xQueueCreate(). Memory allocated by those system calls must
+ * be freed by their respective delete system calls.
  */
 void xMemFree(void *ptr_);
 
 /**
- * @brief The xMemGetUsed() system call returns the amount of memory in bytes
+ * @brief System call to return the amount of allocated dynamic memory.
+ * 
+ * The xMemGetUsed() system call returns the amount of dynamic memory in bytes
  * that is currently allocated. Calls to xMemAlloc() increases and xMemFree()
  * decreases the amount.
  *
@@ -483,7 +494,9 @@ void xMemFree(void *ptr_);
 size_t xMemGetUsed();
 
 /**
- * @brief The xMemGetSize() system call returns the amount of memory in bytes that
+ * @brief System call to return the amount of memory allcoated for a pointer.
+ * 
+ * The xMemGetSize() system call returns the amount of memory in bytes that
  * is currently allocated to a specific pointer. If the pointer is null or invalid,
  * xMemGetSize() will return zero bytes.
  *
@@ -495,28 +508,41 @@ size_t xMemGetUsed();
 size_t xMemGetSize(void *ptr_);
 
 /**
- * @brief The xQueueCreate() system call creates a message queue for inter-task
- * communication. The queue should only be deleted by xQueueDelete() and NOT
- * xMemFree().
+ * @brief System call to create a new message queue.
+ * 
+ * The xQueueCreate() system call creates a message queue for inter-task
+ * communication.
+ * 
+ * @sa xQueue
+ * @sa xQueueDelete()
+ * @sa CONFIG_QUEUE_MINIMUM_LIMIT
  *
  * @param limit_ The message limit for the queue. When this number is reach, the queue
  * is considered full and xQueueSend() will fail. The minimum limit for queues is dependent
  * on the  setting CONFIG_QUEUE_MINIMUM_LIMIT.
  * @return xQueue A queue is returned if successful, otherwise null is returned if unsuccessful.
+ * 
+ * @warning The message queue memory should only be freed by xQueueDelete() and NOT xMemFree().
  */
 xQueue xQueueCreate(xBase limit_);
 
 /**
- * @brief The xQueueDelete() system call will delete a queue created by xQueueCreate(). xQueueDelete()
+ * @brief System call to delete a message queue.
+ * 
+ * The xQueueDelete() system call will delete a message queue created by xQueueCreate(). xQueueDelete()
  * will delete a queue regardless of how many messages the queue contains at the time xQueueDelete()
  * is called.
  *
+ * @sa xQueueCreate()
+ * 
  * @param queue_ The queue to be deleted.
  */
 void xQueueDelete(xQueue queue_);
 
 /**
- * @brief The xQueueGetLength() system call returns the length of the queue (the number of messages
+ * @brief System call to get the length of the message queue.
+ * 
+ * The xQueueGetLength() system call returns the length of the queue (the number of messages
  * the queue currently contains).
  *
  * @param queue_ The queue to return the length of.
@@ -526,8 +552,10 @@ void xQueueDelete(xQueue queue_);
 xBase xQueueGetLength(xQueue queue_);
 
 /**
- * @brief The xQueueIsEmpty() system call will return a true or false dependent on whether the queue is
- * empty or contains one or more messages.
+ * @brief System call to check if the message queue is empty.
+ * 
+ * The xQueueIsEmpty() system call will return a true or false dependent on whether the queue is
+ * empty (message queue length is zero) or contains one or more messages.
  *
  * @param queue_ The queue to determine whether it is empty.
  * @return xBase True if the queue is empty. False if the queue has one or more messages. xQueueIsQueueEmpty()
@@ -536,7 +564,9 @@ xBase xQueueGetLength(xQueue queue_);
 xBase xQueueIsQueueEmpty(xQueue queue_);
 
 /**
- * @brief The xQueueIsFull() system call will return a true or false dependent on whether the queue is
+ * @brief System call to check if the message queue is full.
+ * 
+ * The xQueueIsFull() system call will return a true or false dependent on whether the queue is
  * full or contains zero messages. A queue is considered full if the number of messages in the queue
  * is equal to the queue's length limit.
  *
@@ -547,8 +577,10 @@ xBase xQueueIsQueueEmpty(xQueue queue_);
 xBase xQueueIsQueueFull(xQueue queue_);
 
 /**
- * @brief The xQueueMessageWaiting() system call returns true or false dependent on whether
- * there is at least one message waiting. The queue does not have to be full to return true.
+ * @brief System call to check if there are message queue messages waiting.
+ * 
+ * The xQueueMessageWaiting() system call returns true or false dependent on whether
+ * there is at least one message waiting. The message queue does not have to be full to return true.
  *
  * @param queue_ The queue to determine whether one or more messages are waiting.
  * @return xBase True if one or more messages are waiting. False if there are no
@@ -557,9 +589,15 @@ xBase xQueueIsQueueFull(xQueue queue_);
 xBase xQueueMessagesWaiting(xQueue queue_);
 
 /**
- * @brief The xQueueSend() system call will send a message to the queue. The size of the message
+ * @brief System call to send a message using a message queue.
+ * 
+ * The xQueueSend() system call will send a message using the specified message queue. The size of the message
  * value is passed in the message bytes parameter. The message value size in byes is dependent
  * on the CONFIG_MESSAGE_VALUE_BYTES setting.
+ * 
+ * @sa CONFIG_MESSAGE_VALUE_BYTES
+ * @sa xQueuePeek()
+ * @sa xQueueReceive()
  *
  * @param queue_ The queue to send the message to.
  * @param messageBytes_ The number of bytes contained in the message value. The number of bytes must be greater than
@@ -572,17 +610,26 @@ xBase xQueueMessagesWaiting(xQueue queue_);
 xBase xQueueSend(xQueue queue_, xBase messageBytes_, const char *messageValue_);
 
 /**
- * @brief The xQueuePeek() system call will return the next message in the queue without
+ * @brief System call to peek at the next message in a message queue.
+ * 
+ * The xQueuePeek() system call will return the next message in the specified message queue without
  * dropping the message.
  *
+ * @sa xQueueMessage
+ * @sa xMemFree()
+ * 
  * @param queue_ The queue to return the next message from.
  * @return xQueueMessage The next message in the queue. If the queue is empty or the queue
  * parameter is invalid, xQueuePeek() will return null.
+ * 
+ * @warning The memory allocated by xQueuePeek() must be freed by xMemFree().
  */
 xQueueMessage xQueuePeek(xQueue queue_);
 
 /**
- * @brief The xQueueDropMessage() system call will drop the next message from the queue without
+ * @brief System call to drop the next message in a message queue.
+ * 
+ * The xQueueDropMessage() system call will drop the next message from the message queue without
  * returning the message.
  *
  * @param queue_ The queue to drop the next message from.
@@ -590,12 +637,19 @@ xQueueMessage xQueuePeek(xQueue queue_);
 void xQueueDropMessage(xQueue queue_);
 
 /**
- * @brief The xQueueReceive() system call will return the next message in the queue and drop
- * it from the queue.
+ * @brief System call to receive the next message in the message queue.
+ * 
+ * The xQueueReceive() system call will return the next message in the message queue and drop
+ * it from the message queue.
+ * 
+ * @sa xQueueMessage
+ * @sa xMemFree()
  *
  * @param queue_ The queue to return the next message from.
  * @return xQueueMessage The message returned from the queue. If the queue is empty
  * of the queue parameter is invalid, xQueueReceive() will return null.
+ * 
+ * @warning The memory allocated by xQueueReceive() must be freed by xMemFree().
  */
 xQueueMessage xQueueReceive(xQueue queue_);
 
