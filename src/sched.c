@@ -26,7 +26,9 @@
 
 #include "sched.h"
 
-/* You are not expected to understand this. :) */
+/* "You are not expected to understand this."
+Thank you for the best OS on Earth, Dennis.
+May you rest in peace. */
 
 /* Declare and set the system flags to their default values. */
 Flags_t flags = {
@@ -34,12 +36,7 @@ Flags_t flags = {
     .critBlocking = false,
     .runTimeOverflow = false};
 
-/**
- * @brief The xTaskStartScheduler() system call passes control to the HeliOS scheduler. This system
- * call will not return until xTaskSuspendAll() is called. If xTaskSuspendAll() is called, xTaskResumeAll()
- * must be called before xTaskStartScheduler() can be called again.
- *
- */
+/* The xTaskStartScheduler() system call passes control to the HeliOS scheduler. */
 void xTaskStartScheduler() {
   Task_t *runTask = null;
 
@@ -184,22 +181,15 @@ void TaskRun(Task_t *task_) {
   }
 }
 
-/**
- * @brief The xTaskResumeAll() system call will set the scheduler system flag so the next
- * call to xTaskStartScheduler() will resume execute of all tasks. The state of each task
- * is not altered by xTaskSuspendAll() or xTaskResumeAll().
- *
- */
+/* The xTaskResumeAll() system call will set the scheduler system flag so the next
+call to xTaskStartScheduler() will resume execute of all tasks. */
 void xTaskResumeAll() {
   flags.schedulerRunning = true;
   return;
 }
 
-/**
- * @brief The xTaskSuspendAll() system call will set the scheduler system flag so the scheduler
- * will stop and return. The state of each task is not altered by xTaskSuspendAll() or xTaskResumeAll().
- *
- */
+/* The xTaskSuspendAll() system call will set the scheduler system flag so the scheduler
+will stop and return. */
 void xTaskSuspendAll() {
   flags.schedulerRunning = false;
   return;
@@ -210,14 +200,9 @@ void xTaskStopScheduler() {
   return;
 }
 
-/**
- * @brief The xSystemGetSystemInfo() system call will return the type xSystemInfo containing
- * information about the system including the OS (product) name, its version and how many tasks
- * are currently in the running, suspended or waiting states.
- *
- * @return SystemInfo_t* The system info is returned if successful, otherwise null is
- * returned if unsuccessful.
- */
+/* The xSystemGetSystemInfo() system call will return the type xSystemInfo containing
+information about the system including the OS (product) name, its version and how many tasks
+are currently in the running, suspended or waiting states. */
 SystemInfo_t *xSystemGetSystemInfo() {
   SystemInfo_t *systemInfo = null;
 
