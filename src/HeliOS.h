@@ -451,10 +451,13 @@ extern "C" {
 #endif
 
 /**
- * @brief The xMemAlloc() system call will dynamically allocate memory for HeliOS
- * system calls and end-user tasks. The number of concurrently allocated pointers
- * is dependent on the setting CONFIG_DYNAMIC_MEMORY_ALLOC_TABLE_ENTRIES.
+ * @brief System call to dynamically allocates memory for HeliOS
+ * The xMemAlloc() system call will dynamically allocate memory for HeliOS system calls and
+ * end-user tasks. The number of concurrently allocated pointers is dependent on
+ * the setting CONFIG_DYNAMIC_MEMORY_ALLOC_TABLE_ENTRIES.
  *
+ * @sa CONFIG_DYNAMIC_MEMORY_ALLOC_TABLE_ENTRIES
+ * 
  * @param size_ The amount (size) of the memory to be dynamically allocated in bytes.
  * @return void* If successful, xMemAlloc() returns a pointer to the dynamically
  * allocated memory. If unsuccessful, the system call will return null.
@@ -934,6 +937,8 @@ void xTimerStart(xTimer timer_);
  */
 void xTimerStop(xTimer timer_);
 
+/* In the event HeliOS is compiled with a C++ compiler, make the system calls (written in C)
+visible to C++. */
 #ifdef __cplusplus
 }  // extern "C" {
 #endif
