@@ -32,37 +32,66 @@
 #include "defines.h"
 
 /**
- * @brief Enumerated type for the four possible states a task
- * can be in. A task's state can be set by xTaskResume(),
- * xTaskSuspend() and xTaskWait(). It is also returned by
- * xTaskGetTaskState().
- *
+ * @brief Enumerated type for task states.
+ * 
+ * A task can be in one of the four possible states defined in the TaskState_t
+ * enumerated type. The state of a task is changed by calling xTaskResume(),
+ * xTaskSuspend() or xTaskWait(). The TaskState_t enumerated type should be declared
+ * as xTaskState.
+ * 
+ * @sa xTaskState
+ * @sa xTaskResume()
+ * @sa xTaskSuspend()
+ * @sa xTaskWait() 
+ * 
  */
 typedef enum {
-  TaskStateNone,      /**< No task. */
+  TaskStateError,      /**< Returned by xTaskGetTaskState() when task cannot be found. */
   TaskStateSuspended, /**< State a task is in when it is first created by xTaskCreate() or suspended by xTaskSuspend(). */
   TaskStateRunning,   /**< State a task is in after xTaskResume() is called. */
   TaskStateWaiting    /**< State a task is in after xTaskWait() is called. */
 } TaskState_t;
 
 /**
- * @brief Type definition for the task identifier in the task
- * data structure.
- *
+ * @brief Type definition for the task identifier.
+ * 
+ * A task handle can be found by either the task's ASCII name or its identifier by
+ * calling xTaskGetHandleByName() or xTaskGetHandleById() respectively. The TaskId_t
+ * type should be declared as xTaskId.
+ * 
+ * @sa xTaskId
+ * @sa xTaskGetHandleByName()
+ * @sa xTaskGetHandleById()
+ * 
  */
 typedef int16_t TaskId_t;
 
 /**
- * @brief Type definition for the base data type. This data type is
- * used if no other data types are relevent.
+ * @brief Type definition for the base data type.
+ * 
+ * A simple data type is often needed as an argument for a system call or a return type.
+ * The Base_t type is used in such a case where there are no other structural data
+ * requirements. The Base_t type should be declared as xBase.
+ * 
+ * @sa xBase
  *
  */
 typedef int16_t Base_t;
 
 /**
- * @brief The data structure for task runtime statistics. Should be declared as xTaskRunTimeStats. This type
- * is returned by xTaskGetTaskRunTimeStats() and xTaskGetAllRunTimeStats().
- *
+ * @brief Data structure for task runtime statistics.
+ * 
+ * The TaskRunTimeStats_t structure contains task runtime statistics and is returned by
+ * xTaskGetAllRunTimeStats() and xTaskGetTaskRunTimeStats(). The TaskRunTimeStats_t type
+ * should be declared as xTaskRunTimeStats.
+ * 
+ * @sa xTaskRunTimeStats
+ * @sa xTaskGetTaskRunTimeStats()
+ * @sa xTaskGetAllRunTimeStats()
+ * 
+ * @warning The memory allocated for an instance of xTaskRunTimeStats must be freed
+ * using xMemFree().
+ * 
  */
 typedef struct TaskRunTimeStats_s {
   Time_t lastRunTime;  /**< The runtime duration in microseconds the last time the task was executed by the scheduler. */
@@ -70,9 +99,20 @@ typedef struct TaskRunTimeStats_s {
 } TaskRunTimeStats_t;
 
 /**
- * @brief The data structure for task information. Should be declared as xTaskInfo. This type is returned by
- * xTaskGetTaskInfo().
- *
+ * @brief Data structure for information about a task.
+ * 
+ * The TaskInfo_t structure is similar to xTaskRuntimeStats_t in that it contains runtime statistics for
+ * a task. However, TaskInfo_t also contains additional details about a task such as its identifier, ASCII name
+ * and state. The TaskInfo_t structure is returned by xTaskGetTaskInfo(). If on runtime statistics are needed,
+ * TaskRunTimeStats_t should be used because of its lower memory footprint. The TaskInfo_t type should be
+ * declared as xTaskInfo.
+ * 
+ * @sa xTaskInfo
+ * @sa xTaskGetTaskInfo()
+ * 
+ * @warning The memory allocated for an instance of xTaskInfo must be freed using
+ * xMemFree().
+ * 
  */
 typedef struct TaskInfo_s {
   TaskId_t id;                       /**< The task identifier which is used by xTaskGetHandleById() to return the task handle. */
@@ -83,9 +123,17 @@ typedef struct TaskInfo_s {
 } TaskInfo_t;
 
 /**
- * @brief The data structure for task notifications. Should be declared as xTaskNotification. This type is
- * returned by xTaskNotifyTake().
- *
+ * @brief Data structure for direct to task notifications.
+ * 
+ * The TaskNotification_t data structure contains the direct to task notification returned by xTaskNotifyTake().
+ * The TaskNotification_t type should be declared as xTaskNotification.
+ * 
+ * @sa xTaskNotification
+ * @sa xTaskNotifyTake()
+ * 
+ * @warning The memory allocated for an instance of xTaskNotification must be freed using
+ * xMemFree().
+ * 
  */
 typedef struct TaskNotification_s {
   Base_t notificationBytes;                                /**< The number of bytes in the notificationValue member that makes up the notification value. This cannot exceed CONFIG_NOTIFICATION_VALUE_BYTES. */
@@ -93,9 +141,17 @@ typedef struct TaskNotification_s {
 } TaskNotification_t;
 
 /**
- * @brief The data structure for queue messages. Should be declared as xQueueMessage. This type is
- * returned by xQueueReceive() and xQueuePeek().
- *
+ * @brief Data structure for a message queue message.
+ * 
+ * The QueueMessage_t data structure contains the message queue message returned by xQueuePeek() and
+ * xQueueReceive(). The QueueMessage_t type should be declared as xQueueMessage.
+ * 
+ * @sa xQueueMessage
+ * @sa xQueuePeek()
+ * @sa xQueueReceive()
+ * 
+ * @warning The memory allocated for an instance of xQueueMessage must be freed using xMemFree().
+ * 
  */
 typedef struct QueueMessage_s {
   Base_t messageBytes;                           /**< The number of bytes in the messageValue member that makes up the message value. This cannot exceed CONFIG_MESSAGE_VALUE_BYTES. */
@@ -103,9 +159,16 @@ typedef struct QueueMessage_s {
 } QueueMessage_t;
 
 /**
- * @brief The data structure for system information. Should be declared as xSystemInfo. This type is returned
- * by xSystemGetSystemInfo().
- *
+ * @brief Data structure for system informaiton.
+ * 
+ * The SystemInfo_t data structure contains information about the HeliOS system and is returned
+ * by xSystemGetSystemInfo(). The SystemInfo_t should be declared as xSystemInfo.
+ * 
+ * @sa xSystemInfo
+ * @sa xSystemGetSystemInfo()
+ * 
+ * @warning The memory allocated for an instance of xSystemInfo must be freed using xMemFree().
+ * 
  */
 typedef struct SystemInfo_s {
   char productName[PRODUCTNAME_SIZE]; /**< The name of the operating system or product. This is always HeliOS. */
@@ -115,8 +178,7 @@ typedef struct SystemInfo_s {
   Base_t numberOfTasks;               /**< The number of tasks presently in a suspended, running or waiting state. */
 } SystemInfo_t;
 
-/* Stub type defines for private (internal) data structures. Should be declared using the *x* types
-(e.g., xTask, xQueue, etc). */
+
 typedef void Task_t;
 typedef void TaskParm_t;
 typedef void Queue_t;

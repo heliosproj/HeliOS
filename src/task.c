@@ -451,13 +451,13 @@ TaskState_t xTaskGetTaskState(Task_t *task_) {
     /* Check if the task cursor is null, if so the task could not be found
     so return null. */
     if (ISNULLPTR(taskCursor)) {
-      return TaskStateNone;
+      return TaskStateError;
     }
 
     return taskCursor->state;
   }
 
-  return TaskStateNone;
+  return TaskStateError;
 }
 
 /**

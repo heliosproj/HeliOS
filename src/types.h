@@ -27,14 +27,14 @@
 #define TYPES_H_
 
 typedef enum {
-  TaskStateNone,
+  TaskStateError,
   TaskStateSuspended,
   TaskStateRunning,
   TaskStateWaiting
 } TaskState_t;
 
 typedef enum {
-  TimerStateNone,
+  TimerStateError,
   TimerStateStopped,
   TimerStateRunning
 } TimerState_t;
