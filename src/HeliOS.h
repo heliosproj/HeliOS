@@ -1,7 +1,7 @@
 /**
  * @file HeliOS.h
  * @author Manny Peterson (mannymsp@gmail.com)
- * @brief Header file to be included in end-user code and contains all of the public data types and functions
+ * @brief Header file to be included in end-user code and contains the system calls and related types.
  * @version 0.3.0
  * @date 2022-01-31
  *
@@ -104,7 +104,7 @@ typedef struct TaskRunTimeStats_s {
  * 
  * The TaskInfo_t structure is similar to xTaskRuntimeStats_t in that it contains runtime statistics for
  * a task. However, TaskInfo_t also contains additional details about a task such as its identifier, ASCII name
- * and state. The TaskInfo_t structure is returned by xTaskGetTaskInfo(). If on runtime statistics are needed,
+ * and state. The TaskInfo_t structure is returned by xTaskGetTaskInfo(). If only runtime statistics are needed,
  * TaskRunTimeStats_t should be used because of its lower memory footprint. The TaskInfo_t type should be
  * declared as xTaskInfo.
  * 
@@ -248,19 +248,161 @@ typedef void Queue_t;
  */
 typedef void Timer_t;
 
-/* Type defines for the HeliOS API. */
+/**
+ * @brief Type definition for the base data type.
+ * 
+ * A simple data type is often needed as an argument for a system call or a return type.
+ * The xBase type is used in such a case where there are no other structural data
+ * requirements.
+ * 
+ * @sa Base_t
+ *
+ */
 typedef Base_t xBase;
+
+/**
+ * @brief Type definition for the task identifier.
+ * 
+ * A task handle can be found by either the task's ASCII name or its identifier by
+ * calling xTaskGetHandleByName() or xTaskGetHandleById() respectively.
+ * 
+ * @sa TaskId_t
+ * @sa xTaskGetHandleByName()
+ * @sa xTaskGetHandleById()
+ * 
+ */
 typedef TaskId_t xTaskId;
+
+/**
+ * @brief Stub type definition for the timer type.
+ * 
+ * The xTimer type is a stub type definition for the internal timer data structure and is treated
+ * as a timer handle by most of the timer related system calls. The members of the data structure
+ * are not accessible.
+ * 
+ * @sa Timer_t
+ * @sa xTimerDelete()
+ * 
+ * @warning The memory allocated for an instance of xTimer must be freed using xTimerDelete().
+ * 
+ */
 typedef Timer_t *xTimer;
+
+/**
+ * @brief Stub type definition for the message queue type.
+ * 
+ * The xQueue type is a stub type definition for the internal message queue structure and is treated
+ * as a message queue handle by most of the message queue related system calls. The members of the data structure
+ * are not accessible.
+ * 
+ * @sa Queue_t
+ * @sa xQueueDelete()
+ * 
+ * @warning The memory allocated for an instance of xQueue must be freed using xQueueDelete().
+ * 
+ */
 typedef Queue_t *xQueue;
+
+/**
+ * @brief Data structure for a message queue message.
+ * 
+ * The xQueueMessage data structure contains the message queue message returned by xQueuePeek() and
+ * xQueueReceive(). See QueueMessage_t for information about the data structure's members.
+ * 
+ * @sa QueueMessage_t
+ * @sa xQueuePeek()
+ * @sa xQueueReceive()
+ * @sa xMemFree()
+ * 
+ * @warning The memory allocated for an instance of xQueueMessage must be freed using xMemFree().
+ * 
+ */
 typedef QueueMessage_t *xQueueMessage;
+
+/**
+ * @brief Data structure for direct to task notifications.
+ * 
+ * The xTaskNotification data structure contains the direct to task notification returned by xTaskNotifyTake().
+ * See TaskNotification_t for information about the data structure's members.
+ * 
+ * @sa TaskNotification_t
+ * @sa xTaskNotifyTake()
+ * @sa xMemFree()
+ * 
+ * @warning The memory allocated for an instance of xTaskNotification must be freed using
+ * xMemFree().
+ * 
+ */
 typedef TaskNotification_t *xTaskNotification;
+
+/**
+ * @brief Data structure for information about a task.
+ * 
+ * The xTaskInfo structure is similar to xTaskRunTimeStats in that it contains runtime statistics for
+ * a task. However, xTaskInfo also contains additional details about a task such as its identifier, ASCII name
+ * and state. The xTaskInfo structure is returned by xTaskGetTaskInfo(). If only runtime statistics are needed,
+ * xTaskRunTimeStats should be used because of its lower memory footprint. See TaskInfo_t for information about
+ * the data structure's members.
+ * 
+ * @sa TaskInfo_t
+ * @sa xTaskGetTaskInfo()
+ * @sa xMemFree()
+ * 
+ * @warning The memory allocated for an instance of xTaskInfo must be freed using
+ * xMemFree().
+ * 
+ */
 typedef TaskInfo_t *xTaskInfo;
+
+/**
+ * @brief Data structure for task runtime statistics.
+ * 
+ * The xTaskRunTimeStats structure contains task runtime statistics and is returned by
+ * xTaskGetAllRunTimeStats() and xTaskGetTaskRunTimeStats(). See TaskRunTimeStats_t for information
+ * about the data structure's members.
+ * 
+ * @sa TaskRunTimeStats_t
+ * @sa xTaskGetTaskRunTimeStats()
+ * @sa xTaskGetAllRunTimeStats()
+ * @sa xMemFree()
+ * 
+ * @warning The memory allocated for an instance of xTaskRunTimeStats must be freed
+ * using xMemFree().
+ * 
+ */
 typedef TaskRunTimeStats_t *xTaskRunTimeStats;
+
+/**
+ * @brief Stub type definition for the task type.
+ * 
+ * The xTask type is a stub type definition for the internal task data structure and is treated
+ * as a task handle by most of the task related system calls. The members of the data structure
+ * are not accessible.
+ * 
+ * @sa Task_t
+ * @sa xTaskDelete()
+ * 
+ * @warning The memory allocated for an instance of xTask must be freed by xTaskDelete()
+ * 
+ */
 typedef Task_t *xTask;
 typedef TaskParm_t *xTaskParm;
 typedef Time_t xTime;
 typedef TaskState_t xTaskState;
+
+/**
+ * @brief Data structure for system informaiton.
+ * 
+ * The xSystemInfo data structure contains information about the HeliOS system and is returned
+ * by xSystemGetSystemInfo(). See xSystemInfo_t for information about the data structure's members.
+ * 
+ * @sa SystemInfo_t
+ * @sa xSystemGetSystemInfo()
+ * @sa xMemFree()
+ *  
+ * @warning The memory allocated for an instance of xSystemInfo must be freed using xMemFree().
+ * 
+ */
 typedef SystemInfo_t *xSystemInfo;
 
 #ifdef __cplusplus
