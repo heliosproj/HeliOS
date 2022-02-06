@@ -821,13 +821,17 @@ xBase xTaskGetNumberOfTasks();
  * the details of the task including its identifier, name, state and runtime statistics.
  *
  * @param task_ The task to return the details of.
- * @return TaskInfo_t* The xTaskInfo structure containing the task details. xTaskGetTaskInfo()
+ * @return xTaskInfo The xTaskInfo structure containing the task details. xTaskGetTaskInfo()
  * returns null if the task cannot be found.
  */
-TaskInfo_t *xTaskGetTaskInfo(xTask task_);
+xTaskInfo xTaskGetTaskInfo(xTask task_);
 
 /**
- * @brief The xTaskGetTaskState() system call will return the state of the task.
+ * @brief System call to return the state of a task.
+ * 
+ * The xTaskGetTaskState() system call will return the state of the task.
+ * 
+ * @sa xTaskState
  *
  * @param task_ The task to return the state of.
  * @return xTaskState The xTaskState of the task. If the task cannot be found, xTaskGetTaskState()
@@ -836,19 +840,28 @@ TaskInfo_t *xTaskGetTaskInfo(xTask task_);
 xTaskState xTaskGetTaskState(xTask task_);
 
 /**
- * @brief The xTaskGetName() system call returns the ASCII name of the task. The size of the
+ * @brief System call to return the ASCII name of a task.
+ * 
+ * The xTaskGetName() system call returns the ASCII name of the task. The size of the
  * task is dependent on the setting CONFIG_TASK_NAME_BYTES. The task name is NOT a null
  * terminated char array. The memory allocated for the char array must be freed by
  * xMemFree() when no longer needed.
+ * 
+ * @sa CONFIG_TASK_NAME_BYTES
+ * @sa xMemFree()
  *
  * @param task_ The task to return the name of.
  * @return char* A pointer to the char array containing the ASCII name of the task. The task name
  * is NOT a null terminated char array. xTaskGetName() will return null if the task cannot be found.
+ * 
+ * @warning The memory allocated by xTaskGetName() must be free by xMemFree().
  */
 char *xTaskGetName(xTask task_);
 
 /**
- * @brief The xTaskGetId() system call returns the task identifier for the task.
+ * @brief System call to return the task identifier for a task.
+ * 
+ * The xTaskGetId() system call returns the task identifier for the task.
  *
  * @param task_ The task to return the identifier of.
  * @return xTaskId The identifier of the task. If the task cannot be found, xTaskGetId()
