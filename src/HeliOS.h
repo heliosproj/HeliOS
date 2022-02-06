@@ -386,8 +386,47 @@ typedef TaskRunTimeStats_t *xTaskRunTimeStats;
  * 
  */
 typedef Task_t *xTask;
+
+/**
+ * @brief Type definition for the task parameter.
+ * 
+ * The xTaskParm type used to pass a parameter to a task at the time of creation using
+ * xTaskCreate(). A task parameter is a pointer of type void and can point to any number
+ * of intrinsic types, arrays and/or user defined structures which can be passed to a
+ * task. It is up the the end-user to manage allocate and free the memory related to
+ * these objects using xMemAlloc() and xMemFree().
+ * 
+ * @sa TaskParm_t
+ * @sa xMemAlloc()
+ * @sa xMemFree()
+ * 
+ * @warning The memory allocated for an instance of xTaskParm must be freed using xMemFree().
+ * 
+ */
 typedef TaskParm_t *xTaskParm;
+
+/**
+ * @brief The type definition for time expressed in microseconds.
+ * 
+ * The xTime type is used by several of the task and timer related system calls to express time.
+ * The unit of measure for time is always microseconds.
+ * 
+ */
 typedef Time_t xTime;
+
+/**
+ * @brief Enumerated type for task states.
+ * 
+ * A task can be in one of the four possible states defined in the xTaskState
+ * enumerated type. The state of a task is changed by calling xTaskResume(),
+ * xTaskSuspend() or xTaskWait().
+ * 
+ * @sa TaskState_t
+ * @sa xTaskResume()
+ * @sa xTaskSuspend()
+ * @sa xTaskWait() 
+ * 
+ */
 typedef TaskState_t xTaskState;
 
 /**
@@ -405,6 +444,8 @@ typedef TaskState_t xTaskState;
  */
 typedef SystemInfo_t *xSystemInfo;
 
+/* In the event HeliOS is compiled with a C++ compiler, make the system calls (written in C)
+visible to C++. */
 #ifdef __cplusplus
 extern "C" {
 #endif
