@@ -40,9 +40,9 @@ typedef enum {
 } TimerState_t;
 
 typedef void TaskParm_t;
-typedef int16_t TaskId_t;
-typedef int16_t Flag_t;
-typedef int16_t Base_t;
+typedef uint8_t TaskId_t;
+typedef uint8_t Flag_t;
+typedef uint8_t Base_t;
 
 typedef struct TaskNotification_s {
   Base_t notificationBytes;

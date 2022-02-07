@@ -64,7 +64,7 @@ typedef enum {
  * @sa xTaskGetHandleById()
  *
  */
-typedef int16_t TaskId_t;
+typedef uint8_t TaskId_t;
 
 /**
  * @brief Type definition for the base data type.
@@ -76,7 +76,7 @@ typedef int16_t TaskId_t;
  * @sa xBase
  *
  */
-typedef int16_t Base_t;
+typedef uint8_t Base_t;
 
 /**
  * @brief Data structure for task runtime statistics.
