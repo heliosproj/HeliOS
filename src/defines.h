@@ -158,32 +158,6 @@ exiting a critical section of code. */
 #define EXIT_CRITICAL() flags.critBlocking = false;
 #endif
 
-/* Define a macro which simplifies casting and dereferencing the task
-paramater. */
-
-/**
- * @brief A C macro to simplify casting and dereferencing a task paramater.
- * 
- * When a task paramater is passed to a task, it is passed as a pointer of
- * type void. To use the paramater it must first be casted to the correct type
- * and dereferenced. The following is an example of how the C macro is used.
- * 
- * @code
- * void myTask_main(xTask task_, xTaskParm parm_) {
- *  int i;
- * 
- *  i = DEREF_TASKPARM(int, parm_);
- * 
- * }
- * @endcode
- * 
- * @parm t The data type to case the task paramater to (e.g., int).
- * @parm p The task pointer often named parm_.
- */
-#if !defined(DEREF_TASKPARM)
-#define DEREF_TASKPARM(t, p) *((t *) p)
-#endif
-
 /* Define a marco which makes null pointer checks more readable and
 concise */
 #if !defined(ISNOTNULLPTR)

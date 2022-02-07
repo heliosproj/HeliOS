@@ -443,6 +443,29 @@ typedef TaskState_t xTaskState;
  */
 typedef SystemInfo_t *xSystemInfo;
 
+/**
+ * @brief A C macro to simplify casting and dereferencing a task paramater.
+ * 
+ * When a task paramater is passed to a task, it is passed as a pointer of
+ * type void. To use the paramater it must first be casted to the correct type
+ * and dereferenced. The following is an example of how the C macro is used.
+ * 
+ * @code
+ * void myTask_main(xTask task_, xTaskParm parm_) {
+ *  int i;
+ * 
+ *  i = DEREF_TASKPARM(int, parm_);
+ * 
+ * }
+ * @endcode
+ * 
+ * @param t The data type to case the task paramater to (e.g., int).
+ * @param p The task pointer often named parm_.
+ */
+#if !defined(DEREF_TASKPARM)
+#define DEREF_TASKPARM(t, p) *((t *) p)
+#endif
+
 /* In the event HeliOS is compiled with a C++ compiler, make the system calls (written in C)
 visible to C++. */
 #ifdef __cplusplus
