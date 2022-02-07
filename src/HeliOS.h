@@ -1143,6 +1143,15 @@ void xTimerStart(xTimer timer_);
  */
 void xTimerStop(xTimer timer_);
 
+/**
+ * @brief The xSystemHalt() system call will halt HeliOS.
+ * 
+ * The xSystemHalt() system call will halt HeliOS. Once xSystemHalt() is called,
+ * the system must be reset.
+ * 
+ */
+void xSystemHalt();
+
 /* In the event HeliOS is compiled with a C++ compiler, make the system calls (written in C)
 visible to C++. */
 #ifdef __cplusplus

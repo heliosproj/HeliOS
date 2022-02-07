@@ -49,6 +49,7 @@ Time_t CurrentTime();
 void TaskRun(Task_t *);
 void xTaskResumeAll();
 void xTaskSuspendAll();
+void xSystemHalt();
 SystemInfo_t *xSystemGetSystemInfo();
 void memcpy_(void *, const void *, size_t);
 void memset_(void *, int16_t, size_t);
