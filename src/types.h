@@ -51,7 +51,7 @@ typedef uint16_t Word_t;
 typedef struct HeapEntry_s
 {
     Byte_t free : 1;
-    Byte_t kernel : 1;
+    Byte_t protected : 1;
     Byte_t reserved : 6;
     Word_t blocks;
     struct HeapEntry_s *next;

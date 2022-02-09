@@ -81,8 +81,8 @@ void *xMemAlloc(size_t size_) {
       /* Set the entry to free. */
       heapStart->free = true;
 
-      /* Set the kernel ownership to false. */
-      heapStart->kernel = false;
+      /* Set the entry unprotected by setting protected to false. */
+      heapStart->protected = false;
 
       /* Set the number of blocks in the first entry to the total size of the
       heap in blocks minus one block which is occupied by the first entry. */
@@ -180,8 +180,8 @@ void *xMemAlloc(size_t size_) {
       /* Mark it as free. */
       entryCandidate->next->free = true;
 
-      /* Set the kernel ownership to false. */
-      entryCandidate->next->kernel = false;
+      /* Set the entry unprotected by setting protected to false. */
+      entryCandidate->next->protected = false;
 
       /* Calculate how many remain blocks there are. */
       entryCandidate->next->blocks = entryCandidate->blocks - requestedBlocksWithOverhead;
@@ -192,8 +192,8 @@ void *xMemAlloc(size_t size_) {
       /* Mark the candidate entry as no longer free. */
       entryCandidate->free = false;
 
-      /* Set the kernel ownership to false. */
-      entryCandidate->kernel = false;
+      /* Set the entry unprotected by setting protected to false. */
+      entryCandidate->protected = false;
 
       /* Store how many blocks the entry contains. */
       entryCandidate->blocks = requestedBlocks;
@@ -210,8 +210,8 @@ void *xMemAlloc(size_t size_) {
       so simply mark it as no longer free and return the address. */
       entryCandidate->free = false;
 
-      /* Set the kernel ownership to false. */
-      entryCandidate->kernel = false;
+      /* Set the entry unprotected by setting protected to false. */
+      entryCandidate->protected = false;
 
       /* Clear the memory by mem-setting it to all zeros. */
       memset_((void *)((Byte_t *)entryCandidate + (entryBlocksNeeded * CONFIG_HEAP_BLOCK_SIZE)), 0, requestedBlocks * CONFIG_HEAP_BLOCK_SIZE);
@@ -234,12 +234,11 @@ void xMemFree(void *ptr_) {
 
   /* Check to make sure the end-user passed a pointer that is at least not null. */
   if (ISNOTNULLPTR(ptr_)) {
-
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
     PHASE I: Determine if the first heap entry has been created. If it hasn't then
     just return.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-    
+
     /* Check if the entry at the start of the heap is un-initialized by looking
     at the blocks member. If it is zero then the heap has not been initialized so
     just thrown in the towel. */
@@ -286,7 +285,6 @@ void xMemFree(void *ptr_) {
 
     /* While the heap entry cursor is not null, keep scanning. */
     while (ISNOTNULLPTR(entryCursor)) {
-
       /* If the entry cursor equals the entry we want to free, then break out of the loop. */
       if (entryCursor == entryToFree) {
         break;
@@ -303,9 +301,11 @@ void xMemFree(void *ptr_) {
     /* Check one last time if the entry cursor equals the entry we want to free, if it does,
     mark it free. We are done here. */
     if (entryCursor == entryToFree) {
+      /* Make the entry free by setting free to true. */
       entryCursor->free = true;
 
-      entryCursor->kernel = false;
+      /* Set the entry unprotected by setting protected to false. */
+      entryCursor->protected = false;
     }
   }
 
