@@ -168,13 +168,21 @@ xSystemGetSystemInfo(). */
 /* Define the macro which sets the critical flag to true when
 entering a critical section of code. */
 #if !defined(ENTER_CRITICAL)
-#define ENTER_CRITICAL() sysFlags.critical = true;
+#define ENTER_CRITICAL() sysFlags.critical = true
 #endif
 
 /* Define the macro which sets the critical flag to false when
 exiting a critical section of code. */
 #if !defined(EXIT_CRITICAL)
-#define EXIT_CRITICAL() sysFlags.critical = false;
+#define EXIT_CRITICAL() sysFlags.critical = false
+#endif
+
+/* Define the macro which let's us check if we are NOT in
+a critical section of code. Right now this is only used by task.c
+to ensure tasks are not created or deleted within the scope
+of the scheduler. */
+#if !defined(NOT_CRITICAL)
+#define NOT_CRITICAL() !SystemGetSysFlag().critical
 #endif
 
 /* Define a marco which makes null pointer checks more readable and

@@ -38,9 +38,9 @@ Task_t *xTaskCreate(const char *name_, void (*callback_)(Task_t *, TaskParm_t *)
 
   Task_t *taskCursor = null;
 
-  /* Check if HeliOS is blocking from CRITICAL_ENTER() and make sure the name and callback parameters
+  /* Check if not in a critical section from CRITICAL_ENTER() and make sure the name and callback parameters
   are not null. */
-  if (!SystemGetSysFlag().critical && ISNOTNULLPTR(name_) && ISNOTNULLPTR(callback_)) {
+  if (NOT_CRITICAL() && ISNOTNULLPTR(name_) && ISNOTNULLPTR(callback_)) {
     /* Check if the task list is null, if it is call xMemAlloc() to allocate
     the dynamic memory for it. */
     if (ISNULLPTR(taskList)) {
@@ -106,9 +106,9 @@ void xTaskDelete(Task_t *task_) {
 
   Task_t *taskPrevious = null;
 
-  /* Check if HeliOS is blocking from CRITICAL_ENTER() and make sure the task list is not null
+  /* Check if not in a critical section from CRITICAL_ENTER() and make sure the task list is not null
   and that the task parameter is also not null. */
-  if (!SystemGetSysFlag().critical && ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_)) {
+  if (NOT_CRITICAL() && ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_)) {
     taskCursor = taskList->head;
 
     taskPrevious = null;

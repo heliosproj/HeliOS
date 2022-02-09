@@ -49,7 +49,7 @@ void xTaskStartScheduler() {
   /* Disable interrupts and set the critical blocking flag before entering into the scheduler main
   loop. */
   DISABLE_INTERRUPTS();
-  ENTER_CRITICAL()
+  ENTER_CRITICAL();
 
   /* Continue to loop while the scheduler running flag is true. */
   while (sysFlags.running) {
