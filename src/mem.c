@@ -1,7 +1,7 @@
 /**
  * @file mem.c
  * @author Manny Peterson (mannymsp@gmail.com)
- * @brief Source code for the management of dynamically allocated memory in HeliOS
+ * @brief Source code for the management of heap memory in HeliOS
  * @version 0.3.0
  * @date 2022-01-31
  *
@@ -213,7 +213,7 @@ void *xMemAlloc(size_t size_) {
       /* Set the kernel ownership to false. */
       entryCandidate->kernel = false;
 
-      /* Clear the memory by memsetting it to all zeros. */
+      /* Clear the memory by mem-setting it to all zeros. */
       memset_((void *)((Byte_t *)entryCandidate + (entryBlocksNeeded * CONFIG_HEAP_BLOCK_SIZE)), 0, requestedBlocks * CONFIG_HEAP_BLOCK_SIZE);
 
       /* Return the address of the memory but make sure we move it forward
@@ -232,11 +232,17 @@ void xMemFree(void *ptr_) {
 
   HeapEntry_t *entryToFree = null;
 
+  /* Check to make sure the end-user passed a pointer that is at least not null. */
   if (ISNOTNULLPTR(ptr_)) {
+
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
     PHASE I: Determine if the first heap entry has been created. If it hasn't then
     just return.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+    
+    /* Check if the entry at the start of the heap is un-initialized by looking
+    at the blocks member. If it is zero then the heap has not been initialized so
+    just thrown in the towel. */
     if (heapStart->blocks == 0) {
       return;
     }
@@ -252,10 +258,13 @@ void xMemFree(void *ptr_) {
 
     /* While the heap entry cursor is not null, keep scanning. */
     while (ISNOTNULLPTR(entryCursor)) {
-      blockCount += entryCursor->blocks + entryBlocksNeeded; /* Assuming entry blocks needed has been calculated if the heap has been intialized. */
+      blockCount += entryCursor->blocks + entryBlocksNeeded; /* Assuming entry blocks needed has been
+                                                                calculated if the heap has been initialized. */
       entryCursor = entryCursor->next;
     }
 
+    /* Check if the counted blocks matches the CONFIG_HEAP_SIZE_IN_BLOCKS setting,
+    if it doesn't return. */
     if (blockCount != CONFIG_HEAP_SIZE_IN_BLOCKS) {
       return;
     }
@@ -263,8 +272,13 @@ void xMemFree(void *ptr_) {
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
     PHASE III: Check if the pointer paramater actually points to a heap entry that
     by scanning the heap for it. If it exists, free the entry.
+
+    Don't ever just directly check that the pointer references what APPEARS to be a
+    heap entry!
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+    /* Determine the heap entry to free by moving back from the pointer by the byte size of one
+    heap entry. */
     entryToFree = (HeapEntry_t *)((Byte_t *)ptr_ - (entryBlocksNeeded * CONFIG_HEAP_BLOCK_SIZE));
 
     /* To scan the heap, need to set the heap entry cursor to the start of the heap. */
@@ -272,16 +286,22 @@ void xMemFree(void *ptr_) {
 
     /* While the heap entry cursor is not null, keep scanning. */
     while (ISNOTNULLPTR(entryCursor)) {
+
+      /* If the entry cursor equals the entry we want to free, then break out of the loop. */
       if (entryCursor == entryToFree) {
         break;
       }
       entryCursor = entryCursor->next;
     }
 
+    /* Well, we didn't find the entry for the pointer the end-user wanted freed so
+    return. */
     if (ISNULLPTR(entryCursor)) {
       return;
     }
 
+    /* Check one last time if the entry cursor equals the entry we want to free, if it does,
+    mark it free. We are done here. */
     if (entryCursor == entryToFree) {
       entryCursor->free = true;
 
