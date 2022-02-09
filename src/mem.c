@@ -26,6 +26,8 @@
 
 #include "mem.h"
 
+extern SysFlags_t sysFlags;
+
 static Byte_t heap[HEAP_RAW_SIZE];
 
 HeapEntry_t *heapStart = (HeapEntry_t *)heap;

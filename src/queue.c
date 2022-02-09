@@ -26,6 +26,8 @@
 
 #include "queue.h"
 
+extern SysFlags_t sysFlags;
+
 /* The xQueueCreate() system call creates a message queue for inter-task
 communication. */
 Queue_t *xQueueCreate(Base_t limit_) {

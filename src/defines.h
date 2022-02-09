@@ -35,11 +35,11 @@
 /* Check that the system HeliOS is being targeted for has an
 8-bit wide byte. */
 #if defined(CHAR_BIT)
-#if CHAR_BIT == 8
-#pragma message("INFO: System has an 8-bit wide byte. Good!")
-#else
+#if CHAR_BIT != 8
 #pragma message("WARNING: System may not have an 8-bit wide byte!")
 #endif
+#else
+#pragma message("WARNING: Unable to determine if system has an 8-bit wide byte. CHAR_BIT not defined?")
 #endif
 
 /* Definition blocks for embedded platform and/or tool-chain
@@ -177,12 +177,35 @@ exiting a critical section of code. */
 #define EXIT_CRITICAL() sysFlags.critical = false
 #endif
 
-/* Define the macro which let's us check if we are NOT in
-a critical section of code. Right now this is only used by task.c
-to ensure tasks are not created or deleted within the scope
-of the scheduler. */
-#if !defined(NOT_CRITICAL)
-#define NOT_CRITICAL() !SystemGetSysFlag().critical
+/* Define a macro which makes using the system flags more
+readable. The critical system flag is used by xTaskCreate()
+and xTaskDelete() to determine when within the scope of the
+scheduler. */
+#if !defined(SYSFLAG_CRITICAL)
+#define SYSFLAG_CRITICAL() sysFlags.critical
+#endif
+
+/* Define a macro which makes using the system flags more
+readable. The protect system flag is used by xMemAlloc()
+and xMemFree() to determine when to set an entry in the heap
+to protected. */
+#if !defined(SYSFLAG_PROTECT)
+#define SYSFLAG_PROTECT() sysFlags.protect
+#endif
+
+/* Define a macro which makes using the system flags more
+readable. The running system flag is used by xTaskSuspendAll()
+and xTaskResumeAll() to control the scheduler. */
+#if !defined(SYSFLAG_RUNNING)
+#define SYSFLAG_RUNNING() sysFlags.running
+#endif
+
+/* Define a macro which makes using the system flags more
+readable. The overflow flag is used by the scheduler to determine
+when a task runtime has overflowed and all runtimes need to be
+reset. */
+#if !defined(SYSFLAG_OVERFLOW)
+#define SYSFLAG_OVERFLOW() sysFlags.overflow
 #endif
 
 /* Define a marco which makes null pointer checks more readable and

@@ -39,7 +39,6 @@ extern "C" {
 #endif
 
 void xTaskStartScheduler();
-SysFlags_t SystemGetSysFlag();
 void RunTimeReset();
 Time_t CurrentTime();
 void TaskRun(Task_t *);

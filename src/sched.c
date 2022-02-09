@@ -48,17 +48,18 @@ void xTaskStartScheduler() {
   /* Going to try getting rid of TIM_T_MAX and just underflow an
   unsigned integer. */
   Time_t leastRunTime = -1;
-  //Time_t leastRunTime = TIME_T_MAX;
+  // Time_t leastRunTime = TIME_T_MAX;
 
   /* Disable interrupts and set the critical section flag before entering into the scheduler main
   loop. */
   DISABLE_INTERRUPTS();
+
   ENTER_CRITICAL();
 
   /* Continue to loop while the scheduler running flag is true. */
-  while (sysFlags.running) {
+  while (SYSFLAG_RUNNING()) {
     /* If the runtime overflow flag is true. Reset the runtimes on all of the tasks. */
-    if (sysFlags.overflow) {
+    if (SYSFLAG_OVERFLOW()) {
       RunTimeReset();
     }
 
@@ -99,7 +100,7 @@ void xTaskStartScheduler() {
         runTask = null;
       }
 
-      leastRunTime = TIME_T_MAX;
+      leastRunTime = -1;
     }
   }
 
@@ -107,11 +108,6 @@ void xTaskStartScheduler() {
   EXIT_CRITICAL();
 
   ENABLE_INTERRUPTS();
-}
-
-/* Check to see if HeliOS is in a critical section from ENTER_CRITICAL(). */
-SysFlags_t SystemGetSysFlag() {
-  return sysFlags;
 }
 
 /* If the runtime overflow flag is set, then RunTimeReset() is called to reset all of the
@@ -134,7 +130,7 @@ void RunTimeReset() {
       taskCursor = taskCursor->next;
     }
 
-    sysFlags.overflow = false;
+    SYSFLAG_OVERFLOW() = false;
   }
   return;
 }
@@ -181,28 +177,29 @@ void TaskRun(Task_t *task_) {
   /* Check if the new total runtime is less than the previous total runtime,
   if so an overflow has occurred so set the runtime over flow system flag. */
   if (task_->totalRunTime < prevTotalRunTime) {
-    sysFlags.overflow = true;
+    SYSFLAG_OVERFLOW() = true;
   }
 }
 
 /* The xTaskResumeAll() system call will set the scheduler system flag so the next
 call to xTaskStartScheduler() will resume execute of all tasks. */
 void xTaskResumeAll() {
-  sysFlags.running = true;
+  SYSFLAG_RUNNING() = true;
   return;
 }
 
 /* The xTaskSuspendAll() system call will set the scheduler system flag so the scheduler
 will stop and return. */
 void xTaskSuspendAll() {
-  sysFlags.running = false;
+  SYSFLAG_RUNNING() = false;
   return;
 }
 
 /* The xSystemHalt() system call stops the system by putting HeliOS into an infinite loop. */
 void xSystemHalt() {
   DISABLE_INTERRUPTS();
-  for(;;) {}
+  for (;;) {
+  }
 }
 
 /* TO-DO: Implement xTaskStopScheduler(). */
