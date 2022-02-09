@@ -27,9 +27,20 @@
 #define DEFINES_H_
 
 #include <stdint.h>
+#include <limits.h>
 
 // TO-DO: REMOVE BEFORE RELEASE!!
 #define OTHER_ARCH_LINUX
+
+/* Check that the system HeliOS is being targeted for has an
+8-bit wide byte. */
+#if defined(CHAR_BIT)
+#if CHAR_BIT == 8
+#pragma message("INFO: System has an 8-bit wide byte. Good!")
+#else
+#pragma message("WARNING: System may not have an 8-bit wide byte!")
+#endif
+#endif
 
 /* Definition blocks for embedded platform and/or tool-chain
 specific headers and functions to compile and run HeliOS. When a
