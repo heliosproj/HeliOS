@@ -4,24 +4,24 @@
  * @brief Header file containing all of the private type definitions in HeliOS
  * @version 0.3.0
  * @date 2022-01-31
- * 
+ *
  * @copyright
  * HeliOS Embedded Operating System
  * Copyright (C) 2020-2022 Manny Peterson <mannymsp@gmail.com>
- *  
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *  
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *  
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- * 
+ *
  */
 #ifndef TYPES_H_
 #define TYPES_H_
@@ -43,18 +43,16 @@ typedef enum {
 
 typedef void TaskParm_t;
 typedef uint8_t TaskId_t;
-typedef uint8_t Flag_t;
 typedef uint8_t Base_t;
 typedef uint8_t Byte_t;
 typedef uint16_t Word_t;
 
-typedef struct HeapEntry_s
-{
-    Byte_t free : 1;
-    Byte_t protected : 1;
-    Byte_t reserved : 6;
-    Word_t blocks;
-    struct HeapEntry_s *next;
+typedef struct HeapEntry_s {
+  Byte_t free : 1;
+  Byte_t protected : 1;
+  Byte_t reserved : 6;
+  Word_t blocks;
+  struct HeapEntry_s *next;
 } HeapEntry_t;
 
 typedef struct TaskNotification_s {
@@ -108,11 +106,12 @@ typedef struct TimerList_s {
   Timer_t *head;
 } TimerList_t;
 
-typedef struct Flags_s {
-  Flag_t schedulerRunning;
-  Flag_t critBlocking;
-  Flag_t runTimeOverflow;
-} Flags_t;
+typedef struct SysFlags_s {
+  Byte_t running : 1;
+  Byte_t critical : 1;
+  Byte_t overflow : 1;
+  Byte_t reserved : 5;
+} SysFlags_t;
 
 typedef struct QueueMessage_s {
   Base_t messageBytes;
@@ -129,7 +128,7 @@ typedef struct Queue_s {
   Base_t length;
   Base_t limit;
   Message_t *head;
-  Message_t*tail;
+  Message_t *tail;
 } Queue_t;
 
 typedef struct DynamicMemoryAllocEntry_s {

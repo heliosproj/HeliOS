@@ -31,10 +31,10 @@ Thank you for the best OS on Earth, Dennis.
 May you rest in peace. */
 
 /* Declare and set the system flags to their default values. */
-Flags_t flags = {
-    .schedulerRunning = true,
-    .critBlocking = false,
-    .runTimeOverflow = false};
+SysFlags_t sysFlags = {
+    .running = true,
+    .critical = false,
+    .overflow = false};
 
 /* The xTaskStartScheduler() system call passes control to the HeliOS scheduler. */
 void xTaskStartScheduler() {
@@ -52,9 +52,9 @@ void xTaskStartScheduler() {
   ENTER_CRITICAL()
 
   /* Continue to loop while the scheduler running flag is true. */
-  while (flags.schedulerRunning) {
+  while (sysFlags.running) {
     /* If the runtime overflow flag is true. Reset the runtimes on all of the tasks. */
-    if (flags.runTimeOverflow) {
+    if (sysFlags.overflow) {
       RunTimeReset();
     }
 
@@ -106,8 +106,8 @@ void xTaskStartScheduler() {
 }
 
 /* Check to see if HeliOS is blocking certain system calls from ENTER_CRITICAL(). */
-Flag_t IsNotCritBlocking() {
-  return !flags.critBlocking;
+SysFlags_t SystemGetSysFlag() {
+  return sysFlags;
 }
 
 /* If the runtime overflow flag is set, then RunTimeReset() is called to reset all of the
@@ -130,7 +130,7 @@ void RunTimeReset() {
       taskCursor = taskCursor->next;
     }
 
-    flags.runTimeOverflow = false;
+    sysFlags.overflow = false;
   }
   return;
 }
@@ -177,21 +177,21 @@ void TaskRun(Task_t *task_) {
   /* Check if the new total runtime is less than the previous total runtime,
   if so an overflow has occurred so set the runtime over flow system flag. */
   if (task_->totalRunTime < prevTotalRunTime) {
-    flags.runTimeOverflow = true;
+    sysFlags.overflow = true;
   }
 }
 
 /* The xTaskResumeAll() system call will set the scheduler system flag so the next
 call to xTaskStartScheduler() will resume execute of all tasks. */
 void xTaskResumeAll() {
-  flags.schedulerRunning = true;
+  sysFlags.running = true;
   return;
 }
 
 /* The xTaskSuspendAll() system call will set the scheduler system flag so the scheduler
 will stop and return. */
 void xTaskSuspendAll() {
-  flags.schedulerRunning = false;
+  sysFlags.running = false;
   return;
 }
 

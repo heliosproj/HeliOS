@@ -154,16 +154,16 @@ xSystemGetSystemInfo(). */
 #define PATCH_VERSION_NO 0
 #endif
 
-/* Define the macro which sets the critical blocking flag to true when
+/* Define the macro which sets the critical flag to true when
 entering a critical section of code. */
 #if !defined(ENTER_CRITICAL)
-#define ENTER_CRITICAL() flags.critBlocking = true;
+#define ENTER_CRITICAL() sysFlags.critical = true;
 #endif
 
-/* Define the macro which sets the critical blocking flag to false when
+/* Define the macro which sets the critical flag to false when
 exiting a critical section of code. */
 #if !defined(EXIT_CRITICAL)
-#define EXIT_CRITICAL() flags.critBlocking = false;
+#define EXIT_CRITICAL() sysFlags.critical = false;
 #endif
 
 /* Define a marco which makes null pointer checks more readable and

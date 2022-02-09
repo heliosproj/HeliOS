@@ -39,7 +39,7 @@ extern "C" {
 #endif
 
 void xTaskStartScheduler();
-Flag_t IsNotCritBlocking();
+SysFlags_t SystemGetSysFlag();
 void RunTimeReset();
 Time_t CurrentTime();
 void TaskRun(Task_t *);
