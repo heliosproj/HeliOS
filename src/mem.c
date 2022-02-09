@@ -33,6 +33,8 @@ HeapEntry_t *heapStart = (HeapEntry_t *)heap;
 Word_t entryBlocksNeeded = 0;
 
 void *xMemAlloc(size_t size_) {
+  DISABLE_INTERRUPTS();
+
   Word_t blockCount = 0;
 
   Word_t requestedBlocks = 0;
@@ -108,6 +110,8 @@ void *xMemAlloc(size_t size_) {
     }
 
     if (blockCount != CONFIG_HEAP_SIZE_IN_BLOCKS) {
+      ENABLE_INTERRUPTS();
+
       return null;
     }
 
@@ -162,6 +166,8 @@ void *xMemAlloc(size_t size_) {
     /* If the entry candidate is null, well.... we can't fulfill the request so
     return null. */
     if (ISNULLPTR(entryCandidate)) {
+      ENABLE_INTERRUPTS();
+
       return null;
     }
 
@@ -201,6 +207,8 @@ void *xMemAlloc(size_t size_) {
       /* Clear the memory by mem-setting it to all zeros. */
       memset_((void *)((Byte_t *)entryCandidate + (entryBlocksNeeded * CONFIG_HEAP_BLOCK_SIZE)), 0, requestedBlocks * CONFIG_HEAP_BLOCK_SIZE);
 
+      ENABLE_INTERRUPTS();
+
       /* Return the address of the memory but make sure we move it forward
       enough so the end-user doesn't write to the heap entry. */
       return (void *)((Byte_t *)entryCandidate + (entryBlocksNeeded * CONFIG_HEAP_BLOCK_SIZE));
@@ -216,16 +224,22 @@ void *xMemAlloc(size_t size_) {
       /* Clear the memory by mem-setting it to all zeros. */
       memset_((void *)((Byte_t *)entryCandidate + (entryBlocksNeeded * CONFIG_HEAP_BLOCK_SIZE)), 0, requestedBlocks * CONFIG_HEAP_BLOCK_SIZE);
 
+      ENABLE_INTERRUPTS();
+
       /* Return the address of the memory but make sure we move it forward
       enough so the end-user doesn't write to the heap entry. */
       return (void *)((Byte_t *)entryCandidate + (entryBlocksNeeded * CONFIG_HEAP_BLOCK_SIZE));
     }
   }
 
+  ENABLE_INTERRUPTS();
+
   return null;
 }
 
 void xMemFree(void *ptr_) {
+  DISABLE_INTERRUPTS();
+
   Word_t blockCount = 0;
 
   HeapEntry_t *entryCursor = null;
@@ -243,6 +257,8 @@ void xMemFree(void *ptr_) {
     at the blocks member. If it is zero then the heap has not been initialized so
     just thrown in the towel. */
     if (heapStart->blocks == 0) {
+      ENABLE_INTERRUPTS();
+
       return;
     }
 
@@ -265,6 +281,8 @@ void xMemFree(void *ptr_) {
     /* Check if the counted blocks matches the CONFIG_HEAP_SIZE_IN_BLOCKS setting,
     if it doesn't return. */
     if (blockCount != CONFIG_HEAP_SIZE_IN_BLOCKS) {
+      ENABLE_INTERRUPTS();
+
       return;
     }
 
@@ -295,6 +313,8 @@ void xMemFree(void *ptr_) {
     /* Well, we didn't find the entry for the pointer the end-user wanted freed so
     return. */
     if (ISNULLPTR(entryCursor)) {
+      ENABLE_INTERRUPTS();
+
       return;
     }
 
@@ -308,6 +328,7 @@ void xMemFree(void *ptr_) {
       entryCursor->protected = false;
     }
   }
+  ENABLE_INTERRUPTS();
 
   return;
 }
