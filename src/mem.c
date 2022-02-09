@@ -112,6 +112,8 @@ void *xMemAlloc(size_t size_) {
     }
 
     if (blockCount != CONFIG_HEAP_SIZE_IN_BLOCKS) {
+      EXIT_PROTECT();
+      
       ENABLE_INTERRUPTS();
 
       return null;
@@ -168,6 +170,8 @@ void *xMemAlloc(size_t size_) {
     /* If the entry candidate is null, well.... we can't fulfill the request so
     return null. */
     if (ISNULLPTR(entryCandidate)) {
+      EXIT_PROTECT();
+
       ENABLE_INTERRUPTS();
 
       return null;
@@ -209,6 +213,8 @@ void *xMemAlloc(size_t size_) {
       /* Clear the memory by mem-setting it to all zeros. */
       memset_((void *)((Byte_t *)entryCandidate + (entryBlocksNeeded * CONFIG_HEAP_BLOCK_SIZE)), 0, requestedBlocks * CONFIG_HEAP_BLOCK_SIZE);
 
+      EXIT_PROTECT();
+
       ENABLE_INTERRUPTS();
 
       /* Return the address of the memory but make sure we move it forward
@@ -226,6 +232,8 @@ void *xMemAlloc(size_t size_) {
       /* Clear the memory by mem-setting it to all zeros. */
       memset_((void *)((Byte_t *)entryCandidate + (entryBlocksNeeded * CONFIG_HEAP_BLOCK_SIZE)), 0, requestedBlocks * CONFIG_HEAP_BLOCK_SIZE);
 
+      EXIT_PROTECT();
+
       ENABLE_INTERRUPTS();
 
       /* Return the address of the memory but make sure we move it forward
@@ -233,6 +241,8 @@ void *xMemAlloc(size_t size_) {
       return (void *)((Byte_t *)entryCandidate + (entryBlocksNeeded * CONFIG_HEAP_BLOCK_SIZE));
     }
   }
+
+  EXIT_PROTECT();
 
   ENABLE_INTERRUPTS();
 
@@ -259,6 +269,8 @@ void xMemFree(void *ptr_) {
     at the blocks member. If it is zero then the heap has not been initialized so
     just thrown in the towel. */
     if (heapStart->blocks == 0) {
+      EXIT_PROTECT();
+
       ENABLE_INTERRUPTS();
 
       return;
@@ -283,6 +295,8 @@ void xMemFree(void *ptr_) {
     /* Check if the counted blocks matches the CONFIG_HEAP_SIZE_IN_BLOCKS setting,
     if it doesn't return. */
     if (blockCount != CONFIG_HEAP_SIZE_IN_BLOCKS) {
+      EXIT_PROTECT();
+
       ENABLE_INTERRUPTS();
 
       return;
@@ -315,6 +329,8 @@ void xMemFree(void *ptr_) {
     /* Well, we didn't find the entry for the pointer the end-user wanted freed so
     return. */
     if (ISNULLPTR(entryCursor)) {
+      EXIT_PROTECT();
+
       ENABLE_INTERRUPTS();
 
       return;
@@ -330,6 +346,8 @@ void xMemFree(void *ptr_) {
       entryCursor->protected = false;
     }
   }
+  EXIT_PROTECT();
+
   ENABLE_INTERRUPTS();
 
   return;
