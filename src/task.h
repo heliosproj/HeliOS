@@ -26,10 +26,6 @@
 #ifndef TASK_H_
 #define TASK_H_
 
-#include <limits.h>
-#include <stdint.h>
-#include <stdlib.h>
-
 #include "config.h"
 #include "defines.h"
 #include "types.h"

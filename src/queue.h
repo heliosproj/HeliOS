@@ -26,10 +26,6 @@
 #ifndef QUEUE_H_
 #define QUEUE_H_
 
-#include <limits.h>
-#include <stdint.h>
-#include <stdlib.h>
-
 #include "config.h"
 #include "defines.h"
 #include "types.h"

@@ -26,10 +26,6 @@
 #ifndef SCHED_H_
 #define SCHED_H_
 
-#include <limits.h>
-#include <stdint.h>
-#include <stdlib.h>
-
 #include "config.h"
 #include "defines.h"
 #include "types.h"

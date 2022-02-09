@@ -26,6 +26,8 @@
 #ifndef TYPES_H_
 #define TYPES_H_
 
+#include <stdint.h>
+
 typedef enum {
   TaskStateError,
   TaskStateSuspended,

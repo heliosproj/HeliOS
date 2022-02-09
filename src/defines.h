@@ -26,6 +26,8 @@
 #ifndef DEFINES_H_
 #define DEFINES_H_
 
+#include <stdint.h>
+
 // TO-DO: REMOVE BEFORE RELEASE!!
 #define OTHER_ARCH_LINUX
 
