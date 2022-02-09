@@ -42,7 +42,7 @@ Task_t *xTaskCreate(const char *name_, void (*callback_)(Task_t *, TaskParm_t *)
 
   /* Check if not in a critical section from CRITICAL_ENTER() and make sure the name and callback parameters
   are not null. */
-  if (!SYSFLAG_CRITICAL() && ISNOTNULLPTR(name_) && ISNOTNULLPTR(callback_)) {
+  if (SYSFLAG_CRITICAL() == false && ISNOTNULLPTR(name_) && ISNOTNULLPTR(callback_)) {
     /* Check if the task list is null, if it is call xMemAlloc() to allocate
     the dynamic memory for it. */
     if (ISNULLPTR(taskList)) {
@@ -110,7 +110,7 @@ void xTaskDelete(Task_t *task_) {
 
   /* Check if not in a critical section from CRITICAL_ENTER() and make sure the task list is not null
   and that the task parameter is also not null. */
-  if (!SYSFLAG_CRITICAL() && ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_)) {
+  if (SYSFLAG_CRITICAL() == false && ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_)) {
     taskCursor = taskList->head;
 
     taskPrevious = null;

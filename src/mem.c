@@ -113,7 +113,7 @@ void *xMemAlloc(size_t size_) {
 
     if (blockCount != CONFIG_HEAP_SIZE_IN_BLOCKS) {
       EXIT_PROTECT();
-      
+
       ENABLE_INTERRUPTS();
 
       return null;
@@ -339,6 +339,17 @@ void xMemFree(void *ptr_) {
     /* Check one last time if the entry cursor equals the entry we want to free, if it does,
     mark it free. We are done here. */
     if (entryCursor == entryToFree) {
+
+      /* If the entry is mark protected and the protect system flag is false,
+      then return because the entry cannot be freed. */
+      if (entryCursor->protected == true && SYSFLAG_PROTECT() == false) {
+        EXIT_PROTECT();
+
+        ENABLE_INTERRUPTS();
+
+        return;
+      }
+
       /* Make the entry free by setting free to true. */
       entryCursor->free = true;
 
