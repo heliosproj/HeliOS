@@ -26,87 +26,56 @@
 
 #include "mem.h"
 
-/* Declare a static array of type DynamicMemoryAllocEntry_t to store
-the pointer and size of the memory allocated from the heap by xMemAlloc(). The
-size of the table is dependent on the setting CONFIG_DYNAMIC_MEMORY_ALLOC_TABLE_ENTRIES. */
-DynamicMemoryAllocEntry_t dynamicMemoryAllocTable[CONFIG_DYNAMIC_MEMORY_ALLOC_TABLE_ENTRIES];
-
-/* The xMemAlloc() system call will dynamically allocate memory for HeliOS
-system calls and end-user tasks. */
 void *xMemAlloc(size_t size_) {
-  void *ptr = null;
-
-  /* Make sure the requested memory size is greater than zero. */
-  if (size_ > 0) {
-    for (size_t i = 0; i < CONFIG_DYNAMIC_MEMORY_ALLOC_TABLE_ENTRIES; i++) {
-      /* Check if entry at index a empty entry in the dynamicMemoryAllocTable to use. */
-      if (ISNULLPTR(dynamicMemoryAllocTable[i].ptr)) {
-        ptr = calloc(1, size_);
-
-        /* Ensure that calloc() successfully allocated the requested memory. If
-        successful, add the pointer and size to the table and return the pointer. */
-        if (ISNOTNULLPTR(ptr)) {
-          dynamicMemoryAllocTable[i].size = size_;
-
-          dynamicMemoryAllocTable[i].ptr = ptr;
-
-          return ptr;
-        }
-      }
-    }
-  }
-
   return null;
 }
-
-/* The xMemFree() system call will free memory dynamically allocated by
-xMemAlloc() and other HeliOS system calls such as xSystemGetSystemInfo(). */
-void xMemFree(void *ptr_) {
-  /* Check to make sure the pointer passed to xMemFree() is not null. */
-  if (ISNOTNULLPTR(ptr_)) {
-    for (size_t i = 0; i < CONFIG_DYNAMIC_MEMORY_ALLOC_TABLE_ENTRIES; i++) {
-      /* Check to see if the pointer at the current index in the dynamicMemoryAllocTable
-      matches the pointer parameter. If so, free() the memory and reset the entry
-      at the current index. */
-      if (dynamicMemoryAllocTable[i].ptr == ptr_) {
-        free(dynamicMemoryAllocTable[i].ptr);
-
-        dynamicMemoryAllocTable[i].size = 0;
-
-        dynamicMemoryAllocTable[i].ptr = null;
-      }
-    }
-  }
+void xMemFree(void *ptr) {
+  return;
 }
 
 /* The xMemGetUsed() system call returns the amount of memory in bytes
 that is currently allocated. */
 size_t xMemGetUsed() {
-  size_t used = 0;
-
-  for (size_t i = 0; i < CONFIG_DYNAMIC_MEMORY_ALLOC_TABLE_ENTRIES; i++) {
-    /* If the pointer at the current index in the dynamicMemoryAllocTable
-    is not null, then sum the size and store the result in used. */
-    if (ISNOTNULLPTR(dynamicMemoryAllocTable[i].ptr)) {
-      used += dynamicMemoryAllocTable[i].size;
-    }
-  }
-
-  return used;
+  return 0;
 }
 
 /* The xMemGetSize() system call returns the amount of memory in bytes that
 is currently allocated to a specific pointer. */
 size_t xMemGetSize(void *ptr_) {
-  /* Check to see if the pointer paramater is null, if it is not null, then search the
-  table for the pointer and return the size. */
-  if (ISNOTNULLPTR(ptr_)) {
-    for (size_t i = 0; i < CONFIG_DYNAMIC_MEMORY_ALLOC_TABLE_ENTRIES; i++) {
-      if (dynamicMemoryAllocTable[i].ptr == ptr_) {
-        return dynamicMemoryAllocTable[i].size;
-      }
-    }
-  }
+  return 0;
+}
 
+/* The built-in utility function to copy memory between the source and destination pointers. */
+void memcpy_(void *dest_, const void *src_, size_t n_) {
+  char *src = (char *)src_;
+  char *dest = (char *)dest_;
+
+  for (size_t i = 0; i < n_; i++) {
+    dest[i] = src[i];
+  }
+}
+
+/* The built-in utility function to set the memory pointed to by the destination pointer
+to the specified value. */
+void memset_(void *dest_, int16_t val_, size_t n_) {
+  char *dest = (char *)dest_;
+
+  for (size_t i = 0; i < n_; i++) {
+    dest[i] = (char)val_;
+  }
+}
+
+/* The built-in utility function to compare the contents of memory at two locations pointed to by
+the pointers s1 and s2. */
+int16_t memcmp_(const void *s1_, const void *s2_, size_t n_) {
+  char *s1 = (char *)s1_;
+  char *s2 = (char *)s2_;
+
+  for (size_t i = 0; i < n_; i++) {
+    if (*s1 != *s2)
+      return *s1 - *s2;
+    s1++;
+    s2++;
+  }
   return 0;
 }

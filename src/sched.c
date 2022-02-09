@@ -232,38 +232,3 @@ SystemInfo_t *xSystemGetSystemInfo() {
 
   return null;
 }
-
-/* The built-in utility function to copy memory between the source and destination pointers. */
-void memcpy_(void *dest_, const void *src_, size_t n_) {
-  char *src = (char *)src_;
-  char *dest = (char *)dest_;
-
-  for (size_t i = 0; i < n_; i++) {
-    dest[i] = src[i];
-  }
-}
-
-/* The built-in utility function to set the memory pointed to by the destination pointer
-to the specified value. */
-void memset_(void *dest_, int16_t val_, size_t n_) {
-  char *dest = (char *)dest_;
-
-  for (size_t i = 0; i < n_; i++) {
-    dest[i] = (char)val_;
-  }
-}
-
-/* The built-in utility function to compare the contents of memory at two locations pointed to by
-the pointers s1 and s2. */
-int16_t memcmp_(const void *s1_, const void *s2_, size_t n_) {
-  char *s1 = (char *)s1_;
-  char *s2 = (char *)s2_;
-
-  for (size_t i = 0; i < n_; i++) {
-    if (*s1 != *s2)
-      return *s1 - *s2;
-    s1++;
-    s2++;
-  }
-  return 0;
-}

@@ -46,6 +46,9 @@ void *xMemAlloc(size_t);
 void xMemFree(void *);
 size_t xMemGetUsed();
 size_t xMemGetSize(void *);
+void memcpy_(void *, const void *, size_t);
+void memset_(void *, int16_t, size_t);
+int16_t memcmp_(const void *, const void *, size_t);
 
 #ifdef __cplusplus
 }  // extern "C" {

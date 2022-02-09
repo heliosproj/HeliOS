@@ -51,9 +51,6 @@ void xTaskResumeAll();
 void xTaskSuspendAll();
 void xSystemHalt();
 SystemInfo_t *xSystemGetSystemInfo();
-void memcpy_(void *, const void *, size_t);
-void memset_(void *, int16_t, size_t);
-int16_t memcmp_(const void *, const void *, size_t);
 
 #ifdef __cplusplus
 }  // extern "C" {
