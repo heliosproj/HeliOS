@@ -43,6 +43,17 @@ typedef void TaskParm_t;
 typedef uint8_t TaskId_t;
 typedef uint8_t Flag_t;
 typedef uint8_t Base_t;
+typedef uint8_t Byte_t;
+typedef uint16_t Word_t;
+
+typedef struct HeapEntry_s
+{
+    Byte_t free : 1;
+    Byte_t kernel : 1;
+    Byte_t reserved : 6;
+    Word_t blocks;
+    struct HeapEntry_s *next;
+} HeapEntry_t;
 
 typedef struct TaskNotification_s {
   Base_t notificationBytes;

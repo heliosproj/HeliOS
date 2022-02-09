@@ -26,10 +26,269 @@
 
 #include "mem.h"
 
+static Byte_t heap[HEAP_RAW_SIZE];
+
+HeapEntry_t *heapStart = (HeapEntry_t *)heap;
+
+Word_t entryBlocksNeeded = 0;
+
 void *xMemAlloc(size_t size_) {
+  Word_t blockCount = 0;
+
+  Word_t requestedBlocks = 0;
+
+  Word_t requestedBlocksWithOverhead = 0;
+
+  Word_t leastBlocks = -1;
+
+  HeapEntry_t *entryCursor = null;
+
+  HeapEntry_t *entryCandidate = null;
+
+  /* Confirm the requested size is greater than zero. */
+  if (size_ > 0) {
+    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+    PHASE I: Determine how many blocks a heap entry requires. One block is generally
+    sufficient but we shouldn't assume.
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+    /* If we haven't calculated how many blocks a heap entry requires, calculate
+    it now. */
+    if (entryBlocksNeeded == 0) {
+      /* Calculate the quotient of the blocks needed for the heap entry. */
+      entryBlocksNeeded = sizeof(HeapEntry_t) / CONFIG_HEAP_BLOCK_SIZE;
+
+      /* Calculate the remainder of the blocks needed for the heap entry. If there is
+      a remainder add one more block to the blocks needed. */
+      if (sizeof(HeapEntry_t) % CONFIG_HEAP_BLOCK_SIZE > 0) {
+        /* Add one to the blocks needed since there is a remainder for the blocks
+        needed. */
+        entryBlocksNeeded++;
+      }
+    }
+
+    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+    PHASE II: Determine if the first heap entry has been created. This effectively
+    initializes the heap.
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+    /* If the heap entry at the start of the heap has zero blocks then it hasn't
+    been initialized yet, so do that now. */
+    if (heapStart->blocks == 0) {
+      /* Zero out the entire heap. */
+      memset_(heap, 0, HEAP_RAW_SIZE);
+
+      /* Set the entry to free. */
+      heapStart->free = true;
+
+      /* Set the kernel ownership to false. */
+      heapStart->kernel = false;
+
+      /* Set the number of blocks in the first entry to the total size of the
+      heap in blocks minus one block which is occupied by the first entry. */
+      heapStart->blocks = CONFIG_HEAP_SIZE_IN_BLOCKS - entryBlocksNeeded;
+
+      /* There is no next entry yet so set it to null. */
+      heapStart->next = null;
+    }
+
+    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+    PHASE III: Check the health of the heap but scanning through all of the heap entries
+    counting how many blocks are in each entry then comparing that against the
+    CONFIG_HEAP_SIZE_IN_BLOCKS setting. If the two do not match there is a problem!!
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+    /* To scan the heap, need to set the heap entry cursor to the start of the heap. */
+    entryCursor = heapStart;
+
+    /* While the heap entry cursor is not null, keep scanning. */
+    while (ISNOTNULLPTR(entryCursor)) {
+      blockCount += entryCursor->blocks + entryBlocksNeeded;
+      entryCursor = entryCursor->next;
+    }
+
+    if (blockCount != CONFIG_HEAP_SIZE_IN_BLOCKS) {
+      return null;
+    }
+
+    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+    PHASE IV: Calculate how many blocks are needed for the requested size (in bytes).
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+    /* Calculate the quotient of the requested blocks by dividing the requested size
+    paramater by the heap block size (bytes). */
+    requestedBlocks = size_ / CONFIG_HEAP_BLOCK_SIZE;
+
+    /* Calculate the remainder of the requested blocks. If there is a remainder we
+    need to add one more block. */
+    if (size_ % CONFIG_HEAP_SIZE_IN_BLOCKS > 0) {
+      /* There was a remainder for the requested blocks so add one more block. */
+      requestedBlocks++;
+    }
+
+    /* Because the requested blocks also requires an additional heap entry (if not the first),
+    calculate how many blocks are needed inclusive of the heap entry (i.e., the overhead). */
+    requestedBlocksWithOverhead = requestedBlocks + entryBlocksNeeded;
+
+    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+    PHASE V: Scan the heap entries to find a heap entry that would be a good candidate
+    for the requested blocks. This may be the last entry in the heap OR a entry that
+    was recently freed by xMemFree().
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+    /* To scan the heap, need to set the heap entry cursor to the start of the heap. */
+    entryCursor = heapStart;
+
+    /* While the heap entry cursor is not null, keep scanning. */
+    while (ISNOTNULLPTR(entryCursor)) {
+      /* See if there is a candidate entry for the requested blocks by checking:
+          1) The entry at the cursor is free.
+          2) The entry has enough blocks to cover the requested blocks with overhead.
+          3) The entry has the fewest possible blocks.*/
+      if (entryCursor->free == true && entryCursor->blocks >= requestedBlocksWithOverhead && entryCursor->blocks < leastBlocks) {
+        /* Seems like a good candidate so update the least blocks in case
+        there is an entry with fewer blocks that is free yet will fit
+        the requested blocks with overhead. */
+        leastBlocks = entryCursor->blocks;
+
+        /* Keep a copy of the entry cursor as the best entry candidate. */
+        entryCandidate = entryCursor;
+      }
+
+      /* Move on to the next entry. */
+      entryCursor = entryCursor->next;
+    }
+
+    /* If the entry candidate is null, well.... we can't fulfill the request so
+    return null. */
+    if (ISNULLPTR(entryCandidate)) {
+      return null;
+    }
+
+    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+    PHASE VI: Found a good candidate so either reuse a free entry OR split the last
+    entry in the heap. We will also clear the memory at this time.
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+    /* If the entry candidate's next is null, then this is the last entry in the heap
+    so split the entry blocks in two. */
+    if (ISNULLPTR(entryCandidate->next)) {
+      /* Set the entry candidate next to the new entry that will contain the remaining
+      blocks. */
+      entryCandidate->next = (HeapEntry_t *)((Byte_t *)entryCandidate + (requestedBlocksWithOverhead * CONFIG_HEAP_BLOCK_SIZE));
+
+      /* Mark it as free. */
+      entryCandidate->next->free = true;
+
+      /* Set the kernel ownership to false. */
+      entryCandidate->next->kernel = false;
+
+      /* Calculate how many remain blocks there are. */
+      entryCandidate->next->blocks = entryCandidate->blocks - requestedBlocksWithOverhead;
+
+      /* Set the next entry's next to null since it is the new last entry in the heap. */
+      entryCandidate->next->next = null;
+
+      /* Mark the candidate entry as no longer free. */
+      entryCandidate->free = false;
+
+      /* Set the kernel ownership to false. */
+      entryCandidate->kernel = false;
+
+      /* Store how many blocks the entry contains. */
+      entryCandidate->blocks = requestedBlocks;
+
+      /* Clear the memory by mem-setting it to all zeros. */
+      memset_((void *)((Byte_t *)entryCandidate + (entryBlocksNeeded * CONFIG_HEAP_BLOCK_SIZE)), 0, requestedBlocks * CONFIG_HEAP_BLOCK_SIZE);
+
+      /* Return the address of the memory but make sure we move it forward
+      enough so the end-user doesn't write to the heap entry. */
+      return (void *)((Byte_t *)entryCandidate + (entryBlocksNeeded * CONFIG_HEAP_BLOCK_SIZE));
+
+    } else {
+      /* Looks like we found a candidate that is NOT the last entry in the heap,
+      so simply mark it as no longer free and return the address. */
+      entryCandidate->free = false;
+
+      /* Set the kernel ownership to false. */
+      entryCandidate->kernel = false;
+
+      /* Clear the memory by memsetting it to all zeros. */
+      memset_((void *)((Byte_t *)entryCandidate + (entryBlocksNeeded * CONFIG_HEAP_BLOCK_SIZE)), 0, requestedBlocks * CONFIG_HEAP_BLOCK_SIZE);
+
+      /* Return the address of the memory but make sure we move it forward
+      enough so the end-user doesn't write to the heap entry. */
+      return (void *)((Byte_t *)entryCandidate + (entryBlocksNeeded * CONFIG_HEAP_BLOCK_SIZE));
+    }
+  }
+
   return null;
 }
-void xMemFree(void *ptr) {
+
+void xMemFree(void *ptr_) {
+  Word_t blockCount = 0;
+
+  HeapEntry_t *entryCursor = null;
+
+  HeapEntry_t *entryToFree = null;
+
+  if (ISNOTNULLPTR(ptr_)) {
+    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+    PHASE I: Determine if the first heap entry has been created. If it hasn't then
+    just return.
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+    if (heapStart->blocks == 0) {
+      return;
+    }
+
+    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+    PHASE II: Check the health of the heap but scanning through all of the heap entries
+    counting how many blocks are in each entry then comparing that against the
+    CONFIG_HEAP_SIZE_IN_BLOCKS setting. If the two do not match there is a problem!!
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+    /* To scan the heap, need to set the heap entry cursor to the start of the heap. */
+    entryCursor = heapStart;
+
+    /* While the heap entry cursor is not null, keep scanning. */
+    while (ISNOTNULLPTR(entryCursor)) {
+      blockCount += entryCursor->blocks + entryBlocksNeeded; /* Assuming entry blocks needed has been calculated if the heap has been intialized. */
+      entryCursor = entryCursor->next;
+    }
+
+    if (blockCount != CONFIG_HEAP_SIZE_IN_BLOCKS) {
+      return;
+    }
+
+    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+    PHASE III: Check if the pointer paramater actually points to a heap entry that
+    by scanning the heap for it. If it exists, free the entry.
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+    entryToFree = (HeapEntry_t *)((Byte_t *)ptr_ - (entryBlocksNeeded * CONFIG_HEAP_BLOCK_SIZE));
+
+    /* To scan the heap, need to set the heap entry cursor to the start of the heap. */
+    entryCursor = heapStart;
+
+    /* While the heap entry cursor is not null, keep scanning. */
+    while (ISNOTNULLPTR(entryCursor)) {
+      if (entryCursor == entryToFree) {
+        break;
+      }
+      entryCursor = entryCursor->next;
+    }
+
+    if (ISNULLPTR(entryCursor)) {
+      return;
+    }
+
+    if (entryCursor == entryToFree) {
+      entryCursor->free = true;
+
+      entryCursor->kernel = false;
+    }
+  }
+
   return;
 }
 

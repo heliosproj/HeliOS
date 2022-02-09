@@ -68,20 +68,39 @@ to customize HeliOS for their specific use. */
 #define CONFIG_TASK_NAME_BYTES 16
 
 /**
- * @brief Define the number of entries in the dynamic memory allocation table.
+ * @brief Define the number of blocks in the heap.
  * 
- * Setting CONFIG_DYNAMIC_MEMORY_ALLOC_TABLE_ENTRIES allows the end-user to define
- * the size of the table that is used to track dynamic memory allocated and freed
- * by xMemAlloc() and xMemFree(). The larger the table, the greater the impact
- * there will be on system performance. However, if the table is too small,
- * xMemAlloc() may exhaust the available table entries and fail to allocate
- * the requested memory.
+ * Setting CONFIG_HEAP_SIZE_IN_BLOCKS allows the end-user to
+ * define the size in blocks of the heap. The size of a block
+ * in the heap is determined by the CONFIG_HEAP_BLOCK_SIZE which
+ * is represented in bytes. The size of the heap needs to be
+ * adjusted to fit the memory requirements of the end-user's
+ * application. The default value is 512 blocks.
  * 
  * @sa xMemAlloc()
  * @sa xMemFree()
+ * @sa CONFIG_HEAP_BLOCK_SIZE
  * 
  */
-#define CONFIG_DYNAMIC_MEMORY_ALLOC_TABLE_ENTRIES 100
+#define CONFIG_HEAP_SIZE_IN_BLOCKS 512 
+
+
+/**
+ * @brief Define the heap block size in bytes.
+ * 
+ * Setting CONFIG_HEAP_BLOCK_SIZE allows the end-user to
+ * define the size of a block in the heap. The block size
+ * should be set to achieve the best possible utilization
+ * of the heap. A block size that is too large will waste the
+ * heap for smaller requests for heap. A block size that is too small
+ * will waste heap on entries. The default value is 32 bytes.
+ * 
+ * @sa xMemAlloc()
+ * @sa xMemFree()
+ * @sa CONFIG_HEAP_SIZE_IN_BLOCKS
+ * 
+ */
+#define CONFIG_HEAP_BLOCK_SIZE 32
 
 /**
  * @brief Define the minimum value for a message queue limit.
