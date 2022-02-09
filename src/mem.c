@@ -204,8 +204,8 @@ void *xMemAlloc(size_t size_) {
       /* Mark the candidate entry as no longer free. */
       entryCandidate->free = false;
 
-      /* Set the entry unprotected by setting protected to false. */
-      entryCandidate->protected = false;
+      /* Set the entry protection based on the protect system flag. */
+      entryCandidate->protected = SYSFLAG_PROTECT();
 
       /* Store how many blocks the entry contains. */
       entryCandidate->blocks = requestedBlocks;
@@ -226,8 +226,8 @@ void *xMemAlloc(size_t size_) {
       so simply mark it as no longer free and return the address. */
       entryCandidate->free = false;
 
-      /* Set the entry unprotected by setting protected to false. */
-      entryCandidate->protected = false;
+      /* Set the entry protection based on the protect system flag. */
+      entryCandidate->protected = SYSFLAG_PROTECT();
 
       /* Clear the memory by mem-setting it to all zeros. */
       memset_((void *)((Byte_t *)entryCandidate + (entryBlocksNeeded * CONFIG_HEAP_BLOCK_SIZE)), 0, requestedBlocks * CONFIG_HEAP_BLOCK_SIZE);
