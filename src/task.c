@@ -33,8 +33,6 @@ TaskList_t *taskList = null;
 state set to suspended. The xTaskCreate() and xTaskDelete() system calls cannot be called within
 a task. They MUST be called outside of the scope of the HeliOS scheduler. */
 Task_t *xTaskCreate(const char *name_, void (*callback_)(Task_t *, TaskParm_t *), TaskParm_t *taskParameter_) {
-  /* Disable interrupts while manipulating the task list to prevent corruption. */
-  DISABLE_INTERRUPTS();
 
   Task_t *task = null;
 
@@ -51,7 +49,6 @@ Task_t *xTaskCreate(const char *name_, void (*callback_)(Task_t *, TaskParm_t *)
       /* Check if the task list is still null in which case xMemAlloc() was unable to allocate
       the required memory. Enable interrupts and return null. */
       if (ISNULLPTR(taskList)) {
-        ENABLE_INTERRUPTS();
 
         return null;
       }
@@ -93,13 +90,10 @@ Task_t *xTaskCreate(const char *name_, void (*callback_)(Task_t *, TaskParm_t *)
 
       taskList->length++;
 
-      ENABLE_INTERRUPTS();
-
       return task;
     }
   }
 
-  ENABLE_INTERRUPTS();
 
   return null;
 }
@@ -107,8 +101,6 @@ Task_t *xTaskCreate(const char *name_, void (*callback_)(Task_t *, TaskParm_t *)
 /* The xTaskDelete() system call will delete a task. The xTaskCreate() and xTaskDelete() system calls
 cannot be called within a task. They MUST be called outside of the scope of the HeliOS scheduler. */
 void xTaskDelete(Task_t *task_) {
-  /* Disable interrupts while manipulating the task list to prevent corruption. */
-  DISABLE_INTERRUPTS();
 
   Task_t *taskCursor = null;
 
@@ -141,7 +133,6 @@ void xTaskDelete(Task_t *task_) {
 
       /* If the task cursor is null then return because the task was never found. */
       if (ISNULLPTR(taskCursor)) {
-        ENABLE_INTERRUPTS();
 
         return;
       }
@@ -153,8 +144,6 @@ void xTaskDelete(Task_t *task_) {
       taskList->length--;
     }
   }
-
-  ENABLE_INTERRUPTS();
 
   return;
 }

@@ -29,9 +29,6 @@
 /* The xQueueCreate() system call creates a message queue for inter-task
 communication. */
 Queue_t *xQueueCreate(Base_t limit_) {
-  /* Interrupts are disabled while manipulating internal linked lists to prevent
-  corruption. */
-  DISABLE_INTERRUPTS();
 
   Queue_t *queue = null;
 
@@ -50,13 +47,9 @@ Queue_t *xQueueCreate(Base_t limit_) {
 
       queue->tail = null;
 
-      ENABLE_INTERRUPTS();
-
       return queue;
     }
   }
-
-  ENABLE_INTERRUPTS();
 
   return null;
 }
@@ -194,7 +187,6 @@ Base_t xQueueMessagesWaiting(Queue_t *queue_) {
 /* The xQueueSend() system call will send a message to the queue. The size of the message
 value is passed in the message bytes parameter. */
 Base_t xQueueSend(Queue_t *queue_, Base_t messageBytes_, const char *messageValue_) {
-  DISABLE_INTERRUPTS();
 
   Message_t *message = null;
 
@@ -242,14 +234,10 @@ Base_t xQueueSend(Queue_t *queue_, Base_t messageBytes_, const char *messageValu
 
         queue_->length++;
 
-        ENABLE_INTERRUPTS();
-
         return true;
       }
     }
   }
-
-  ENABLE_INTERRUPTS();
 
   return false;
 }
@@ -282,9 +270,6 @@ QueueMessage_t *xQueuePeek(Queue_t *queue_) {
 /* The xQueueDropMessage() system call will drop the next message from the queue without
 returning the message. */
 void xQueueDropMessage(Queue_t *queue_) {
-  /* Interrupts are disabled while manipulating internal linked lists to prevent
-  corruption. */
-  DISABLE_INTERRUPTS();
 
   QueueMessage_t *message = null;
 
@@ -293,7 +278,6 @@ void xQueueDropMessage(Queue_t *queue_) {
     /* Check if the head of the queue is null, if so enable interrupts and
     return because there is nothing to drop. */
     if (ISNULLPTR(queue_->head)) {
-      ENABLE_INTERRUPTS();
 
       return;
     }
@@ -312,8 +296,6 @@ void xQueueDropMessage(Queue_t *queue_) {
 
     xMemFree(message);
   }
-
-  ENABLE_INTERRUPTS();
 
   return;
 }

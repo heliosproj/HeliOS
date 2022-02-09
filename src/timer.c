@@ -36,9 +36,6 @@ TimerList_t *timerList = null;
  be freed by xTimerDelete(). Unlike tasks, timers may be created and deleted within
  tasks. */
 Timer_t *xTimerCreate(Time_t timerPeriod_) {
-  /* Disable interrupts while manipulating the timer linked list (this is done to preserve
-  the integrity of the linked list). */
-  DISABLE_INTERRUPTS();
 
   Timer_t *timer = null;
 
@@ -50,10 +47,9 @@ Timer_t *xTimerCreate(Time_t timerPeriod_) {
     if (ISNULLPTR(timerList)) {
       timerList = (TimerList_t *)xMemAlloc(sizeof(TimerList_t));
 
-      /* Check if xMemAlloc() succesffully allocated the memory for the timer list, if not
+      /* Check if xMemAlloc() successfully allocated the memory for the timer list, if not
       enable interrupts and return null. */
       if (ISNULLPTR(timerList)) {
-        ENABLE_INTERRUPTS();
 
         return null;
       }
@@ -88,12 +84,9 @@ Timer_t *xTimerCreate(Time_t timerPeriod_) {
 
       timerList->length++;
 
-      ENABLE_INTERRUPTS();
-
       return timer;
     }
   }
-  ENABLE_INTERRUPTS();
 
   return null;
 }
@@ -101,9 +94,6 @@ Timer_t *xTimerCreate(Time_t timerPeriod_) {
 /* The xTimerDelete() system call will delete a timer. For more information on timers see the
 xTaskTimerCreate() system call. */
 void xTimerDelete(Timer_t *timer_) {
-  /* Disable interrupts while manipulating the timer linked list (this is done to preserve
-  the integrity of the linked list). */
-  DISABLE_INTERRUPTS();
 
   Timer_t *timerCursor = null;
 
@@ -137,7 +127,6 @@ void xTimerDelete(Timer_t *timer_) {
       /* If the timer cursor is null, then the timer could not be found so
       enable interrupts and return. */
       if (ISNULLPTR(timerCursor)) {
-        ENABLE_INTERRUPTS();
 
         return;
       }
@@ -149,8 +138,6 @@ void xTimerDelete(Timer_t *timer_) {
       timerList->length--;
     }
   }
-
-  ENABLE_INTERRUPTS();
 
   return;
 }
