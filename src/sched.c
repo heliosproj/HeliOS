@@ -34,7 +34,8 @@ May you rest in peace. */
 SysFlags_t sysFlags = {
     .running = true,
     .critical = false,
-    .overflow = false};
+    .overflow = false,
+    .protect = false};
 
 /* The xTaskStartScheduler() system call passes control to the HeliOS scheduler. */
 void xTaskStartScheduler() {
@@ -44,9 +45,12 @@ void xTaskStartScheduler() {
 
   TaskList_t *taskList = null;
 
-  Time_t leastRunTime = TIME_T_MAX;
+  /* Going to try getting rid of TIM_T_MAX and just underflow an
+  unsigned integer. */
+  Time_t leastRunTime = -1;
+  //Time_t leastRunTime = TIME_T_MAX;
 
-  /* Disable interrupts and set the critical blocking flag before entering into the scheduler main
+  /* Disable interrupts and set the critical section flag before entering into the scheduler main
   loop. */
   DISABLE_INTERRUPTS();
   ENTER_CRITICAL();
@@ -99,13 +103,13 @@ void xTaskStartScheduler() {
     }
   }
 
-  /* Enable interrupts and UNset the critical blocking flag before returning from the scheduler. */
+  /* Enable interrupts and UNset the critical section flag before returning from the scheduler. */
   EXIT_CRITICAL();
 
   ENABLE_INTERRUPTS();
 }
 
-/* Check to see if HeliOS is blocking certain system calls from ENTER_CRITICAL(). */
+/* Check to see if HeliOS is in a critical section from ENTER_CRITICAL(). */
 SysFlags_t SystemGetSysFlag() {
   return sysFlags;
 }
