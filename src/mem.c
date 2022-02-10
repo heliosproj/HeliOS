@@ -459,30 +459,32 @@ size_t xMemGetSize(void *ptr_) {
   /* Check to make sure the end-user passed a pointer that is at least not null. */
   if (ISNOTNULLPTR(ptr_)) {
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-    PHASE I: Determine if the first heap entry has been created. If it hasn't then
+    PHASE I: Determine if the first heap entry has been created. If it hasn't, then
     just return.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
     /* Check if the entry at the start of the heap is un-initialized by looking
-    at the blocks member. If it is zero then the heap has not been initialized so
-    just thrown in the towel. */
+    at the blocks number of blocks it contains. If it is zero, then the heap has
+    not been initialized so just thrown in the towel. */
     if (heapStart->blocks == 0) {
       return 0;
     }
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-    PHASE II: Check the health of the heap but scanning through all of the heap entries
+    PHASE II: Check the health of the heap by scanning through all of the heap entries
     counting how many blocks are in each entry then comparing that against the
     CONFIG_HEAP_SIZE_IN_BLOCKS setting. If the two do not match there is a problem!!
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-    /* To scan the heap, need to set the heap entry cursor to the start of the heap. */
+    /* To scan the heap, set the heap entry cursor to the start of the heap. */
     entryCursor = heapStart;
 
     /* While the heap entry cursor is not null, keep scanning. */
     while (ISNOTNULLPTR(entryCursor)) {
       blockCount += entryCursor->blocks + entryBlocksNeeded; /* Assuming entry blocks needed has been
                                                                 calculated if the heap has been initialized. */
+
+      /* Move on to the next heap entry. */                                                        
       entryCursor = entryCursor->next;
     }
 
@@ -497,14 +499,14 @@ size_t xMemGetSize(void *ptr_) {
     by scanning the heap for it. If it exists, free the entry.
 
     Don't ever just directly check that the pointer references what APPEARS to be a
-    heap entry!
+    heap entry - always traverse the heap!!
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-    /* Determine the heap entry to free by moving back from the pointer by the byte size of one
+    /* Determine the heap entry to get the size of by moving back from the pointer by the byte size of one
     heap entry. */
     entryToSize = (HeapEntry_t *)((Byte_t *)ptr_ - (entryBlocksNeeded * CONFIG_HEAP_BLOCK_SIZE));
 
-    /* To scan the heap, need to set the heap entry cursor to the start of the heap. */
+    /* To scan the heap, set the heap entry cursor to the start of the heap. */
     entryCursor = heapStart;
 
     /* While the heap entry cursor is not null, keep scanning. */
@@ -513,6 +515,8 @@ size_t xMemGetSize(void *ptr_) {
       if (entryCursor == entryToSize) {
         break;
       }
+
+      /* Move on to the next heap entry. */
       entryCursor = entryCursor->next;
     }
 
@@ -522,13 +526,15 @@ size_t xMemGetSize(void *ptr_) {
       return 0;
     }
 
+    /* We want to return the amount of BYTES in use by the pointer so multiply the
+    blocks consumed by the entry by the CONFIG_HEAP_BLOCK_SIZE. */
     return entryCursor->blocks * CONFIG_HEAP_BLOCK_SIZE;
   }
 
   return 0;
 }
 
-/* The built-in utility function to copy memory between the source and destination pointers. */
+/* A memory utility to copy memory between the source and destination pointers. */
 void memcpy_(void *dest_, const void *src_, size_t n_) {
   char *src = (char *)src_;
   char *dest = (char *)dest_;
@@ -538,7 +544,7 @@ void memcpy_(void *dest_, const void *src_, size_t n_) {
   }
 }
 
-/* The built-in utility function to set the memory pointed to by the destination pointer
+/* A memory utility to set the memory pointed to by the destination pointer
 to the specified value. */
 void memset_(void *dest_, int16_t val_, size_t n_) {
   char *dest = (char *)dest_;
@@ -548,7 +554,7 @@ void memset_(void *dest_, int16_t val_, size_t n_) {
   }
 }
 
-/* The built-in utility function to compare the contents of memory at two locations pointed to by
+/* A memory utility to compare the contents of memory at two locations pointed to by
 the pointers s1 and s2. */
 int16_t memcmp_(const void *s1_, const void *s2_, size_t n_) {
   char *s1 = (char *)s1_;
