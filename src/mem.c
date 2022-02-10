@@ -27,6 +27,7 @@
 #include "mem.h"
 
 extern SysFlags_t sysFlags;
+extern TaskList_t *taskList;
 
 static Byte_t heap[HEAP_RAW_SIZE];
 

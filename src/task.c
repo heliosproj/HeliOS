@@ -611,12 +611,6 @@ TaskNotification_t *xTaskNotifyTake(Task_t *task_) {
   return null;
 }
 
-/* Returns the task list. This function is predominantly used by the scheduler to access
-the tasks linked list. */
-TaskList_t *TaskListGet() {
-  return taskList;
-}
-
 /* The xTaskResume() system call will resume a suspended task. Tasks are suspended on creation
 so either xTaskResume() or xTaskWait() must be called to place the task in a state that the scheduler
 will execute. */

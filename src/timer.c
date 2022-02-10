@@ -27,6 +27,7 @@
 #include "timer.h"
 
 extern SysFlags_t sysFlags;
+extern TaskList_t *taskList;
 
 /* Declare and initialize the task list to null. */
 TimerList_t *timerList = null;

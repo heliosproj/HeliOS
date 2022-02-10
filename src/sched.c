@@ -30,6 +30,8 @@
 Thank you for the best OS on Earth, Dennis.
 May you rest in peace. */
 
+extern TaskList_t *taskList;
+
 /* Declare and set the system flags to their default values. */
 SysFlags_t sysFlags = {
     .running = true,
@@ -42,8 +44,6 @@ void xTaskStartScheduler() {
   Task_t *runTask = null;
 
   Task_t *taskCursor = null;
-
-  TaskList_t *taskList = null;
 
   /* Going to try getting rid of TIM_T_MAX and just underflow an
   unsigned integer. */
@@ -62,8 +62,6 @@ void xTaskStartScheduler() {
     if (SYSFLAG_OVERFLOW()) {
       RunTimeReset();
     }
-
-    taskList = TaskListGet();
 
     /* Check if the task list returned by TaskListGet() is not null before accessing it. */
     if (ISNOTNULLPTR(taskList)) {
@@ -115,11 +113,7 @@ total runtimes on tasks to their last runtime. */
 void RunTimeReset() {
   Task_t *taskCursor = null;
 
-  TaskList_t *taskList = null;
-
-  taskList = TaskListGet();
-
-  /* Check if TaskListGet() returned a good task list by checking it is not null before accessing it. */
+  /* Check if task list is not null before accessing it. */
   if (ISNOTNULLPTR(taskList)) {
     taskCursor = taskList->head;
 

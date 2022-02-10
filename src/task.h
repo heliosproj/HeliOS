@@ -53,7 +53,6 @@ char *xTaskList();
 Base_t xTaskNotificationIsWaiting(Task_t *);
 void xTaskNotifyGive(Task_t *task_, Base_t, const char *); 
 TaskNotification_t *xTaskNotifyTake(Task_t *);
-TaskList_t *TaskListGet();
 void xTaskNotifyStateClear(Task_t *);
 void xTaskResume(Task_t *);
 void xTaskSuspend(Task_t *);
