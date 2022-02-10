@@ -473,56 +473,58 @@ extern "C" {
 #endif
 
 /**
- * @brief System call to dynamically allocate memory
- * The xMemAlloc() system call will dynamically allocate memory for HeliOS system calls and
- * end-user tasks. The number of concurrently allocated pointers is dependent on
- * the setting CONFIG_DYNAMIC_MEMORY_ALLOC_TABLE_ENTRIES.
+ * @brief System call to allocate memory from the heap.
+ * 
+ * The xMemAlloc() system call will allocate memory from the heap for HeliOS system
+ * calls and end-user tasks. The size of the heap is dependent on the 
+ * CONFIG_HEAP_SIZE_IN_BLOCKS and CONFIG_HEAP_BLOCK_SIZE settings.
  *
- * @sa CONFIG_DYNAMIC_MEMORY_ALLOC_TABLE_ENTRIES
+ * @sa CONFIG_HEAP_SIZE_IN_BLOCKS
+ * @sa CONFIG_HEAP_BLOCK_SIZE
  * @sa xMemFree()
  *
- * @param size_ The amount (size) of the memory to be dynamically allocated in bytes.
- * @return void* If successful, xMemAlloc() returns a pointer to the dynamically
- * allocated memory. If unsuccessful, the system call will return null.
+ * @param size_ The amount (size) of the memory to be allocated from the heap in bytes.
+ * @return void* If successful, xMemAlloc() returns a pointer to the newly allocated memory.
+ * If unsuccessful, the system call will return null.
  */
 void *xMemAlloc(size_t size_);
 
 /**
- * @brief System call to free dynamically allocated memory
+ * @brief System call to free memory allocated from the heap.
  *
- * The xMemFree() system call will free memory dynamically allocated by
+ * The xMemFree() system call will free heap memory allocated by
  * xMemAlloc() and other HeliOS system calls such as xSystemGetSystemInfo().
  *
  * @sa xMemAlloc()
  *
- * @param ptr_ The pointer to the dynamically allocated memory to be freed.
+ * @param ptr_ The pointer to the allocated heap memory to be freed.
  *
- * @warning xMemFree() should NOT be used to free memory allocated by xTaskCreate(),
+ * @warning xMemFree() cannot be used to free memory allocated by xTaskCreate(),
  * xTimerCreate() or xQueueCreate(). Memory allocated by those system calls must
  * be freed by their respective delete system calls.
  */
 void xMemFree(void *ptr_);
 
 /**
- * @brief System call to return the amount of allocated dynamic memory.
+ * @brief System call to return the amount of allocated heap memory.
  *
- * The xMemGetUsed() system call returns the amount of dynamic memory in bytes
+ * The xMemGetUsed() system call returns the amount of heap memory in bytes
  * that is currently allocated. Calls to xMemAlloc() increases and xMemFree()
  * decreases the amount.
  *
- * @return size_t The amount of memory currently allocated in bytes. If no dynamic
+ * @return size_t The amount of memory currently allocated in bytes. If no heap
  * memory is currently allocated, xMemGetUsed() will return zero.
  */
 size_t xMemGetUsed();
 
 /**
- * @brief System call to return the amount of memory allcoated for a pointer.
+ * @brief System call to return the amount of heap memory allcoated for a pointer.
  *
- * The xMemGetSize() system call returns the amount of memory in bytes that
+ * The xMemGetSize() system call returns the amount of heap memory in bytes that
  * is currently allocated to a specific pointer. If the pointer is null or invalid,
  * xMemGetSize() will return zero bytes.
  *
- * @param ptr_ The pointer to the dynamically allocated memory to obtain the size of the
+ * @param ptr_ The pointer to the allocated heap memory to obtain the size of the
  * memory that is allocated.
  * @return size_t The amount of memory currently allocated to the specific pointer in bytes. If
  * the pointer is invalid or null, xMemGetSize() will return zero.
