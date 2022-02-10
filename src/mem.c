@@ -36,25 +36,29 @@ HeapEntry_t *heapStart = (HeapEntry_t *)heap;
 Word_t entryBlocksNeeded = 0;
 
 void *xMemAlloc(size_t size_) {
+  /* Disable interrupts because we can't be interrupted while modifying the heap. */
   DISABLE_INTERRUPTS();
 
   Word_t blockCount = 0;
 
   Word_t requestedBlocks = 0;
 
+  /* Requested blocks with overhead is the requested blocks + the number of blocks
+  required for the heap entry. */
   Word_t requestedBlocksWithOverhead = 0;
 
+  /* To get the maximum value of Word_t, we underflow the unsigned type. */
   Word_t leastBlocks = -1;
 
   HeapEntry_t *entryCursor = null;
 
   HeapEntry_t *entryCandidate = null;
 
-  /* Confirm the requested size is greater than zero. */
+  /* Confirm the requested size in bytes is greater than zero. */
   if (size_ > 0) {
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
     PHASE I: Determine how many blocks a heap entry requires. One block is generally
-    sufficient but we shouldn't assume.
+    sufficient but we shouldn't assume. This only needs to be done once.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
     /* If we haven't calculated how many blocks a heap entry requires, calculate
@@ -74,45 +78,55 @@ void *xMemAlloc(size_t size_) {
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
     PHASE II: Determine if the first heap entry has been created. This effectively
-    initializes the heap.
+    initializes the heap. This also only needs to be done once.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
     /* If the heap entry at the start of the heap has zero blocks then it hasn't
     been initialized yet, so do that now. */
     if (heapStart->blocks == 0) {
-      /* Zero out the entire heap. */
+      /* Zero out the entire heap. HEAP_RAW_SIZE equates to CONFIG_HEAP_SIZE_IN_BLOCKS * CONFIG_HEAP_BLOCK_SIZE. */
       memset_(heap, 0, HEAP_RAW_SIZE);
 
-      /* Set the entry to free. */
+      /* Set the heap entry to free because, it is free. */
       heapStart->free = true;
 
-      /* Set the entry unprotected by setting protected to false. */
+      /* Mark the entry unprotected by setting protected to false. An entry is protected if the macro ENTER_PROTECT()
+      is called before invoking xMemAlloc(). A protected entry cannot be freed by xMemFree() unless ENTER_PROTECT()
+      is called beforehand. */
       heapStart->protected = false;
 
-      /* Set the number of blocks in the first entry to the total size of the
-      heap in blocks minus one block which is occupied by the first entry. */
+      /* Set the number of blocks in the first entry to the total number of blocks
+      in the heap heap minus one block which is occupied by the first heap entry. */
       heapStart->blocks = CONFIG_HEAP_SIZE_IN_BLOCKS - entryBlocksNeeded;
 
-      /* There is no next entry yet so set it to null. */
+      /* There is only one heap entry at this point so set the next to null. */
       heapStart->next = null;
     }
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-    PHASE III: Check the health of the heap but scanning through all of the heap entries
+    PHASE III: Check the health of the heap by scanning through all of the heap entries
     counting how many blocks are in each entry then comparing that against the
     CONFIG_HEAP_SIZE_IN_BLOCKS setting. If the two do not match there is a problem!!
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-    /* To scan the heap, need to set the heap entry cursor to the start of the heap. */
+    /* To scan the heap, set the heap entry cursor to the start of the heap. */
     entryCursor = heapStart;
 
     /* While the heap entry cursor is not null, keep scanning. */
     while (ISNOTNULLPTR(entryCursor)) {
+      /* Continue to sum the blocks while keeping in mind that the heap entries
+      consume blocks too. */
       blockCount += entryCursor->blocks + entryBlocksNeeded;
+
+      /* Move on to the next heap entry. */
       entryCursor = entryCursor->next;
     }
 
+    /* If the block count does not match CONFIG_HEAP_SIZE_IN_BLOCKS then we need
+    to return because the heap is corrupt. */
     if (blockCount != CONFIG_HEAP_SIZE_IN_BLOCKS) {
+      /* Exit protect and enable interrupts before returning. */
+
       EXIT_PROTECT();
 
       ENABLE_INTERRUPTS();
@@ -121,11 +135,11 @@ void *xMemAlloc(size_t size_) {
     }
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-    PHASE IV: Calculate how many blocks are needed for the requested size (in bytes).
+    PHASE IV: Calculate how many blocks are needed for the requested size in bytes.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
     /* Calculate the quotient of the requested blocks by dividing the requested size
-    paramater by the heap block size (bytes). */
+    paramater by the heap block size also in bytes. */
     requestedBlocks = size_ / CONFIG_HEAP_BLOCK_SIZE;
 
     /* Calculate the remainder of the requested blocks. If there is a remainder we
@@ -141,7 +155,7 @@ void *xMemAlloc(size_t size_) {
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
     PHASE V: Scan the heap entries to find a heap entry that would be a good candidate
-    for the requested blocks. This may be the last entry in the heap OR a entry that
+    for the requested blocks. This may be the last entry in the heap OR an entry that
     was recently freed by xMemFree().
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
@@ -150,10 +164,10 @@ void *xMemAlloc(size_t size_) {
 
     /* While the heap entry cursor is not null, keep scanning. */
     while (ISNOTNULLPTR(entryCursor)) {
-      /* See if there is a candidate entry for the requested blocks by checking:
+      /* See if there is a candidate heap entry for the requested blocks by checking:
           1) The entry at the cursor is free.
           2) The entry has enough blocks to cover the requested blocks with overhead.
-          3) The entry has the fewest possible blocks.*/
+          3) The entry has the least possible number of blocks.*/
       if (entryCursor->free == true && entryCursor->blocks >= requestedBlocksWithOverhead && entryCursor->blocks < leastBlocks) {
         /* Seems like a good candidate so update the least blocks in case
         there is an entry with fewer blocks that is free yet will fit
@@ -171,6 +185,8 @@ void *xMemAlloc(size_t size_) {
     /* If the entry candidate is null, well.... we can't fulfill the request so
     return null. */
     if (ISNULLPTR(entryCandidate)) {
+      /* Exit protect and enable interrupts before returning. */
+
       EXIT_PROTECT();
 
       ENABLE_INTERRUPTS();
@@ -186,20 +202,20 @@ void *xMemAlloc(size_t size_) {
     /* If the entry candidate's next is null, then this is the last entry in the heap
     so split the entry blocks in two. */
     if (ISNULLPTR(entryCandidate->next)) {
-      /* Set the entry candidate next to the new entry that will contain the remaining
-      blocks. */
+      /* Set the entry candidate "next" to the new entry that will contain the remaining
+      unused blocks. */
       entryCandidate->next = (HeapEntry_t *)((Byte_t *)entryCandidate + (requestedBlocksWithOverhead * CONFIG_HEAP_BLOCK_SIZE));
 
-      /* Mark it as free. */
+      /* Mark the new entry as free. */
       entryCandidate->next->free = true;
 
-      /* Set the entry unprotected by setting protected to false. */
+      /* Mark the new entry as unprotected. */
       entryCandidate->next->protected = false;
 
-      /* Calculate how many remain blocks there are. */
+      /* Calculate how many remaining blocks there are and update the new entry. */
       entryCandidate->next->blocks = entryCandidate->blocks - requestedBlocksWithOverhead;
 
-      /* Set the next entry's next to null since it is the new last entry in the heap. */
+      /* Set the new entry's "next: to null since it is now the last entry in the heap. */
       entryCandidate->next->next = null;
 
       /* Mark the candidate entry as no longer free. */
@@ -214,6 +230,8 @@ void *xMemAlloc(size_t size_) {
       /* Clear the memory by mem-setting it to all zeros. */
       memset_((void *)((Byte_t *)entryCandidate + (entryBlocksNeeded * CONFIG_HEAP_BLOCK_SIZE)), 0, requestedBlocks * CONFIG_HEAP_BLOCK_SIZE);
 
+      /* Exit protect and enable interrupts before returning. */
+
       EXIT_PROTECT();
 
       ENABLE_INTERRUPTS();
@@ -224,7 +242,7 @@ void *xMemAlloc(size_t size_) {
 
     } else {
       /* Looks like we found a candidate that is NOT the last entry in the heap,
-      so simply mark it as no longer free and return the address. */
+      so simply mark it as no longer free. */
       entryCandidate->free = false;
 
       /* Set the entry protection based on the protect system flag. */
@@ -232,6 +250,8 @@ void *xMemAlloc(size_t size_) {
 
       /* Clear the memory by mem-setting it to all zeros. */
       memset_((void *)((Byte_t *)entryCandidate + (entryBlocksNeeded * CONFIG_HEAP_BLOCK_SIZE)), 0, requestedBlocks * CONFIG_HEAP_BLOCK_SIZE);
+
+      /* Exit protect and enable interrupts before returning. */
 
       EXIT_PROTECT();
 
@@ -242,6 +262,8 @@ void *xMemAlloc(size_t size_) {
       return (void *)((Byte_t *)entryCandidate + (entryBlocksNeeded * CONFIG_HEAP_BLOCK_SIZE));
     }
   }
+
+  /* Exit protect and enable interrupts before returning. */
 
   EXIT_PROTECT();
 
