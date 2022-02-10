@@ -704,7 +704,7 @@ void xTaskChangePeriod(Task_t *task_, Time_t timerPeriod_) {
   Task_t *taskCursor = null;
 
   /* Check if the task list is not null and the task parameter is not null. */
-  if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_) && timerPeriod_ >= 0) {
+  if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_)) {
     taskCursor = taskList->head;
 
     /* While the task cursor is not null and the task cursor is not equal

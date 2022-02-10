@@ -340,7 +340,6 @@ void xMemFree(void *ptr_) {
     /* Check one last time if the entry cursor equals the entry we want to free, if it does,
     mark it free. We are done here. */
     if (entryCursor == entryToFree) {
-
       /* If the entry is mark protected and the protect system flag is false,
       then return because the entry cannot be freed. */
       if (entryCursor->protected == true && SYSFLAG_PROTECT() == false) {
@@ -368,7 +367,39 @@ void xMemFree(void *ptr_) {
 /* The xMemGetUsed() system call returns the amount of memory in bytes
 that is currently allocated. */
 size_t xMemGetUsed() {
-  return 0;
+  Word_t blockCount = 0;
+
+  HeapEntry_t *entryCursor = null;
+
+  /* Check if the entry at the start of the heap is un-initialized by looking
+  at the blocks member. If it is zero then the heap has not been initialized so
+  just thrown in the towel. */
+  if (heapStart->blocks == 0) {
+
+    return 0;
+
+  }
+
+  /* To scan the heap, need to set the heap entry cursor to the start of the heap. */
+  entryCursor = heapStart;
+
+  /* While the heap entry cursor is not null, keep scanning. */
+  while (ISNOTNULLPTR(entryCursor)) {
+    blockCount += entryCursor->blocks + entryBlocksNeeded; /* Assuming entry blocks needed has been
+                                                              calculated if the heap has been initialized. */
+    entryCursor = entryCursor->next;
+
+  }
+
+  /* Check if the counted blocks matches the CONFIG_HEAP_SIZE_IN_BLOCKS setting,
+  if it doesn't return. */
+  if (blockCount != CONFIG_HEAP_SIZE_IN_BLOCKS) {
+
+    return 0;
+
+  }
+
+  return blockCount * CONFIG_HEAP_BLOCK_SIZE;
 }
 
 /* The xMemGetSize() system call returns the amount of memory in bytes that

@@ -39,56 +39,51 @@ TimerList_t *timerList = null;
  be freed by xTimerDelete(). Unlike tasks, timers may be created and deleted within
  tasks. */
 Timer_t *xTimerCreate(Time_t timerPeriod_) {
-
   Timer_t *timer = null;
 
   Timer_t *timerCursor = null;
 
-  /* Check if the timer period paramater is greater or equal to zero. */
-  if (timerPeriod_ >= 0) {
-    /* Check if the timer list is null, if it is create it. */
+  /* Check if the timer list is null, if it is create it. */
+  if (ISNULLPTR(timerList)) {
+    timerList = (TimerList_t *)xMemAlloc(sizeof(TimerList_t));
+
+    /* Check if xMemAlloc() successfully allocated the memory for the timer list, if not
+    enable interrupts and return null. */
     if (ISNULLPTR(timerList)) {
-      timerList = (TimerList_t *)xMemAlloc(sizeof(TimerList_t));
-
-      /* Check if xMemAlloc() successfully allocated the memory for the timer list, if not
-      enable interrupts and return null. */
-      if (ISNULLPTR(timerList)) {
-
-        return null;
-      }
+      return null;
     }
+  }
 
-    timer = (Timer_t *)xMemAlloc(sizeof(Task_t));
+  timer = (Timer_t *)xMemAlloc(sizeof(Task_t));
 
-    /* Check if xMemAlloc() successfully allocated the memory for the timer. */
-    if (ISNOTNULLPTR(timer)) {
-      timer->state = TimerStateStopped;
+  /* Check if xMemAlloc() successfully allocated the memory for the timer. */
+  if (ISNOTNULLPTR(timer)) {
+    timer->state = TimerStateStopped;
 
-      timer->timerPeriod = timerPeriod_;
+    timer->timerPeriod = timerPeriod_;
 
-      timer->timerStartTime = CURRENTTIME();
+    timer->timerStartTime = CURRENTTIME();
 
-      timer->next = null;
+    timer->next = null;
 
-      timerCursor = timerList->head;
+    timerCursor = timerList->head;
 
-      /* Check if the head of the timer list is null. If so, iterate through the
-      timer list to find the end otherwise just append the timer to the timer list. */
-      if (ISNOTNULLPTR(timerList->head)) {
-        /* While the next timer is not null. */
-        while (ISNOTNULLPTR(timerCursor->next)) {
-          timerCursor = timerCursor->next;
-        }
-
-        timerCursor->next = timer;
-      } else {
-        timerList->head = timer;
+    /* Check if the head of the timer list is null. If so, iterate through the
+    timer list to find the end otherwise just append the timer to the timer list. */
+    if (ISNOTNULLPTR(timerList->head)) {
+      /* While the next timer is not null. */
+      while (ISNOTNULLPTR(timerCursor->next)) {
+        timerCursor = timerCursor->next;
       }
 
-      timerList->length++;
-
-      return timer;
+      timerCursor->next = timer;
+    } else {
+      timerList->head = timer;
     }
+
+    timerList->length++;
+
+    return timer;
   }
 
   return null;
@@ -97,7 +92,6 @@ Timer_t *xTimerCreate(Time_t timerPeriod_) {
 /* The xTimerDelete() system call will delete a timer. For more information on timers see the
 xTaskTimerCreate() system call. */
 void xTimerDelete(Timer_t *timer_) {
-
   Timer_t *timerCursor = null;
 
   Timer_t *timerPrevious = null;
@@ -130,7 +124,6 @@ void xTimerDelete(Timer_t *timer_) {
       /* If the timer cursor is null, then the timer could not be found so
       enable interrupts and return. */
       if (ISNULLPTR(timerCursor)) {
-
         return;
       }
 
@@ -153,7 +146,7 @@ void xTimerChangePeriod(Timer_t *timer_, Time_t timerPeriod_) {
 
   /* Check if the timer list is not null, the timer parameter is not null and the timer period
   is zero or greater. */
-  if (ISNOTNULLPTR(timerList) && ISNOTNULLPTR(timer_) && timerPeriod_ >= 0) {
+  if (ISNOTNULLPTR(timerList) && ISNOTNULLPTR(timer_)) {
     timerCursor = timerList->head;
 
     /* While timer cursor is not null and the timer cursor does not equal the timer
