@@ -407,6 +407,81 @@ size_t xMemGetUsed() {
 /* The xMemGetSize() system call returns the amount of memory in bytes that
 is currently allocated to a specific pointer. */
 size_t xMemGetSize(void *ptr_) {
+  Word_t blockCount = 0;
+
+  HeapEntry_t *entryCursor = null;
+
+  HeapEntry_t *entryToSize = null;
+
+  /* Check to make sure the end-user passed a pointer that is at least not null. */
+  if (ISNOTNULLPTR(ptr_)) {
+    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+    PHASE I: Determine if the first heap entry has been created. If it hasn't then
+    just return.
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+    /* Check if the entry at the start of the heap is un-initialized by looking
+    at the blocks member. If it is zero then the heap has not been initialized so
+    just thrown in the towel. */
+    if (heapStart->blocks == 0) {
+      return 0;
+    }
+
+    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+    PHASE II: Check the health of the heap but scanning through all of the heap entries
+    counting how many blocks are in each entry then comparing that against the
+    CONFIG_HEAP_SIZE_IN_BLOCKS setting. If the two do not match there is a problem!!
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+    /* To scan the heap, need to set the heap entry cursor to the start of the heap. */
+    entryCursor = heapStart;
+
+    /* While the heap entry cursor is not null, keep scanning. */
+    while (ISNOTNULLPTR(entryCursor)) {
+      blockCount += entryCursor->blocks + entryBlocksNeeded; /* Assuming entry blocks needed has been
+                                                                calculated if the heap has been initialized. */
+      entryCursor = entryCursor->next;
+    }
+
+    /* Check if the counted blocks matches the CONFIG_HEAP_SIZE_IN_BLOCKS setting,
+    if it doesn't return. */
+    if (blockCount != CONFIG_HEAP_SIZE_IN_BLOCKS) {
+      return 0;
+    }
+
+    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+    PHASE III: Check if the pointer paramater actually points to a heap entry that
+    by scanning the heap for it. If it exists, free the entry.
+
+    Don't ever just directly check that the pointer references what APPEARS to be a
+    heap entry!
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+    /* Determine the heap entry to free by moving back from the pointer by the byte size of one
+    heap entry. */
+    entryToSize = (HeapEntry_t *)((Byte_t *)ptr_ - (entryBlocksNeeded * CONFIG_HEAP_BLOCK_SIZE));
+
+    /* To scan the heap, need to set the heap entry cursor to the start of the heap. */
+    entryCursor = heapStart;
+
+    /* While the heap entry cursor is not null, keep scanning. */
+    while (ISNOTNULLPTR(entryCursor)) {
+      /* If the entry cursor equals the entry we want to free, then break out of the loop. */
+      if (entryCursor == entryToSize) {
+        break;
+      }
+      entryCursor = entryCursor->next;
+    }
+
+    /* Well, we didn't find the entry for the pointer the end-user wanted freed so
+    return. */
+    if (ISNULLPTR(entryCursor)) {
+      return 0;
+    }
+
+    return entryCursor->blocks * CONFIG_HEAP_BLOCK_SIZE;
+  }
+
   return 0;
 }
 
