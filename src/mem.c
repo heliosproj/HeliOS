@@ -35,6 +35,8 @@ HeapEntry_t *heapStart = (HeapEntry_t *)heap;
 
 Word_t entryBlocksNeeded = 0;
 
+/* The xMemAlloc() system call will allocate heap memory and return a pointer
+to the newly allocated memory. */
 void *xMemAlloc(size_t size_) {
   /* Disable interrupts because we can't be interrupted while modifying the heap. */
   DISABLE_INTERRUPTS();
@@ -272,6 +274,7 @@ void *xMemAlloc(size_t size_) {
   return null;
 }
 
+/* The xMemFree() system call will free heap memory pointed to by the pointer parameter. */
 void xMemFree(void *ptr_) {
   /* Disable interrupts because we can't be interrupted while modifying the heap. */
   DISABLE_INTERRUPTS();
