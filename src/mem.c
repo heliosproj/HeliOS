@@ -409,13 +409,13 @@ size_t xMemGetUsed() {
   HeapEntry_t *entryCursor = null;
 
   /* Check if the entry at the start of the heap is un-initialized by looking
-  at the blocks member. If it is zero then the heap has not been initialized so
+  at the number of blocks it contains. If it is zero, then the heap has not been initialized so
   just thrown in the towel. */
   if (heapStart->blocks == 0) {
     return 0;
   }
 
-  /* To scan the heap, need to set the heap entry cursor to the start of the heap. */
+  /* To scan the heap, set the heap entry cursor to the start of the heap. */
   entryCursor = heapStart;
 
   /* While the heap entry cursor is not null, keep scanning. */
@@ -423,10 +423,16 @@ size_t xMemGetUsed() {
     blockCount += entryCursor->blocks + entryBlocksNeeded; /* Assuming entry blocks needed has been
                                                               calculated if the heap has been initialized. */
 
+    /* At each entry, check to see if it is in use. If it is add the number
+    of blocks it contains plus the number of blocks consumed by the heap entry
+    block to the used block count. */
     if (entryCursor->free == false) {
+
+      /* Sum the number of used blocks for each heap entry in use. */
       usedBlockCount += entryCursor->blocks + entryBlocksNeeded;
     }
 
+    /* Move on to the next heap entry. */
     entryCursor = entryCursor->next;
   }
 
@@ -436,6 +442,8 @@ size_t xMemGetUsed() {
     return 0;
   }
 
+  /* We want to return the amount of BYTES in use in the heap so multiply the
+  used block count by the CONFIG_HEAP_BLOCK_SIZE. */
   return usedBlockCount * CONFIG_HEAP_BLOCK_SIZE;
 }
 
