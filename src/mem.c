@@ -273,6 +273,7 @@ void *xMemAlloc(size_t size_) {
 }
 
 void xMemFree(void *ptr_) {
+  /* Disable interrupts because we can't be interrupted while modifying the heap. */
   DISABLE_INTERRUPTS();
 
   Word_t blockCount = 0;
@@ -289,9 +290,10 @@ void xMemFree(void *ptr_) {
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
     /* Check if the entry at the start of the heap is un-initialized by looking
-    at the blocks member. If it is zero then the heap has not been initialized so
+    at the blocks member. If it is zero, then the heap has not been initialized so
     just thrown in the towel. */
     if (heapStart->blocks == 0) {
+      /* Exit protect and enable interrupts before returning. */
       EXIT_PROTECT();
 
       ENABLE_INTERRUPTS();
@@ -300,24 +302,27 @@ void xMemFree(void *ptr_) {
     }
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-    PHASE II: Check the health of the heap but scanning through all of the heap entries
+    PHASE II: Check the health of the heap by scanning through all of the heap entries
     counting how many blocks are in each entry then comparing that against the
     CONFIG_HEAP_SIZE_IN_BLOCKS setting. If the two do not match there is a problem!!
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-    /* To scan the heap, need to set the heap entry cursor to the start of the heap. */
+    /* To scan the heap, set the heap entry cursor to the start of the heap. */
     entryCursor = heapStart;
 
     /* While the heap entry cursor is not null, keep scanning. */
     while (ISNOTNULLPTR(entryCursor)) {
       blockCount += entryCursor->blocks + entryBlocksNeeded; /* Assuming entry blocks needed has been
                                                                 calculated if the heap has been initialized. */
+
+      /* Move on to the next heap entry. */
       entryCursor = entryCursor->next;
     }
 
     /* Check if the counted blocks matches the CONFIG_HEAP_SIZE_IN_BLOCKS setting,
-    if it doesn't return. */
+    if it doesn't return (i.e., Houston, we've had a problem.) */
     if (blockCount != CONFIG_HEAP_SIZE_IN_BLOCKS) {
+      /* Exit protect and enable interrupts before returning. */
       EXIT_PROTECT();
 
       ENABLE_INTERRUPTS();
@@ -330,14 +335,14 @@ void xMemFree(void *ptr_) {
     by scanning the heap for it. If it exists, free the entry.
 
     Don't ever just directly check that the pointer references what APPEARS to be a
-    heap entry!
+    heap entry - always traverse the heap!!
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
     /* Determine the heap entry to free by moving back from the pointer by the byte size of one
     heap entry. */
     entryToFree = (HeapEntry_t *)((Byte_t *)ptr_ - (entryBlocksNeeded * CONFIG_HEAP_BLOCK_SIZE));
 
-    /* To scan the heap, need to set the heap entry cursor to the start of the heap. */
+    /* To scan the heap, set the heap entry cursor to the start of the heap. */
     entryCursor = heapStart;
 
     /* While the heap entry cursor is not null, keep scanning. */
@@ -346,12 +351,15 @@ void xMemFree(void *ptr_) {
       if (entryCursor == entryToFree) {
         break;
       }
+
+      /* Move on to the next heap entry. */
       entryCursor = entryCursor->next;
     }
 
     /* Well, we didn't find the entry for the pointer the end-user wanted freed so
     return. */
     if (ISNULLPTR(entryCursor)) {
+      /* Exit protect and enable interrupts before returning. */
       EXIT_PROTECT();
 
       ENABLE_INTERRUPTS();
@@ -362,9 +370,12 @@ void xMemFree(void *ptr_) {
     /* Check one last time if the entry cursor equals the entry we want to free, if it does,
     mark it free. We are done here. */
     if (entryCursor == entryToFree) {
-      /* If the entry is mark protected and the protect system flag is false,
-      then return because the entry cannot be freed. */
+      /* If the entry is marked protected and the protect system flag is false,
+      then return because a protected entry cannot be freed while the protect
+      system flag is false. */
       if (entryCursor->protected == true && SYSFLAG_PROTECT() == false) {
+        /* Exit protect and enable interrupts before returning. */
+
         EXIT_PROTECT();
 
         ENABLE_INTERRUPTS();
@@ -375,10 +386,12 @@ void xMemFree(void *ptr_) {
       /* Make the entry free by setting free to true. */
       entryCursor->free = true;
 
-      /* Set the entry unprotected by setting protected to false. */
+      /* Mark the entry as unprotected. */
       entryCursor->protected = false;
     }
   }
+
+  /* Exit protect and enable interrupts before returning. */
   EXIT_PROTECT();
 
   ENABLE_INTERRUPTS();
