@@ -369,15 +369,15 @@ that is currently allocated. */
 size_t xMemGetUsed() {
   Word_t blockCount = 0;
 
+  Word_t usedBlockCount = 0;
+
   HeapEntry_t *entryCursor = null;
 
   /* Check if the entry at the start of the heap is un-initialized by looking
   at the blocks member. If it is zero then the heap has not been initialized so
   just thrown in the towel. */
   if (heapStart->blocks == 0) {
-
     return 0;
-
   }
 
   /* To scan the heap, need to set the heap entry cursor to the start of the heap. */
@@ -387,19 +387,21 @@ size_t xMemGetUsed() {
   while (ISNOTNULLPTR(entryCursor)) {
     blockCount += entryCursor->blocks + entryBlocksNeeded; /* Assuming entry blocks needed has been
                                                               calculated if the heap has been initialized. */
-    entryCursor = entryCursor->next;
 
+    if (entryCursor->free == false) {
+      usedBlockCount += entryCursor->blocks + entryBlocksNeeded;
+    }
+
+    entryCursor = entryCursor->next;
   }
 
   /* Check if the counted blocks matches the CONFIG_HEAP_SIZE_IN_BLOCKS setting,
   if it doesn't return. */
   if (blockCount != CONFIG_HEAP_SIZE_IN_BLOCKS) {
-
     return 0;
-
   }
 
-  return blockCount * CONFIG_HEAP_BLOCK_SIZE;
+  return usedBlockCount * CONFIG_HEAP_BLOCK_SIZE;
 }
 
 /* The xMemGetSize() system call returns the amount of memory in bytes that
