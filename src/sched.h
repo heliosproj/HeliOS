@@ -38,15 +38,15 @@
 extern "C" {
 #endif
 
-void xTaskStartScheduler();
-void RunTimeReset();
-Time_t CurrentTime();
+void xTaskStartScheduler(void);
+void RunTimeReset(void);
+Time_t CurrentTime(void);
 void TaskRun(Task_t *task_);
-void xTaskResumeAll();
-void xTaskSuspendAll();
-void xSystemHalt();
-void xTaskStopScheduler();
-SystemInfo_t *xSystemGetSystemInfo();
+void xTaskResumeAll(void);
+void xTaskSuspendAll(void);
+void xSystemHalt(void);
+void xTaskStopScheduler(void);
+SystemInfo_t *xSystemGetSystemInfo(void);
 
 #ifdef __cplusplus
 }  // extern "C" {

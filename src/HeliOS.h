@@ -515,7 +515,7 @@ void xMemFree(void *ptr_);
  * @return size_t The amount of memory currently allocated in bytes. If no heap
  * memory is currently allocated, xMemGetUsed() will return zero.
  */
-size_t xMemGetUsed();
+size_t xMemGetUsed(void);
 
 /**
  * @brief System call to return the amount of heap memory allcoated for a pointer.
@@ -685,7 +685,7 @@ xQueueMessage xQueueReceive(xQueue queue_);
  * must be called before xTaskStartScheduler() can be called again.
  *
  */
-void xTaskStartScheduler();
+void xTaskStartScheduler(void);
 
 /**
  * @brief System call to set scheduler running system flag to true.
@@ -696,7 +696,7 @@ void xTaskStartScheduler();
  *
  * @sa xTaskSuspendAll()
  */
-void xTaskResumeAll();
+void xTaskResumeAll(void);
 
 /**
  * @brief System call to set the scheduler running system flag to false.
@@ -707,7 +707,7 @@ void xTaskResumeAll();
  *
  * @sa xTaskResumeAll()
  */
-void xTaskSuspendAll();
+void xTaskSuspendAll(void);
 
 /**
  * @brief The xSystemGetSystemInfo() system call will return the type xSystemInfo containing
@@ -722,7 +722,7 @@ void xTaskSuspendAll();
  *
  * @warning The memory allocated by the xSystemGetSystemInfo() must be freed with xMemFree()
  */
-xSystemInfo xSystemGetSystemInfo();
+xSystemInfo xSystemGetSystemInfo(void);
 
 /**
  * @brief System call to create a new task.
@@ -839,7 +839,7 @@ xTaskRunTimeStats xTaskGetTaskRunTimeStats(xTask task_);
  *
  * @return xBase The number of tasks.
  */
-xBase xTaskGetNumberOfTasks();
+xBase xTaskGetNumberOfTasks(void);
 
 /**
  * @brief The xTaskGetTaskInfo() system call returns the xTaskInfo structure containing
@@ -1175,7 +1175,7 @@ void xTimerStop(xTimer timer_);
  * the system must be reset.
  * 
  */
-void xSystemHalt();
+void xSystemHalt(void);
 
 /* In the event HeliOS is compiled with a C++ compiler, make the system calls (written in C)
 visible to C++. */

@@ -298,7 +298,7 @@ TaskRunTimeStats_t *xTaskGetTaskRunTimeStats(Task_t *task_) {
 
 /* The xTaskGetNumberOfTasks() system call returns the current number of tasks
 regardless of their state. */
-Base_t xTaskGetNumberOfTasks() {
+Base_t xTaskGetNumberOfTasks(void) {
   Base_t tasks = 0;
 
   Task_t *taskCursor = null;
@@ -459,7 +459,7 @@ TaskId_t xTaskGetId(Task_t *task_) {
 }
 
 /* TO-DO: Implement xTaskList(). */
-char *xTaskList() {
+char *xTaskList(void) {
   return null;
 }
 

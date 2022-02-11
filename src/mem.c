@@ -404,7 +404,7 @@ void xMemFree(void *ptr_) {
 
 /* The xMemGetUsed() system call returns the amount of memory in bytes
 that is currently allocated. */
-size_t xMemGetUsed() {
+size_t xMemGetUsed(void) {
   Word_t blockCount = 0;
 
   Word_t usedBlockCount = 0;

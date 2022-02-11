@@ -40,7 +40,7 @@ SysFlags_t sysFlags = {
     .protect = false};
 
 /* The xTaskStartScheduler() system call passes control to the HeliOS scheduler. */
-void xTaskStartScheduler() {
+void xTaskStartScheduler(void) {
   Task_t *runTask = null;
 
   Task_t *taskCursor = null;
@@ -110,7 +110,7 @@ void xTaskStartScheduler() {
 
 /* If the runtime overflow flag is set, then RunTimeReset() is called to reset all of the
 total runtimes on tasks to their last runtime. */
-void RunTimeReset() {
+void RunTimeReset(void) {
   Task_t *taskCursor = null;
 
   /* Check if task list is not null before accessing it. */
@@ -130,7 +130,7 @@ void RunTimeReset() {
 }
 
 /* Used only for when testing HeliOS on Linux, then get the time from clock_gettime(). */
-Time_t CurrentTime() {
+Time_t CurrentTime(void) {
 #if defined(OTHER_ARCH_LINUX)
   struct timespec t;
   clock_gettime(CLOCK_MONOTONIC_RAW, &t);
@@ -177,34 +177,34 @@ void TaskRun(Task_t *task_) {
 
 /* The xTaskResumeAll() system call will set the scheduler system flag so the next
 call to xTaskStartScheduler() will resume execute of all tasks. */
-void xTaskResumeAll() {
+void xTaskResumeAll(void) {
   SYSFLAG_RUNNING() = true;
   return;
 }
 
 /* The xTaskSuspendAll() system call will set the scheduler system flag so the scheduler
 will stop and return. */
-void xTaskSuspendAll() {
+void xTaskSuspendAll(void) {
   SYSFLAG_RUNNING() = false;
   return;
 }
 
 /* The xSystemHalt() system call stops the system by putting HeliOS into an infinite loop. */
-void xSystemHalt() {
+void xSystemHalt(void) {
   DISABLE_INTERRUPTS();
   for (;;) {
   }
 }
 
 /* TO-DO: Implement xTaskStopScheduler(). */
-void xTaskStopScheduler() {
+void xTaskStopScheduler(void) {
   return;
 }
 
 /* The xSystemGetSystemInfo() system call will return the type xSystemInfo containing
 information about the system including the OS (product) name, its version and how many tasks
 are currently in the running, suspended or waiting states. */
-SystemInfo_t *xSystemGetSystemInfo() {
+SystemInfo_t *xSystemGetSystemInfo(void) {
   SystemInfo_t *systemInfo = null;
 
   systemInfo = (SystemInfo_t *)xMemAlloc(sizeof(SystemInfo_t));

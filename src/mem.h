@@ -40,7 +40,7 @@ extern "C" {
 
 void *xMemAlloc(size_t size_);
 void xMemFree(void *ptr_);
-size_t xMemGetUsed();
+size_t xMemGetUsed(void);
 size_t xMemGetSize(void *ptr_);
 void memcpy_(void *dest_, const void *src_, size_t n_);
 void memset_(void *dest_, int16_t val_, size_t n_);
