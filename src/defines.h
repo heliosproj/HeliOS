@@ -26,8 +26,8 @@
 #ifndef DEFINES_H_
 #define DEFINES_H_
 
-#include <stdint.h>
 #include <limits.h>
+#include <stdint.h>
 
 // TO-DO: REMOVE BEFORE RELEASE!!
 #pragma message("NOTE: Remove OTHER_ARCH_LINUX define from defines.h before release.")
@@ -110,29 +110,39 @@ typedef uint32_t Time_t;
 
 /* Define "null" if not defined. */
 #if !defined(null)
-#define null ((void *)0x0)
+#define null 0x0
 #endif
 
 /* Define "true" if not defined. */
 #if !defined(true)
-#define true 0x1
+#define true 0x1u
 #endif
 
 /* Define "false" if not defined. */
 #if !defined(false)
-#define false 0x0
+#define false 0x0u
+#endif
+
+/* Redefine CONFIG_HEAP_SIZE_IN_BLOCKS with the data type. */
+#if !defined(HEAP_SIZE_IN_BLOCKS)
+#define HEAP_SIZE_IN_BLOCKS ((Word_t)CONFIG_HEAP_SIZE_IN_BLOCKS)
+#endif
+
+/* Redefine CONFIG_HEAP_BLOCK_SIZE with the data type. */
+#if !defined(HEAP_BLOCK_SIZE)
+#define HEAP_BLOCK_SIZE ((Word_t)CONFIG_HEAP_BLOCK_SIZE)
 #endif
 
 /* Define the raw size of the heap in bytes based on the number of blocks
 the heap contains and the size of each block in bytes. */
 #if !defined(HEAP_RAW_SIZE)
-#define HEAP_RAW_SIZE CONFIG_HEAP_SIZE_IN_BLOCKS * CONFIG_HEAP_BLOCK_SIZE
+#define HEAP_RAW_SIZE HEAP_SIZE_IN_BLOCKS * HEAP_BLOCK_SIZE
 #endif
 
 /* Define the size in bytes of the product name which is accessible through
 xSystemGetSystemInfo(). */
 #if !defined(PRODUCTNAME_SIZE)
-#define PRODUCTNAME_SIZE 6
+#define PRODUCTNAME_SIZE 6u
 #endif
 
 /* Define the product name which is accessible through xSystemGetSystemInfo(). */
@@ -143,19 +153,19 @@ xSystemGetSystemInfo(). */
 /* Define the product major version number which is accessible through
 xSystemGetSystemInfo(). */
 #if !defined(MAJOR_VERSION_NO)
-#define MAJOR_VERSION_NO 0
+#define MAJOR_VERSION_NO 0u
 #endif
 
 /* Define the product minor version number which is accessible through
 xSystemGetSystemInfo(). */
 #if !defined(MINOR_VERSION_NO)
-#define MINOR_VERSION_NO 3
+#define MINOR_VERSION_NO 3u
 #endif
 
 /* Define the product patch version number which is accessible through
 xSystemGetSystemInfo(). */
 #if !defined(PATCH_VERSION_NO)
-#define PATCH_VERSION_NO 0
+#define PATCH_VERSION_NO 0u
 #endif
 
 /* Define the macro which sets the critical flag to true when
