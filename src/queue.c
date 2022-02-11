@@ -32,7 +32,6 @@ extern TaskList_t *taskList;
 /* The xQueueCreate() system call creates a message queue for inter-task
 communication. */
 Queue_t *xQueueCreate(Base_t limit_) {
-
   Queue_t *queue = NULL;
 
   /* Check to make sure the limit parameter is greater than or equal to the
@@ -83,7 +82,7 @@ Base_t xQueueGetLength(Queue_t *queue_) {
 
   /* Check if the queue parameter is not null. */
   if (ISNOTNULLPTR(queue_)) {
-    messageCursor = (QueueMessage_t*) queue_->head;
+    messageCursor = (Message_t *)queue_->head;
 
     /* If the queue has a head, iterate through the queue and count the number of messages. */
     while (ISNOTNULLPTR(messageCursor)) {
@@ -190,7 +189,6 @@ Base_t xQueueMessagesWaiting(Queue_t *queue_) {
 /* The xQueueSend() system call will send a message to the queue. The size of the message
 value is passed in the message bytes parameter. */
 Base_t xQueueSend(Queue_t *queue_, Base_t messageBytes_, const char *messageValue_) {
-
   Message_t *message = NULL;
 
   Base_t messages = 0x0u;
@@ -199,7 +197,7 @@ Base_t xQueueSend(Queue_t *queue_, Base_t messageBytes_, const char *messageValu
 
   /* Check if the queue parameter is not null, message bytes is between one and CONFIG_MESSAGE_VALUE_BYTES and the message value parameter
   is not null. */
-  if (ISNOTNULLPTR(queue_) && messageBytes_ > 0x0u && messageBytes_ <= MESSAGE_VALUE_BYTES && ISNOTNULLPTR(messageValue_)) {
+  if (ISNOTNULLPTR(queue_) && messageBytes_ > 0x0u && messageBytes_ <= CONFIG_MESSAGE_VALUE_BYTES && ISNOTNULLPTR(messageValue_)) {
     messageCursor = queue_->head;
 
     /* If the queue has a head, iterate through the queue and count the number of messages. */
@@ -218,7 +216,7 @@ Base_t xQueueSend(Queue_t *queue_, Base_t messageBytes_, const char *messageValu
       if (ISNOTNULLPTR(message)) {
         message->messageBytes = messageBytes_;
 
-        memcpy_(message->messageValue, messageValue_, MESSAGE_VALUE_BYTES);
+        memcpy_(message->messageValue, messageValue_, CONFIG_MESSAGE_VALUE_BYTES);
 
         message->next = NULL;
 
@@ -260,7 +258,7 @@ QueueMessage_t *xQueuePeek(Queue_t *queue_) {
       if (ISNOTNULLPTR(message)) {
         message->messageBytes = queue_->head->messageBytes;
 
-        memcpy_(message->messageValue, queue_->head->messageValue, MESSAGE_VALUE_BYTES);
+        memcpy_(message->messageValue, queue_->head->messageValue, CONFIG_MESSAGE_VALUE_BYTES);
 
         return message;
       }
@@ -273,7 +271,6 @@ QueueMessage_t *xQueuePeek(Queue_t *queue_) {
 /* The xQueueDropMessage() system call will drop the next message from the queue without
 returning the message. */
 void xQueueDropMessage(Queue_t *queue_) {
-
   QueueMessage_t *message = NULL;
 
   /* Check if the queue parameter is not null. */
@@ -281,7 +278,6 @@ void xQueueDropMessage(Queue_t *queue_) {
     /* Check if the head of the queue is null, if so enable interrupts and
     return because there is nothing to drop. */
     if (ISNULLPTR(queue_->head)) {
-
       return;
     }
 

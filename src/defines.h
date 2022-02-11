@@ -132,35 +132,10 @@ typedef uint32_t Time_t;
 #define ZERO 0x0u
 #endif
 
-/* Redefine CONFIG_MESSAGE_VALUE_BYTES with the type cast. */
-#if !defined(MESSAGE_VALUE_BYTES)
-#define MESSAGE_VALUE_BYTES ((Base_t)CONFIG_MESSAGE_VALUE_BYTES)
-#endif
-
-/* Redefine CONFIG_NOTIFICATION_VALUE_BYTES with the type cast. */
-#if !defined(NOTIFICATION_VALUE_BYTES)
-#define NOTIFICATION_VALUE_BYTES ((Base_t)CONFIG_NOTIFICATION_VALUE_BYTES)
-#endif
-
-/* Redefine CONFIG_TASK_NAME_BYTES with the type cast. */
-#if !defined(TASK_NAME_BYTES)
-#define TASK_NAME_BYTES ((Base_t)CONFIG_TASK_NAME_BYTES)
-#endif
-
-/* Redefine CONFIG_HEAP_SIZE_IN_BLOCKS with the type cast. */
-#if !defined(HEAP_SIZE_IN_BLOCKS)
-#define HEAP_SIZE_IN_BLOCKS ((Word_t)CONFIG_HEAP_SIZE_IN_BLOCKS)
-#endif
-
-/* Redefine CONFIG_HEAP_BLOCK_SIZE with the type cast. */
-#if !defined(HEAP_BLOCK_SIZE)
-#define HEAP_BLOCK_SIZE ((Word_t)CONFIG_HEAP_BLOCK_SIZE)
-#endif
-
 /* Define the raw size of the heap in bytes based on the number of blocks
 the heap contains and the size of each block in bytes. */
 #if !defined(HEAP_RAW_SIZE)
-#define HEAP_RAW_SIZE HEAP_SIZE_IN_BLOCKS * HEAP_BLOCK_SIZE
+#define HEAP_RAW_SIZE CONFIG_HEAP_SIZE_IN_BLOCKS * CONFIG_HEAP_BLOCK_SIZE
 #endif
 
 /* Define the size in bytes of the product name which is accessible through

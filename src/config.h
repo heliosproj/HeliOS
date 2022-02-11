@@ -40,7 +40,7 @@ to customize HeliOS for their specific use. */
  * @sa xQueueMessage
  * 
  */
-#define CONFIG_MESSAGE_VALUE_BYTES 16
+#define CONFIG_MESSAGE_VALUE_BYTES 16u
 
 /**
  * @brief Define the size in bytes of the direct to task notification value.
@@ -52,7 +52,7 @@ to customize HeliOS for their specific use. */
  * 
  * @sa xTaskNotification
  */
-#define CONFIG_NOTIFICATION_VALUE_BYTES 16
+#define CONFIG_NOTIFICATION_VALUE_BYTES 16u
 
 /**
  * @brief Define the size in bytes of the ASCII task name.
@@ -65,7 +65,7 @@ to customize HeliOS for their specific use. */
  * @sa xTaskInfo
  * 
  */
-#define CONFIG_TASK_NAME_BYTES 16
+#define CONFIG_TASK_NAME_BYTES 16u
 
 /**
  * @brief Define the number of blocks in the heap.
@@ -82,7 +82,7 @@ to customize HeliOS for their specific use. */
  * @sa CONFIG_HEAP_BLOCK_SIZE
  * 
  */
-#define CONFIG_HEAP_SIZE_IN_BLOCKS 512 
+#define CONFIG_HEAP_SIZE_IN_BLOCKS 512u
 
 
 /**
@@ -100,7 +100,7 @@ to customize HeliOS for their specific use. */
  * @sa CONFIG_HEAP_SIZE_IN_BLOCKS
  * 
  */
-#define CONFIG_HEAP_BLOCK_SIZE 32
+#define CONFIG_HEAP_BLOCK_SIZE 32u
 
 /**
  * @brief Define the minimum value for a message queue limit.
@@ -116,5 +116,5 @@ to customize HeliOS for their specific use. */
  * @sa xQueueCreate()
  * 
  */
-#define CONFIG_QUEUE_MINIMUM_LIMIT 5
+#define CONFIG_QUEUE_MINIMUM_LIMIT 5u
 #endif

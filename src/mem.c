@@ -67,11 +67,11 @@ void *xMemAlloc(size_t size_) {
     it now. */
     if (entryBlocksNeeded == 0x0u) {
       /* Calculate the quotient of the blocks needed for the heap entry. */
-      entryBlocksNeeded = (Word_t)sizeof(HeapEntry_t) / HEAP_BLOCK_SIZE;
+      entryBlocksNeeded = (Word_t)sizeof(HeapEntry_t) / CONFIG_HEAP_BLOCK_SIZE;
 
       /* Calculate the remainder of the blocks needed for the heap entry. If there is
       a remainder add one more block to the blocks needed. */
-      if (sizeof(HeapEntry_t) % HEAP_BLOCK_SIZE > 0x0u) {
+      if (sizeof(HeapEntry_t) % CONFIG_HEAP_BLOCK_SIZE > 0x0u) {
         /* Add one to the blocks needed since there is a remainder for the blocks
         needed. */
         entryBlocksNeeded++;
@@ -99,7 +99,7 @@ void *xMemAlloc(size_t size_) {
 
       /* Set the number of blocks in the first entry to the total number of blocks
       in the heap heap minus one block which is occupied by the first heap entry. */
-      start->blocks = HEAP_SIZE_IN_BLOCKS - entryBlocksNeeded;
+      start->blocks = CONFIG_HEAP_SIZE_IN_BLOCKS - entryBlocksNeeded;
 
       /* There is only one heap entry at this point so set the next to null. */
       start->next = NULL;
@@ -126,7 +126,7 @@ void *xMemAlloc(size_t size_) {
 
     /* If the block count does not match HEAP_SIZE_IN_BLOCKS then we need
     to return because the heap is corrupt. */
-    if (blockCount != HEAP_SIZE_IN_BLOCKS) {
+    if (blockCount != CONFIG_HEAP_SIZE_IN_BLOCKS) {
       /* Exit protect and enable interrupts before returning. */
 
       EXIT_PROTECT();
@@ -142,11 +142,11 @@ void *xMemAlloc(size_t size_) {
 
     /* Calculate the quotient of the requested blocks by dividing the requested size
     paramater by the heap block size also in bytes. */
-    requestedBlocks = (Word_t)size_ / HEAP_BLOCK_SIZE;
+    requestedBlocks = (Word_t)size_ / CONFIG_HEAP_BLOCK_SIZE;
 
     /* Calculate the remainder of the requested blocks. If there is a remainder we
     need to add one more block. */
-    if (size_ % HEAP_SIZE_IN_BLOCKS > 0x0u) {
+    if (size_ % CONFIG_HEAP_SIZE_IN_BLOCKS > 0x0u) {
       /* There was a remainder for the requested blocks so add one more block. */
       requestedBlocks++;
     }
@@ -206,7 +206,7 @@ void *xMemAlloc(size_t size_) {
     if (ISNULLPTR(entryCandidate->next)) {
       /* Set the entry candidate "next" to the new entry that will contain the remaining
       unused blocks. */
-      entryCandidate->next = (HeapEntry_t *)((Byte_t *)entryCandidate + (requestedBlocksWithOverhead * HEAP_BLOCK_SIZE));
+      entryCandidate->next = (HeapEntry_t *)((Byte_t *)entryCandidate + (requestedBlocksWithOverhead * CONFIG_HEAP_BLOCK_SIZE));
 
       /* Mark the new entry as free. */
       entryCandidate->next->free = true;
@@ -230,7 +230,7 @@ void *xMemAlloc(size_t size_) {
       entryCandidate->blocks = requestedBlocks;
 
       /* Clear the memory by mem-setting it to all zeros. */
-      memset_((void *)((Byte_t *)entryCandidate + (entryBlocksNeeded * HEAP_BLOCK_SIZE)), 0, requestedBlocks * HEAP_BLOCK_SIZE);
+      memset_((void *)((Byte_t *)entryCandidate + (entryBlocksNeeded * CONFIG_HEAP_BLOCK_SIZE)), 0, requestedBlocks * CONFIG_HEAP_BLOCK_SIZE);
 
       /* Exit protect and enable interrupts before returning. */
 
@@ -240,7 +240,7 @@ void *xMemAlloc(size_t size_) {
 
       /* Return the address of the memory but make sure we move it forward
       enough so the end-user doesn't write to the heap entry. */
-      return (void *)((Byte_t *)entryCandidate + (entryBlocksNeeded * HEAP_BLOCK_SIZE));
+      return (void *)((Byte_t *)entryCandidate + (entryBlocksNeeded * CONFIG_HEAP_BLOCK_SIZE));
 
     } else {
       /* Looks like we found a candidate that is NOT the last entry in the heap,
@@ -251,7 +251,7 @@ void *xMemAlloc(size_t size_) {
       entryCandidate->protected = SYSFLAG_PROTECT();
 
       /* Clear the memory by mem-setting it to all zeros. */
-      memset_((void *)((Byte_t *)entryCandidate + (entryBlocksNeeded * HEAP_BLOCK_SIZE)), 0, requestedBlocks * HEAP_BLOCK_SIZE);
+      memset_((void *)((Byte_t *)entryCandidate + (entryBlocksNeeded * CONFIG_HEAP_BLOCK_SIZE)), 0, requestedBlocks * CONFIG_HEAP_BLOCK_SIZE);
 
       /* Exit protect and enable interrupts before returning. */
 
@@ -261,7 +261,7 @@ void *xMemAlloc(size_t size_) {
 
       /* Return the address of the memory but make sure we move it forward
       enough so the end-user doesn't write to the heap entry. */
-      return (void *)((Byte_t *)entryCandidate + (entryBlocksNeeded * HEAP_BLOCK_SIZE));
+      return (void *)((Byte_t *)entryCandidate + (entryBlocksNeeded * CONFIG_HEAP_BLOCK_SIZE));
     }
   }
 
@@ -324,7 +324,7 @@ void xMemFree(void *ptr_) {
 
     /* Check if the counted blocks matches the HEAP_SIZE_IN_BLOCKS setting,
     if it doesn't return (i.e., Houston, we've had a problem.) */
-    if (blockCount != HEAP_SIZE_IN_BLOCKS) {
+    if (blockCount != CONFIG_HEAP_SIZE_IN_BLOCKS) {
       /* Exit protect and enable interrupts before returning. */
       EXIT_PROTECT();
 
@@ -343,7 +343,7 @@ void xMemFree(void *ptr_) {
 
     /* Determine the heap entry to free by moving back from the pointer by the byte size of one
     heap entry. */
-    entryToFree = (HeapEntry_t *)((Byte_t *)ptr_ - (entryBlocksNeeded * HEAP_BLOCK_SIZE));
+    entryToFree = (HeapEntry_t *)((Byte_t *)ptr_ - (entryBlocksNeeded * CONFIG_HEAP_BLOCK_SIZE));
 
     /* To scan the heap, set the heap entry cursor to the start of the heap. */
     entryCursor = start;
@@ -440,13 +440,13 @@ size_t xMemGetUsed(void) {
 
   /* Check if the counted blocks matches the HEAP_SIZE_IN_BLOCKS setting,
   if it doesn't return. */
-  if (blockCount != HEAP_SIZE_IN_BLOCKS) {
+  if (blockCount != CONFIG_HEAP_SIZE_IN_BLOCKS) {
     return 0;
   }
 
   /* We want to return the amount of BYTES in use in the heap so multiply the
   used block count by the HEAP_BLOCK_SIZE. */
-  return usedBlockCount * HEAP_BLOCK_SIZE;
+  return usedBlockCount * CONFIG_HEAP_BLOCK_SIZE;
 }
 
 /* The xMemGetSize() system call returns the amount of memory in bytes that
@@ -492,7 +492,7 @@ size_t xMemGetSize(void *ptr_) {
 
     /* Check if the counted blocks matches the HEAP_SIZE_IN_BLOCKS setting,
     if it doesn't return. */
-    if (blockCount != HEAP_SIZE_IN_BLOCKS) {
+    if (blockCount != CONFIG_HEAP_SIZE_IN_BLOCKS) {
       return 0;
     }
 
@@ -506,7 +506,7 @@ size_t xMemGetSize(void *ptr_) {
 
     /* Determine the heap entry to get the size of by moving back from the pointer by the byte size of one
     heap entry. */
-    entryToSize = (HeapEntry_t *)((Byte_t *)ptr_ - (entryBlocksNeeded * HEAP_BLOCK_SIZE));
+    entryToSize = (HeapEntry_t *)((Byte_t *)ptr_ - (entryBlocksNeeded * CONFIG_HEAP_BLOCK_SIZE));
 
     /* To scan the heap, set the heap entry cursor to the start of the heap. */
     entryCursor = start;
@@ -530,7 +530,7 @@ size_t xMemGetSize(void *ptr_) {
 
     /* We want to return the amount of BYTES in use by the pointer so multiply the
     blocks consumed by the entry by the HEAP_BLOCK_SIZE. */
-    return entryCursor->blocks * HEAP_BLOCK_SIZE;
+    return entryCursor->blocks * CONFIG_HEAP_BLOCK_SIZE;
   }
 
   return 0;
