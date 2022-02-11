@@ -50,9 +50,9 @@ void *xMemAlloc(size_t size_) {
   /* To get the maximum value of Word_t, we underflow the unsigned type. */
   Word_t leastBlocks = -1;
 
-  HeapEntry_t *entryCursor = null;
+  HeapEntry_t *entryCursor = NULL;
 
-  HeapEntry_t *entryCandidate = null;
+  HeapEntry_t *entryCandidate = NULL;
 
   /* Confirm the requested size in bytes is greater than zero. */
   if (size_ > 0x0u) {
@@ -100,7 +100,7 @@ void *xMemAlloc(size_t size_) {
       ((HeapEntry_t *)heap)->blocks = HEAP_SIZE_IN_BLOCKS - entryBlocksNeeded;
 
       /* There is only one heap entry at this point so set the next to null. */
-      ((HeapEntry_t *)heap)->next = null;
+      ((HeapEntry_t *)heap)->next = NULL;
     }
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -131,7 +131,7 @@ void *xMemAlloc(size_t size_) {
 
       ENABLE_INTERRUPTS();
 
-      return null;
+      return NULL;
     }
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -191,7 +191,7 @@ void *xMemAlloc(size_t size_) {
 
       ENABLE_INTERRUPTS();
 
-      return null;
+      return NULL;
     }
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -216,7 +216,7 @@ void *xMemAlloc(size_t size_) {
       entryCandidate->next->blocks = entryCandidate->blocks - requestedBlocksWithOverhead;
 
       /* Set the new entry's "next: to null since it is now the last entry in the heap. */
-      entryCandidate->next->next = null;
+      entryCandidate->next->next = NULL;
 
       /* Mark the candidate entry as no longer free. */
       entryCandidate->free = false;
@@ -269,7 +269,7 @@ void *xMemAlloc(size_t size_) {
 
   ENABLE_INTERRUPTS();
 
-  return null;
+  return NULL;
 }
 
 /* The xMemFree() system call will free heap memory pointed to by the pointer parameter. */
@@ -279,9 +279,9 @@ void xMemFree(void *ptr_) {
 
   Word_t blockCount = 0x0u;
 
-  HeapEntry_t *entryCursor = null;
+  HeapEntry_t *entryCursor = NULL;
 
-  HeapEntry_t *entryToFree = null;
+  HeapEntry_t *entryToFree = NULL;
 
   /* Check to make sure the end-user passed a pointer that is at least not null. */
   if (ISNOTNULLPTR(ptr_)) {
@@ -407,7 +407,7 @@ size_t xMemGetUsed(void) {
 
   Word_t usedBlockCount = 0x0u;
 
-  HeapEntry_t *entryCursor = null;
+  HeapEntry_t *entryCursor = NULL;
 
   /* Check if the entry at the start of the heap is un-initialized by looking
   at the number of blocks it contains. If it is zero, then the heap has not been initialized so
@@ -453,9 +453,9 @@ is currently allocated to a specific pointer. */
 size_t xMemGetSize(void *ptr_) {
   Word_t blockCount = 0x0u;
 
-  HeapEntry_t *entryCursor = null;
+  HeapEntry_t *entryCursor = NULL;
 
-  HeapEntry_t *entryToSize = null;
+  HeapEntry_t *entryToSize = NULL;
 
   /* Check to make sure the end-user passed a pointer that is at least not null. */
   if (ISNOTNULLPTR(ptr_)) {

@@ -29,16 +29,16 @@
 extern SysFlags_t sysFlags;
 
 /* Declare and initialize the task list to null. */
-TaskList_t *taskList = null;
+TaskList_t *taskList = NULL;
 
 /* The xTaskCreate() system call will create a new task. The task will be created with its
 state set to suspended. The xTaskCreate() and xTaskDelete() system calls cannot be called within
 a task. They MUST be called outside of the scope of the HeliOS scheduler. */
 Task_t *xTaskCreate(const char *name_, void (*callback_)(Task_t *, TaskParm_t *), TaskParm_t *taskParameter_) {
 
-  Task_t *task = null;
+  Task_t *task = NULL;
 
-  Task_t *taskCursor = null;
+  Task_t *taskCursor = NULL;
 
   /* Check if not in a critical section from CRITICAL_ENTER() and make sure the name and callback parameters
   are not null. */
@@ -52,7 +52,7 @@ Task_t *xTaskCreate(const char *name_, void (*callback_)(Task_t *, TaskParm_t *)
       the required memory. Enable interrupts and return null. */
       if (ISNULLPTR(taskList)) {
 
-        return null;
+        return NULL;
       }
     }
 
@@ -73,7 +73,7 @@ Task_t *xTaskCreate(const char *name_, void (*callback_)(Task_t *, TaskParm_t *)
 
       task->taskParameter = taskParameter_;
 
-      task->next = null;
+      task->next = NULL;
 
       taskCursor = taskList->head;
 
@@ -97,23 +97,23 @@ Task_t *xTaskCreate(const char *name_, void (*callback_)(Task_t *, TaskParm_t *)
   }
 
 
-  return null;
+  return NULL;
 }
 
 /* The xTaskDelete() system call will delete a task. The xTaskCreate() and xTaskDelete() system calls
 cannot be called within a task. They MUST be called outside of the scope of the HeliOS scheduler. */
 void xTaskDelete(Task_t *task_) {
 
-  Task_t *taskCursor = null;
+  Task_t *taskCursor = NULL;
 
-  Task_t *taskPrevious = null;
+  Task_t *taskPrevious = NULL;
 
   /* Check if not in a critical section from CRITICAL_ENTER() and make sure the task list is not null
   and that the task parameter is also not null. */
   if (SYSFLAG_CRITICAL() == false && ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_)) {
     taskCursor = taskList->head;
 
-    taskPrevious = null;
+    taskPrevious = NULL;
 
     /* Check if the task cursor is not null and if the task cursor equals the task
     to be deleted. */
@@ -155,7 +155,7 @@ task specified by its ASCII name. The length of the task name is dependent on th
 CONFIG_TASK_NAME_BYTES setting. The name is compared byte-for-byte so the name is
 case sensitive. */
 Task_t *xTaskGetHandleByName(const char *name_) {
-  Task_t *taskCursor = null;
+  Task_t *taskCursor = NULL;
 
   /* Check if the task list is not null and the name parameter is also not null. */
   if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(name_)) {
@@ -173,13 +173,13 @@ Task_t *xTaskGetHandleByName(const char *name_) {
     }
   }
 
-  return null;
+  return NULL;
 }
 
 /* The xTaskGetHandleById() system call will return a pointer to the task handle
 specified by its identifier. */
 Task_t *xTaskGetHandleById(TaskId_t id_) {
-  Task_t *taskCursor = null;
+  Task_t *taskCursor = NULL;
 
   /* Check if the task list is not null and the identifier parameter is greater than
   zero. */
@@ -197,7 +197,7 @@ Task_t *xTaskGetHandleById(TaskId_t id_) {
     }
   }
 
-  return null;
+  return NULL;
 }
 
 /* The xTaskGetAllRunTimeStats() system call will return the runtime statistics for all
@@ -209,9 +209,9 @@ TaskRunTimeStats_t *xTaskGetAllRunTimeStats(Base_t *tasks_) {
 
   Base_t tasks = 0x0u;
 
-  Task_t *taskCursor = null;
+  Task_t *taskCursor = NULL;
 
-  TaskRunTimeStats_t *taskRunTimeStats = null;
+  TaskRunTimeStats_t *taskRunTimeStats = NULL;
 
   /* Check if the task list is not null and the tasks parameter is not null. */
   if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(tasks_)) {
@@ -255,16 +255,16 @@ TaskRunTimeStats_t *xTaskGetAllRunTimeStats(Base_t *tasks_) {
     *tasks_ = 0x0u;
   }
 
-  return null;
+  return NULL;
 }
 
 /* The xTaskGetTaskRunTimeStats() system call returns the task runtime statistics for
 one task. The xTaskGetTaskRunTimeStats() system call returns the xTaskRunTimeStats type.
 The memory must be freed by calling xMemFree() after it is no longer needed. */
 TaskRunTimeStats_t *xTaskGetTaskRunTimeStats(Task_t *task_) {
-  Task_t *taskCursor = null;
+  Task_t *taskCursor = NULL;
 
-  TaskRunTimeStats_t *taskRunTimeStats = null;
+  TaskRunTimeStats_t *taskRunTimeStats = NULL;
 
   /* Check if the task list and the task parameter is not null. */
   if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_)) {
@@ -278,7 +278,7 @@ TaskRunTimeStats_t *xTaskGetTaskRunTimeStats(Task_t *task_) {
 
     /* If the task cursor is null, the task could not be found so return null. */
     if (ISNULLPTR(taskCursor)) {
-      return null;
+      return NULL;
     }
 
     taskRunTimeStats = (TaskRunTimeStats_t *)xMemAlloc(sizeof(TaskRunTimeStats_t));
@@ -293,7 +293,7 @@ TaskRunTimeStats_t *xTaskGetTaskRunTimeStats(Task_t *task_) {
     }
   }
 
-  return null;
+  return NULL;
 }
 
 /* The xTaskGetNumberOfTasks() system call returns the current number of tasks
@@ -301,7 +301,7 @@ regardless of their state. */
 Base_t xTaskGetNumberOfTasks(void) {
   Base_t tasks = 0x0u;
 
-  Task_t *taskCursor = null;
+  Task_t *taskCursor = NULL;
 
   /* Check if the task list is not null. */
   if (ISNOTNULLPTR(taskList)) {
@@ -328,9 +328,9 @@ Base_t xTaskGetNumberOfTasks(void) {
 /* The xTaskGetTaskInfo() system call returns the xTaskInfo structure containing
 the details of the task including its identifier, name, state and runtime statistics. */
 TaskInfo_t *xTaskGetTaskInfo(Task_t *task_) {
-  Task_t *taskCursor = null;
+  Task_t *taskCursor = NULL;
 
-  TaskInfo_t *taskInfo = null;
+  TaskInfo_t *taskInfo = NULL;
 
   /* Check if the task list is not null and the task parameter is not null. */
   if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_)) {
@@ -345,7 +345,7 @@ TaskInfo_t *xTaskGetTaskInfo(Task_t *task_) {
     /* Check if the task cursor is null, if so the task could not be found
     so return null. */
     if (ISNULLPTR(taskCursor)) {
-      return null;
+      return NULL;
     }
 
     taskInfo = (TaskInfo_t *)xMemAlloc(sizeof(TaskInfo_t));
@@ -366,12 +366,12 @@ TaskInfo_t *xTaskGetTaskInfo(Task_t *task_) {
     }
   }
 
-  return null;
+  return NULL;
 }
 
 /* The xTaskGetTaskState() system call will return the state of the task. */
 TaskState_t xTaskGetTaskState(Task_t *task_) {
-  Task_t *taskCursor = null;
+  Task_t *taskCursor = NULL;
 
   /* Check if the task list is not null and the task parameter is not null. */
   if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_)) {
@@ -399,9 +399,9 @@ TaskState_t xTaskGetTaskState(Task_t *task_) {
 task is dependent on the setting CONFIG_TASK_NAME_BYTES. The task name is NOT a null
 terminated char array. */
 char *xTaskGetName(Task_t *task_) {
-  char *name = null;
+  char *name = NULL;
 
-  Task_t *taskCursor = null;
+  Task_t *taskCursor = NULL;
 
   /* Check if the task list is not null and the task parameter is not null. */
   if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_)) {
@@ -416,7 +416,7 @@ char *xTaskGetName(Task_t *task_) {
     /* Check if the task cursor is null, if so the task could not be found
     so return null. */
     if (ISNULLPTR(taskCursor)) {
-      return null;
+      return NULL;
     }
 
     name = (char *)xMemAlloc(TASK_NAME_BYTES);
@@ -429,12 +429,12 @@ char *xTaskGetName(Task_t *task_) {
     }
   }
 
-  return null;
+  return NULL;
 }
 
 /* The xTaskGetId() system call returns the task identifier for the task. */
 TaskId_t xTaskGetId(Task_t *task_) {
-  Task_t *taskCursor = null;
+  Task_t *taskCursor = NULL;
 
   /* Check if the task list is not null and the task parameter is not null. */
   if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_)) {
@@ -460,13 +460,13 @@ TaskId_t xTaskGetId(Task_t *task_) {
 
 /* TO-DO: Implement xTaskList(). */
 char *xTaskList(void) {
-  return null;
+  return NULL;
 }
 
 /* The xTaskNotifyStateClear() system call will clear a waiting task notification if one
 exists without returning the notification. */
 void xTaskNotifyStateClear(Task_t *task_) {
-  Task_t *taskCursor = null;
+  Task_t *taskCursor = NULL;
 
   /* Check if the task list is not null and the task parameter is not null. */
   if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_)) {
@@ -498,7 +498,7 @@ void xTaskNotifyStateClear(Task_t *task_) {
 /* The xTaskNotificationIsWaiting() system call will return true or false depending
 on whether there is a task notification waiting for the task. */
 Base_t xTaskNotificationIsWaiting(Task_t *task_) {
-  Task_t *taskCursor = null;
+  Task_t *taskCursor = NULL;
 
   /* Check if the task list is not null and the task parameter is not null. */
   if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_)) {
@@ -532,7 +532,7 @@ notification bytes must be between one and the CONFIG_NOTIFICATION_VALUE_BYTES s
 value must contain a pointer to a char array containing the notification value. If the task already
 has a waiting task notification, xTaskNotifyGive() will NOT overwrite the waiting task notification. */
 void xTaskNotifyGive(Task_t *task_, Base_t notificationBytes_, const char *notificationValue_) {
-  Task_t *taskCursor = null;
+  Task_t *taskCursor = NULL;
 
   /* Check if the task list is not null and the task parameter is not null, the notification bytes are between
   one and CONFIG_NOTIFICATION_VALUE_BYTES and that the notification value char array pointer is not null. */
@@ -567,9 +567,9 @@ void xTaskNotifyGive(Task_t *task_, Base_t notificationBytes_, const char *notif
 is one. The xTaskNotifyTake() system call will return an xTaskNotification structure containing
 the notification bytes and its value. */
 TaskNotification_t *xTaskNotifyTake(Task_t *task_) {
-  Task_t *taskCursor = null;
+  Task_t *taskCursor = NULL;
 
-  TaskNotification_t *taskNotification = null;
+  TaskNotification_t *taskNotification = NULL;
 
   /* Check if the task list is not null and the task parameter is not null. */
   if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_)) {
@@ -584,7 +584,7 @@ TaskNotification_t *xTaskNotifyTake(Task_t *task_) {
     /* Check if the task cursor is null, if so the task could not be found
     so return null. */
     if (ISNULLPTR(taskCursor)) {
-      return null;
+      return NULL;
     }
 
     /* Check if the notification bytes are greater than zero, if so there is a waiting task
@@ -608,14 +608,14 @@ TaskNotification_t *xTaskNotifyTake(Task_t *task_) {
     }
   }
 
-  return null;
+  return NULL;
 }
 
 /* The xTaskResume() system call will resume a suspended task. Tasks are suspended on creation
 so either xTaskResume() or xTaskWait() must be called to place the task in a state that the scheduler
 will execute. */
 void xTaskResume(Task_t *task_) {
-  Task_t *taskCursor = null;
+  Task_t *taskCursor = NULL;
 
   /* Check if the task list is not null and the task parameter is not null. */
   if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_)) {
@@ -642,7 +642,7 @@ void xTaskResume(Task_t *task_) {
 /* The xTaskSuspend() system call will suspend a task. A task that has been suspended
 will not be executed by the scheduler until xTaskResume() or xTaskWait() is called. */
 void xTaskSuspend(Task_t *task_) {
-  Task_t *taskCursor = null;
+  Task_t *taskCursor = NULL;
 
   /* Check if the task list is not null and the task parameter is not null. */
   if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_)) {
@@ -671,7 +671,7 @@ be in the waiting state for event driven multitasking with either direct to task
 notifications OR setting the period on the task timer with xTaskChangePeriod(). A task
 in the waiting state will not be executed by the scheduler until an event has occurred. */
 void xTaskWait(Task_t *task_) {
-  Task_t *taskCursor = null;
+  Task_t *taskCursor = NULL;
 
   /* Check if the task list is not null and the task parameter is not null. */
   if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_)) {
@@ -701,7 +701,7 @@ must be in the waiting state set by calling xTaskWait() on the task. Once the ti
 and the task is in the waiting state, the task will be executed every N microseconds based on the period.
 Changing the period to zero will prevent the task from being executed even if it is in the waiting state. */
 void xTaskChangePeriod(Task_t *task_, Time_t timerPeriod_) {
-  Task_t *taskCursor = null;
+  Task_t *taskCursor = NULL;
 
   /* Check if the task list is not null and the task parameter is not null. */
   if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_)) {
@@ -728,7 +728,7 @@ void xTaskChangePeriod(Task_t *task_, Time_t timerPeriod_) {
 /* The xTaskGetPeriod() will return the period for the timer for the specified task. See
 xTaskChangePeriod() for more information on how the task timer works. */
 Time_t xTaskGetPeriod(Task_t *task_) {
-  Task_t *taskCursor = null;
+  Task_t *taskCursor = NULL;
 
   /* Check if the task list is not null and the task parameter is not null. */
   if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_)) {
@@ -754,7 +754,7 @@ Time_t xTaskGetPeriod(Task_t *task_) {
 /* The xTaskResetTimer() system call will reset the task timer. xTaskResetTimer() does not change
 the timer period or the task state when called. See xTaskChangePeriod() for more details on task timers. */
 void xTaskResetTimer(Task_t *task_) {
-  Task_t *taskCursor = null;
+  Task_t *taskCursor = NULL;
 
   /* Check if the task list is not null and the task parameter is not null. */
   if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_)) {

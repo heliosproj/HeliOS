@@ -41,9 +41,9 @@ SysFlags_t sysFlags = {
 
 /* The xTaskStartScheduler() system call passes control to the HeliOS scheduler. */
 void xTaskStartScheduler(void) {
-  Task_t *runTask = null;
+  Task_t *runTask = NULL;
 
-  Task_t *taskCursor = null;
+  Task_t *taskCursor = NULL;
 
   /* Going to try getting rid of TIM_T_MAX and just underflow an
   unsigned integer. */
@@ -95,7 +95,7 @@ void xTaskStartScheduler(void) {
       if (ISNOTNULLPTR(runTask)) {
         TaskRun(runTask);
 
-        runTask = null;
+        runTask = NULL;
       }
 
       leastRunTime = -1;
@@ -111,7 +111,7 @@ void xTaskStartScheduler(void) {
 /* If the runtime overflow flag is set, then RunTimeReset() is called to reset all of the
 total runtimes on tasks to their last runtime. */
 void RunTimeReset(void) {
-  Task_t *taskCursor = null;
+  Task_t *taskCursor = NULL;
 
   /* Check if task list is not null before accessing it. */
   if (ISNOTNULLPTR(taskList)) {
@@ -205,7 +205,7 @@ void xTaskStopScheduler(void) {
 information about the system including the OS (product) name, its version and how many tasks
 are currently in the running, suspended or waiting states. */
 SystemInfo_t *xSystemGetSystemInfo(void) {
-  SystemInfo_t *systemInfo = null;
+  SystemInfo_t *systemInfo = NULL;
 
   systemInfo = (SystemInfo_t *)xMemAlloc(sizeof(SystemInfo_t));
 
@@ -225,5 +225,5 @@ SystemInfo_t *xSystemGetSystemInfo(void) {
     return systemInfo;
   }
 
-  return null;
+  return NULL;
 }

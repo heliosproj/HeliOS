@@ -108,11 +108,6 @@ typedef uint32_t Time_t;
 typedef uint32_t Time_t;
 #endif
 
-/* Define "null" if not defined. */
-#if !defined(null)
-#define null 0x0
-#endif
-
 /* Define "true" if not defined. */
 #if !defined(true)
 #define true 0x1u
@@ -246,12 +241,12 @@ reset. */
 /* Define a marco which makes null pointer checks more readable and
 concise */
 #if !defined(ISNOTNULLPTR)
-#define ISNOTNULLPTR(p) null != p
+#define ISNOTNULLPTR(p) NULL != p
 #endif
 
 /* Define a marco which makes null pointer checks more readable and
 concise */
 #if !defined(ISNULLPTR)
-#define ISNULLPTR(p) null == p
+#define ISNULLPTR(p) NULL == p
 #endif
 #endif
