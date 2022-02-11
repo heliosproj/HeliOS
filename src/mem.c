@@ -31,7 +31,7 @@ extern TaskList_t *taskList;
 
 static Byte_t heap[HEAP_RAW_SIZE];
 
-static HeapEntry_t *start = heap;
+static HeapEntry_t *start = (HeapEntry_t *)heap;
 
 static Word_t entryBlocksNeeded = 0x0u;
 
@@ -563,8 +563,9 @@ int16_t memcmp_(const void *s1_, const void *s2_, size_t n_) {
   char *s2 = (char *)s2_;
 
   for (size_t i = 0; i < n_; i++) {
-    if (*s1 != *s2)
+    if (*s1 != *s2) {
       return *s1 - *s2;
+    }
     s1++;
     s2++;
   }
