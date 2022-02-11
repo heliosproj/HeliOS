@@ -31,6 +31,8 @@ extern TaskList_t *taskList;
 
 static Byte_t heap[HEAP_RAW_SIZE];
 
+static HeapEntry_t *start = heap;
+
 static Word_t entryBlocksNeeded = 0x0u;
 
 /* The xMemAlloc() system call will allocate heap memory and return a pointer
@@ -65,7 +67,7 @@ void *xMemAlloc(size_t size_) {
     it now. */
     if (entryBlocksNeeded == 0x0u) {
       /* Calculate the quotient of the blocks needed for the heap entry. */
-      entryBlocksNeeded = sizeof(HeapEntry_t) / HEAP_BLOCK_SIZE;
+      entryBlocksNeeded = (Word_t)sizeof(HeapEntry_t) / HEAP_BLOCK_SIZE;
 
       /* Calculate the remainder of the blocks needed for the heap entry. If there is
       a remainder add one more block to the blocks needed. */
@@ -83,24 +85,24 @@ void *xMemAlloc(size_t size_) {
 
     /* If the heap entry at the start of the heap has zero blocks then it hasn't
     been initialized yet, so do that now. */
-    if (((HeapEntry_t *)heap)->blocks == 0x0u) {
+    if (start->blocks == 0x0u) {
       /* Zero out the entire heap. HEAP_RAW_SIZE equates to HEAP_SIZE_IN_BLOCKS * HEAP_BLOCK_SIZE. */
       memset_(heap, 0, HEAP_RAW_SIZE);
 
       /* Set the heap entry to free because, it is free. */
-      ((HeapEntry_t *)heap)->free = true;
+      start->free = true;
 
       /* Mark the entry unprotected by setting protected to false. An entry is protected if the macro ENTER_PROTECT()
       is called before invoking xMemAlloc(). A protected entry cannot be freed by xMemFree() unless ENTER_PROTECT()
       is called beforehand. */
-      ((HeapEntry_t *)heap)->protected = false;
+      start->protected = false;
 
       /* Set the number of blocks in the first entry to the total number of blocks
       in the heap heap minus one block which is occupied by the first heap entry. */
-      ((HeapEntry_t *)heap)->blocks = HEAP_SIZE_IN_BLOCKS - entryBlocksNeeded;
+      start->blocks = HEAP_SIZE_IN_BLOCKS - entryBlocksNeeded;
 
       /* There is only one heap entry at this point so set the next to null. */
-      ((HeapEntry_t *)heap)->next = NULL;
+      start->next = NULL;
     }
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -110,7 +112,7 @@ void *xMemAlloc(size_t size_) {
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
     /* To scan the heap, set the heap entry cursor to the start of the heap. */
-    entryCursor = (HeapEntry_t *)heap;
+    entryCursor = start;
 
     /* While the heap entry cursor is not null, keep scanning. */
     while (ISNOTNULLPTR(entryCursor)) {
@@ -140,7 +142,7 @@ void *xMemAlloc(size_t size_) {
 
     /* Calculate the quotient of the requested blocks by dividing the requested size
     paramater by the heap block size also in bytes. */
-    requestedBlocks = size_ / HEAP_BLOCK_SIZE;
+    requestedBlocks = (Word_t)size_ / HEAP_BLOCK_SIZE;
 
     /* Calculate the remainder of the requested blocks. If there is a remainder we
     need to add one more block. */
@@ -160,7 +162,7 @@ void *xMemAlloc(size_t size_) {
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
     /* To scan the heap, need to set the heap entry cursor to the start of the heap. */
-    entryCursor = (HeapEntry_t *)heap;
+    entryCursor = start;
 
     /* While the heap entry cursor is not null, keep scanning. */
     while (ISNOTNULLPTR(entryCursor)) {
@@ -293,7 +295,7 @@ void xMemFree(void *ptr_) {
     /* Check if the entry at the start of the heap is un-initialized by looking
     at the blocks member. If it is zero, then the heap has not been initialized so
     just thrown in the towel. */
-    if (((HeapEntry_t *)heap)->blocks == 0x0u) {
+    if (start->blocks == 0x0u) {
       /* Exit protect and enable interrupts before returning. */
       EXIT_PROTECT();
 
@@ -309,7 +311,7 @@ void xMemFree(void *ptr_) {
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
     /* To scan the heap, set the heap entry cursor to the start of the heap. */
-    entryCursor = (HeapEntry_t *)heap;
+    entryCursor = start;
 
     /* While the heap entry cursor is not null, keep scanning. */
     while (ISNOTNULLPTR(entryCursor)) {
@@ -344,7 +346,7 @@ void xMemFree(void *ptr_) {
     entryToFree = (HeapEntry_t *)((Byte_t *)ptr_ - (entryBlocksNeeded * HEAP_BLOCK_SIZE));
 
     /* To scan the heap, set the heap entry cursor to the start of the heap. */
-    entryCursor = (HeapEntry_t *)heap;
+    entryCursor = start;
 
     /* While the heap entry cursor is not null, keep scanning. */
     while (ISNOTNULLPTR(entryCursor)) {
@@ -412,12 +414,12 @@ size_t xMemGetUsed(void) {
   /* Check if the entry at the start of the heap is un-initialized by looking
   at the number of blocks it contains. If it is zero, then the heap has not been initialized so
   just thrown in the towel. */
-  if (((HeapEntry_t *)heap)->blocks == 0x0u) {
+  if (start->blocks == 0x0u) {
     return 0;
   }
 
   /* To scan the heap, set the heap entry cursor to the start of the heap. */
-  entryCursor = (HeapEntry_t *)heap;
+  entryCursor = start;
 
   /* While the heap entry cursor is not null, keep scanning. */
   while (ISNOTNULLPTR(entryCursor)) {
@@ -428,7 +430,6 @@ size_t xMemGetUsed(void) {
     of blocks it contains plus the number of blocks consumed by the heap entry
     block to the used block count. */
     if (entryCursor->free == false) {
-
       /* Sum the number of used blocks for each heap entry in use. */
       usedBlockCount += entryCursor->blocks + entryBlocksNeeded;
     }
@@ -467,7 +468,7 @@ size_t xMemGetSize(void *ptr_) {
     /* Check if the entry at the start of the heap is un-initialized by looking
     at the blocks number of blocks it contains. If it is zero, then the heap has
     not been initialized so just thrown in the towel. */
-    if (((HeapEntry_t *)heap)->blocks == 0x0u) {
+    if (start->blocks == 0x0u) {
       return 0;
     }
 
@@ -478,14 +479,14 @@ size_t xMemGetSize(void *ptr_) {
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
     /* To scan the heap, set the heap entry cursor to the start of the heap. */
-    entryCursor = (HeapEntry_t *)heap;
+    entryCursor = start;
 
     /* While the heap entry cursor is not null, keep scanning. */
     while (ISNOTNULLPTR(entryCursor)) {
       blockCount += entryCursor->blocks + entryBlocksNeeded; /* Assuming entry blocks needed has been
                                                                 calculated if the heap has been initialized. */
 
-      /* Move on to the next heap entry. */                                                        
+      /* Move on to the next heap entry. */
       entryCursor = entryCursor->next;
     }
 
@@ -508,7 +509,7 @@ size_t xMemGetSize(void *ptr_) {
     entryToSize = (HeapEntry_t *)((Byte_t *)ptr_ - (entryBlocksNeeded * HEAP_BLOCK_SIZE));
 
     /* To scan the heap, set the heap entry cursor to the start of the heap. */
-    entryCursor = (HeapEntry_t *)heap;
+    entryCursor = start;
 
     /* While the heap entry cursor is not null, keep scanning. */
     while (ISNOTNULLPTR(entryCursor)) {
