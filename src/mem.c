@@ -31,7 +31,7 @@ extern TaskList_t *taskList;
 
 static Byte_t heap[HEAP_RAW_SIZE];
 
-static Word_t entryBlocksNeeded = 0;
+static Word_t entryBlocksNeeded = 0x0u;
 
 /* The xMemAlloc() system call will allocate heap memory and return a pointer
 to the newly allocated memory. */
@@ -39,13 +39,13 @@ void *xMemAlloc(size_t size_) {
   /* Disable interrupts because we can't be interrupted while modifying the heap. */
   DISABLE_INTERRUPTS();
 
-  Word_t blockCount = 0;
+  Word_t blockCount = 0x0u;
 
-  Word_t requestedBlocks = 0;
+  Word_t requestedBlocks = 0x0u;
 
   /* Requested blocks with overhead is the requested blocks + the number of blocks
   required for the heap entry. */
-  Word_t requestedBlocksWithOverhead = 0;
+  Word_t requestedBlocksWithOverhead = 0x0u;
 
   /* To get the maximum value of Word_t, we underflow the unsigned type. */
   Word_t leastBlocks = -1;
@@ -55,7 +55,7 @@ void *xMemAlloc(size_t size_) {
   HeapEntry_t *entryCandidate = null;
 
   /* Confirm the requested size in bytes is greater than zero. */
-  if (size_ > 0) {
+  if (size_ > 0x0u) {
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
     PHASE I: Determine how many blocks a heap entry requires. One block is generally
     sufficient but we shouldn't assume. This only needs to be done once.
@@ -63,13 +63,13 @@ void *xMemAlloc(size_t size_) {
 
     /* If we haven't calculated how many blocks a heap entry requires, calculate
     it now. */
-    if (entryBlocksNeeded == 0) {
+    if (entryBlocksNeeded == 0x0u) {
       /* Calculate the quotient of the blocks needed for the heap entry. */
       entryBlocksNeeded = sizeof(HeapEntry_t) / HEAP_BLOCK_SIZE;
 
       /* Calculate the remainder of the blocks needed for the heap entry. If there is
       a remainder add one more block to the blocks needed. */
-      if (sizeof(HeapEntry_t) % HEAP_BLOCK_SIZE > 0) {
+      if (sizeof(HeapEntry_t) % HEAP_BLOCK_SIZE > 0x0u) {
         /* Add one to the blocks needed since there is a remainder for the blocks
         needed. */
         entryBlocksNeeded++;
@@ -83,7 +83,7 @@ void *xMemAlloc(size_t size_) {
 
     /* If the heap entry at the start of the heap has zero blocks then it hasn't
     been initialized yet, so do that now. */
-    if (((HeapEntry_t *)heap)->blocks == 0) {
+    if (((HeapEntry_t *)heap)->blocks == 0x0u) {
       /* Zero out the entire heap. HEAP_RAW_SIZE equates to HEAP_SIZE_IN_BLOCKS * HEAP_BLOCK_SIZE. */
       memset_(heap, 0, HEAP_RAW_SIZE);
 
@@ -144,7 +144,7 @@ void *xMemAlloc(size_t size_) {
 
     /* Calculate the remainder of the requested blocks. If there is a remainder we
     need to add one more block. */
-    if (size_ % HEAP_SIZE_IN_BLOCKS > 0) {
+    if (size_ % HEAP_SIZE_IN_BLOCKS > 0x0u) {
       /* There was a remainder for the requested blocks so add one more block. */
       requestedBlocks++;
     }
@@ -277,7 +277,7 @@ void xMemFree(void *ptr_) {
   /* Disable interrupts because we can't be interrupted while modifying the heap. */
   DISABLE_INTERRUPTS();
 
-  Word_t blockCount = 0;
+  Word_t blockCount = 0x0u;
 
   HeapEntry_t *entryCursor = null;
 
@@ -293,7 +293,7 @@ void xMemFree(void *ptr_) {
     /* Check if the entry at the start of the heap is un-initialized by looking
     at the blocks member. If it is zero, then the heap has not been initialized so
     just thrown in the towel. */
-    if (((HeapEntry_t *)heap)->blocks == 0) {
+    if (((HeapEntry_t *)heap)->blocks == 0x0u) {
       /* Exit protect and enable interrupts before returning. */
       EXIT_PROTECT();
 
@@ -403,16 +403,16 @@ void xMemFree(void *ptr_) {
 /* The xMemGetUsed() system call returns the amount of memory in bytes
 that is currently allocated. */
 size_t xMemGetUsed(void) {
-  Word_t blockCount = 0;
+  Word_t blockCount = 0x0u;
 
-  Word_t usedBlockCount = 0;
+  Word_t usedBlockCount = 0x0u;
 
   HeapEntry_t *entryCursor = null;
 
   /* Check if the entry at the start of the heap is un-initialized by looking
   at the number of blocks it contains. If it is zero, then the heap has not been initialized so
   just thrown in the towel. */
-  if (((HeapEntry_t *)heap)->blocks == 0) {
+  if (((HeapEntry_t *)heap)->blocks == 0x0u) {
     return 0;
   }
 
@@ -451,7 +451,7 @@ size_t xMemGetUsed(void) {
 /* The xMemGetSize() system call returns the amount of memory in bytes that
 is currently allocated to a specific pointer. */
 size_t xMemGetSize(void *ptr_) {
-  Word_t blockCount = 0;
+  Word_t blockCount = 0x0u;
 
   HeapEntry_t *entryCursor = null;
 
@@ -467,7 +467,7 @@ size_t xMemGetSize(void *ptr_) {
     /* Check if the entry at the start of the heap is un-initialized by looking
     at the blocks number of blocks it contains. If it is zero, then the heap has
     not been initialized so just thrown in the towel. */
-    if (((HeapEntry_t *)heap)->blocks == 0) {
+    if (((HeapEntry_t *)heap)->blocks == 0x0u) {
       return 0;
     }
 

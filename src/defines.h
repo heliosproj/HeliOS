@@ -123,12 +123,27 @@ typedef uint32_t Time_t;
 #define false 0x0u
 #endif
 
-/* Redefine CONFIG_HEAP_SIZE_IN_BLOCKS with the data type. */
+/* Redefine CONFIG_MESSAGE_VALUE_BYTES with the type cast. */
+#if !defined(MESSAGE_VALUE_BYTES)
+#define MESSAGE_VALUE_BYTES ((Base_t)CONFIG_MESSAGE_VALUE_BYTES)
+#endif
+
+/* Redefine CONFIG_NOTIFICATION_VALUE_BYTES with the type cast. */
+#if !defined(NOTIFICATION_VALUE_BYTES)
+#define NOTIFICATION_VALUE_BYTES ((Base_t)CONFIG_NOTIFICATION_VALUE_BYTES)
+#endif
+
+/* Redefine CONFIG_TASK_NAME_BYTES with the type cast. */
+#if !defined(TASK_NAME_BYTES)
+#define TASK_NAME_BYTES ((Base_t)CONFIG_TASK_NAME_BYTES)
+#endif
+
+/* Redefine CONFIG_HEAP_SIZE_IN_BLOCKS with the type cast. */
 #if !defined(HEAP_SIZE_IN_BLOCKS)
 #define HEAP_SIZE_IN_BLOCKS ((Word_t)CONFIG_HEAP_SIZE_IN_BLOCKS)
 #endif
 
-/* Redefine CONFIG_HEAP_BLOCK_SIZE with the data type. */
+/* Redefine CONFIG_HEAP_BLOCK_SIZE with the type cast. */
 #if !defined(HEAP_BLOCK_SIZE)
 #define HEAP_BLOCK_SIZE ((Word_t)CONFIG_HEAP_BLOCK_SIZE)
 #endif

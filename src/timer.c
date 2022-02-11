@@ -244,7 +244,7 @@ Base_t xTimerHasTimerExpired(Timer_t *timer_) {
 
     /* If the state is running, timer period is greater than zero and if the elapsed time
     is equal to or greater than the timer period, return true. */
-    if (timerCursor->state == TimerStateRunning && timerCursor->timerPeriod > 0 && CURRENTTIME() - timerCursor->timerStartTime > timerCursor->timerPeriod) {
+    if (timerCursor->state == TimerStateRunning && timerCursor->timerPeriod > 0x0u && CURRENTTIME() - timerCursor->timerStartTime > timerCursor->timerPeriod) {
       return true;
     }
   }

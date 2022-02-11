@@ -65,7 +65,7 @@ Task_t *xTaskCreate(const char *name_, void (*callback_)(Task_t *, TaskParm_t *)
 
       task->id = taskList->nextId;
 
-      memcpy_(task->name, name_, CONFIG_TASK_NAME_BYTES);
+      memcpy_(task->name, name_, TASK_NAME_BYTES);
 
       task->state = TaskStateSuspended;
 
@@ -165,7 +165,7 @@ Task_t *xTaskGetHandleByName(const char *name_) {
     while (ISNOTNULLPTR(taskCursor)) {
       /* Compare the task name of the task pointed to by the task cursor against the
       name parameter. */
-      if (memcmp_(taskCursor->name, name_, CONFIG_TASK_NAME_BYTES) == 0) {
+      if (memcmp_(taskCursor->name, name_, TASK_NAME_BYTES) == 0x0u) {
         return taskCursor;
       }
 
@@ -183,7 +183,7 @@ Task_t *xTaskGetHandleById(TaskId_t id_) {
 
   /* Check if the task list is not null and the identifier parameter is greater than
   zero. */
-  if (ISNOTNULLPTR(taskList) && id_ > 0) {
+  if (ISNOTNULLPTR(taskList)) {
     taskCursor = taskList->head;
 
     /* While the task cursor is not null, check the task pointed to by the task cursor
@@ -205,9 +205,9 @@ Task_t *xTaskGetHandleById(TaskId_t id_) {
  the xTaskRunTimeStats type. An xBase variable must be passed by reference to xTaskGetAllRunTimeStats()
  which will contain the number of tasks so the end-user can iterate through the tasks. */
 TaskRunTimeStats_t *xTaskGetAllRunTimeStats(Base_t *tasks_) {
-  Base_t i = 0;
+  Base_t i = 0x0u;
 
-  Base_t tasks = 0;
+  Base_t tasks = 0x0u;
 
   Task_t *taskCursor = null;
 
@@ -252,7 +252,7 @@ TaskRunTimeStats_t *xTaskGetAllRunTimeStats(Base_t *tasks_) {
       }
     }
 
-    *tasks_ = 0;
+    *tasks_ = 0x0u;
   }
 
   return null;
@@ -299,7 +299,7 @@ TaskRunTimeStats_t *xTaskGetTaskRunTimeStats(Task_t *task_) {
 /* The xTaskGetNumberOfTasks() system call returns the current number of tasks
 regardless of their state. */
 Base_t xTaskGetNumberOfTasks(void) {
-  Base_t tasks = 0;
+  Base_t tasks = 0x0u;
 
   Task_t *taskCursor = null;
 
@@ -356,7 +356,7 @@ TaskInfo_t *xTaskGetTaskInfo(Task_t *task_) {
 
       taskInfo->state = taskCursor->state;
 
-      memcpy_(taskInfo->name, taskCursor->name, CONFIG_TASK_NAME_BYTES);
+      memcpy_(taskInfo->name, taskCursor->name, TASK_NAME_BYTES);
 
       taskInfo->lastRunTime = taskCursor->lastRunTime;
 
@@ -419,11 +419,11 @@ char *xTaskGetName(Task_t *task_) {
       return null;
     }
 
-    name = (char *)xMemAlloc(CONFIG_TASK_NAME_BYTES);
+    name = (char *)xMemAlloc(TASK_NAME_BYTES);
 
     /* Check if the task info memory has been allocated by xMemAlloc(). */
     if (ISNOTNULLPTR(name)) {
-      memcpy_(name, taskCursor->name, CONFIG_TASK_NAME_BYTES);
+      memcpy_(name, taskCursor->name, TASK_NAME_BYTES);
 
       return name;
     }
@@ -484,11 +484,11 @@ void xTaskNotifyStateClear(Task_t *task_) {
       return;
     }
 
-    /* If the task notification bytes are greater than zero, then there is a notficiation
+    /* If the task notification bytes are greater than zero, then there is a notification
     to clear. */
-    if (taskCursor->notificationBytes > 0) {
-      taskCursor->notificationBytes = 0;
-      memset_(taskCursor->notificationValue, 0, CONFIG_NOTIFICATION_VALUE_BYTES);
+    if (taskCursor->notificationBytes > 0x0u) {
+      taskCursor->notificationBytes = 0x0u;
+      memset_(taskCursor->notificationValue, 0, NOTIFICATION_VALUE_BYTES);
     }
   }
 
@@ -518,7 +518,7 @@ Base_t xTaskNotificationIsWaiting(Task_t *task_) {
 
     /* Check if the notification bytes are greater than zero. If so, there is a notification
     waiting so return true. */
-    if (taskCursor->notificationBytes > 0) {
+    if (taskCursor->notificationBytes > 0x0u) {
       return true;
     }
   }
@@ -536,7 +536,7 @@ void xTaskNotifyGive(Task_t *task_, Base_t notificationBytes_, const char *notif
 
   /* Check if the task list is not null and the task parameter is not null, the notification bytes are between
   one and CONFIG_NOTIFICATION_VALUE_BYTES and that the notification value char array pointer is not null. */
-  if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_) && notificationBytes_ > 0 && notificationBytes_ < CONFIG_NOTIFICATION_VALUE_BYTES && ISNOTNULLPTR(notificationValue_)) {
+  if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_) && notificationBytes_ > 0 && notificationBytes_ < NOTIFICATION_VALUE_BYTES && ISNOTNULLPTR(notificationValue_)) {
     taskCursor = taskList->head;
 
     /* While the task cursor is not null and the task cursor is not equal
@@ -553,10 +553,10 @@ void xTaskNotifyGive(Task_t *task_, Base_t notificationBytes_, const char *notif
 
     /* If the notification bytes are zero then there is not a notification already waiting,
     so copy the notification value into the task and set the notification bytes. */
-    if (taskCursor->notificationBytes == 0) {
+    if (taskCursor->notificationBytes == 0x0u) {
       taskCursor->notificationBytes = notificationBytes_;
 
-      memcpy_(taskCursor->notificationValue, notificationValue_, CONFIG_NOTIFICATION_VALUE_BYTES);
+      memcpy_(taskCursor->notificationValue, notificationValue_, NOTIFICATION_VALUE_BYTES);
     }
   }
 
@@ -589,7 +589,7 @@ TaskNotification_t *xTaskNotifyTake(Task_t *task_) {
 
     /* Check if the notification bytes are greater than zero, if so there is a waiting task
     notification. */
-    if (taskCursor->notificationBytes > 0) {
+    if (taskCursor->notificationBytes > 0x0u) {
       taskNotification = (TaskNotification_t *)xMemAlloc(sizeof(TaskNotification_t));
 
       /* Check if xMemAlloc() successfully allocated the memory for the task notification
@@ -597,11 +597,11 @@ TaskNotification_t *xTaskNotifyTake(Task_t *task_) {
       if (ISNOTNULLPTR(taskNotification)) {
         taskNotification->notificationBytes = taskCursor->notificationBytes;
 
-        memcpy_(taskNotification->notificationValue, taskCursor->notificationValue, CONFIG_NOTIFICATION_VALUE_BYTES);
+        memcpy_(taskNotification->notificationValue, taskCursor->notificationValue, NOTIFICATION_VALUE_BYTES);
 
-        taskCursor->notificationBytes = 0;
+        taskCursor->notificationBytes = 0x0u;
 
-        memset_(taskCursor->notificationValue, 0, CONFIG_NOTIFICATION_VALUE_BYTES);
+        memset_(taskCursor->notificationValue, 0, NOTIFICATION_VALUE_BYTES);
 
         return taskNotification;
       }

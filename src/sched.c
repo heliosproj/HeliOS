@@ -143,9 +143,9 @@ Time_t CurrentTime(void) {
 /* Called by the xTaskStartScheduler() system call, TaskRun() executes a task and updates all of its
 runtime statistics. */
 void TaskRun(Task_t *task_) {
-  Time_t taskStartTime = 0;
+  Time_t taskStartTime = 0x0u;
 
-  Time_t prevTotalRunTime = 0;
+  Time_t prevTotalRunTime = 0x0u;
 
   /* Record the total runtime before executing the task. */
   prevTotalRunTime = task_->totalRunTime;
