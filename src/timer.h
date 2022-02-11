@@ -38,15 +38,15 @@
 extern "C" {
 #endif
 
-Timer_t *xTimerCreate(Time_t);
-void xTimerDelete(Timer_t *);
-void xTimerChangePeriod(Timer_t *, Time_t);
-Time_t xTimerGetPeriod(Timer_t *);
-Base_t xTimerIsTimerActive(Timer_t *);
-Base_t xTimerHasTimerExpired(Timer_t *);
-void xTimerReset(Timer_t *);
-void xTimerStart(Timer_t *);
-void xTimerStop(Timer_t *);
+Timer_t *xTimerCreate(Time_t timerPeriod_);
+void xTimerDelete(Timer_t *timer_);
+void xTimerChangePeriod(Timer_t *timer_, Time_t timerPeriod_);
+Time_t xTimerGetPeriod(Timer_t *timer_);
+Base_t xTimerIsTimerActive(Timer_t *timer_);
+Base_t xTimerHasTimerExpired(Timer_t *timer_);
+void xTimerReset(Timer_t *timer_);
+void xTimerStart(Timer_t *timer_);
+void xTimerStop(Timer_t *timer_);
 
 #ifdef __cplusplus
 }  // extern "C" {

@@ -38,13 +38,13 @@
 extern "C" {
 #endif
 
-void *xMemAlloc(size_t);
-void xMemFree(void *);
+void *xMemAlloc(size_t size_);
+void xMemFree(void *ptr_);
 size_t xMemGetUsed();
-size_t xMemGetSize(void *);
-void memcpy_(void *, const void *, size_t);
-void memset_(void *, int16_t, size_t);
-int16_t memcmp_(const void *, const void *, size_t);
+size_t xMemGetSize(void *ptr_);
+void memcpy_(void *dest_, const void *src_, size_t n_);
+void memset_(void *dest_, int16_t val_, size_t n_);
+int16_t memcmp_(const void *s1_, const void *s2_, size_t n_);
 
 #ifdef __cplusplus
 }  // extern "C" {

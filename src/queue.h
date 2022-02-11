@@ -38,16 +38,16 @@
 extern "C" {
 #endif
 
-Queue_t *xQueueCreate(Base_t);
-void xQueueDelete(Queue_t *);
-Base_t xQueueGetLength(Queue_t *);
-Base_t xQueueIsQueueEmpty(Queue_t *);
-Base_t xQueueIsQueueFull(Queue_t *);
-Base_t xQueueMessagesWaiting(Queue_t *);
-Base_t xQueueSend(Queue_t *, Base_t, const char *);
-QueueMessage_t *xQueuePeek(Queue_t *);
-void xQueueDropMessage(Queue_t *);
-QueueMessage_t *xQueueReceive(Queue_t *); 
+Queue_t *xQueueCreate(Base_t limit_);
+void xQueueDelete(Queue_t *queue_);
+Base_t xQueueGetLength(Queue_t *queue_);
+Base_t xQueueIsQueueEmpty(Queue_t *queue_);
+Base_t xQueueIsQueueFull(Queue_t *queue_);
+Base_t xQueueMessagesWaiting(Queue_t *queue_);
+Base_t xQueueSend(Queue_t *queue_, Base_t messageBytes_, const char *messageValue_);
+QueueMessage_t *xQueuePeek(Queue_t *queue_);
+void xQueueDropMessage(Queue_t *queue_);
+QueueMessage_t *xQueueReceive(Queue_t *queue_);
 
 #ifdef __cplusplus
 }  // extern "C" {

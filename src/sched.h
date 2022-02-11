@@ -41,10 +41,11 @@ extern "C" {
 void xTaskStartScheduler();
 void RunTimeReset();
 Time_t CurrentTime();
-void TaskRun(Task_t *);
+void TaskRun(Task_t *task_);
 void xTaskResumeAll();
 void xTaskSuspendAll();
 void xSystemHalt();
+void xTaskStopScheduler();
 SystemInfo_t *xSystemGetSystemInfo();
 
 #ifdef __cplusplus
