@@ -118,6 +118,20 @@ typedef uint32_t Time_t;
 #define false 0x0u
 #endif
 
+/* Define "NULL" if not defined. */
+#if !defined(NULL)
+#ifdef __cplusplus
+#define NULL 0
+#else
+#define NULL ((void *)0)
+#endif
+#endif
+
+/* Define "ZERO" if not defined. */
+#if !defined(ZERO)
+#define ZERO 0x0u
+#endif
+
 /* Redefine CONFIG_MESSAGE_VALUE_BYTES with the type cast. */
 #if !defined(MESSAGE_VALUE_BYTES)
 #define MESSAGE_VALUE_BYTES ((Base_t)CONFIG_MESSAGE_VALUE_BYTES)

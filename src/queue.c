@@ -83,7 +83,7 @@ Base_t xQueueGetLength(Queue_t *queue_) {
 
   /* Check if the queue parameter is not null. */
   if (ISNOTNULLPTR(queue_)) {
-    messageCursor = queue_->head;
+    messageCursor = (QueueMessage_t*) queue_->head;
 
     /* If the queue has a head, iterate through the queue and count the number of messages. */
     while (ISNOTNULLPTR(messageCursor)) {
@@ -256,7 +256,7 @@ QueueMessage_t *xQueuePeek(Queue_t *queue_) {
     if (ISNOTNULLPTR(queue_->head)) {
       message = (QueueMessage_t *)xMemAlloc(sizeof(QueueMessage_t));
 
-      /* Check if a new message was successfully allocatd by xMemAlloc(). */
+      /* Check if a new message was successfully allocated by xMemAlloc(). */
       if (ISNOTNULLPTR(message)) {
         message->messageBytes = queue_->head->messageBytes;
 
@@ -285,7 +285,7 @@ void xQueueDropMessage(Queue_t *queue_) {
       return;
     }
 
-    message = (QueueMessage_t *)queue_->head;
+    message = queue_->head;
 
     queue_->head = queue_->head->next;
 

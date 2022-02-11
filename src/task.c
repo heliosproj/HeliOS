@@ -227,7 +227,7 @@ TaskRunTimeStats_t *xTaskGetAllRunTimeStats(Base_t *tasks_) {
 
     /* Check if the number of tasks is greater than zero and the length of the task list equals
     the number of tasks just counted (this is done as an integrity check). */
-    if (tasks > 0 && taskList->length == tasks) {
+    if (tasks > 0x0u && taskList->length == tasks) {
       taskRunTimeStats = (TaskRunTimeStats_t *)xMemAlloc(tasks * sizeof(TaskRunTimeStats_t));
 
       /* Check if xMemAlloc() successfully allocated the memory. */
@@ -536,7 +536,7 @@ void xTaskNotifyGive(Task_t *task_, Base_t notificationBytes_, const char *notif
 
   /* Check if the task list is not null and the task parameter is not null, the notification bytes are between
   one and CONFIG_NOTIFICATION_VALUE_BYTES and that the notification value char array pointer is not null. */
-  if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_) && notificationBytes_ > 0 && notificationBytes_ < NOTIFICATION_VALUE_BYTES && ISNOTNULLPTR(notificationValue_)) {
+  if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_) && notificationBytes_ > 0x0u && notificationBytes_ < NOTIFICATION_VALUE_BYTES && ISNOTNULLPTR(notificationValue_)) {
     taskCursor = taskList->head;
 
     /* While the task cursor is not null and the task cursor is not equal

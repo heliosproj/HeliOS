@@ -111,7 +111,6 @@ void xTimerDelete(Timer_t *timer_) {
 
       timerList->length--;
 
-      timer_ = NULL;
     } else {
       /* While the timer cursor is not null and the timer cursor is not
       equal to the timer parameter, continue to scan the timer list. */
