@@ -82,7 +82,7 @@ Base_t xQueueGetLength(Queue_t *queue_) {
 
   /* Check if the queue parameter is not null. */
   if (ISNOTNULLPTR(queue_)) {
-    messageCursor = (Message_t *)queue_->head;
+    messageCursor = queue_->head;
 
     /* If the queue has a head, iterate through the queue and count the number of messages. */
     while (ISNOTNULLPTR(messageCursor)) {
@@ -271,7 +271,7 @@ QueueMessage_t *xQueuePeek(Queue_t *queue_) {
 /* The xQueueDropMessage() system call will drop the next message from the queue without
 returning the message. */
 void xQueueDropMessage(Queue_t *queue_) {
-  QueueMessage_t *message = NULL;
+  Message_t *message = NULL;
 
   /* Check if the queue parameter is not null. */
   if (ISNOTNULLPTR(queue_)) {
