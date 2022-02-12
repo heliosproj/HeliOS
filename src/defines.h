@@ -135,7 +135,7 @@ typedef uint32_t Time_t;
 /* Define the raw size of the heap in bytes based on the number of blocks
 the heap contains and the size of each block in bytes. */
 #if !defined(HEAP_RAW_SIZE)
-#define HEAP_RAW_SIZE CONFIG_HEAP_SIZE_IN_BLOCKS * CONFIG_HEAP_BLOCK_SIZE
+#define HEAP_RAW_SIZE CONFIG_HEAP_SIZE_IN_BLOCKS *CONFIG_HEAP_BLOCK_SIZE
 #endif
 
 /* Define the size in bytes of the product name which is accessible through
@@ -230,12 +230,12 @@ reset. */
 /* Define a marco which makes null pointer checks more readable and
 concise */
 #if !defined(ISNOTNULLPTR)
-#define ISNOTNULLPTR(p) NULL != p
+#define ISNOTNULLPTR(p) ((NULL) != (p))
 #endif
 
 /* Define a marco which makes null pointer checks more readable and
 concise */
 #if !defined(ISNULLPTR)
-#define ISNULLPTR(p) NULL == p
+#define ISNULLPTR(p) ((NULL) == (p))
 #endif
 #endif

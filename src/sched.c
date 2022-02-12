@@ -84,6 +84,8 @@ void xTaskStartScheduler(void) {
           leastRunTime = taskCursor->totalRunTime;
 
           runTask = taskCursor;
+        } else {
+          /* Nothing to do here.. Just for MISRA C:2012 compliance. */
         }
 
         taskCursor = taskCursor->next;
@@ -132,7 +134,7 @@ Time_t CurrentTime(void) {
 #if defined(OTHER_ARCH_LINUX)
   struct timespec t;
   clock_gettime(CLOCK_MONOTONIC_RAW, &t);
-  return t.tv_sec * 1000000 + t.tv_nsec / 1000;
+  return (t.tv_sec * 1000000) + (t.tv_nsec / 1000);
 #else
   return ZERO;
 #endif

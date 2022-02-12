@@ -205,7 +205,7 @@ Base_t xQueueSend(Queue_t *queue_, Base_t messageBytes_, const char *messageValu
 
   /* Check if the queue parameter is not null, message bytes is between one and CONFIG_MESSAGE_VALUE_BYTES and the message value parameter
   is not null. */
-  if (ISNOTNULLPTR(queue_) && messageBytes_ > ZERO && messageBytes_ <= CONFIG_MESSAGE_VALUE_BYTES && ISNOTNULLPTR(messageValue_)) {
+  if ((ISNOTNULLPTR(queue_)) && (messageBytes_ > ZERO) && (messageBytes_ <= CONFIG_MESSAGE_VALUE_BYTES) && (ISNOTNULLPTR(messageValue_))) {
     messageCursor = queue_->head;
 
     /* If the queue has a head, iterate through the queue and count the number of messages. */
