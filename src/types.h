@@ -41,10 +41,12 @@ typedef enum {
   TimerStateRunning
 } TimerState_t;
 
+/* WARNING: Modifying these type defintions may cause serious headaches. You've been warned!
+typedef uint32_t Time_t; <-- Time_t is defined in defines.h and is platform and/or tool-chain dependent. */
 typedef void TaskParm_t;
 typedef uint8_t Base_t;
 typedef uint8_t Byte_t;
-typedef uint16_t Word_t;
+typedef uint16_t Word_t; /* Here a "word" does NOT refer to the machine word. It just means two bytes. */
 
 typedef struct HeapEntry_s {
   Byte_t free : 1;
