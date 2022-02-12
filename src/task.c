@@ -168,7 +168,7 @@ Task_t *xTaskGetHandleByName(const char *name_) {
 
 /* The xTaskGetHandleById() system call will return a pointer to the task handle
 specified by its identifier. */
-Task_t *xTaskGetHandleById(TaskId_t id_) {
+Task_t *xTaskGetHandleById(Base_t id_) {
   Task_t *ret = NULL;
 
   Task_t *taskCursor = NULL;
@@ -416,8 +416,8 @@ char *xTaskGetName(Task_t *task_) {
 }
 
 /* The xTaskGetId() system call returns the task identifier for the task. */
-TaskId_t xTaskGetId(Task_t *task_) {
-  TaskId_t ret = zero;
+Base_t xTaskGetId(Task_t *task_) {
+  Base_t ret = zero;
 
   Task_t *taskCursor = NULL;
 

@@ -53,20 +53,6 @@ typedef enum {
 } TaskState_t;
 
 /**
- * @brief Type definition for the task identifier.
- *
- * A task handle can be found by either the task's ASCII name or its identifier by
- * calling xTaskGetHandleByName() or xTaskGetHandleById() respectively. The TaskId_t
- * type should be declared as xTaskId.
- *
- * @sa xTaskId
- * @sa xTaskGetHandleByName()
- * @sa xTaskGetHandleById()
- *
- */
-typedef uint8_t TaskId_t;
-
-/**
  * @brief Type definition for the base data type.
  *
  * A simple data type is often needed as an argument for a system call or a return type.
@@ -117,7 +103,7 @@ typedef struct TaskRunTimeStats_s {
  *
  */
 typedef struct TaskInfo_s {
-  TaskId_t id;                       /**< The task identifier which is used by xTaskGetHandleById() to return the task handle. */
+  Base_t id;                       /**< The task identifier which is used by xTaskGetHandleById() to return the task handle. */
   char name[CONFIG_TASK_NAME_BYTES]; /**< The name of the task which is used by xTaskGetHandleByName() to return the task handle. */
   TaskState_t state;                 /**< The state the task is in which is one of four states specified in the TaskState_t enumerated data type. */
   Time_t lastRunTime;                /**< The runtime duration in microseconds the last time the task was executed by the scheduler. */
@@ -258,19 +244,6 @@ typedef void Timer_t;
  *
  */
 typedef Base_t xBase;
-
-/**
- * @brief Type definition for the task identifier.
- *
- * A task handle can be found by either the task's ASCII name or its identifier by
- * calling xTaskGetHandleByName() or xTaskGetHandleById() respectively.
- *
- * @sa TaskId_t
- * @sa xTaskGetHandleByName()
- * @sa xTaskGetHandleById()
- *
- */
-typedef TaskId_t xTaskId;
 
 /**
  * @brief Stub type definition for the timer type.
@@ -784,13 +757,13 @@ xTask xTaskGetHandleByName(const char *name_);
  * The xTaskGetHandleById() system call will return a pointer to the task handle
  * specified by its identifier.
  *
- * @sa xTaskId
+ * @sa xBase
  *
  * @param id_ The identifier of the task to return the handle pointer for.
  * @return xTask A  pointer to the task handle. xTaskGetHandleById() returns null if the
  * the task identifier cannot be found.
  */
-xTask xTaskGetHandleById(xTaskId id_);
+xTask xTaskGetHandleById(xBase id_);
 
 /**
  * @brief System call to return task runtime statistics for all tasks.
@@ -889,10 +862,10 @@ char *xTaskGetName(xTask task_);
  * The xTaskGetId() system call returns the task identifier for the task.
  *
  * @param task_ The task to return the identifier of.
- * @return xTaskId The identifier of the task. If the task cannot be found, xTaskGetId()
+ * @return xBase The identifier of the task. If the task cannot be found, xTaskGetId()
  * returns zero (all tasks identifiers are 1 or greater).
  */
-xTaskId xTaskGetId(xTask task_);
+xBase xTaskGetId(xTask task_);
 
 /**
  * @brief System call to clear a waiting direct to task notification.
