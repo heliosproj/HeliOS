@@ -58,7 +58,8 @@ void *xMemAlloc(size_t size_) {
 
   HeapEntry_t *entryCandidate = NULL;
 
-  /* Confirm the requested size in bytes is greater than zero. */
+  /* Confirm the requested size in bytes is greater than zero. If not, just head toward
+  return and return null. */
   if (size_ > zero) {
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
     PHASE I: Determine how many blocks a heap entry requires. One block is generally
@@ -68,11 +69,11 @@ void *xMemAlloc(size_t size_) {
     /* If we haven't calculated how many blocks a heap entry requires, calculate
     it now. */
     if (entryBlocksNeeded == zero) {
-      /* Calculate the quotient of the blocks needed for the heap entry. */
+      /* Calculate the quotient portion of the blocks needed for the heap entry. */
       entryBlocksNeeded = (Word_t)sizeof(HeapEntry_t) / CONFIG_HEAP_BLOCK_SIZE;
 
-      /* Calculate the remainder of the blocks needed for the heap entry. If there is
-      a remainder add one more block to the blocks needed. */
+      /* Calculate the remainder portion of the blocks needed for the heap entry. If there is
+      a remainder, add one more block to the blocks needed. */
       if ((sizeof(HeapEntry_t) % CONFIG_HEAP_BLOCK_SIZE) > zero) {
         /* Add one to the blocks needed since there is a remainder for the blocks
         needed. */
@@ -86,7 +87,7 @@ void *xMemAlloc(size_t size_) {
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
     /* If the heap entry at the start of the heap has zero blocks then it hasn't
-    been initialized yet, so do that now. */
+    been initialized yet, so do that now. If it has then just move on.*/
     if (start->blocks == zero) {
       /* Zero out the entire heap. HEAP_RAW_SIZE equates to HEAP_SIZE_IN_BLOCKS * HEAP_BLOCK_SIZE. */
       memset_(heap, zero, HEAP_RAW_SIZE);
@@ -96,7 +97,9 @@ void *xMemAlloc(size_t size_) {
 
       /* Mark the entry unprotected by setting protected to false. An entry is protected if the macro ENTER_PROTECT()
       is called before invoking xMemAlloc(). A protected entry cannot be freed by xMemFree() unless ENTER_PROTECT()
-      is called beforehand. */
+      is called beforehand calling xMemFree().
+      
+      NOTE: Protected heap memory is ONLY for system calls, not for use by the end-user.*/
       start->protected = false;
 
       /* Set the number of blocks in the first entry to the total number of blocks
@@ -127,17 +130,17 @@ void *xMemAlloc(size_t size_) {
     }
 
     /* If the block count does not match HEAP_SIZE_IN_BLOCKS then we need
-    to return because the heap is corrupt. */
+    to return because the heap is corrupt. Otherwise continue to phase IV. */
     if (blockCount == CONFIG_HEAP_SIZE_IN_BLOCKS) {
       /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
        PHASE IV: Calculate how many blocks are needed for the requested size in bytes.
        * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-      /* Calculate the quotient of the requested blocks by dividing the requested size
+      /* Calculate the quotient portion of the requested blocks by dividing the requested size
       paramater by the heap block size also in bytes. */
       requestedBlocks = (Word_t)size_ / CONFIG_HEAP_BLOCK_SIZE;
 
-      /* Calculate the remainder of the requested blocks. If there is a remainder we
+      /* Calculate the remainder portion of the requested blocks. If there is a remainder we
       need to add one more block. */
       if ((size_ % CONFIG_HEAP_SIZE_IN_BLOCKS) > zero) {
         /* There was a remainder for the requested blocks so add one more block. */
@@ -162,14 +165,15 @@ void *xMemAlloc(size_t size_) {
         /* See if there is a candidate heap entry for the requested blocks by checking:
             1) The entry at the cursor is free.
             2) The entry has enough blocks to cover the requested blocks with overhead.
-            3) The entry has the least possible number of blocks.*/
+            3) The entry has the fewest possible number of blocks based on our need.*/
         if ((entryCursor->free == true) && (entryCursor->blocks >= requestedBlocksWithOverhead) && (entryCursor->blocks < leastBlocks)) {
           /* Seems like a good candidate so update the least blocks in case
           there is an entry with fewer blocks that is free yet will fit
           the requested blocks with overhead. */
           leastBlocks = entryCursor->blocks;
 
-          /* Keep a copy of the entry cursor as the best entry candidate. */
+          /* Keep a copy of the entry cursor as the best entry candidate in case we find out
+          that the candidate is the winner. */
           entryCandidate = entryCursor;
         }
 
@@ -178,7 +182,7 @@ void *xMemAlloc(size_t size_) {
       }
 
       /* If the entry candidate is null, well.... we can't fulfill the request so
-      return null. */
+      move on and return null. */
       if (ISNOTNULLPTR(entryCandidate)) {
         /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
         PHASE VI: Found a good candidate so either reuse a free entry OR split the last
@@ -201,7 +205,7 @@ void *xMemAlloc(size_t size_) {
           /* Calculate how many remaining blocks there are and update the new entry. */
           entryCandidate->next->blocks = entryCandidate->blocks - requestedBlocksWithOverhead;
 
-          /* Set the new entry's "next: to null since it is now the last entry in the heap. */
+          /* Set the new entry's "next" to null since it is now the last entry in the heap. */
           entryCandidate->next->next = NULL;
 
           /* Mark the candidate entry as no longer free. */
@@ -222,7 +226,7 @@ void *xMemAlloc(size_t size_) {
 
         } else {
           /* Looks like we found a candidate that is NOT the last entry in the heap,
-          so simply mark it as no longer free. */
+          so simply claim it for France. */
           entryCandidate->free = false;
 
           /* Set the entry protection based on the protect system flag. */
@@ -259,7 +263,8 @@ void xMemFree(void *ptr_) {
 
   HeapEntry_t *entryToFree = NULL;
 
-  /* Check to make sure the end-user passed a pointer that is at least not null. */
+  /* Check to make sure the end-user passed a pointer that is at least not null. If it is null,
+  then move on and return. */
   if (ISNOTNULLPTR(ptr_)) {
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
     PHASE I: Determine if the first heap entry has been created. If it hasn't then
@@ -271,10 +276,10 @@ void xMemFree(void *ptr_) {
     just thrown in the towel. */
     if (start->blocks != zero) {
       /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-        PHASE II: Check the health of the heap by scanning through all of the heap entries
-        counting how many blocks are in each entry then comparing that against the
-        HEAP_SIZE_IN_BLOCKS setting. If the two do not match there is a problem!!
-        * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+      PHASE II: Check the health of the heap by scanning through all of the heap entries
+      counting how many blocks are in each entry then comparing that against the
+      HEAP_SIZE_IN_BLOCKS setting. If the two do not match there is a problem!!
+      * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
       /* To scan the heap, set the heap entry cursor to the start of the heap. */
       entryCursor = start;
@@ -317,11 +322,11 @@ void xMemFree(void *ptr_) {
           entryCursor = entryCursor->next;
         }
 
-        /* Well, we didn't find the entry for the pointer the end-user wanted freed so
-        return. */
+        /* Check if the entry cursor is null, if it is we couldn't find the entry to be freed. If it is
+        not null then proceed with marking the entry free. */
         if (ISNOTNULLPTR(entryCursor)) {
           /* Check one last time if the entry cursor equals the entry we want to free, if it does,
-           mark it free. We are done here. */
+           mark it free. */
           if (entryCursor == entryToFree) {
             /* If the entry is marked protected and the protect system flag is false,
             then return because a protected entry cannot be freed while the protect
@@ -370,7 +375,7 @@ size_t xMemGetUsed(void) {
       blockCount += entryCursor->blocks + entryBlocksNeeded; /* Assuming entry blocks needed has been
                                                                 calculated if the heap has been initialized. */
 
-      /* At each entry, check to see if it is in use. If it is add the number
+      /* At each entry, check to see if it is in use. If it is, add the number
       of blocks it contains plus the number of blocks consumed by the heap entry
       block to the used block count. */
       if (entryCursor->free == false) {
@@ -461,8 +466,8 @@ size_t xMemGetSize(void *ptr_) {
           entryCursor = entryCursor->next;
         }
 
-        /* Well, we didn't find the entry for the pointer the end-user wanted freed so
-        return. */
+        /* If the entry cursor is null we didn't find the entry we were looking for so return,
+        otherwise return the about of bytes consumed by the entry at the pointer. */
         if (ISNOTNULLPTR(entryCursor)) {
           /* We want to return the amount of BYTES in use by the pointer so multiply the
           blocks consumed by the entry by the HEAP_BLOCK_SIZE. */
@@ -508,7 +513,8 @@ uint16_t memcmp_(const void *s1_, const void *s2_, size_t n_) {
   for (size_t i = zero; i < n_; i++) {
     if (*s1 != *s2) {
       ret = *s1 - *s2;
-      break;
+      break; /* Typically memcmp() just returns here but we can't do that for MISRA C:2012
+      compliance. */
     }
     s1++;
     s2++;
