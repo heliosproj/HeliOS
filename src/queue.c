@@ -41,7 +41,7 @@ Queue_t *xQueueCreate(Base_t limit_) {
 
     /* Check if queue was successfully allocated by xMemAlloc(). */
     if (ISNOTNULLPTR(ret)) {
-      ret->length = ZERO;
+      ret->length = zero;
 
       ret->limit = limit_;
 
@@ -74,9 +74,9 @@ void xQueueDelete(Queue_t *queue_) {
 /* The xQueueGetLength() system call returns the length of the queue (the number of messages
 the queue currently contains). */
 Base_t xQueueGetLength(Queue_t *queue_) {
-  Base_t ret = ZERO;
+  Base_t ret = zero;
 
-  Base_t messages = ZERO;
+  Base_t messages = zero;
 
   Message_t *messageCursor = NULL;
 
@@ -106,7 +106,7 @@ empty or contains one or more messages. */
 Base_t xQueueIsQueueEmpty(Queue_t *queue_) {
   Base_t ret = false;
 
-  Base_t messages = ZERO;
+  Base_t messages = zero;
 
   Message_t *messageCursor = NULL;
 
@@ -123,7 +123,7 @@ Base_t xQueueIsQueueEmpty(Queue_t *queue_) {
 
     /* Check to make sure the number of messages counted matches the length attribute of the queue
     and if the number of messages equals zero. */
-    if ((messages == ZERO) && (queue_->length == messages)) {
+    if ((messages == zero) && (queue_->length == messages)) {
       ret = true;
     }
   }
@@ -137,7 +137,7 @@ is equal to the queue's length limit. */
 Base_t xQueueIsQueueFull(Queue_t *queue_) {
   Base_t ret = false;
 
-  Base_t messages = ZERO;
+  Base_t messages = zero;
 
   Message_t *messageCursor = NULL;
 
@@ -167,7 +167,7 @@ there is at least one message waiting. The queue does not have to be full to ret
 Base_t xQueueMessagesWaiting(Queue_t *queue_) {
   Base_t ret = false;
 
-  Base_t messages = ZERO;
+  Base_t messages = zero;
 
   Message_t *messageCursor = NULL;
 
@@ -184,7 +184,7 @@ Base_t xQueueMessagesWaiting(Queue_t *queue_) {
 
     /* Check to make sure the number of messages counted matches the length attribute of the queue
     and if the number of messages is greater than zero. */
-    if ((messages > ZERO) && (queue_->length == messages)) {
+    if ((messages > zero) && (queue_->length == messages)) {
       ret = true;
     }
   }
@@ -199,13 +199,13 @@ Base_t xQueueSend(Queue_t *queue_, Base_t messageBytes_, const char *messageValu
 
   Message_t *message = NULL;
 
-  Base_t messages = ZERO;
+  Base_t messages = zero;
 
   Message_t *messageCursor = NULL;
 
   /* Check if the queue parameter is not null, message bytes is between one and CONFIG_MESSAGE_VALUE_BYTES and the message value parameter
   is not null. */
-  if ((ISNOTNULLPTR(queue_)) && (messageBytes_ > ZERO) && (messageBytes_ <= CONFIG_MESSAGE_VALUE_BYTES) && (ISNOTNULLPTR(messageValue_))) {
+  if ((ISNOTNULLPTR(queue_)) && (messageBytes_ > zero) && (messageBytes_ <= CONFIG_MESSAGE_VALUE_BYTES) && (ISNOTNULLPTR(messageValue_))) {
     messageCursor = queue_->head;
 
     /* If the queue has a head, iterate through the queue and count the number of messages. */

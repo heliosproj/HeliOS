@@ -68,11 +68,11 @@ void xTaskStartScheduler(void) {
       /* While the task cursor is not null (i.e., there are further tasks in the task list). */
       while (ISNOTNULLPTR(taskCursor)) {
         /* If the task pointed to by the task cursor is waiting and it has a notification waiting, then execute it. */
-        if ((taskCursor->state == TaskStateWaiting) && (taskCursor->notificationBytes > ZERO)) {
+        if ((taskCursor->state == TaskStateWaiting) && (taskCursor->notificationBytes > zero)) {
           TaskRun(taskCursor);
 
           /* If the task pointed to by the task cursor is waiting and its timer has expired, then execute it. */
-        } else if ((taskCursor->state == TaskStateWaiting) && (taskCursor->timerPeriod > ZERO) && ((CURRENTTIME() - taskCursor->timerStartTime) > taskCursor->timerPeriod)) {
+        } else if ((taskCursor->state == TaskStateWaiting) && (taskCursor->timerPeriod > zero) && ((CURRENTTIME() - taskCursor->timerStartTime) > taskCursor->timerPeriod)) {
           TaskRun(taskCursor);
 
           taskCursor->timerStartTime = CURRENTTIME();
@@ -136,16 +136,16 @@ Time_t CurrentTime(void) {
   clock_gettime(CLOCK_MONOTONIC_RAW, &t);
   return (t.tv_sec * 1000000) + (t.tv_nsec / 1000);
 #else
-  return ZERO;
+  return zero;
 #endif
 }
 
 /* Called by the xTaskStartScheduler() system call, TaskRun() executes a task and updates all of its
 runtime statistics. */
 void TaskRun(Task_t *task_) {
-  Time_t taskStartTime = ZERO;
+  Time_t taskStartTime = zero;
 
-  Time_t prevTotalRunTime = ZERO;
+  Time_t prevTotalRunTime = zero;
 
   /* Record the total runtime before executing the task. */
   prevTotalRunTime = task_->totalRunTime;

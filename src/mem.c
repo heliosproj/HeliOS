@@ -33,7 +33,7 @@ static Byte_t heap[HEAP_RAW_SIZE];
 
 static HeapEntry_t *start = (HeapEntry_t *)heap;
 
-static Word_t entryBlocksNeeded = ZERO;
+static Word_t entryBlocksNeeded = zero;
 
 /* The xMemAlloc() system call will allocate heap memory and return a pointer
 to the newly allocated memory. */
@@ -43,13 +43,13 @@ void *xMemAlloc(size_t size_) {
 
   void *ret = NULL;
 
-  Word_t blockCount = ZERO;
+  Word_t blockCount = zero;
 
-  Word_t requestedBlocks = ZERO;
+  Word_t requestedBlocks = zero;
 
   /* Requested blocks with overhead is the requested blocks + the number of blocks
   required for the heap entry. */
-  Word_t requestedBlocksWithOverhead = ZERO;
+  Word_t requestedBlocksWithOverhead = zero;
 
   /* To get the maximum value of Word_t, we underflow the unsigned type. */
   Word_t leastBlocks = -1;
@@ -59,7 +59,7 @@ void *xMemAlloc(size_t size_) {
   HeapEntry_t *entryCandidate = NULL;
 
   /* Confirm the requested size in bytes is greater than zero. */
-  if (size_ > ZERO) {
+  if (size_ > zero) {
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
     PHASE I: Determine how many blocks a heap entry requires. One block is generally
     sufficient but we shouldn't assume. This only needs to be done once.
@@ -67,13 +67,13 @@ void *xMemAlloc(size_t size_) {
 
     /* If we haven't calculated how many blocks a heap entry requires, calculate
     it now. */
-    if (entryBlocksNeeded == ZERO) {
+    if (entryBlocksNeeded == zero) {
       /* Calculate the quotient of the blocks needed for the heap entry. */
       entryBlocksNeeded = (Word_t)sizeof(HeapEntry_t) / CONFIG_HEAP_BLOCK_SIZE;
 
       /* Calculate the remainder of the blocks needed for the heap entry. If there is
       a remainder add one more block to the blocks needed. */
-      if ((sizeof(HeapEntry_t) % CONFIG_HEAP_BLOCK_SIZE) > ZERO) {
+      if ((sizeof(HeapEntry_t) % CONFIG_HEAP_BLOCK_SIZE) > zero) {
         /* Add one to the blocks needed since there is a remainder for the blocks
         needed. */
         entryBlocksNeeded++;
@@ -87,9 +87,9 @@ void *xMemAlloc(size_t size_) {
 
     /* If the heap entry at the start of the heap has zero blocks then it hasn't
     been initialized yet, so do that now. */
-    if (start->blocks == ZERO) {
+    if (start->blocks == zero) {
       /* Zero out the entire heap. HEAP_RAW_SIZE equates to HEAP_SIZE_IN_BLOCKS * HEAP_BLOCK_SIZE. */
-      memset_(heap, ZERO, HEAP_RAW_SIZE);
+      memset_(heap, zero, HEAP_RAW_SIZE);
 
       /* Set the heap entry to free because, it is free. */
       start->free = true;
@@ -139,7 +139,7 @@ void *xMemAlloc(size_t size_) {
 
       /* Calculate the remainder of the requested blocks. If there is a remainder we
       need to add one more block. */
-      if ((size_ % CONFIG_HEAP_SIZE_IN_BLOCKS) > ZERO) {
+      if ((size_ % CONFIG_HEAP_SIZE_IN_BLOCKS) > zero) {
         /* There was a remainder for the requested blocks so add one more block. */
         requestedBlocks++;
       }
@@ -214,7 +214,7 @@ void *xMemAlloc(size_t size_) {
           entryCandidate->blocks = requestedBlocks;
 
           /* Clear the memory by mem-setting it to all zeros. */
-          memset_((void *)((Byte_t *)entryCandidate + (entryBlocksNeeded * CONFIG_HEAP_BLOCK_SIZE)), ZERO, requestedBlocks * CONFIG_HEAP_BLOCK_SIZE);
+          memset_((void *)((Byte_t *)entryCandidate + (entryBlocksNeeded * CONFIG_HEAP_BLOCK_SIZE)), zero, requestedBlocks * CONFIG_HEAP_BLOCK_SIZE);
 
           /* Return the address of the memory but make sure we move it forward
           enough so the end-user doesn't write to the heap entry. */
@@ -229,7 +229,7 @@ void *xMemAlloc(size_t size_) {
           entryCandidate->protected = SYSFLAG_PROTECT();
 
           /* Clear the memory by mem-setting it to all zeros. */
-          memset_((void *)((Byte_t *)entryCandidate + (entryBlocksNeeded * CONFIG_HEAP_BLOCK_SIZE)), ZERO, requestedBlocks * CONFIG_HEAP_BLOCK_SIZE);
+          memset_((void *)((Byte_t *)entryCandidate + (entryBlocksNeeded * CONFIG_HEAP_BLOCK_SIZE)), zero, requestedBlocks * CONFIG_HEAP_BLOCK_SIZE);
 
           /* Return the address of the memory but make sure we move it forward
           enough so the end-user doesn't write to the heap entry. */
@@ -253,7 +253,7 @@ void xMemFree(void *ptr_) {
   /* Disable interrupts because we can't be interrupted while modifying the heap. */
   DISABLE_INTERRUPTS();
 
-  Word_t blockCount = ZERO;
+  Word_t blockCount = zero;
 
   HeapEntry_t *entryCursor = NULL;
 
@@ -269,7 +269,7 @@ void xMemFree(void *ptr_) {
     /* Check if the entry at the start of the heap is un-initialized by looking
     at the blocks member. If it is zero, then the heap has not been initialized so
     just thrown in the towel. */
-    if (start->blocks != ZERO) {
+    if (start->blocks != zero) {
       /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
         PHASE II: Check the health of the heap by scanning through all of the heap entries
         counting how many blocks are in each entry then comparing that against the
@@ -350,18 +350,18 @@ void xMemFree(void *ptr_) {
 /* The xMemGetUsed() system call returns the amount of memory in bytes
 that is currently allocated. */
 size_t xMemGetUsed(void) {
-  size_t ret = ZERO;
+  size_t ret = zero;
 
-  Word_t blockCount = ZERO;
+  Word_t blockCount = zero;
 
-  Word_t usedBlockCount = ZERO;
+  Word_t usedBlockCount = zero;
 
   HeapEntry_t *entryCursor = NULL;
 
   /* Check if the entry at the start of the heap is un-initialized by looking
   at the number of blocks it contains. If it is zero, then the heap has not been initialized so
   just thrown in the towel. */
-  if (start->blocks != ZERO) {
+  if (start->blocks != zero) {
     /* To scan the heap, set the heap entry cursor to the start of the heap. */
     entryCursor = start;
 
@@ -395,9 +395,9 @@ size_t xMemGetUsed(void) {
 /* The xMemGetSize() system call returns the amount of memory in bytes that
 is currently allocated to a specific pointer. */
 size_t xMemGetSize(void *ptr_) {
-  size_t ret = ZERO;
+  size_t ret = zero;
 
-  Word_t blockCount = ZERO;
+  Word_t blockCount = zero;
 
   HeapEntry_t *entryCursor = NULL;
 
@@ -413,7 +413,7 @@ size_t xMemGetSize(void *ptr_) {
     /* Check if the entry at the start of the heap is un-initialized by looking
     at the blocks number of blocks it contains. If it is zero, then the heap has
     not been initialized so just thrown in the towel. */
-    if (start->blocks != ZERO) {
+    if (start->blocks != zero) {
       /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
        PHASE II: Check the health of the heap by scanning through all of the heap entries
        counting how many blocks are in each entry then comparing that against the
@@ -480,7 +480,7 @@ void memcpy_(void *dest_, const void *src_, size_t n_) {
   char *src = (char *)src_;
   char *dest = (char *)dest_;
 
-  for (size_t i = ZERO; i < n_; i++) {
+  for (size_t i = zero; i < n_; i++) {
     dest[i] = src[i];
   }
   return;
@@ -491,7 +491,7 @@ to the specified value. */
 void memset_(void *dest_, uint16_t val_, size_t n_) {
   char *dest = (char *)dest_;
 
-  for (size_t i = ZERO; i < n_; i++) {
+  for (size_t i = zero; i < n_; i++) {
     dest[i] = (char)val_;
   }
   return;
@@ -500,12 +500,12 @@ void memset_(void *dest_, uint16_t val_, size_t n_) {
 /* A memory utility to compare the contents of memory at two locations pointed to by
 the pointers s1 and s2. */
 uint16_t memcmp_(const void *s1_, const void *s2_, size_t n_) {
-  uint16_t ret = ZERO;
+  uint16_t ret = zero;
 
   char *s1 = (char *)s1_;
   char *s2 = (char *)s2_;
 
-  for (size_t i = ZERO; i < n_; i++) {
+  for (size_t i = zero; i < n_; i++) {
     if (*s1 != *s2) {
       ret = *s1 - *s2;
       break;

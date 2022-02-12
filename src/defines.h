@@ -127,9 +127,9 @@ typedef uint32_t Time_t;
 #endif
 #endif
 
-/* Define "ZERO" if not defined. */
-#if !defined(ZERO)
-#define ZERO 0x0u
+/* Define "zero" if not defined. */
+#if !defined(zero)
+#define zero 0x0u
 #endif
 
 /* Define the raw size of the heap in bytes based on the number of blocks
