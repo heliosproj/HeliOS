@@ -73,7 +73,7 @@ void *xMemAlloc(size_t size_) {
 
       /* Calculate the remainder of the blocks needed for the heap entry. If there is
       a remainder add one more block to the blocks needed. */
-      if (sizeof(HeapEntry_t) % CONFIG_HEAP_BLOCK_SIZE > ZERO) {
+      if ((sizeof(HeapEntry_t) % CONFIG_HEAP_BLOCK_SIZE) > ZERO) {
         /* Add one to the blocks needed since there is a remainder for the blocks
         needed. */
         entryBlocksNeeded++;
@@ -326,13 +326,7 @@ void xMemFree(void *ptr_) {
             /* If the entry is marked protected and the protect system flag is false,
             then return because a protected entry cannot be freed while the protect
             system flag is false. */
-            if (entryCursor->protected == false) {
-              /* Make the entry free by setting free to true. */
-              entryCursor->free = true;
-
-              /* Mark the entry as unprotected. */
-              entryCursor->protected = false;
-            } else if (entryCursor->protected == true && SYSFLAG_PROTECT() == true) {
+            if ((entryCursor->protected == false) || ((entryCursor->protected == true) && (SYSFLAG_PROTECT() == true))) {
               /* Make the entry free by setting free to true. */
               entryCursor->free = true;
 
