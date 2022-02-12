@@ -155,7 +155,7 @@ Task_t *xTaskGetHandleByName(const char *name_) {
     while (ISNOTNULLPTR(taskCursor)) {
       /* Compare the task name of the task pointed to by the task cursor against the
       name parameter. */
-      if (memcmp_(taskCursor->name, name_, CONFIG_TASK_NAME_BYTES) == 0x0u) {
+      if (memcmp_(taskCursor->name, name_, CONFIG_TASK_NAME_BYTES) == ZERO) {
         ret = taskCursor;
       }
 
@@ -197,9 +197,9 @@ Task_t *xTaskGetHandleById(TaskId_t id_) {
  the xTaskRunTimeStats type. An xBase variable must be passed by reference to xTaskGetAllRunTimeStats()
  which will contain the number of tasks so the end-user can iterate through the tasks. */
 TaskRunTimeStats_t *xTaskGetAllRunTimeStats(Base_t *tasks_) {
-  Base_t i = 0x0u;
+  Base_t i = ZERO;
 
-  Base_t tasks = 0x0u;
+  Base_t tasks = ZERO;
 
   Task_t *taskCursor = NULL;
 
@@ -219,7 +219,7 @@ TaskRunTimeStats_t *xTaskGetAllRunTimeStats(Base_t *tasks_) {
 
     /* Check if the number of tasks is greater than zero and the length of the task list equals
     the number of tasks just counted (this is done as an integrity check). */
-    if (tasks > 0x0u && taskList->length == tasks) {
+    if (tasks > ZERO && taskList->length == tasks) {
       ret = (TaskRunTimeStats_t *)xMemAlloc(tasks * sizeof(TaskRunTimeStats_t));
 
       /* Check if xMemAlloc() successfully allocated the memory. */
@@ -241,7 +241,7 @@ TaskRunTimeStats_t *xTaskGetAllRunTimeStats(Base_t *tasks_) {
         *tasks_ = tasks;
 
       } else {
-        *tasks_ = 0x0u;
+        *tasks_ = ZERO;
       }
     }
   }
@@ -286,9 +286,9 @@ TaskRunTimeStats_t *xTaskGetTaskRunTimeStats(Task_t *task_) {
 /* The xTaskGetNumberOfTasks() system call returns the current number of tasks
 regardless of their state. */
 Base_t xTaskGetNumberOfTasks(void) {
-  Base_t ret = 0x0u;
+  Base_t ret = ZERO;
 
-  Base_t tasks = 0x0u;
+  Base_t tasks = ZERO;
 
   Task_t *taskCursor = NULL;
 
@@ -417,7 +417,7 @@ char *xTaskGetName(Task_t *task_) {
 
 /* The xTaskGetId() system call returns the task identifier for the task. */
 TaskId_t xTaskGetId(Task_t *task_) {
-  TaskId_t ret = 0x0u;
+  TaskId_t ret = ZERO;
 
   Task_t *taskCursor = NULL;
 
@@ -466,9 +466,9 @@ void xTaskNotifyStateClear(Task_t *task_) {
     if (ISNOTNULLPTR(taskCursor)) {
       /* If the task notification bytes are greater than zero, then there is a notification
       to clear. */
-      if (taskCursor->notificationBytes > 0x0u) {
-        taskCursor->notificationBytes = 0x0u;
-        memset_(taskCursor->notificationValue, 0, CONFIG_NOTIFICATION_VALUE_BYTES);
+      if (taskCursor->notificationBytes > ZERO) {
+        taskCursor->notificationBytes = ZERO;
+        memset_(taskCursor->notificationValue, ZERO, CONFIG_NOTIFICATION_VALUE_BYTES);
       }
     }
   }
@@ -479,7 +479,7 @@ void xTaskNotifyStateClear(Task_t *task_) {
 /* The xTaskNotificationIsWaiting() system call will return true or false depending
 on whether there is a task notification waiting for the task. */
 Base_t xTaskNotificationIsWaiting(Task_t *task_) {
-  Base_t ret = 0x0u;
+  Base_t ret = ZERO;
 
   Task_t *taskCursor = NULL;
 
@@ -498,7 +498,7 @@ Base_t xTaskNotificationIsWaiting(Task_t *task_) {
     if (ISNOTNULLPTR(taskCursor)) {
       /* Check if the notification bytes are greater than zero. If so, there is a notification
       waiting so return true. */
-      if (taskCursor->notificationBytes > 0x0u) {
+      if (taskCursor->notificationBytes > ZERO) {
         ret = true;
       }
     }
@@ -517,7 +517,7 @@ void xTaskNotifyGive(Task_t *task_, Base_t notificationBytes_, const char *notif
 
   /* Check if the task list is not null and the task parameter is not null, the notification bytes are between
   one and CONFIG_NOTIFICATION_VALUE_BYTES and that the notification value char array pointer is not null. */
-  if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_) && notificationBytes_ > 0x0u && notificationBytes_ < CONFIG_NOTIFICATION_VALUE_BYTES && ISNOTNULLPTR(notificationValue_)) {
+  if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_) && notificationBytes_ > ZERO && notificationBytes_ < CONFIG_NOTIFICATION_VALUE_BYTES && ISNOTNULLPTR(notificationValue_)) {
     taskCursor = taskList->head;
 
     /* While the task cursor is not null and the task cursor is not equal
@@ -531,7 +531,7 @@ void xTaskNotifyGive(Task_t *task_, Base_t notificationBytes_, const char *notif
     if (ISNOTNULLPTR(taskCursor)) {
       /* If the notification bytes are zero then there is not a notification already waiting,
       so copy the notification value into the task and set the notification bytes. */
-      if (taskCursor->notificationBytes == 0x0u) {
+      if (taskCursor->notificationBytes == ZERO) {
         taskCursor->notificationBytes = notificationBytes_;
 
         memcpy_(taskCursor->notificationValue, notificationValue_, CONFIG_NOTIFICATION_VALUE_BYTES);
@@ -565,7 +565,7 @@ TaskNotification_t *xTaskNotifyTake(Task_t *task_) {
     if (ISNOTNULLPTR(taskCursor)) {
       /* Check if the notification bytes are greater than zero, if so there is a waiting task
       notification. */
-      if (taskCursor->notificationBytes > 0x0u) {
+      if (taskCursor->notificationBytes > ZERO) {
         ret = (TaskNotification_t *)xMemAlloc(sizeof(TaskNotification_t));
 
         /* Check if xMemAlloc() successfully allocated the memory for the task notification
@@ -575,9 +575,9 @@ TaskNotification_t *xTaskNotifyTake(Task_t *task_) {
 
           memcpy_(ret->notificationValue, taskCursor->notificationValue, CONFIG_NOTIFICATION_VALUE_BYTES);
 
-          taskCursor->notificationBytes = 0x0u;
+          taskCursor->notificationBytes = ZERO;
 
-          memset_(taskCursor->notificationValue, 0, CONFIG_NOTIFICATION_VALUE_BYTES);
+          memset_(taskCursor->notificationValue, ZERO, CONFIG_NOTIFICATION_VALUE_BYTES);
         }
       }
     }
@@ -695,7 +695,7 @@ void xTaskChangePeriod(Task_t *task_, Time_t timerPeriod_) {
 /* The xTaskGetPeriod() will return the period for the timer for the specified task. See
 xTaskChangePeriod() for more information on how the task timer works. */
 Time_t xTaskGetPeriod(Task_t *task_) {
-  Time_t ret = 0x0;
+  Time_t ret = ZERO;
 
   Task_t *taskCursor = NULL;
 

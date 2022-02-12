@@ -158,7 +158,7 @@ void xTimerChangePeriod(Timer_t *timer_, Time_t timerPeriod_) {
 /* The xTimerGetPeriod() system call will return the current timer period
 for the specified timer. */
 Time_t xTimerGetPeriod(Timer_t *timer_) {
-  Time_t ret = 0x0u;
+  Time_t ret = ZERO;
 
   Timer_t *timerCursor = NULL;
 
@@ -232,7 +232,7 @@ Base_t xTimerHasTimerExpired(Timer_t *timer_) {
     if (ISNOTNULLPTR(timerCursor)) {
       /* If the state is running, timer period is greater than zero and if the elapsed time
       is equal to or greater than the timer period, return true. */
-      if (timerCursor->state == TimerStateRunning && timerCursor->timerPeriod > 0x0u && CURRENTTIME() - timerCursor->timerStartTime > timerCursor->timerPeriod) {
+      if (timerCursor->state == TimerStateRunning && timerCursor->timerPeriod > ZERO && CURRENTTIME() - timerCursor->timerStartTime > timerCursor->timerPeriod) {
         ret = true;
       }
     }
