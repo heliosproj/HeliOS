@@ -141,7 +141,7 @@ the heap contains and the size of each block in bytes. */
 /* Define the size in bytes of the product name which is accessible through
 xSystemGetSystemInfo(). */
 #if !defined(PRODUCTNAME_SIZE)
-#define PRODUCTNAME_SIZE 6u
+#define PRODUCTNAME_SIZE 0x6u
 #endif
 
 /* Define the product name which is accessible through xSystemGetSystemInfo(). */
@@ -152,19 +152,19 @@ xSystemGetSystemInfo(). */
 /* Define the product major version number which is accessible through
 xSystemGetSystemInfo(). */
 #if !defined(MAJOR_VERSION_NO)
-#define MAJOR_VERSION_NO 0u
+#define MAJOR_VERSION_NO 0x0u
 #endif
 
 /* Define the product minor version number which is accessible through
 xSystemGetSystemInfo(). */
 #if !defined(MINOR_VERSION_NO)
-#define MINOR_VERSION_NO 3u
+#define MINOR_VERSION_NO 0x3u
 #endif
 
 /* Define the product patch version number which is accessible through
 xSystemGetSystemInfo(). */
 #if !defined(PATCH_VERSION_NO)
-#define PATCH_VERSION_NO 0u
+#define PATCH_VERSION_NO 0x0u
 #endif
 
 /* Define the macro which sets the critical flag to true when
