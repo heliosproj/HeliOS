@@ -57,7 +57,8 @@ typedef enum {
  *
  * A simple data type is often needed as an argument for a system call or a return type.
  * The Base_t type is used in such a case where there are no other structural data
- * requirements. The Base_t type should be declared as xBase.
+ * requirements and is typically an unsigned 8-bit integer. The Base_t type should
+ * be declared as xBase.
  *
  * @sa xBase
  *
@@ -97,6 +98,7 @@ typedef struct TaskRunTimeStats_s {
  * @sa xTaskInfo
  * @sa xTaskGetTaskInfo()
  * @sa xMemFree()
+ * @sa CONFIG_TASK_NAME_BYTES
  *
  * @warning The memory allocated for an instance of xTaskInfo must be freed using
  * xMemFree().
@@ -119,6 +121,7 @@ typedef struct TaskInfo_s {
  * @sa xTaskNotification
  * @sa xTaskNotifyTake()
  * @sa xMemFree()
+ * @sa CONFIG_NOTIFICATION_VALUE_BYTES
  *
  * @warning The memory allocated for an instance of xTaskNotification must be freed using
  * xMemFree().
@@ -139,6 +142,7 @@ typedef struct TaskNotification_s {
  * @sa xQueuePeek()
  * @sa xQueueReceive()
  * @sa xMemFree()
+ * @sa CONFIG_MESSAGE_VALUE_BYTES
  *
  * @warning The memory allocated for an instance of xQueueMessage must be freed using xMemFree().
  *
@@ -187,7 +191,7 @@ typedef void Task_t;
 /**
  * @brief Type definition for the task parameter.
  *
- * The TaskParm_t type used to pass a parameter to a task at the time of creation using
+ * The TaskParm_t type is used to pass a parameter to a task at the time of creation using
  * xTaskCreate(). A task parameter is a pointer of type void and can point to any number
  * of intrinsic types, arrays and/or user defined structures which can be passed to a
  * task. It is up the the end-user to manage allocate and free the memory related to
@@ -285,6 +289,7 @@ typedef Queue_t *xQueue;
  * @sa xQueuePeek()
  * @sa xQueueReceive()
  * @sa xMemFree()
+ * @sa CONFIG_MESSAGE_VALUE_BYTES
  *
  * @warning The memory allocated for an instance of xQueueMessage must be freed using xMemFree().
  *
@@ -300,6 +305,7 @@ typedef QueueMessage_t *xQueueMessage;
  * @sa TaskNotification_t
  * @sa xTaskNotifyTake()
  * @sa xMemFree()
+ * @sa CONFIG_NOTIFICATION_VALUE_BYTES
  *
  * @warning The memory allocated for an instance of xTaskNotification must be freed using
  * xMemFree().
@@ -319,6 +325,7 @@ typedef TaskNotification_t *xTaskNotification;
  * @sa TaskInfo_t
  * @sa xTaskGetTaskInfo()
  * @sa xMemFree()
+ * @sa CONFIG_TASK_NAME_BYTES
  *
  * @warning The memory allocated for an instance of xTaskInfo must be freed using
  * xMemFree().
@@ -352,6 +359,7 @@ typedef TaskRunTimeStats_t *xTaskRunTimeStats;
  * are not accessible.
  *
  * @sa Task_t
+ * @sa xTaskCreate()
  * @sa xTaskDelete()
  *
  * @warning The memory allocated for an instance of xTask must be freed by xTaskDelete()
@@ -362,7 +370,7 @@ typedef Task_t *xTask;
 /**
  * @brief Type definition for the task parameter.
  *
- * The xTaskParm type used to pass a parameter to a task at the time of creation using
+ * The xTaskParm type is used to pass a parameter to a task at the time of creation using
  * xTaskCreate(). A task parameter is a pointer of type void and can point to any number
  * of intrinsic types, arrays and/or user defined structures which can be passed to a
  * task. It is up the the end-user to manage allocate and free the memory related to
@@ -421,7 +429,8 @@ typedef SystemInfo_t *xSystemInfo;
  * 
  * When a task paramater is passed to a task, it is passed as a pointer of
  * type void. To use the paramater it must first be casted to the correct type
- * and dereferenced. The following is an example of how the C macro is used.
+ * and dereferenced. The following is an example of how the DEREF_TASKPARM() C
+ * macro simplifies that process.
  * 
  * @code
  * void myTask_main(xTask task_, xTaskParm parm_) {
@@ -449,8 +458,9 @@ extern "C" {
  * @brief System call to allocate memory from the heap.
  * 
  * The xMemAlloc() system call will allocate memory from the heap for HeliOS system
- * calls and end-user tasks. The size of the heap is dependent on the 
- * CONFIG_HEAP_SIZE_IN_BLOCKS and CONFIG_HEAP_BLOCK_SIZE settings.
+ * calls and end-user tasks. The size of the heap in bytes is dependent on the 
+ * CONFIG_HEAP_SIZE_IN_BLOCKS and CONFIG_HEAP_BLOCK_SIZE settings. xMemAlloc() automatically
+ * clears the memory it allocates.
  *
  * @sa CONFIG_HEAP_SIZE_IN_BLOCKS
  * @sa CONFIG_HEAP_BLOCK_SIZE
@@ -459,6 +469,11 @@ extern "C" {
  * @param size_ The amount (size) of the memory to be allocated from the heap in bytes.
  * @return void* If successful, xMemAlloc() returns a pointer to the newly allocated memory.
  * If unsuccessful, the system call will return null.
+ * 
+ * @note HeliOS technically does not allocate memory from what is traditionally heap memory.
+ * HeliOS uses a private "heap" which is actually static memory allocated at compile time. This
+ * is done to maintain MISRA C:2012 compliance since standard library functions like malloc(),
+ * cmalloc() and free() are not permitted.
  */
 void *xMemAlloc(size_t size_);
 
@@ -487,6 +502,9 @@ void xMemFree(void *ptr_);
  *
  * @return size_t The amount of memory currently allocated in bytes. If no heap
  * memory is currently allocated, xMemGetUsed() will return zero.
+ * 
+ * @note xMemGetUsed() also checks the health of the heap and will return zero if
+ * it detects a consistency issue with the heap.
  */
 size_t xMemGetUsed(void);
 
@@ -501,6 +519,12 @@ size_t xMemGetUsed(void);
  * memory that is allocated.
  * @return size_t The amount of memory currently allocated to the specific pointer in bytes. If
  * the pointer is invalid or null, xMemGetSize() will return zero.
+ * 
+ * @note If the pointer ptr_ points to a structure that, for example, is 48 bytes in size
+ * base on sizeof(), xMemGetSize() will return the number of bytes allocated by the block(s)
+ * that contain the structure. Assuming the default block size of 32, a 48 byte structure would require
+ * TWO blocks so xMemGetSize() would return 64 - not 48. xMemGetSize() also checks the health of the
+ * heap and will return zero if it detects a consistency issue with the heap.
  */
 size_t xMemGetSize(void *ptr_);
 
@@ -545,6 +569,9 @@ void xQueueDelete(xQueue queue_);
  * @param queue_ The queue to return the length of.
  * @return xBase The number of messages in the queue. If unsuccessful or if the queue is empty,
  * xQueueGetLength() returns zero.
+ * 
+ * @note The xQueueGetLength() system call will also check the health of the queue and returns
+ * zero if a consistency issues is detected.
  */
 xBase xQueueGetLength(xQueue queue_);
 
@@ -557,6 +584,9 @@ xBase xQueueGetLength(xQueue queue_);
  * @param queue_ The queue to determine whether it is empty.
  * @return xBase True if the queue is empty. False if the queue has one or more messages. xQueueIsQueueEmpty()
  * will also return false if the queue parameter is invalid.
+ * 
+ * @note The xQueueIsQueueEmpty() will also check the health of the queue and return false
+ * if a consistency issue is detected.
  */
 xBase xQueueIsQueueEmpty(xQueue queue_);
 
@@ -568,8 +598,11 @@ xBase xQueueIsQueueEmpty(xQueue queue_);
  * is equal to the queue's length limit.
  *
  * @param queue_ The queue to determine whether it is full.
- * @return xBase True if the queue is full. False if the queue has zero. xQueueIsQueueEmpty()
+ * @return xBase True if the queue is full. False if the queue has zero. xQueueIsQueueFull()
  * will also return false if the queue parameter is invalid.
+ * 
+ * @note The xQueueIsQueueFull() will also check the health of the queue and return false
+ * if a consistency issue is detected. 
  */
 xBase xQueueIsQueueFull(xQueue queue_);
 
@@ -589,7 +622,7 @@ xBase xQueueMessagesWaiting(xQueue queue_);
  * @brief System call to send a message using a message queue.
  *
  * The xQueueSend() system call will send a message using the specified message queue. The size of the message
- * value is passed in the message bytes parameter. The message value size in byes is dependent
+ * value is passed in the message bytes parameter. The maximum message value size in byes is dependent
  * on the CONFIG_MESSAGE_VALUE_BYTES setting.
  *
  * @sa CONFIG_MESSAGE_VALUE_BYTES
@@ -771,8 +804,9 @@ xTask xTaskGetHandleById(xBase id_);
  * The xTaskGetAllRunTimeStats() system call will return the runtime statistics for all
  * of the tasks regardless of their state. The xTaskGetAllRunTimeStats() system call returns
  * the xTaskRunTimeStats type. An xBase variable must be passed by reference to xTaskGetAllRunTimeStats()
- * which will contain the number of tasks so the end-user can iterate through the tasks. The
- * xTaskRunTimeStats memory must be freed by xMemFree() after it is no longer needed.
+ * which will be updated by xTaskGetAllRunTimeStats() to contain the number of tasks so the
+ * end-user can iterate through the tasks. The xTaskRunTimeStats memory must be freed by xMemFree()
+ * after it is no longer needed.
  *
  * @sa xTaskRunTimeStats
  * @sa xMemFree()
@@ -783,6 +817,9 @@ xTask xTaskGetHandleById(xBase id_);
  * currently no tasks then this will be null. This memory must be freed by xMemFree().
  * 
  * @warning The memory allocated by xTaskGetAllRunTimeStats() must be freed by xMemFree().
+ * 
+ * @note The xTaskGetAllRuntTimeStats() system call will also check the health of the task list and
+ * will return null if a consistency issue is detected.
  */
 xTaskRunTimeStats xTaskGetAllRunTimeStats(xBase *tasks_);
 
@@ -811,6 +848,9 @@ xTaskRunTimeStats xTaskGetTaskRunTimeStats(xTask task_);
  * regardless of their state.
  *
  * @return xBase The number of tasks.
+ * 
+ * @note The xTaskGetNumberOfTasks() system call will also check the health of the task list and
+ * will return zero if a consistency issue is detected.
  */
 xBase xTaskGetNumberOfTasks(void);
 
@@ -821,6 +861,8 @@ xBase xTaskGetNumberOfTasks(void);
  * @param task_ The task to return the details of.
  * @return xTaskInfo The xTaskInfo structure containing the task details. xTaskGetTaskInfo()
  * returns null if the task cannot be found.
+ * 
+ * @warning The memory allocated by xTaskGetTaskInfo() must be freed by xMemFree().
  */
 xTaskInfo xTaskGetTaskInfo(xTask task_);
 
@@ -897,6 +939,7 @@ xBase xTaskNotificationIsWaiting(xTask task_);
  * notification bytes must be between one and the CONFIG_NOTIFICATION_VALUE_BYTES setting. The notification
  * value must contain a pointer to a char array containing the notification value. If the task already
  * has a waiting task notification, xTaskNotifyGive() will NOT overwrite the waiting task notification.
+ * xTaskNotifyGive() will return true if the direct to task notification was successfully given.
  * 
  * @sa CONFIG_NOTIFICATION_VALUE_BYTES
  * @sa xTaskNotifyTake()
@@ -905,8 +948,9 @@ xBase xTaskNotificationIsWaiting(xTask task_);
  * @param notificationBytes_ The number of bytes contained in the notification value. The number must be
  * between one and the CONFIG_NOTIFICATION_VALUE_BYTES setting.
  * @param notificationValue_ A char array containing the notification value.
+ * @return xBase True if the direct to task notification was successfully given, false if not.
  */
-void xTaskNotifyGive(xTask task_, xBase notificationBytes_, const char *notificationValue_);
+Base_t xTaskNotifyGive(xTask task_, xBase notificationBytes_, const char *notificationValue_);
 
 /**
  * @brief System call to take a direct to task notification from another task.
@@ -919,6 +963,7 @@ void xTaskNotifyGive(xTask task_, xBase notificationBytes_, const char *notifica
  * @sa xTaskNotification
  * @sa xTaskNotifyGive()
  * @sa xMemFree()
+ * @sa CONFIG_NOTIFICATION_VALUE_BYTES
  *
  * @param task_ The task to return a waiting task notification.
  * @return xTaskNotification The xTaskNotification structure containing the notification bytes
@@ -980,8 +1025,9 @@ void xTaskWait(xTask task_);
  * The xTaskChangePeriod() system call will change the period (microseconds) on the task timer
  * for the specified task. The timer period must be greater than zero. To have any effect, the task
  * must be in the waiting state set by calling xTaskWait() on the task. Once the timer period is set
- * and the task is in the waiting state, the task will be executed every N microseconds based on the period.
- * Changing the period to zero will prevent the task from being executed even if it is in the waiting state.
+ * and the task is in the waiting state, the task will be executed every timerPeriod_ microseconds.
+ * Changing the period to zero will prevent the task from being executed even if it is in the waiting state
+ * unless it were to receive a direct to task notification.
  * 
  * @sa xTaskWait()
  * @sa xTaskGetPeriod()
@@ -1099,7 +1145,7 @@ xBase xTimerIsTimerActive(xTimer timer_);
  * 
  * The xTimerHasTimerExpired() system call will return true or false dependent on whether
  * the timer period for the specified timer has elapsed. xTimerHasTimerExpired() will NOT
- * reset the timer. Timers will not automatically reset. Timers must be reset with xTimerReset().
+ * reset the timer. Timers will not automatically reset. Timers MUST be reset with xTimerReset().
  * 
  * @sa xTimerReset()
  *

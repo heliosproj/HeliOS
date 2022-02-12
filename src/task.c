@@ -512,7 +512,9 @@ task notification bytes is the number of bytes contained in the notification val
 notification bytes must be between one and the CONFIG_NOTIFICATION_VALUE_BYTES setting. The notification
 value must contain a pointer to a char array containing the notification value. If the task already
 has a waiting task notification, xTaskNotifyGive() will NOT overwrite the waiting task notification. */
-void xTaskNotifyGive(Task_t *task_, Base_t notificationBytes_, const char *notificationValue_) {
+Base_t xTaskNotifyGive(Task_t *task_, Base_t notificationBytes_, const char *notificationValue_) {
+  Base_t ret = false;
+
   Task_t *taskCursor = NULL;
 
   /* Check if the task list is not null and the task parameter is not null, the notification bytes are between
@@ -535,11 +537,13 @@ void xTaskNotifyGive(Task_t *task_, Base_t notificationBytes_, const char *notif
         taskCursor->notificationBytes = notificationBytes_;
 
         memcpy_(taskCursor->notificationValue, notificationValue_, CONFIG_NOTIFICATION_VALUE_BYTES);
+
+        ret = true;
       }
     }
   }
 
-  return;
+  return ret;
 }
 
 /* The xTaskNotifyTake() system call will return the waiting task notification if there

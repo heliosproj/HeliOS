@@ -27,7 +27,7 @@
 #define CONFIG_H_
 
 /* The following configurable settings may be changed by the end-user
-to customize HeliOS for their specific use. */
+to customize HeliOS for their specific application. */
 
 /**
  * @brief Define the size in bytes of the message queue message value.
@@ -35,7 +35,8 @@ to customize HeliOS for their specific use. */
  * Setting the CONFIG_MESSAGE_VALUE_BYTES allows the end-user to define
  * the size of the message queue message value. The larger the size of the
  * message value, the greater impact there will be on system performance.
- * The default size is 16.
+ * The default size is 16 bytes. The literal must be appended with "u" to
+ * maintain MISRA C:2012 compliance.
  * 
  * @sa xQueueMessage
  * 
@@ -48,7 +49,8 @@ to customize HeliOS for their specific use. */
  * Setting the CONFIG_NOTIFICATION_VALUE_BYTES allows the end-user to define
  * the size of the direct to task notification value. The larger the size of the
  * notification value, the greater impact there will be on system performance.
- * The default size is 16.
+ * The default size is 16 bytes. The literal must be appended with "u" to
+ * maintain MISRA C:2012 compliance.
  * 
  * @sa xTaskNotification
  */
@@ -60,7 +62,8 @@ to customize HeliOS for their specific use. */
  * Setting the CONFIG_TASK_NAME_BYTES allows the end-user to define
  * the size of the ASCII task name. The larger the size of the task
  * name, the greater impact there will be on system performance.
- * The default size is 16.
+ * The default size is 16 bytes. The literal must be appended with "u"
+ * to maintain MISRA C:2012 compliance.
  * 
  * @sa xTaskInfo
  * 
@@ -71,11 +74,12 @@ to customize HeliOS for their specific use. */
  * @brief Define the number of blocks in the heap.
  * 
  * Setting CONFIG_HEAP_SIZE_IN_BLOCKS allows the end-user to
- * define the size in blocks of the heap. The size of a block
+ * define the size of the heap in blocks. The size of a block
  * in the heap is determined by the CONFIG_HEAP_BLOCK_SIZE which
  * is represented in bytes. The size of the heap needs to be
  * adjusted to fit the memory requirements of the end-user's
- * application. The default value is 512 blocks.
+ * application. The default value is 512 blocks. The literal
+ * must be appended with "u" to maintain MISRA C:2012 compliance.
  * 
  * @sa xMemAlloc()
  * @sa xMemFree()
@@ -84,16 +88,16 @@ to customize HeliOS for their specific use. */
  */
 #define CONFIG_HEAP_SIZE_IN_BLOCKS 512u
 
-
 /**
  * @brief Define the heap block size in bytes.
  * 
  * Setting CONFIG_HEAP_BLOCK_SIZE allows the end-user to
- * define the size of a block in the heap. The block size
+ * define the size of a heap block in bytes. The block size
  * should be set to achieve the best possible utilization
  * of the heap. A block size that is too large will waste the
  * heap for smaller requests for heap. A block size that is too small
- * will waste heap on entries. The default value is 32 bytes.
+ * will waste heap on entries. The default value is 32 bytes. The
+ * literal must be appended with "u" to maintain MISRA C:2012 compliance.
  * 
  * @sa xMemAlloc()
  * @sa xMemFree()
@@ -106,10 +110,12 @@ to customize HeliOS for their specific use. */
  * @brief Define the minimum value for a message queue limit.
  * 
  * Setting the CONFIG_QUEUE_MINIMUM_LIMIT allows the end-user to define
- * the MINIMUM value a message queue can be created with xQueueCreate().
+ * the MINIMUM length limit a message queue can be created with xQueueCreate().
  * When a message queue length equals its limit, the message queue will
  * be considered full and return true when xQueueIsQueueFull() is called.
- * A full queue will also not accept messages from xQueueSend().
+ * A full queue will also not accept messages from xQueueSend(). The default
+ * value is 5. The literal must be appended with "u" to maintain MISRA C:2012
+ * compliance.
  * 
  * @sa xQueueIsQueueFull()
  * @sa xQueueSend()

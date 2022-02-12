@@ -52,7 +52,7 @@ Base_t xTaskGetId(Task_t *task_);
 char *xTaskList(void);
 void xTaskNotifyStateClear(Task_t *task_);
 Base_t xTaskNotificationIsWaiting(Task_t *task_);
-void xTaskNotifyGive(Task_t *task_, Base_t notificationBytes_, const char *notificationValue_);
+Base_t xTaskNotifyGive(Task_t *task_, Base_t notificationBytes_, const char *notificationValue_);
 TaskNotification_t *xTaskNotifyTake(Task_t *task_);
 void xTaskResume(Task_t *task_);
 void xTaskSuspend(Task_t *task_);
