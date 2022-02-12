@@ -32,28 +32,26 @@ extern TaskList_t *taskList;
 /* The xQueueCreate() system call creates a message queue for inter-task
 communication. */
 Queue_t *xQueueCreate(Base_t limit_) {
-  Queue_t *queue = NULL;
+  Queue_t *ret = NULL;
 
   /* Check to make sure the limit parameter is greater than or equal to the
   setting CONFIG_QUEUE_MINIMUM_LIMIT. */
   if (limit_ >= CONFIG_QUEUE_MINIMUM_LIMIT) {
-    queue = (Queue_t *)xMemAlloc(sizeof(Queue_t));
+    ret = (Queue_t *)xMemAlloc(sizeof(Queue_t));
 
     /* Check if queue was successfully allocated by xMemAlloc(). */
-    if (ISNOTNULLPTR(queue)) {
-      queue->length = 0x0u;
+    if (ISNOTNULLPTR(ret)) {
+      ret->length = 0x0u;
 
-      queue->limit = limit_;
+      ret->limit = limit_;
 
-      queue->head = NULL;
+      ret->head = NULL;
 
-      queue->tail = NULL;
-
-      return queue;
+      ret->tail = NULL;
     }
   }
 
-  return NULL;
+  return ret;
 }
 
 /* The xQueueDelete() system call will delete a queue created by xQueueCreate(). xQueueDelete()
@@ -76,6 +74,8 @@ void xQueueDelete(Queue_t *queue_) {
 /* The xQueueGetLength() system call returns the length of the queue (the number of messages
 the queue currently contains). */
 Base_t xQueueGetLength(Queue_t *queue_) {
+  Base_t ret = 0x0u;
+
   Base_t messages = 0x0u;
 
   Message_t *messageCursor = NULL;
@@ -94,16 +94,18 @@ Base_t xQueueGetLength(Queue_t *queue_) {
     /* Check to make sure the number of messages counted matches the length attribute of the queue.
     This is to confirm the integrity of the queue before returning its length. */
     if (queue_->length == messages) {
-      return messages;
+      ret = messages;
     }
   }
 
-  return 0;
+  return ret;
 }
 
 /* The xQueueIsEmpty() system call will return a true or false dependent on whether the queue is
 empty or contains one or more messages. */
 Base_t xQueueIsQueueEmpty(Queue_t *queue_) {
+  Base_t ret = false;
+
   Base_t messages = 0x0u;
 
   Message_t *messageCursor = NULL;
@@ -122,17 +124,19 @@ Base_t xQueueIsQueueEmpty(Queue_t *queue_) {
     /* Check to make sure the number of messages counted matches the length attribute of the queue
     and if the number of messages equals zero. */
     if (messages == 0x0u && queue_->length == messages) {
-      return true;
+      ret = true;
     }
   }
 
-  return false;
+  return ret;
 }
 
 /* The xQueueIsFull() system call will return a true or false dependent on whether the queue is
 full or contains zero messages. A queue is considered full if the number of messages in the queue
 is equal to the queue's length limit. */
 Base_t xQueueIsQueueFull(Queue_t *queue_) {
+  Base_t ret = false;
+
   Base_t messages = 0x0u;
 
   Message_t *messageCursor = NULL;
@@ -151,16 +155,18 @@ Base_t xQueueIsQueueFull(Queue_t *queue_) {
     /* Check to make sure the number of messages counted matches the length attribute of the queue
     and if the number of messages is greater than or equal to the queue length limit. */
     if (messages >= queue_->limit && queue_->length == messages) {
-      return true;
+      ret = true;
     }
   }
 
-  return false;
+  return ret;
 }
 
 /* The xQueueMessageWaiting() system call returns true or false dependent on whether
 there is at least one message waiting. The queue does not have to be full to return true. */
 Base_t xQueueMessagesWaiting(Queue_t *queue_) {
+  Base_t ret = false;
+
   Base_t messages = 0x0u;
 
   Message_t *messageCursor = NULL;
@@ -179,16 +185,18 @@ Base_t xQueueMessagesWaiting(Queue_t *queue_) {
     /* Check to make sure the number of messages counted matches the length attribute of the queue
     and if the number of messages is greater than zero. */
     if (messages > 0x0u && queue_->length == messages) {
-      return true;
+      ret = true;
     }
   }
 
-  return false;
+  return ret;
 }
 
 /* The xQueueSend() system call will send a message to the queue. The size of the message
 value is passed in the message bytes parameter. */
 Base_t xQueueSend(Queue_t *queue_, Base_t messageBytes_, const char *messageValue_) {
+  Base_t ret = false;
+
   Message_t *message = NULL;
 
   Base_t messages = 0x0u;
@@ -235,37 +243,35 @@ Base_t xQueueSend(Queue_t *queue_, Base_t messageBytes_, const char *messageValu
 
         queue_->length++;
 
-        return true;
+        ret = true;
       }
     }
   }
 
-  return false;
+  return ret;
 }
 
 /* The xQueuePeek() system call will return the next message in the queue without
 dropping the message. */
 QueueMessage_t *xQueuePeek(Queue_t *queue_) {
-  QueueMessage_t *message = NULL;
+  QueueMessage_t *ret = NULL;
 
   /* Check if the queue parameter is not null. */
   if (ISNOTNULLPTR(queue_)) {
     /* Check if the head of the queue is not null. */
     if (ISNOTNULLPTR(queue_->head)) {
-      message = (QueueMessage_t *)xMemAlloc(sizeof(QueueMessage_t));
+      ret = (QueueMessage_t *)xMemAlloc(sizeof(QueueMessage_t));
 
       /* Check if a new message was successfully allocated by xMemAlloc(). */
-      if (ISNOTNULLPTR(message)) {
-        message->messageBytes = queue_->head->messageBytes;
+      if (ISNOTNULLPTR(ret)) {
+        ret->messageBytes = queue_->head->messageBytes;
 
-        memcpy_(message->messageValue, queue_->head->messageValue, CONFIG_MESSAGE_VALUE_BYTES);
-
-        return message;
+        memcpy_(ret->messageValue, queue_->head->messageValue, CONFIG_MESSAGE_VALUE_BYTES);
       }
     }
   }
 
-  return NULL;
+  return ret;
 }
 
 /* The xQueueDropMessage() system call will drop the next message from the queue without
@@ -277,23 +283,21 @@ void xQueueDropMessage(Queue_t *queue_) {
   if (ISNOTNULLPTR(queue_)) {
     /* Check if the head of the queue is null, if so enable interrupts and
     return because there is nothing to drop. */
-    if (ISNULLPTR(queue_->head)) {
-      return;
+    if (ISNOTNULLPTR(queue_->head)) {
+      message = queue_->head;
+
+      queue_->head = queue_->head->next;
+
+      /* Again check if the head of the queue is null, if so set the tail
+      of the queue to null. */
+      if (ISNULLPTR(queue_->head)) {
+        queue_->tail = NULL;
+      }
+
+      queue_->length--;
+
+      xMemFree(message);
     }
-
-    message = queue_->head;
-
-    queue_->head = queue_->head->next;
-
-    /* Again check if the head of the queue is null, if so set the tail
-    of the queue to null. */
-    if (ISNULLPTR(queue_->head)) {
-      queue_->tail = NULL;
-    }
-
-    queue_->length--;
-
-    xMemFree(message);
   }
 
   return;
@@ -302,20 +306,18 @@ void xQueueDropMessage(Queue_t *queue_) {
 /* The xQueueReceive() system call will return the next message in the queue and drop
 it from the queue. */
 QueueMessage_t *xQueueReceive(Queue_t *queue_) {
-  QueueMessage_t *message = NULL;
+  QueueMessage_t *ret = NULL;
 
   /* Check if the queue parameter is not null. */
   if (ISNOTNULLPTR(queue_)) {
-    message = xQueuePeek(queue_);
+    ret = xQueuePeek(queue_);
 
     /* Check if the message returned from xQueuePeek() is not null. If so, drop the message from the
     queue and return the message. */
-    if (ISNOTNULLPTR(message)) {
+    if (ISNOTNULLPTR(ret)) {
       xQueueDropMessage(queue_);
-
-      return message;
     }
   }
 
-  return NULL;
+  return ret;
 }

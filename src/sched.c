@@ -173,6 +173,8 @@ void TaskRun(Task_t *task_) {
   if (task_->totalRunTime < prevTotalRunTime) {
     SYSFLAG_OVERFLOW() = true;
   }
+
+  return;
 }
 
 /* The xTaskResumeAll() system call will set the scheduler system flag so the next
@@ -205,25 +207,23 @@ void xTaskStopScheduler(void) {
 information about the system including the OS (product) name, its version and how many tasks
 are currently in the running, suspended or waiting states. */
 SystemInfo_t *xSystemGetSystemInfo(void) {
-  SystemInfo_t *systemInfo = NULL;
+  SystemInfo_t *ret = NULL;
 
-  systemInfo = (SystemInfo_t *)xMemAlloc(sizeof(SystemInfo_t));
+  ret = (SystemInfo_t *)xMemAlloc(sizeof(SystemInfo_t));
 
   /* Check if system info is not null to make sure xMemAlloc() successfully allocated
   the memory. */
-  if (ISNOTNULLPTR(systemInfo)) {
-    memcpy_(systemInfo->productName, PRODUCT_NAME, PRODUCTNAME_SIZE);
+  if (ISNOTNULLPTR(ret)) {
+    memcpy_(ret->productName, PRODUCT_NAME, PRODUCTNAME_SIZE);
 
-    systemInfo->majorVersion = MAJOR_VERSION_NO;
+    ret->majorVersion = MAJOR_VERSION_NO;
 
-    systemInfo->minorVersion = MINOR_VERSION_NO;
+    ret->minorVersion = MINOR_VERSION_NO;
 
-    systemInfo->patchVersion = PATCH_VERSION_NO;
+    ret->patchVersion = PATCH_VERSION_NO;
 
-    systemInfo->numberOfTasks = xTaskGetNumberOfTasks();
-
-    return systemInfo;
+    ret->numberOfTasks = xTaskGetNumberOfTasks();
   }
 
-  return NULL;
+  return ret;
 }
