@@ -440,42 +440,40 @@ size_t xMemGetSize(void *ptr_) {
 
       /* Check if the counted blocks matches the HEAP_SIZE_IN_BLOCKS setting,
       if it doesn't return. */
-      if (blockCount != CONFIG_HEAP_SIZE_IN_BLOCKS) {
-        return ZERO;
-      }
+      if (blockCount == CONFIG_HEAP_SIZE_IN_BLOCKS) {
+        /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+        PHASE III: Check if the pointer paramater actually points to a heap entry that
+        by scanning the heap for it. If it exists, free the entry.
 
-      /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-      PHASE III: Check if the pointer paramater actually points to a heap entry that
-      by scanning the heap for it. If it exists, free the entry.
+        Don't ever just directly check that the pointer references what APPEARS to be a
+        heap entry - always traverse the heap!!
+        * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-      Don't ever just directly check that the pointer references what APPEARS to be a
-      heap entry - always traverse the heap!!
-      * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+        /* Determine the heap entry to get the size of by moving back from the pointer by the byte size of one
+        heap entry. */
+        entryToSize = (HeapEntry_t *)((Byte_t *)ptr_ - (entryBlocksNeeded * CONFIG_HEAP_BLOCK_SIZE));
 
-      /* Determine the heap entry to get the size of by moving back from the pointer by the byte size of one
-      heap entry. */
-      entryToSize = (HeapEntry_t *)((Byte_t *)ptr_ - (entryBlocksNeeded * CONFIG_HEAP_BLOCK_SIZE));
+        /* To scan the heap, set the heap entry cursor to the start of the heap. */
+        entryCursor = start;
 
-      /* To scan the heap, set the heap entry cursor to the start of the heap. */
-      entryCursor = start;
+        /* While the heap entry cursor is not null, keep scanning. */
+        while (ISNOTNULLPTR(entryCursor)) {
+          /* If the entry cursor equals the entry we want to free, then break out of the loop. */
+          if (entryCursor == entryToSize) {
+            break;
+          }
 
-      /* While the heap entry cursor is not null, keep scanning. */
-      while (ISNOTNULLPTR(entryCursor)) {
-        /* If the entry cursor equals the entry we want to free, then break out of the loop. */
-        if (entryCursor == entryToSize) {
-          break;
+          /* Move on to the next heap entry. */
+          entryCursor = entryCursor->next;
         }
 
-        /* Move on to the next heap entry. */
-        entryCursor = entryCursor->next;
-      }
-
-      /* Well, we didn't find the entry for the pointer the end-user wanted freed so
-      return. */
-      if (ISNOTNULLPTR(entryCursor)) {
-        /* We want to return the amount of BYTES in use by the pointer so multiply the
-        blocks consumed by the entry by the HEAP_BLOCK_SIZE. */
-        ret = entryCursor->blocks * CONFIG_HEAP_BLOCK_SIZE;
+        /* Well, we didn't find the entry for the pointer the end-user wanted freed so
+        return. */
+        if (ISNOTNULLPTR(entryCursor)) {
+          /* We want to return the amount of BYTES in use by the pointer so multiply the
+          blocks consumed by the entry by the HEAP_BLOCK_SIZE. */
+          ret = entryCursor->blocks * CONFIG_HEAP_BLOCK_SIZE;
+        }
       }
     }
   }
@@ -508,15 +506,18 @@ void memset_(void *dest_, uint16_t val_, size_t n_) {
 /* A memory utility to compare the contents of memory at two locations pointed to by
 the pointers s1 and s2. */
 uint16_t memcmp_(const void *s1_, const void *s2_, size_t n_) {
+  uint16_t ret = ZERO;
+
   char *s1 = (char *)s1_;
   char *s2 = (char *)s2_;
 
   for (size_t i = ZERO; i < n_; i++) {
     if (*s1 != *s2) {
-      return *s1 - *s2;
+      ret = *s1 - *s2;
+      break;
     }
     s1++;
     s2++;
   }
-  return ZERO;
+  return ret;
 }
