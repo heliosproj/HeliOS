@@ -385,7 +385,7 @@ size_t xMemGetUsed(void) {
     /* Check if the counted blocks matches the HEAP_SIZE_IN_BLOCKS setting,
     if it doesn't return. */
     if (blockCount == CONFIG_HEAP_SIZE_IN_BLOCKS) {
-      ret = usedBlockCount * CONFIG_HEAP_BLOCK_SIZE;
+      ret = (size_t)usedBlockCount * CONFIG_HEAP_BLOCK_SIZE;
     }
   }
 
