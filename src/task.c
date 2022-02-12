@@ -41,7 +41,7 @@ Task_t *xTaskCreate(const char *name_, void (*callback_)(Task_t *, TaskParm_t *)
 
   /* Check if not in a critical section from CRITICAL_ENTER() and make sure the name and callback parameters
   are not null. */
-  if (SYSFLAG_CRITICAL() == false && ISNOTNULLPTR(name_) && ISNOTNULLPTR(callback_)) {
+  if ((SYSFLAG_CRITICAL() == false) && (ISNOTNULLPTR(name_)) && (ISNOTNULLPTR(callback_))) {
     /* Check if the task list is null, if it is call xMemAlloc() to allocate
     the dynamic memory for it. */
     if (ISNULLPTR(taskList)) {
@@ -101,14 +101,14 @@ void xTaskDelete(Task_t *task_) {
 
   /* Check if not in a critical section from CRITICAL_ENTER() and make sure the task list is not null
   and that the task parameter is also not null. */
-  if (SYSFLAG_CRITICAL() == false && ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_)) {
+  if ((SYSFLAG_CRITICAL() == false) && (ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(task_))) {
     taskCursor = taskList->head;
 
     taskPrevious = NULL;
 
     /* Check if the task cursor is not null and if the task cursor equals the task
     to be deleted. */
-    if (ISNOTNULLPTR(taskCursor) && taskCursor == task_) {
+    if ((ISNOTNULLPTR(taskCursor)) && (taskCursor == task_)) {
       taskList->head = taskCursor->next;
 
       xMemFree(taskCursor);
@@ -118,7 +118,7 @@ void xTaskDelete(Task_t *task_) {
     } else {
       /* While the task cursor is not null and the task cursor is not equal to the
       task to be deleted. */
-      while (ISNOTNULLPTR(taskCursor) && taskCursor != task_) {
+      while ((ISNOTNULLPTR(taskCursor)) && (taskCursor != task_)) {
         taskPrevious = taskCursor;
 
         taskCursor = taskCursor->next;
@@ -148,7 +148,7 @@ Task_t *xTaskGetHandleByName(const char *name_) {
   Task_t *taskCursor = NULL;
 
   /* Check if the task list is not null and the name parameter is also not null. */
-  if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(name_)) {
+  if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(name_))) {
     taskCursor = taskList->head;
 
     /* While the task cursor is not null, scan the task list for the task name. */
@@ -206,7 +206,7 @@ TaskRunTimeStats_t *xTaskGetAllRunTimeStats(Base_t *tasks_) {
   TaskRunTimeStats_t *ret = NULL;
 
   /* Check if the task list is not null and the tasks parameter is not null. */
-  if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(tasks_)) {
+  if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(tasks_))) {
     taskCursor = taskList->head;
 
     /* While the task cursor is not null, continue to traverse the task list counting
@@ -219,7 +219,7 @@ TaskRunTimeStats_t *xTaskGetAllRunTimeStats(Base_t *tasks_) {
 
     /* Check if the number of tasks is greater than zero and the length of the task list equals
     the number of tasks just counted (this is done as an integrity check). */
-    if (tasks > ZERO && taskList->length == tasks) {
+    if ((tasks > ZERO) && (taskList->length == tasks)) {
       ret = (TaskRunTimeStats_t *)xMemAlloc(tasks * sizeof(TaskRunTimeStats_t));
 
       /* Check if xMemAlloc() successfully allocated the memory. */
@@ -258,12 +258,12 @@ TaskRunTimeStats_t *xTaskGetTaskRunTimeStats(Task_t *task_) {
   TaskRunTimeStats_t *ret = NULL;
 
   /* Check if the task list and the task parameter is not null. */
-  if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_)) {
+  if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(task_))) {
     taskCursor = taskList->head;
 
     /* While the task cursor is not null and the task cursor is not equal to the
     task being searched for. */
-    while (ISNOTNULLPTR(taskCursor) && taskCursor != task_) {
+    while ((ISNOTNULLPTR(taskCursor)) && (taskCursor != task_)) {
       taskCursor = taskCursor->next;
     }
 
@@ -322,12 +322,12 @@ TaskInfo_t *xTaskGetTaskInfo(Task_t *task_) {
   TaskInfo_t *ret = NULL;
 
   /* Check if the task list is not null and the task parameter is not null. */
-  if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_)) {
+  if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(task_))) {
     taskCursor = taskList->head;
 
     /* While the task cursor is not null and the task cursor is not equal
     to the task being searched for. */
-    while (ISNOTNULLPTR(taskCursor) && taskCursor != task_) {
+    while ((ISNOTNULLPTR(taskCursor)) && (taskCursor != task_)) {
       taskCursor = taskCursor->next;
     }
 
@@ -361,12 +361,12 @@ TaskState_t xTaskGetTaskState(Task_t *task_) {
   Task_t *taskCursor = NULL;
 
   /* Check if the task list is not null and the task parameter is not null. */
-  if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_)) {
+  if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(task_))) {
     taskCursor = taskList->head;
 
     /* While the task cursor is not null and the task cursor is not equal
     to the task being searched for. */
-    while (ISNOTNULLPTR(taskCursor) && taskCursor != task_) {
+    while ((ISNOTNULLPTR(taskCursor)) && (taskCursor != task_)) {
       taskCursor = taskCursor->next;
     }
 
@@ -391,12 +391,12 @@ char *xTaskGetName(Task_t *task_) {
   Task_t *taskCursor = NULL;
 
   /* Check if the task list is not null and the task parameter is not null. */
-  if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_)) {
+  if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(task_))) {
     taskCursor = taskList->head;
 
     /* While the task cursor is not null and the task cursor is not equal
     to the task being searched for. */
-    while (ISNOTNULLPTR(taskCursor) && taskCursor != task_) {
+    while ((ISNOTNULLPTR(taskCursor)) && (taskCursor != task_)) {
       taskCursor = taskCursor->next;
     }
 
@@ -422,12 +422,12 @@ TaskId_t xTaskGetId(Task_t *task_) {
   Task_t *taskCursor = NULL;
 
   /* Check if the task list is not null and the task parameter is not null. */
-  if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_)) {
+  if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(task_))) {
     taskCursor = taskList->head;
 
     /* While the task cursor is not null and the task cursor is not equal
     to the task being searched for. */
-    while (ISNOTNULLPTR(taskCursor) && taskCursor != task_) {
+    while ((ISNOTNULLPTR(taskCursor)) && (taskCursor != task_)) {
       taskCursor = taskCursor->next;
     }
 
@@ -452,12 +452,12 @@ void xTaskNotifyStateClear(Task_t *task_) {
   Task_t *taskCursor = NULL;
 
   /* Check if the task list is not null and the task parameter is not null. */
-  if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_)) {
+  if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(task_))) {
     taskCursor = taskList->head;
 
     /* While the task cursor is not null and the task cursor is not equal
     to the task being searched for. */
-    while (ISNOTNULLPTR(taskCursor) && taskCursor != task_) {
+    while ((ISNOTNULLPTR(taskCursor)) && (taskCursor != task_)) {
       taskCursor = taskCursor->next;
     }
 
@@ -484,12 +484,12 @@ Base_t xTaskNotificationIsWaiting(Task_t *task_) {
   Task_t *taskCursor = NULL;
 
   /* Check if the task list is not null and the task parameter is not null. */
-  if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_)) {
+  if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(task_))) {
     taskCursor = taskList->head;
 
     /* While the task cursor is not null and the task cursor is not equal
     to the task being searched for. */
-    while (ISNOTNULLPTR(taskCursor) && taskCursor != task_) {
+    while ((ISNOTNULLPTR(taskCursor)) && (taskCursor != task_)) {
       taskCursor = taskCursor->next;
     }
 
@@ -517,12 +517,12 @@ void xTaskNotifyGive(Task_t *task_, Base_t notificationBytes_, const char *notif
 
   /* Check if the task list is not null and the task parameter is not null, the notification bytes are between
   one and CONFIG_NOTIFICATION_VALUE_BYTES and that the notification value char array pointer is not null. */
-  if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_) && notificationBytes_ > ZERO && notificationBytes_ < CONFIG_NOTIFICATION_VALUE_BYTES && ISNOTNULLPTR(notificationValue_)) {
+  if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(task_)) && (notificationBytes_ > ZERO) && (notificationBytes_ < CONFIG_NOTIFICATION_VALUE_BYTES) && (ISNOTNULLPTR(notificationValue_))) {
     taskCursor = taskList->head;
 
     /* While the task cursor is not null and the task cursor is not equal
     to the task being searched for. */
-    while (ISNOTNULLPTR(taskCursor) && taskCursor != task_) {
+    while ((ISNOTNULLPTR(taskCursor)) && (taskCursor != task_)) {
       taskCursor = taskCursor->next;
     }
 
@@ -551,12 +551,12 @@ TaskNotification_t *xTaskNotifyTake(Task_t *task_) {
   TaskNotification_t *ret = NULL;
 
   /* Check if the task list is not null and the task parameter is not null. */
-  if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_)) {
+  if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(task_))) {
     taskCursor = taskList->head;
 
     /* While the task cursor is not null and the task cursor is not equal
     to the task being searched for. */
-    while (ISNOTNULLPTR(taskCursor) && taskCursor != task_) {
+    while ((ISNOTNULLPTR(taskCursor)) && (taskCursor != task_)) {
       taskCursor = taskCursor->next;
     }
 
@@ -593,12 +593,12 @@ void xTaskResume(Task_t *task_) {
   Task_t *taskCursor = NULL;
 
   /* Check if the task list is not null and the task parameter is not null. */
-  if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_)) {
+  if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(task_))) {
     taskCursor = taskList->head;
 
     /* While the task cursor is not null and the task cursor is not equal
     to the task being searched for. */
-    while (ISNOTNULLPTR(taskCursor) && taskCursor != task_) {
+    while ((ISNOTNULLPTR(taskCursor)) && (taskCursor != task_)) {
       taskCursor = taskCursor->next;
     }
 
@@ -618,12 +618,12 @@ void xTaskSuspend(Task_t *task_) {
   Task_t *taskCursor = NULL;
 
   /* Check if the task list is not null and the task parameter is not null. */
-  if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_)) {
+  if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(task_))) {
     taskCursor = taskList->head;
 
     /* While the task cursor is not null and the task cursor is not equal
     to the task being searched for. */
-    while (ISNOTNULLPTR(taskCursor) && taskCursor != task_) {
+    while ((ISNOTNULLPTR(taskCursor)) && (taskCursor != task_)) {
       taskCursor = taskCursor->next;
     }
 
@@ -645,12 +645,12 @@ void xTaskWait(Task_t *task_) {
   Task_t *taskCursor = NULL;
 
   /* Check if the task list is not null and the task parameter is not null. */
-  if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_)) {
+  if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(task_))) {
     taskCursor = taskList->head;
 
     /* While the task cursor is not null and the task cursor is not equal
     to the task being searched for. */
-    while (ISNOTNULLPTR(taskCursor) && taskCursor != task_) {
+    while ((ISNOTNULLPTR(taskCursor)) && (taskCursor != task_)) {
       taskCursor = taskCursor->next;
     }
 
@@ -673,12 +673,12 @@ void xTaskChangePeriod(Task_t *task_, Time_t timerPeriod_) {
   Task_t *taskCursor = NULL;
 
   /* Check if the task list is not null and the task parameter is not null. */
-  if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_)) {
+  if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(task_))) {
     taskCursor = taskList->head;
 
     /* While the task cursor is not null and the task cursor is not equal
     to the task being searched for. */
-    while (ISNOTNULLPTR(taskCursor) && taskCursor != task_) {
+    while ((ISNOTNULLPTR(taskCursor)) && (taskCursor != task_)) {
       taskCursor = taskCursor->next;
     }
 
@@ -700,12 +700,12 @@ Time_t xTaskGetPeriod(Task_t *task_) {
   Task_t *taskCursor = NULL;
 
   /* Check if the task list is not null and the task parameter is not null. */
-  if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_)) {
+  if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(task_))) {
     taskCursor = taskList->head;
 
     /* While the task cursor is not null and the task cursor is not equal
     to the task being searched for. */
-    while (ISNOTNULLPTR(taskCursor) && taskCursor != task_) {
+    while ((ISNOTNULLPTR(taskCursor)) && (taskCursor != task_)) {
       taskCursor = taskCursor->next;
     }
 
@@ -725,12 +725,12 @@ void xTaskResetTimer(Task_t *task_) {
   Task_t *taskCursor = NULL;
 
   /* Check if the task list is not null and the task parameter is not null. */
-  if (ISNOTNULLPTR(taskList) && ISNOTNULLPTR(task_)) {
+  if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(task_))) {
     taskCursor = taskList->head;
 
     /* While the task cursor is not null and the task cursor is not equal
     to the task being searched for. */
-    while (ISNOTNULLPTR(taskCursor) && taskCursor != task_) {
+    while ((ISNOTNULLPTR(taskCursor)) && (taskCursor != task_)) {
       taskCursor = taskCursor->next;
     }
 

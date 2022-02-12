@@ -45,10 +45,8 @@ void xTaskStartScheduler(void) {
 
   Task_t *taskCursor = NULL;
 
-  /* Going to try getting rid of TIM_T_MAX and just underflow an
-  unsigned integer. */
+  /* Underflow unsigned least runtime to get maximum value */
   Time_t leastRunTime = -1;
-  // Time_t leastRunTime = TIME_T_MAX;
 
   /* Disable interrupts and set the critical section flag before entering into the scheduler main
   loop. */
@@ -70,11 +68,11 @@ void xTaskStartScheduler(void) {
       /* While the task cursor is not null (i.e., there are further tasks in the task list). */
       while (ISNOTNULLPTR(taskCursor)) {
         /* If the task pointed to by the task cursor is waiting and it has a notification waiting, then execute it. */
-        if (taskCursor->state == TaskStateWaiting && taskCursor->notificationBytes > ZERO) {
+        if ((taskCursor->state == TaskStateWaiting) && (taskCursor->notificationBytes > ZERO)) {
           TaskRun(taskCursor);
 
           /* If the task pointed to by the task cursor is waiting and its timer has expired, then execute it. */
-        } else if (taskCursor->state == TaskStateWaiting && taskCursor->timerPeriod > ZERO && CURRENTTIME() - taskCursor->timerStartTime > taskCursor->timerPeriod) {
+        } else if ((taskCursor->state == TaskStateWaiting) && (taskCursor->timerPeriod > ZERO) && ((CURRENTTIME() - taskCursor->timerStartTime) > taskCursor->timerPeriod)) {
           TaskRun(taskCursor);
 
           taskCursor->timerStartTime = CURRENTTIME();
@@ -82,7 +80,7 @@ void xTaskStartScheduler(void) {
           /* If the task pointed to by the task cursor is running and it's total runtime is less than the
           least runtime from previous tasks, then set the run task pointer to the task cursor. This logic
           is used to achieve the runtime balancing. */
-        } else if (taskCursor->state == TaskStateRunning && taskCursor->totalRunTime < leastRunTime) {
+        } else if ((taskCursor->state == TaskStateRunning) && (taskCursor->totalRunTime < leastRunTime)) {
           leastRunTime = taskCursor->totalRunTime;
 
           runTask = taskCursor;

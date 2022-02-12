@@ -139,7 +139,7 @@ void *xMemAlloc(size_t size_) {
 
       /* Calculate the remainder of the requested blocks. If there is a remainder we
       need to add one more block. */
-      if (size_ % CONFIG_HEAP_SIZE_IN_BLOCKS > ZERO) {
+      if ((size_ % CONFIG_HEAP_SIZE_IN_BLOCKS) > ZERO) {
         /* There was a remainder for the requested blocks so add one more block. */
         requestedBlocks++;
       }
@@ -163,7 +163,7 @@ void *xMemAlloc(size_t size_) {
             1) The entry at the cursor is free.
             2) The entry has enough blocks to cover the requested blocks with overhead.
             3) The entry has the least possible number of blocks.*/
-        if (entryCursor->free == true && entryCursor->blocks >= requestedBlocksWithOverhead && entryCursor->blocks < leastBlocks) {
+        if ((entryCursor->free == true) && (entryCursor->blocks >= requestedBlocksWithOverhead) && (entryCursor->blocks < leastBlocks)) {
           /* Seems like a good candidate so update the least blocks in case
           there is an entry with fewer blocks that is free yet will fit
           the requested blocks with overhead. */

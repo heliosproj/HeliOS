@@ -90,14 +90,14 @@ void xTimerDelete(Timer_t *timer_) {
   Timer_t *timerPrevious = NULL;
 
   /* Check if the timer list is not null and the timer parameter is not null. */
-  if (ISNOTNULLPTR(timerList) && ISNOTNULLPTR(timer_)) {
+  if ((ISNOTNULLPTR(timerList)) && (ISNOTNULLPTR(timer_))) {
     timerCursor = timerList->head;
 
     timerPrevious = NULL;
 
     /* Check if the timer cursor is not null a if the timer cursor equals
     the timer parameter. */
-    if (ISNOTNULLPTR(timerCursor) && timerCursor == timer_) {
+    if ((ISNOTNULLPTR(timerCursor)) && (timerCursor == timer_)) {
       timerList->head = timerCursor->next;
 
       xMemFree(timerCursor);
@@ -107,7 +107,7 @@ void xTimerDelete(Timer_t *timer_) {
     } else {
       /* While the timer cursor is not null and the timer cursor is not
       equal to the timer parameter, continue to scan the timer list. */
-      while (ISNOTNULLPTR(timerCursor) && timerCursor != timer_) {
+      while ((ISNOTNULLPTR(timerCursor)) && (timerCursor != timer_)) {
         timerPrevious = timerCursor;
 
         timerCursor = timerCursor->next;
@@ -136,12 +136,12 @@ void xTimerChangePeriod(Timer_t *timer_, Time_t timerPeriod_) {
 
   /* Check if the timer list is not null, the timer parameter is not null and the timer period
   is zero or greater. */
-  if (ISNOTNULLPTR(timerList) && ISNOTNULLPTR(timer_)) {
+  if ((ISNOTNULLPTR(timerList)) && (ISNOTNULLPTR(timer_))) {
     timerCursor = timerList->head;
 
     /* While timer cursor is not null and the timer cursor does not equal the timer
     parameter, keep scanning the timer list. */
-    while (ISNOTNULLPTR(timerCursor) && timerCursor != timer_) {
+    while ((ISNOTNULLPTR(timerCursor)) && (timerCursor != timer_)) {
       timerCursor = timerCursor->next;
     }
 
@@ -163,12 +163,12 @@ Time_t xTimerGetPeriod(Timer_t *timer_) {
   Timer_t *timerCursor = NULL;
 
   /* Check if the timer list is not null and the timer parameter is not null. */
-  if (ISNOTNULLPTR(timerList) && ISNOTNULLPTR(timer_)) {
+  if ((ISNOTNULLPTR(timerList)) && (ISNOTNULLPTR(timer_))) {
     timerCursor = timerList->head;
 
     /* While timer cursor is not null and the timer cursor does not equal the timer
     parameter, keep scanning the timer list. */
-    while (ISNOTNULLPTR(timerCursor) && timerCursor != timer_) {
+    while ((ISNOTNULLPTR(timerCursor)) && (timerCursor != timer_)) {
       timerCursor = timerCursor->next;
     }
 
@@ -188,12 +188,12 @@ Base_t xTimerIsTimerActive(Timer_t *timer_) {
   Timer_t *timerCursor = NULL;
 
   /* Check if the timer list is not null and the timer parameter is not null. */
-  if (ISNOTNULLPTR(timerList) && ISNOTNULLPTR(timer_)) {
+  if ((ISNOTNULLPTR(timerList)) && (ISNOTNULLPTR(timer_))) {
     timerCursor = timerList->head;
 
     /* While timer cursor is not null and the timer cursor does not equal the timer
     parameter, keep scanning the timer list. */
-    while (ISNOTNULLPTR(timerCursor) && timerCursor != timer_) {
+    while ((ISNOTNULLPTR(timerCursor)) && (timerCursor != timer_)) {
       timerCursor = timerCursor->next;
     }
 
@@ -218,12 +218,12 @@ Base_t xTimerHasTimerExpired(Timer_t *timer_) {
   Timer_t *timerCursor = NULL;
 
   /* Check if the timer list is not null and the timer parameter is not null. */
-  if (ISNOTNULLPTR(timerList) && ISNOTNULLPTR(timer_)) {
+  if ((ISNOTNULLPTR(timerList)) && (ISNOTNULLPTR(timer_))) {
     timerCursor = timerList->head;
 
     /* While timer cursor is not null and the timer cursor does not equal the timer
     parameter, keep scanning the timer list. */
-    while (ISNOTNULLPTR(timerCursor) && timerCursor != timer_) {
+    while ((ISNOTNULLPTR(timerCursor)) && (timerCursor != timer_)) {
       timerCursor = timerCursor->next;
     }
 
@@ -232,7 +232,7 @@ Base_t xTimerHasTimerExpired(Timer_t *timer_) {
     if (ISNOTNULLPTR(timerCursor)) {
       /* If the state is running, timer period is greater than zero and if the elapsed time
       is equal to or greater than the timer period, return true. */
-      if (timerCursor->state == TimerStateRunning && timerCursor->timerPeriod > ZERO && CURRENTTIME() - timerCursor->timerStartTime > timerCursor->timerPeriod) {
+      if ((timerCursor->state == TimerStateRunning) && (timerCursor->timerPeriod > ZERO) && ((CURRENTTIME() - timerCursor->timerStartTime) > timerCursor->timerPeriod)) {
         ret = true;
       }
     }
@@ -246,12 +246,12 @@ void xTimerReset(Timer_t *timer_) {
   Timer_t *timerCursor = NULL;
 
   /* Check if the timer list is not null and the timer parameter is not null. */
-  if (ISNOTNULLPTR(timerList) && ISNOTNULLPTR(timer_)) {
+  if ((ISNOTNULLPTR(timerList)) && (ISNOTNULLPTR(timer_))) {
     timerCursor = timerList->head;
 
     /* While timer cursor is not null and the timer cursor does not equal the timer
     parameter, keep scanning the timer list. */
-    while (ISNOTNULLPTR(timerCursor) && timerCursor != timer_) {
+    while ((ISNOTNULLPTR(timerCursor)) && (timerCursor != timer_)) {
       timerCursor = timerCursor->next;
     }
 
@@ -271,12 +271,12 @@ void xTimerStart(Timer_t *timer_) {
   Timer_t *timerCursor = NULL;
 
   /* Check if the timer list is not null and the timer parameter is not null. */
-  if (ISNOTNULLPTR(timerList) && ISNOTNULLPTR(timer_)) {
+  if ((ISNOTNULLPTR(timerList)) && (ISNOTNULLPTR(timer_))) {
     timerCursor = timerList->head;
 
     /* While timer cursor is not null and the timer cursor does not equal the timer
     parameter, keep scanning the timer list. */
-    while (ISNOTNULLPTR(timerCursor) && timerCursor != timer_) {
+    while ((ISNOTNULLPTR(timerCursor)) && (timerCursor != timer_)) {
       timerCursor = timerCursor->next;
     }
 
@@ -296,12 +296,12 @@ void xTimerStop(Timer_t *timer_) {
   Timer_t *timerCursor = NULL;
 
   /* Check if the timer list is not null and the timer parameter is not null. */
-  if (ISNOTNULLPTR(timerList) && ISNOTNULLPTR(timer_)) {
+  if ((ISNOTNULLPTR(timerList)) && (ISNOTNULLPTR(timer_))) {
     timerCursor = timerList->head;
 
     /* While timer cursor is not null and the timer cursor does not equal the timer
     parameter, keep scanning the timer list. */
-    while (ISNOTNULLPTR(timerCursor) && timerCursor != timer_) {
+    while ((ISNOTNULLPTR(timerCursor)) && (timerCursor != timer_)) {
       timerCursor = timerCursor->next;
     }
 

@@ -123,7 +123,7 @@ Base_t xQueueIsQueueEmpty(Queue_t *queue_) {
 
     /* Check to make sure the number of messages counted matches the length attribute of the queue
     and if the number of messages equals zero. */
-    if (messages == ZERO && queue_->length == messages) {
+    if ((messages == ZERO) && (queue_->length == messages)) {
       ret = true;
     }
   }
@@ -154,7 +154,7 @@ Base_t xQueueIsQueueFull(Queue_t *queue_) {
 
     /* Check to make sure the number of messages counted matches the length attribute of the queue
     and if the number of messages is greater than or equal to the queue length limit. */
-    if (messages >= queue_->limit && queue_->length == messages) {
+    if ((messages >= queue_->limit) && (queue_->length == messages)) {
       ret = true;
     }
   }
@@ -184,7 +184,7 @@ Base_t xQueueMessagesWaiting(Queue_t *queue_) {
 
     /* Check to make sure the number of messages counted matches the length attribute of the queue
     and if the number of messages is greater than zero. */
-    if (messages > ZERO && queue_->length == messages) {
+    if ((messages > ZERO) && (queue_->length == messages)) {
       ret = true;
     }
   }
@@ -217,7 +217,7 @@ Base_t xQueueSend(Queue_t *queue_, Base_t messageBytes_, const char *messageValu
 
     /* Check if the length of the queue is less than the limit and the length of the queue matches the number of messages
     counted. */
-    if (queue_->length < queue_->limit && queue_->length == messages) {
+    if ((queue_->length < queue_->limit) && (queue_->length == messages)) {
       message = (Message_t *)xMemAlloc(sizeof(Message_t));
 
       /* Check if the message was successfully allocated by xMemAlloc(). */

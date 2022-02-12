@@ -87,6 +87,7 @@
   ],
   "files.associations": {
     "task.h": "c",
-    "sched.h": "c"
+    "sched.h": "c",
+    "queue.h": "c"
   }
 }
