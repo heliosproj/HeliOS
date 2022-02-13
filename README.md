@@ -58,10 +58,44 @@ Below is the Arduino "Blink" example code implemented using HeliOS. In this exam
 ```C
 #include "HeliOS.h"
 
+void blinkTask_main(xTask task_, xTaskParm parm_) {
+
+  int ledState = DEREF_TASKPARM(int, parm_);
+
+  if (ledState) {
+    printf("ON!!!\n");
+
+    ledState = 0;
+  } else {
+    printf("OFF!!!\n");
+
+    ledState = 1;
+  }
+
+  DEREF_TASKPARM(int, parm_) = ledState;
+
+  return;
+}
+
 void setup() {
 
+  int ledState = 0;
 
-  
+  xTask blink = xTaskCreate("BLINK", blinkTask_main, &ledState);
+
+  if (blink) {
+    xTaskWait(blink);
+
+    xTaskChangePeriod(blink, 1000000);
+
+    xTaskStartScheduler();
+  }
+
+  xSystemHalt();
+}
+
+void loop() {
+
 }
 ```
 # Releases
