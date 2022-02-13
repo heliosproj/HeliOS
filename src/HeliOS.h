@@ -392,6 +392,17 @@ typedef TaskParm_t *xTaskParm;
  * The unit of measure for time is always microseconds.
  *
  */
+typedef TIME_T_TYPE Time_t;
+
+/**
+ * @brief The type definition for time expressed in microseconds.
+ *
+ * The xTime type is used by several of the task and timer related system calls to express time.
+ * The unit of measure for time is always microseconds.
+ * 
+ * @sa Time_t
+ *
+ */
 typedef Time_t xTime;
 
 /**

@@ -47,6 +47,7 @@ typedef void TaskParm_t;
 typedef uint8_t Base_t;
 typedef uint8_t Byte_t;
 typedef uint16_t Word_t; /* Here a "word" does NOT refer to the machine word. It just means two bytes. */
+typedef TIME_T_TYPE Time_t;
 
 typedef struct HeapEntry_s {
   Byte_t free : 1;

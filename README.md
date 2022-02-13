@@ -37,6 +37,7 @@ development board using the Arduino platform. */
 #define ENABLE_INTERRUPTS() interrupts()
 #define TIME_T_TYPE uint32_t
 ```
+Please note, when defining TIME_T_TYPE, use only an unsigned integer type. While 16-bit wide unsigned integers will work, 32-bits (uint32_t) wide or wider is preferred.
 # Example
 Many embedded applications implement what is called a "super loop". A super loop is a loop that never exits (i.e., while(1){}) and contains most of the code executed by the microcontroller. The problem with super loops is they can grow out of control and become difficult to manage. This becomes especially challenging given the relatively few options for controlling timing (e.g., delay()). Unfortunately the use of delay() to control timing also means the microcontroller is unable to perform other operations (at least without the help of an ISR) until delay() returns. Below is an example of how easy it is to leverage the event-driven multitasking capabilities within HeliOS to implement the Arduino "Blink" example.
 ## Arduino "Blink" Example
