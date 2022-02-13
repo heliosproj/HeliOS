@@ -57,10 +57,18 @@ void loop() {
 ## HeliOS "Blink" Example
 Below is the Arduino "Blink" example code implemented using HeliOS. In this example, a HeliOS task, which alternates the microcontroller's GPIO pin state between high and low, is added in a "wait" state and a timer is set instructing HeliOS's scheduler to execute the task every 1,000,000 microseconds.
 ```C
+
+/* Include the HeliOS header, do not include
+any other HeliOS header. */
 #include "HeliOS.h"
 
+/* Define the task's main function. The definition must
+include the xTask and xTaskParm parameters. */
 void blinkTask_main(xTask task_, xTaskParm parm_) {
 
+  /* Dereference the task parameter and store its value
+  in a local integer. This integer contains the state
+  of the LED (i.e., on or off). */
   int ledState = DEREF_TASKPARM(int, parm_);
 
   if (ledState) {
@@ -73,6 +81,10 @@ void blinkTask_main(xTask task_, xTaskParm parm_) {
     ledState = 1;
   }
 
+  /* Dereference the task parameter to update its
+  value. The task's main function will receive this
+  value next time the task's main function is called
+  by the scheduler. */
   DEREF_TASKPARM(int, parm_) = ledState;
 
   return;
@@ -84,23 +96,41 @@ void setup() {
 
   pinMode(LED_BUILTIN, OUTPUT);
 
+  /* Create a new HeliOS task, give it an ASCII name, a reference to
+  the task's main function and a reference to the task's parameter - in
+  this case the state of the LED. */
   xTask blink = xTaskCreate("BLINK", blinkTask_main, &ledState);
 
+  /* Check to make sure the task was created by xTaskCreate() before
+  attempting to use the task. */
   if (blink) {
+
+    /* Place the task in the "waiting" state so it will respond to task
+    events. */
     xTaskWait(blink);
 
+    /* Set the task timer period to one second. The HeliOS scheduler
+    will execute the task every second until the task is either suspended,
+    its task timer period is changed or the task is deleted. */
     xTaskChangePeriod(blink, 1000000);
 
+    /* Pass control to the HeliOS scheduler. The HeliOS scheduler will
+    not relinquish control unless xTaskSuspendAll() is called. */
     xTaskStartScheduler();
 
+
+    /* If the scheduler relinquishes control, do some clean-up by
+    deleting the task. */
     xTaskDelete(blink);
   }
 
+  /* Halt the system. Once called, the system must be reset to
+  recover. */
   xSystemHalt();
 }
 
 void loop() {
-
+  /* The loop function is not used and should remain empty. */
 }
 ```
 # Releases
