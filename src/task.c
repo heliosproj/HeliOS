@@ -124,7 +124,7 @@ void xTaskDelete(Task_t *task_) {
         taskCursor = taskCursor->next;
       }
 
-      /* If the task cursor is null then return because the task was never found. */
+      /* If the task cursor is is not null, then delete the task otherwise return. */
       if (ISNOTNULLPTR(taskCursor)) {
         taskPrevious->next = taskCursor->next;
 
@@ -336,7 +336,8 @@ TaskInfo_t *xTaskGetTaskInfo(Task_t *task_) {
     if (ISNOTNULLPTR(taskCursor)) {
       ret = (TaskInfo_t *)xMemAlloc(sizeof(TaskInfo_t));
 
-      /* Check if the task info memory has been allocated by xMemAlloc(). */
+      /* Check if the task info memory has been allocated by xMemAlloc(). if it
+      has then populate the task info and return. */
       if (ISNOTNULLPTR(ret)) {
         ret->id = taskCursor->id;
 
@@ -370,12 +371,13 @@ TaskState_t xTaskGetTaskState(Task_t *task_) {
       taskCursor = taskCursor->next;
     }
 
-    /* Check if the task cursor is null, if so the task could not be found
-    so return null. */
-    if (ISNULLPTR(taskCursor)) {
-      ret = TaskStateError;
-    } else {
+    /* Check if the task cursor is not null, if so return the tasks's state
+    otherwise return the error task state. */
+    if (ISNOTNULLPTR(taskCursor)) {
       ret = taskCursor->state;
+
+    } else {
+      ret = TaskStateError;
     }
   }
 
@@ -400,8 +402,8 @@ char *xTaskGetName(Task_t *task_) {
       taskCursor = taskCursor->next;
     }
 
-    /* Check if the task cursor is null, if so the task could not be found
-    so return null. */
+    /* Check if the task cursor is not null, if so allocate memory for the
+    task name. */
     if (ISNOTNULLPTR(taskCursor)) {
       ret = (char *)xMemAlloc(CONFIG_TASK_NAME_BYTES);
 
@@ -431,8 +433,8 @@ Base_t xTaskGetId(Task_t *task_) {
       taskCursor = taskCursor->next;
     }
 
-    /* Check if the task cursor is null, if so the task could not be found
-    so return null. */
+    /* Check if the task cursor is not null, if so set the return value
+    to the task identifier. */
     if (ISNOTNULLPTR(taskCursor)) {
       ret = taskCursor->id;
     }
@@ -461,8 +463,8 @@ void xTaskNotifyStateClear(Task_t *task_) {
       taskCursor = taskCursor->next;
     }
 
-    /* Check if the task cursor is null, if so the task could not be found
-    so return. */
+    /* Check if the task cursor is not null, if so check if there is a waiting
+    notification. */
     if (ISNOTNULLPTR(taskCursor)) {
       /* If the task notification bytes are greater than zero, then there is a notification
       to clear. */
@@ -493,8 +495,8 @@ Base_t xTaskNotificationIsWaiting(Task_t *task_) {
       taskCursor = taskCursor->next;
     }
 
-    /* Check if the task cursor is null, if so the task could not be found
-    so return false. */
+    /* Check if the task cursor is not null, if so check if there is a waiting
+    task notification. */
     if (ISNOTNULLPTR(taskCursor)) {
       /* Check if the notification bytes are greater than zero. If so, there is a notification
       waiting so return true. */
@@ -528,8 +530,7 @@ Base_t xTaskNotifyGive(Task_t *task_, Base_t notificationBytes_, const char *not
       taskCursor = taskCursor->next;
     }
 
-    /* Check if the task cursor is null, if so the task could not be found
-    so return null. */
+    /* Check if the task cursor is not null, if so add the task notification to the task. */
     if (ISNOTNULLPTR(taskCursor)) {
       /* If the notification bytes are zero then there is not a notification already waiting,
       so copy the notification value into the task and set the notification bytes. */
@@ -564,8 +565,8 @@ TaskNotification_t *xTaskNotifyTake(Task_t *task_) {
       taskCursor = taskCursor->next;
     }
 
-    /* Check if the task cursor is null, if so the task could not be found
-    so return null. */
+    /* Check if the task cursor is not null, if so check if there is a waiting
+    task notification. */
     if (ISNOTNULLPTR(taskCursor)) {
       /* Check if the notification bytes are greater than zero, if so there is a waiting task
       notification. */
@@ -606,8 +607,7 @@ void xTaskResume(Task_t *task_) {
       taskCursor = taskCursor->next;
     }
 
-    /* Check if the task cursor is null, if so the task could not be found
-    so return. */
+    /* Check if the task cursor is not null, if so set the task state. */
     if (ISNOTNULLPTR(taskCursor)) {
       taskCursor->state = TaskStateRunning;
     }
@@ -631,8 +631,7 @@ void xTaskSuspend(Task_t *task_) {
       taskCursor = taskCursor->next;
     }
 
-    /* Check if the task cursor is null, if so the task could not be found
-    so return. */
+    /* Check if the task cursor is not null, if so set the task state. */
     if (ISNOTNULLPTR(taskCursor)) {
       taskCursor->state = TaskStateSuspended;
     }
@@ -658,8 +657,7 @@ void xTaskWait(Task_t *task_) {
       taskCursor = taskCursor->next;
     }
 
-    /* Check if the task cursor is null, if so the task could not be found
-    so return null. */
+    /* Check if the task cursor is not null, if so set the task state. */
     if (ISNOTNULLPTR(taskCursor)) {
       taskCursor->state = TaskStateWaiting;
     }
@@ -686,8 +684,7 @@ void xTaskChangePeriod(Task_t *task_, Time_t timerPeriod_) {
       taskCursor = taskCursor->next;
     }
 
-    /* Check if the task cursor is null, if so the task could not be found
-    so return null. */
+    /* Check if the task cursor is not null, if so set the task timer period. */
     if (ISNOTNULLPTR(taskCursor)) {
       taskCursor->timerPeriod = timerPeriod_;
     }
@@ -713,8 +710,8 @@ Time_t xTaskGetPeriod(Task_t *task_) {
       taskCursor = taskCursor->next;
     }
 
-    /* Check if the task cursor is null, if so the task could not be found
-    so return null. */
+    /* Check if the task cursor is not null, if so set the return value to the
+    task timer period. */
     if (ISNOTNULLPTR(taskCursor)) {
       ret = taskCursor->timerPeriod;
     }
@@ -738,8 +735,8 @@ void xTaskResetTimer(Task_t *task_) {
       taskCursor = taskCursor->next;
     }
 
-    /* Check if the task cursor is null, if so the task could not be found
-    so return null. */
+    /* Check if the task cursor is not null, if so set the start time to
+    the current time. */
     if (ISNOTNULLPTR(taskCursor)) {
       taskCursor->timerStartTime = CURRENTTIME();
     }

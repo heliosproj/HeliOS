@@ -1,5 +1,5 @@
 {
-  "C_Cpp.clang_format_fallbackStyle": "{BasedOnStyle: Google, IndentWidth: 2, ColumnLimit: 0}",
+  "C_Cpp.clang_format_fallbackStyle": "{BasedOnStyle: Google, AllowShortIfStatementsOnASingleLine: Never, AllowShortBlocksOnASingleLine: false, AllowShortFunctionsOnASingleLine: None, AllowShortLoopsOnASingleLine: false, ColumnLimit: 0, IndentWidth: 2, KeepEmptyLinesAtTheStartOfBlocks: true, MaxEmptyLinesToKeep: 4, SortIncludes: false, UseTab: Never}",
   "doxdocgen.c.commentPrefix": " * ",
   "doxdocgen.c.factoryMethodText": "",
   "doxdocgen.c.firstLine": "/**",
