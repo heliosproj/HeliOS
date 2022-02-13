@@ -91,6 +91,8 @@ void setup() {
     xTaskChangePeriod(blink, 1000000);
 
     xTaskStartScheduler();
+
+    xTaskDelete(blink);
   }
 
   xSystemHalt();
@@ -114,8 +116,8 @@ All releases, including the current release, can be found [here](https://github.
 # Contributing
 To contribute, create a pull request with your changes. Please fork from the **develop** branch only, as **master** is kept even with the current release.
 # Copyright & License
-HeliOS Copyright (C) 2020-2022 Manny Peterson
+HeliOS Embedded Operating System Copyright (C) 2020-2022 Manny Peterson
 
-HeliOS is copyrighted open source software licensed under the Free Software Foundation's GNU General Public License Version 3. The license can be found [here](/LICENSE.md).
+HeliOS is copyrighted open source software licensed under the Free Software Foundation's GNU General Public License (GPL) Version 3. The full license text can be found [here](/LICENSE.md).
 # Important
-HeliOS is **not** certified for use in safety-critical applications. The HeliOS source code, whether in full or in part, must **never** be used in applications where a risk to life exists.
+HeliOS is **not** certified for use in safety-critical applications. The HeliOS source code, whether in full or in part, must **never** be used in applications where a risk to life exists. In other words, do not use HeliOS in your project if there is even a remote chance someone might get hurt.
