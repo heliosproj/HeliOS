@@ -19,31 +19,23 @@ HeliOS is built to be robust. Each HeliOS release (0.3.0 and later) undergoes st
 
 Lastly, for PlatformIO and Arduino users, HeliOS is easily added to their embedded application. The current release of HeliOS is available directly through the PlatformIO Registry and the Arduino Library Manager. For users of other embedded platforms and/or tool-chains, simply download HeliOS from GitHub and add the sources to your project.
 # What's Happening
-HeliOS is always being improved. Development is currently focused on improvements to the scheduler, adding features, adding additional microcontroller support, code documentation, additional example sketches and testing. If you are looking to check-out the latest developments in HeliOS, clone the **develop** branch. But remember that the source code and documentation in the **develop** branch is under active development and may or may not compile. In the meantime, don't forget to **star** and **watch** the HeliOS repository so you don't miss out on new releases.
+The HeliOS 0.3.x series kernel was recently released and replaces the 0.2.x series kernel. With the 0.3.x series kernel, there have been significant changes to both the kernel internals and the API rendering it incompatible with applications built on 0.2.x. While the changes are significant, updating an application built with 0.2.x requires only a small amount of time as all of the features of HeliOS 0.2.x have been retained in 0.3.x. The key difference is the breadth of features offered by the 0.3.x series kernel has been expanded and existing features rewritten. Along with 0.3.x is a complete developer’s guide to assist the user in building applications on 0.3.x. The focus for HeliOS development going forward will be expanding available example code, further enhancing documentation and addressing any quality issues. As always, contributions are welcome and anyone wishing to contribute to HeliOS should refer to the “Contributing” section.
 # Getting Started
-## Arduino
-Because HeliOS is compliant with the Arduino 1.5 (rev. 2.2) Library Specification, getting up and running is quick and easy. HeliOS can be installed directly from the Arduino Library Manager or downloaded and installed manually. Both options are described [here](https://www.arduino.cc/en/Guide/Libraries#toc3). You can also refer to the auto-generated instructions from ArduBadge [here](https://www.ardu-badge.com/HeliOS). Once up and running, check out one of the example sketches or refer to the HeliOS Programmer's Guide in the Documentation section.
-## Other Microcontrollers
-Built-in (tested) support currently exists for the following microcontrollers:
-* AVR
-* SAM/SAMD
-* ESP8266
-* ESP32
-* Teensy
-
-HeliOS can be compiled for other microcontrollers as well. However, your mileage may vary. If you wish to add support for your favorite microcontroller, please see the Contributing section for details on how to contribute code.
-## Linux & Microsoft Windows
-Built-in support exists for compiling and running HeliOS in user-land on Linux and Microsoft Windows. When running in user-land, HeliOS acts like a threading library for applications. To compile for Linux or Microsoft Windows, simply un-comment the appropriate C preprocessor directive in the header file HeliOS.h (as shown below) and compile using GCC or Microsoft Visual C++. The files needed to compile uild HeliOS for user-land on Linux and Microsoft Windows can be found in extras/linux and extras/windows directories respectively.
+## Documentation
+The entire HeliOS API is documented in the HeliOS Developer’s Guide is available in PDF format in the HeliOS sources tree under “doc”.
+## Microcontroller Support
+Other than four define statements, HeliOS requires zero additional portability code. Currently HeliOS has built-in support for AVR, SAMD, SAM, ESP8266, ESP32 and Teensy 3/4/MM microcontrollers (though the latter is an ARM development board). If using the Arduino platform/tool-chain, HeliOS should work right out of the box by adding HeliOS to the project from the PlatformIO Registry or Arduino Library Manager.
+## Adding Support
+If the user’s desired microcontroller is not supported out of the box, support for other platforms and/or tool-chains only require the user to define the following four defines (and any required headers for the defines) in defines.h.
 ```C
-/*
- * Un-comment to compile for Linux or Microsoft
- * Windows.
- * #define OTHER_ARCH_LINUX
- * #define OTHER_ARCH_WINDOWS
- */
+/* Example defines for a microcontroler using the
+Arduino platform. */
+#include <Arduino.h>
+#define CURRENTTIME() micros()
+#define DISABLE_INTERRUPTS() noInterrupts()
+#define ENABLE_INTERRUPTS() interrupts()
+#define TIME_T_TYPE uint32_t
 ```
-# Documentation
-The HeliOS Programmer's Guide is a work in progress. What is available today can be found [here](/extras/HeliOS_Programmers_Guide.md). If you are interested in contributing to the HeliOS Programmer's Guide, please see the Contributing section for details.
 # Example
 Many embedded projects on microcontrollers implement what is called a "super loop". A super loop is a loop that never exits (i.e., while(1){}) and contains most of the code executed by the microcontroller. The problem with super loops is they can grow out of control and become difficult to manage. This becomes especially challenging given the relatively few options for controling timing (e.g., delay()). Unfortunately the use of delay() to control timing also means the microcontroller is unable to perform other operations (at least without the help of an ISR) until delay() returns. Below is an example of how easy it is to leverage the event driven multitasking capabilities within HeliOS.
 ## Arduino "Blink" Example
