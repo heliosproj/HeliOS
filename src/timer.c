@@ -113,8 +113,8 @@ void xTimerDelete(Timer_t *timer_) {
         timerCursor = timerCursor->next;
       }
 
-      /* If the timer cursor is null, then the timer could not be found so
-      enable interrupts and return. */
+      /* If the timer cursor is not null, then remove the timer
+      from the list and free its memory. */
       if (ISNOTNULLPTR(timerCursor)) {
         timerPrevious->next = timerCursor->next;
 
@@ -145,8 +145,7 @@ void xTimerChangePeriod(Timer_t *timer_, Time_t timerPeriod_) {
       timerCursor = timerCursor->next;
     }
 
-    /* If the timer cursor is null, the timer could not be found in the timer list
-    so just return. */
+    /* If the timer cursor is not null, then set the timer's period. */
     if (ISNOTNULLPTR(timerCursor)) {
       timerCursor->timerPeriod = timerPeriod_;
     }
@@ -172,8 +171,8 @@ Time_t xTimerGetPeriod(Timer_t *timer_) {
       timerCursor = timerCursor->next;
     }
 
-    /* If the timer cursor is null, the timer could not be found in the timer list
-    so just return zero. */
+    /* If the timer cursor is not null, then set the return value to the timer's
+    period. */
     if (ISNOTNULLPTR(timerCursor)) {
       ret = timerCursor->timerPeriod;
     }
@@ -197,8 +196,7 @@ Base_t xTimerIsTimerActive(Timer_t *timer_) {
       timerCursor = timerCursor->next;
     }
 
-    /* If the timer cursor is null, the timer could not be found in the timer list
-    so just return. */
+    /* If the timer cursor is not null, then check if the timer is running. */
     if (ISNOTNULLPTR(timerCursor)) {
       if (timerCursor->state == TimerStateRunning) {
         ret = true;
@@ -227,8 +225,7 @@ Base_t xTimerHasTimerExpired(Timer_t *timer_) {
       timerCursor = timerCursor->next;
     }
 
-    /* If the timer cursor is null, the timer could not be found in the timer list
-    so just return false. */
+    /* If the timer cursor is not null, check to see if the timer has expired. */
     if (ISNOTNULLPTR(timerCursor)) {
       /* If the state is running, timer period is greater than zero and if the elapsed time
       is equal to or greater than the timer period, return true. */
@@ -255,8 +252,7 @@ void xTimerReset(Timer_t *timer_) {
       timerCursor = timerCursor->next;
     }
 
-    /* If the timer cursor is null, the timer could not be found in the timer list
-    so just return. */
+    /* If the timer cursor is not null, then set the timer to the current time. */
     if (ISNOTNULLPTR(timerCursor)) {
       timerCursor->timerStartTime = CURRENTTIME();
     }
@@ -280,8 +276,7 @@ void xTimerStart(Timer_t *timer_) {
       timerCursor = timerCursor->next;
     }
 
-    /* If the timer cursor is null, the timer could not be found in the timer list
-    so just return. */
+    /* If the timer cursor is not null, then set the state of the timer to running. */
     if (ISNOTNULLPTR(timerCursor)) {
       timerCursor->state = TimerStateRunning;
     }
@@ -305,8 +300,7 @@ void xTimerStop(Timer_t *timer_) {
       timerCursor = timerCursor->next;
     }
 
-    /* If the timer cursor is null, the timer could not be found in the timer list
-    so just return. */
+    /* If the timer cursor is not null, set the state of the timer to stopped. */
     if (ISNOTNULLPTR(timerCursor)) {
       timerCursor->state = TimerStateStopped;
     }
