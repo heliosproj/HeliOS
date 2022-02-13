@@ -63,11 +63,11 @@ void blinkTask_main(xTask task_, xTaskParm parm_) {
   int ledState = DEREF_TASKPARM(int, parm_);
 
   if (ledState) {
-    printf("ON!!!\n");
+    digitalWrite(LED_BUILTIN, HIGH);
 
     ledState = 0;
   } else {
-    printf("OFF!!!\n");
+    digitalWrite(LED_BUILTIN, LOW);
 
     ledState = 1;
   }
@@ -80,6 +80,8 @@ void blinkTask_main(xTask task_, xTaskParm parm_) {
 void setup() {
 
   int ledState = 0;
+
+  pinMode(LED_BUILTIN, OUTPUT);
 
   xTask blink = xTaskCreate("BLINK", blinkTask_main, &ledState);
 
@@ -100,39 +102,20 @@ void loop() {
 ```
 # Releases
 All releases, including the current release, can be found [here](https://github.com/MannyPeterson/HeliOS/releases).
-* 0.2.8 - added xTaskSetTimerWOReset(), added task a task parameter, improved headers and added support for queues
-* 0.2.7 - added a contributed example, privatized the list pointers for scheduler and added support for Teensy 3/4
-* 0.2.6 - added built-in support for ESP8266 and minor internal updates
-* 0.2.5 - numerous internal enhancements including improved time precision and scheduler now gracefully handles overflow of run-time timer
-* 0.2.4 - additional example Arduino sketches and other code improvements
+* 0.3.0 - First release of the new 0.3.x series kernel (many new features, most of the kernel rewritten, new example code and new documentation)
+* 0.2.8 - Added xTaskSetTimerWOReset(), added task a task parameter, improved headers and added support for queues
+* 0.2.7 - Added a contributed example, privatized the list pointers for scheduler and added support for Teensy 3/4
+* 0.2.6 - Added built-in support for ESP8266 and minor internal updates
+* 0.2.5 - Numerous internal enhancements including improved time precision and scheduler now gracefully handles overflow of run-time timer
+* 0.2.4 - Additional example Arduino sketches and other code improvements
 * 0.2.3 - Improved protection of system state, new examples, improved code documentation and some maintainability enhancements
 * 0.2.2 - Additional function calls, minor fixes and documentation enhancements
 * 0.2.1 - The first official release
 # Contributing
-While all contributions are welcome, contributions are needed most in the following areas:
-* Testing, Testing and More Testing
-* Code Documentation, Readability and Maintainability
-* New Features
-* Additional Microcontroller Support
-* Example Sketches
-* HeliOS Programmer's Guide
+To contribute, create a pull request with your changes. Please fork from the **develop** branch only as **master** is kept even with the current release.
+# Copyright & License
+HeliOS Copyright (C) 2020-2022 Manny Peterson
 
-To contribute, simply create a pull request with your changes. Please fork from the **develop** branch as **master** is kept even with the current release. Pull requests are typically responded to as quickly as possible.
-# Thank you
-No free and open source software project has been successful without the contributions of many. This space is reserved for recognizing people who have made meaningful contributions to HeliOS. All contributors are listed in alphabetical order.
-* [Jakub Rakus](https://github.com/JakubRakus)
-* [Julien Peyregne](https://github.com/JuPrgn)
-* [Kai Wurtz](https://github.com/kwrtz)
-* [Konidem](https://github.com/Konidem)
-* [Stig Bjorlykke](https://github.com/stigbjorlykke)
-* [Thomas Hornschuh](https://github.com/ThomasHornschuh)
-* [XXIITEAM](https://github.com/IIXXTEAM)
-* [Mats Tage Axelsson](https://github.com/matstage)
-
-Also, special thanks to [Gil Maimon](https://github.com/gilmaimon) for the great website [ArduBadge](https://www.ardu-badge.com/).
-# License & Trademarks
 HeliOS is copyrighted open source software licensed under the Free Software Foundation's GNU General Public License Version 3. The license can be found [here](/LICENSE.md).
-
-Microsoft Windows and Microsoft Visual C++ are registered trademarks of Microsoft Corporation in the United States and/or other countries.
 # Important
 HeliOS is **not** certified for use in safety-critical applications. The HeliOS source code, whether in full or in part, must **never** be used in applications where a risk to life exists.
