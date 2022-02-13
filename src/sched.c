@@ -28,7 +28,7 @@
 
 /* "You are not expected to understand this."
 Thank you for the best OS on Earth, Dennis.
-May you rest in peace. */
+May you forever rest in peace. */
 
 extern TaskList_t *taskList;
 

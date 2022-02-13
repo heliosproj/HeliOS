@@ -1,4 +1,5 @@
 /.vscode/**
 !.gitignore
+!.gitattributes
 !/.vscode/
 !/.vscode/settings.json
