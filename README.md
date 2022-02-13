@@ -28,8 +28,9 @@ Other than four define statements, HeliOS requires zero additional portability c
 ## Adding Support
 If the user’s desired microcontroller is not supported out of the box, support for other platforms and/or tool-chains only require the user to define the following four defines (and any required headers for the defines) in defines.h.
 ```C
-/* Example defines for a microcontroler using the
-Arduino platform. */
+/* Example defines for a Microchip SAM D MCU based
+development board using the Arduino platform. */
+#elif defined(ARDUINO_ARCH_SAMD)
 #include <Arduino.h>
 #define CURRENTTIME() micros()
 #define DISABLE_INTERRUPTS() noInterrupts()
@@ -37,9 +38,9 @@ Arduino platform. */
 #define TIME_T_TYPE uint32_t
 ```
 # Example
-Many embedded projects on microcontrollers implement what is called a "super loop". A super loop is a loop that never exits (i.e., while(1){}) and contains most of the code executed by the microcontroller. The problem with super loops is they can grow out of control and become difficult to manage. This becomes especially challenging given the relatively few options for controling timing (e.g., delay()). Unfortunately the use of delay() to control timing also means the microcontroller is unable to perform other operations (at least without the help of an ISR) until delay() returns. Below is an example of how easy it is to leverage the event driven multitasking capabilities within HeliOS.
+Many embedded applications implement what is called a "super loop". A super loop is a loop that never exits (i.e., while(1){}) and contains most of the code executed by the microcontroller. The problem with super loops is they can grow out of control and become difficult to manage. This becomes especially challenging given the relatively few options for controlling timing (e.g., delay()). Unfortunately the use of delay() to control timing also means the microcontroller is unable to perform other operations (at least without the help of an ISR) until delay() returns. Below is an example of how easy it is to leverage the event-driven multitasking capabilities within HeliOS to implement the Arduino "Blink" example.
 ## Arduino "Blink" Example
-Below is a copy of the traditional Arduino "Blink" example code.
+Below is the "Blink" example code included with the Arduino platform.
 ```C
 void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
@@ -53,107 +54,14 @@ void loop() {
 }
 ```
 ## HeliOS "Blink" Example
-Below is the Arduino "Blink" example code implemented using HeliOS. In this example, a HeliOS task, which alternates the microcontroller's GPIO pin state between high and low, is added in a "wait" state and a timer is set instructing HeliOS's scheduler to execute the task every 1,000,000 microseconds. That's it!
+Below is the Arduino "Blink" example code implemented using HeliOS. In this example, a HeliOS task, which alternates the microcontroller's GPIO pin state between high and low, is added in a "wait" state and a timer is set instructing HeliOS's scheduler to execute the task every 1,000,000 microseconds.
 ```C
-/*
- * Include the standard HeliOS header for Arduino sketches. This header
- * includes the required HeliOS header files automatically.
- */
-#include <HeliOS_Arduino.h>
-
-/*
- * Declare and initialize an int to maintain the state of
- * the built-in LED.
- */
-volatile int ledState = 0;
-
-/*
- * The task definition for taskBlink() which will
- * be executed by HeliOS every 1,000,000 microseconds
- * (1 second).
- */
-void taskBlink(xTaskId id_) {
-  /*
-   * If the state is 0 or LOW then set the state to
-   * 1 or HIGH. Likewise, if the state is 1 or HIGH
-   * then set the state to LOW.
-   */
-  if (ledState) {
-    /*
-     * Set the state of the digital GPIO pin associated
-     * with the built-in LED to LOW.
-     */
-    digitalWrite(LED_BUILTIN, LOW);
-
-    /*
-     * Update the int containing the state of the built-in
-     * LED accordingly.
-     */
-    ledState = 0;
-  } else {
-    /*
-     * Set the state of the digital GPIO pin associated
-     * with the built-in LED to HIGH.
-     */
-    digitalWrite(LED_BUILTIN, HIGH);
-
-    /*
-     * Update the int containing the state of the built-in
-     * LED accordingly.
-     */
-    ledState = 1;
-  }
-}
+#include "HeliOS.h"
 
 void setup() {
-  /*
-   * Declare an xTaskId to hold the the task id
-   * and initialize.
-   */
-  xTaskId id = 0;
 
-  /*
-   * Call xHeliOSSetup() to initialize HeliOS and
-   * its data structures. xHeliOSSetup() must be
-   * called before any other HeliOS function call.
-   */
-  xHeliOSSetup();
 
-  /*
-   * Set the mode of the digital GPIO pin associated
-   * with the built-in LED to OUTPUT only.
-   */
-  pinMode(LED_BUILTIN, OUTPUT);
-
-  /*
-   * Add the task taskBlink() to HeliOS by passing
-   * xTaskAdd() the friendly name of the task as well
-   * as a callback pointer to the task function.
-   */
-  id = xTaskAdd("TASKBLINK", &taskBlink);
-
-  /*
-   * Call xTaskWait() to place taskBlink() into a wait
-   * state by passing xTaskWait() the task id. A task
-   * must be in a wait state to respond to timer events.
-   */
-  xTaskWait(id);
-
-  /*
-   * Set the timer interval for taskBlink() to 1,000,000 microseconds
-   * (1 second). HeliOS automatically begins incrementing
-   * the timer for the task once the timer interval is set.
-   */
-  xTaskSetTimer(id, 1000000);
-}
-
-void loop() {
-  /*
-   * Momentarily pass control to HeliOS by calling the
-   * xHeliOSLoop() function call. xHeliOSLoop() should be
-   * the only code inside of the sketch's loop() function.
-   */
-  xHeliOSLoop();
+  
 }
 ```
 # Releases
