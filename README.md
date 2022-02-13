@@ -102,7 +102,7 @@ void loop() {
 ```
 # Releases
 All releases, including the current release, can be found [here](https://github.com/MannyPeterson/HeliOS/releases).
-* 0.3.0 - First release of the new 0.3.x series kernel (many new features, most of the kernel rewritten, new example code and new documentation)
+* **0.3.0 - First release of the new 0.3.x series kernel (many new features, most of the kernel rewritten, new example code and new documentation)**
 * 0.2.8 - Added xTaskSetTimerWOReset(), added task a task parameter, improved headers and added support for queues
 * 0.2.7 - Added a contributed example, privatized the list pointers for scheduler and added support for Teensy 3/4
 * 0.2.6 - Added built-in support for ESP8266 and minor internal updates
@@ -112,7 +112,7 @@ All releases, including the current release, can be found [here](https://github.
 * 0.2.2 - Additional function calls, minor fixes and documentation enhancements
 * 0.2.1 - The first official release
 # Contributing
-To contribute, create a pull request with your changes. Please fork from the **develop** branch only as **master** is kept even with the current release.
+To contribute, create a pull request with your changes. Please fork from the **develop** branch only, as **master** is kept even with the current release.
 # Copyright & License
 HeliOS Copyright (C) 2020-2022 Manny Peterson
 
