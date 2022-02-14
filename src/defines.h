@@ -1,7 +1,7 @@
 /**
  * @file defines.h
  * @author Manny Peterson (mannymsp@gmail.com)
- * @brief Header file containing all of the C preprocessor define statements for HeliOS
+ * @brief Kernel header file containing all of the macros required to build HeliOS
  * @version 0.3.0
  * @date 2022-01-31
  *

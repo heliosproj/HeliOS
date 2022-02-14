@@ -1,7 +1,7 @@
 /**
  * @file HeliOS.h
  * @author Manny Peterson (mannymsp@gmail.com)
- * @brief Header file to be included in end-user code and contains the system calls and related types.
+ * @brief Header file to be included in end-user application code.
  * @version 0.3.0
  * @date 2022-01-31
  *

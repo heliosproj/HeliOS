@@ -1,7 +1,7 @@
 /**
  * @file queue.h
  * @author Manny Peterson (mannymsp@gmail.com)
- * @brief Source code for interprocess communication queues in HeliOS
+ * @brief Kernel sources for interprocess communication queues in HeliOS
  * @version 0.3.0
  * @date 2022-01-31
  * 

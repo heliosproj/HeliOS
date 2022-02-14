@@ -1,7 +1,7 @@
 /**
  * @file sched.h
  * @author Manny Peterson (mannymsp@gmail.com)
- * @brief Source code for the HeliOS scheduler and memory utilities for HeliOS
+ * @brief Kernel sources for the HeliOS scheduler
  * @version 0.3.0
  * @date 2022-01-31
  * 

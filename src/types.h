@@ -1,7 +1,7 @@
 /**
  * @file types.h
  * @author Manny Peterson (mannymsp@gmail.com)
- * @brief Header file containing all of the private type definitions in HeliOS
+ * @brief Kernel header for all kernel type definitions in HeliOS
  * @version 0.3.0
  * @date 2022-01-31
  *

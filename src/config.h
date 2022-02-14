@@ -1,7 +1,7 @@
 /**
  * @file config.h
  * @author Manny Peterson (mannymsp@gmail.com)
- * @brief Header file for configurable settings in HelIOS
+ * @brief Kernel header file for user definable settings in HelIOS
  * @version 0.3.0
  * @date 2022-01-31
  * 

@@ -1,7 +1,7 @@
 /**
  * @file mem.c
  * @author Manny Peterson (mannymsp@gmail.com)
- * @brief Source code for the management of heap memory in HeliOS
+ * @brief Kernel sources for the management of heap memory in HeliOS
  * @version 0.3.0
  * @date 2022-01-31
  *

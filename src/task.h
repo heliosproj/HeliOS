@@ -1,7 +1,7 @@
 /**
  * @file task.h
  * @author Manny Peterson (mannymsp@gmail.com)
- * @brief Source code for tasks and managing tasks in HeliOS
+ * @brief Kernel sources for tasks and task management in HeliOS
  * @version 0.3.0
  * @date 2022-01-31
  * 
