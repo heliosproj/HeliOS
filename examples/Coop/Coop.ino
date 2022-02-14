@@ -1,4 +1,11 @@
-/*
+/**
+ * @file Coop.ino
+ * @author Manny Peterson (mannymsp@gmail.com)
+ * @brief Example code for cooperative multitasking
+ * @version 0.3.0
+ * @date 2022-02-14
+ *
+ * @copyright
  * HeliOS Embedded Operating System
  * Copyright (C) 2020-2022 Manny Peterson <mannymsp@gmail.com>
  *
@@ -14,106 +21,72 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
-
-/*
- * Additional documentation on HeliOS and its Application
- * Programming Interface (API) is available in the
- * HeliOS Programmer's Guide which can be found here:
  *
- * https://github.com/MannyPeterson/HeliOS/blob/master/extras/HeliOS_Programmers_Guide.md
  */
+
+#include <HeliOS.h>
 
 /*
- * Include the standard HeliOS header for Arduino sketches. This header
- * includes the required HeliOS header files automatically.
+ * The task definition for short running task which
+ * delay for 10 milliseconds. Do not actually use delay()
+ * in your applications using HeliOS. This is strictly
+ * for demonstration purposes.
  */
-#include <HeliOS_Arduino.h>
-
-/*
- * The task definition for taskShort() which
- * will perform 1,000 arbitrary floating point
- * operations.
- */
-void taskShort(xTaskId id_) {
-  volatile float a = 0.0f, b = 0.0f;
-
-  for (int i = 0; i < 1000; i++)
-    a += i;
-
-  b = a;
+void taskShort_main(xTask task_, xTaskParm parm_) {
+  delay(10);
 
   Serial.print("S");
 }
 
 /*
- * The task definition for taskLong() which
- * will perform 10,000 arbitrary floating point
- * operations.
+ * The task definition for short running task which
+ * delay for 60 milliseconds. Do not actually use delay()
+ * in your applications using HeliOS. This is strictly
+ * for demonstration purposes.
  */
-void taskLong(xTaskId id_) {
-  volatile float a = 0.0f, b = 0.0f;
-
-  for (int i = 0; i < 10000; i++)
-    a += i;
-
-  b = a;
+void taskLong_main(xTask task_, xTaskParm parm_) {
+  delay(60);
 
   Serial.println("L");
 }
 
 void setup() {
-  /*
-   * Declare an xTaskId to hold the the task id
-   * and initialize.
-   */
-  xTaskId id = 0;
 
-  /*
-   * Call xHeliOSSetup() to initialize HeliOS and
-   * its data structures. xHeliOSSetup() must be
-   * called before any other HeliOS function call.
-   */
-  xHeliOSSetup();
-
-  /*
-   * Set the serial data rate and begin serial
-   * communication.
-   */
   Serial.begin(9600);
 
-  /*
-   * Add the task taskShort() to HeliOS by passing
-   * xTaskAdd() the friendly name of the task as well
-   * as a callback pointer to the task function.
-   */
-  id = xTaskAdd("TASKSHORT", &taskShort);
+  /* Create a new HeliOS task, give it an ASCII name, a reference to
+  the task's main function. Since no task paramater is desired,
+  simply set the task paramater argument to NULL. */
+  xTask shortTask = xTaskCreate("SHORT", taskShort_main, NULL);
+  xTask longTask = xTaskCreate("LONG", taskLong_main, NULL);
 
-  /*
-   * Call xTaskStart() to start taskShort() by passing
-   * xTaskStart() the id of the task to start.
-   */
-  xTaskStart(id);
 
-  /*
-   * Add the task taskShort() to HeliOS by passing
-   * xTaskAdd() the friendly name of the task as well
-   * as a callback pointer to the task function.
-   */
-  id = xTaskAdd("TASKLONG", &taskLong);
+  /* Check to make sure the task was created by xTaskCreate() before
+  attempting to use the task. */
+  if (shortTask && longTask) {
 
-  /*
-   * Call xTaskStart() to start taskLong() by passing
-   * xTaskStart() the id of the task to start.
-   */
-  xTaskStart(id);
+    /* Start the short running and long running tasks. */
+    xTaskResume(shortTask);
+
+    xTaskResume(longTask);
+
+    /* Pass control to the HeliOS scheduler. The HeliOS scheduler will
+    not relinquish control unless xTaskSuspendAll() is called. */
+    xTaskStartScheduler();
+
+
+    /* If the scheduler relinquishes control, do some clean-up by
+    deleting the task. */
+    xTaskDelete(shortTask);
+
+    xTaskDelete(longTask);
+  }
+
+  /* Halt the system. Once called, the system must be reset to
+  recover. */
+  xSystemHalt();
 }
 
 void loop() {
-  /*
-   * Momentarily pass control to HeliOS by calling the
-   * xHeliOSLoop() function call. xHeliOSLoop() should be
-   * the only code inside of the sketch's loop() function.
-   */
-  xHeliOSLoop();
+  /* The loop function is not used and should remain empty. */
 }

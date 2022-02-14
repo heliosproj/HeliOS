@@ -27,7 +27,7 @@
 
 /* Include the HeliOS header, do not include
 any other HeliOS header. */
-#include "HeliOS.h"
+#include <HeliOS.h>
 
 /* Define the task's main function. The definition must
 include the xTask and xTaskParm parameters. */
