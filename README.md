@@ -25,7 +25,7 @@ The HeliOS API is documented in the [HeliOS Developer's Guide](/doc/HeliOS_Devel
 ## Microcontroller Support
 Other than four define statements, HeliOS requires zero additional portability code. Currently HeliOS has built-in support for AVR, SAMD, SAM, ESP8266, ESP32 and Teensy 3/4/MM microcontrollers (though the latter is an ARM Cortex-M based development board). If using the Arduino platform/tool-chain, HeliOS should work right out of the box by adding HeliOS to the project from the [PlatformIO Registry](https://registry.platformio.org/libraries/mannypeterson/HeliOS) or [Arduino Library Manager](https://www.arduino.cc/reference/en/libraries/helios/).
 ## Adding Support
-If the user’s desired microcontroller is not supported out of the box, support for other platforms and/or tool-chains only require the user to define the following four defines (and any required headers for the defines) in [defines.h](/src/defines.h).
+For most users this section is unnecessary to build HeliOS as HeliOS will fallback to a generic Arduino configuration if built-in support for the microcontroller does not exist. However, if HeliOS does not build for the user's specific microcontroller, adding support for other platforms and/or tool-chains only requires the user to define the following four defines (and any required headers for the defines) in [defines.h](/src/defines.h).
 ```C
 /* Example defines for a Microchip SAM D MCU based
 development board using the Arduino platform. */
