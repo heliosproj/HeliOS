@@ -66,6 +66,16 @@ typedef enum {
 typedef uint8_t Base_t;
 
 /**
+ * @brief Type definition for system time measured in microseconds.
+ * 
+ * The Time_t type is used to store system time which is measured in microseconds
+ * from system initialization. Despite its name, this type does not store real time
+ * clock (RTC) time or date information.
+ * 
+ */
+typedef TIME_T_TYPE Time_t;
+
+/**
  * @brief Data structure for task runtime statistics.
  *
  * The TaskRunTimeStats_t structure contains task runtime statistics and is returned by

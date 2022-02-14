@@ -29,11 +29,6 @@
 #include <limits.h>
 #include <stdint.h>
 
-// TO-DO: REMOVE BEFORE RELEASE!!
-#pragma message("NOTE: Remove OTHER_ARCH_LINUX define from defines.h before release.")
-#define OTHER_ARCH_LINUX
-// TO-DO: REMOVE BEFORE RELEASE!!
-
 /* Check that the system HeliOS is being targeted for has an
 8-bit wide byte. */
 #if defined(CHAR_BIT)
