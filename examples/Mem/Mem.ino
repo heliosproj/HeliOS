@@ -1,4 +1,11 @@
-/*
+/**
+ * @file Mem.ino
+ * @author Manny Peterson (mannymsp@gmail.com)
+ * @brief Example code to demonstrate how heap memory is managed in HeliOS
+ * @version 0.3.0
+ * @date 2022-02-14
+ *
+ * @copyright
  * HeliOS Embedded Operating System
  * Copyright (C) 2020-2022 Manny Peterson <mannymsp@gmail.com>
  *
@@ -14,151 +21,99 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
-
-/*
- * Additional documentation on HeliOS and its Application
- * Programming Interface (API) is available in the
- * HeliOS Programmer's Guide which can be found here:
  *
- * https://github.com/MannyPeterson/HeliOS/blob/master/extras/HeliOS_Programmers_Guide.md
  */
 
-/*
- * Include the standard HeliOS header for Arduino sketches. This header
- * includes the required HeliOS header files automatically.
- */
-#include <HeliOS_Arduino.h>
 
-/*
- * The task definition for taskSerial() which will
- * be executed by HeliOS every 1,000,000 microseconds
- * (1 second).
- */
-void taskSerial(xTaskId id_) {
-  /*
-   * Declare and initialize a string object to
-   * hold the text which will be written to the
-   * serial bus every 1,000,000 microseconds
-   * (1 second).
-   */
+#include <HeliOS.h>
+
+
+void taskPrint_main(xTask task_, xTaskParm parm_) {
+
   String str = "";
 
-  /*
-   * Print to serial bus how much HeliOS managed
-   * memory is in use.
-   */
-  str += "taskSerial(): ";
+
+  /* Get how much heap memory is being used to start with. */
+  str += "taskPrint_main(): ";
   str += xMemGetUsed();
-  str += " bytes of managed memory in use.";
+  str += " bytes of heap memory in use.";
   Serial.println(str);
 
-  /*
-   * Call xTaskGetInfo() three times to allocate
-   * some HeliOS managed memory.
-   */
-  xTaskGetInfoResult tres1 = xTaskGetInfo(id_);
-  xTaskGetInfoResult tres2 = xTaskGetInfo(id_);
-  xTaskGetInfoResult tres3 = xTaskGetInfo(id_);
 
-  /*
-   * Clear the string.
-   */
+  /* Call xTaskGetInfo() a few times to allocate some memory. */
+  xTaskInfo tinfo1 = xTaskGetTaskInfo(task_);
+  xTaskInfo tinfo2 = xTaskGetTaskInfo(task_);
+  xTaskInfo tinfo3 = xTaskGetTaskInfo(task_);
+
+
   str = "";
 
-  /*
-   * Print to serial bus how much HeliOS managed
-   * memory is in use.
-   */
-  str += "taskSerial(): xTaskGetInforesult is using ";
-  str += xMemGetSize(tres1);
-  str += " bytes of managed memory.";
+
+  /* Call xMemGetSize() to find out how much heap memory
+  is being used by xTaskInfo. */
+  str += "taskPrint_main(): xTaskInfo is using ";
+  str += xMemGetSize(tinfo1);
+  str += " bytes of heap memory.";
   Serial.println(str);
 
-  /*
-   * Clear the string.
-   */
+
   str = "";
 
-  /*
-   * Print to serial bus how much HeliOS managed
-   * memory is in use.
-   */
-  str += "taskSerial(): ";
+  /* Now see how much heap memory is in use. */
+  str += "taskPrint_main(): ";
   str += xMemGetUsed();
-  str += " bytes of managed memory in use.";
+  str += " bytes of heap memory in use.";
   Serial.println(str);
 
-  /*
-   * Call xMemFree() three times to free the
-   * HeliOS managed memory allocated by xTaskGetInfo().
-   */
-  xMemFree(tres1);
-  xMemFree(tres2);
-  xMemFree(tres3);
 
-  /*
-   * Clear the string.
-   */
+  /* Free all of the xTaskInfo memory. */
+  xMemFree(tinfo1);
+  xMemFree(tinfo2);
+  xMemFree(tinfo3);
+
+
   str = "";
 
-  /*
-   * Print to serial bus how much HeliOS managed
-   * memory is in use.
-   */
-  str += "taskSerial(): ";
+  /* Check how much heap memory is in use one more time. It
+  should be the same as what we started with. */
+  str += "taskPrint_main(): ";
   str += xMemGetUsed();
-  str += " bytes of managed memory in use.";
+  str += " bytes of heap memory in use.";
   Serial.println(str);
 }
 
 void setup() {
-  /*
-   * Declare an xTaskId to hold the the task id
-   * and initialize.
-   */
-  xTaskId id = 0;
 
-  /*
-   * Call xHeliOSSetup() to initialize HeliOS and
-   * its data structures. xHeliOSSetup() must be
-   * called before any other HeliOS function call.
-   */
-  xHeliOSSetup();
-
-  /*
-   * Set the serial data rate and begin serial
-   * communication.
-   */
   Serial.begin(9600);
 
-  /*
-   * Add the task taskSerial() to HeliOS by passing
-   * xTaskAdd() the friendly name of the task as well
-   * as a callback pointer to the task function.
-   */
-  id = xTaskAdd("TASKSERIAL", &taskSerial);
+  /* Create a task to demonstrate how heap memory is managed
+  in HeliOS. */
+  xTask task = xTaskCreate("PRINT", taskPrint_main, NULL);
 
-  /*
-   * Call xTaskWait() to place taskSerial() into a wait
-   * state by passing xTaskWait() the task id. A task
-   * must be in a wait state to respond to timer events.
-   */
-  xTaskWait(id);
+  /* Check to make sure the task was created by xTaskCreate() before
+  attempting to use the task. */
+  if (task) {
 
-  /*
-   * Set the timer interval for taskSerial() to 1,000,000 microseconds
-   * (1 second). HeliOS automatically begins incrementing
-   * the timer for the task once the timer interval is set.
-   */
-  xTaskSetTimer(id, 1000000);
+    /* Place the task in the waiting state. */
+    xTaskWait(task);
+
+    /* Set the task timer to one second. */
+    xTaskChangePeriod(task, 1000000);
+
+    /* Pass control to the HeliOS scheduler. The HeliOS scheduler will
+    not relinquish control unless xTaskSuspendAll() is called. */
+    xTaskStartScheduler();
+
+    /* If the scheduler relinquishes control, do some clean-up by
+    deleting the task. */
+    xTaskDelete(task);
+  }
+
+  /* Halt the system. Once called, the system must be reset to
+  recover. */
+  xSystemHalt();
 }
 
 void loop() {
-  /*
-   * Momentarily pass control to HeliOS by calling the
-   * xHeliOSLoop() function call. xHeliOSLoop() should be
-   * the only code inside of the sketch's loop() function.
-   */
-  xHeliOSLoop();
+  /* The loop function is not used and should remain empty. */
 }
