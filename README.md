@@ -134,7 +134,8 @@ void loop() {
 ```
 # Releases
 All releases, including the current release, can be found [here](https://github.com/MannyPeterson/HeliOS/releases).
-* **0.3.0 - First release of the new 0.3.x series kernel (many new features, most of the kernel rewritten, new example code and new documentation)**
+* **0.3.1 - TBD**
+* 0.3.0 - First release of the new 0.3.x series kernel (many new features, most of the kernel rewritten, new example code and new documentation)
 * 0.2.7 - Added a contributed example, privatized the list pointers for scheduler and added support for Teensy 3/4
 * 0.2.6 - Added built-in support for ESP8266 and minor internal updates
 * 0.2.5 - Numerous internal enhancements including improved time precision and scheduler now gracefully handles overflow of run-time timer

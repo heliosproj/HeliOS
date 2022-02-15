@@ -229,6 +229,8 @@ TaskRunTimeStats_t *xTaskGetAllRunTimeStats(Base_t *tasks_) {
         /* While the task cursor is not null, continue to traverse the task list adding the
         runtime statistics of each task to the runtime stats array to be returned. */
         while (ISNOTNULLPTR(taskCursor)) {
+          ret[i].id = taskCursor->id;
+
           ret[i].lastRunTime = taskCursor->lastRunTime;
 
           ret[i].totalRunTime = taskCursor->totalRunTime;
@@ -273,6 +275,8 @@ TaskRunTimeStats_t *xTaskGetTaskRunTimeStats(Task_t *task_) {
 
       /* Check if xMemAlloc() successfully allocated the memory. */
       if (ISNOTNULLPTR(ret)) {
+        ret->id = taskCursor->id;
+
         ret->lastRunTime = taskCursor->lastRunTime;
 
         ret->totalRunTime = taskCursor->totalRunTime;
@@ -354,6 +358,14 @@ TaskInfo_t *xTaskGetTaskInfo(Task_t *task_) {
 
   return ret;
 }
+
+/* The xTaskGetAllTaskInfo() system call returns the xTaskInfo structure containing
+the details of ALL tasks including its identifier, name, state and runtime statistics. */
+TaskInfo_t *xTaskGetAllTaskInfo(Base_t *tasks_) {
+
+  return NULL;
+}
+
 
 /* The xTaskGetTaskState() system call will return the state of the task. */
 TaskState_t xTaskGetTaskState(Task_t *task_) {

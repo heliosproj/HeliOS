@@ -67,11 +67,11 @@ typedef uint8_t Base_t;
 
 /**
  * @brief Type definition for system time measured in microseconds.
- * 
+ *
  * The Time_t type is used to store system time which is measured in microseconds
  * from system initialization. Despite its name, this type does not store real time
  * clock (RTC) time or date information.
- * 
+ *
  */
 typedef TIME_T_TYPE Time_t;
 
@@ -92,6 +92,7 @@ typedef TIME_T_TYPE Time_t;
  *
  */
 typedef struct TaskRunTimeStats_s {
+  Base_t id;           /**< The task identifier which is used by xTaskGetHandleById() to return the task handle. */
   Time_t lastRunTime;  /**< The runtime duration in microseconds the last time the task was executed by the scheduler. */
   Time_t totalRunTime; /**< The total runtime duration in microseconds the task has been executed by the scheduler. */
 } TaskRunTimeStats_t;
@@ -115,7 +116,7 @@ typedef struct TaskRunTimeStats_s {
  *
  */
 typedef struct TaskInfo_s {
-  Base_t id;                       /**< The task identifier which is used by xTaskGetHandleById() to return the task handle. */
+  Base_t id;                         /**< The task identifier which is used by xTaskGetHandleById() to return the task handle. */
   char name[CONFIG_TASK_NAME_BYTES]; /**< The name of the task which is used by xTaskGetHandleByName() to return the task handle. */
   TaskState_t state;                 /**< The state the task is in which is one of four states specified in the TaskState_t enumerated data type. */
   Time_t lastRunTime;                /**< The runtime duration in microseconds the last time the task was executed by the scheduler. */
@@ -409,7 +410,7 @@ typedef TIME_T_TYPE Time_t;
  *
  * The xTime type is used by several of the task and timer related system calls to express time.
  * The unit of measure for time is always microseconds.
- * 
+ *
  * @sa Time_t
  *
  */
@@ -447,26 +448,26 @@ typedef SystemInfo_t *xSystemInfo;
 
 /**
  * @brief A C macro to simplify casting and dereferencing a task paramater.
- * 
+ *
  * When a task paramater is passed to a task, it is passed as a pointer of
  * type void. To use the paramater it must first be casted to the correct type
  * and dereferenced. The following is an example of how the DEREF_TASKPARM() C
  * macro simplifies that process.
- * 
+ *
  * @code
  * void myTask_main(xTask task_, xTaskParm parm_) {
  *  int i;
- * 
+ *
  *  i = DEREF_TASKPARM(int, parm_);
- * 
+ *
  * }
  * @endcode
- * 
+ *
  * @param t The data type to case the task paramater to (e.g., int).
  * @param p The task pointer often named parm_.
  */
 #if !defined(DEREF_TASKPARM)
-#define DEREF_TASKPARM(t, p) *((t *) p)
+#define DEREF_TASKPARM(t, p) *((t *)p)
 #endif
 
 /* In the event HeliOS is compiled with a C++ compiler, make the system calls (written in C)
@@ -477,9 +478,9 @@ extern "C" {
 
 /**
  * @brief System call to allocate memory from the heap.
- * 
+ *
  * The xMemAlloc() system call will allocate memory from the heap for HeliOS system
- * calls and end-user tasks. The size of the heap in bytes is dependent on the 
+ * calls and end-user tasks. The size of the heap in bytes is dependent on the
  * CONFIG_HEAP_SIZE_IN_BLOCKS and CONFIG_HEAP_BLOCK_SIZE settings. xMemAlloc() automatically
  * clears the memory it allocates.
  *
@@ -490,7 +491,7 @@ extern "C" {
  * @param size_ The amount (size) of the memory to be allocated from the heap in bytes.
  * @return void* If successful, xMemAlloc() returns a pointer to the newly allocated memory.
  * If unsuccessful, the system call will return null.
- * 
+ *
  * @note HeliOS technically does not allocate memory from what is traditionally heap memory.
  * HeliOS uses a private "heap" which is actually static memory allocated at compile time. This
  * is done to maintain MISRA C:2012 compliance since standard library functions like malloc(),
@@ -523,7 +524,7 @@ void xMemFree(void *ptr_);
  *
  * @return size_t The amount of memory currently allocated in bytes. If no heap
  * memory is currently allocated, xMemGetUsed() will return zero.
- * 
+ *
  * @note xMemGetUsed() also checks the health of the heap and will return zero if
  * it detects a consistency issue with the heap.
  */
@@ -540,7 +541,7 @@ size_t xMemGetUsed(void);
  * memory that is allocated.
  * @return size_t The amount of memory currently allocated to the specific pointer in bytes. If
  * the pointer is invalid or null, xMemGetSize() will return zero.
- * 
+ *
  * @note If the pointer ptr_ points to a structure that, for example, is 48 bytes in size
  * base on sizeof(), xMemGetSize() will return the number of bytes allocated by the block(s)
  * that contain the structure. Assuming the default block size of 32, a 48 byte structure would require
@@ -590,7 +591,7 @@ void xQueueDelete(xQueue queue_);
  * @param queue_ The queue to return the length of.
  * @return xBase The number of messages in the queue. If unsuccessful or if the queue is empty,
  * xQueueGetLength() returns zero.
- * 
+ *
  * @note The xQueueGetLength() system call will also check the health of the queue and returns
  * zero if a consistency issues is detected.
  */
@@ -605,7 +606,7 @@ xBase xQueueGetLength(xQueue queue_);
  * @param queue_ The queue to determine whether it is empty.
  * @return xBase True if the queue is empty. False if the queue has one or more messages. xQueueIsQueueEmpty()
  * will also return false if the queue parameter is invalid.
- * 
+ *
  * @note The xQueueIsQueueEmpty() will also check the health of the queue and return false
  * if a consistency issue is detected.
  */
@@ -621,9 +622,9 @@ xBase xQueueIsQueueEmpty(xQueue queue_);
  * @param queue_ The queue to determine whether it is full.
  * @return xBase True if the queue is full. False if the queue has zero. xQueueIsQueueFull()
  * will also return false if the queue parameter is invalid.
- * 
+ *
  * @note The xQueueIsQueueFull() will also check the health of the queue and return false
- * if a consistency issue is detected. 
+ * if a consistency issue is detected.
  */
 xBase xQueueIsQueueFull(xQueue queue_);
 
@@ -821,7 +822,7 @@ xTask xTaskGetHandleById(xBase id_);
 
 /**
  * @brief System call to return task runtime statistics for all tasks.
- * 
+ *
  * The xTaskGetAllRunTimeStats() system call will return the runtime statistics for all
  * of the tasks regardless of their state. The xTaskGetAllRunTimeStats() system call returns
  * the xTaskRunTimeStats type. An xBase variable must be passed by reference to xTaskGetAllRunTimeStats()
@@ -831,14 +832,14 @@ xTask xTaskGetHandleById(xBase id_);
  *
  * @sa xTaskRunTimeStats
  * @sa xMemFree()
- * 
- * @param tasks_ An variable of type xBase passed by reference which will contain the number of tasks
+ *
+ * @param tasks_ A variable of type xBase passed by reference which will contain the number of tasks
  * upon return. If no tasks currently exist, this variable will not be modified.
  * @return xTaskRunTimeStats The runtime stats returned by xTaskGetAllRunTimeStats(). If there are
  * currently no tasks then this will be null. This memory must be freed by xMemFree().
- * 
+ *
  * @warning The memory allocated by xTaskGetAllRunTimeStats() must be freed by xMemFree().
- * 
+ *
  * @note The xTaskGetAllRuntTimeStats() system call will also check the health of the task list and
  * will return null if a consistency issue is detected.
  */
@@ -846,30 +847,30 @@ xTaskRunTimeStats xTaskGetAllRunTimeStats(xBase *tasks_);
 
 /**
  * @brief System call to return task runtime statistics for the specified task.
- * 
+ *
  * The xTaskGetTaskRunTimeStats() system call returns the task runtime statistics for
  * one task. The xTaskGetTaskRunTimeStats() system call returns the xTaskRunTimeStats type.
  * The memory must be freed by calling xMemFree() after it is no longer needed.
  *
  * @sa xTaskRunTimeStats
  * @sa xMemFree()
- * 
+ *
  * @param task_ The task to get the runtime statistics for.
  * @return xTaskRunTimeStats The runtime stats returned by xTaskGetTaskRunTimeStats().
  * xTaskGetTaskRunTimeStats() will return null of the task cannot be found.
- * 
+ *
  * @warning The memory allocated by xTaskGetTaskRunTimeStats() must be freed by xMemFree().
  */
 xTaskRunTimeStats xTaskGetTaskRunTimeStats(xTask task_);
 
 /**
  * @brief System call to return the number of tasks regardless of their state.
- * 
+ *
  * The xTaskGetNumberOfTasks() system call returns the current number of tasks
  * regardless of their state.
  *
  * @return xBase The number of tasks.
- * 
+ *
  * @note The xTaskGetNumberOfTasks() system call will also check the health of the task list and
  * will return zero if a consistency issue is detected.
  */
@@ -878,20 +879,40 @@ xBase xTaskGetNumberOfTasks(void);
 /**
  * @brief The xTaskGetTaskInfo() system call returns the xTaskInfo structure containing
  * the details of the task including its identifier, name, state and runtime statistics.
+ * 
+ * @sa xTaskInfo
  *
  * @param task_ The task to return the details of.
  * @return xTaskInfo The xTaskInfo structure containing the task details. xTaskGetTaskInfo()
  * returns null if the task cannot be found.
- * 
+ *
  * @warning The memory allocated by xTaskGetTaskInfo() must be freed by xMemFree().
  */
 xTaskInfo xTaskGetTaskInfo(xTask task_);
 
 /**
+ * @brief The xTaskGetAllTaskInfo() system call returns the xTaskInfo structure containing
+ * the details of ALL tasks including their identifier, name, state and runtime statistics.
+ * 
+ * @sa xTaskInfo
+ * 
+ * @param tasks_ A variable of type xBase passed by reference which will contain the number of tasks
+ * upon return. If no tasks currently exist, this variable will not be modified.
+ * @return xTaskInfo The xTaskInfo structure containing the tasks details. xTaskGetAllTaskInfo()
+ * returns null if there no tasks or if a consistency issue is detected.
+ * 
+ * @note The xTaskGetAllTaskInfo() system call will also check the health of the task list and
+ * will return zero if a consistency issue is detected.
+ * 
+ * @warning The memory allocated by xTaskGetAllTaskInfo() must be freed by xMemFree().
+ */
+xTaskInfo *xTaskGetAllTaskInfo(xBase *tasks_);
+
+/**
  * @brief System call to return the state of a task.
- * 
+ *
  * The xTaskGetTaskState() system call will return the state of the task.
- * 
+ *
  * @sa xTaskState
  *
  * @param task_ The task to return the state of.
@@ -902,26 +923,26 @@ xTaskState xTaskGetTaskState(xTask task_);
 
 /**
  * @brief System call to return the ASCII name of a task.
- * 
+ *
  * The xTaskGetName() system call returns the ASCII name of the task. The size of the
  * task is dependent on the setting CONFIG_TASK_NAME_BYTES. The task name is NOT a null
  * terminated char array. The memory allocated for the char array must be freed by
  * xMemFree() when no longer needed.
- * 
+ *
  * @sa CONFIG_TASK_NAME_BYTES
  * @sa xMemFree()
  *
  * @param task_ The task to return the name of.
  * @return char* A pointer to the char array containing the ASCII name of the task. The task name
  * is NOT a null terminated char array. xTaskGetName() will return null if the task cannot be found.
- * 
+ *
  * @warning The memory allocated by xTaskGetName() must be free by xMemFree().
  */
 char *xTaskGetName(xTask task_);
 
 /**
  * @brief System call to return the task identifier for a task.
- * 
+ *
  * The xTaskGetId() system call returns the task identifier for the task.
  *
  * @param task_ The task to return the identifier of.
@@ -932,7 +953,7 @@ xBase xTaskGetId(xTask task_);
 
 /**
  * @brief System call to clear a waiting direct to task notification.
- * 
+ *
  * The xTaskNotifyStateClear() system call will clear a waiting direct to task notification if one
  * exists without returning the notification.
  *
@@ -942,7 +963,7 @@ void xTaskNotifyStateClear(xTask task_);
 
 /**
  * @brief System call to check if a direct to task notification is waiting.
- * 
+ *
  * The xTaskNotificationIsWaiting() system call will return true or false depending
  * on whether there is a direct to task notification waiting for the task.
  *
@@ -954,14 +975,14 @@ xBase xTaskNotificationIsWaiting(xTask task_);
 
 /**
  * @brief System call to give another task a direct to task notification.
- * 
+ *
  * The xTaskNotifyGive() system call will give a direct to task notification to the specified task. The
  * task notification bytes is the number of bytes contained in the notification value. The number of
  * notification bytes must be between one and the CONFIG_NOTIFICATION_VALUE_BYTES setting. The notification
  * value must contain a pointer to a char array containing the notification value. If the task already
  * has a waiting task notification, xTaskNotifyGive() will NOT overwrite the waiting task notification.
  * xTaskNotifyGive() will return true if the direct to task notification was successfully given.
- * 
+ *
  * @sa CONFIG_NOTIFICATION_VALUE_BYTES
  * @sa xTaskNotifyTake()
  *
@@ -975,12 +996,12 @@ Base_t xTaskNotifyGive(xTask task_, xBase notificationBytes_, const char *notifi
 
 /**
  * @brief System call to take a direct to task notification from another task.
- * 
+ *
  * The xTaskNotifyTake() system call will return the waiting direct to task notification if there
  * is one. The xTaskNotifyTake() system call will return an xTaskNotification structure containing
  * the notification bytes and its value. The memory allocated by xTaskNotifyTake() must be freed
  * by xMemFree().
- * 
+ *
  * @sa xTaskNotification
  * @sa xTaskNotifyGive()
  * @sa xMemFree()
@@ -990,18 +1011,18 @@ Base_t xTaskNotifyGive(xTask task_, xBase notificationBytes_, const char *notifi
  * @return xTaskNotification The xTaskNotification structure containing the notification bytes
  * and value. xTaskNotifyTake() will return null if no waiting task notification exists or if
  * the task cannot be found.
- * 
+ *
  * @warning The memory allocated by xTaskNotifyTake() must be freed by xMemFree().
  */
 xTaskNotification xTaskNotifyTake(xTask task_);
 
 /**
  * @brief System call to resume a task.
- * 
+ *
  * The xTaskResume() system call will resume a suspended task. Tasks are suspended on creation
  * so either xTaskResume() or xTaskWait() must be called to place the task in a state that the scheduler
  * will execute.
- * 
+ *
  * @sa xTaskState
  * @sa xTaskSuspend()
  * @sa xTaskWait()
@@ -1012,10 +1033,10 @@ void xTaskResume(xTask task_);
 
 /**
  * @brief System call to suspend a task.
- * 
+ *
  * The xTaskSuspend() system call will suspend a task. A task that has been suspended
  * will not be executed by the scheduler until xTaskResume() or xTaskWait() is called.
- * 
+ *
  * @sa xTaskState
  * @sa xTaskResume()
  * @sa xTaskWait()
@@ -1026,7 +1047,7 @@ void xTaskSuspend(xTask task_);
 
 /**
  * @brief System call to place a task in a waiting state.
- * 
+ *
  * The xTaskWait() system call will place a task in the waiting state. A task must
  * be in the waiting state for event driven multitasking with either direct to task
  * notifications OR setting the period on the task timer with xTaskChangePeriod(). A task
@@ -1035,21 +1056,21 @@ void xTaskSuspend(xTask task_);
  * @sa xTaskState
  * @sa xTaskResume()
  * @sa xTaskSuspend()
- * 
+ *
  * @param task_ The task to place in the waiting state.
  */
 void xTaskWait(xTask task_);
 
 /**
  * @brief System call to set the task timer period.
- * 
+ *
  * The xTaskChangePeriod() system call will change the period (microseconds) on the task timer
  * for the specified task. The timer period must be greater than zero. To have any effect, the task
  * must be in the waiting state set by calling xTaskWait() on the task. Once the timer period is set
  * and the task is in the waiting state, the task will be executed every timerPeriod_ microseconds.
  * Changing the period to zero will prevent the task from being executed even if it is in the waiting state
  * unless it were to receive a direct to task notification.
- * 
+ *
  * @sa xTaskWait()
  * @sa xTaskGetPeriod()
  * @sa xTaskResetTimer()
@@ -1061,10 +1082,10 @@ void xTaskChangePeriod(xTask task_, xTime timerPeriod_);
 
 /**
  * @brief System call to get the task timer period.
- * 
+ *
  * The xTaskGetPeriod() will return the period for the timer for the specified task. See
  * xTaskChangePeriod() for more information on how the task timer works.
- * 
+ *
  * @sa xTaskWait()
  * @sa xTaskChangePeriod()
  * @sa xTaskResetTimer()
@@ -1077,45 +1098,45 @@ xTime xTaskGetPeriod(xTask task_);
 
 /**
  * @brief System call to reset the task timer.
- * 
+ *
  * The xTaskResetTimer() system call will reset the task timer. xTaskResetTimer() does not change
  * the timer period or the task state when called. See xTaskChangePeriod() for more details on task timers.
  *
  * @sa xTaskWait()
  * @sa xTaskChangePeriod()
  * @sa xTaskGetPeriod()
- * 
+ *
  * @param task_ The task to reset the task timer for.
  */
 void xTaskResetTimer(xTask task_);
 
 /**
  * @brief System call to create a new timer.
- * 
+ *
  * The xTimerCreate() system call will create a new timer. Timers differ from
  * task timers in that they do not create events that effect the scheduling of a task.
  * Timers can be used by tasks to initiate various task activities based on a specified
  * time period represented in microseconds. The memory allocated by xTimerCreate() must
  * be freed by xTimerDelete(). Unlike tasks, timers may be created and deleted within
  * tasks.
- * 
+ *
  * @sa xTimer
  * @sa xTimerDelete()
  *
  * @param timerPeriod_ The number of microseconds before the timer expires.
  * @return xTimer The newly created timer. If the timer period parameter is less than zero
  * or xTimerCreate() was unable to allocate the required memory, xTimerCreate() will return null.
- * 
+ *
  * @warning The timer memory should only be freed by xTimerDelete() and NOT xMemFree().
  */
 xTimer xTimerCreate(xTime timerPeriod_);
 
 /**
  * @brief System call will delete a timer.
- * 
+ *
  * The xTimerDelete() system call will delete a timer. For more information on timers see the
  * xTaskTimerCreate() system call.
- * 
+ *
  * @sa xTimerCreate()
  *
  * @param timer_ The timer to be deleted.
@@ -1124,13 +1145,13 @@ void xTimerDelete(xTimer timer_);
 
 /**
  * @brief System call to change the period of a timer.
- * 
+ *
  * The xTimerChangePeriod() system call will change the period of the specified timer.
  * The timer period is measured in microseconds. If the timer period is zero, the xTimerHasTimerExpired()
  * system call will always return false.
  *
  * @sa xTimerHasTimerExpired()
- * 
+ *
  * @param timer_ The timer to change the period for.
  * @param timerPeriod_ The timer period in is microseconds. Timer period must be zero or greater.
  */
@@ -1138,7 +1159,7 @@ void xTimerChangePeriod(xTimer timer_, xTime timerPeriod_);
 
 /**
  * @brief System call to get the period of a timer.
- * 
+ *
  * The xTimerGetPeriod() system call will return the current timer period
  * for the specified timer.
  *
@@ -1150,10 +1171,10 @@ xTime xTimerGetPeriod(xTimer timer_);
 
 /**
  * @brief System call to check if a timer is active.
- * 
+ *
  * The xTimerIsTimerActive() system call will return true of the timer has been
  * started with xTimerStart().
- * 
+ *
  * @sa xTimerStart()
  *
  * @param timer_ The timer to check if active.
@@ -1163,11 +1184,11 @@ xBase xTimerIsTimerActive(xTimer timer_);
 
 /**
  * @brief System call to check if a timer has expired.
- * 
+ *
  * The xTimerHasTimerExpired() system call will return true or false dependent on whether
  * the timer period for the specified timer has elapsed. xTimerHasTimerExpired() will NOT
  * reset the timer. Timers will not automatically reset. Timers MUST be reset with xTimerReset().
- * 
+ *
  * @sa xTimerReset()
  *
  * @param timer_ The timer to determine if the period has expired.
@@ -1177,7 +1198,7 @@ xBase xTimerHasTimerExpired(xTimer timer_);
 
 /**
  * @brief System call to reset a timer.
- * 
+ *
  * The xTimerReset() system call will reset the start time of the timer to zero.
  *
  * @param timer_ The timer to be reset.
@@ -1186,10 +1207,10 @@ void xTimerReset(xTimer timer_);
 
 /**
  * @brief System call to start a timer.
- * 
+ *
  * The xTimerStart() system call will place the timer in the running (active) state. Neither xTimerStart() nor
  * xTimerStop() will reset the timer. Timers can only be reset with xTimerReset().
- * 
+ *
  * @sa xTimerStop()
  * @sa xTimerReset()
  *
@@ -1200,7 +1221,7 @@ void xTimerStart(xTimer timer_);
 /**
  * @brief The xTimerStop() system call will place the timer in the stopped state. Neither xTimerStart() nor
  * xTimerStop() will reset the timer. Timers can only be reset with xTimerReset().
- * 
+ *
  * @sa xTimerStart()
  * @sa xTimerReset()
  *
@@ -1210,10 +1231,10 @@ void xTimerStop(xTimer timer_);
 
 /**
  * @brief The xSystemHalt() system call will halt HeliOS.
- * 
+ *
  * The xSystemHalt() system call will halt HeliOS. Once xSystemHalt() is called,
  * the system must be reset.
- * 
+ *
  */
 void xSystemHalt(void);
 

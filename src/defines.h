@@ -29,6 +29,8 @@
 #include <limits.h>
 #include <stdint.h>
 
+#define OTHER_ARCH_LINUX
+
 /* Check that the system HeliOS is being targeted for has an
 8-bit wide byte. */
 #if defined(CHAR_BIT)
@@ -159,7 +161,7 @@ xSystemGetSystemInfo(). */
 /* Define the product patch version number which is accessible through
 xSystemGetSystemInfo(). */
 #if !defined(PATCH_VERSION_NO)
-#define PATCH_VERSION_NO 0x0u
+#define PATCH_VERSION_NO 0x1u
 #endif
 
 /* Define the macro which sets the critical flag to true when

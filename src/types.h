@@ -78,6 +78,7 @@ typedef struct Task_s {
 } Task_t;
 
 typedef struct TaskRunTimeStats_s {
+  Base_t id;
   Time_t lastRunTime;
   Time_t totalRunTime;
 } TaskRunTimeStats_t;
