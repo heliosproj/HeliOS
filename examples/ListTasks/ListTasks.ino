@@ -1,4 +1,11 @@
-/*
+/**
+ * @file ListTasks.ino
+ * @author Manny Peterson (mannymsp@gmail.com)
+ * @brief Example code to print runtime statistics for all tasks
+ * @version 0.3.0
+ * @date 2022-02-14
+ *
+ * @copyright
  * HeliOS Embedded Operating System
  * Copyright (C) 2020-2022 Manny Peterson <mannymsp@gmail.com>
  *
@@ -14,185 +21,76 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
-
-/*
- * Additional documentation on HeliOS and its Application
- * Programming Interface (API) is available in the
- * HeliOS Programmer's Guide which can be found here:
  *
- * https://github.com/MannyPeterson/HeliOS/blob/master/extras/HeliOS_Programmers_Guide.md
  */
 
-/*
- * Include the standard HeliOS header for Arduino sketches. This header
- * includes the required HeliOS header files automatically.
- */
-#include <HeliOS_Arduino.h>
+#include <HeliOS.h>
 
 /*
- * Define Serial speed and timers
+ * The task definition for the task to print all
+ * task informaiton every one second.
  */
-#define SERIAL_SPEED 9600
-#define TASKSERIAL_TIMER 5000
-#define OTHERTASK_TIMER 2000
+void taskPrint_main(xTask task_, xTaskParm parm_) {
 
-/*
- * The task definition for taskSerial() which will
- * be executed by HeliOS every 1,000,000 microseconds
- * (1 second).
- */
-void taskSerial(xTaskId id_) {
-  /*
-   * Declare and initialize a string object to
-   * hold the text which will be written to the
-   * serial bus every 1,000,000 microseconds
-   * (1 second).
-   */
   String str = "";
 
-  /*
-   * Declare and initialize and int to store the number
-   * of tasks in the task list. This will get populated
-   * by xTaskGetList().
-   */
-  int16_t tasks = 0;
+  xBase tasks = 0;
 
-  /*
-   * Call xTaskGetInfo() to obtain the task information
-   * by passing xTaskGetInfo() the task id of the active
-   * task.
-   */
-  xTaskGetListResult tres = xTaskGetList(&tasks);
+  /* Get information about the this task by
+  calling xTaskGetAllRunTimeStats() on the task handle. */
+  xTaskRunTimeStats stats = xTaskGetAllRunTimeStats(&tasks);
 
-  /*
-   * Check the pointer to the xTaskGetListResult
-   * structure before accessing any of its members
-   * since xTaskGetList() can return null if the
-   * task id does not exist or HeliOS is unable
-   * to reserve the required managed memory.
-   */
-  if (tres) {
-    /*
-     * Loop through the xTaskGetListResult array
-     * for the number of times specified by
-     * the int task.
-     */
+  /* Check to make sure the task information was
+  returned by xTaskGetAllRunTimeStats() before attempting
+  to access it. */
+  if (stats) {
     for (int i = 0; i < tasks; i++) {
-      /*
-       * Clear the string.
-       */
-      str = "";
-
-      /*
-       * Append all of the members of the xTaskGetListResult
-       * structure to the string.
-       */
-      str += "task : id = ";
-      str += tres[i].id;
-      str += ", name = ";
-      str += tres[i].name;
-      str += ", state = ";
-      str += tres[i].state;
-      str += ", ltime = ";
-      str += tres[i].lastRuntime;
+      str += "taskPrint_main(): ltime = ";
+      str += stats->lastRunTime;
       str += ", ttime = ";
-      str += tres[i].totalRuntime;
-
-      /*
-       * Print the string to the serial bus.
-       */
-      Serial.println(str);
+      str += stats->totalRunTime;
     }
+
+    Serial.println(str);
   }
 
-  /*
-   * Free the managed memory allocated by the xTaskGetInfo()
-   * function call. If xMemFree() is not called, HeliOS
-   * may exhaust its available managed memory through
-   * subsequent calls to xTaskGetInfo().
-   */
-  xMemFree(tres);
-}
-
-/*
- * The task definition for otherTask() which will
- * be executed by HeliOS every 2,000,000 microseconds
- * (2 second).
- */
-void otherTask(xTaskId id_) {
-  xTaskGetInfoResult tres = xTaskGetInfo(id_);
-  xMemFree(tres);
+  /* Free the memory allocated to the task information
+  structure. */
+  xMemFree(stats);
 }
 
 void setup() {
-  /*
-   * Declare an xTaskId to hold the the task id
-   * and initialize.
-   */
-  xTaskId id = 0;
 
-  /*
-   * Call xHeliOSSetup() to initialize HeliOS and
-   * its data structures. xHeliOSSetup() must be
-   * called before any other HeliOS function call.
-   */
-  xHeliOSSetup();
+  Serial.begin(9600);
 
-  /*
-   * Set the serial data rate and begin serial
-   * communication.
-   */
-  Serial.begin(SERIAL_SPEED);
+  /* Create a task to print all task information every
+  second. */
+  xTask task = xTaskCreate("PRINT", taskPrint_main, NULL);
 
-  /*
-   * Add the task taskSerial() to HeliOS by passing
-   * xTaskAdd() the friendly name of the task as well
-   * as a callback pointer to the task function.
-   */
-  id = xTaskAdd("TASKSERIAL", &taskSerial);
+  /* Check to make sure the task was created by xTaskCreate() before
+  attempting to use the task. */
+  if (task) {
 
-  /*
-   * Call xTaskWait() to place taskSerial() into a wait
-   * state by passing xTaskWait() the task id. A task
-   * must be in a wait state to respond to timer events.
-   */
-  xTaskWait(id);
+    /* Place the task in the waiting state. */
+    xTaskWait(task);
 
-  /*
-   * Set the timer interval for taskSerial() to 5,000,000 microseconds
-   * (5 second). HeliOS automatically begins incrementing
-   * the timer for the task once the timer interval is set.
-   */
-  xTaskSetTimer(id, TASKSERIAL_TIMER);
-  
-  /*
-   * Add the second task otherTask() to HeliOS by passing
-   * xTaskAdd() the friendly name of the task as well
-   * as a callback pointer to the task function.
-   */
-  id = xTaskAdd("OTHERTASK", &otherTask);
+    /* Set the task timer to one second. */
+    xTaskChangePeriod(task, 1000000);
 
-  /*
-   * Call xTaskWait() to place taskSerial2() into a wait
-   * state by passing xTaskWait() the task id. A task
-   * must be in a wait state to respond to timer events.
-   */
-  xTaskWait(id);
+    /* Pass control to the HeliOS scheduler. The HeliOS scheduler will
+    not relinquish control unless xTaskSuspendAll() is called. */
+    xTaskStartScheduler();
 
-  /*
-   * Set the timer interval for otherTask() to 2,000,000 microseconds
-   * (2 second). HeliOS automatically begins incrementing
-   * the timer for the task once the timer interval is set.
-   */
-  xTaskSetTimer(id, OTHERTASK_TIMER);
+    /* If the scheduler relinquishes control, do some clean-up by
+    deleting the task. */
+    xTaskDelete(task);
+  }
+
+  /* Halt the system. Once called, the system must be reset to
+  recover. */
+  xSystemHalt();
 }
 
 void loop() {
-  /*
-   * Momentarily pass control to HeliOS by calling the
-   * xHeliOSLoop() function call. xHeliOSLoop() should be
-   * the only code inside of the sketch's loop() function.
-   */
-  xHeliOSLoop();
+  /* The loop function is not used and should remain empty. */
 }
