@@ -1,7 +1,7 @@
 /**
- * @file mem.h
+ * @file timer.h
  * @author Manny Peterson (mannymsp@gmail.com)
- * @brief Kernel sources for the management of heap memory in HeliOS
+ * @brief Kernel sources for timers and timer management in HeliOS
  * @version 0.3.0
  * @date 2022-01-31
  * 
@@ -23,28 +23,30 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  * 
  */
-#ifndef MEM_H_
-#define MEM_H_
+#ifndef TIMER_H_
+#define TIMER_H_
 
 #include "config.h"
 #include "defines.h"
 #include "types.h"
+#include "mem.h"
 #include "queue.h"
 #include "sched.h"
 #include "task.h"
-#include "timer.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-void *xMemAlloc(size_t size_);
-void xMemFree(void *ptr_);
-size_t xMemGetUsed(void);
-size_t xMemGetSize(void *ptr_);
-void memcpy_(void *dest_, const void *src_, size_t n_);
-void memset_(void *dest_, uint16_t val_, size_t n_);
-uint16_t memcmp_(const void *s1_, const void *s2_, size_t n_);
+Timer_t *xTimerCreate(Time_t timerPeriod_);
+void xTimerDelete(Timer_t *timer_);
+void xTimerChangePeriod(Timer_t *timer_, Time_t timerPeriod_);
+Time_t xTimerGetPeriod(Timer_t *timer_);
+Base_t xTimerIsTimerActive(Timer_t *timer_);
+Base_t xTimerHasTimerExpired(Timer_t *timer_);
+void xTimerReset(Timer_t *timer_);
+void xTimerStart(Timer_t *timer_);
+void xTimerStop(Timer_t *timer_);
 
 #ifdef __cplusplus
 }  // extern "C" {

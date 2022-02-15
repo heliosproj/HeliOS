@@ -1,4 +1,11 @@
-/*
+/**
+ * @file Timer.ino
+ * @author Manny Peterson (mannymsp@gmail.com)
+ * @brief Example code to demonstrate event driven multitasking using a task timer
+ * @version 0.3.0
+ * @date 2022-02-14
+ *
+ * @copyright
  * HeliOS Embedded Operating System
  * Copyright (C) 2020-2022 Manny Peterson <mannymsp@gmail.com>
  *
@@ -14,89 +21,51 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
-
-/*
- * Additional documentation on HeliOS and its Application
- * Programming Interface (API) is available in the
- * HeliOS Programmer's Guide which can be found here:
  *
- * https://github.com/MannyPeterson/HeliOS/blob/master/extras/HeliOS_Programmers_Guide.md
  */
 
-/*
- * Include the standard HeliOS header for Arduino sketches. This header
- * includes the required HeliOS header files automatically.
- */
-#include <HeliOS_Arduino.h>
+#include <HeliOS.h>
 
-/*
- * The task definition for taskSerial() which will
- * be executed by HeliOS every 1,000,000 microseconds
- * (1 second).
- */
-void taskSerial(xTaskId id_) {
-  /*
-   * Declare and initialize a String object to
-   * hold the message which will be written
-   * to the serial bus every 1,000,000 microseconds
-   * (1 second).
-   */
-  String str = "taskSerial(): one second has passed.";
 
-  /*
-   * Print the message to the serial bus.
-   */
+void taskPrint_main(xTask task_, xTaskParm parm_) {
+
+  String str = "taskPrint_main(): one second has passed.";
+
   Serial.println(str);
 }
 
 void setup() {
-  /*
-   * Declare an xTaskId to hold the the task id
-   * and initialize.
-   */
-  xTaskId id = 0;
 
-  /*
-   * Call xHeliOSSetup() to initialize HeliOS and
-   * its data structures. xHeliOSSetup() must be
-   * called before any other HeliOS function call.
-   */
-  xHeliOSSetup();
-
-  /*
-   * Set the serial data rate and begin serial
-   * communication.
-   */
   Serial.begin(9600);
 
-  /*
-   * Add the task taskSerial() to HeliOS by passing
-   * xTaskAdd() the friendly name of the task as well
-   * as a callback pointer to the task function.
-   */
-  id = xTaskAdd("TASKSERIAL", &taskSerial);
+  /* Create a task to demonstrate event driven multitasking using
+  a task timer. */
+  xTask task = xTaskCreate("PRINT", taskPrint_main, NULL);
 
-  /*
-   * Call xTaskWait() to place taskSerial() into a wait
-   * state by passing xTaskWait() the task id. A task
-   * must be in a wait state to respond to timer events.
-   */
-  xTaskWait(id);
+  /* Check to make sure the task was created by xTaskCreate() before
+  attempting to use the task. */
+  if (task) {
 
-  /*
-   * Set the timer interval for taskSerial() to 1,000,000 microseconds
-   * (1 second). HeliOS automatically begins incrementing
-   * the timer for the task once the timer interval is set.
-   */
-  xTaskSetTimer(id, 1000000);
+    /* Place the task in the waiting state. */
+    xTaskWait(task);
+
+    /* Set the task timer to one second. */
+    xTaskChangePeriod(task, 1000000);
+
+    /* Pass control to the HeliOS scheduler. The HeliOS scheduler will
+    not relinquish control unless xTaskSuspendAll() is called. */
+    xTaskStartScheduler();
+
+    /* If the scheduler relinquishes control, do some clean-up by
+    deleting the task. */
+    xTaskDelete(task);
+  }
+
+  /* Halt the system. Once called, the system must be reset to
+  recover. */
+  xSystemHalt();
 }
 
 void loop() {
-  /*
-   * Momentarily pass control to HeliOS by calling the
-   * xHeliOSLoop() function call. xHeliOSLoop() should be
-   * the only code inside of the sketch's loop() function.
-   */
-  xHeliOSLoop();
+  /* The loop function is not used and should remain empty. */
 }

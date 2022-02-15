@@ -1,7 +1,7 @@
 /**
- * @file mem.h
+ * @file queue.h
  * @author Manny Peterson (mannymsp@gmail.com)
- * @brief Kernel sources for the management of heap memory in HeliOS
+ * @brief Kernel sources for interprocess communication queues in HeliOS
  * @version 0.3.0
  * @date 2022-01-31
  * 
@@ -23,13 +23,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  * 
  */
-#ifndef MEM_H_
-#define MEM_H_
+#ifndef QUEUE_H_
+#define QUEUE_H_
 
 #include "config.h"
 #include "defines.h"
 #include "types.h"
-#include "queue.h"
+#include "mem.h"
 #include "sched.h"
 #include "task.h"
 #include "timer.h"
@@ -38,13 +38,16 @@
 extern "C" {
 #endif
 
-void *xMemAlloc(size_t size_);
-void xMemFree(void *ptr_);
-size_t xMemGetUsed(void);
-size_t xMemGetSize(void *ptr_);
-void memcpy_(void *dest_, const void *src_, size_t n_);
-void memset_(void *dest_, uint16_t val_, size_t n_);
-uint16_t memcmp_(const void *s1_, const void *s2_, size_t n_);
+Queue_t *xQueueCreate(Base_t limit_);
+void xQueueDelete(Queue_t *queue_);
+Base_t xQueueGetLength(Queue_t *queue_);
+Base_t xQueueIsQueueEmpty(Queue_t *queue_);
+Base_t xQueueIsQueueFull(Queue_t *queue_);
+Base_t xQueueMessagesWaiting(Queue_t *queue_);
+Base_t xQueueSend(Queue_t *queue_, Base_t messageBytes_, const char *messageValue_);
+QueueMessage_t *xQueuePeek(Queue_t *queue_);
+void xQueueDropMessage(Queue_t *queue_);
+QueueMessage_t *xQueueReceive(Queue_t *queue_);
 
 #ifdef __cplusplus
 }  // extern "C" {

@@ -1,0 +1,93 @@
+{
+  "C_Cpp.clang_format_fallbackStyle": "{BasedOnStyle: Google, AllowShortIfStatementsOnASingleLine: Never, AllowShortBlocksOnASingleLine: false, AllowShortFunctionsOnASingleLine: None, AllowShortLoopsOnASingleLine: false, ColumnLimit: 0, IndentWidth: 2, KeepEmptyLinesAtTheStartOfBlocks: true, MaxEmptyLinesToKeep: 4, SortIncludes: false, UseTab: Never}",
+  "doxdocgen.c.commentPrefix": " * ",
+  "doxdocgen.c.factoryMethodText": "",
+  "doxdocgen.c.firstLine": "/**",
+  "doxdocgen.c.getterText": "",
+  "doxdocgen.c.lastLine": " */",
+  "doxdocgen.c.setterText": "",
+  "doxdocgen.c.triggerSequence": "/**",
+  "doxdocgen.cpp.ctorText": "",
+  "doxdocgen.cpp.dtorText": "",
+  "doxdocgen.cpp.tparamTemplate": "@tparam {param} ",
+  "doxdocgen.file.copyrightTag": [
+    "@copyright",
+    "HeliOS Embedded Operating System",
+    "Copyright (C) 2020-2022 Manny Peterson <mannymsp@gmail.com>",
+    " ",
+    "This program is free software: you can redistribute it and/or modify",
+    "it under the terms of the GNU General Public License as published by",
+    "the Free Software Foundation, either version 3 of the License, or",
+    "(at your option) any later version.",
+    " ",
+    "This program is distributed in the hope that it will be useful,",
+    "but WITHOUT ANY WARRANTY; without even the implied warranty of",
+    "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the",
+    "GNU General Public License for more details.",
+    " ",
+    "You should have received a copy of the GNU General Public License",
+    "along with this program.  If not, see <https://www.gnu.org/licenses/>."
+  ],
+  "doxdocgen.file.customTag": [],
+  "doxdocgen.file.fileOrder": [
+    "file",
+    "author",
+    "brief",
+    "version",
+    "date",
+    "empty",
+    "copyright",
+    "empty",
+    "custom"
+  ],
+  "doxdocgen.file.fileTemplate": "@file {name}",
+  "doxdocgen.file.versionTag": "@version 0.3.0",
+  "doxdocgen.generic.authorEmail": "mannymsp@gmail.com",
+  "doxdocgen.generic.authorName": "Manny Peterson",
+  "doxdocgen.generic.authorTag": "@author {author} ({email})",
+  "doxdocgen.generic.boolReturnsTrueFalse": true,
+  "doxdocgen.generic.briefTemplate": "@brief {text}",
+  "doxdocgen.generic.dateFormat": "YYYY-MM-DD",
+  "doxdocgen.generic.dateTemplate": "@date {date}",
+  "doxdocgen.generic.generateSmartText": false,
+  "doxdocgen.generic.includeTypeAtReturn": true,
+  "doxdocgen.generic.linesToGet": 20,
+  "doxdocgen.generic.order": [
+    "brief",
+    "empty",
+    "tparam",
+    "param",
+    "return"
+  ],
+  "doxdocgen.generic.customTags": [],
+  "doxdocgen.generic.paramTemplate": "@param {param} ",
+  "doxdocgen.generic.returnTemplate": "@return {type} ",
+  "doxdocgen.generic.splitCasingSmartText": true,
+  "doxdocgen.generic.filteredKeywords": [],
+  "doxdocgen.generic.useGitUserName": false,
+  "doxdocgen.generic.useGitUserEmail": false,
+  "doxdocgen.generic.commandSuggestion": true,
+  "doxdocgen.generic.commandSuggestionAddPrefix": false,
+  "cSpell.languageSettings": [
+    {
+      "languageId": "cpp,c",
+      "allowCompoundWords": false,
+      "includeRegExpList": [
+        "CStyleComment",
+        "string"
+      ],
+      "ignoreRegExpList": [
+        "/#include.*/"
+      ]
+    }
+  ],
+  "cSpell.words": [
+    "datastructure",
+    "Manny"
+  ],
+  "files.associations": {
+    "task.h": "c",
+    "sched.h": "c",
+    "queue.h": "c"
+  }
+}

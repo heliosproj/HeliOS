@@ -1,45 +1,67 @@
-/*
+/**
+ * @file task.h
+ * @author Manny Peterson (mannymsp@gmail.com)
+ * @brief Kernel sources for tasks and task management in HeliOS
+ * @version 0.3.0
+ * @date 2022-01-31
+ * 
+ * @copyright
  * HeliOS Embedded Operating System
  * Copyright (C) 2020-2022 Manny Peterson <mannymsp@gmail.com>
- *
+ *  
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ *  
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ *  
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * 
  */
+#ifndef TASK_H_
+#define TASK_H_
 
-#include <stdbool.h>
-#include <stdint.h>
+#include "config.h"
+#include "defines.h"
+#include "types.h"
+#include "mem.h"
+#include "queue.h"
+#include "sched.h"
+#include "timer.h"
 
 #ifdef __cplusplus
-  extern "C" {
+extern "C" {
 #endif
 
-void TaskInit();
-TaskId_t xTaskAdd(const char *, void (*)(TaskId_t));
-void xTaskRemove(TaskId_t);
-void xTaskClear();
-void xTaskStart(TaskId_t);
-void xTaskStop(TaskId_t);
-void xTaskWait(TaskId_t);
-TaskId_t xTaskGetId(const char *);
-void xTaskNotify(TaskId_t, int16_t, char *);
-void xTaskNotifyClear(TaskId_t);
-TaskGetNotifResult_t *xTaskGetNotif(TaskId_t);
-TaskGetInfoResult_t *xTaskGetInfo(TaskId_t);
-bool TaskListSeek(TaskId_t);
-TaskGetListResult_t *xTaskGetList(int16_t *);
-void xTaskSetTimer(TaskId_t, Time_t);
-void xTaskResetTimer(TaskId_t);
+Task_t *xTaskCreate(const char *name_, void (*callback_)(Task_t *, TaskParm_t *), TaskParm_t *taskParameter_);
+void xTaskDelete(Task_t *task_);
+Task_t *xTaskGetHandleByName(const char *name_);
+Task_t *xTaskGetHandleById(Base_t id_);
+TaskRunTimeStats_t *xTaskGetAllRunTimeStats(Base_t *tasks_);
+TaskRunTimeStats_t *xTaskGetTaskRunTimeStats(Task_t *task_);
+Base_t xTaskGetNumberOfTasks(void);
+TaskInfo_t *xTaskGetTaskInfo(Task_t *task_);
+TaskState_t xTaskGetTaskState(Task_t *task_);
+char *xTaskGetName(Task_t *task_);
+Base_t xTaskGetId(Task_t *task_);
+char *xTaskList(void);
+void xTaskNotifyStateClear(Task_t *task_);
+Base_t xTaskNotificationIsWaiting(Task_t *task_);
+Base_t xTaskNotifyGive(Task_t *task_, Base_t notificationBytes_, const char *notificationValue_);
+TaskNotification_t *xTaskNotifyTake(Task_t *task_);
+void xTaskResume(Task_t *task_);
+void xTaskSuspend(Task_t *task_);
+void xTaskWait(Task_t *task_);
+void xTaskChangePeriod(Task_t *task_, Time_t timerPeriod_);
+Time_t xTaskGetPeriod(Task_t *task_);
+void xTaskResetTimer(Task_t *task_);
 
 #ifdef __cplusplus
-} // extern "C" {
+}  // extern "C" {
+#endif
 #endif

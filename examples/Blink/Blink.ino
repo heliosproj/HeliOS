@@ -1,4 +1,11 @@
-/*
+/**
+ * @file Blink.ino
+ * @author Manny Peterson (mannymsp@gmail.com)
+ * @brief Blink example code for Arduino
+ * @version 0.3.0
+ * @date 2022-02-14
+ *
+ * @copyright
  * HeliOS Embedded Operating System
  * Copyright (C) 2020-2022 Manny Peterson <mannymsp@gmail.com>
  *
@@ -14,113 +21,81 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
-
-/*
- * Additional documentation on HeliOS and its Application
- * Programming Interface (API) is available in the
- * HeliOS Programmer's Guide which can be found here:
  *
- * https://github.com/MannyPeterson/HeliOS/blob/master/extras/HeliOS_Programmers_Guide.md
  */
 
-/*
- * Include the standard HeliOS header for Arduino sketches. This header
- * includes the required HeliOS header files automatically.
- */
-#include <HeliOS_Arduino.h>
 
-/*
- * Declare and initialize an int to maintain the state of
- * the built-in LED.
- */
-volatile int ledState = 0;
+/* Include the HeliOS header, do not include
+any other HeliOS header. */
+#include <HeliOS.h>
 
-/*
- * The task definition for taskBlink() which will
- * be executed by HeliOS every 1,000,000 microseconds
- * (1 second).
- */
-void taskBlink(xTaskId id_) {
-  /*
-   * If the state is 0 or LOW then set the state to
-   * 1 or HIGH. Likewise, if the state is 1 or HIGH
-   * then set the state to LOW.
-   */
+/* Define the task's main function. The definition must
+include the xTask and xTaskParm parameters. */
+void blinkTask_main(xTask task_, xTaskParm parm_) {
+
+  /* Dereference the task parameter and store its value
+  in a local integer. This integer contains the state
+  of the LED (i.e., on or off). */
+  int ledState = DEREF_TASKPARM(int, parm_);
+
   if (ledState) {
-    /*
-     * Set the state of the digital GPIO pin associated
-     * with the built-in LED to LOW.
-     */
-    digitalWrite(LED_BUILTIN, LOW);
-
-    /*
-     * Update the int containing the state of the built-in
-     * LED accordingly.
-     */
-    ledState = 0;
-  } else {
-    /*
-     * Set the state of the digital GPIO pin associated
-     * with the built-in LED to HIGH.
-     */
     digitalWrite(LED_BUILTIN, HIGH);
 
-    /*
-     * Update the int containing the state of the built-in
-     * LED accordingly.
-     */
+    ledState = 0;
+  } else {
+    digitalWrite(LED_BUILTIN, LOW);
+
     ledState = 1;
   }
+
+  /* Dereference the task parameter to update its
+  value. The task's main function will receive this
+  value next time the task's main function is called
+  by the scheduler. */
+  DEREF_TASKPARM(int, parm_) = ledState;
+
+  return;
 }
 
 void setup() {
-  /*
-   * Declare an xTaskId to hold the the task id
-   * and initialize.
-   */
-  xTaskId id = 0;
 
-  /*
-   * Call xHeliOSSetup() to initialize HeliOS and
-   * its data structures. xHeliOSSetup() must be
-   * called before any other HeliOS function call.
-   */
-  xHeliOSSetup();
+  int ledState = 0;
 
-  /*
-   * Set the mode of the digital GPIO pin associated
-   * with the built-in LED to OUTPUT only.
-   */
   pinMode(LED_BUILTIN, OUTPUT);
 
-  /*
-   * Add the task taskBlink() to HeliOS by passing
-   * xTaskAdd() the friendly name of the task as well
-   * as a callback pointer to the task function.
-   */
-  id = xTaskAdd("TASKBLINK", &taskBlink);
+  /* Create a new HeliOS task, give it an ASCII name, a reference to
+  the task's main function and a reference to the task's parameter - in
+  this case the state of the LED. */
+  xTask blink = xTaskCreate("BLINK", blinkTask_main, &ledState);
 
-  /*
-   * Call xTaskWait() to place taskBlink() into a wait
-   * state by passing xTaskWait() the task id. A task
-   * must be in a wait state to respond to timer events.
-   */
-  xTaskWait(id);
+  /* Check to make sure the task was created by xTaskCreate() before
+  attempting to use the task. */
+  if (blink) {
 
-  /*
-   * Set the timer interval for taskBlink() to 1,000,000 microseconds
-   * (1 second). HeliOS automatically begins incrementing
-   * the timer for the task once the timer interval is set.
-   */
-  xTaskSetTimer(id, 1000000);
+    /* Place the task in the "waiting" state so it will respond to task
+    events. */
+    xTaskWait(blink);
+
+    /* Set the task timer period to one second. The HeliOS scheduler
+    will execute the task every second until the task is either suspended,
+    its task timer period is changed or the task is deleted. */
+    xTaskChangePeriod(blink, 1000000);
+
+    /* Pass control to the HeliOS scheduler. The HeliOS scheduler will
+    not relinquish control unless xTaskSuspendAll() is called. */
+    xTaskStartScheduler();
+
+
+    /* If the scheduler relinquishes control, do some clean-up by
+    deleting the task. */
+    xTaskDelete(blink);
+  }
+
+  /* Halt the system. Once called, the system must be reset to
+  recover. */
+  xSystemHalt();
 }
 
 void loop() {
-  /*
-   * Momentarily pass control to HeliOS by calling the
-   * xHeliOSLoop() function call. xHeliOSLoop() should be
-   * the only code inside of the sketch's loop() function.
-   */
-  xHeliOSLoop();
+  /* The loop function is not used and should remain empty. */
 }

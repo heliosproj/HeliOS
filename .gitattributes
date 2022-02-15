@@ -3,11 +3,10 @@
 # git config --global core.autocrlf false
 
 *.c text eol=lf
-*.cpp text eol=lf
 *.h text eol=lf
 *.ino text eol=lf
 *.md text eol=lf
-keywords.txt text eol=lf
-library.properties text eol=lf
-Makefile text eol-lf
+*.json text eof=lf
+*.properties text eol=lf
 *.png binary
+*.pdf binary
