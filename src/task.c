@@ -362,8 +362,62 @@ TaskInfo_t *xTaskGetTaskInfo(Task_t *task_) {
 /* The xTaskGetAllTaskInfo() system call returns the xTaskInfo structure containing
 the details of ALL tasks including its identifier, name, state and runtime statistics. */
 TaskInfo_t *xTaskGetAllTaskInfo(Base_t *tasks_) {
+  Base_t i = zero;
 
-  return NULL;
+  Base_t tasks = zero;
+
+  Task_t *taskCursor = NULL;
+
+  TaskInfo_t *ret = NULL;
+
+  /* Check if the task list is not null and the tasks parameter is not null. */
+  if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(tasks_))) {
+    taskCursor = taskList->head;
+
+    /* While the task cursor is not null, continue to traverse the task list counting
+    the number of tasks in the list. */
+    while (ISNOTNULLPTR(taskCursor)) {
+      tasks++;
+
+      taskCursor = taskCursor->next;
+    }
+
+    /* Check if the number of tasks is greater than zero and the length of the task list equals
+    the number of tasks just counted (this is done as an integrity check). */
+    if ((tasks > zero) && (taskList->length == tasks)) {
+      ret = (TaskInfo_t *)xMemAlloc(tasks * sizeof(TaskInfo_t));
+
+      /* Check if xMemAlloc() successfully allocated the memory. */
+      if (ISNOTNULLPTR(ret)) {
+        taskCursor = taskList->head;
+
+        /* While the task cursor is not null, continue to traverse the task list adding the
+        runtime statistics of each task to the runtime stats array to be returned. */
+        while (ISNOTNULLPTR(taskCursor)) {
+          ret[i].id = taskCursor->id;
+
+          ret[i].state = taskCursor->state;
+
+          memcpy_(ret[i].name, taskCursor->name, CONFIG_TASK_NAME_BYTES);
+
+          ret[i].lastRunTime = taskCursor->lastRunTime;
+
+          ret[i].totalRunTime = taskCursor->totalRunTime;
+
+          taskCursor = taskCursor->next;
+
+          i++;
+        }
+
+        *tasks_ = tasks;
+
+      } else {
+        *tasks_ = zero;
+      }
+    }
+  }
+
+  return ret;
 }
 
 
