@@ -1,8 +1,8 @@
 /**
  * @file defines.h
  * @author Manny Peterson (mannymsp@gmail.com)
- * @brief Kernel header file containing all of the macros required to build HeliOS
- * @version 0.3.0
+ * @brief Kernel header for macros and definitions
+ * @version 0.3.1
  * @date 2022-01-31
  *
  * @copyright

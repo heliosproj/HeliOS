@@ -1,8 +1,8 @@
 /**
  * @file timer.c
  * @author Manny Peterson (mannymsp@gmail.com)
- * @brief Kernel sources for timers and timer management in HeliOS
- * @version 0.3.0
+ * @brief Kernel sources for timers
+ * @version 0.3.1
  * @date 2022-01-31
  *
  * @copyright
@@ -27,7 +27,6 @@
 #include "timer.h"
 
 extern SysFlags_t sysFlags;
-extern TaskList_t *taskList;
 
 /* Declare and initialize the task list to null. */
 static TimerList_t *timerList = NULL;

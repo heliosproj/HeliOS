@@ -1,8 +1,8 @@
 /**
  * @file timer.h
  * @author Manny Peterson (mannymsp@gmail.com)
- * @brief Kernel sources for timers and timer management in HeliOS
- * @version 0.3.0
+ * @brief Kernel sources for timers
+ * @version 0.3.1
  * @date 2022-01-31
  * 
  * @copyright
@@ -31,7 +31,7 @@
 #include "types.h"
 #include "mem.h"
 #include "queue.h"
-#include "sched.h"
+#include "sys.h"
 #include "task.h"
 
 #ifdef __cplusplus

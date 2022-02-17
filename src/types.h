@@ -1,8 +1,8 @@
 /**
  * @file types.h
  * @author Manny Peterson (mannymsp@gmail.com)
- * @brief Kernel header for all kernel type definitions in HeliOS
- * @version 0.3.0
+ * @brief Kernel header for kernel type definitions
+ * @version 0.3.1
  * @date 2022-01-31
  *
  * @copyright

@@ -1,8 +1,8 @@
 /**
- * @file sched.h
+ * @file sys.h
  * @author Manny Peterson (mannymsp@gmail.com)
- * @brief Kernel sources for the HeliOS scheduler
- * @version 0.3.0
+ * @brief Kernel sources system related calls
+ * @version 0.3.1
  * @date 2022-01-31
  * 
  * @copyright
@@ -23,8 +23,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  * 
  */
-#ifndef SCHED_H_
-#define SCHED_H_
+#ifndef SYS_H_
+#define SYS_H_
 
 #include "config.h"
 #include "defines.h"
@@ -38,14 +38,8 @@
 extern "C" {
 #endif
 
-void xTaskStartScheduler(void);
-void RunTimeReset(void);
-Time_t CurrentTime(void);
-void TaskRun(Task_t *task_);
-void xTaskResumeAll(void);
-void xTaskSuspendAll(void);
 void xSystemHalt(void);
-void xTaskStopScheduler(void);
+
 SystemInfo_t *xSystemGetSystemInfo(void);
 
 #ifdef __cplusplus

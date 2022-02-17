@@ -1,7 +1,7 @@
 /**
  * @file mem.c
  * @author Manny Peterson (mannymsp@gmail.com)
- * @brief Kernel sources for the management of heap memory in HeliOS
+ * @brief Kernel sources for memory management
  * @version 0.3.0
  * @date 2022-01-31
  *
@@ -27,7 +27,6 @@
 #include "mem.h"
 
 extern SysFlags_t sysFlags;
-extern TaskList_t *taskList;
 
 static Byte_t heap[HEAP_RAW_SIZE];
 

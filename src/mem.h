@@ -1,8 +1,8 @@
 /**
  * @file mem.h
  * @author Manny Peterson (mannymsp@gmail.com)
- * @brief Kernel sources for the management of heap memory in HeliOS
- * @version 0.3.0
+ * @brief Kernel sources for memory management
+ * @version 0.3.1
  * @date 2022-01-31
  * 
  * @copyright
@@ -30,7 +30,7 @@
 #include "defines.h"
 #include "types.h"
 #include "queue.h"
-#include "sched.h"
+#include "sys.h"
 #include "task.h"
 #include "timer.h"
 

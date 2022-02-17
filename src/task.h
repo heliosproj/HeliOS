@@ -1,8 +1,8 @@
 /**
  * @file task.h
  * @author Manny Peterson (mannymsp@gmail.com)
- * @brief Kernel sources for tasks and task management in HeliOS
- * @version 0.3.0
+ * @brief Kernel sources for task management
+ * @version 0.3.1
  * @date 2022-01-31
  * 
  * @copyright
@@ -31,7 +31,7 @@
 #include "types.h"
 #include "mem.h"
 #include "queue.h"
-#include "sched.h"
+#include "sys.h"
 #include "timer.h"
 
 #ifdef __cplusplus
@@ -61,6 +61,13 @@ void xTaskWait(Task_t *task_);
 void xTaskChangePeriod(Task_t *task_, Time_t timerPeriod_);
 Time_t xTaskGetPeriod(Task_t *task_);
 void xTaskResetTimer(Task_t *task_);
+void xTaskStartScheduler(void);
+void RunTimeReset(void);
+Time_t CurrentTime(void);
+void TaskRun(Task_t *task_);
+void xTaskResumeAll(void);
+void xTaskSuspendAll(void);
+void xTaskStopScheduler(void);
 
 #ifdef __cplusplus
 }  // extern "C" {

@@ -1,7 +1,7 @@
 /**
  * @file queue.c
  * @author Manny Peterson (mannymsp@gmail.com)
- * @brief Kernel sources for interprocess communication queues in HeliOS
+ * @brief Kernel sources for message queues
  * @version 0.3.0
  * @date 2022-01-31
  *
@@ -27,7 +27,6 @@
 #include "queue.h"
 
 extern SysFlags_t sysFlags;
-extern TaskList_t *taskList;
 
 /* The xQueueCreate() system call creates a message queue for inter-task
 communication. */
