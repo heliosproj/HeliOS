@@ -33,10 +33,14 @@ communication. */
 Queue_t *xQueueCreate(Base_t limit_) {
   Queue_t *ret = NULL;
 
+  SYSASSERT(limit_ >= CONFIG_QUEUE_MINIMUM_LIMIT);
+
   /* Check to make sure the limit parameter is greater than or equal to the
   setting CONFIG_QUEUE_MINIMUM_LIMIT. */
   if (limit_ >= CONFIG_QUEUE_MINIMUM_LIMIT) {
     ret = (Queue_t *)xMemAlloc(sizeof(Queue_t));
+
+    SYSASSERT(ISNOTNULLPTR(ret));
 
     /* Check if queue was successfully allocated by xMemAlloc(). */
     if (ISNOTNULLPTR(ret)) {
@@ -56,6 +60,9 @@ Queue_t *xQueueCreate(Base_t limit_) {
 /* The xQueueDelete() system call will delete a queue created by xQueueCreate(). xQueueDelete()
 will delete a queue regardless of how many messages the queue contains at the time xQueueDelete() is called. */
 void xQueueDelete(Queue_t *queue_) {
+
+  SYSASSERT(ISNOTNULLPTR(queue_));
+
   /* Check if the queue parameter is null */
   if (ISNOTNULLPTR(queue_)) {
     /* If the queue has a head it contains messages, iterate through the queue and drop
@@ -79,6 +86,8 @@ Base_t xQueueGetLength(Queue_t *queue_) {
 
   Message_t *messageCursor = NULL;
 
+  SYSASSERT(ISNOTNULLPTR(queue_));
+
   /* Check if the queue parameter is not null. */
   if (ISNOTNULLPTR(queue_)) {
     messageCursor = queue_->head;
@@ -89,6 +98,8 @@ Base_t xQueueGetLength(Queue_t *queue_) {
 
       messageCursor = messageCursor->next;
     }
+
+    SYSASSERT(queue_->length == messages);
 
     /* Check to make sure the number of messages counted matches the length attribute of the queue.
     This is to confirm the integrity of the queue before returning its length. */
@@ -109,6 +120,8 @@ Base_t xQueueIsQueueEmpty(Queue_t *queue_) {
 
   Message_t *messageCursor = NULL;
 
+  SYSASSERT(ISNOTNULLPTR(queue_));
+
   /* Check if the queue pointer is not null. */
   if (ISNOTNULLPTR(queue_)) {
     messageCursor = queue_->head;
@@ -119,6 +132,8 @@ Base_t xQueueIsQueueEmpty(Queue_t *queue_) {
 
       messageCursor = messageCursor->next;
     }
+
+    SYSASSERT(queue_->length == messages);
 
     /* Check to make sure the number of messages counted matches the length attribute of the queue
     and if the number of messages equals zero. */
@@ -140,6 +155,8 @@ Base_t xQueueIsQueueFull(Queue_t *queue_) {
 
   Message_t *messageCursor = NULL;
 
+  SYSASSERT(ISNOTNULLPTR(queue_));
+
   /* Check if the queue parameter is not null. */
   if (ISNOTNULLPTR(queue_)) {
     messageCursor = queue_->head;
@@ -150,6 +167,8 @@ Base_t xQueueIsQueueFull(Queue_t *queue_) {
 
       messageCursor = messageCursor->next;
     }
+
+    SYSASSERT(queue_->length == messages);
 
     /* Check to make sure the number of messages counted matches the length attribute of the queue
     and if the number of messages is greater than or equal to the queue length limit. */
@@ -170,6 +189,8 @@ Base_t xQueueMessagesWaiting(Queue_t *queue_) {
 
   Message_t *messageCursor = NULL;
 
+  SYSASSERT(ISNOTNULLPTR(queue_));
+
   /* Check if the queue parameter is not null. */
   if (ISNOTNULLPTR(queue_)) {
     messageCursor = queue_->head;
@@ -180,6 +201,8 @@ Base_t xQueueMessagesWaiting(Queue_t *queue_) {
 
       messageCursor = messageCursor->next;
     }
+
+    SYSASSERT(queue_->length == messages);
 
     /* Check to make sure the number of messages counted matches the length attribute of the queue
     and if the number of messages is greater than zero. */
@@ -202,6 +225,8 @@ Base_t xQueueSend(Queue_t *queue_, Base_t messageBytes_, const char *messageValu
 
   Message_t *messageCursor = NULL;
 
+  SYSASSERT((ISNOTNULLPTR(queue_)) && (messageBytes_ > zero) && (messageBytes_ <= CONFIG_MESSAGE_VALUE_BYTES) && (ISNOTNULLPTR(messageValue_)));
+
   /* Check if the queue parameter is not null, message bytes is between one and CONFIG_MESSAGE_VALUE_BYTES and the message value parameter
   is not null. */
   if ((ISNOTNULLPTR(queue_)) && (messageBytes_ > zero) && (messageBytes_ <= CONFIG_MESSAGE_VALUE_BYTES) && (ISNOTNULLPTR(messageValue_))) {
@@ -214,10 +239,14 @@ Base_t xQueueSend(Queue_t *queue_, Base_t messageBytes_, const char *messageValu
       messageCursor = messageCursor->next;
     }
 
+    SYSASSERT(queue_->length == messages);
+
     /* Check if the length of the queue is less than the limit and the length of the queue matches the number of messages
     counted. */
     if ((queue_->length < queue_->limit) && (queue_->length == messages)) {
       message = (Message_t *)xMemAlloc(sizeof(Message_t));
+
+      SYSASSERT(ISNOTNULLPTR(message));
 
       /* Check if the message was successfully allocated by xMemAlloc(). */
       if (ISNOTNULLPTR(message)) {
@@ -255,11 +284,15 @@ dropping the message. */
 QueueMessage_t *xQueuePeek(Queue_t *queue_) {
   QueueMessage_t *ret = NULL;
 
+  SYSASSERT(ISNOTNULLPTR(queue_));
+
   /* Check if the queue parameter is not null. */
   if (ISNOTNULLPTR(queue_)) {
     /* Check if the head of the queue is not null. */
     if (ISNOTNULLPTR(queue_->head)) {
       ret = (QueueMessage_t *)xMemAlloc(sizeof(QueueMessage_t));
+
+      SYSASSERT(ISNOTNULLPTR(ret));
 
       /* Check if a new message was successfully allocated by xMemAlloc(). */
       if (ISNOTNULLPTR(ret)) {
@@ -278,9 +311,11 @@ returning the message. */
 void xQueueDropMessage(Queue_t *queue_) {
   Message_t *message = NULL;
 
+  SYSASSERT(ISNOTNULLPTR(queue_));
+
   /* Check if the queue parameter is not null. */
   if (ISNOTNULLPTR(queue_)) {
-    /* Check if the head of the queue is null, if so enable interrupts and
+    /* Check if the head of the queue is null, if so
     return because there is nothing to drop. */
     if (ISNOTNULLPTR(queue_->head)) {
       message = queue_->head;
@@ -306,6 +341,8 @@ void xQueueDropMessage(Queue_t *queue_) {
 it from the queue. */
 QueueMessage_t *xQueueReceive(Queue_t *queue_) {
   QueueMessage_t *ret = NULL;
+
+  SYSASSERT(ISNOTNULLPTR(queue_));
 
   /* Check if the queue parameter is not null. */
   if (ISNOTNULLPTR(queue_)) {
