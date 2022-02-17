@@ -40,7 +40,7 @@ SysFlags_t sysFlags = {
 /* The xSystemAssert() system call will be called when
 the SYSASSERT() macro evaluates true. */
 void xSystemAssert(const char *file_, int line_) {
-
+  
   return;
 }
 
