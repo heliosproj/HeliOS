@@ -116,11 +116,11 @@ to default to the Arduino platform and/or tool-chain. */
 #endif
 
 /* Define "NULL" if not defined. */
-#if !defined(NULL)
-#ifdef __cplusplus
-#define NULL 0
-#else
+#if !defined(NULLs)
+#if !defined(__cplusplus)
 #define NULL ((void *)0)
+#else
+#define NULL 0
 #endif
 #endif
 
@@ -235,4 +235,15 @@ concise */
 #if !defined(ISNULLPTR)
 #define ISNULLPTR(p) ((NULL) == (p))
 #endif
+
+/* Define a assert macro if assertions are enabled through
+the CONFIG_ENABLE_SYSTEM_ASSERT setting. */
+#if !defined(SYSASSERT)
+#if !defined(CONFIG_ENABLE_SYSTEM_ASSERT)
+#define SYSASSERT(x)
+#else
+#define SYSASSERT(x) if ((x) == false) xSystemAssert(__FILE__, __LINE__)
+#endif
+#endif
+
 #endif

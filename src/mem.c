@@ -42,7 +42,7 @@ void *xMemAlloc(size_t size_) {
 
   void *ret = NULL;
 
-  Word_t blockCount = zero;
+  Word_t blocks = zero;
 
   Word_t requestedBlocks = zero;
 
@@ -56,6 +56,8 @@ void *xMemAlloc(size_t size_) {
   HeapEntry_t *entryCursor = NULL;
 
   HeapEntry_t *entryCandidate = NULL;
+
+  SYSASSERT(size_ > zero);
 
   /* Confirm the requested size in bytes is greater than zero. If not, just head toward
   return and return null. */
@@ -97,7 +99,7 @@ void *xMemAlloc(size_t size_) {
       /* Mark the entry unprotected by setting protected to false. An entry is protected if the macro ENTER_PROTECT()
       is called before invoking xMemAlloc(). A protected entry cannot be freed by xMemFree() unless ENTER_PROTECT()
       is called beforehand calling xMemFree().
-      
+
       NOTE: Protected heap memory is ONLY for system calls, not for use by the end-user.*/
       start->protected = false;
 
@@ -122,15 +124,17 @@ void *xMemAlloc(size_t size_) {
     while (ISNOTNULLPTR(entryCursor)) {
       /* Continue to sum the blocks while keeping in mind that the heap entries
       consume blocks too. */
-      blockCount += entryCursor->blocks + entryBlocksNeeded;
+      blocks += entryCursor->blocks + entryBlocksNeeded;
 
       /* Move on to the next heap entry. */
       entryCursor = entryCursor->next;
     }
 
+    SYSASSERT(blocks == CONFIG_HEAP_SIZE_IN_BLOCKS);
+
     /* If the block count does not match HEAP_SIZE_IN_BLOCKS then we need
     to return because the heap is corrupt. Otherwise continue to phase IV. */
-    if (blockCount == CONFIG_HEAP_SIZE_IN_BLOCKS) {
+    if (blocks == CONFIG_HEAP_SIZE_IN_BLOCKS) {
       /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
        PHASE IV: Calculate how many blocks are needed for the requested size in bytes.
        * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -256,11 +260,13 @@ void xMemFree(void *ptr_) {
   /* Disable interrupts because we can't be interrupted while modifying the heap. */
   DISABLE_INTERRUPTS();
 
-  Word_t blockCount = zero;
+  Word_t blocks = zero;
 
   HeapEntry_t *entryCursor = NULL;
 
   HeapEntry_t *entryToFree = NULL;
+
+  SYSASSERT(ISNOTNULLPTR(ptr_));
 
   /* Check to make sure the end-user passed a pointer that is at least not null. If it is null,
   then move on and return. */
@@ -269,6 +275,8 @@ void xMemFree(void *ptr_) {
     PHASE I: Determine if the first heap entry has been created. If it hasn't then
     just return.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+    SYSASSERT(start->blocks != zero);
 
     /* Check if the entry at the start of the heap is un-initialized by looking
     at the blocks member. If it is zero, then the heap has not been initialized so
@@ -285,16 +293,18 @@ void xMemFree(void *ptr_) {
 
       /* While the heap entry cursor is not null, keep scanning. */
       while (ISNOTNULLPTR(entryCursor)) {
-        blockCount += entryCursor->blocks + entryBlocksNeeded; /* Assuming entry blocks needed has been
+        blocks += entryCursor->blocks + entryBlocksNeeded; /* Assuming entry blocks needed has been
                                                                   calculated if the heap has been initialized. */
 
         /* Move on to the next heap entry. */
         entryCursor = entryCursor->next;
       }
 
+      SYSASSERT(blocks == CONFIG_HEAP_SIZE_IN_BLOCKS);
+
       /* Check if the counted blocks matches the HEAP_SIZE_IN_BLOCKS setting,
       if it doesn't return (i.e., Houston, we've had a problem.) */
-      if (blockCount == CONFIG_HEAP_SIZE_IN_BLOCKS) {
+      if (blocks == CONFIG_HEAP_SIZE_IN_BLOCKS) {
         /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
         PHASE III: Check if the pointer paramater actually points to a heap entry that
         by scanning the heap for it. If it exists, free the entry.
@@ -321,12 +331,20 @@ void xMemFree(void *ptr_) {
           entryCursor = entryCursor->next;
         }
 
+        SYSASSERT(ISNOTNULLPTR(entryCursor));
+
         /* Check if the entry cursor is null, if it is we couldn't find the entry to be freed. If it is
         not null then proceed with marking the entry free. */
         if (ISNOTNULLPTR(entryCursor)) {
+
+          SYSASSERT(entryCursor == entryToFree);
+
           /* Check one last time if the entry cursor equals the entry we want to free, if it does,
            mark it free. */
           if (entryCursor == entryToFree) {
+
+            SYSASSERT((entryCursor->protected == false) || ((entryCursor->protected == true) && (SYSFLAG_PROTECT() == true)));
+
             /* If the entry is marked protected and the protect system flag is false,
             then return because a protected entry cannot be freed while the protect
             system flag is false. */
@@ -356,11 +374,13 @@ that is currently allocated. */
 size_t xMemGetUsed(void) {
   size_t ret = zero;
 
-  Word_t blockCount = zero;
+  Word_t blocks = zero;
 
-  Word_t usedBlockCount = zero;
+  Word_t usedBlocks = zero;
 
   HeapEntry_t *entryCursor = NULL;
+
+  SYSASSERT(start->blocks != zero);
 
   /* Check if the entry at the start of the heap is un-initialized by looking
   at the number of blocks it contains. If it is zero, then the heap has not been initialized so
@@ -371,7 +391,7 @@ size_t xMemGetUsed(void) {
 
     /* While the heap entry cursor is not null, keep scanning. */
     while (ISNOTNULLPTR(entryCursor)) {
-      blockCount += entryCursor->blocks + entryBlocksNeeded; /* Assuming entry blocks needed has been
+      blocks += entryCursor->blocks + entryBlocksNeeded; /* Assuming entry blocks needed has been
                                                                 calculated if the heap has been initialized. */
 
       /* At each entry, check to see if it is in use. If it is, add the number
@@ -379,17 +399,19 @@ size_t xMemGetUsed(void) {
       block to the used block count. */
       if (entryCursor->free == false) {
         /* Sum the number of used blocks for each heap entry in use. */
-        usedBlockCount += entryCursor->blocks + entryBlocksNeeded;
+        usedBlocks += entryCursor->blocks + entryBlocksNeeded;
       }
 
       /* Move on to the next heap entry. */
       entryCursor = entryCursor->next;
     }
 
+    SYSASSERT(blocks == CONFIG_HEAP_SIZE_IN_BLOCKS);
+
     /* Check if the counted blocks matches the HEAP_SIZE_IN_BLOCKS setting,
     if it doesn't return. */
-    if (blockCount == CONFIG_HEAP_SIZE_IN_BLOCKS) {
-      ret = (size_t)usedBlockCount * CONFIG_HEAP_BLOCK_SIZE;
+    if (blocks == CONFIG_HEAP_SIZE_IN_BLOCKS) {
+      ret = (size_t)usedBlocks * CONFIG_HEAP_BLOCK_SIZE;
     }
   }
 
@@ -401,11 +423,13 @@ is currently allocated to a specific pointer. */
 size_t xMemGetSize(void *ptr_) {
   size_t ret = zero;
 
-  Word_t blockCount = zero;
+  Word_t blocks = zero;
 
   HeapEntry_t *entryCursor = NULL;
 
   HeapEntry_t *entryToSize = NULL;
+
+  SYSASSERT(ISNOTNULLPTR(ptr_));
 
   /* Check to make sure the end-user passed a pointer that is at least not null. */
   if (ISNOTNULLPTR(ptr_)) {
@@ -413,6 +437,8 @@ size_t xMemGetSize(void *ptr_) {
     PHASE I: Determine if the first heap entry has been created. If it hasn't, then
     just return.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+    SYSASSERT(start->blocks != zero);
 
     /* Check if the entry at the start of the heap is un-initialized by looking
     at the blocks number of blocks it contains. If it is zero, then the heap has
@@ -429,16 +455,18 @@ size_t xMemGetSize(void *ptr_) {
 
       /* While the heap entry cursor is not null, keep scanning. */
       while (ISNOTNULLPTR(entryCursor)) {
-        blockCount += entryCursor->blocks + entryBlocksNeeded; /* Assuming entry blocks needed has been
+        blocks += entryCursor->blocks + entryBlocksNeeded; /* Assuming entry blocks needed has been
                                                                   calculated if the heap has been initialized. */
 
         /* Move on to the next heap entry. */
         entryCursor = entryCursor->next;
       }
 
+      SYSASSERT(blocks == CONFIG_HEAP_SIZE_IN_BLOCKS);
+
       /* Check if the counted blocks matches the HEAP_SIZE_IN_BLOCKS setting,
       if it doesn't return. */
-      if (blockCount == CONFIG_HEAP_SIZE_IN_BLOCKS) {
+      if (blocks == CONFIG_HEAP_SIZE_IN_BLOCKS) {
         /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
         PHASE III: Check if the pointer paramater actually points to a heap entry that
         by scanning the heap for it. If it exists, free the entry.
@@ -464,6 +492,8 @@ size_t xMemGetSize(void *ptr_) {
           /* Move on to the next heap entry. */
           entryCursor = entryCursor->next;
         }
+
+        SYSASSERT(ISNOTNULLPTR(entryCursor));
 
         /* If the entry cursor is null we didn't find the entry we were looking for so return,
         otherwise return the about of bytes consumed by the entry at the pointer. */

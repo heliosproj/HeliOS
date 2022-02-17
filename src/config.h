@@ -30,6 +30,19 @@
 to customize HeliOS for their specific application. */
 
 /**
+ * @brief Define to enable system assertions.
+ * 
+ * The CONFIG_ENABLE_SYSTEM_ASSERT setting allows the end-user to
+ * enable system assertions in HeliOS. Once enabled, the end-user
+ * must define the assertion behavior in xSystemAssert() for there
+ * to be an effect.
+ * 
+ * @sa xSystemAssert()
+ * 
+ */
+#define CONFIG_ENABLE_SYSTEM_ASSERT
+
+/**
  * @brief Define the size in bytes of the message queue message value.
  * 
  * Setting the CONFIG_MESSAGE_VALUE_BYTES allows the end-user to define

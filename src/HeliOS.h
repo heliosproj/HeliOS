@@ -477,6 +477,22 @@ extern "C" {
 #endif
 
 /**
+ * @brief System call to handle assertions.
+ * 
+ * The xSystemAssert() system call handles assertions. The xSystemAssert() system
+ * call should not be called directly. Instead, the SYSASSERT() macro should be used.
+ * The system assertion functionality will only work when the CONFIG_ENABLE_SYSTEM_ASSERT
+ * setting is defined.
+ * 
+ * @sa SYSASSERT
+ * @sa CONFIG_ENABLE_SYSTEM_ASSERT
+ * 
+ * @param file_ The is automatically defined by the compiler's definition of _FILE_
+ * @param line_  This is automatically defined by the compiler's definition of _LINE_
+ */
+void xSystemAssert(const char *file_, int line_);
+
+/**
  * @brief System call to allocate memory from the heap.
  *
  * The xMemAlloc() system call will allocate memory from the heap for HeliOS system

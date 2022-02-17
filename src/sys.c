@@ -37,6 +37,13 @@ SysFlags_t sysFlags = {
     .overflow = false,
     .protect = false};
 
+/* The xSystemAssert() system call will be called when
+the SYSASSERT() macro evaluates true. */
+void xSystemAssert(const char *file_, int line_) {
+
+  return;
+}
+
 /* The xSystemGetSystemInfo() system call will return the type xSystemInfo containing
 information about the system including the OS (product) name, its version and how many tasks
 are currently in the running, suspended or waiting states. */
