@@ -46,8 +46,13 @@ Timer_t *xTimerCreate(Time_t timerPeriod_) {
   if (ISNULLPTR(timerList)) {
     timerList = (TimerList_t *)xMemAlloc(sizeof(TimerList_t));
   }
+
+  SYSASSERT(ISNOTNULLPTR(timerList));
+
   if (ISNOTNULLPTR(timerList)) {
     ret = (Timer_t *)xMemAlloc(sizeof(Task_t));
+
+    SYSASSERT(ISNOTNULLPTR(ret));
 
     /* Check if xMemAlloc() successfully allocated the memory for the timer. */
     if (ISNOTNULLPTR(ret)) {
@@ -88,6 +93,10 @@ void xTimerDelete(Timer_t *timer_) {
 
   Timer_t *timerPrevious = NULL;
 
+  SYSASSERT(ISNOTNULLPTR(timerList));
+
+  SYSASSERT(ISNOTNULLPTR(timer_));
+
   /* Check if the timer list is not null and the timer parameter is not null. */
   if ((ISNOTNULLPTR(timerList)) && (ISNOTNULLPTR(timer_))) {
     timerCursor = timerList->head;
@@ -112,6 +121,8 @@ void xTimerDelete(Timer_t *timer_) {
         timerCursor = timerCursor->next;
       }
 
+      SYSASSERT(ISNOTNULLPTR(timerCursor));
+
       /* If the timer cursor is not null, then remove the timer
       from the list and free its memory. */
       if (ISNOTNULLPTR(timerCursor)) {
@@ -133,6 +144,11 @@ system call will always return false. */
 void xTimerChangePeriod(Timer_t *timer_, Time_t timerPeriod_) {
   Timer_t *timerCursor = NULL;
 
+
+  SYSASSERT(ISNOTNULLPTR(timerList));
+
+  SYSASSERT(ISNOTNULLPTR(timer_));
+
   /* Check if the timer list is not null, the timer parameter is not null and the timer period
   is zero or greater. */
   if ((ISNOTNULLPTR(timerList)) && (ISNOTNULLPTR(timer_))) {
@@ -143,6 +159,8 @@ void xTimerChangePeriod(Timer_t *timer_, Time_t timerPeriod_) {
     while ((ISNOTNULLPTR(timerCursor)) && (timerCursor != timer_)) {
       timerCursor = timerCursor->next;
     }
+
+    SYSASSERT(ISNOTNULLPTR(timerCursor));
 
     /* If the timer cursor is not null, then set the timer's period. */
     if (ISNOTNULLPTR(timerCursor)) {
@@ -160,6 +178,11 @@ Time_t xTimerGetPeriod(Timer_t *timer_) {
 
   Timer_t *timerCursor = NULL;
 
+
+  SYSASSERT(ISNOTNULLPTR(timerList));
+
+  SYSASSERT(ISNOTNULLPTR(timer_));
+
   /* Check if the timer list is not null and the timer parameter is not null. */
   if ((ISNOTNULLPTR(timerList)) && (ISNOTNULLPTR(timer_))) {
     timerCursor = timerList->head;
@@ -169,6 +192,8 @@ Time_t xTimerGetPeriod(Timer_t *timer_) {
     while ((ISNOTNULLPTR(timerCursor)) && (timerCursor != timer_)) {
       timerCursor = timerCursor->next;
     }
+
+    SYSASSERT(ISNOTNULLPTR(timerCursor));
 
     /* If the timer cursor is not null, then set the return value to the timer's
     period. */
@@ -185,6 +210,11 @@ Base_t xTimerIsTimerActive(Timer_t *timer_) {
   Base_t ret = false;
   Timer_t *timerCursor = NULL;
 
+
+  SYSASSERT(ISNOTNULLPTR(timerList));
+
+  SYSASSERT(ISNOTNULLPTR(timer_));
+
   /* Check if the timer list is not null and the timer parameter is not null. */
   if ((ISNOTNULLPTR(timerList)) && (ISNOTNULLPTR(timer_))) {
     timerCursor = timerList->head;
@@ -194,6 +224,8 @@ Base_t xTimerIsTimerActive(Timer_t *timer_) {
     while ((ISNOTNULLPTR(timerCursor)) && (timerCursor != timer_)) {
       timerCursor = timerCursor->next;
     }
+
+    SYSASSERT(ISNOTNULLPTR(timerCursor));
 
     /* If the timer cursor is not null, then check if the timer is running. */
     if (ISNOTNULLPTR(timerCursor)) {
@@ -214,6 +246,11 @@ Base_t xTimerHasTimerExpired(Timer_t *timer_) {
 
   Timer_t *timerCursor = NULL;
 
+
+  SYSASSERT(ISNOTNULLPTR(timerList));
+
+  SYSASSERT(ISNOTNULLPTR(timer_));
+
   /* Check if the timer list is not null and the timer parameter is not null. */
   if ((ISNOTNULLPTR(timerList)) && (ISNOTNULLPTR(timer_))) {
     timerCursor = timerList->head;
@@ -223,6 +260,8 @@ Base_t xTimerHasTimerExpired(Timer_t *timer_) {
     while ((ISNOTNULLPTR(timerCursor)) && (timerCursor != timer_)) {
       timerCursor = timerCursor->next;
     }
+
+    SYSASSERT(ISNOTNULLPTR(timerCursor));
 
     /* If the timer cursor is not null, check to see if the timer has expired. */
     if (ISNOTNULLPTR(timerCursor)) {
@@ -241,6 +280,11 @@ Base_t xTimerHasTimerExpired(Timer_t *timer_) {
 void xTimerReset(Timer_t *timer_) {
   Timer_t *timerCursor = NULL;
 
+
+  SYSASSERT(ISNOTNULLPTR(timerList));
+
+  SYSASSERT(ISNOTNULLPTR(timer_));
+
   /* Check if the timer list is not null and the timer parameter is not null. */
   if ((ISNOTNULLPTR(timerList)) && (ISNOTNULLPTR(timer_))) {
     timerCursor = timerList->head;
@@ -250,6 +294,8 @@ void xTimerReset(Timer_t *timer_) {
     while ((ISNOTNULLPTR(timerCursor)) && (timerCursor != timer_)) {
       timerCursor = timerCursor->next;
     }
+
+    SYSASSERT(ISNOTNULLPTR(timerCursor));
 
     /* If the timer cursor is not null, then set the timer to the current time. */
     if (ISNOTNULLPTR(timerCursor)) {
@@ -265,6 +311,11 @@ xTaskStop() will reset the timer. Timers can only be reset with xTimerReset(). *
 void xTimerStart(Timer_t *timer_) {
   Timer_t *timerCursor = NULL;
 
+
+  SYSASSERT(ISNOTNULLPTR(timerList));
+
+  SYSASSERT(ISNOTNULLPTR(timer_));
+
   /* Check if the timer list is not null and the timer parameter is not null. */
   if ((ISNOTNULLPTR(timerList)) && (ISNOTNULLPTR(timer_))) {
     timerCursor = timerList->head;
@@ -274,6 +325,8 @@ void xTimerStart(Timer_t *timer_) {
     while ((ISNOTNULLPTR(timerCursor)) && (timerCursor != timer_)) {
       timerCursor = timerCursor->next;
     }
+
+    SYSASSERT(ISNOTNULLPTR(timerCursor));
 
     /* If the timer cursor is not null, then set the state of the timer to running. */
     if (ISNOTNULLPTR(timerCursor)) {
@@ -289,6 +342,11 @@ xTaskStop() will reset the timer. Timers can only be reset with xTimerReset(). *
 void xTimerStop(Timer_t *timer_) {
   Timer_t *timerCursor = NULL;
 
+
+  SYSASSERT(ISNOTNULLPTR(timerList));
+
+  SYSASSERT(ISNOTNULLPTR(timer_));
+
   /* Check if the timer list is not null and the timer parameter is not null. */
   if ((ISNOTNULLPTR(timerList)) && (ISNOTNULLPTR(timer_))) {
     timerCursor = timerList->head;
@@ -298,6 +356,8 @@ void xTimerStop(Timer_t *timer_) {
     while ((ISNOTNULLPTR(timerCursor)) && (timerCursor != timer_)) {
       timerCursor = timerCursor->next;
     }
+
+    SYSASSERT(ISNOTNULLPTR(timerCursor));
 
     /* If the timer cursor is not null, set the state of the timer to stopped. */
     if (ISNOTNULLPTR(timerCursor)) {

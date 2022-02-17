@@ -39,6 +39,12 @@ Task_t *xTaskCreate(const char *name_, void (*callback_)(Task_t *, TaskParm_t *)
 
   Task_t *taskCursor = NULL;
 
+  SYSASSERT(SYSFLAG_CRITICAL() == false);
+
+  SYSASSERT(ISNOTNULLPTR(name_));
+
+  SYSASSERT(ISNOTNULLPTR(callback_));
+
   /* Check if not in a critical section from CRITICAL_ENTER() and make sure the name and callback parameters
   are not null. */
   if ((SYSFLAG_CRITICAL() == false) && (ISNOTNULLPTR(name_)) && (ISNOTNULLPTR(callback_))) {
@@ -47,14 +53,20 @@ Task_t *xTaskCreate(const char *name_, void (*callback_)(Task_t *, TaskParm_t *)
     if (ISNULLPTR(taskList)) {
       taskList = (TaskList_t *)xMemAlloc(sizeof(TaskList_t));
     }
+
+    SYSASSERT(ISNOTNULLPTR(taskList));
+
     /* Check if the task list is still null in which case xMemAlloc() was unable to allocate
     the required memory. Enable interrupts and return null. */
     if (ISNOTNULLPTR(taskList)) {
       ret = (Task_t *)xMemAlloc(sizeof(Task_t));
 
+      SYSASSERT(ISNOTNULLPTR(ret));
+
       /* Check if the task is not null. If it is, then xMemAlloc() was unable to allocate the required
       memory. */
       if (ISNOTNULLPTR(ret)) {
+
         taskList->nextId++;
 
         ret->id = taskList->nextId;
@@ -99,6 +111,12 @@ void xTaskDelete(Task_t *task_) {
 
   Task_t *taskPrevious = NULL;
 
+  SYSASSERT(SYSFLAG_CRITICAL() == false);
+
+  SYSASSERT(ISNOTNULLPTR(taskList));
+
+  SYSASSERT(ISNOTNULLPTR(task_));
+
   /* Check if not in a critical section from CRITICAL_ENTER() and make sure the task list is not null
   and that the task parameter is also not null. */
   if ((SYSFLAG_CRITICAL() == false) && (ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(task_))) {
@@ -124,6 +142,8 @@ void xTaskDelete(Task_t *task_) {
         taskCursor = taskCursor->next;
       }
 
+      SYSASSERT(ISNOTNULLPTR(taskCursor));
+
       /* If the task cursor is is not null, then delete the task otherwise return. */
       if (ISNOTNULLPTR(taskCursor)) {
         taskPrevious->next = taskCursor->next;
@@ -147,6 +167,10 @@ Task_t *xTaskGetHandleByName(const char *name_) {
 
   Task_t *taskCursor = NULL;
 
+  SYSASSERT(ISNOTNULLPTR(taskList));
+
+  SYSASSERT(ISNOTNULLPTR(name_));
+
   /* Check if the task list is not null and the name parameter is also not null. */
   if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(name_))) {
     taskCursor = taskList->head;
@@ -157,6 +181,8 @@ Task_t *xTaskGetHandleByName(const char *name_) {
       name parameter. */
       if (memcmp_(taskCursor->name, name_, CONFIG_TASK_NAME_BYTES) == zero) {
         ret = taskCursor;
+
+        break;
       }
 
       taskCursor = taskCursor->next;
@@ -173,6 +199,8 @@ Task_t *xTaskGetHandleById(Base_t id_) {
 
   Task_t *taskCursor = NULL;
 
+  SYSASSERT(ISNOTNULLPTR(taskList));
+
   /* Check if the task list is not null and the identifier parameter is greater than
   zero. */
   if (ISNOTNULLPTR(taskList)) {
@@ -183,6 +211,8 @@ Task_t *xTaskGetHandleById(Base_t id_) {
     while (ISNOTNULLPTR(taskCursor)) {
       if (taskCursor->id == id_) {
         ret = taskCursor;
+
+        break;
       }
 
       taskCursor = taskCursor->next;
@@ -205,6 +235,10 @@ TaskRunTimeStats_t *xTaskGetAllRunTimeStats(Base_t *tasks_) {
 
   TaskRunTimeStats_t *ret = NULL;
 
+  SYSASSERT(ISNOTNULLPTR(taskList));
+
+  SYSASSERT(ISNOTNULLPTR(tasks_));
+
   /* Check if the task list is not null and the tasks parameter is not null. */
   if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(tasks_))) {
     taskCursor = taskList->head;
@@ -217,10 +251,15 @@ TaskRunTimeStats_t *xTaskGetAllRunTimeStats(Base_t *tasks_) {
       taskCursor = taskCursor->next;
     }
 
+    SYSASSERT(taskList->length == tasks);
+
     /* Check if the number of tasks is greater than zero and the length of the task list equals
     the number of tasks just counted (this is done as an integrity check). */
     if ((tasks > zero) && (taskList->length == tasks)) {
       ret = (TaskRunTimeStats_t *)xMemAlloc(tasks * sizeof(TaskRunTimeStats_t));
+
+
+      SYSASSERT(ISNOTNULLPTR(ret));
 
       /* Check if xMemAlloc() successfully allocated the memory. */
       if (ISNOTNULLPTR(ret)) {
@@ -259,6 +298,11 @@ TaskRunTimeStats_t *xTaskGetTaskRunTimeStats(Task_t *task_) {
 
   TaskRunTimeStats_t *ret = NULL;
 
+
+  SYSASSERT(ISNOTNULLPTR(taskList));
+
+  SYSASSERT(ISNOTNULLPTR(task_));
+
   /* Check if the task list and the task parameter is not null. */
   if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(task_))) {
     taskCursor = taskList->head;
@@ -269,9 +313,13 @@ TaskRunTimeStats_t *xTaskGetTaskRunTimeStats(Task_t *task_) {
       taskCursor = taskCursor->next;
     }
 
+    SYSASSERT(ISNOTNULLPTR(taskCursor));
+
     /* If the task cursor is null, the task could not be found so return null. */
     if (ISNOTNULLPTR(taskCursor)) {
       ret = (TaskRunTimeStats_t *)xMemAlloc(sizeof(TaskRunTimeStats_t));
+
+      SYSASSERT(ISNOTNULLPTR(ret));
 
       /* Check if xMemAlloc() successfully allocated the memory. */
       if (ISNOTNULLPTR(ret)) {
@@ -296,6 +344,8 @@ Base_t xTaskGetNumberOfTasks(void) {
 
   Task_t *taskCursor = NULL;
 
+  SYSASSERT(ISNOTNULLPTR(taskList));
+
   /* Check if the task list is not null. */
   if (ISNOTNULLPTR(taskList)) {
     taskCursor = taskList->head;
@@ -307,6 +357,8 @@ Base_t xTaskGetNumberOfTasks(void) {
 
       taskCursor = taskCursor->next;
     }
+
+    SYSASSERT(taskList->length == tasks);
 
     /* Check if the length of the task list equals the number of tasks counted
     (this is an integrity check). */
@@ -325,6 +377,11 @@ TaskInfo_t *xTaskGetTaskInfo(Task_t *task_) {
 
   TaskInfo_t *ret = NULL;
 
+
+  SYSASSERT(ISNOTNULLPTR(taskList));
+
+  SYSASSERT(ISNOTNULLPTR(task_));
+
   /* Check if the task list is not null and the task parameter is not null. */
   if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(task_))) {
     taskCursor = taskList->head;
@@ -335,10 +392,14 @@ TaskInfo_t *xTaskGetTaskInfo(Task_t *task_) {
       taskCursor = taskCursor->next;
     }
 
+    SYSASSERT(ISNOTNULLPTR(taskCursor));
+
     /* Check if the task cursor is null, if so the task could not be found
     so return null. */
     if (ISNOTNULLPTR(taskCursor)) {
       ret = (TaskInfo_t *)xMemAlloc(sizeof(TaskInfo_t));
+
+      SYSASSERT(ISNOTNULLPTR(ret));
 
       /* Check if the task info memory has been allocated by xMemAlloc(). if it
       has then populate the task info and return. */
@@ -370,6 +431,11 @@ TaskInfo_t *xTaskGetAllTaskInfo(Base_t *tasks_) {
 
   TaskInfo_t *ret = NULL;
 
+
+  SYSASSERT(ISNOTNULLPTR(taskList));
+
+  SYSASSERT(ISNOTNULLPTR(tasks_));
+
   /* Check if the task list is not null and the tasks parameter is not null. */
   if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(tasks_))) {
     taskCursor = taskList->head;
@@ -382,10 +448,14 @@ TaskInfo_t *xTaskGetAllTaskInfo(Base_t *tasks_) {
       taskCursor = taskCursor->next;
     }
 
+    SYSASSERT(taskList->length == tasks);
+
     /* Check if the number of tasks is greater than zero and the length of the task list equals
     the number of tasks just counted (this is done as an integrity check). */
     if ((tasks > zero) && (taskList->length == tasks)) {
       ret = (TaskInfo_t *)xMemAlloc(tasks * sizeof(TaskInfo_t));
+
+      SYSASSERT(ISNOTNULLPTR(ret));
 
       /* Check if xMemAlloc() successfully allocated the memory. */
       if (ISNOTNULLPTR(ret)) {
@@ -427,6 +497,11 @@ TaskState_t xTaskGetTaskState(Task_t *task_) {
 
   Task_t *taskCursor = NULL;
 
+
+  SYSASSERT(ISNOTNULLPTR(taskList));
+
+  SYSASSERT(ISNOTNULLPTR(task_));
+
   /* Check if the task list is not null and the task parameter is not null. */
   if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(task_))) {
     taskCursor = taskList->head;
@@ -436,6 +511,8 @@ TaskState_t xTaskGetTaskState(Task_t *task_) {
     while ((ISNOTNULLPTR(taskCursor)) && (taskCursor != task_)) {
       taskCursor = taskCursor->next;
     }
+
+    SYSASSERT(ISNOTNULLPTR(taskCursor));
 
     /* Check if the task cursor is not null, if so return the tasks's state
     otherwise return the error task state. */
@@ -458,6 +535,11 @@ char *xTaskGetName(Task_t *task_) {
 
   Task_t *taskCursor = NULL;
 
+
+  SYSASSERT(ISNOTNULLPTR(taskList));
+
+  SYSASSERT(ISNOTNULLPTR(task_));
+
   /* Check if the task list is not null and the task parameter is not null. */
   if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(task_))) {
     taskCursor = taskList->head;
@@ -468,10 +550,14 @@ char *xTaskGetName(Task_t *task_) {
       taskCursor = taskCursor->next;
     }
 
+    SYSASSERT(ISNOTNULLPTR(taskCursor));
+
     /* Check if the task cursor is not null, if so allocate memory for the
     task name. */
     if (ISNOTNULLPTR(taskCursor)) {
       ret = (char *)xMemAlloc(CONFIG_TASK_NAME_BYTES);
+
+      SYSASSERT(ISNOTNULLPTR(ret));
 
       /* Check if the task info memory has been allocated by xMemAlloc(). */
       if (ISNOTNULLPTR(ret)) {
@@ -489,6 +575,11 @@ Base_t xTaskGetId(Task_t *task_) {
 
   Task_t *taskCursor = NULL;
 
+
+  SYSASSERT(ISNOTNULLPTR(taskList));
+
+  SYSASSERT(ISNOTNULLPTR(task_));
+
   /* Check if the task list is not null and the task parameter is not null. */
   if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(task_))) {
     taskCursor = taskList->head;
@@ -498,6 +589,8 @@ Base_t xTaskGetId(Task_t *task_) {
     while ((ISNOTNULLPTR(taskCursor)) && (taskCursor != task_)) {
       taskCursor = taskCursor->next;
     }
+
+    SYSASSERT(ISNOTNULLPTR(taskCursor));
 
     /* Check if the task cursor is not null, if so set the return value
     to the task identifier. */
@@ -519,6 +612,11 @@ exists without returning the notification. */
 void xTaskNotifyStateClear(Task_t *task_) {
   Task_t *taskCursor = NULL;
 
+
+  SYSASSERT(ISNOTNULLPTR(taskList));
+
+  SYSASSERT(ISNOTNULLPTR(task_));
+
   /* Check if the task list is not null and the task parameter is not null. */
   if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(task_))) {
     taskCursor = taskList->head;
@@ -528,6 +626,8 @@ void xTaskNotifyStateClear(Task_t *task_) {
     while ((ISNOTNULLPTR(taskCursor)) && (taskCursor != task_)) {
       taskCursor = taskCursor->next;
     }
+
+    SYSASSERT(ISNOTNULLPTR(taskCursor));
 
     /* Check if the task cursor is not null, if so check if there is a waiting
     notification. */
@@ -551,6 +651,11 @@ Base_t xTaskNotificationIsWaiting(Task_t *task_) {
 
   Task_t *taskCursor = NULL;
 
+
+  SYSASSERT(ISNOTNULLPTR(taskList));
+
+  SYSASSERT(ISNOTNULLPTR(task_));
+
   /* Check if the task list is not null and the task parameter is not null. */
   if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(task_))) {
     taskCursor = taskList->head;
@@ -560,6 +665,8 @@ Base_t xTaskNotificationIsWaiting(Task_t *task_) {
     while ((ISNOTNULLPTR(taskCursor)) && (taskCursor != task_)) {
       taskCursor = taskCursor->next;
     }
+
+    SYSASSERT(ISNOTNULLPTR(taskCursor));
 
     /* Check if the task cursor is not null, if so check if there is a waiting
     task notification. */
@@ -585,6 +692,17 @@ Base_t xTaskNotifyGive(Task_t *task_, Base_t notificationBytes_, const char *not
 
   Task_t *taskCursor = NULL;
 
+
+  SYSASSERT(ISNOTNULLPTR(taskList));
+
+  SYSASSERT(ISNOTNULLPTR(task_));
+
+  SYSASSERT(notificationBytes_ > zero);
+
+  SYSASSERT(notificationBytes_ < CONFIG_NOTIFICATION_VALUE_BYTES);
+
+  SYSASSERT(ISNOTNULLPTR(notificationValue_));
+
   /* Check if the task list is not null and the task parameter is not null, the notification bytes are between
   one and CONFIG_NOTIFICATION_VALUE_BYTES and that the notification value char array pointer is not null. */
   if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(task_)) && (notificationBytes_ > zero) && (notificationBytes_ < CONFIG_NOTIFICATION_VALUE_BYTES) && (ISNOTNULLPTR(notificationValue_))) {
@@ -595,6 +713,8 @@ Base_t xTaskNotifyGive(Task_t *task_, Base_t notificationBytes_, const char *not
     while ((ISNOTNULLPTR(taskCursor)) && (taskCursor != task_)) {
       taskCursor = taskCursor->next;
     }
+
+    SYSASSERT(ISNOTNULLPTR(taskCursor));
 
     /* Check if the task cursor is not null, if so add the task notification to the task. */
     if (ISNOTNULLPTR(taskCursor)) {
@@ -621,6 +741,11 @@ TaskNotification_t *xTaskNotifyTake(Task_t *task_) {
 
   TaskNotification_t *ret = NULL;
 
+
+  SYSASSERT(ISNOTNULLPTR(taskList));
+
+  SYSASSERT(ISNOTNULLPTR(task_));
+
   /* Check if the task list is not null and the task parameter is not null. */
   if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(task_))) {
     taskCursor = taskList->head;
@@ -631,6 +756,8 @@ TaskNotification_t *xTaskNotifyTake(Task_t *task_) {
       taskCursor = taskCursor->next;
     }
 
+    SYSASSERT(ISNOTNULLPTR(taskCursor));
+
     /* Check if the task cursor is not null, if so check if there is a waiting
     task notification. */
     if (ISNOTNULLPTR(taskCursor)) {
@@ -638,6 +765,8 @@ TaskNotification_t *xTaskNotifyTake(Task_t *task_) {
       notification. */
       if (taskCursor->notificationBytes > zero) {
         ret = (TaskNotification_t *)xMemAlloc(sizeof(TaskNotification_t));
+
+        SYSASSERT(ISNOTNULLPTR(ret));
 
         /* Check if xMemAlloc() successfully allocated the memory for the task notification
         structure. */
@@ -663,6 +792,11 @@ will execute. */
 void xTaskResume(Task_t *task_) {
   Task_t *taskCursor = NULL;
 
+
+  SYSASSERT(ISNOTNULLPTR(taskList));
+
+  SYSASSERT(ISNOTNULLPTR(task_));
+
   /* Check if the task list is not null and the task parameter is not null. */
   if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(task_))) {
     taskCursor = taskList->head;
@@ -672,6 +806,8 @@ void xTaskResume(Task_t *task_) {
     while ((ISNOTNULLPTR(taskCursor)) && (taskCursor != task_)) {
       taskCursor = taskCursor->next;
     }
+
+    SYSASSERT(ISNOTNULLPTR(taskCursor));
 
     /* Check if the task cursor is not null, if so set the task state. */
     if (ISNOTNULLPTR(taskCursor)) {
@@ -687,6 +823,11 @@ will not be executed by the scheduler until xTaskResume() or xTaskWait() is call
 void xTaskSuspend(Task_t *task_) {
   Task_t *taskCursor = NULL;
 
+
+  SYSASSERT(ISNOTNULLPTR(taskList));
+
+  SYSASSERT(ISNOTNULLPTR(task_));
+
   /* Check if the task list is not null and the task parameter is not null. */
   if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(task_))) {
     taskCursor = taskList->head;
@@ -696,6 +837,8 @@ void xTaskSuspend(Task_t *task_) {
     while ((ISNOTNULLPTR(taskCursor)) && (taskCursor != task_)) {
       taskCursor = taskCursor->next;
     }
+
+    SYSASSERT(ISNOTNULLPTR(taskCursor));
 
     /* Check if the task cursor is not null, if so set the task state. */
     if (ISNOTNULLPTR(taskCursor)) {
@@ -713,6 +856,11 @@ in the waiting state will not be executed by the scheduler until an event has oc
 void xTaskWait(Task_t *task_) {
   Task_t *taskCursor = NULL;
 
+
+  SYSASSERT(ISNOTNULLPTR(taskList));
+
+  SYSASSERT(ISNOTNULLPTR(task_));
+
   /* Check if the task list is not null and the task parameter is not null. */
   if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(task_))) {
     taskCursor = taskList->head;
@@ -722,6 +870,8 @@ void xTaskWait(Task_t *task_) {
     while ((ISNOTNULLPTR(taskCursor)) && (taskCursor != task_)) {
       taskCursor = taskCursor->next;
     }
+
+    SYSASSERT(ISNOTNULLPTR(taskCursor));
 
     /* Check if the task cursor is not null, if so set the task state. */
     if (ISNOTNULLPTR(taskCursor)) {
@@ -740,6 +890,11 @@ Changing the period to zero will prevent the task from being executed even if it
 void xTaskChangePeriod(Task_t *task_, Time_t timerPeriod_) {
   Task_t *taskCursor = NULL;
 
+
+  SYSASSERT(ISNOTNULLPTR(taskList));
+
+  SYSASSERT(ISNOTNULLPTR(task_));
+
   /* Check if the task list is not null and the task parameter is not null. */
   if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(task_))) {
     taskCursor = taskList->head;
@@ -749,6 +904,8 @@ void xTaskChangePeriod(Task_t *task_, Time_t timerPeriod_) {
     while ((ISNOTNULLPTR(taskCursor)) && (taskCursor != task_)) {
       taskCursor = taskCursor->next;
     }
+
+    SYSASSERT(ISNOTNULLPTR(taskCursor));
 
     /* Check if the task cursor is not null, if so set the task timer period. */
     if (ISNOTNULLPTR(taskCursor)) {
@@ -766,6 +923,11 @@ Time_t xTaskGetPeriod(Task_t *task_) {
 
   Task_t *taskCursor = NULL;
 
+
+  SYSASSERT(ISNOTNULLPTR(taskList));
+
+  SYSASSERT(ISNOTNULLPTR(task_));
+
   /* Check if the task list is not null and the task parameter is not null. */
   if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(task_))) {
     taskCursor = taskList->head;
@@ -775,6 +937,8 @@ Time_t xTaskGetPeriod(Task_t *task_) {
     while ((ISNOTNULLPTR(taskCursor)) && (taskCursor != task_)) {
       taskCursor = taskCursor->next;
     }
+
+    SYSASSERT(ISNOTNULLPTR(taskCursor));
 
     /* Check if the task cursor is not null, if so set the return value to the
     task timer period. */
@@ -791,6 +955,11 @@ the timer period or the task state when called. See xTaskChangePeriod() for more
 void xTaskResetTimer(Task_t *task_) {
   Task_t *taskCursor = NULL;
 
+
+  SYSASSERT(ISNOTNULLPTR(taskList));
+
+  SYSASSERT(ISNOTNULLPTR(task_));
+
   /* Check if the task list is not null and the task parameter is not null. */
   if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(task_))) {
     taskCursor = taskList->head;
@@ -800,6 +969,8 @@ void xTaskResetTimer(Task_t *task_) {
     while ((ISNOTNULLPTR(taskCursor)) && (taskCursor != task_)) {
       taskCursor = taskCursor->next;
     }
+
+    SYSASSERT(ISNOTNULLPTR(taskCursor));
 
     /* Check if the task cursor is not null, if so set the start time to
     the current time. */
@@ -821,19 +992,25 @@ void xTaskStartScheduler(void) {
 
   /* Disable interrupts and set the critical section flag before entering into the scheduler main
   loop. */
-  DISABLE_INTERRUPTS();
 
-  ENTER_CRITICAL();
+  SYSASSERT(SYSFLAG_CRITICAL() == false);
 
-  /* Continue to loop while the scheduler running flag is true. */
-  while (SYSFLAG_RUNNING()) {
-    /* If the runtime overflow flag is true. Reset the runtimes on all of the tasks. */
-    if (SYSFLAG_OVERFLOW()) {
-      RunTimeReset();
-    }
+  SYSASSERT(ISNOTNULLPTR(taskList));
 
-    /* Check if the task list returned by TaskListGet() is not null before accessing it. */
-    if (ISNOTNULLPTR(taskList)) {
+  if ((SYSFLAG_CRITICAL() == false) && (ISNOTNULLPTR(taskList))) {
+
+    DISABLE_INTERRUPTS();
+
+    ENTER_CRITICAL();
+
+    /* Continue to loop while the scheduler running flag is true. */
+    while (SYSFLAG_RUNNING()) {
+      /* If the runtime overflow flag is true. Reset the runtimes on all of the tasks. */
+      if (SYSFLAG_OVERFLOW()) {
+        RunTimeReset();
+      }
+
+
       taskCursor = taskList->head;
 
       /* While the task cursor is not null (i.e., there are further tasks in the task list). */
@@ -871,18 +1048,22 @@ void xTaskStartScheduler(void) {
 
       leastRunTime = -1;
     }
+
+    /* Enable interrupts and UNset the critical section flag before returning from the scheduler. */
+    EXIT_CRITICAL();
+
+    ENABLE_INTERRUPTS();
   }
 
-  /* Enable interrupts and UNset the critical section flag before returning from the scheduler. */
-  EXIT_CRITICAL();
-
-  ENABLE_INTERRUPTS();
+  return;
 }
 
 /* If the runtime overflow flag is set, then RunTimeReset() is called to reset all of the
 total runtimes on tasks to their last runtime. */
 void RunTimeReset(void) {
   Task_t *taskCursor = NULL;
+
+  SYSASSERT(ISNOTNULLPTR(taskList));
 
   /* Check if task list is not null before accessing it. */
   if (ISNOTNULLPTR(taskList)) {

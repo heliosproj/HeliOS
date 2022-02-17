@@ -225,7 +225,13 @@ Base_t xQueueSend(Queue_t *queue_, Base_t messageBytes_, const char *messageValu
 
   Message_t *messageCursor = NULL;
 
-  SYSASSERT((ISNOTNULLPTR(queue_)) && (messageBytes_ > zero) && (messageBytes_ <= CONFIG_MESSAGE_VALUE_BYTES) && (ISNOTNULLPTR(messageValue_)));
+  SYSASSERT(ISNOTNULLPTR(queue_));
+
+  SYSASSERT(messageBytes_ > zero);
+
+  SYSASSERT(messageBytes_ <= CONFIG_MESSAGE_VALUE_BYTES);
+
+  SYSASSERT(ISNOTNULLPTR(messageValue_));
 
   /* Check if the queue parameter is not null, message bytes is between one and CONFIG_MESSAGE_VALUE_BYTES and the message value parameter
   is not null. */
