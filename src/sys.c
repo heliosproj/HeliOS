@@ -52,6 +52,8 @@ SystemInfo_t *xSystemGetSystemInfo(void) {
 
   ret = (SystemInfo_t *)xMemAlloc(sizeof(SystemInfo_t));
 
+  SYSASSERT(ISNOTNULLPTR(ret));
+
   /* Check if system info is not null to make sure xMemAlloc() successfully allocated
   the memory. */
   if (ISNOTNULLPTR(ret)) {
