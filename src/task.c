@@ -1143,13 +1143,6 @@ void xTaskSuspendAll(void) {
   return;
 }
 
-/* The xSystemHalt() system call stops the system by putting HeliOS into an infinite loop. */
-void xSystemHalt(void) {
-  DISABLE_INTERRUPTS();
-  for (;;) {
-  }
-}
-
 /* TO-DO: Implement xTaskStopScheduler(). */
 void xTaskStopScheduler(void) {
   return;

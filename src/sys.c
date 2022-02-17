@@ -43,6 +43,17 @@ void xSystemAssert(const char *file_, int line_) {
   return;
 }
 
+/* The xSystemHalt() system call stops the system by putting HeliOS into an infinite loop. */
+void xSystemHalt(void) {
+
+
+  DISABLE_INTERRUPTS();
+  
+  
+  for (;;) {
+  }
+}
+
 /* The xSystemGetSystemInfo() system call will return the type xSystemInfo containing
 information about the system including the OS (product) name, its version and how many tasks
 are currently in the running, suspended or waiting states. */
