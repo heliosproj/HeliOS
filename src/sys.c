@@ -38,8 +38,15 @@ SysFlags_t sysFlags = {
     .protect = false};
 
 /* The xSystemAssert() system call will be called when
-the SYSASSERT() macro evaluates true. */
+the SYSASSERT() macro evaluates true. In order for there
+to be any effect, CONFIG_ENABLE_SYSTEM_ASSERT and
+CONFIG_SYSTEM_ASSERT_BEHAVIOR must be defined. */
 void xSystemAssert(const char *file_, int line_) {
+
+#if defined(CONFIG_SYSTEM_ASSERT_BEHAVIOR)
+  CONFIG_SYSTEM_ASSERT_BEHAVIOR(file_, line_);
+#endif
+
   return;
 }
 
@@ -48,8 +55,8 @@ void xSystemHalt(void) {
 
 
   DISABLE_INTERRUPTS();
-  
-  
+
+
   for (;;) {
   }
 }

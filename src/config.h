@@ -34,13 +34,31 @@ to customize HeliOS for their specific application. */
  * 
  * The CONFIG_ENABLE_SYSTEM_ASSERT setting allows the end-user to
  * enable system assertions in HeliOS. Once enabled, the end-user
- * must define the assertion behavior in xSystemAssert() for there
+ * must define CONFIG_SYSTEM_ASSERT_BEHAVIOR for there
  * to be an effect.
  * 
  * @sa xSystemAssert()
  * 
  */
 #define CONFIG_ENABLE_SYSTEM_ASSERT
+
+/**
+ * @brief Define the system assertion behavior.
+ * 
+ * The CONFIG_SYSTEM_ASSERT_BEHAVIOR setting allows the end-user
+ * to specify the behavior (code) of xSystemAssert() which is called
+ * when CONFIG_ENABLE_SYSTEM_ASSERT is defined.
+ * 
+ * @sa CONFIG_ENABLE_SYSTEM_ASSERT
+ * @sa xSystemAssert()
+ * 
+ * @code {.c}
+ * #define CONFIG_SYSTEM_ASSERT_BEHAVIOR(f, l) printf("assert %s:%d\n", f, l)
+ * @endcode
+ * 
+ * 
+ */
+#define CONFIG_SYSTEM_ASSERT_BEHAVIOR(f, l)
 
 /**
  * @brief Define the size in bytes of the message queue message value.

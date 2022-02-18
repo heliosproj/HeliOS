@@ -487,7 +487,7 @@ typedef SystemInfo_t *xSystemInfo;
  * and dereferenced. The following is an example of how the DEREF_TASKPARM() C
  * macro simplifies that process.
  *
- * @code
+ * @code {.c}
  * void myTask_main(xTask task_, xTaskParm parm_) {
  *  int i;
  *
@@ -495,7 +495,7 @@ typedef SystemInfo_t *xSystemInfo;
  *
  * }
  * @endcode
- *
+ * 
  * @param t The data type to case the task paramater to (e.g., int).
  * @param p The task pointer often named parm_.
  */
