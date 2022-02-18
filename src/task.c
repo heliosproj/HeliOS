@@ -1138,11 +1138,6 @@ void xTaskSuspendAll(void) {
   return;
 }
 
-/* TO-DO: Implement xTaskList(). */
-char *xTaskList(void) {
-  return NULL;
-}
-
 /* The xTaskGetSchedulerState() system call will return the state of the scheduler. */
 SchedulerState_t xTaskGetSchedulerState(void) {
   SchedulerState_t ret = SchedulerStateError;

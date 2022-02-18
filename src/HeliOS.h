@@ -195,7 +195,7 @@ typedef struct QueueMessage_s {
  *
  */
 typedef struct SystemInfo_s {
-  char productName[PRODUCTNAME_SIZE]; /**< The name of the operating system or product. This is always HeliOS. */
+  char productName[OS_PRODUCT_NAME_SIZE]; /**< The name of the operating system or product. This is always HeliOS. */
   Base_t majorVersion;                /**< The major version number of HeliOS and is Symantec Versioning Specification (SemVer) compliant. */
   Base_t minorVersion;                /**< The minor version number of HeliOS and is Symantec Versioning Specification (SemVer) compliant. */
   Base_t patchVersion;                /**< The patch version number of HeliOS and is Symantec Versioning Specification (SemVer) compliant. */

@@ -50,7 +50,6 @@ TaskInfo_t *xTaskGetAllTaskInfo(Base_t *tasks_);
 TaskState_t xTaskGetTaskState(Task_t *task_);
 char *xTaskGetName(Task_t *task_);
 Base_t xTaskGetId(Task_t *task_);
-char *xTaskList(void);
 void xTaskNotifyStateClear(Task_t *task_);
 Base_t xTaskNotificationIsWaiting(Task_t *task_);
 Base_t xTaskNotifyGive(Task_t *task_, Base_t notificationBytes_, const char *notificationValue_);

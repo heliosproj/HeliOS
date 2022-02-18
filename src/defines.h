@@ -29,8 +29,6 @@
 #include <limits.h>
 #include <stdint.h>
 
-#define OTHER_ARCH_LINUX
-
 /* Check that the system HeliOS is being targeted for has an
 8-bit wide byte. */
 #if defined(CHAR_BIT)
@@ -124,6 +122,7 @@ to default to the Arduino platform and/or tool-chain. */
 
 #elif defined(OTHER_ARCH_LINUX)
 
+#include <stdio.h>
 #include <time.h>
 
 #define CURRENTTIME() CurrentTime()
