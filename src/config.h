@@ -47,7 +47,8 @@ to customize HeliOS for their specific application. */
  * 
  * The CONFIG_SYSTEM_ASSERT_BEHAVIOR setting allows the end-user
  * to specify the behavior (code) of xSystemAssert() which is called
- * when CONFIG_ENABLE_SYSTEM_ASSERT is defined.
+ * when CONFIG_ENABLE_SYSTEM_ASSERT is defined. Typically some sort
+ * of output is generated over a serial or other interface.
  * 
  * @sa CONFIG_ENABLE_SYSTEM_ASSERT
  * @sa xSystemAssert()
@@ -115,6 +116,9 @@ to customize HeliOS for their specific application. */
  * @sa xMemAlloc()
  * @sa xMemFree()
  * @sa CONFIG_HEAP_BLOCK_SIZE
+ * 
+ * @note To use the platform and/or tool-chain defaults,
+ * leave CONFIG_HEAP_SIZE_IN_BLOCKS undefined.
  * 
  */
 #define CONFIG_HEAP_SIZE_IN_BLOCKS 512u
