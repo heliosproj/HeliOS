@@ -56,7 +56,7 @@ Timer_t *xTimerCreate(Time_t timerPeriod_) {
 
     /* Check if xMemAlloc() successfully allocated the memory for the timer. */
     if (ISNOTNULLPTR(ret)) {
-      ret->state = TimerStateStopped;
+      ret->state = TimerStateSuspended;
 
       ret->timerPeriod = timerPeriod_;
 
@@ -361,7 +361,7 @@ void xTimerStop(Timer_t *timer_) {
 
     /* If the timer cursor is not null, set the state of the timer to stopped. */
     if (ISNOTNULLPTR(timerCursor)) {
-      timerCursor->state = TimerStateStopped;
+      timerCursor->state = TimerStateSuspended;
     }
   }
 

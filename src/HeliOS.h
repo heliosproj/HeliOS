@@ -53,6 +53,24 @@ typedef enum {
 } TaskState_t;
 
 /**
+ * @brief Enumerated type for scheduler states.
+ *
+ * The scheduler can be in one of four possible states defined in the SchedulerState_t
+ * enumerated type. The state of the scheduler is changed by calling xTaskSuspendAll()
+ * and xTaskResumeAll(). The state can be obtained by calling xTaskGetSchedulerState().
+ *
+ * @sa xSchedulerState
+ * @sa xTaskSuspendAll()
+ * @sa xTaskResumeAll()
+ *
+ */
+typedef enum {
+  SchedulerStateError,     /**< Not used. */
+  SchedulerStateSuspended, /**< State the scheduler is in after xTaskSuspendAll() is called. */
+  SchedulerStateRunning    /**< State the scheduler is in after xTaskResumeAll() is called. */
+} SchedulerState_t;
+
+/**
  * @brief Type definition for the base data type.
  *
  * A simple data type is often needed as an argument for a system call or a return type.
@@ -432,6 +450,21 @@ typedef Time_t xTime;
 typedef TaskState_t xTaskState;
 
 /**
+ * @brief Enumerated type for scheduler states.
+ *
+ * The scheduler can be in one of four possible states defined in the SchedulerState_t
+ * enumerated type. The state of the scheduler is changed by calling xTaskSuspendAll()
+ * and xTaskResumeAll(). The state can be obtained by calling xTaskGetSchedulerState().
+ *
+ * @sa xSchedulerState
+ * @sa xTaskSuspendAll()
+ * @sa xTaskResumeAll()
+ * @sa xTaskGetSchedulerState()
+ *
+ */
+typedef SchedulerState_t xSchedulerState;
+
+/**
  * @brief Data structure for system informaiton.
  *
  * The xSystemInfo data structure contains information about the HeliOS system and is returned
@@ -478,15 +511,15 @@ extern "C" {
 
 /**
  * @brief System call to handle assertions.
- * 
+ *
  * The xSystemAssert() system call handles assertions. The xSystemAssert() system
  * call should not be called directly. Instead, the SYSASSERT() macro should be used.
  * The system assertion functionality will only work when the CONFIG_ENABLE_SYSTEM_ASSERT
  * setting is defined.
- * 
+ *
  * @sa SYSASSERT
  * @sa CONFIG_ENABLE_SYSTEM_ASSERT
- * 
+ *
  * @param file_ The is automatically defined by the compiler's definition of _FILE_
  * @param line_  This is automatically defined by the compiler's definition of _LINE_
  */
@@ -895,7 +928,7 @@ xBase xTaskGetNumberOfTasks(void);
 /**
  * @brief The xTaskGetTaskInfo() system call returns the xTaskInfo structure containing
  * the details of the task including its identifier, name, state and runtime statistics.
- * 
+ *
  * @sa xTaskInfo
  *
  * @param task_ The task to return the details of.
@@ -909,17 +942,17 @@ xTaskInfo xTaskGetTaskInfo(xTask task_);
 /**
  * @brief The xTaskGetAllTaskInfo() system call returns the xTaskInfo structure containing
  * the details of ALL tasks including their identifier, name, state and runtime statistics.
- * 
+ *
  * @sa xTaskInfo
- * 
+ *
  * @param tasks_ A variable of type xBase passed by reference which will contain the number of tasks
  * upon return. If no tasks currently exist, this variable will not be modified.
  * @return xTaskInfo The xTaskInfo structure containing the tasks details. xTaskGetAllTaskInfo()
  * returns null if there no tasks or if a consistency issue is detected.
- * 
+ *
  * @note The xTaskGetAllTaskInfo() system call will also check the health of the task list and
  * will return zero if a consistency issue is detected.
- * 
+ *
  * @warning The memory allocated by xTaskGetAllTaskInfo() must be freed by xMemFree().
  */
 xTaskInfo *xTaskGetAllTaskInfo(xBase *tasks_);
@@ -1125,6 +1158,20 @@ xTime xTaskGetPeriod(xTask task_);
  * @param task_ The task to reset the task timer for.
  */
 void xTaskResetTimer(xTask task_);
+
+/**
+ * @brief System call to get the state of the scheduler.
+ *
+ * The xTaskGetSchedulerState() system call will return the state of the scheduler. The
+ * state of the scheduler can only be changed using xTaskSuspendAll() and xTaskResumeAll().
+ *
+ * @sa xSchedulerState
+ * @sa xTaskSuspendAll()
+ * @sa xTaskResumeAll()
+ *
+ * @return xSchedulerState The state of the scheduler.
+ */
+xSchedulerState xTaskGetSchedulerState(void);
 
 /**
  * @brief System call to create a new timer.

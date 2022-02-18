@@ -602,11 +602,6 @@ Base_t xTaskGetId(Task_t *task_) {
   return ret;
 }
 
-/* TO-DO: Implement xTaskList(). */
-char *xTaskList(void) {
-  return NULL;
-}
-
 /* The xTaskNotifyStateClear() system call will clear a waiting task notification if one
 exists without returning the notification. */
 void xTaskNotifyStateClear(Task_t *task_) {
@@ -1143,7 +1138,24 @@ void xTaskSuspendAll(void) {
   return;
 }
 
-/* TO-DO: Implement xTaskStopScheduler(). */
-void xTaskStopScheduler(void) {
-  return;
+/* TO-DO: Implement xTaskList(). */
+char *xTaskList(void) {
+  return NULL;
+}
+
+/* The xTaskGetSchedulerState() system call will return the state of the scheduler. */
+SchedulerState_t xTaskGetSchedulerState(void) {
+  SchedulerState_t ret = SchedulerStateError;
+
+  if(SYSFLAG_RUNNING() == true) {
+
+    ret = SchedulerStateRunning;
+
+  } else {
+
+    ret = SchedulerStateSuspended;
+
+  }
+
+  return ret;
 }

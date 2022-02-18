@@ -67,7 +67,7 @@ Time_t CurrentTime(void);
 void TaskRun(Task_t *task_);
 void xTaskResumeAll(void);
 void xTaskSuspendAll(void);
-void xTaskStopScheduler(void);
+SchedulerState_t xTaskGetSchedulerState(void);
 
 #ifdef __cplusplus
 }  // extern "C" {

@@ -36,8 +36,14 @@ typedef enum {
 } TaskState_t;
 
 typedef enum {
+  SchedulerStateError,
+  SchedulerStateSuspended,
+  SchedulerStateRunning
+} SchedulerState_t;
+
+typedef enum {
   TimerStateError,
-  TimerStateStopped,
+  TimerStateSuspended,
   TimerStateRunning
 } TimerState_t;
 
