@@ -44,65 +44,150 @@
 /* Definition blocks for embedded platform and/or tool-chain
 specific headers and functions to compile and run HeliOS. When a
 new embedded platform and/or tool-chain is added, the following
-defines must be included:
+defines (with the exception of CONFIG_HEAP_SIZE_IN_BLOCKS) must
+be included:
 
 * CURRENTTIME()
 * DISABLE_INTERRUPTS()
 * ENABLE_INTERRUPTS()
 * TIME_T_TYPE
+* CONFIG_HEAP_SIZE_IN_BLOCKS <- Optional. However, if defined
+  must be enclosed in an #if !defined(CONFIG_HEAP_SIZE_IN_BLOCKS)
+  block.
 
 If no definition block for the embedded platform and/or tool-chain
 is matched, the "else" block will print a compiler warning and attempt
 to default to the Arduino platform and/or tool-chain. */
 #if defined(ARDUINO_ARCH_AVR)
+
 #include <Arduino.h>
+
 #define CURRENTTIME() micros()
+
 #define DISABLE_INTERRUPTS() noInterrupts()
+
 #define ENABLE_INTERRUPTS() interrupts()
+
 #define TIME_T_TYPE uint32_t
+
+#if !defined(CONFIG_HEAP_SIZE_IN_BLOCKS)
+#define CONFIG_HEAP_SIZE_IN_BLOCKS 0x20u /* 32u */
+#endif
+
 #elif defined(ARDUINO_ARCH_SAM)
+
 #include <Arduino.h>
+
 #define CURRENTTIME() micros()
+
 #define DISABLE_INTERRUPTS() noInterrupts()
+
 #define ENABLE_INTERRUPTS() interrupts()
+
 #define TIME_T_TYPE uint32_t
+
+#if !defined(CONFIG_HEAP_SIZE_IN_BLOCKS)
+#define CONFIG_HEAP_SIZE_IN_BLOCKS 0x80u /* 128u */
+#endif
+
 #elif defined(ARDUINO_ARCH_SAMD)
+
 #include <Arduino.h>
+
 #define CURRENTTIME() micros()
+
 #define DISABLE_INTERRUPTS() noInterrupts()
+
 #define ENABLE_INTERRUPTS() interrupts()
+
 #define TIME_T_TYPE uint32_t
+
+#if !defined(CONFIG_HEAP_SIZE_IN_BLOCKS)
+#define CONFIG_HEAP_SIZE_IN_BLOCKS 0x80u /* 128u */
+#endif
+
 #elif defined(ARDUINO_ARCH_ESP8266)
+
 #include <Arduino.h>
+
 #define CURRENTTIME() micros()
+
 #define DISABLE_INTERRUPTS() noInterrupts()
+
 #define ENABLE_INTERRUPTS() interrupts()
+
 #define TIME_T_TYPE uint32_t
+
+#if !defined(CONFIG_HEAP_SIZE_IN_BLOCKS)
+#define CONFIG_HEAP_SIZE_IN_BLOCKS 0x80u /* 128u */
+#endif
+
 #elif defined(OTHER_ARCH_LINUX)
+
 #include <time.h>
+
 #define CURRENTTIME() CurrentTime()
+
 #define DISABLE_INTERRUPTS()
+
 #define ENABLE_INTERRUPTS()
+
 #define TIME_T_TYPE uint64_t
+
+#if !defined(CONFIG_HEAP_SIZE_IN_BLOCKS)
+#define CONFIG_HEAP_SIZE_IN_BLOCKS 0x200u /* 512u */
+#endif
+
 #elif defined(ARDUINO_TEENSY_MICROMOD) || defined(ARDUINO_TEENSY40) || defined(ARDUINO_TEENSY41) || defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY35) || defined(ARDUINO_TEENSY31) || defined(ARDUINO_TEENSY32) || defined(ARDUINO_TEENSY30) || defined(ARDUINO_TEENSYLC)
+
 #include <Arduino.h>
+
 #define CURRENTTIME() micros()
+
 #define DISABLE_INTERRUPTS() noInterrupts()
+
 #define ENABLE_INTERRUPTS() interrupts()
+
 #define TIME_T_TYPE uint32_t
+
+#if !defined(CONFIG_HEAP_SIZE_IN_BLOCKS)
+#define CONFIG_HEAP_SIZE_IN_BLOCKS 0x200u /* 512u */
+#endif
+
 #elif defined(ESP32)
+
 #include <Arduino.h>
+
 #define CURRENTTIME() micros()
+
 #define DISABLE_INTERRUPTS() noInterrupts()
+
 #define ENABLE_INTERRUPTS() interrupts()
+
 #define TIME_T_TYPE uint32_t
+
+#if !defined(CONFIG_HEAP_SIZE_IN_BLOCKS)
+#define CONFIG_HEAP_SIZE_IN_BLOCKS 0x200u /* 512u */
+#endif
+
 #else
-#pragma message("WARNING: This embedded platform and/or tool-chain is not currently supported by HeliOS - proceed with caution.")
+
+#pragma message("WARNING: This embedded platform and/or tool-chain is not currently supported.")
+
 #include <Arduino.h>
+
 #define CURRENTTIME() micros()
+
 #define DISABLE_INTERRUPTS() noInterrupts()
+
 #define ENABLE_INTERRUPTS() interrupts()
+
 #define TIME_T_TYPE uint32_t
+
+#if !defined(CONFIG_HEAP_SIZE_IN_BLOCKS)
+#define CONFIG_HEAP_SIZE_IN_BLOCKS 0x20u /* 32u */
+#endif
+
 #endif
 
 /* Define "true" if not defined. */
@@ -118,9 +203,9 @@ to default to the Arduino platform and/or tool-chain. */
 /* Define "NULL" if not defined. */
 #if !defined(NULLs)
 #if !defined(__cplusplus)
-#define NULL ((void *)0)
+#define NULL ((void *)0x0)
 #else
-#define NULL 0
+#define NULL 0x0
 #endif
 #endif
 
