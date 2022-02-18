@@ -142,7 +142,7 @@ typedef struct Queue_s {
 } Queue_t;
 
 typedef struct SystemInfo_s {
-  char productName[PRODUCTNAME_SIZE];
+  char productName[OS_PRODUCT_NAME_SIZE];
   Base_t majorVersion;
   Base_t minorVersion;
   Base_t patchVersion;

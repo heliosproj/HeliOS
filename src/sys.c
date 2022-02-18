@@ -74,13 +74,13 @@ SystemInfo_t *xSystemGetSystemInfo(void) {
   /* Check if system info is not null to make sure xMemAlloc() successfully allocated
   the memory. */
   if (ISNOTNULLPTR(ret)) {
-    memcpy_(ret->productName, PRODUCT_NAME, PRODUCTNAME_SIZE);
+    memcpy_(ret->productName, OS_PRODUCT_NAME, OS_PRODUCT_NAME_SIZE);
 
-    ret->majorVersion = MAJOR_VERSION_NO;
+    ret->majorVersion = OS_MAJOR_VERSION_NO;
 
-    ret->minorVersion = MINOR_VERSION_NO;
+    ret->minorVersion = OS_MINOR_VERSION_NO;
 
-    ret->patchVersion = PATCH_VERSION_NO;
+    ret->patchVersion = OS_PATCH_VERSION_NO;
 
     ret->numberOfTasks = xTaskGetNumberOfTasks();
   }

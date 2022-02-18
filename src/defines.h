@@ -222,31 +222,31 @@ the heap contains and the size of each block in bytes. */
 
 /* Define the size in bytes of the product name which is accessible through
 xSystemGetSystemInfo(). */
-#if !defined(PRODUCTNAME_SIZE)
-#define PRODUCTNAME_SIZE 0x6u
+#if !defined(OS_PRODUCT_NAME_SIZE)
+#define OS_PRODUCT_NAME_SIZE 0x6u
 #endif
 
 /* Define the product name which is accessible through xSystemGetSystemInfo(). */
-#if !defined(PRODUCT_NAME)
-#define PRODUCT_NAME "HeliOS"
+#if !defined(OS_PRODUCT_NAME)
+#define OS_PRODUCT_NAME "HeliOS"
 #endif
 
 /* Define the product major version number which is accessible through
 xSystemGetSystemInfo(). */
-#if !defined(MAJOR_VERSION_NO)
-#define MAJOR_VERSION_NO 0x0u
+#if !defined(OS_MAJOR_VERSION_NO)
+#define OS_MAJOR_VERSION_NO 0x0u
 #endif
 
 /* Define the product minor version number which is accessible through
 xSystemGetSystemInfo(). */
-#if !defined(MINOR_VERSION_NO)
-#define MINOR_VERSION_NO 0x3u
+#if !defined(OS_MINOR_VERSION_NO)
+#define OS_MINOR_VERSION_NO 0x3u
 #endif
 
 /* Define the product patch version number which is accessible through
 xSystemGetSystemInfo(). */
-#if !defined(PATCH_VERSION_NO)
-#define PATCH_VERSION_NO 0x1u
+#if !defined(OS_PATCH_VERSION_NO)
+#define OS_PATCH_VERSION_NO 0x1u
 #endif
 
 /* Define the macro which sets the critical flag to true when
