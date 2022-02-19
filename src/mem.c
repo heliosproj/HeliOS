@@ -42,8 +42,6 @@ void *xMemAlloc(size_t size_) {
 
   void *ret = NULL;
 
-  Word_t blocks = zero;
-
   Word_t requestedBlocks = zero;
 
   /* Requested blocks with overhead is the requested blocks + the number of blocks
@@ -57,11 +55,11 @@ void *xMemAlloc(size_t size_) {
 
   HeapEntry_t *entryCandidate = NULL;
 
-  SYSASSERT(size_ > zero);
+  SYSASSERT(zero < size_);
 
   /* Confirm the requested size in bytes is greater than zero. If not, just head toward
   return and return null. */
-  if (size_ > zero) {
+  if (zero < size_) {
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
     PHASE I: Determine how many blocks a heap entry requires. One block is generally
     sufficient but we shouldn't assume. This only needs to be done once.
@@ -69,13 +67,13 @@ void *xMemAlloc(size_t size_) {
 
     /* If we haven't calculated how many blocks a heap entry requires, calculate
     it now. */
-    if (entryBlocksNeeded == zero) {
+    if (zero == entryBlocksNeeded) {
       /* Calculate the quotient portion of the blocks needed for the heap entry. */
       entryBlocksNeeded = (Word_t)sizeof(HeapEntry_t) / CONFIG_HEAP_BLOCK_SIZE;
 
       /* Calculate the remainder portion of the blocks needed for the heap entry. If there is
       a remainder, add one more block to the blocks needed. */
-      if ((sizeof(HeapEntry_t) % CONFIG_HEAP_BLOCK_SIZE) > zero) {
+      if (zero < (sizeof(HeapEntry_t) % CONFIG_HEAP_BLOCK_SIZE)) {
         /* Add one to the blocks needed since there is a remainder for the blocks
         needed. */
         entryBlocksNeeded++;
@@ -89,7 +87,7 @@ void *xMemAlloc(size_t size_) {
 
     /* If the heap entry at the start of the heap has zero blocks then it hasn't
     been initialized yet, so do that now. If it has then just move on.*/
-    if (start->blocks == zero) {
+    if (zero == start->blocks) {
       /* Zero out the entire heap. HEAP_RAW_SIZE equates to HEAP_SIZE_IN_BLOCKS * HEAP_BLOCK_SIZE. */
       memset_(heap, zero, HEAP_RAW_SIZE);
 
@@ -112,29 +110,14 @@ void *xMemAlloc(size_t size_) {
     }
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-    PHASE III: Check the health of the heap by scanning through all of the heap entries
-    counting how many blocks are in each entry then comparing that against the
-    HEAP_SIZE_IN_BLOCKS setting. If the two do not match there is a problem!!
+    PHASE III: Check the health of the heap by calling CheckHeapHealth().
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-    /* To scan the heap, set the heap entry cursor to the start of the heap. */
-    entryCursor = start;
+    SYSASSERT(RETURN_SUCCESS == CheckHeapHealth(CHECK_HEAP_HEALTH_ONLY, NULL));
 
-    /* While the heap entry cursor is not null, keep scanning. */
-    while (ISNOTNULLPTR(entryCursor)) {
-      /* Continue to sum the blocks while keeping in mind that the heap entries
-      consume blocks too. */
-      blocks += entryCursor->blocks + entryBlocksNeeded;
 
-      /* Move on to the next heap entry. */
-      entryCursor = entryCursor->next;
-    }
-
-    SYSASSERT(blocks == CONFIG_HEAP_SIZE_IN_BLOCKS);
-
-    /* If the block count does not match HEAP_SIZE_IN_BLOCKS then we need
-    to return because the heap is corrupt. Otherwise continue to phase IV. */
-    if (blocks == CONFIG_HEAP_SIZE_IN_BLOCKS) {
+    /* If the heap is healthy, then proceed to phase IV. */
+    if (RETURN_SUCCESS == CheckHeapHealth(CHECK_HEAP_HEALTH_ONLY, NULL)) {
       /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
        PHASE IV: Calculate how many blocks are needed for the requested size in bytes.
        * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -145,7 +128,7 @@ void *xMemAlloc(size_t size_) {
 
       /* Calculate the remainder portion of the requested blocks. If there is a remainder we
       need to add one more block. */
-      if ((size_ % CONFIG_HEAP_SIZE_IN_BLOCKS) > zero) {
+      if (zero < (size_ % CONFIG_HEAP_SIZE_IN_BLOCKS)) {
         /* There was a remainder for the requested blocks so add one more block. */
         requestedBlocks++;
       }
@@ -169,7 +152,7 @@ void *xMemAlloc(size_t size_) {
             1) The entry at the cursor is free.
             2) The entry has enough blocks to cover the requested blocks with overhead.
             3) The entry has the fewest possible number of blocks based on our need.*/
-        if ((entryCursor->free == true) && (entryCursor->blocks >= requestedBlocksWithOverhead) && (entryCursor->blocks < leastBlocks)) {
+        if ((true == entryCursor->free) && (requestedBlocksWithOverhead <= entryCursor->blocks) && (leastBlocks > entryCursor->blocks)) {
           /* Seems like a good candidate so update the least blocks in case
           there is an entry with fewer blocks that is free yet will fit
           the requested blocks with overhead. */
@@ -215,7 +198,7 @@ void *xMemAlloc(size_t size_) {
           entryCandidate->free = false;
 
           /* Set the entry protection based on the privileged system flag. */
-          if (SYSFLAG_PRIVILEGED() == true) {
+          if (true == SYSFLAG_PRIVILEGED()) {
 
             entryCandidate->protected = true;
 
@@ -240,7 +223,7 @@ void *xMemAlloc(size_t size_) {
           entryCandidate->free = false;
 
           /* Set the entry protection based on the privileged system flag. */
-          if (SYSFLAG_PRIVILEGED() == true) {
+          if (true == SYSFLAG_PRIVILEGED()) {
 
             entryCandidate->protected = true;
 
@@ -275,106 +258,51 @@ void xMemFree(void *ptr_) {
   /* Disable interrupts because we can't be interrupted while modifying the heap. */
   DISABLE_INTERRUPTS();
 
-  Word_t blocks = zero;
-
-  HeapEntry_t *entryCursor = NULL;
-
   HeapEntry_t *entryToFree = NULL;
 
+
+  /* Assert if the end-user passed pointer is null. */
   SYSASSERT(ISNOTNULLPTR(ptr_));
 
   /* Check to make sure the end-user passed a pointer that is at least not null. If it is null,
   then move on and return. */
   if (ISNOTNULLPTR(ptr_)) {
-    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-    PHASE I: Determine if the first heap entry has been created. If it hasn't then
-    just return.
-    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-    SYSASSERT(start->blocks != zero);
 
-    /* Check if the entry at the start of the heap is un-initialized by looking
-    at the blocks member. If it is zero, then the heap has not been initialized so
-    just thrown in the towel. */
-    if (start->blocks != zero) {
-      /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-      PHASE II: Check the health of the heap by scanning through all of the heap entries
-      counting how many blocks are in each entry then comparing that against the
-      HEAP_SIZE_IN_BLOCKS setting. If the two do not match there is a problem!!
-      * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+    /* Check if the heap is un-initialized, unhealthy or the end-user passed
+    pointer is invalid. */
+    SYSASSERT(RETURN_SUCCESS == CheckHeapHealth(CHECK_HEAP_HEALTH_AND_PTR, ptr_));
 
-      /* To scan the heap, set the heap entry cursor to the start of the heap. */
-      entryCursor = start;
 
-      /* While the heap entry cursor is not null, keep scanning. */
-      while (ISNOTNULLPTR(entryCursor)) {
-        blocks += entryCursor->blocks + entryBlocksNeeded; /* Assuming entry blocks needed has been
-                                                                  calculated if the heap has been initialized. */
+    /* If the heap is initialized, healthy and the end-user passed pointer
+    is valid, then proceed to free the memory. */
+    if (RETURN_SUCCESS == CheckHeapHealth(CHECK_HEAP_HEALTH_AND_PTR, ptr_)) {
 
-        /* Move on to the next heap entry. */
-        entryCursor = entryCursor->next;
-      }
 
-      SYSASSERT(blocks == CONFIG_HEAP_SIZE_IN_BLOCKS);
 
-      /* Check if the counted blocks matches the HEAP_SIZE_IN_BLOCKS setting,
-      if it doesn't return (i.e., Houston, we've had a problem.) */
-      if (blocks == CONFIG_HEAP_SIZE_IN_BLOCKS) {
-        /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-        PHASE III: Check if the pointer paramater actually points to a heap entry that
-        by scanning the heap for it. If it exists, free the entry.
+      /* Determine the heap entry to free by moving back from the pointer by the byte size of one
+      heap entry. */
+      entryToFree = (HeapEntry_t *)((Byte_t *)ptr_ - (entryBlocksNeeded * CONFIG_HEAP_BLOCK_SIZE));
 
-        Don't ever just directly check that the pointer references what APPEARS to be a
-        heap entry - always traverse the heap!!
-        * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+      SYSASSERT((false == entryToFree->protected) || ((true == entryToFree->protected) && (true == SYSFLAG_PRIVILEGED())));
 
-        /* Determine the heap entry to free by moving back from the pointer by the byte size of one
-        heap entry. */
-        entryToFree = (HeapEntry_t *)((Byte_t *)ptr_ - (entryBlocksNeeded * CONFIG_HEAP_BLOCK_SIZE));
+      /* If the entry is marked protected and the protect system flag is false,
+      then return because a protected entry cannot be freed while the protect
+      system flag is false. */
+      if ((false == entryToFree->protected) || ((true == entryToFree->protected) && (true == SYSFLAG_PRIVILEGED()))) {
 
-        /* To scan the heap, set the heap entry cursor to the start of the heap. */
-        entryCursor = start;
 
-        /* While the heap entry cursor is not null, keep scanning. */
-        while (ISNOTNULLPTR(entryCursor)) {
-          /* If the entry cursor equals the entry we want to free, then break out of the loop. */
-          if (entryCursor == entryToFree) {
-            break;
-          }
+        /* Make the entry free by setting free to true. */
+        entryToFree->free = true;
 
-          /* Move on to the next heap entry. */
-          entryCursor = entryCursor->next;
-        }
+        /* Mark the entry as unprotected. */
+        entryToFree->protected = false;
 
-        SYSASSERT(ISNOTNULLPTR(entryCursor));
-
-        /* Check if the entry cursor is null, if it is we couldn't find the entry to be freed. If it is
-        not null then proceed with marking the entry free. */
-        if (ISNOTNULLPTR(entryCursor)) {
-
-          SYSASSERT(entryCursor == entryToFree);
-
-          /* Check one last time if the entry cursor equals the entry we want to free, if it does,
-           mark it free. */
-          if (entryCursor == entryToFree) {
-
-            SYSASSERT((entryCursor->protected == false) || ((entryCursor->protected == true) && (SYSFLAG_PRIVILEGED() == true)));
-
-            /* If the entry is marked protected and the protect system flag is false,
-            then return because a protected entry cannot be freed while the protect
-            system flag is false. */
-            if ((entryCursor->protected == false) || ((entryCursor->protected == true) && (SYSFLAG_PRIVILEGED() == true))) {
-              /* Make the entry free by setting free to true. */
-              entryCursor->free = true;
-
-              /* Mark the entry as unprotected. */
-              entryCursor->protected = false;
-            }
-          }
-        }
+        /* Never change the entry's blocks!! */
       }
     }
   }
+
 
   /* Exit protect and enable interrupts before returning. */
   EXIT_PRIVILEGED();
@@ -394,45 +322,38 @@ size_t xMemGetUsed(void) {
   Word_t usedBlocks = zero;
 
 
-  /* Assert if the end-user passed a null pointer. */
-  SYSASSERT(ISNOTNULLPTR(ptr_));
+  /* Check if the heap is un-initialized or unhealthy. */
+  SYSASSERT(RETURN_SUCCESS == CheckHeapHealth(CHECK_HEAP_HEALTH_ONLY, NULL));
 
 
-  /* Check to make sure the end-user passed a pointer that is at least not null. */
-  if (ISNOTNULLPTR(ptr_)) {
+  /* If the heap is initialized and healthy, then proceed with summing up the
+  blocks that are in use. */
+  if (RETURN_SUCCESS == CheckHeapHealth(CHECK_HEAP_HEALTH_ONLY, NULL)) {
 
-    /* Check if the heap is un-initialized or unhealthy. */
-    SYSASSERT(CHECK_HEAP_HEALTH_SUCCESS == CheckHeapHealth(CHECK_HEAP_HEALTH_ONLY, NULL));
+    entryCursor = start;
 
-
-    /* If the heap is initialized and healthy, then proceed with summing up the
-    blocks that are in use. */
-    if (CHECK_HEAP_HEALTH_SUCCESS == CheckHeapHealth(CHECK_HEAP_HEALTH_ONLY, NULL)) {
-
-      entryCursor = start;
-
-      /* While the heap entry cursor is not null, keep scanning. */
-      while (ISNOTNULLPTR(entryCursor)) {
+    /* While the heap entry cursor is not null, keep scanning. */
+    while (ISNOTNULLPTR(entryCursor)) {
 
 
-        /* At each entry, check to see if it is in use. If it is, add the number
-        of blocks it contains plus the number of blocks consumed by the heap entry
-        block to the used block count. */
-        if (entryCursor->free == false) {
+      /* At each entry, check to see if it is in use. If it is, add the number
+      of blocks it contains plus the number of blocks consumed by the heap entry
+      block to the used block count. */
+      if (entryCursor->free == false) {
 
-          /* Sum the number of used blocks for each heap entry in use. */
-          usedBlocks += entryCursor->blocks + entryBlocksNeeded;
-        }
-
-        /* Move on to the next heap entry. */
-        entryCursor = entryCursor->next;
+        /* Sum the number of used blocks for each heap entry in use. */
+        usedBlocks += entryCursor->blocks + entryBlocksNeeded;
       }
 
-      /* End-user is expecting bytes, so calculate it based on the
-      block size. */
-      ret = usedBlocks * CONFIG_HEAP_BLOCK_SIZE;
+      /* Move on to the next heap entry. */
+      entryCursor = entryCursor->next;
     }
+
+    /* End-user is expecting bytes, so calculate it based on the
+    block size. */
+    ret = usedBlocks * CONFIG_HEAP_BLOCK_SIZE;
   }
+
 
   return ret;
 }
@@ -457,12 +378,12 @@ size_t xMemGetSize(void *ptr_) {
 
     /* Check if the heap is un-initialized, unhealthy or if the end-user passed
     pointer is an invalid pointer. */
-    SYSASSERT(CHECK_HEAP_HEALTH_SUCCESS == CheckHeapHealth(CHECK_HEAP_HEALTH_AND_PTR, ptr_));
+    SYSASSERT(RETURN_SUCCESS == CheckHeapHealth(CHECK_HEAP_HEALTH_AND_PTR, ptr_));
 
 
     /* If the heap is initialized, healthy and if the end-user passed pointer is
     valid then we can continue. */
-    if (CHECK_HEAP_HEALTH_SUCCESS == CheckHeapHealth(CHECK_HEAP_HEALTH_AND_PTR, ptr_)) {
+    if (RETURN_SUCCESS == CheckHeapHealth(CHECK_HEAP_HEALTH_AND_PTR, ptr_)) {
 
       /* Need to calculate the location of the heap entry for the end-user passed pointer. */
       entryToSize = (HeapEntry_t *)((Byte_t *)ptr_ - (entryBlocksNeeded * CONFIG_HEAP_BLOCK_SIZE));
@@ -492,17 +413,18 @@ size_t xMemGetSize(void *ptr_) {
 }
 
 /* The CheckHeapHealth() function checks the health of the heap and optionally
-will check that a pointer is valid at the same time. */
+will check that a pointer is valid at the same time. CheckHeapHealth() does
+not respect the entry protected flag because it isn't changing anything. */
 Base_t CheckHeapHealth(Base_t option_, void *ptr_) {
   HeapEntry_t *entryCursor = NULL;
 
-  HeapEntry_t *entryToFind = NULL;
+  HeapEntry_t *entryToCheck = NULL;
 
   Base_t ptrFound = false;
 
   Word_t blocks = zero;
 
-  Base_t ret = CHECK_HEAP_HEALTH_FAILURE;
+  Base_t ret = RETURN_FAILURE;
 
 
   /* Assert if there is an invalid combination of arguments
@@ -530,7 +452,7 @@ Base_t CheckHeapHealth(Base_t option_, void *ptr_) {
       then we must calculate where its heap entry would be. */
       if (CHECK_HEAP_HEALTH_AND_PTR == option_) {
 
-        entryToFind = (HeapEntry_t *)((Byte_t *)ptr_ - (entryBlocksNeeded * CONFIG_HEAP_BLOCK_SIZE));
+        entryToCheck = (HeapEntry_t *)((Byte_t *)ptr_ - (entryBlocksNeeded * CONFIG_HEAP_BLOCK_SIZE));
       }
 
       /* Traverse the heap and sum the blocks from
@@ -541,7 +463,7 @@ Base_t CheckHeapHealth(Base_t option_, void *ptr_) {
 
         /* At the same time if we are checking for a pointer, let's find it. If
         found then set the pointer found variable to true. */
-        if ((CHECK_HEAP_HEALTH_AND_PTR == option_) && (entryCursor == entryToFind)) {
+        if ((CHECK_HEAP_HEALTH_AND_PTR == option_) && (entryCursor == entryToCheck) && (false == entryCursor->free)) {
 
           ptrFound = true;
         }
@@ -559,6 +481,9 @@ Base_t CheckHeapHealth(Base_t option_, void *ptr_) {
       matches what we expected, if so proceed. */
       if (CONFIG_HEAP_SIZE_IN_BLOCKS == blocks) {
 
+        /* Assert if the pointer was not found if we
+        were looking for it. */
+        SYSASSERT((CHECK_HEAP_HEALTH_ONLY == option_) || ((CHECK_HEAP_HEALTH_AND_PTR == option_) && (true == ptrFound)));
 
         /* If we only have to check the heap health then set the
         return value to success OR if we are also checking that
@@ -566,7 +491,7 @@ Base_t CheckHeapHealth(Base_t option_, void *ptr_) {
         if the pointer's heap entry was found. */
         if ((CHECK_HEAP_HEALTH_ONLY == option_) || ((CHECK_HEAP_HEALTH_AND_PTR == option_) && (true == ptrFound))) {
 
-          ret = CHECK_HEAP_HEALTH_SUCCESS;
+          ret = RETURN_SUCCESS;
         }
       }
     }

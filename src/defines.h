@@ -29,6 +29,8 @@
 #include <limits.h>
 #include <stdint.h>
 
+#define OTHER_ARCH_LINUX
+
 /* Check that the system HeliOS is being targeted for has an
 8-bit wide byte. */
 #if defined(CHAR_BIT)
@@ -213,6 +215,18 @@ to default to the Arduino platform and/or tool-chain. */
 #define zero 0x0u
 #endif
 
+/* Define a general return failure for
+return values. */
+#if !defined(RETURN_FAILURE)
+#define RETURN_FAILURE 0x0u
+#endif
+
+/* Define a general return success
+for return values. */
+#if !defined(RETURN_SUCCESS)
+#define RETURN_SUCCESS 0x1u
+#endif
+
 /* Define the raw size of the heap in bytes based on the number of blocks
 the heap contains and the size of each block in bytes. */
 #if !defined(HEAP_RAW_SIZE)
@@ -341,17 +355,5 @@ and also check a pointer at the same time. */
 #if !defined(CHECK_HEAP_HEALTH_AND_PTR)
 #define CHECK_HEAP_HEALTH_AND_PTR 0x2u
 #endif
-
-/* CheckHeapHealth() return if the check was successful. */
-#if !defined(CHECK_HEAP_HEALTH_SUCCESS)
-#define CHECK_HEAP_HEALTH_SUCCESS 0x4u
-#endif
-
-
-/* CheckHeapHealth() return if the check was NOT successful. */
-#if !defined(CHECK_HEAP_HEALTH_FAILURE)
-#define CHECK_HEAP_HEALTH_FAILURE 0x8u
-#endif
-
 
 #endif
