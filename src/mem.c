@@ -415,7 +415,7 @@ size_t xMemGetSize(void *ptr_) {
 /* The CheckHeapHealth() function checks the health of the heap and optionally
 will check that a pointer is valid at the same time. CheckHeapHealth() does
 not respect the entry protected flag because it isn't changing anything. */
-Base_t CheckHeapHealth(Base_t option_, void *ptr_) {
+Base_t CheckHeapHealth(const Base_t option_, const void *ptr_) {
   HeapEntry_t *entryCursor = NULL;
 
   HeapEntry_t *entryToCheck = NULL;
