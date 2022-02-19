@@ -41,8 +41,8 @@ extern "C" {
 void *xMemAlloc(size_t size_);
 void xMemFree(void *ptr_);
 size_t xMemGetUsed(void);
-Base_t xMemIsValid(void *ptr_);
 size_t xMemGetSize(void *ptr_);
+Base_t CheckHeapHealth(Base_t option_, void *ptr_);
 void memcpy_(void *dest_, const void *src_, size_t n_);
 void memset_(void *dest_, uint16_t val_, size_t n_);
 uint16_t memcmp_(const void *s1_, const void *s2_, size_t n_);
