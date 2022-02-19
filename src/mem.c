@@ -214,8 +214,15 @@ void *xMemAlloc(size_t size_) {
           /* Mark the candidate entry as no longer free. */
           entryCandidate->free = false;
 
-          /* Set the entry protection based on the protect system flag. */
-          entryCandidate->protected = SYSFLAG_PROTECT();
+          /* Set the entry protection based on the privileged system flag. */
+          if (SYSFLAG_PRIVILEGED() == true) {
+
+            entryCandidate->protected = true;
+
+          } else {
+
+            entryCandidate->protected = false;
+          }
 
           /* Store how many blocks the entry contains. */
           entryCandidate->blocks = requestedBlocks;
@@ -232,8 +239,17 @@ void *xMemAlloc(size_t size_) {
           so simply claim it for France. */
           entryCandidate->free = false;
 
-          /* Set the entry protection based on the protect system flag. */
-          entryCandidate->protected = SYSFLAG_PROTECT();
+          /* Set the entry protection based on the privileged system flag. */
+          if (SYSFLAG_PRIVILEGED() == true) {
+
+            entryCandidate->protected = true;
+
+          } else {
+
+            entryCandidate->protected = false;
+
+          }
+
 
           /* Clear the memory by mem-setting it to all zeros. */
           memset_((void *)((Byte_t *)entryCandidate + (entryBlocksNeeded * CONFIG_HEAP_BLOCK_SIZE)), zero, requestedBlocks * CONFIG_HEAP_BLOCK_SIZE);
@@ -248,7 +264,7 @@ void *xMemAlloc(size_t size_) {
 
   /* Exit protect and enable interrupts before returning. */
 
-  EXIT_PROTECT();
+  EXIT_PRIVILEGED();
 
   ENABLE_INTERRUPTS();
 
@@ -343,12 +359,12 @@ void xMemFree(void *ptr_) {
            mark it free. */
           if (entryCursor == entryToFree) {
 
-            SYSASSERT((entryCursor->protected == false) || ((entryCursor->protected == true) && (SYSFLAG_PROTECT() == true)));
+            SYSASSERT((entryCursor->protected == false) || ((entryCursor->protected == true) && (SYSFLAG_PRIVILEGED() == true)));
 
             /* If the entry is marked protected and the protect system flag is false,
             then return because a protected entry cannot be freed while the protect
             system flag is false. */
-            if ((entryCursor->protected == false) || ((entryCursor->protected == true) && (SYSFLAG_PROTECT() == true))) {
+            if ((entryCursor->protected == false) || ((entryCursor->protected == true) && (SYSFLAG_PRIVILEGED() == true))) {
               /* Make the entry free by setting free to true. */
               entryCursor->free = true;
 
@@ -362,7 +378,7 @@ void xMemFree(void *ptr_) {
   }
 
   /* Exit protect and enable interrupts before returning. */
-  EXIT_PROTECT();
+  EXIT_PRIVILEGED();
 
   ENABLE_INTERRUPTS();
 

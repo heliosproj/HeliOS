@@ -29,7 +29,7 @@
 extern SysFlags_t sysFlags;
 
 /* Declare and initialize the task list to null. */
-static TimerList_t *timerList = NULL;
+TimerList_t *timerList = NULL;
 
 /* The xTimerCreate() system call will create a new timer. Timers differ from
  task timers in that they do not create events that effect the scheduling of a task.

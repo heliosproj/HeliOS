@@ -35,7 +35,7 @@ SysFlags_t sysFlags = {
     .running = true,
     .critical = false,
     .overflow = false,
-    .protect = false};
+    .privileged = false};
 
 /* The xSystemAssert() system call will be called when
 the SYSASSERT() macro evaluates true. In order for there

@@ -268,29 +268,29 @@ scheduler. */
 #define SYSFLAG_CRITICAL() sysFlags.critical
 #endif
 
-/* Define the macro which sets the protect flag to true when
+/* Define the macro which sets the privileged flag to true when
 the next call to xMemAlloc() and xMemFree() is for protected
 memory. */
-#if !defined(ENTER_PROTECT)
-#define ENTER_PROTECT() sysFlags.protect = true
+#if !defined(ENTER_PRIVILEGED)
+#define ENTER_PRIVILEGED() sysFlags.privileged = true
 #endif
 
-/* Define the macro which sets the protect flag to false to
+/* Define the macro which sets the privileged flag to false to
 exit protected memory mode.
 
 NOTE: This should only be called from within xMemAlloc() and
 xMemFree() since both system calls will automatically exit
-protected mode after they are done. */
-#if !defined(EXIT_PROTECT)
-#define EXIT_PROTECT() sysFlags.protect = false
+privileged mode after they are done. */
+#if !defined(EXIT_PRIVILEGED)
+#define EXIT_PRIVILEGED() sysFlags.privileged = false
 #endif
 
 /* Define a macro which makes using the system flags more
-readable. The protect system flag is used by xMemAlloc()
+readable. The privileged system flag is used by xMemAlloc()
 and xMemFree() to determine when to set an entry in the heap
 to protected. */
-#if !defined(SYSFLAG_PROTECT)
-#define SYSFLAG_PROTECT() sysFlags.protect
+#if !defined(SYSFLAG_PRIVILEGED)
+#define SYSFLAG_PRIVILEGED() sysFlags.privileged
 #endif
 
 /* Define a macro which makes using the system flags more

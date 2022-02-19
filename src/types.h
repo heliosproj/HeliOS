@@ -119,7 +119,7 @@ typedef struct SysFlags_s {
   Byte_t running : 1;
   Byte_t critical : 1;
   Byte_t overflow : 1;
-  Byte_t protect : 1;
+  Byte_t privileged : 1;
   Byte_t reserved : 4;
 } SysFlags_t;
 
