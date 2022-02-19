@@ -44,7 +44,7 @@ Timer_t *xTimerCreate(Time_t timerPeriod_) {
 
   /* Check if the timer list is null, if it is create it. */
   if (ISNULLPTR(timerList)) {
-  
+
     ENTER_PRIVILEGED();
 
     timerList = (TimerList_t *)xMemAlloc(sizeof(TimerList_t));
@@ -376,4 +376,39 @@ void xTimerStop(Timer_t *timer_) {
   }
 
   return;
+}
+
+
+
+Base_t SearchTimer(const Timer_t *timer_) {
+  Base_t ret = RETURN_FAILURE;
+
+  Task_t *timerCursor = NULL;
+
+  SYSASSERT(ISNOTNULLPTR(timerList));
+
+  SYSASSERT(ISNOTNULLPTR(timer_));
+
+  if ((ISNOTNULLPTR(timerList)) && (ISNOTNULLPTR(timer_))) {
+
+    SYSASSERT(RETURN_SUCCESS == CheckHeapHealth(CHECK_HEAP_HEALTH_AND_PTR, timer_));
+
+    if (RETURN_SUCCESS == CheckHeapHealth(CHECK_HEAP_HEALTH_AND_PTR, timer_)) {
+
+      while ((ISNOTNULLPTR(timerCursor)) && (timerCursor != timer_)) {
+
+        timerCursor = timerCursor->next;
+      }
+
+      SYSASSERT(ISNOTNULLPTR(timerCursor));
+
+      if (ISNOTNULLPTR(timerCursor)) {
+
+        ret = RETURN_SUCCESS;
+      
+      }
+    }
+  }
+
+  return ret;
 }
