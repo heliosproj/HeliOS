@@ -38,6 +38,9 @@ Queue_t *xQueueCreate(Base_t limit_) {
   /* Check to make sure the limit parameter is greater than or equal to the
   setting CONFIG_QUEUE_MINIMUM_LIMIT. */
   if (limit_ >= CONFIG_QUEUE_MINIMUM_LIMIT) {
+
+    ENTER_PRIVILEGED();
+
     ret = (Queue_t *)xMemAlloc(sizeof(Queue_t));
 
     SYSASSERT(ISNOTNULLPTR(ret));
@@ -70,6 +73,8 @@ void xQueueDelete(Queue_t *queue_) {
     while (ISNOTNULLPTR(queue_->head)) {
       xQueueDropMessage(queue_);
     }
+
+    ENTER_PRIVILEGED();
 
     xMemFree(queue_);
   }
@@ -250,6 +255,9 @@ Base_t xQueueSend(Queue_t *queue_, Base_t messageBytes_, const char *messageValu
     /* Check if the length of the queue is less than the limit and the length of the queue matches the number of messages
     counted. */
     if ((queue_->length < queue_->limit) && (queue_->length == messages)) {
+      
+      ENTER_PRIVILEGED();
+
       message = (Message_t *)xMemAlloc(sizeof(Message_t));
 
       SYSASSERT(ISNOTNULLPTR(message));
@@ -335,6 +343,8 @@ void xQueueDropMessage(Queue_t *queue_) {
       }
 
       queue_->length--;
+
+      ENTER_PRIVILEGED();
 
       xMemFree(message);
     }

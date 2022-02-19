@@ -51,6 +51,9 @@ Task_t *xTaskCreate(const char *name_, void (*callback_)(Task_t *, TaskParm_t *)
     /* Check if the task list is null, if it is call xMemAlloc() to allocate
     the dynamic memory for it. */
     if (ISNULLPTR(taskList)) {
+    
+      ENTER_PRIVILEGED();
+
       taskList = (TaskList_t *)xMemAlloc(sizeof(TaskList_t));
     }
 
@@ -59,6 +62,9 @@ Task_t *xTaskCreate(const char *name_, void (*callback_)(Task_t *, TaskParm_t *)
     /* Check if the task list is still null in which case xMemAlloc() was unable to allocate
     the required memory. Enable interrupts and return null. */
     if (ISNOTNULLPTR(taskList)) {
+
+      ENTER_PRIVILEGED();
+
       ret = (Task_t *)xMemAlloc(sizeof(Task_t));
 
       SYSASSERT(ISNOTNULLPTR(ret));
@@ -129,6 +135,8 @@ void xTaskDelete(Task_t *task_) {
     if ((ISNOTNULLPTR(taskCursor)) && (taskCursor == task_)) {
       taskList->head = taskCursor->next;
 
+      ENTER_PRIVILEGED();
+
       xMemFree(taskCursor);
 
       taskList->length--;
@@ -147,6 +155,8 @@ void xTaskDelete(Task_t *task_) {
       /* If the task cursor is is not null, then delete the task otherwise return. */
       if (ISNOTNULLPTR(taskCursor)) {
         taskPrevious->next = taskCursor->next;
+
+        ENTER_PRIVILEGED();
 
         xMemFree(taskCursor);
 

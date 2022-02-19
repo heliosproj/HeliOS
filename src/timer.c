@@ -44,12 +44,18 @@ Timer_t *xTimerCreate(Time_t timerPeriod_) {
 
   /* Check if the timer list is null, if it is create it. */
   if (ISNULLPTR(timerList)) {
+  
+    ENTER_PRIVILEGED();
+
     timerList = (TimerList_t *)xMemAlloc(sizeof(TimerList_t));
   }
 
   SYSASSERT(ISNOTNULLPTR(timerList));
 
   if (ISNOTNULLPTR(timerList)) {
+
+    ENTER_PRIVILEGED();
+
     ret = (Timer_t *)xMemAlloc(sizeof(Task_t));
 
     SYSASSERT(ISNOTNULLPTR(ret));
@@ -108,6 +114,8 @@ void xTimerDelete(Timer_t *timer_) {
     if ((ISNOTNULLPTR(timerCursor)) && (timerCursor == timer_)) {
       timerList->head = timerCursor->next;
 
+      ENTER_PRIVILEGED();
+
       xMemFree(timerCursor);
 
       timerList->length--;
@@ -127,6 +135,8 @@ void xTimerDelete(Timer_t *timer_) {
       from the list and free its memory. */
       if (ISNOTNULLPTR(timerCursor)) {
         timerPrevious->next = timerCursor->next;
+
+        ENTER_PRIVILEGED();
 
         xMemFree(timerCursor);
 
