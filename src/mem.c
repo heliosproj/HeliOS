@@ -247,7 +247,6 @@ void *xMemAlloc(size_t size_) {
           } else {
 
             entryCandidate->protected = false;
-
           }
 
 
@@ -434,6 +433,60 @@ size_t xMemGetUsed(void) {
   return ret;
 }
 
+
+Base_t xMemIsValid(void *ptr_) {
+  Base_t ret = false;
+
+  HeapEntry_t *entryCursor = NULL;
+
+  HeapEntry_t *entryToCheck = NULL;
+
+  SYSASSERT(ISNOTNULLPTR(ptr_));
+
+  if (ISNOTNULLPTR(ptr_)) {
+
+
+    SYSASSERT(start->blocks != zero);
+
+
+    if (start->blocks != zero) {
+
+      entryToCheck = (HeapEntry_t *)((Byte_t *)ptr_ - (entryBlocksNeeded * CONFIG_HEAP_BLOCK_SIZE));
+
+      /* To scan the heap, set the heap entry cursor to the start of the heap. */
+      entryCursor = start;
+
+      /* While the heap entry cursor is not null, keep scanning. */
+      while (ISNOTNULLPTR(entryCursor)) {
+        /* If the entry cursor equals the entry we want to free, then break out of the loop. */
+        if (entryCursor == entryToCheck) {
+
+          break;
+        }
+
+        /* Move on to the next heap entry. */
+        entryCursor = entryCursor->next;
+      }
+
+      SYSASSERT(ISNOTNULLPTR(entryCursor));
+
+      if (ISNOTNULLPTR(entryCursor)) {
+
+        SYSASSERT((entryCursor->free == false) && ((entryCursor->protected == false) || ((entryCursor->protected == true) && (SYSFLAG_PRIVILEGED() == true))));
+
+        if ((entryCursor->free == false) && ((entryCursor->protected == false) || ((entryCursor->protected == true) && (SYSFLAG_PRIVILEGED() == true)))) {
+
+          ret = true;
+        }
+      }
+    }
+  }
+
+  EXIT_PRIVILEGED();
+
+  return ret;
+}
+
 /* The xMemGetSize() system call returns the amount of memory in bytes that
 is currently allocated to a specific pointer. */
 size_t xMemGetSize(void *ptr_) {
@@ -514,13 +567,22 @@ size_t xMemGetSize(void *ptr_) {
         /* If the entry cursor is null we didn't find the entry we were looking for so return,
         otherwise return the about of bytes consumed by the entry at the pointer. */
         if (ISNOTNULLPTR(entryCursor)) {
-          /* We want to return the amount of BYTES in use by the pointer so multiply the
-          blocks consumed by the entry by the HEAP_BLOCK_SIZE. */
-          ret = entryCursor->blocks * CONFIG_HEAP_BLOCK_SIZE;
+
+          SYSASSERT((entryCursor->free == false) && ((entryCursor->protected == false) || ((entryCursor->protected == true) && (SYSFLAG_PRIVILEGED() == true))));
+
+          if ((entryCursor->free == false) && ((entryCursor->protected == false) || ((entryCursor->protected == true) && (SYSFLAG_PRIVILEGED() == true)))) {
+
+            /* We want to return the amount of BYTES in use by the pointer so multiply the
+            blocks consumed by the entry by the HEAP_BLOCK_SIZE. */
+            ret = entryCursor->blocks * CONFIG_HEAP_BLOCK_SIZE;
+            
+          }
         }
       }
     }
   }
+
+  EXIT_PRIVILEGED();
 
   return ret;
 }

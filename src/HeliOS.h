@@ -1301,6 +1301,24 @@ void xTimerStop(xTimer timer_);
  */
 void xSystemHalt(void);
 
+/**
+ * @brief The xMemIsValid() system call check that a pointer is valid.
+ * 
+ * The xMemIsValid() system call will check that a pointer to heap
+ * memory is valid. xMemGetSize() will do the same but xMemIsValid()
+ * is faster because it performs less checks and doesn't read the
+ * size from the heap entry.
+ * 
+ * @sa xMemGetSize()
+ * @sa xMemFree()
+ * @sa xMemAlloc()
+ * 
+ * @param ptr_ The pointer to heap memory to check if is valid.
+ * @return xBase xMemIsValid() returns true if the pointer is valid. Otherwise
+ * xMemIsValid() returns false.
+ */
+xBase xMemIsValid(void *ptr_);
+
 /* In the event HeliOS is compiled with a C++ compiler, make the system calls (written in C)
 visible to C++. */
 #ifdef __cplusplus
