@@ -64,30 +64,25 @@ Queue_t *xQueueCreate(Base_t limit_) {
 will delete a queue regardless of how many messages the queue contains at the time xQueueDelete() is called. */
 void xQueueDelete(Queue_t *queue_) {
 
-  SYSASSERT(ISNOTNULLPTR(queue_));
 
-  /* Check if the queue parameter is null */
-  if (ISNOTNULLPTR(queue_)) {
+  SYSASSERT(RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_));
 
 
-    SYSASSERT(RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_));
+  if (RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_)) {
 
 
-    if (RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_)) {
+    /* If the queue has a head it contains messages, iterate through the queue and drop
+    all of the messages. */
+    while (ISNOTNULLPTR(queue_->head)) {
 
-
-      /* If the queue has a head it contains messages, iterate through the queue and drop
-      all of the messages. */
-      while (ISNOTNULLPTR(queue_->head)) {
-
-        xQueueDropMessage(queue_);
-      }
-
-      ENTER_PRIVILEGED();
-
-      xMemFree(queue_);
+      xQueueDropMessage(queue_);
     }
+
+    ENTER_PRIVILEGED();
+
+    xMemFree(queue_);
   }
+
 
   return;
 }
@@ -101,37 +96,33 @@ Base_t xQueueGetLength(Queue_t *queue_) {
 
   Message_t *messageCursor = NULL;
 
-  SYSASSERT(ISNOTNULLPTR(queue_));
 
-  /* Check if the queue parameter is not null. */
-  if (ISNOTNULLPTR(queue_)) {
-
-    SYSASSERT(RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_));
+  SYSASSERT(RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_));
 
 
-    if (RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_)) {
+  if (RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_)) {
 
 
-      messageCursor = queue_->head;
+    messageCursor = queue_->head;
 
-      /* If the queue has a head, iterate through the queue and count the number of messages. */
-      while (ISNOTNULLPTR(messageCursor)) {
+    /* If the queue has a head, iterate through the queue and count the number of messages. */
+    while (ISNOTNULLPTR(messageCursor)) {
 
-        messages++;
+      messages++;
 
-        messageCursor = messageCursor->next;
-      }
+      messageCursor = messageCursor->next;
+    }
 
-      SYSASSERT(messages == queue_->length);
+    SYSASSERT(messages == queue_->length);
 
-      /* Check to make sure the number of messages counted matches the length attribute of the queue.
-      This is to confirm the integrity of the queue before returning its length. */
-      if (messages == queue_->length) {
+    /* Check to make sure the number of messages counted matches the length attribute of the queue.
+    This is to confirm the integrity of the queue before returning its length. */
+    if (messages == queue_->length) {
 
-        ret = messages;
-      }
+      ret = messages;
     }
   }
+
 
   return ret;
 }
@@ -145,34 +136,32 @@ Base_t xQueueIsQueueEmpty(Queue_t *queue_) {
 
   Message_t *messageCursor = NULL;
 
-  SYSASSERT(ISNOTNULLPTR(queue_));
-
-  /* Check if the queue pointer is not null. */
-  if (ISNOTNULLPTR(queue_)) {
-
-    SYSASSERT(RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_));
 
 
-    if (RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_)) {
+  SYSASSERT(RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_));
 
 
-      messageCursor = queue_->head;
+  if (RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_)) {
 
-      /* If the queue has a head, iterate through the queue and count the number of messages. */
-      while (ISNOTNULLPTR(messageCursor)) {
-        messages++;
 
-        messageCursor = messageCursor->next;
-      }
+    messageCursor = queue_->head;
 
-      SYSASSERT(messages = queue_->length);
+    /* If the queue has a head, iterate through the queue and count the number of messages. */
+    while (ISNOTNULLPTR(messageCursor)) {
 
-      /* Check to make sure the number of messages counted matches the length attribute of the queue
-      and if the number of messages equals zero. */
-      if ((zero == messages) && (messages == queue_->length)) {
 
-        ret = true;
-      }
+      messages++;
+
+      messageCursor = messageCursor->next;
+    }
+
+    SYSASSERT(messages = queue_->length);
+
+    /* Check to make sure the number of messages counted matches the length attribute of the queue
+    and if the number of messages equals zero. */
+    if ((zero == messages) && (messages == queue_->length)) {
+
+      ret = true;
     }
   }
 
@@ -190,35 +179,31 @@ Base_t xQueueIsQueueFull(Queue_t *queue_) {
 
   Message_t *messageCursor = NULL;
 
-  SYSASSERT(ISNOTNULLPTR(queue_));
-
-  /* Check if the queue parameter is not null. */
-  if (ISNOTNULLPTR(queue_)) {
 
 
-    SYSASSERT(RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_));
+  SYSASSERT(RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_));
 
 
-    if (RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_)) {
+  if (RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_)) {
 
-      messageCursor = queue_->head;
+    messageCursor = queue_->head;
 
-      /* If the queue has a head, iterate through the queue and count the number of messages. */
-      while (ISNOTNULLPTR(messageCursor)) {
-        messages++;
+    /* If the queue has a head, iterate through the queue and count the number of messages. */
+    while (ISNOTNULLPTR(messageCursor)) {
 
-        messageCursor = messageCursor->next;
-      }
+      messages++;
 
-      SYSASSERT(messages == queue_->length);
+      messageCursor = messageCursor->next;
+    }
 
-      /* Check to make sure the number of messages counted matches the length attribute of the queue
-      and if the number of messages is greater than or equal to the queue length limit. */
-      if ((messages >= queue_->limit) && (messages == queue_->length)) {
+    SYSASSERT(messages == queue_->length);
+
+    /* Check to make sure the number of messages counted matches the length attribute of the queue
+    and if the number of messages is greater than or equal to the queue length limit. */
+    if ((messages >= queue_->limit) && (messages == queue_->length)) {
 
 
-        ret = true;
-      }
+      ret = true;
     }
   }
 
@@ -234,37 +219,34 @@ Base_t xQueueMessagesWaiting(Queue_t *queue_) {
 
   Message_t *messageCursor = NULL;
 
-  SYSASSERT(ISNOTNULLPTR(queue_));
-
-  /* Check if the queue parameter is not null. */
-  if (ISNOTNULLPTR(queue_)) {
-
-    SYSASSERT(RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_));
 
 
-    if (RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_)) {
-
-      messageCursor = queue_->head;
-
-      /* If the queue has a head, iterate through the queue and count the number of messages. */
-      while (ISNOTNULLPTR(messageCursor)) {
-
-        messages++;
-
-        messageCursor = messageCursor->next;
-      }
-
-      SYSASSERT(messages == queue_->length);
-
-      /* Check to make sure the number of messages counted matches the length attribute of the queue
-      and if the number of messages is greater than zero. */
-      if ((zero < messages) && (messages == queue_->length)) {
+  SYSASSERT(RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_));
 
 
-        ret = true;
-      }
+  if (RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_)) {
+
+    messageCursor = queue_->head;
+
+    /* If the queue has a head, iterate through the queue and count the number of messages. */
+    while (ISNOTNULLPTR(messageCursor)) {
+
+      messages++;
+
+      messageCursor = messageCursor->next;
+    }
+
+    SYSASSERT(messages == queue_->length);
+
+    /* Check to make sure the number of messages counted matches the length attribute of the queue
+    and if the number of messages is greater than zero. */
+    if ((zero < messages) && (messages == queue_->length)) {
+
+
+      ret = true;
     }
   }
+
 
   return ret;
 }
@@ -280,8 +262,6 @@ Base_t xQueueSend(Queue_t *queue_, Base_t messageBytes_, const char *messageValu
 
   Message_t *messageCursor = NULL;
 
-  SYSASSERT(ISNOTNULLPTR(queue_));
-
   SYSASSERT(zero < messageBytes_);
 
   SYSASSERT(CONFIG_MESSAGE_VALUE_BYTES >= messageBytes_);
@@ -290,7 +270,7 @@ Base_t xQueueSend(Queue_t *queue_, Base_t messageBytes_, const char *messageValu
 
   /* Check if the queue parameter is not null, message bytes is between one and CONFIG_MESSAGE_VALUE_BYTES and the message value parameter
   is not null. */
-  if ((ISNOTNULLPTR(queue_)) && (zero < messageBytes_) && (CONFIG_MESSAGE_VALUE_BYTES >= messageBytes_) && (ISNOTNULLPTR(messageValue_))) {
+  if ((zero < messageBytes_) && (CONFIG_MESSAGE_VALUE_BYTES >= messageBytes_) && (ISNOTNULLPTR(messageValue_))) {
 
     SYSASSERT(RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_));
 
@@ -361,31 +341,32 @@ dropping the message. */
 QueueMessage_t *xQueuePeek(Queue_t *queue_) {
   QueueMessage_t *ret = NULL;
 
-  SYSASSERT(ISNOTNULLPTR(queue_));
-
-  /* Check if the queue parameter is not null. */
-  if (ISNOTNULLPTR(queue_)) {
-
-    SYSASSERT(RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_));
 
 
-    if (RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_)) {
+  SYSASSERT(RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_));
 
-      /* Check if the head of the queue is not null. */
-      if (ISNOTNULLPTR(queue_->head)) {
-        ret = (QueueMessage_t *)xMemAlloc(sizeof(QueueMessage_t));
 
-        SYSASSERT(ISNOTNULLPTR(ret));
+  if (RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_)) {
 
-        /* Check if a new message was successfully allocated by xMemAlloc(). */
-        if (ISNOTNULLPTR(ret)) {
-          ret->messageBytes = queue_->head->messageBytes;
+    /* Check if the head of the queue is not null. */
+    if (ISNOTNULLPTR(queue_->head)) {
 
-          memcpy_(ret->messageValue, queue_->head->messageValue, CONFIG_MESSAGE_VALUE_BYTES);
-        }
+
+      ret = (QueueMessage_t *)xMemAlloc(sizeof(QueueMessage_t));
+
+      SYSASSERT(ISNOTNULLPTR(ret));
+
+      /* Check if a new message was successfully allocated by xMemAlloc(). */
+      if (ISNOTNULLPTR(ret)) {
+
+
+        ret->messageBytes = queue_->head->messageBytes;
+
+        memcpy_(ret->messageValue, queue_->head->messageValue, CONFIG_MESSAGE_VALUE_BYTES);
       }
     }
   }
+
 
   return ret;
 }
@@ -395,40 +376,39 @@ returning the message. */
 void xQueueDropMessage(Queue_t *queue_) {
   Message_t *message = NULL;
 
-  SYSASSERT(ISNOTNULLPTR(queue_));
 
-  /* Check if the queue parameter is not null. */
-  if (ISNOTNULLPTR(queue_)) {
+  SYSASSERT(RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_));
 
 
-    SYSASSERT(RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_));
-
-
-    if (RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_)) {
+  if (RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_)) {
 
 
 
-      /* Check if the head of the queue is null, if so
-      return because there is nothing to drop. */
-      if (ISNOTNULLPTR(queue_->head)) {
-        message = queue_->head;
+    /* Check if the head of the queue is null, if so
+    return because there is nothing to drop. */
+    if (ISNOTNULLPTR(queue_->head)) {
 
-        queue_->head = queue_->head->next;
 
-        /* Again check if the head of the queue is null, if so set the tail
-        of the queue to null. */
-        if (ISNULLPTR(queue_->head)) {
-          queue_->tail = NULL;
-        }
+      message = queue_->head;
 
-        queue_->length--;
+      queue_->head = queue_->head->next;
 
-        ENTER_PRIVILEGED();
 
-        xMemFree(message);
+      /* Again check if the head of the queue is null, if so set the tail
+      of the queue to null. */
+      if (ISNULLPTR(queue_->head)) {
+
+        queue_->tail = NULL;
       }
+
+      queue_->length--;
+
+      ENTER_PRIVILEGED();
+
+      xMemFree(message);
     }
   }
+
 
   return;
 }
@@ -438,26 +418,25 @@ it from the queue. */
 QueueMessage_t *xQueueReceive(Queue_t *queue_) {
   QueueMessage_t *ret = NULL;
 
-  SYSASSERT(ISNOTNULLPTR(queue_));
-
-  /* Check if the queue parameter is not null. */
-  if (ISNOTNULLPTR(queue_)) {
 
 
 
-    SYSASSERT(RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_));
+  SYSASSERT(RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_));
 
 
-    if (RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_)) {
+  if (RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_)) {
 
-      ret = xQueuePeek(queue_);
+    ret = xQueuePeek(queue_);
 
-      /* Check if the message returned from xQueuePeek() is not null. If so, drop the message from the
-      queue and return the message. */
-      if (ISNOTNULLPTR(ret)) {
-        xQueueDropMessage(queue_);
-      }
-    }
+
+    /* Check if the message returned from xQueuePeek() is not null. If so, drop the message from the
+    queue and return the message. */
+    if (ISNOTNULLPTR(ret)) {
+
+
+      xQueueDropMessage(queue_);
+        }
   }
+
   return ret;
 }

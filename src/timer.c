@@ -103,60 +103,61 @@ void xTimerDelete(Timer_t *timer_) {
 
   Timer_t *timerPrevious = NULL;
 
-  SYSASSERT(ISNOTNULLPTR(timerList));
 
-  SYSASSERT(ISNOTNULLPTR(timer_));
 
-  /* Check if the timer list is not null and the timer parameter is not null. */
-  if ((ISNOTNULLPTR(timerList)) && (ISNOTNULLPTR(timer_))) {
+  SYSASSERT(RETURN_SUCCESS == TimerListFindTimer(timer_));
 
-    SYSASSERT(RETURN_SUCCESS == TimerListFindTimer(timer_));
-
-    if (RETURN_SUCCESS == TimerListFindTimer(timer_)) {
+  if (RETURN_SUCCESS == TimerListFindTimer(timer_)) {
 
 
 
-      timerCursor = timerList->head;
+    timerCursor = timerList->head;
 
-      timerPrevious = NULL;
+    timerPrevious = NULL;
 
-      /* Check if the timer cursor is not null a if the timer cursor equals
-      the timer parameter. */
-      if ((ISNOTNULLPTR(timerCursor)) && (timerCursor == timer_)) {
+    /* Check if the timer cursor is not null a if the timer cursor equals
+    the timer parameter. */
+    if ((ISNOTNULLPTR(timerCursor)) && (timerCursor == timer_)) {
 
-        timerList->head = timerCursor->next;
+      timerList->head = timerCursor->next;
+
+      ENTER_PRIVILEGED();
+
+      xMemFree(timerCursor);
+
+      timerList->length--;
+
+    } else {
+
+
+      /* While the timer cursor is not null and the timer cursor is not
+      equal to the timer parameter, continue to scan the timer list. */
+      while ((ISNOTNULLPTR(timerCursor)) && (timerCursor != timer_)) {
+
+
+        timerPrevious = timerCursor;
+
+        timerCursor = timerCursor->next;
+      }
+
+      SYSASSERT(ISNOTNULLPTR(timerCursor));
+
+      /* If the timer cursor is not null, then remove the timer
+      from the list and free its memory. */
+      if (ISNOTNULLPTR(timerCursor)) {
+
+
+        timerPrevious->next = timerCursor->next;
 
         ENTER_PRIVILEGED();
 
         xMemFree(timerCursor);
 
         timerList->length--;
-
-      } else {
-        /* While the timer cursor is not null and the timer cursor is not
-        equal to the timer parameter, continue to scan the timer list. */
-        while ((ISNOTNULLPTR(timerCursor)) && (timerCursor != timer_)) {
-          timerPrevious = timerCursor;
-
-          timerCursor = timerCursor->next;
-        }
-
-        SYSASSERT(ISNOTNULLPTR(timerCursor));
-
-        /* If the timer cursor is not null, then remove the timer
-        from the list and free its memory. */
-        if (ISNOTNULLPTR(timerCursor)) {
-          timerPrevious->next = timerCursor->next;
-
-          ENTER_PRIVILEGED();
-
-          xMemFree(timerCursor);
-
-          timerList->length--;
-        }
       }
     }
   }
+
 
   return;
 }
@@ -167,21 +168,15 @@ system call will always return false. */
 void xTimerChangePeriod(Timer_t *timer_, Time_t timerPeriod_) {
 
 
-  SYSASSERT(ISNOTNULLPTR(timerList));
 
-  SYSASSERT(ISNOTNULLPTR(timer_));
 
-  /* Check if the timer list is not null, the timer parameter is not null and the timer period
-  is zero or greater. */
-  if ((ISNOTNULLPTR(timerList)) && (ISNOTNULLPTR(timer_))) {
+  SYSASSERT(RETURN_SUCCESS == TimerListFindTimer(timer_));
 
-    SYSASSERT(RETURN_SUCCESS == TimerListFindTimer(timer_));
+  if (RETURN_SUCCESS == TimerListFindTimer(timer_)) {
 
-    if (RETURN_SUCCESS == TimerListFindTimer(timer_)) {
-
-      timer_->timerPeriod = timerPeriod_;
-    }
+    timer_->timerPeriod = timerPeriod_;
   }
+
 
   return;
 }
@@ -191,21 +186,15 @@ for the specified timer. */
 Time_t xTimerGetPeriod(Timer_t *timer_) {
   Time_t ret = zero;
 
-  SYSASSERT(ISNOTNULLPTR(timerList));
 
-  SYSASSERT(ISNOTNULLPTR(timer_));
 
-  /* Check if the timer list is not null, the timer parameter is not null and the timer period
-  is zero or greater. */
-  if ((ISNOTNULLPTR(timerList)) && (ISNOTNULLPTR(timer_))) {
+  SYSASSERT(RETURN_SUCCESS == TimerListFindTimer(timer_));
 
-    SYSASSERT(RETURN_SUCCESS == TimerListFindTimer(timer_));
+  if (RETURN_SUCCESS == TimerListFindTimer(timer_)) {
 
-    if (RETURN_SUCCESS == TimerListFindTimer(timer_)) {
-
-      ret = timer_->timerPeriod;
-    }
+    ret = timer_->timerPeriod;
   }
+
 
   return ret;
 }
@@ -215,24 +204,18 @@ started with xTimerStart(). */
 Base_t xTimerIsTimerActive(Timer_t *timer_) {
   Base_t ret = false;
 
-  SYSASSERT(ISNOTNULLPTR(timerList));
 
-  SYSASSERT(ISNOTNULLPTR(timer_));
 
-  /* Check if the timer list is not null, the timer parameter is not null and the timer period
-  is zero or greater. */
-  if ((ISNOTNULLPTR(timerList)) && (ISNOTNULLPTR(timer_))) {
+  SYSASSERT(RETURN_SUCCESS == TimerListFindTimer(timer_));
 
-    SYSASSERT(RETURN_SUCCESS == TimerListFindTimer(timer_));
+  if (RETURN_SUCCESS == TimerListFindTimer(timer_)) {
 
-    if (RETURN_SUCCESS == TimerListFindTimer(timer_)) {
+    if (TimerStateRunning == timer_->state) {
 
-      if (TimerStateRunning == timer_->state) {
-
-        ret = true;
-      }
+      ret = true;
     }
   }
+
 
   return ret;
 }
@@ -243,25 +226,18 @@ reset the timer. Timers must be reset with xTimerReset(). */
 Base_t xTimerHasTimerExpired(Timer_t *timer_) {
   Base_t ret = false;
 
-  SYSASSERT(ISNOTNULLPTR(timerList));
 
-  SYSASSERT(ISNOTNULLPTR(timer_));
 
-  /* Check if the timer list is not null, the timer parameter is not null and the timer period
-  is zero or greater. */
-  if ((ISNOTNULLPTR(timerList)) && (ISNOTNULLPTR(timer_))) {
+  SYSASSERT(RETURN_SUCCESS == TimerListFindTimer(timer_));
 
-    SYSASSERT(RETURN_SUCCESS == TimerListFindTimer(timer_));
+  if (RETURN_SUCCESS == TimerListFindTimer(timer_)) {
 
-    if (RETURN_SUCCESS == TimerListFindTimer(timer_)) {
+    if ((TimerStateRunning == timer_->state) && (zero < timer_->timerPeriod) && ((CURRENTTIME() - timer_->timerStartTime) > timer_->timerPeriod)) {
 
-      if ((TimerStateRunning == timer_->state) && (zero < timer_->timerPeriod) && ((CURRENTTIME() - timer_->timerStartTime) > timer_->timerPeriod)) {
-        
-        ret = true;
-
-      }
+      ret = true;
     }
   }
+
 
   return ret;
 }
@@ -273,20 +249,13 @@ Base_t xTimerHasTimerExpired(Timer_t *timer_) {
 void xTimerReset(Timer_t *timer_) {
 
 
-  SYSASSERT(ISNOTNULLPTR(timerList));
 
-  SYSASSERT(ISNOTNULLPTR(timer_));
 
-  /* Check if the timer list is not null, the timer parameter is not null and the timer period
-  is zero or greater. */
-  if ((ISNOTNULLPTR(timerList)) && (ISNOTNULLPTR(timer_))) {
+  SYSASSERT(RETURN_SUCCESS == TimerListFindTimer(timer_));
 
-    SYSASSERT(RETURN_SUCCESS == TimerListFindTimer(timer_));
+  if (RETURN_SUCCESS == TimerListFindTimer(timer_)) {
 
-    if (RETURN_SUCCESS == TimerListFindTimer(timer_)) {
-
-      timer_->timerStartTime = CURRENTTIME();
-    }
+    timer_->timerStartTime = CURRENTTIME();
   }
 
   return;
@@ -297,21 +266,15 @@ xTaskStop() will reset the timer. Timers can only be reset with xTimerReset(). *
 void xTimerStart(Timer_t *timer_) {
 
 
-  SYSASSERT(ISNOTNULLPTR(timerList));
 
-  SYSASSERT(ISNOTNULLPTR(timer_));
 
-  /* Check if the timer list is not null, the timer parameter is not null and the timer period
-  is zero or greater. */
-  if ((ISNOTNULLPTR(timerList)) && (ISNOTNULLPTR(timer_))) {
+  SYSASSERT(RETURN_SUCCESS == TimerListFindTimer(timer_));
 
-    SYSASSERT(RETURN_SUCCESS == TimerListFindTimer(timer_));
+  if (RETURN_SUCCESS == TimerListFindTimer(timer_)) {
 
-    if (RETURN_SUCCESS == TimerListFindTimer(timer_)) {
-
-      timer_->state = TimerStateRunning;
-    }
+    timer_->state = TimerStateRunning;
   }
+
 
   return;
 }
@@ -321,21 +284,15 @@ xTaskStop() will reset the timer. Timers can only be reset with xTimerReset(). *
 void xTimerStop(Timer_t *timer_) {
 
 
-  SYSASSERT(ISNOTNULLPTR(timerList));
 
-  SYSASSERT(ISNOTNULLPTR(timer_));
 
-  /* Check if the timer list is not null, the timer parameter is not null and the timer period
-  is zero or greater. */
-  if ((ISNOTNULLPTR(timerList)) && (ISNOTNULLPTR(timer_))) {
+  SYSASSERT(RETURN_SUCCESS == TimerListFindTimer(timer_));
 
-    SYSASSERT(RETURN_SUCCESS == TimerListFindTimer(timer_));
+  if (RETURN_SUCCESS == TimerListFindTimer(timer_)) {
 
-    if (RETURN_SUCCESS == TimerListFindTimer(timer_)) {
-
-      timer_->state = TimerStateSuspended;
-    }
+    timer_->state = TimerStateSuspended;
   }
+
 
   return;
 }
