@@ -75,13 +75,17 @@ Timer_t *xTimerCreate(Time_t timerPeriod_) {
       /* Check if the head of the timer list is null. If so, iterate through the
       timer list to find the end otherwise just append the timer to the timer list. */
       if (ISNOTNULLPTR(timerList->head)) {
+
         /* While the next timer is not null. */
         while (ISNOTNULLPTR(timerCursor->next)) {
+
           timerCursor = timerCursor->next;
         }
 
         timerCursor->next = ret;
+
       } else {
+
         timerList->head = ret;
       }
 
@@ -105,42 +109,51 @@ void xTimerDelete(Timer_t *timer_) {
 
   /* Check if the timer list is not null and the timer parameter is not null. */
   if ((ISNOTNULLPTR(timerList)) && (ISNOTNULLPTR(timer_))) {
-    timerCursor = timerList->head;
 
-    timerPrevious = NULL;
+    SYSASSERT(RETURN_SUCCESS == TimerListFindTimer(timer_));
 
-    /* Check if the timer cursor is not null a if the timer cursor equals
-    the timer parameter. */
-    if ((ISNOTNULLPTR(timerCursor)) && (timerCursor == timer_)) {
-      timerList->head = timerCursor->next;
+    if (RETURN_SUCCESS == TimerListFindTimer(timer_)) {
 
-      ENTER_PRIVILEGED();
 
-      xMemFree(timerCursor);
 
-      timerList->length--;
+      timerCursor = timerList->head;
 
-    } else {
-      /* While the timer cursor is not null and the timer cursor is not
-      equal to the timer parameter, continue to scan the timer list. */
-      while ((ISNOTNULLPTR(timerCursor)) && (timerCursor != timer_)) {
-        timerPrevious = timerCursor;
+      timerPrevious = NULL;
 
-        timerCursor = timerCursor->next;
-      }
+      /* Check if the timer cursor is not null a if the timer cursor equals
+      the timer parameter. */
+      if ((ISNOTNULLPTR(timerCursor)) && (timerCursor == timer_)) {
 
-      SYSASSERT(ISNOTNULLPTR(timerCursor));
-
-      /* If the timer cursor is not null, then remove the timer
-      from the list and free its memory. */
-      if (ISNOTNULLPTR(timerCursor)) {
-        timerPrevious->next = timerCursor->next;
+        timerList->head = timerCursor->next;
 
         ENTER_PRIVILEGED();
 
         xMemFree(timerCursor);
 
         timerList->length--;
+
+      } else {
+        /* While the timer cursor is not null and the timer cursor is not
+        equal to the timer parameter, continue to scan the timer list. */
+        while ((ISNOTNULLPTR(timerCursor)) && (timerCursor != timer_)) {
+          timerPrevious = timerCursor;
+
+          timerCursor = timerCursor->next;
+        }
+
+        SYSASSERT(ISNOTNULLPTR(timerCursor));
+
+        /* If the timer cursor is not null, then remove the timer
+        from the list and free its memory. */
+        if (ISNOTNULLPTR(timerCursor)) {
+          timerPrevious->next = timerCursor->next;
+
+          ENTER_PRIVILEGED();
+
+          xMemFree(timerCursor);
+
+          timerList->length--;
+        }
       }
     }
   }
@@ -152,7 +165,6 @@ void xTimerDelete(Timer_t *timer_) {
 The timer period is measured in microseconds. If the timer period is zero, the xTimerHasTimerExpired()
 system call will always return false. */
 void xTimerChangePeriod(Timer_t *timer_, Time_t timerPeriod_) {
-  Timer_t *timerCursor = NULL;
 
 
   SYSASSERT(ISNOTNULLPTR(timerList));
@@ -162,19 +174,12 @@ void xTimerChangePeriod(Timer_t *timer_, Time_t timerPeriod_) {
   /* Check if the timer list is not null, the timer parameter is not null and the timer period
   is zero or greater. */
   if ((ISNOTNULLPTR(timerList)) && (ISNOTNULLPTR(timer_))) {
-    timerCursor = timerList->head;
 
-    /* While timer cursor is not null and the timer cursor does not equal the timer
-    parameter, keep scanning the timer list. */
-    while ((ISNOTNULLPTR(timerCursor)) && (timerCursor != timer_)) {
-      timerCursor = timerCursor->next;
-    }
+    SYSASSERT(RETURN_SUCCESS == TimerListFindTimer(timer_));
 
-    SYSASSERT(ISNOTNULLPTR(timerCursor));
+    if (RETURN_SUCCESS == TimerListFindTimer(timer_)) {
 
-    /* If the timer cursor is not null, then set the timer's period. */
-    if (ISNOTNULLPTR(timerCursor)) {
-      timerCursor->timerPeriod = timerPeriod_;
+      timer_->timerPeriod = timerPeriod_;
     }
   }
 
@@ -186,31 +191,22 @@ for the specified timer. */
 Time_t xTimerGetPeriod(Timer_t *timer_) {
   Time_t ret = zero;
 
-  Timer_t *timerCursor = NULL;
-
-
   SYSASSERT(ISNOTNULLPTR(timerList));
 
   SYSASSERT(ISNOTNULLPTR(timer_));
 
-  /* Check if the timer list is not null and the timer parameter is not null. */
+  /* Check if the timer list is not null, the timer parameter is not null and the timer period
+  is zero or greater. */
   if ((ISNOTNULLPTR(timerList)) && (ISNOTNULLPTR(timer_))) {
-    timerCursor = timerList->head;
 
-    /* While timer cursor is not null and the timer cursor does not equal the timer
-    parameter, keep scanning the timer list. */
-    while ((ISNOTNULLPTR(timerCursor)) && (timerCursor != timer_)) {
-      timerCursor = timerCursor->next;
-    }
+    SYSASSERT(RETURN_SUCCESS == TimerListFindTimer(timer_));
 
-    SYSASSERT(ISNOTNULLPTR(timerCursor));
+    if (RETURN_SUCCESS == TimerListFindTimer(timer_)) {
 
-    /* If the timer cursor is not null, then set the return value to the timer's
-    period. */
-    if (ISNOTNULLPTR(timerCursor)) {
-      ret = timerCursor->timerPeriod;
+      ret = timer_->timerPeriod;
     }
   }
+
   return ret;
 }
 
@@ -218,28 +214,21 @@ Time_t xTimerGetPeriod(Timer_t *timer_) {
 started with xTimerStart(). */
 Base_t xTimerIsTimerActive(Timer_t *timer_) {
   Base_t ret = false;
-  Timer_t *timerCursor = NULL;
-
 
   SYSASSERT(ISNOTNULLPTR(timerList));
 
   SYSASSERT(ISNOTNULLPTR(timer_));
 
-  /* Check if the timer list is not null and the timer parameter is not null. */
+  /* Check if the timer list is not null, the timer parameter is not null and the timer period
+  is zero or greater. */
   if ((ISNOTNULLPTR(timerList)) && (ISNOTNULLPTR(timer_))) {
-    timerCursor = timerList->head;
 
-    /* While timer cursor is not null and the timer cursor does not equal the timer
-    parameter, keep scanning the timer list. */
-    while ((ISNOTNULLPTR(timerCursor)) && (timerCursor != timer_)) {
-      timerCursor = timerCursor->next;
-    }
+    SYSASSERT(RETURN_SUCCESS == TimerListFindTimer(timer_));
 
-    SYSASSERT(ISNOTNULLPTR(timerCursor));
+    if (RETURN_SUCCESS == TimerListFindTimer(timer_)) {
 
-    /* If the timer cursor is not null, then check if the timer is running. */
-    if (ISNOTNULLPTR(timerCursor)) {
-      if (timerCursor->state == TimerStateRunning) {
+      if (TimerStateRunning == timer_->state) {
+
         ret = true;
       }
     }
@@ -254,31 +243,22 @@ reset the timer. Timers must be reset with xTimerReset(). */
 Base_t xTimerHasTimerExpired(Timer_t *timer_) {
   Base_t ret = false;
 
-  Timer_t *timerCursor = NULL;
-
-
   SYSASSERT(ISNOTNULLPTR(timerList));
 
   SYSASSERT(ISNOTNULLPTR(timer_));
 
-  /* Check if the timer list is not null and the timer parameter is not null. */
+  /* Check if the timer list is not null, the timer parameter is not null and the timer period
+  is zero or greater. */
   if ((ISNOTNULLPTR(timerList)) && (ISNOTNULLPTR(timer_))) {
-    timerCursor = timerList->head;
 
-    /* While timer cursor is not null and the timer cursor does not equal the timer
-    parameter, keep scanning the timer list. */
-    while ((ISNOTNULLPTR(timerCursor)) && (timerCursor != timer_)) {
-      timerCursor = timerCursor->next;
-    }
+    SYSASSERT(RETURN_SUCCESS == TimerListFindTimer(timer_));
 
-    SYSASSERT(ISNOTNULLPTR(timerCursor));
+    if (RETURN_SUCCESS == TimerListFindTimer(timer_)) {
 
-    /* If the timer cursor is not null, check to see if the timer has expired. */
-    if (ISNOTNULLPTR(timerCursor)) {
-      /* If the state is running, timer period is greater than zero and if the elapsed time
-      is equal to or greater than the timer period, return true. */
-      if ((timerCursor->state == TimerStateRunning) && (timerCursor->timerPeriod > zero) && ((CURRENTTIME() - timerCursor->timerStartTime) > timerCursor->timerPeriod)) {
+      if ((TimerStateRunning == timer_->state) && (zero < timer_->timerPeriod) && ((CURRENTTIME() - timer_->timerStartTime) > timer_->timerPeriod)) {
+        
         ret = true;
+
       }
     }
   }
@@ -286,30 +266,26 @@ Base_t xTimerHasTimerExpired(Timer_t *timer_) {
   return ret;
 }
 
+
+
+
 /* The xTimerReset() system call will reset the start time of the timer to zero. */
 void xTimerReset(Timer_t *timer_) {
-  Timer_t *timerCursor = NULL;
 
 
   SYSASSERT(ISNOTNULLPTR(timerList));
 
   SYSASSERT(ISNOTNULLPTR(timer_));
 
-  /* Check if the timer list is not null and the timer parameter is not null. */
+  /* Check if the timer list is not null, the timer parameter is not null and the timer period
+  is zero or greater. */
   if ((ISNOTNULLPTR(timerList)) && (ISNOTNULLPTR(timer_))) {
-    timerCursor = timerList->head;
 
-    /* While timer cursor is not null and the timer cursor does not equal the timer
-    parameter, keep scanning the timer list. */
-    while ((ISNOTNULLPTR(timerCursor)) && (timerCursor != timer_)) {
-      timerCursor = timerCursor->next;
-    }
+    SYSASSERT(RETURN_SUCCESS == TimerListFindTimer(timer_));
 
-    SYSASSERT(ISNOTNULLPTR(timerCursor));
+    if (RETURN_SUCCESS == TimerListFindTimer(timer_)) {
 
-    /* If the timer cursor is not null, then set the timer to the current time. */
-    if (ISNOTNULLPTR(timerCursor)) {
-      timerCursor->timerStartTime = CURRENTTIME();
+      timer_->timerStartTime = CURRENTTIME();
     }
   }
 
@@ -319,28 +295,21 @@ void xTimerReset(Timer_t *timer_) {
 /* The xTimerStart() system call will place the timer in the running state. Neither xTaskStart() nor
 xTaskStop() will reset the timer. Timers can only be reset with xTimerReset(). */
 void xTimerStart(Timer_t *timer_) {
-  Timer_t *timerCursor = NULL;
 
 
   SYSASSERT(ISNOTNULLPTR(timerList));
 
   SYSASSERT(ISNOTNULLPTR(timer_));
 
-  /* Check if the timer list is not null and the timer parameter is not null. */
+  /* Check if the timer list is not null, the timer parameter is not null and the timer period
+  is zero or greater. */
   if ((ISNOTNULLPTR(timerList)) && (ISNOTNULLPTR(timer_))) {
-    timerCursor = timerList->head;
 
-    /* While timer cursor is not null and the timer cursor does not equal the timer
-    parameter, keep scanning the timer list. */
-    while ((ISNOTNULLPTR(timerCursor)) && (timerCursor != timer_)) {
-      timerCursor = timerCursor->next;
-    }
+    SYSASSERT(RETURN_SUCCESS == TimerListFindTimer(timer_));
 
-    SYSASSERT(ISNOTNULLPTR(timerCursor));
+    if (RETURN_SUCCESS == TimerListFindTimer(timer_)) {
 
-    /* If the timer cursor is not null, then set the state of the timer to running. */
-    if (ISNOTNULLPTR(timerCursor)) {
-      timerCursor->state = TimerStateRunning;
+      timer_->state = TimerStateRunning;
     }
   }
 
@@ -350,28 +319,21 @@ void xTimerStart(Timer_t *timer_) {
 /* The xTimerStop() system call will place the timer in the stopped state. Neither xTaskStart() nor
 xTaskStop() will reset the timer. Timers can only be reset with xTimerReset(). */
 void xTimerStop(Timer_t *timer_) {
-  Timer_t *timerCursor = NULL;
 
 
   SYSASSERT(ISNOTNULLPTR(timerList));
 
   SYSASSERT(ISNOTNULLPTR(timer_));
 
-  /* Check if the timer list is not null and the timer parameter is not null. */
+  /* Check if the timer list is not null, the timer parameter is not null and the timer period
+  is zero or greater. */
   if ((ISNOTNULLPTR(timerList)) && (ISNOTNULLPTR(timer_))) {
-    timerCursor = timerList->head;
 
-    /* While timer cursor is not null and the timer cursor does not equal the timer
-    parameter, keep scanning the timer list. */
-    while ((ISNOTNULLPTR(timerCursor)) && (timerCursor != timer_)) {
-      timerCursor = timerCursor->next;
-    }
+    SYSASSERT(RETURN_SUCCESS == TimerListFindTimer(timer_));
 
-    SYSASSERT(ISNOTNULLPTR(timerCursor));
+    if (RETURN_SUCCESS == TimerListFindTimer(timer_)) {
 
-    /* If the timer cursor is not null, set the state of the timer to stopped. */
-    if (ISNOTNULLPTR(timerCursor)) {
-      timerCursor->state = TimerStateSuspended;
+      timer_->state = TimerStateSuspended;
     }
   }
 
@@ -405,7 +367,6 @@ Base_t TimerListFindTimer(const Timer_t *timer_) {
       if (ISNOTNULLPTR(timerCursor)) {
 
         ret = RETURN_SUCCESS;
-      
       }
     }
   }
