@@ -67,7 +67,7 @@ void TaskRun(Task_t *task_);
 void xTaskResumeAll(void);
 void xTaskSuspendAll(void);
 SchedulerState_t xTaskGetSchedulerState(void);
-Base_t SearchTask(const Task_t *task_);
+Base_t TaskListFindTask(const Task_t *task_);
 
 #ifdef __cplusplus
 }  // extern "C" {

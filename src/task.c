@@ -133,9 +133,9 @@ void xTaskDelete(Task_t *task_) {
   and that the task parameter is also not null. */
   if ((false == SYSFLAG_CRITICAL()) && (ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(task_))) {
 
-    SYSASSERT(RETURN_SUCCESS == SearchTask(task_));
+    SYSASSERT(RETURN_SUCCESS == TaskListFindTask(task_));
 
-    if (RETURN_SUCCESS == SearchTask(task_)) {
+    if (RETURN_SUCCESS == TaskListFindTask(task_)) {
 
       taskCursor = taskList->head;
 
@@ -342,10 +342,10 @@ TaskRunTimeStats_t *xTaskGetTaskRunTimeStats(Task_t *task_) {
   if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(task_))) {
 
 
-    SYSASSERT(RETURN_SUCCESS == SearchTask(task_));
+    SYSASSERT(RETURN_SUCCESS == TaskListFindTask(task_));
 
     /* If the task cursor is null, the task could not be found so return null. */
-    if (RETURN_SUCCESS == SearchTask(task_)) {
+    if (RETURN_SUCCESS == TaskListFindTask(task_)) {
 
       ret = (TaskRunTimeStats_t *)xMemAlloc(sizeof(TaskRunTimeStats_t));
 
@@ -417,9 +417,9 @@ TaskInfo_t *xTaskGetTaskInfo(Task_t *task_) {
   /* Check if the task list is not null and the task parameter is not null. */
   if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(task_))) {
 
-    SYSASSERT(RETURN_SUCCESS == SearchTask(task_));
+    SYSASSERT(RETURN_SUCCESS == TaskListFindTask(task_));
 
-    if (RETURN_SUCCESS == SearchTask(task_)) {
+    if (RETURN_SUCCESS == TaskListFindTask(task_)) {
 
       ret = (TaskInfo_t *)xMemAlloc(sizeof(TaskInfo_t));
 
@@ -531,9 +531,9 @@ TaskState_t xTaskGetTaskState(Task_t *task_) {
   if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(task_))) {
 
 
-    SYSASSERT(RETURN_SUCCESS == SearchTask(task_));
+    SYSASSERT(RETURN_SUCCESS == TaskListFindTask(task_));
 
-    if (RETURN_SUCCESS == SearchTask(task_)) {
+    if (RETURN_SUCCESS == TaskListFindTask(task_)) {
 
       ret = task_->state;
     }
@@ -558,9 +558,9 @@ char *xTaskGetName(Task_t *task_) {
   if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(task_))) {
 
 
-    SYSASSERT(RETURN_SUCCESS == SearchTask(task_));
+    SYSASSERT(RETURN_SUCCESS == TaskListFindTask(task_));
 
-    if (RETURN_SUCCESS == SearchTask(task_)) {
+    if (RETURN_SUCCESS == TaskListFindTask(task_)) {
 
       ret = (char *)xMemAlloc(CONFIG_TASK_NAME_BYTES);
 
@@ -590,9 +590,9 @@ Base_t xTaskGetId(Task_t *task_) {
   /* Check if the task list is not null and the task parameter is not null. */
   if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(task_))) {
 
-    SYSASSERT(RETURN_SUCCESS == SearchTask(task_));
+    SYSASSERT(RETURN_SUCCESS == TaskListFindTask(task_));
 
-    if (RETURN_SUCCESS == SearchTask(task_)) {
+    if (RETURN_SUCCESS == TaskListFindTask(task_)) {
 
       ret = task_->id;
     }
@@ -612,9 +612,9 @@ void xTaskNotifyStateClear(Task_t *task_) {
   /* Check if the task list is not null and the task parameter is not null. */
   if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(task_))) {
 
-    SYSASSERT(RETURN_SUCCESS == SearchTask(task_));
+    SYSASSERT(RETURN_SUCCESS == TaskListFindTask(task_));
 
-    if (RETURN_SUCCESS == SearchTask(task_)) {
+    if (RETURN_SUCCESS == TaskListFindTask(task_)) {
 
       if (zero < task_->notificationBytes) {
 
@@ -641,9 +641,9 @@ Base_t xTaskNotificationIsWaiting(Task_t *task_) {
   /* Check if the task list is not null and the task parameter is not null. */
   if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(task_))) {
 
-    SYSASSERT(RETURN_SUCCESS == SearchTask(task_));
+    SYSASSERT(RETURN_SUCCESS == TaskListFindTask(task_));
 
-    if (RETURN_SUCCESS == SearchTask(task_)) {
+    if (RETURN_SUCCESS == TaskListFindTask(task_)) {
 
       if (zero < task_->notificationBytes) {
 
@@ -678,9 +678,9 @@ Base_t xTaskNotifyGive(Task_t *task_, Base_t notificationBytes_, const char *not
   one and CONFIG_NOTIFICATION_VALUE_BYTES and that the notification value char array pointer is not null. */
   if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(task_)) && (zero < notificationBytes_) && (CONFIG_NOTIFICATION_VALUE_BYTES > notificationBytes_) && (ISNOTNULLPTR(notificationValue_))) {
 
-    SYSASSERT(RETURN_SUCCESS == SearchTask(task_));
+    SYSASSERT(RETURN_SUCCESS == TaskListFindTask(task_));
 
-    if (RETURN_SUCCESS == SearchTask(task_)) {
+    if (RETURN_SUCCESS == TaskListFindTask(task_)) {
       if (zero == task_->notificationBytes) {
 
         task_->notificationBytes = notificationBytes_;
@@ -710,9 +710,9 @@ TaskNotification_t *xTaskNotifyTake(Task_t *task_) {
   /* Check if the task list is not null and the task parameter is not null. */
   if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(task_))) {
 
-    SYSASSERT(RETURN_SUCCESS == SearchTask(task_));
+    SYSASSERT(RETURN_SUCCESS == TaskListFindTask(task_));
 
-    if (RETURN_SUCCESS == SearchTask(task_)) {
+    if (RETURN_SUCCESS == TaskListFindTask(task_)) {
 
       if (zero < task_->notificationBytes) {
 
@@ -752,9 +752,9 @@ void xTaskResume(Task_t *task_) {
   /* Check if the task list is not null and the task parameter is not null. */
   if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(task_))) {
 
-    SYSASSERT(RETURN_SUCCESS == SearchTask(task_));
+    SYSASSERT(RETURN_SUCCESS == TaskListFindTask(task_));
 
-    if (RETURN_SUCCESS == SearchTask(task_)) {
+    if (RETURN_SUCCESS == TaskListFindTask(task_)) {
 
       task_->state = TaskStateRunning;
     }
@@ -775,9 +775,9 @@ void xTaskSuspend(Task_t *task_) {
   /* Check if the task list is not null and the task parameter is not null. */
   if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(task_))) {
 
-    SYSASSERT(RETURN_SUCCESS == SearchTask(task_));
+    SYSASSERT(RETURN_SUCCESS == TaskListFindTask(task_));
 
-    if (RETURN_SUCCESS == SearchTask(task_)) {
+    if (RETURN_SUCCESS == TaskListFindTask(task_)) {
 
       task_->state = TaskStateSuspended;
     }
@@ -800,9 +800,9 @@ void xTaskWait(Task_t *task_) {
   /* Check if the task list is not null and the task parameter is not null. */
   if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(task_))) {
 
-    SYSASSERT(RETURN_SUCCESS == SearchTask(task_));
+    SYSASSERT(RETURN_SUCCESS == TaskListFindTask(task_));
 
-    if (RETURN_SUCCESS == SearchTask(task_)) {
+    if (RETURN_SUCCESS == TaskListFindTask(task_)) {
 
       task_->state = TaskStateWaiting;
     }
@@ -826,9 +826,9 @@ void xTaskChangePeriod(Task_t *task_, Time_t timerPeriod_) {
   /* Check if the task list is not null and the task parameter is not null. */
   if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(task_))) {
 
-    SYSASSERT(RETURN_SUCCESS == SearchTask(task_));
+    SYSASSERT(RETURN_SUCCESS == TaskListFindTask(task_));
 
-    if (RETURN_SUCCESS == SearchTask(task_)) {
+    if (RETURN_SUCCESS == TaskListFindTask(task_)) {
 
       task_->timerPeriod = timerPeriod_;
     }
@@ -849,9 +849,9 @@ Time_t xTaskGetPeriod(Task_t *task_) {
   /* Check if the task list is not null and the task parameter is not null. */
   if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(task_))) {
 
-    SYSASSERT(RETURN_SUCCESS == SearchTask(task_));
+    SYSASSERT(RETURN_SUCCESS == TaskListFindTask(task_));
 
-    if (RETURN_SUCCESS == SearchTask(task_)) {
+    if (RETURN_SUCCESS == TaskListFindTask(task_)) {
 
       ret = task_->timerPeriod;
     }
@@ -860,7 +860,7 @@ Time_t xTaskGetPeriod(Task_t *task_) {
   return ret;
 }
 
-Base_t SearchTask(const Task_t *task_) {
+Base_t TaskListFindTask(const Task_t *task_) {
   Base_t ret = RETURN_FAILURE;
 
   Task_t *taskCursor = NULL;
@@ -871,9 +871,9 @@ Base_t SearchTask(const Task_t *task_) {
 
   if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(task_))) {
 
-    SYSASSERT(RETURN_SUCCESS == CheckHeapHealth(CHECK_HEAP_HEALTH_AND_PTR, task_));
+    SYSASSERT(RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, task_));
 
-    if (RETURN_SUCCESS == CheckHeapHealth(CHECK_HEAP_HEALTH_AND_PTR, task_)) {
+    if (RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, task_)) {
 
       while ((ISNOTNULLPTR(taskCursor)) && (taskCursor != task_)) {
 
@@ -903,9 +903,9 @@ void xTaskResetTimer(Task_t *task_) {
   /* Check if the task list is not null and the task parameter is not null. */
   if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(task_))) {
 
-    SYSASSERT(RETURN_SUCCESS == SearchTask(task_));
+    SYSASSERT(RETURN_SUCCESS == TaskListFindTask(task_));
 
-    if (RETURN_SUCCESS == SearchTask(task_)) {
+    if (RETURN_SUCCESS == TaskListFindTask(task_)) {
 
       task_->timerStartTime = CURRENTTIME();
     }

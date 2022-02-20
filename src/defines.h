@@ -346,14 +346,14 @@ the CONFIG_ENABLE_SYSTEM_ASSERT setting. */
 
 /* CheckHeapHealth() option to only check the health of the heap
 and NOT also check a pointer at the same time. */
-#if !defined(CHECK_HEAP_HEALTH_ONLY)
-#define CHECK_HEAP_HEALTH_ONLY 0x1u
+#if !defined(HEAP_CHECK_HEALTH_ONLY)
+#define HEAP_CHECK_HEALTH_ONLY 0x1u
 #endif
 
 /* CheckHeapHealth() option to check the health of the heap
 and also check a pointer at the same time. */
-#if !defined(CHECK_HEAP_HEALTH_AND_PTR)
-#define CHECK_HEAP_HEALTH_AND_PTR 0x2u
+#if !defined(HEAP_CHECK_HEALTH_AND_POINTER)
+#define HEAP_CHECK_HEALTH_AND_POINTER 0x2u
 #endif
 
 #endif

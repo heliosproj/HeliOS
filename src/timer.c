@@ -380,10 +380,10 @@ void xTimerStop(Timer_t *timer_) {
 
 
 
-Base_t SearchTimer(const Timer_t *timer_) {
+Base_t TimerListFindTimer(const Timer_t *timer_) {
   Base_t ret = RETURN_FAILURE;
 
-  Task_t *timerCursor = NULL;
+  Timer_t *timerCursor = NULL;
 
   SYSASSERT(ISNOTNULLPTR(timerList));
 
@@ -391,9 +391,9 @@ Base_t SearchTimer(const Timer_t *timer_) {
 
   if ((ISNOTNULLPTR(timerList)) && (ISNOTNULLPTR(timer_))) {
 
-    SYSASSERT(RETURN_SUCCESS == CheckHeapHealth(CHECK_HEAP_HEALTH_AND_PTR, timer_));
+    SYSASSERT(RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, timer_));
 
-    if (RETURN_SUCCESS == CheckHeapHealth(CHECK_HEAP_HEALTH_AND_PTR, timer_)) {
+    if (RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, timer_)) {
 
       while ((ISNOTNULLPTR(timerCursor)) && (timerCursor != timer_)) {
 

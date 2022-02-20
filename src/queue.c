@@ -70,10 +70,10 @@ void xQueueDelete(Queue_t *queue_) {
   if (ISNOTNULLPTR(queue_)) {
 
 
-    SYSASSERT(RETURN_SUCCESS == CheckHeapHealth(CHECK_HEAP_HEALTH_AND_PTR, queue_));
+    SYSASSERT(RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_));
 
 
-    if (RETURN_SUCCESS == CheckHeapHealth(CHECK_HEAP_HEALTH_AND_PTR, queue_)) {
+    if (RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_)) {
 
 
       /* If the queue has a head it contains messages, iterate through the queue and drop
@@ -106,10 +106,10 @@ Base_t xQueueGetLength(Queue_t *queue_) {
   /* Check if the queue parameter is not null. */
   if (ISNOTNULLPTR(queue_)) {
 
-    SYSASSERT(RETURN_SUCCESS == CheckHeapHealth(CHECK_HEAP_HEALTH_AND_PTR, queue_));
+    SYSASSERT(RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_));
 
 
-    if (RETURN_SUCCESS == CheckHeapHealth(CHECK_HEAP_HEALTH_AND_PTR, queue_)) {
+    if (RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_)) {
 
 
       messageCursor = queue_->head;
@@ -150,10 +150,10 @@ Base_t xQueueIsQueueEmpty(Queue_t *queue_) {
   /* Check if the queue pointer is not null. */
   if (ISNOTNULLPTR(queue_)) {
 
-    SYSASSERT(RETURN_SUCCESS == CheckHeapHealth(CHECK_HEAP_HEALTH_AND_PTR, queue_));
+    SYSASSERT(RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_));
 
 
-    if (RETURN_SUCCESS == CheckHeapHealth(CHECK_HEAP_HEALTH_AND_PTR, queue_)) {
+    if (RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_)) {
 
 
       messageCursor = queue_->head;
@@ -196,10 +196,10 @@ Base_t xQueueIsQueueFull(Queue_t *queue_) {
   if (ISNOTNULLPTR(queue_)) {
 
 
-    SYSASSERT(RETURN_SUCCESS == CheckHeapHealth(CHECK_HEAP_HEALTH_AND_PTR, queue_));
+    SYSASSERT(RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_));
 
 
-    if (RETURN_SUCCESS == CheckHeapHealth(CHECK_HEAP_HEALTH_AND_PTR, queue_)) {
+    if (RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_)) {
 
       messageCursor = queue_->head;
 
@@ -239,10 +239,10 @@ Base_t xQueueMessagesWaiting(Queue_t *queue_) {
   /* Check if the queue parameter is not null. */
   if (ISNOTNULLPTR(queue_)) {
 
-    SYSASSERT(RETURN_SUCCESS == CheckHeapHealth(CHECK_HEAP_HEALTH_AND_PTR, queue_));
+    SYSASSERT(RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_));
 
 
-    if (RETURN_SUCCESS == CheckHeapHealth(CHECK_HEAP_HEALTH_AND_PTR, queue_)) {
+    if (RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_)) {
 
       messageCursor = queue_->head;
 
@@ -292,10 +292,10 @@ Base_t xQueueSend(Queue_t *queue_, Base_t messageBytes_, const char *messageValu
   is not null. */
   if ((ISNOTNULLPTR(queue_)) && (zero < messageBytes_) && (CONFIG_MESSAGE_VALUE_BYTES >= messageBytes_) && (ISNOTNULLPTR(messageValue_))) {
 
-    SYSASSERT(RETURN_SUCCESS == CheckHeapHealth(CHECK_HEAP_HEALTH_AND_PTR, queue_));
+    SYSASSERT(RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_));
 
 
-    if (RETURN_SUCCESS == CheckHeapHealth(CHECK_HEAP_HEALTH_AND_PTR, queue_)) {
+    if (RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_)) {
 
       messageCursor = queue_->head;
 
@@ -366,10 +366,10 @@ QueueMessage_t *xQueuePeek(Queue_t *queue_) {
   /* Check if the queue parameter is not null. */
   if (ISNOTNULLPTR(queue_)) {
 
-    SYSASSERT(RETURN_SUCCESS == CheckHeapHealth(CHECK_HEAP_HEALTH_AND_PTR, queue_));
+    SYSASSERT(RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_));
 
 
-    if (RETURN_SUCCESS == CheckHeapHealth(CHECK_HEAP_HEALTH_AND_PTR, queue_)) {
+    if (RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_)) {
 
       /* Check if the head of the queue is not null. */
       if (ISNOTNULLPTR(queue_->head)) {
@@ -401,10 +401,10 @@ void xQueueDropMessage(Queue_t *queue_) {
   if (ISNOTNULLPTR(queue_)) {
 
 
-    SYSASSERT(RETURN_SUCCESS == CheckHeapHealth(CHECK_HEAP_HEALTH_AND_PTR, queue_));
+    SYSASSERT(RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_));
 
 
-    if (RETURN_SUCCESS == CheckHeapHealth(CHECK_HEAP_HEALTH_AND_PTR, queue_)) {
+    if (RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_)) {
 
 
 
@@ -445,10 +445,10 @@ QueueMessage_t *xQueueReceive(Queue_t *queue_) {
 
 
 
-    SYSASSERT(RETURN_SUCCESS == CheckHeapHealth(CHECK_HEAP_HEALTH_AND_PTR, queue_));
+    SYSASSERT(RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_));
 
 
-    if (RETURN_SUCCESS == CheckHeapHealth(CHECK_HEAP_HEALTH_AND_PTR, queue_)) {
+    if (RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_)) {
 
       ret = xQueuePeek(queue_);
 

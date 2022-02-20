@@ -113,11 +113,11 @@ void *xMemAlloc(size_t size_) {
     PHASE III: Check the health of the heap by calling CheckHeapHealth().
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-    SYSASSERT(RETURN_SUCCESS == CheckHeapHealth(CHECK_HEAP_HEALTH_ONLY, NULL));
+    SYSASSERT(RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_ONLY, NULL));
 
 
     /* If the heap is healthy, then proceed to phase IV. */
-    if (RETURN_SUCCESS == CheckHeapHealth(CHECK_HEAP_HEALTH_ONLY, NULL)) {
+    if (RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_ONLY, NULL)) {
       /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
        PHASE IV: Calculate how many blocks are needed for the requested size in bytes.
        * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -271,12 +271,12 @@ void xMemFree(void *ptr_) {
 
     /* Check if the heap is un-initialized, unhealthy or the end-user passed
     pointer is invalid. */
-    SYSASSERT(RETURN_SUCCESS == CheckHeapHealth(CHECK_HEAP_HEALTH_AND_PTR, ptr_));
+    SYSASSERT(RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, ptr_));
 
 
     /* If the heap is initialized, healthy and the end-user passed pointer
     is valid, then proceed to free the memory. */
-    if (RETURN_SUCCESS == CheckHeapHealth(CHECK_HEAP_HEALTH_AND_PTR, ptr_)) {
+    if (RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, ptr_)) {
 
 
 
@@ -323,12 +323,12 @@ size_t xMemGetUsed(void) {
 
 
   /* Check if the heap is un-initialized or unhealthy. */
-  SYSASSERT(RETURN_SUCCESS == CheckHeapHealth(CHECK_HEAP_HEALTH_ONLY, NULL));
+  SYSASSERT(RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_ONLY, NULL));
 
 
   /* If the heap is initialized and healthy, then proceed with summing up the
   blocks that are in use. */
-  if (RETURN_SUCCESS == CheckHeapHealth(CHECK_HEAP_HEALTH_ONLY, NULL)) {
+  if (RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_ONLY, NULL)) {
 
     entryCursor = start;
 
@@ -378,12 +378,12 @@ size_t xMemGetSize(void *ptr_) {
 
     /* Check if the heap is un-initialized, unhealthy or if the end-user passed
     pointer is an invalid pointer. */
-    SYSASSERT(RETURN_SUCCESS == CheckHeapHealth(CHECK_HEAP_HEALTH_AND_PTR, ptr_));
+    SYSASSERT(RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, ptr_));
 
 
     /* If the heap is initialized, healthy and if the end-user passed pointer is
     valid then we can continue. */
-    if (RETURN_SUCCESS == CheckHeapHealth(CHECK_HEAP_HEALTH_AND_PTR, ptr_)) {
+    if (RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, ptr_)) {
 
       /* Need to calculate the location of the heap entry for the end-user passed pointer. */
       entryToSize = (HeapEntry_t *)((Byte_t *)ptr_ - (entryBlocksNeeded * CONFIG_HEAP_BLOCK_SIZE));
@@ -415,7 +415,7 @@ size_t xMemGetSize(void *ptr_) {
 /* The CheckHeapHealth() function checks the health of the heap and optionally
 will check that a pointer is valid at the same time. CheckHeapHealth() does
 not respect the entry protected flag because it isn't changing anything. */
-Base_t CheckHeapHealth(const Base_t option_, const void *ptr_) {
+Base_t HeapCheck(const Base_t option_, const void *ptr_) {
   HeapEntry_t *entryCursor = NULL;
 
   HeapEntry_t *entryToCheck = NULL;
@@ -429,12 +429,12 @@ Base_t CheckHeapHealth(const Base_t option_, const void *ptr_) {
 
   /* Assert if there is an invalid combination of arguments
   passed to function. */
-  SYSASSERT(((CHECK_HEAP_HEALTH_ONLY == option_) && (ISNULLPTR(ptr_))) || ((CHECK_HEAP_HEALTH_AND_PTR == option_) && (ISNOTNULLPTR(ptr_))));
+  SYSASSERT(((HEAP_CHECK_HEALTH_ONLY == option_) && (ISNULLPTR(ptr_))) || ((HEAP_CHECK_HEALTH_AND_POINTER == option_) && (ISNOTNULLPTR(ptr_))));
 
 
   /* Check if there is an invalid combination of arguments passed
   to function before proceeding with checks. */
-  if (((CHECK_HEAP_HEALTH_ONLY == option_) && (ISNULLPTR(ptr_))) || ((CHECK_HEAP_HEALTH_AND_PTR == option_) && (ISNOTNULLPTR(ptr_)))) {
+  if (((HEAP_CHECK_HEALTH_ONLY == option_) && (ISNULLPTR(ptr_))) || ((HEAP_CHECK_HEALTH_AND_POINTER == option_) && (ISNOTNULLPTR(ptr_)))) {
 
 
     /* Assert if the heap has not been initialized. */
@@ -450,7 +450,7 @@ Base_t CheckHeapHealth(const Base_t option_, const void *ptr_) {
 
       /* If we need to also check that a pointer is valid at the same time,
       then we must calculate where its heap entry would be. */
-      if (CHECK_HEAP_HEALTH_AND_PTR == option_) {
+      if (HEAP_CHECK_HEALTH_AND_POINTER == option_) {
 
         entryToCheck = (HeapEntry_t *)((Byte_t *)ptr_ - (entryBlocksNeeded * CONFIG_HEAP_BLOCK_SIZE));
       }
@@ -463,7 +463,7 @@ Base_t CheckHeapHealth(const Base_t option_, const void *ptr_) {
 
         /* At the same time if we are checking for a pointer, let's find it. If
         found then set the pointer found variable to true. */
-        if ((CHECK_HEAP_HEALTH_AND_PTR == option_) && (entryCursor == entryToCheck) && (false == entryCursor->free)) {
+        if ((HEAP_CHECK_HEALTH_AND_POINTER == option_) && (entryCursor == entryToCheck) && (false == entryCursor->free)) {
 
           ptrFound = true;
         }
@@ -483,13 +483,13 @@ Base_t CheckHeapHealth(const Base_t option_, const void *ptr_) {
 
         /* Assert if the pointer was not found if we
         were looking for it. */
-        SYSASSERT((CHECK_HEAP_HEALTH_ONLY == option_) || ((CHECK_HEAP_HEALTH_AND_PTR == option_) && (true == ptrFound)));
+        SYSASSERT((HEAP_CHECK_HEALTH_ONLY == option_) || ((HEAP_CHECK_HEALTH_AND_POINTER == option_) && (true == ptrFound)));
 
         /* If we only have to check the heap health then set the
         return value to success OR if we are also checking that
         the pointer was valid then set the return value to success
         if the pointer's heap entry was found. */
-        if ((CHECK_HEAP_HEALTH_ONLY == option_) || ((CHECK_HEAP_HEALTH_AND_PTR == option_) && (true == ptrFound))) {
+        if ((HEAP_CHECK_HEALTH_ONLY == option_) || ((HEAP_CHECK_HEALTH_AND_POINTER == option_) && (true == ptrFound))) {
 
           ret = RETURN_SUCCESS;
         }
