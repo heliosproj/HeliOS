@@ -314,6 +314,8 @@ Base_t TimerListFindTimer(const Timer_t *timer_) {
 
     if (RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, timer_)) {
 
+      timerCursor = timerList->head;
+
       while ((ISNOTNULLPTR(timerCursor)) && (timerCursor != timer_)) {
 
         timerCursor = timerCursor->next;

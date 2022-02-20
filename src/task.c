@@ -807,6 +807,8 @@ Base_t TaskListFindTask(const Task_t *task_) {
 
     if (RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, task_)) {
 
+      taskCursor = taskList->head;
+
       while ((ISNOTNULLPTR(taskCursor)) && (taskCursor != task_)) {
 
         taskCursor = taskCursor->next;
@@ -967,7 +969,6 @@ Time_t CurrentTime(void) {
   return zero;
 
 #endif
-
 }
 
 /* Called by the xTaskStartScheduler() system call, TaskRun() executes a task and updates all of its
@@ -1003,7 +1004,6 @@ void TaskRun(Task_t *task_) {
   if (task_->totalRunTime < prevTotalRunTime) {
 
     SYSFLAG_OVERFLOW() = true;
-
   }
 
   return;
@@ -1016,7 +1016,6 @@ void xTaskResumeAll(void) {
   SYSFLAG_RUNNING() = true;
 
   return;
-
 }
 
 /* The xTaskSuspendAll() system call will set the scheduler system flag so the scheduler
@@ -1026,7 +1025,6 @@ void xTaskSuspendAll(void) {
   SYSFLAG_RUNNING() = false;
 
   return;
-  
 }
 
 /* The xTaskGetSchedulerState() system call will return the state of the scheduler. */
