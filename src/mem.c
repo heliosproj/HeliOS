@@ -391,12 +391,12 @@ size_t xMemGetSize(void *ptr_) {
 
       /* The entry should not be free, also check if it is protected because if it is
       then we must be in privileged mode. */
-      SYSASSERT((entryToSize->free == false) && ((entryToSize->protected == false) || ((entryToSize->free == false) && (entryToSize->protected == true) && (SYSFLAG_PRIVILEGED() == true))));
+      SYSASSERT((false == entryToSize->free) && ((false == entryToSize->protected) || ((false == entryToSize->free) && (true == entryToSize->protected) && (true == SYSFLAG_PRIVILEGED()))));
 
 
       /* Make sure the entry is not free, also if protected we must also be in privileged
       mode. */
-      if ((entryToSize->free == false) && ((entryToSize->protected == false) || ((entryToSize->free == false) && (entryToSize->protected == true) && (SYSFLAG_PRIVILEGED() == true)))) {
+      if ((false == entryToSize->free) && ((false == entryToSize->protected) || ((false == entryToSize->free) && (true == entryToSize->protected) && (true == SYSFLAG_PRIVILEGED())))) {
 
 
 
