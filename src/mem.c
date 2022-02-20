@@ -378,6 +378,8 @@ void xMemFree(void *ptr_) {
 /* The xMemGetUsed() system call returns the amount of memory in bytes
 that is currently allocated. */
 size_t xMemGetUsed(void) {
+
+
   size_t ret = zero;
 
   HeapEntry_t *entryCursor = NULL;
@@ -385,23 +387,21 @@ size_t xMemGetUsed(void) {
   Word_t usedBlocks = zero;
 
 
-  /* Check if the heap is un-initialized or unhealthy. */
+  /* Assert if the heap does not pass its health check. */
   SYSASSERT(RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_ONLY, NULL));
 
 
-  /* If the heap is initialized and healthy, then proceed with summing up the
-  blocks that are in use. */
+  /* If the heap is healthy, we can proceed with calculating heap
+  memory in use. Otherwise, just head toward the exit. */
   if (RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_ONLY, NULL)) {
 
     entryCursor = start;
 
-    /* While the heap entry cursor is not null, keep scanning. */
+    /* While we have a heap entry to read, keep traversing the heap. */
     while (ISNOTNULLPTR(entryCursor)) {
 
-
-      /* At each entry, check to see if it is in use. If it is, add the number
-      of blocks it contains plus the number of blocks consumed by the heap entry
-      block to the used block count. */
+      /* If the heap entry we come across is free then let's add its blocks
+      to the used blocks. */
       if (entryCursor->free == false) {
 
         /* Sum the number of used blocks for each heap entry in use. */
@@ -422,63 +422,70 @@ size_t xMemGetUsed(void) {
 }
 
 
+
+
 /* The xMemGetSize() system call returns the amount of memory in bytes that
 is currently allocated to a specific pointer. */
 size_t xMemGetSize(void *ptr_) {
+
+
   size_t ret = zero;
 
 
   HeapEntry_t *entryToSize = NULL;
 
 
-  /* Assert if the end-user passed a null pointer. */
-  SYSASSERT(ISNOTNULLPTR(ptr_));
 
 
-  /* Check to make sure the end-user passed a pointer that is at least not null. */
-  if (ISNOTNULLPTR(ptr_)) {
-
-
-    /* Check if the heap is un-initialized, unhealthy or if the end-user passed
-    pointer is an invalid pointer. */
-    SYSASSERT(RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, ptr_));
-
-
-    /* If the heap is initialized, healthy and if the end-user passed pointer is
-    valid then we can continue. */
-    if (RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, ptr_)) {
-
-      /* Need to calculate the location of the heap entry for the end-user passed pointer. */
-      entryToSize = (HeapEntry_t *)((Byte_t *)ptr_ - (entryBlocksNeeded * CONFIG_HEAP_BLOCK_SIZE));
-
-
-      /* The entry should not be free, also check if it is protected because if it is
-      then we must be in privileged mode. */
-      SYSASSERT((false == entryToSize->free) && ((false == entryToSize->protected) || ((false == entryToSize->free) && (true == entryToSize->protected) && (true == SYSFLAG_PRIVILEGED()))));
-
-
-      /* Make sure the entry is not free, also if protected we must also be in privileged
-      mode. */
-      if ((false == entryToSize->free) && ((false == entryToSize->protected) || ((false == entryToSize->free) && (true == entryToSize->protected) && (true == SYSFLAG_PRIVILEGED())))) {
+  /* Assert if the heap failed its health check OR if the end-user scammed
+  us on the pointer. */
+  SYSASSERT(RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, ptr_));
 
 
 
-        /* We want to return the amount of BYTES in use by the pointer so multiply the
-        blocks consumed by the entry by the HEAP_BLOCK_SIZE. */
-        ret = entryToSize->blocks * CONFIG_HEAP_BLOCK_SIZE;
-      }
+  /* If the heap passes its health check and the pointer the end-user passed
+  us is valid, then continue. */
+  if (RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, ptr_)) {
+
+
+
+    /* The end-user's pointer points to the start of their allocated space, we
+    need to move back one block to read the entry. */
+    entryToSize = (HeapEntry_t *)((Byte_t *)ptr_ - (entryBlocksNeeded * CONFIG_HEAP_BLOCK_SIZE));
+
+
+    /* The entry should not be free, also check if it is protected because if it is
+    then we must be in privileged mode. */
+    SYSASSERT((false == entryToSize->free) && ((false == entryToSize->protected) || ((false == entryToSize->free) && (true == entryToSize->protected) && (true == SYSFLAG_PRIVILEGED()))));
+
+
+    /* The entry should not be free, also check if it is protected because if it is
+    then we must be in privileged mode. */
+    if ((false == entryToSize->free) && ((false == entryToSize->protected) || ((false == entryToSize->free) && (true == entryToSize->protected) && (true == SYSFLAG_PRIVILEGED())))) {
+
+
+
+      /* The end-user is expecting us to return the number of bytes in used. So
+      perform some advanced multiplication. */
+      ret = entryToSize->blocks * CONFIG_HEAP_BLOCK_SIZE;
     }
   }
+
 
   EXIT_PRIVILEGED();
 
   return ret;
 }
 
+
+
+
 /* The CheckHeapHealth() function checks the health of the heap and optionally
 will check that a pointer is valid at the same time. CheckHeapHealth() does
 not respect the entry protected flag because it isn't changing anything. */
 Base_t HeapCheck(const Base_t option_, const void *ptr_) {
+
+
   HeapEntry_t *entryCursor = NULL;
 
   HeapEntry_t *entryToCheck = NULL;
@@ -511,7 +518,7 @@ Base_t HeapCheck(const Base_t option_, const void *ptr_) {
       entryCursor = start;
 
 
-      /* If we need to also check that a pointer is valid at the same time,
+      /* If we need to also check that the end-user's pointer is valid at the same time,
       then we must calculate where its heap entry would be. */
       if (HEAP_CHECK_HEALTH_AND_POINTER == option_) {
 
@@ -544,9 +551,12 @@ Base_t HeapCheck(const Base_t option_, const void *ptr_) {
       matches what we expected, if so proceed. */
       if (CONFIG_HEAP_SIZE_IN_BLOCKS == blocks) {
 
+
         /* Assert if the pointer was not found if we
         were looking for it. */
         SYSASSERT((HEAP_CHECK_HEALTH_ONLY == option_) || ((HEAP_CHECK_HEALTH_AND_POINTER == option_) && (true == ptrFound)));
+
+
 
         /* If we only have to check the heap health then set the
         return value to success OR if we are also checking that
