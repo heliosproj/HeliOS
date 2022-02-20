@@ -33,12 +33,12 @@
 
 /* Check that the system HeliOS is being targeted for has an
 8-bit wide byte. */
-#if defined(CHAR_BIT)
+#if !defined(CHAR_BIT)
+#pragma message("WARNING: Unable to determine if system has an 8-bit wide byte. CHAR_BIT not defined?")
+#else
 #if CHAR_BIT != 8
 #pragma message("WARNING: System may not have an 8-bit wide byte!")
 #endif
-#else
-#pragma message("WARNING: Unable to determine if system has an 8-bit wide byte. CHAR_BIT not defined?")
 #endif
 
 /* Definition blocks for embedded platform and/or tool-chain
