@@ -26,27 +26,49 @@
 
 #include "queue.h"
 
+
+
 extern SysFlags_t sysFlags;
+
+
 
 /* The xQueueCreate() system call creates a message queue for inter-task
 communication. */
 Queue_t *xQueueCreate(Base_t limit_) {
+
+
   Queue_t *ret = NULL;
 
+
+  /* Assert if the end-user attempted to create a queue with a limit
+  that is less than the configured minimum limit. */
   SYSASSERT(CONFIG_QUEUE_MINIMUM_LIMIT <= limit_);
 
-  /* Check to make sure the limit parameter is greater than or equal to the
-  setting CONFIG_QUEUE_MINIMUM_LIMIT. */
+
+  /* Check if the end-user attempted to create a queue with a limit
+  that is less than the configured minimum limit, if they did then
+  just head toward the exit. */
   if (CONFIG_QUEUE_MINIMUM_LIMIT <= limit_) {
 
+
+    /* Creating a kernel object so put ourselves in privileged
+    mode. */
     ENTER_PRIVILEGED();
+
 
     ret = (Queue_t *)xMemAlloc(sizeof(Queue_t));
 
+
+    /* Assert if xMemAlloc() didn't return our requested
+    heap memory. */
     SYSASSERT(ISNOTNULLPTR(ret));
 
-    /* Check if queue was successfully allocated by xMemAlloc(). */
+
+    /* Check if xMemAlloc() returned our requested
+    heap memory. */
     if (ISNOTNULLPTR(ret)) {
+
+
       ret->length = zero;
 
       ret->limit = limit_;
@@ -65,21 +87,32 @@ will delete a queue regardless of how many messages the queue contains at the ti
 void xQueueDelete(Queue_t *queue_) {
 
 
+  /* Assert if the heap fails its health check or if the queue pointer the end-user
+  passed is invalid. */
   SYSASSERT(RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_));
 
 
+
+  /* Check if the heap is health and the queue pointer the end-user passed is valid.
+  If so, continue. Otherwise, head toward the exit. */
   if (RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_)) {
 
 
-    /* If the queue has a head it contains messages, iterate through the queue and drop
-    all of the messages. */
+    /* If the queue contains messages, traverse the queue and drop the
+    messages as we go. */
     while (ISNOTNULLPTR(queue_->head)) {
 
+
+      /* Drop the next message in the queue. */
       xQueueDropMessage(queue_);
     }
 
+
+    /* Freeing a kernel object so enter privileged mode. */
     ENTER_PRIVILEGED();
 
+
+    /* Free the memory for the queue. */
     xMemFree(queue_);
   }
 
@@ -87,25 +120,33 @@ void xQueueDelete(Queue_t *queue_) {
   return;
 }
 
+
+
+
 /* The xQueueGetLength() system call returns the length of the queue (the number of messages
 the queue currently contains). */
 Base_t xQueueGetLength(Queue_t *queue_) {
+
+
   Base_t ret = zero;
 
   Base_t messages = zero;
 
   Message_t *messageCursor = NULL;
 
-
+  /* Assert if the heap fails its health check or if the queue pointer the end-user
+  passed is invalid. */
   SYSASSERT(RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_));
 
 
+  /* Check if the heap is health and the queue pointer the end-user passed is valid.
+  If so, continue. Otherwise, head toward the exit. */
   if (RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_)) {
 
 
     messageCursor = queue_->head;
 
-    /* If the queue has a head, iterate through the queue and count the number of messages. */
+    /* Traverse the queue and count the number of messages it contains. */
     while (ISNOTNULLPTR(messageCursor)) {
 
       messages++;
@@ -113,10 +154,14 @@ Base_t xQueueGetLength(Queue_t *queue_) {
       messageCursor = messageCursor->next;
     }
 
+
+    /* Assert if the number of messages we counted disagrees with the queue's
+    length. This could indicate a problem. */
     SYSASSERT(messages == queue_->length);
 
-    /* Check to make sure the number of messages counted matches the length attribute of the queue.
-    This is to confirm the integrity of the queue before returning its length. */
+
+    /* Check if the number of messages we counted agrees with the queue's
+    length. */
     if (messages == queue_->length) {
 
       ret = messages;
@@ -127,9 +172,15 @@ Base_t xQueueGetLength(Queue_t *queue_) {
   return ret;
 }
 
+
+
+
 /* The xQueueIsEmpty() system call will return a true or false dependent on whether the queue is
 empty or contains one or more messages. */
 Base_t xQueueIsQueueEmpty(Queue_t *queue_) {
+
+
+
   Base_t ret = false;
 
   Base_t messages = zero;
@@ -137,16 +188,19 @@ Base_t xQueueIsQueueEmpty(Queue_t *queue_) {
   Message_t *messageCursor = NULL;
 
 
-
+  /* Assert if the heap fails its health check or if the queue pointer the end-user
+  passed is invalid. */
   SYSASSERT(RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_));
 
 
+  /* Check if the heap is health and the queue pointer the end-user passed is valid.
+  If so, continue. Otherwise, head toward the exit. */
   if (RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_)) {
 
 
     messageCursor = queue_->head;
 
-    /* If the queue has a head, iterate through the queue and count the number of messages. */
+    /* Traverse the queue and count the number of messages it contains. */
     while (ISNOTNULLPTR(messageCursor)) {
 
 
@@ -155,10 +209,15 @@ Base_t xQueueIsQueueEmpty(Queue_t *queue_) {
       messageCursor = messageCursor->next;
     }
 
+
+
+    /* Assert if the number of messages we counted disagrees with the queue's
+    length. This could indicate a problem. */
     SYSASSERT(messages = queue_->length);
 
-    /* Check to make sure the number of messages counted matches the length attribute of the queue
-    and if the number of messages equals zero. */
+
+    /* Check if the number of messages we counted agrees with the queue's
+    length. Also, for the queue to be empty there must be zero messages. */
     if ((zero == messages) && (messages == queue_->length)) {
 
       ret = true;
@@ -169,10 +228,14 @@ Base_t xQueueIsQueueEmpty(Queue_t *queue_) {
   return ret;
 }
 
+
+
 /* The xQueueIsFull() system call will return a true or false dependent on whether the queue is
 full or contains zero messages. A queue is considered full if the number of messages in the queue
 is equal to the queue's length limit. */
 Base_t xQueueIsQueueFull(Queue_t *queue_) {
+
+
   Base_t ret = false;
 
   Base_t messages = zero;
@@ -180,15 +243,20 @@ Base_t xQueueIsQueueFull(Queue_t *queue_) {
   Message_t *messageCursor = NULL;
 
 
-
+  /* Assert if the heap fails its health check or if the queue pointer the end-user
+  passed is invalid. */
   SYSASSERT(RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_));
 
 
+  /* Check if the heap is health and the queue pointer the end-user passed is valid.
+  If so, continue. Otherwise, head toward the exit. */
   if (RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_)) {
 
     messageCursor = queue_->head;
 
-    /* If the queue has a head, iterate through the queue and count the number of messages. */
+
+
+    /* Traverse the queue and count the number of messages it contains. */
     while (ISNOTNULLPTR(messageCursor)) {
 
       messages++;
@@ -196,10 +264,14 @@ Base_t xQueueIsQueueFull(Queue_t *queue_) {
       messageCursor = messageCursor->next;
     }
 
+
+    /* Assert if the number of messages we counted disagrees with the queue's
+    length. This could indicate a problem. */
     SYSASSERT(messages == queue_->length);
 
-    /* Check to make sure the number of messages counted matches the length attribute of the queue
-    and if the number of messages is greater than or equal to the queue length limit. */
+    /* Check if the number of messages we counted agrees with the queue's
+    length. Also, for the queue to be full the number of messages must be
+    equal to the queue limit. */
     if ((messages >= queue_->limit) && (messages == queue_->length)) {
 
 
@@ -210,9 +282,15 @@ Base_t xQueueIsQueueFull(Queue_t *queue_) {
   return ret;
 }
 
+
+
+
 /* The xQueueMessageWaiting() system call returns true or false dependent on whether
 there is at least one message waiting. The queue does not have to be full to return true. */
 Base_t xQueueMessagesWaiting(Queue_t *queue_) {
+
+
+
   Base_t ret = false;
 
   Base_t messages = zero;
@@ -220,15 +298,19 @@ Base_t xQueueMessagesWaiting(Queue_t *queue_) {
   Message_t *messageCursor = NULL;
 
 
-
+  /* Assert if the heap fails its health check or if the queue pointer the end-user
+  passed is invalid. */
   SYSASSERT(RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_));
 
 
+
+  /* Check if the heap is health and the queue pointer the end-user passed is valid.
+  If so, continue. Otherwise, head toward the exit. */
   if (RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_)) {
 
     messageCursor = queue_->head;
 
-    /* If the queue has a head, iterate through the queue and count the number of messages. */
+    /* Traverse the queue and count the number of messages it contains. */
     while (ISNOTNULLPTR(messageCursor)) {
 
       messages++;
@@ -236,10 +318,15 @@ Base_t xQueueMessagesWaiting(Queue_t *queue_) {
       messageCursor = messageCursor->next;
     }
 
+
+    /* Assert if the number of messages we counted disagrees with the queue's
+    length. This could indicate a problem. */
     SYSASSERT(messages == queue_->length);
 
-    /* Check to make sure the number of messages counted matches the length attribute of the queue
-    and if the number of messages is greater than zero. */
+
+    /* Check if the number of messages we counted agrees with the queue's
+    length. Also, for there to be waiting messages look to make sure the
+    count is greater than zero. */
     if ((zero < messages) && (messages == queue_->length)) {
 
 
@@ -251,9 +338,15 @@ Base_t xQueueMessagesWaiting(Queue_t *queue_) {
   return ret;
 }
 
+
+
+
 /* The xQueueSend() system call will send a message to the queue. The size of the message
 value is passed in the message bytes parameter. */
 Base_t xQueueSend(Queue_t *queue_, Base_t messageBytes_, const char *messageValue_) {
+
+
+
   Base_t ret = RETURN_FAILURE;
 
   Message_t *message = NULL;
@@ -262,19 +355,31 @@ Base_t xQueueSend(Queue_t *queue_, Base_t messageBytes_, const char *messageValu
 
   Message_t *messageCursor = NULL;
 
+
+  /* Assert if the end-user passed zero message bytes. A message
+  must have at least one byte in its message. */
   SYSASSERT(zero < messageBytes_);
 
+
+  /* Assert if the end-user passed a number of message bytes that
+  exceeds the size of the message value. */
   SYSASSERT(CONFIG_MESSAGE_VALUE_BYTES >= messageBytes_);
 
+
+  /* Assert if the end-user passed a null pointer for the message
+  value. */
   SYSASSERT(ISNOTNULLPTR(messageValue_));
 
-  /* Check if the queue parameter is not null, message bytes is between one and CONFIG_MESSAGE_VALUE_BYTES and the message value parameter
-  is not null. */
+  /* Check if the message bytes is within parameters and the message value is not null. */
   if ((zero < messageBytes_) && (CONFIG_MESSAGE_VALUE_BYTES >= messageBytes_) && (ISNOTNULLPTR(messageValue_))) {
 
+
+    /* Assert if the heap fails its health check or if the queue pointer the end-user
+    passed is invalid. */
     SYSASSERT(RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_));
 
-
+    /* Check if the heap is health and the queue pointer the end-user passed is valid.
+    If so, continue. Otherwise, head toward the exit. */
     if (RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_)) {
 
       messageCursor = queue_->head;
@@ -287,18 +392,28 @@ Base_t xQueueSend(Queue_t *queue_, Base_t messageBytes_, const char *messageValu
         messageCursor = messageCursor->next;
       }
 
+
+      /* Assert if the queue is full. */
       SYSASSERT(queue_->limit > queue_->length);
 
+
+      /* Assert if the messages counted disagrees with the queue length. If
+      so there is a problem. */
       SYSASSERT(messages == queue_->length);
 
-      /* Check if the length of the queue is less than the limit and the length of the queue matches the number of messages
-      counted. */
+
+      /* Check if the queue is not full and that the messages counted agrees with the
+      queue length. */
       if ((queue_->limit > queue_->length) && (messages == queue_->length)) {
 
+
+        /* Going to create a kernel object so enter privileged mode. */
         ENTER_PRIVILEGED();
 
         message = (Message_t *)xMemAlloc(sizeof(Message_t));
 
+
+        /* Assert if xMemAlloc() did not allocate our requested memory. */
         SYSASSERT(ISNOTNULLPTR(message));
 
         /* Check if the message was successfully allocated by xMemAlloc(). */
@@ -435,7 +550,7 @@ QueueMessage_t *xQueueReceive(Queue_t *queue_) {
 
 
       xQueueDropMessage(queue_);
-        }
+    }
   }
 
   return ret;
