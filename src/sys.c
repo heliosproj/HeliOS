@@ -50,13 +50,13 @@ void xSystemAssert(const char *file_, int line_) {
   return;
 }
 
-/* The xSystemHalt() system call stops the system by putting HeliOS into an infinite loop. */
+/* The xSystemHalt() system call halts the system. */
 void xSystemHalt(void) {
 
-
+  /* Don't want to service interrupts anymore so disable them. */
   DISABLE_INTERRUPTS();
 
-
+  /* Put the processor into an infinite loop. */
   for (;;) {
   }
 }
@@ -65,15 +65,25 @@ void xSystemHalt(void) {
 information about the system including the OS (product) name, its version and how many tasks
 are currently in the running, suspended or waiting states. */
 SystemInfo_t *xSystemGetSystemInfo(void) {
+
   SystemInfo_t *ret = NULL;
+
+
 
   ret = (SystemInfo_t *)xMemAlloc(sizeof(SystemInfo_t));
 
+
+
+  /* Assert if xMemAlloc() failed to allocate the heap memory. */
   SYSASSERT(ISNOTNULLPTR(ret));
+
+
 
   /* Check if system info is not null to make sure xMemAlloc() successfully allocated
   the memory. */
   if (ISNOTNULLPTR(ret)) {
+
+
     memcpy_(ret->productName, OS_PRODUCT_NAME, OS_PRODUCT_NAME_SIZE);
 
     ret->majorVersion = OS_MAJOR_VERSION_NO;
