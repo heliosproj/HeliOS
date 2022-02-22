@@ -202,7 +202,7 @@ to default to the Arduino platform and/or tool-chain. */
 #endif
 
 /* Define "NULL" if not defined. */
-#if !defined(NULLs)
+#if !defined(NULL)
 #if !defined(__cplusplus)
 #define NULL ((void *)0x0)
 #else
