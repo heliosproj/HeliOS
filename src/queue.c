@@ -2,7 +2,7 @@
  * @file queue.c
  * @author Manny Peterson (mannymsp@gmail.com)
  * @brief Kernel sources for message queues
- * @version 0.3.0
+ * @version 0.3.1
  * @date 2022-01-31
  *
  * @copyright
@@ -357,7 +357,7 @@ Base_t xQueueSend(Queue_t *queue_, Base_t messageBytes_, const char *messageValu
 
 
   /* Assert if the end-user passed zero message bytes. A message
-  must have at least one byte in its message. */
+  must have at least one byte in it. */
   SYSASSERT(zero < messageBytes_);
 
 
@@ -457,21 +457,28 @@ QueueMessage_t *xQueuePeek(Queue_t *queue_) {
   QueueMessage_t *ret = NULL;
 
 
-
+  /* Assert if the heap fails its health check or if the queue pointer the end-user
+  passed is invalid. */
   SYSASSERT(RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_));
 
 
+  /* Check if the heap is health and the queue pointer the end-user passed is valid.
+  If so, continue. Otherwise, head toward the exit. */
   if (RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_)) {
 
-    /* Check if the head of the queue is not null. */
+    /* If the head is not null, then there is a message waiting for us to
+    peek at. */
     if (ISNOTNULLPTR(queue_->head)) {
 
 
       ret = (QueueMessage_t *)xMemAlloc(sizeof(QueueMessage_t));
 
+
+      /* Assert if xMemAlloc() didn't do its job. */
       SYSASSERT(ISNOTNULLPTR(ret));
 
-      /* Check if a new message was successfully allocated by xMemAlloc(). */
+      /* If xMemAlloc() allocated the heap memory then copy the message into the
+      queue message we will return. Otherwise, head toward the exit. */
       if (ISNOTNULLPTR(ret)) {
 
 
@@ -489,18 +496,26 @@ QueueMessage_t *xQueuePeek(Queue_t *queue_) {
 /* The xQueueDropMessage() system call will drop the next message from the queue without
 returning the message. */
 void xQueueDropMessage(Queue_t *queue_) {
+
+
   Message_t *message = NULL;
 
 
+
+  /* Assert if the heap fails its health check or if the queue pointer the end-user
+  passed is invalid. */
   SYSASSERT(RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_));
 
 
+
+  /* Check if the heap is health and the queue pointer the end-user passed is valid.
+  If so, continue. Otherwise, head toward the exit. */
   if (RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_)) {
 
 
 
-    /* Check if the head of the queue is null, if so
-    return because there is nothing to drop. */
+    /* Check if there is a message in the queue, if there isn't then
+    we have nothing to drop so head toward the exit. */
     if (ISNOTNULLPTR(queue_->head)) {
 
 
@@ -509,8 +524,8 @@ void xQueueDropMessage(Queue_t *queue_) {
       queue_->head = queue_->head->next;
 
 
-      /* Again check if the head of the queue is null, if so set the tail
-      of the queue to null. */
+      /* If the head is now null, then let's set the tail to null
+      too because the queue is now empty. */
       if (ISNULLPTR(queue_->head)) {
 
         queue_->tail = NULL;
@@ -518,6 +533,9 @@ void xQueueDropMessage(Queue_t *queue_) {
 
       queue_->length--;
 
+
+      /* To free the message kernel object we must go into
+      privileged mode. */
       ENTER_PRIVILEGED();
 
       xMemFree(message);
@@ -531,24 +549,38 @@ void xQueueDropMessage(Queue_t *queue_) {
 /* The xQueueReceive() system call will return the next message in the queue and drop
 it from the queue. */
 QueueMessage_t *xQueueReceive(Queue_t *queue_) {
+
+
   QueueMessage_t *ret = NULL;
 
 
 
-
+  /* Assert if the heap fails its health check or if the queue pointer the end-user
+  passed is invalid. */
   SYSASSERT(RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_));
 
 
+
+  /* Check if the heap is health and the queue pointer the end-user passed is valid.
+  If so, continue. Otherwise, head toward the exit. */
   if (RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_)) {
 
+
+    /* Re-use some code and peek to see if there is a message
+    wiating in the queue.
+    
+    NOTE: We don't need to allocate any heap memory since xQueuePeek()
+    has already done that for us. */
     ret = xQueuePeek(queue_);
 
 
-    /* Check if the message returned from xQueuePeek() is not null. If so, drop the message from the
-    queue and return the message. */
+    /* See if xQueuePeek() returned a message, if so we need to drop it
+    before we return the message. */
     if (ISNOTNULLPTR(ret)) {
 
 
+      /* Re-use some code and just call xQueueDropMessage() to drop
+      the message we just received. */
       xQueueDropMessage(queue_);
     }
   }
