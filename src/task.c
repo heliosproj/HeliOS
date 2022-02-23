@@ -53,7 +53,7 @@ Task_t *xTaskCreate(const char *name_, void (*callback_)(Task_t *, TaskParm_t *)
 
   Task_t *taskCursor = NULL;
 
-  SYSASSERT(SchedulerStateSuspended == schedulerState);
+  SYSASSERT(false == SYSFLAG_RUNNING());
 
   SYSASSERT(ISNOTNULLPTR(name_));
 
@@ -66,7 +66,7 @@ Task_t *xTaskCreate(const char *name_, void (*callback_)(Task_t *, TaskParm_t *)
   pass any null pointers.
 
   NOTE: It is okay for the task paramater to be null. */
-  if ((SchedulerStateSuspended == schedulerState) && (ISNOTNULLPTR(name_)) && (ISNOTNULLPTR(callback_))) {
+  if ((false == SYSFLAG_RUNNING()) && (ISNOTNULLPTR(name_)) && (ISNOTNULLPTR(callback_))) {
 
 
     /* See if the task list needs to be created. */
@@ -160,11 +160,11 @@ void xTaskDelete(Task_t *task_) {
 
 
   /* Assert if we are within the scope of the scheduler. */
-  SYSASSERT(SchedulerStateSuspended == schedulerState);
+  SYSASSERT(false == SYSFLAG_RUNNING());
 
 
   /* Check to make sure we aren't in the scope of the scheduler. */
-  if (SchedulerStateSuspended == schedulerState) {
+  if (false == SYSFLAG_RUNNING()) {
 
 
     /* Assert if we can't find the task in the task list. */
@@ -1076,7 +1076,6 @@ Base_t TaskListFindTask(const Task_t *task_) {
 
 
 
-
 /* The xTaskResetTimer() system call will reset the task timer. xTaskResetTimer() does not change
 the timer period or the task state when called. See xTaskChangePeriod() for more details on task timers. */
 void xTaskResetTimer(Task_t *task_) {
@@ -1147,7 +1146,6 @@ void xTaskStartScheduler(void) {
       if (SYSFLAG_OVERFLOW()) {
 
         RunTimeReset();
-      
       }
 
 
