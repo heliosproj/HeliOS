@@ -443,15 +443,19 @@ TaskRunTimeStats_t *xTaskGetTaskRunTimeStats(Task_t *task_) {
 /* The xTaskGetNumberOfTasks() system call returns the current number of tasks
 regardless of their state. */
 Base_t xTaskGetNumberOfTasks(void) {
+
+
   Base_t ret = zero;
 
   Base_t tasks = zero;
 
   Task_t *taskCursor = NULL;
 
+  /* Assert if the task list is not initialized. */
   SYSASSERT(ISNOTNULLPTR(taskList));
 
-  /* Check if the task list is not null. */
+
+  /* Check if the task list is not initialized. */
   if (ISNOTNULLPTR(taskList)) {
 
     taskCursor = taskList->head;
@@ -465,11 +469,13 @@ Base_t xTaskGetNumberOfTasks(void) {
       taskCursor = taskCursor->next;
     }
 
-    SYSASSERT(taskList->length == tasks);
+    /* Assert if the number of tasks counted does not agree with the task list
+    length. */
+    SYSASSERT(tasks == taskList->length);
 
     /* Check if the length of the task list equals the number of tasks counted
     (this is an integrity check). */
-    if (taskList->length == tasks) {
+    if (tasks == taskList->length) {
 
       ret = tasks;
     }
@@ -486,13 +492,17 @@ TaskInfo_t *xTaskGetTaskInfo(Task_t *task_) {
 
 
 
-
+  /* Assert if the task cannot be found. */
   SYSASSERT(RETURN_SUCCESS == TaskListFindTask(task_));
 
+
+  /* Check if the task cannot be found. */
   if (RETURN_SUCCESS == TaskListFindTask(task_)) {
 
     ret = (TaskInfo_t *)xMemAlloc(sizeof(TaskInfo_t));
 
+
+    /* Assert if xMemAlloc() failed to do its one job in life. */
     SYSASSERT(ISNOTNULLPTR(ret));
 
     /* Check if the task info memory has been allocated by xMemAlloc(). if it
@@ -518,6 +528,8 @@ TaskInfo_t *xTaskGetTaskInfo(Task_t *task_) {
 /* The xTaskGetAllTaskInfo() system call returns the xTaskInfo structure containing
 the details of ALL tasks including its identifier, name, state and runtime statistics. */
 TaskInfo_t *xTaskGetAllTaskInfo(Base_t *tasks_) {
+
+
   Base_t i = zero;
 
   Base_t tasks = zero;
@@ -527,14 +539,20 @@ TaskInfo_t *xTaskGetAllTaskInfo(Base_t *tasks_) {
   TaskInfo_t *ret = NULL;
 
 
+  /* Assert if the task list has not been initialized. */
   SYSASSERT(ISNOTNULLPTR(taskList));
 
+
+  /* Assert if the end-user passed us a null pointer. */
   SYSASSERT(ISNOTNULLPTR(tasks_));
+
 
   /* Check if the task list is not null and the tasks parameter is not null. */
   if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(tasks_))) {
 
     taskCursor = taskList->head;
+
+
 
     /* While the task cursor is not null, continue to traverse the task list counting
     the number of tasks in the list. */
@@ -544,6 +562,8 @@ TaskInfo_t *xTaskGetAllTaskInfo(Base_t *tasks_) {
 
       taskCursor = taskCursor->next;
     }
+
+
 
     SYSASSERT(tasks == taskList->length);
 
