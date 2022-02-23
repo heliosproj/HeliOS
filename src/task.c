@@ -910,15 +910,20 @@ void xTaskResume(Task_t *task_) {
   return;
 }
 
+
+
+
 /* The xTaskSuspend() system call will suspend a task. A task that has been suspended
 will not be executed by the scheduler until xTaskResume() or xTaskWait() is called. */
 void xTaskSuspend(Task_t *task_) {
 
 
 
-
+  /* Assert if the task cannot be found. */
   SYSASSERT(RETURN_SUCCESS == TaskListFindTask(task_));
 
+
+  /* Check if the task can be found. */
   if (RETURN_SUCCESS == TaskListFindTask(task_)) {
 
     task_->state = TaskStateSuspended;
@@ -928,6 +933,9 @@ void xTaskSuspend(Task_t *task_) {
   return;
 }
 
+
+
+
 /* The xTaskWait() system call will place a task in the waiting state. A task must
 be in the waiting state for event driven multitasking with either direct to task
 notifications OR setting the period on the task timer with xTaskChangePeriod(). A task
@@ -935,9 +943,11 @@ in the waiting state will not be executed by the scheduler until an event has oc
 void xTaskWait(Task_t *task_) {
 
 
-
+  /* Assert if the task cannot be found. */
   SYSASSERT(RETURN_SUCCESS == TaskListFindTask(task_));
 
+
+  /* Check if the task can be found. */
   if (RETURN_SUCCESS == TaskListFindTask(task_)) {
 
     task_->state = TaskStateWaiting;
@@ -947,6 +957,9 @@ void xTaskWait(Task_t *task_) {
   return;
 }
 
+
+
+
 /* The xTaskChangePeriod() system call will change the period (microseconds) on the task timer
 for the specified task. The timer period must be greater than zero. To have any effect, the task
 must be in the waiting state set by calling xTaskWait() on the task. Once the timer period is set
@@ -955,9 +968,11 @@ Changing the period to zero will prevent the task from being executed even if it
 void xTaskChangePeriod(Task_t *task_, Time_t timerPeriod_) {
 
 
-
+  /* Assert if the task cannot be found. */
   SYSASSERT(RETURN_SUCCESS == TaskListFindTask(task_));
 
+
+  /* Check if the task can be found. */
   if (RETURN_SUCCESS == TaskListFindTask(task_)) {
 
     task_->timerPeriod = timerPeriod_;
@@ -967,15 +982,22 @@ void xTaskChangePeriod(Task_t *task_, Time_t timerPeriod_) {
   return;
 }
 
+
+
+
 /* The xTaskGetPeriod() will return the period for the timer for the specified task. See
 xTaskChangePeriod() for more information on how the task timer works. */
 Time_t xTaskGetPeriod(Task_t *task_) {
+
+
   Time_t ret = zero;
 
 
-
+  /* Assert if the task cannot be found. */
   SYSASSERT(RETURN_SUCCESS == TaskListFindTask(task_));
 
+
+  /* Check if the task can be found. */
   if (RETURN_SUCCESS == TaskListFindTask(task_)) {
 
     ret = task_->timerPeriod;
@@ -985,31 +1007,58 @@ Time_t xTaskGetPeriod(Task_t *task_) {
   return ret;
 }
 
+
+/* TaskListFindTask() is used to search the task list for a
+task and returns RETURN_SUCCESS if the task is found. It also
+always checks the health of the heap by calling HeapCheck(). */
 Base_t TaskListFindTask(const Task_t *task_) {
+
+
   Base_t ret = RETURN_FAILURE;
 
   Task_t *taskCursor = NULL;
 
+
+  /* Assert if the task list is not initialized. */
   SYSASSERT(ISNOTNULLPTR(taskList));
 
+
+  /* Assert if the task pointer is null. */
   SYSASSERT(ISNOTNULLPTR(task_));
 
+
+  /* Check if the task list is initialized and the task pointer is not null. */
   if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(task_))) {
 
+
+    /* Assert if HeapCheck() fails on the health check of the heap OR if
+    the task pointer's entry cannot be found in the heap. */
     SYSASSERT(RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, task_));
 
+
+    /* Check if HeapCheck() passes on the health check and
+    the task pointer's entry can be found in the heap. */
     if (RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, task_)) {
+
 
       taskCursor = taskList->head;
 
+      /* Traverse the heap to find the task in the task list. */
       while ((ISNOTNULLPTR(taskCursor)) && (taskCursor != task_)) {
 
         taskCursor = taskCursor->next;
       }
 
+
+      /* Assert if the task cannot be found. */
       SYSASSERT(ISNOTNULLPTR(taskCursor));
 
+
+      /* Check if the task was found, if so then
+      return success! */
       if (ISNOTNULLPTR(taskCursor)) {
+
+
         ret = RETURN_SUCCESS;
       }
     }
@@ -1024,9 +1073,11 @@ void xTaskResetTimer(Task_t *task_) {
 
 
 
-
+  /* Assert if the task cannot be found. */
   SYSASSERT(RETURN_SUCCESS == TaskListFindTask(task_));
 
+
+  /* Check if the task was found. */
   if (RETURN_SUCCESS == TaskListFindTask(task_)) {
 
     task_->timerStartTime = CURRENTTIME();
@@ -1047,18 +1098,33 @@ void xTaskStartScheduler(void) {
   /* Disable interrupts and set the critical section flag before entering into the scheduler main
   loop. */
 
+
+  /* Assert if we are already inside the scope of the scheduler. */
   SYSASSERT(false == SYSFLAG_CRITICAL());
 
+
+  /* Assert if the task list has not been initialized. */
   SYSASSERT(ISNOTNULLPTR(taskList));
 
+
+  /* Check that we aren't inside the scope of the scheduler and that
+  the task list has been initialized. */
   if ((false == SYSFLAG_CRITICAL()) && (ISNOTNULLPTR(taskList))) {
 
+
+    /* Disable interrupts while the scheduler runs. We do ENABLE
+    the interrupts before we call the task's main. */
     DISABLE_INTERRUPTS();
 
+
+    /* Set the critical flag because we are now in the scheduler's
+    scope. */
     ENTER_CRITICAL();
 
     /* Continue to loop while the scheduler running flag is true. */
     while (SYSFLAG_RUNNING()) {
+
+
       /* If the runtime overflow flag is true. Reset the runtimes on all of the tasks. */
       if (SYSFLAG_OVERFLOW()) {
         RunTimeReset();
@@ -1101,6 +1167,7 @@ void xTaskStartScheduler(void) {
         taskCursor = taskCursor->next;
       }
 
+
       /* If the run task pointer is not null, then there is a running tasks to execute. */
       if (ISNOTNULLPTR(runTask)) {
 
@@ -1126,6 +1193,8 @@ void xTaskStartScheduler(void) {
 /* If the runtime overflow flag is set, then RunTimeReset() is called to reset all of the
 total runtimes on tasks to their last runtime. */
 void RunTimeReset(void) {
+
+
   Task_t *taskCursor = NULL;
 
 
@@ -1167,6 +1236,8 @@ Time_t CurrentTime(void) {
 /* Called by the xTaskStartScheduler() system call, TaskRun() executes a task and updates all of its
 runtime statistics. */
 void TaskRun(Task_t *task_) {
+
+
   Time_t taskStartTime = zero;
 
   Time_t prevTotalRunTime = zero;
@@ -1222,6 +1293,8 @@ void xTaskSuspendAll(void) {
 
 /* The xTaskGetSchedulerState() system call will return the state of the scheduler. */
 SchedulerState_t xTaskGetSchedulerState(void) {
+
+
   SchedulerState_t ret = SchedulerStateError;
 
   if (SYSFLAG_RUNNING() == true) {
