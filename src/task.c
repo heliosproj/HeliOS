@@ -36,6 +36,11 @@ extern SysFlags_t sysFlags;
 TaskList_t *taskList = NULL;
 
 
+/* Declare and initialize the scheduler state to
+running. This is controlled with xTaskResumeAll()
+and xTaskSuspendAll(). */
+SchedulerState_t schedulerState = SchedulerStateRunning;
+
 
 
 /* The xTaskCreate() system call will create a new task. The task will be created with its
@@ -48,7 +53,7 @@ Task_t *xTaskCreate(const char *name_, void (*callback_)(Task_t *, TaskParm_t *)
 
   Task_t *taskCursor = NULL;
 
-  SYSASSERT(false == SYSFLAG_CRITICAL());
+  SYSASSERT(SchedulerStateSuspended == schedulerState);
 
   SYSASSERT(ISNOTNULLPTR(name_));
 
@@ -61,7 +66,7 @@ Task_t *xTaskCreate(const char *name_, void (*callback_)(Task_t *, TaskParm_t *)
   pass any null pointers.
 
   NOTE: It is okay for the task paramater to be null. */
-  if ((false == SYSFLAG_CRITICAL()) && (ISNOTNULLPTR(name_)) && (ISNOTNULLPTR(callback_))) {
+  if ((SchedulerStateSuspended == schedulerState) && (ISNOTNULLPTR(name_)) && (ISNOTNULLPTR(callback_))) {
 
 
     /* See if the task list needs to be created. */
@@ -155,11 +160,11 @@ void xTaskDelete(Task_t *task_) {
 
 
   /* Assert if we are within the scope of the scheduler. */
-  SYSASSERT(SYSFLAG_CRITICAL() == false);
+  SYSASSERT(SchedulerStateSuspended == schedulerState);
 
 
   /* Check to make sure we aren't in the scope of the scheduler. */
-  if (false == SYSFLAG_CRITICAL()) {
+  if (SchedulerStateSuspended == schedulerState) {
 
 
     /* Assert if we can't find the task in the task list. */
@@ -1110,17 +1115,17 @@ void xTaskStartScheduler(void) {
   loop. */
 
 
-  /* Assert if we are already inside the scope of the scheduler. */
-  SYSASSERT(false == SYSFLAG_CRITICAL());
+  /* Assert if the scheduler is already running. */
+  SYSASSERT(false == SYSFLAG_RUNNING());
 
 
   /* Assert if the task list has not been initialized. */
   SYSASSERT(ISNOTNULLPTR(taskList));
 
 
-  /* Check that we aren't inside the scope of the scheduler and that
-  the task list has been initialized. */
-  if ((false == SYSFLAG_CRITICAL()) && (ISNOTNULLPTR(taskList))) {
+  /* Check that the scheduler is not already running and
+  that the task list is initialized. */
+  if ((false == SYSFLAG_RUNNING()) && (ISNOTNULLPTR(taskList))) {
 
 
     /* Disable interrupts while the scheduler runs. We do ENABLE
@@ -1128,17 +1133,21 @@ void xTaskStartScheduler(void) {
     DISABLE_INTERRUPTS();
 
 
-    /* Set the critical flag because we are now in the scheduler's
-    scope. */
-    ENTER_CRITICAL();
+    /* Now set the scheduler system flag to running because
+    the scheduler IS running. */
+    SYSFLAG_RUNNING() = true;
+
+
 
     /* Continue to loop while the scheduler running flag is true. */
-    while (SYSFLAG_RUNNING()) {
+    while (SchedulerStateRunning == schedulerState) {
 
 
       /* If the runtime overflow flag is true. Reset the runtimes on all of the tasks. */
       if (SYSFLAG_OVERFLOW()) {
+
         RunTimeReset();
+      
       }
 
 
@@ -1191,9 +1200,7 @@ void xTaskStartScheduler(void) {
     }
 
 
-
-    /* Enable interrupts and UNset the critical section flag before returning from the scheduler. */
-    EXIT_CRITICAL();
+    SYSFLAG_RUNNING() = false;
 
     ENABLE_INTERRUPTS();
   }
@@ -1300,7 +1307,8 @@ void TaskRun(Task_t *task_) {
 call to xTaskStartScheduler() will resume execute of all tasks. */
 void xTaskResumeAll(void) {
 
-  SYSFLAG_RUNNING() = true;
+
+  schedulerState = SchedulerStateRunning;
 
   return;
 }
@@ -1312,7 +1320,8 @@ void xTaskResumeAll(void) {
 will stop and return. */
 void xTaskSuspendAll(void) {
 
-  SYSFLAG_RUNNING() = false;
+  schedulerState = SchedulerStateSuspended;
+
 
   return;
 }
@@ -1321,19 +1330,5 @@ void xTaskSuspendAll(void) {
 SchedulerState_t xTaskGetSchedulerState(void) {
 
 
-  SchedulerState_t ret = SchedulerStateError;
-
-
-  /* Check if the scheduler is running, if it is
-  then return SchedulerStateRunning. */
-  if (true == SYSFLAG_RUNNING()) {
-
-    ret = SchedulerStateRunning;
-
-  } else {
-
-    ret = SchedulerStateSuspended;
-  }
-
-  return ret;
+  return schedulerState;
 }

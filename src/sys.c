@@ -36,7 +36,6 @@ May you forever rest in peace. */
 /* Declare and set the system flags to their default values. */
 SysFlags_t sysFlags = {
     .running = true,
-    .critical = false,
     .overflow = false,
     .privileged = false};
 

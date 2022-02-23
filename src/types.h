@@ -117,10 +117,10 @@ typedef struct TimerList_s {
 
 typedef struct SysFlags_s {
   Byte_t running : 1;
-  Byte_t critical : 1;
+/*  Byte_t critical : 1; NOT GOING TO BE USED THIS WAY ANY LONGER */
   Byte_t overflow : 1;
   Byte_t privileged : 1;
-  Byte_t reserved : 4;
+  Byte_t reserved : 5;
 } SysFlags_t;
 
 typedef struct QueueMessage_s {

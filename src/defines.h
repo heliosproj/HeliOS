@@ -262,26 +262,6 @@ xSystemGetSystemInfo(). */
 #define OS_PATCH_VERSION_NO 0x1u
 #endif
 
-/* Define the macro which sets the critical flag to true when
-entering a critical section of code. */
-#if !defined(ENTER_CRITICAL)
-#define ENTER_CRITICAL() sysFlags.critical = true
-#endif
-
-/* Define the macro which sets the critical flag to false when
-exiting a critical section of code. */
-#if !defined(EXIT_CRITICAL)
-#define EXIT_CRITICAL() sysFlags.critical = false
-#endif
-
-/* Define a macro which makes using the system flags more
-readable. The critical system flag is used by xTaskCreate()
-and xTaskDelete() to determine when within the scope of the
-scheduler. */
-#if !defined(SYSFLAG_CRITICAL)
-#define SYSFLAG_CRITICAL() sysFlags.critical
-#endif
-
 /* Define the macro which sets the privileged flag to true when
 the next call to xMemAlloc() and xMemFree() is for protected
 memory. */
