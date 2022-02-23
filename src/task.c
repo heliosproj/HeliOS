@@ -1008,6 +1008,7 @@ Time_t xTaskGetPeriod(Task_t *task_) {
 }
 
 
+
 /* TaskListFindTask() is used to search the task list for a
 task and returns RETURN_SUCCESS if the task is found. It also
 always checks the health of the heap by calling HeapCheck(). */
@@ -1067,6 +1068,10 @@ Base_t TaskListFindTask(const Task_t *task_) {
   return ret;
 }
 
+
+
+
+
 /* The xTaskResetTimer() system call will reset the task timer. xTaskResetTimer() does not change
 the timer period or the task state when called. See xTaskChangePeriod() for more details on task timers. */
 void xTaskResetTimer(Task_t *task_) {
@@ -1086,8 +1091,14 @@ void xTaskResetTimer(Task_t *task_) {
   return;
 }
 
+
+
+
 /* The xTaskStartScheduler() system call passes control to the HeliOS scheduler. */
 void xTaskStartScheduler(void) {
+
+
+
   Task_t *runTask = NULL;
 
   Task_t *taskCursor = NULL;
@@ -1190,6 +1201,9 @@ void xTaskStartScheduler(void) {
   return;
 }
 
+
+
+
 /* If the runtime overflow flag is set, then RunTimeReset() is called to reset all of the
 total runtimes on tasks to their last runtime. */
 void RunTimeReset(void) {
@@ -1215,6 +1229,9 @@ void RunTimeReset(void) {
   return;
 }
 
+
+
+
 /* Used only for when testing HeliOS on Linux, then get the time from clock_gettime(). */
 Time_t CurrentTime(void) {
 
@@ -1232,6 +1249,9 @@ Time_t CurrentTime(void) {
 
 #endif
 }
+
+
+
 
 /* Called by the xTaskStartScheduler() system call, TaskRun() executes a task and updates all of its
 runtime statistics. */
@@ -1273,6 +1293,9 @@ void TaskRun(Task_t *task_) {
   return;
 }
 
+
+
+
 /* The xTaskResumeAll() system call will set the scheduler system flag so the next
 call to xTaskStartScheduler() will resume execute of all tasks. */
 void xTaskResumeAll(void) {
@@ -1281,6 +1304,9 @@ void xTaskResumeAll(void) {
 
   return;
 }
+
+
+
 
 /* The xTaskSuspendAll() system call will set the scheduler system flag so the scheduler
 will stop and return. */
@@ -1297,7 +1323,10 @@ SchedulerState_t xTaskGetSchedulerState(void) {
 
   SchedulerState_t ret = SchedulerStateError;
 
-  if (SYSFLAG_RUNNING() == true) {
+
+  /* Check if the scheduler is running, if it is
+  then return SchedulerStateRunning. */
+  if (true == SYSFLAG_RUNNING()) {
 
     ret = SchedulerStateRunning;
 
