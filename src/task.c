@@ -564,21 +564,27 @@ TaskInfo_t *xTaskGetAllTaskInfo(Base_t *tasks_) {
     }
 
 
-
+    /* Assert if the number of tasks counted disagrees with the length of the task list. */
     SYSASSERT(tasks == taskList->length);
 
     /* Check if the number of tasks is greater than zero and the length of the task list equals
     the number of tasks just counted (this is done as an integrity check). */
     if ((zero < tasks) && (tasks == taskList->length)) {
 
+
+
       ret = (TaskInfo_t *)xMemAlloc(tasks * sizeof(TaskInfo_t));
 
+
+      /* Assert if xMemAlloc() didn't do its job. */
       SYSASSERT(ISNOTNULLPTR(ret));
 
       /* Check if xMemAlloc() successfully allocated the memory. */
       if (ISNOTNULLPTR(ret)) {
 
+
         taskCursor = taskList->head;
+
 
         /* While the task cursor is not null, continue to traverse the task list adding the
         runtime statistics of each task to the runtime stats array to be returned. */
@@ -615,13 +621,17 @@ TaskInfo_t *xTaskGetAllTaskInfo(Base_t *tasks_) {
 
 /* The xTaskGetTaskState() system call will return the state of the task. */
 TaskState_t xTaskGetTaskState(Task_t *task_) {
+
+
   TaskState_t ret = TaskStateError;
 
 
 
-
+  /* Assert if the task cannot be found. */
   SYSASSERT(RETURN_SUCCESS == TaskListFindTask(task_));
 
+
+  /* Check to make sure the task was found. */
   if (RETURN_SUCCESS == TaskListFindTask(task_)) {
 
     ret = task_->state;
@@ -635,21 +645,31 @@ TaskState_t xTaskGetTaskState(Task_t *task_) {
 task is dependent on the setting CONFIG_TASK_NAME_BYTES. The task name is NOT a null
 terminated char array. */
 char *xTaskGetName(Task_t *task_) {
+
+
   char *ret = NULL;
 
 
 
-
+  /* Assert if the task cannot be found. */
   SYSASSERT(RETURN_SUCCESS == TaskListFindTask(task_));
 
+
+  /* Check if the task can be found. */
   if (RETURN_SUCCESS == TaskListFindTask(task_)) {
+
 
     ret = (char *)xMemAlloc(CONFIG_TASK_NAME_BYTES);
 
+
+    /* Assert if xMemAlloc() didn't do its job. */
     SYSASSERT(ISNOTNULLPTR(ret));
+
 
     /* Check if the task info memory has been allocated by xMemAlloc(). */
     if (ISNOTNULLPTR(ret)) {
+
+
 
       memcpy_(ret, task_->name, CONFIG_TASK_NAME_BYTES);
     }
@@ -661,12 +681,16 @@ char *xTaskGetName(Task_t *task_) {
 
 /* The xTaskGetId() system call returns the task identifier for the task. */
 Base_t xTaskGetId(Task_t *task_) {
+
+
   Base_t ret = zero;
 
 
-
+  /* Assert if the task cannot be found. */
   SYSASSERT(RETURN_SUCCESS == TaskListFindTask(task_));
 
+
+  /* Check that the task was found. */
   if (RETURN_SUCCESS == TaskListFindTask(task_)) {
 
     ret = task_->id;
@@ -681,11 +705,16 @@ exists without returning the notification. */
 void xTaskNotifyStateClear(Task_t *task_) {
 
 
-
+  /* Assert if the task cannot be found. */
   SYSASSERT(RETURN_SUCCESS == TaskListFindTask(task_));
 
+
+  /* Check if the task was found. */
   if (RETURN_SUCCESS == TaskListFindTask(task_)) {
 
+
+    /* If the notification bytes are greater than zero then there
+    is a notification to be cleared. */
     if (zero < task_->notificationBytes) {
 
       task_->notificationBytes = zero;
