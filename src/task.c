@@ -232,6 +232,7 @@ void xTaskDelete(Task_t *task_) {
 
 
 
+
 /* The xTaskGetHandleByName() system call will return the task handle pointer to the
 task specified by its ASCII name. The length of the task name is dependent on the
 CONFIG_TASK_NAME_BYTES setting. The name is compared byte-for-byte so the name is
@@ -276,6 +277,9 @@ Task_t *xTaskGetHandleByName(const char *name_) {
   return ret;
 }
 
+
+
+
 /* The xTaskGetHandleById() system call will return a pointer to the task handle
 specified by its identifier. */
 Task_t *xTaskGetHandleById(Base_t id_) {
@@ -317,6 +321,9 @@ Task_t *xTaskGetHandleById(Base_t id_) {
 
   return ret;
 }
+
+
+
 
 /* The xTaskGetAllRunTimeStats() system call will return the runtime statistics for all
  of the tasks regardless of their state. The xTaskGetAllRunTimeStats() system call returns
@@ -404,6 +411,9 @@ TaskRunTimeStats_t *xTaskGetAllRunTimeStats(Base_t *tasks_) {
   return ret;
 }
 
+
+
+
 /* The xTaskGetTaskRunTimeStats() system call returns the task runtime statistics for
 one task. The xTaskGetTaskRunTimeStats() system call returns the xTaskRunTimeStats type.
 The memory must be freed by calling xMemFree() after it is no longer needed. */
@@ -439,6 +449,9 @@ TaskRunTimeStats_t *xTaskGetTaskRunTimeStats(Task_t *task_) {
 
   return ret;
 }
+
+
+
 
 /* The xTaskGetNumberOfTasks() system call returns the current number of tasks
 regardless of their state. */
@@ -484,6 +497,9 @@ Base_t xTaskGetNumberOfTasks(void) {
   return ret;
 }
 
+
+
+
 /* The xTaskGetTaskInfo() system call returns the xTaskInfo structure containing
 the details of the task including its identifier, name, state and runtime statistics. */
 TaskInfo_t *xTaskGetTaskInfo(Task_t *task_) {
@@ -524,6 +540,9 @@ TaskInfo_t *xTaskGetTaskInfo(Task_t *task_) {
 
   return ret;
 }
+
+
+
 
 /* The xTaskGetAllTaskInfo() system call returns the xTaskInfo structure containing
 the details of ALL tasks including its identifier, name, state and runtime statistics. */
@@ -619,6 +638,7 @@ TaskInfo_t *xTaskGetAllTaskInfo(Base_t *tasks_) {
 }
 
 
+
 /* The xTaskGetTaskState() system call will return the state of the task. */
 TaskState_t xTaskGetTaskState(Task_t *task_) {
 
@@ -640,6 +660,8 @@ TaskState_t xTaskGetTaskState(Task_t *task_) {
 
   return ret;
 }
+
+
 
 /* The xTaskGetName() system call returns the ASCII name of the task. The size of the
 task is dependent on the setting CONFIG_TASK_NAME_BYTES. The task name is NOT a null
@@ -679,6 +701,8 @@ char *xTaskGetName(Task_t *task_) {
   return ret;
 }
 
+
+
 /* The xTaskGetId() system call returns the task identifier for the task. */
 Base_t xTaskGetId(Task_t *task_) {
 
@@ -699,6 +723,9 @@ Base_t xTaskGetId(Task_t *task_) {
 
   return ret;
 }
+
+
+
 
 /* The xTaskNotifyStateClear() system call will clear a waiting task notification if one
 exists without returning the notification. */
@@ -727,6 +754,8 @@ void xTaskNotifyStateClear(Task_t *task_) {
   return;
 }
 
+
+
 /* The xTaskNotificationIsWaiting() system call will return true or false depending
 on whether there is a task notification waiting for the task. */
 Base_t xTaskNotificationIsWaiting(Task_t *task_) {
@@ -734,11 +763,16 @@ Base_t xTaskNotificationIsWaiting(Task_t *task_) {
 
 
 
-
+  /* Assert if the task cannot be found. */
   SYSASSERT(RETURN_SUCCESS == TaskListFindTask(task_));
 
+
+  /* Check if the task was found. */
   if (RETURN_SUCCESS == TaskListFindTask(task_)) {
 
+
+    /* If there are notification bytes, there is a notification
+    waiting. */
     if (zero < task_->notificationBytes) {
 
 
@@ -750,30 +784,47 @@ Base_t xTaskNotificationIsWaiting(Task_t *task_) {
   return ret;
 }
 
+
+
+
 /* The xTaskNotifyGive() system call will send a task notification to the specified task. The
 task notification bytes is the number of bytes contained in the notification value. The number of
 notification bytes must be between one and the CONFIG_NOTIFICATION_VALUE_BYTES setting. The notification
 value must contain a pointer to a char array containing the notification value. If the task already
 has a waiting task notification, xTaskNotifyGive() will NOT overwrite the waiting task notification. */
 Base_t xTaskNotifyGive(Task_t *task_, Base_t notificationBytes_, const char *notificationValue_) {
+
+
+
   Base_t ret = RETURN_FAILURE;
 
-
+  /* Assert if the notification bytes are zero. */
   SYSASSERT(zero < notificationBytes_);
 
+  /* Assert if the notification bytes exceeds the setting
+  CONFIG_NOTIFICATION_VALUE_BYTES. */
   SYSASSERT(CONFIG_NOTIFICATION_VALUE_BYTES > notificationBytes_);
 
+
+  /* Assert if the end-user passed us a null pointer for the
+  notification value. */
   SYSASSERT(ISNOTNULLPTR(notificationValue_));
 
   /* Check if the task list is not null and the task parameter is not null, the notification bytes are between
   one and CONFIG_NOTIFICATION_VALUE_BYTES and that the notification value char array pointer is not null. */
   if ((zero < notificationBytes_) && (CONFIG_NOTIFICATION_VALUE_BYTES > notificationBytes_) && (ISNOTNULLPTR(notificationValue_))) {
 
+
+    /* Assert if we can't find the task to receive the notification. */
     SYSASSERT(RETURN_SUCCESS == TaskListFindTask(task_));
 
+
+    /* Check if the task can be found. */
     if (RETURN_SUCCESS == TaskListFindTask(task_)) {
 
 
+      /* Make sure there isn't a waiting notification. xTaskNotifyGive will NOT
+      overwrite a waiting notification. */
       if (zero == task_->notificationBytes) {
 
         task_->notificationBytes = notificationBytes_;
@@ -788,6 +839,8 @@ Base_t xTaskNotifyGive(Task_t *task_, Base_t notificationBytes_, const char *not
   return ret;
 }
 
+
+
 /* The xTaskNotifyTake() system call will return the waiting task notification if there
 is one. The xTaskNotifyTake() system call will return an xTaskNotification structure containing
 the notification bytes and its value. */
@@ -797,15 +850,23 @@ TaskNotification_t *xTaskNotifyTake(Task_t *task_) {
 
 
 
-
+  /* Assert if the task cannot be found. */
   SYSASSERT(RETURN_SUCCESS == TaskListFindTask(task_));
 
+
+  /* Check if the task cannot be found. */
   if (RETURN_SUCCESS == TaskListFindTask(task_)) {
 
+    /* If there are notification bytes, there is a notification
+    waiting. */
     if (zero < task_->notificationBytes) {
+
+
 
       ret = (TaskNotification_t *)xMemAlloc(sizeof(TaskNotification_t));
 
+
+      /* Assert if xMemAlloc() didn't do its job. */
       SYSASSERT(ISNOTNULLPTR(ret));
 
       /* Check if xMemAlloc() successfully allocated the memory for the task notification
@@ -827,6 +888,8 @@ TaskNotification_t *xTaskNotifyTake(Task_t *task_) {
   return ret;
 }
 
+
+
 /* The xTaskResume() system call will resume a suspended task. Tasks are suspended on creation
 so either xTaskResume() or xTaskWait() must be called to place the task in a state that the scheduler
 will execute. */
@@ -834,9 +897,10 @@ void xTaskResume(Task_t *task_) {
 
 
 
-
+  /* Assert if the task cannot be found. */
   SYSASSERT(RETURN_SUCCESS == TaskListFindTask(task_));
 
+  /* Check if the task can be found. */
   if (RETURN_SUCCESS == TaskListFindTask(task_)) {
 
     task_->state = TaskStateRunning;
