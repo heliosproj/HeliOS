@@ -26,15 +26,24 @@
 
 #include "task.h"
 
+
+
 extern SysFlags_t sysFlags;
+
+
 
 /* Declare and initialize the task list to null. */
 TaskList_t *taskList = NULL;
+
+
+
 
 /* The xTaskCreate() system call will create a new task. The task will be created with its
 state set to suspended. The xTaskCreate() and xTaskDelete() system calls cannot be called within
 a task. They MUST be called outside of the scope of the HeliOS scheduler. */
 Task_t *xTaskCreate(const char *name_, void (*callback_)(Task_t *, TaskParm_t *), TaskParm_t *taskParameter_) {
+
+
   Task_t *ret = NULL;
 
   Task_t *taskCursor = NULL;
@@ -45,32 +54,48 @@ Task_t *xTaskCreate(const char *name_, void (*callback_)(Task_t *, TaskParm_t *)
 
   SYSASSERT(ISNOTNULLPTR(callback_));
 
-  /* Check if not in a critical section from CRITICAL_ENTER() and make sure the name and callback parameters
-  are not null. */
+
+
+
+  /* Make sure we aren't inside the scope of the scheduler and that the end-user didn't
+  pass any null pointers.
+
+  NOTE: It is okay for the task paramater to be null. */
   if ((false == SYSFLAG_CRITICAL()) && (ISNOTNULLPTR(name_)) && (ISNOTNULLPTR(callback_))) {
-    /* Check if the task list is null, if it is call xMemAlloc() to allocate
-    the dynamic memory for it. */
+
+
+    /* See if the task list needs to be created. */
     if (ISNULLPTR(taskList)) {
 
+
+      /* We are creating a kernel object here so enter privileged mode. */
       ENTER_PRIVILEGED();
+
 
       taskList = (TaskList_t *)xMemAlloc(sizeof(TaskList_t));
     }
 
+
+    /* Assert if xMemAlloc() didn't do its job. */
     SYSASSERT(ISNOTNULLPTR(taskList));
 
-    /* Check if the task list is still null in which case xMemAlloc() was unable to allocate
-    the required memory. Enable interrupts and return null. */
+
+    /* Check if xMemAlloc() did its job. */
     if (ISNOTNULLPTR(taskList)) {
 
+
+      /* We are creating a kernel object so enter privileged mode. */
       ENTER_PRIVILEGED();
 
       ret = (Task_t *)xMemAlloc(sizeof(Task_t));
 
+
+      /* Again, assert if xMemAlloc() didn't do its job. */
       SYSASSERT(ISNOTNULLPTR(ret));
 
-      /* Check if the task is not null. If it is, then xMemAlloc() was unable to allocate the required
-      memory. */
+
+      /* Check if xMemAlloc() did its job. If so, populate the task with all the
+      pertinent details. */
       if (ISNOTNULLPTR(ret)) {
 
         taskList->nextId++;
@@ -89,8 +114,9 @@ Task_t *xTaskCreate(const char *name_, void (*callback_)(Task_t *, TaskParm_t *)
 
         taskCursor = taskList->head;
 
-        /* Check if the task list head is not null, if it is set it to the newly created task. If it
-        isn't null then append the newly created task to the task list. */
+        /* Check if this is the first task in the task list. If it is just set
+        the head to it. Otherwise we are going to have to traverse the list
+        to find the end. */
         if (ISNOTNULLPTR(taskList->head)) {
 
 
@@ -116,32 +142,47 @@ Task_t *xTaskCreate(const char *name_, void (*callback_)(Task_t *, TaskParm_t *)
   return ret;
 }
 
+
+
 /* The xTaskDelete() system call will delete a task. The xTaskCreate() and xTaskDelete() system calls
 cannot be called within a task. They MUST be called outside of the scope of the HeliOS scheduler. */
 void xTaskDelete(Task_t *task_) {
+
+
   Task_t *taskCursor = NULL;
 
   Task_t *taskPrevious = NULL;
 
+
+  /* Assert if we are within the scope of the scheduler. */
   SYSASSERT(SYSFLAG_CRITICAL() == false);
 
 
-  /* Check if not in a critical section from CRITICAL_ENTER() and make sure the task list is not null
-  and that the task parameter is also not null. */
+  /* Check to make sure we aren't in the scope of the scheduler. */
   if (false == SYSFLAG_CRITICAL()) {
 
+
+    /* Assert if we can't find the task in the task list. */
     SYSASSERT(RETURN_SUCCESS == TaskListFindTask(task_));
 
+
+    /* Check if the task is in the task list, if not then head toward
+    the exit. */
     if (RETURN_SUCCESS == TaskListFindTask(task_)) {
+
 
       taskCursor = taskList->head;
 
-      /* Check if the task cursor is not null and if the task cursor equals the task
-      to be deleted. */
+
+      /* If the task is at the head of the task list then just remove
+      it and free its heap memory. */
       if ((ISNOTNULLPTR(taskCursor)) && (taskCursor == task_)) {
+
 
         taskList->head = taskCursor->next;
 
+
+        /* We are freeing a kernel object so enter privileged mode. */
         ENTER_PRIVILEGED();
 
         xMemFree(taskCursor);
@@ -149,8 +190,9 @@ void xTaskDelete(Task_t *task_) {
         taskList->length--;
 
       } else {
-        /* While the task cursor is not null and the task cursor is not equal to the
-        task to be deleted. */
+
+        /* Well, it wasn't at the head of the task list so now we have to
+        go hunt it down. */
         while ((ISNOTNULLPTR(taskCursor)) && (taskCursor != task_)) {
 
           taskPrevious = taskCursor;
@@ -158,16 +200,26 @@ void xTaskDelete(Task_t *task_) {
           taskCursor = taskCursor->next;
         }
 
+
+        /* Assert if we didn't find it which should be impossible given
+        TaskListFindTask() found it. Maybe some cosmic rays bit flipped
+        the DRAM!? */
         SYSASSERT(ISNOTNULLPTR(taskCursor));
 
-        /* If the task cursor is is not null, then delete the task otherwise return. */
+
+        /* Check if the task cursor points to something. That something should
+        be the task we want to free. */
         if (ISNOTNULLPTR(taskCursor)) {
 
           taskPrevious->next = taskCursor->next;
 
+
+          /* We are freeing a kernel object so enter privileged mode. */
           ENTER_PRIVILEGED();
 
+
           xMemFree(taskCursor);
+
 
           taskList->length--;
         }
@@ -178,17 +230,25 @@ void xTaskDelete(Task_t *task_) {
   return;
 }
 
+
+
 /* The xTaskGetHandleByName() system call will return the task handle pointer to the
 task specified by its ASCII name. The length of the task name is dependent on the
 CONFIG_TASK_NAME_BYTES setting. The name is compared byte-for-byte so the name is
 case sensitive. */
 Task_t *xTaskGetHandleByName(const char *name_) {
+
+
   Task_t *ret = NULL;
 
   Task_t *taskCursor = NULL;
 
+
+  /* Assert if the task list has not been initialized. We wouldn't have to do this
+  if we called TaskListFindTask() but that isn't needed here. */
   SYSASSERT(ISNOTNULLPTR(taskList));
 
+  /* Assert if the end-user passed a null pointer for the task name. */
   SYSASSERT(ISNOTNULLPTR(name_));
 
   /* Check if the task list is not null and the name parameter is also not null. */
@@ -219,12 +279,18 @@ Task_t *xTaskGetHandleByName(const char *name_) {
 /* The xTaskGetHandleById() system call will return a pointer to the task handle
 specified by its identifier. */
 Task_t *xTaskGetHandleById(Base_t id_) {
+
+
   Task_t *ret = NULL;
 
   Task_t *taskCursor = NULL;
 
+  /* Assert if the task list has not been initialized. We wouldn't have to do this
+  if we called TaskListFindTask() but that isn't needed here. */
   SYSASSERT(ISNOTNULLPTR(taskList));
 
+
+  /* Assert if the task identifier is zero because it shouldn't be. */
   SYSASSERT(zero < id_);
 
   /* Check if the task list is not null and the identifier parameter is greater than
@@ -257,6 +323,8 @@ Task_t *xTaskGetHandleById(Base_t id_) {
  the xTaskRunTimeStats type. An xBase variable must be passed by reference to xTaskGetAllRunTimeStats()
  which will contain the number of tasks so the end-user can iterate through the tasks. */
 TaskRunTimeStats_t *xTaskGetAllRunTimeStats(Base_t *tasks_) {
+
+
   Base_t i = zero;
 
   Base_t tasks = zero;
@@ -265,9 +333,15 @@ TaskRunTimeStats_t *xTaskGetAllRunTimeStats(Base_t *tasks_) {
 
   TaskRunTimeStats_t *ret = NULL;
 
+
+  /* Assert if the task list has not been initialized. We wouldn't have to do this
+  if we called TaskListFindTask() but that isn't needed here. */
   SYSASSERT(ISNOTNULLPTR(taskList));
 
+
+  /* Check to make sure the pointer for the pass-by-reference is not null. */
   SYSASSERT(ISNOTNULLPTR(tasks_));
+
 
   /* Check if the task list is not null and the tasks parameter is not null. */
   if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(tasks_))) {
@@ -283,6 +357,8 @@ TaskRunTimeStats_t *xTaskGetAllRunTimeStats(Base_t *tasks_) {
       taskCursor = taskCursor->next;
     }
 
+
+    /* Assert if the tasks counted does not agree with the length of the task list. */
     SYSASSERT(tasks == taskList->length);
 
     /* Check if the number of tasks is greater than zero and the length of the task list equals
@@ -292,8 +368,9 @@ TaskRunTimeStats_t *xTaskGetAllRunTimeStats(Base_t *tasks_) {
 
       ret = (TaskRunTimeStats_t *)xMemAlloc(tasks * sizeof(TaskRunTimeStats_t));
 
-
+      /* Assert if xMemAlloc() didn't do its job. */
       SYSASSERT(ISNOTNULLPTR(ret));
+
 
       /* Check if xMemAlloc() successfully allocated the memory. */
       if (ISNOTNULLPTR(ret)) {
@@ -336,14 +413,17 @@ TaskRunTimeStats_t *xTaskGetTaskRunTimeStats(Task_t *task_) {
 
 
 
-
+  /* Assert if the task cannot be found in the task list. */
   SYSASSERT(RETURN_SUCCESS == TaskListFindTask(task_));
 
-  /* If the task cursor is null, the task could not be found so return null. */
+  /* Check if the task cannot be found in the task list. */
   if (RETURN_SUCCESS == TaskListFindTask(task_)) {
+
 
     ret = (TaskRunTimeStats_t *)xMemAlloc(sizeof(TaskRunTimeStats_t));
 
+
+    /* Assert if xMemAlloc() didn't do its job. */
     SYSASSERT(ISNOTNULLPTR(ret));
 
     /* Check if xMemAlloc() successfully allocated the memory. */

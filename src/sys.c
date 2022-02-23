@@ -30,6 +30,9 @@
 Thank you for the best OS on Earth, Dennis.
 May you forever rest in peace. */
 
+
+
+
 /* Declare and set the system flags to their default values. */
 SysFlags_t sysFlags = {
     .running = true,
@@ -37,15 +40,22 @@ SysFlags_t sysFlags = {
     .overflow = false,
     .privileged = false};
 
+
+
+
 /* The xSystemAssert() system call will be called when
-the SYSASSERT() macro evaluates true. In order for there
+the SYSASSERT() macro evaluates false. In order for there
 to be any effect, CONFIG_ENABLE_SYSTEM_ASSERT and
 CONFIG_SYSTEM_ASSERT_BEHAVIOR must be defined. */
 void xSystemAssert(const char *file_, int line_) {
 
+
+
 #if defined(CONFIG_SYSTEM_ASSERT_BEHAVIOR)
   CONFIG_SYSTEM_ASSERT_BEHAVIOR(file_, line_);
 #endif
+
+
 
   return;
 }
@@ -53,12 +63,19 @@ void xSystemAssert(const char *file_, int line_) {
 /* The xSystemHalt() system call halts the system. */
 void xSystemHalt(void) {
 
+
   /* Don't want to service interrupts anymore so disable them. */
   DISABLE_INTERRUPTS();
 
+
+
   /* Put the processor into an infinite loop. */
   for (;;) {
+    /* Do nothing - literally. */
   }
+
+
+
 }
 
 /* The xSystemGetSystemInfo() system call will return the type xSystemInfo containing
