@@ -26,10 +26,19 @@
 
 #include "timer.h"
 
+
+
+
 extern SysFlags_t sysFlags;
+
+
+
 
 /* Declare and initialize the task list to null. */
 TimerList_t *timerList = NULL;
+
+
+
 
 /* The xTimerCreate() system call will create a new timer. Timers differ from
  task timers in that they do not create events that effect the scheduling of a task.
@@ -38,30 +47,46 @@ TimerList_t *timerList = NULL;
  be freed by xTimerDelete(). Unlike tasks, timers may be created and deleted within
  tasks. */
 Timer_t *xTimerCreate(Time_t timerPeriod_) {
+
+
   Timer_t *ret = NULL;
 
   Timer_t *timerCursor = NULL;
 
-  /* Check if the timer list is null, if it is create it. */
+
+  /* Check if the timer list has been initialized. */
   if (ISNULLPTR(timerList)) {
 
+    /* Going to create a kernel object so enter privileged mode. */
     ENTER_PRIVILEGED();
 
     timerList = (TimerList_t *)xMemAlloc(sizeof(TimerList_t));
   }
 
+
+  /* Assert if xMemAlloc() didn't do its job. */
   SYSASSERT(ISNOTNULLPTR(timerList));
 
+
+  /* Check if xMemAlloc() did its job. */
   if (ISNOTNULLPTR(timerList)) {
 
+
+    /* Going to create a kernel object so enter privileged mode. */
     ENTER_PRIVILEGED();
+
 
     ret = (Timer_t *)xMemAlloc(sizeof(Task_t));
 
+
+    /* Assert if xMemAlloc() didn't do its job. */
     SYSASSERT(ISNOTNULLPTR(ret));
+
 
     /* Check if xMemAlloc() successfully allocated the memory for the timer. */
     if (ISNOTNULLPTR(ret)) {
+
+
       ret->state = TimerStateSuspended;
 
       ret->timerPeriod = timerPeriod_;
@@ -71,6 +96,7 @@ Timer_t *xTimerCreate(Time_t timerPeriod_) {
       ret->next = NULL;
 
       timerCursor = timerList->head;
+
 
       /* Check if the head of the timer list is null. If so, iterate through the
       timer list to find the end otherwise just append the timer to the timer list. */
@@ -96,17 +122,25 @@ Timer_t *xTimerCreate(Time_t timerPeriod_) {
   return ret;
 }
 
+
+
+
 /* The xTimerDelete() system call will delete a timer. For more information on timers see the
 xTaskTimerCreate() system call. */
 void xTimerDelete(Timer_t *timer_) {
   Timer_t *timerCursor = NULL;
 
+
+
   Timer_t *timerPrevious = NULL;
 
 
-
+  /* Assert if the timer cannot be found in the timer
+  list. */
   SYSASSERT(RETURN_SUCCESS == TimerListFindTimer(timer_));
 
+
+  /* Check if the timer was found in the timer list. */
   if (RETURN_SUCCESS == TimerListFindTimer(timer_)) {
 
 
@@ -119,8 +153,11 @@ void xTimerDelete(Timer_t *timer_) {
     the timer parameter. */
     if ((ISNOTNULLPTR(timerCursor)) && (timerCursor == timer_)) {
 
+
       timerList->head = timerCursor->next;
 
+
+      /* Enter privileged mode to create a kernel object. */
       ENTER_PRIVILEGED();
 
       xMemFree(timerCursor);
@@ -140,15 +177,22 @@ void xTimerDelete(Timer_t *timer_) {
         timerCursor = timerCursor->next;
       }
 
+
+      /* Assert if the timer is not found though this
+      shouldn't ever happen. */
       SYSASSERT(ISNOTNULLPTR(timerCursor));
 
-      /* If the timer cursor is not null, then remove the timer
-      from the list and free its memory. */
+
+      /* Check if the timer was found, if so drop it from
+      the timer list and free its memory. */
       if (ISNOTNULLPTR(timerCursor)) {
 
 
         timerPrevious->next = timerCursor->next;
 
+
+        /* Going to free a kernel object so enter privileged
+        mode. */
         ENTER_PRIVILEGED();
 
         xMemFree(timerCursor);
@@ -162,6 +206,9 @@ void xTimerDelete(Timer_t *timer_) {
   return;
 }
 
+
+
+
 /* The xTimerChangePeriod() system call will change the period of the specified timer.
 The timer period is measured in microseconds. If the timer period is zero, the xTimerHasTimerExpired()
 system call will always return false. */
@@ -169,9 +216,11 @@ void xTimerChangePeriod(Timer_t *timer_, Time_t timerPeriod_) {
 
 
 
-
+  /* Assert if the timer cannot be found in the timer list. */
   SYSASSERT(RETURN_SUCCESS == TimerListFindTimer(timer_));
 
+
+  /* Check if the timer was found in the timer list. */
   if (RETURN_SUCCESS == TimerListFindTimer(timer_)) {
 
     timer_->timerPeriod = timerPeriod_;
@@ -181,15 +230,20 @@ void xTimerChangePeriod(Timer_t *timer_, Time_t timerPeriod_) {
   return;
 }
 
+
+
+
 /* The xTimerGetPeriod() system call will return the current timer period
 for the specified timer. */
 Time_t xTimerGetPeriod(Timer_t *timer_) {
+
   Time_t ret = zero;
 
 
-
+  /* Assert if the timer cannot be found in the timer list. */
   SYSASSERT(RETURN_SUCCESS == TimerListFindTimer(timer_));
 
+  /* Check if the timer was found in the timer list. */
   if (RETURN_SUCCESS == TimerListFindTimer(timer_)) {
 
     ret = timer_->timerPeriod;
@@ -199,17 +253,25 @@ Time_t xTimerGetPeriod(Timer_t *timer_) {
   return ret;
 }
 
+
+
+
 /* The xTimerIsTimerActive() system call will return true of the timer has been
 started with xTimerStart(). */
 Base_t xTimerIsTimerActive(Timer_t *timer_) {
+
+
   Base_t ret = false;
 
 
-
+  /* Assert if the timer cannot be found in the timer list. */
   SYSASSERT(RETURN_SUCCESS == TimerListFindTimer(timer_));
 
+  /* Check if the timer was found in the timer list. */
   if (RETURN_SUCCESS == TimerListFindTimer(timer_)) {
 
+    /* Check if the timer state is running, if so
+    return true. */
     if (TimerStateRunning == timer_->state) {
 
       ret = true;
@@ -220,18 +282,40 @@ Base_t xTimerIsTimerActive(Timer_t *timer_) {
   return ret;
 }
 
+
+
+
 /* The xTimerHasTimerExpired() system call will return true or false dependent on whether
 the timer period for the specified timer has elapsed. xTimerHasTimerExpired() will NOT
 reset the timer. Timers must be reset with xTimerReset(). */
 Base_t xTimerHasTimerExpired(Timer_t *timer_) {
+
+
   Base_t ret = false;
 
 
-
+  /* Assert if the timer cannot be found in the timer list. */
   SYSASSERT(RETURN_SUCCESS == TimerListFindTimer(timer_));
 
+
+  /* Check if the timer was found in the timer list. */
   if (RETURN_SUCCESS == TimerListFindTimer(timer_)) {
 
+
+    /* Assert if the timer isn't running, it must be for the
+    timer to expire. */
+    SYSASSERT(TimerStateRunning == timer_->state);
+
+
+
+    /* Assert if the timer period is zero, it must be greater
+    than zero for the timer to expire. */
+    SYSASSERT(zero < timer_->timerPeriod);
+
+
+    /* The timer should be running, the timer period should be
+    greater than zero and the elapsed time is greater than
+    the timer period. If so, then return true. */
     if ((TimerStateRunning == timer_->state) && (zero < timer_->timerPeriod) && ((CURRENTTIME() - timer_->timerStartTime) > timer_->timerPeriod)) {
 
       ret = true;
@@ -250,9 +334,12 @@ void xTimerReset(Timer_t *timer_) {
 
 
 
-
+  /* Assert if the timer cannot be found in the timer list. */
   SYSASSERT(RETURN_SUCCESS == TimerListFindTimer(timer_));
 
+
+
+  /* Check if the timer was found in the timer list. */
   if (RETURN_SUCCESS == TimerListFindTimer(timer_)) {
 
     timer_->timerStartTime = CURRENTTIME();
@@ -267,9 +354,12 @@ void xTimerStart(Timer_t *timer_) {
 
 
 
-
+  /* Assert if the timer cannot be found in the timer list. */
   SYSASSERT(RETURN_SUCCESS == TimerListFindTimer(timer_));
 
+
+
+  /* Check if the timer was found in the timer list. */
   if (RETURN_SUCCESS == TimerListFindTimer(timer_)) {
 
     timer_->state = TimerStateRunning;
@@ -285,9 +375,11 @@ void xTimerStop(Timer_t *timer_) {
 
 
 
-
+  /* Assert if the timer cannot be found in the timer list. */
   SYSASSERT(RETURN_SUCCESS == TimerListFindTimer(timer_));
 
+
+  /* Check if the timer was found in the timer list. */
   if (RETURN_SUCCESS == TimerListFindTimer(timer_)) {
 
     timer_->state = TimerStateSuspended;
