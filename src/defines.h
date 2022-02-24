@@ -233,30 +233,30 @@ the heap contains and the size of each block in bytes. */
 #define HEAP_RAW_SIZE CONFIG_HEAP_SIZE_IN_BLOCKS *CONFIG_HEAP_BLOCK_SIZE
 #endif
 
-/* Define the size in bytes of the product name which is accessible through
+/* Define the size in bytes of the OS product name which is accessible through
 xSystemGetSystemInfo(). */
 #if !defined(OS_PRODUCT_NAME_SIZE)
 #define OS_PRODUCT_NAME_SIZE 0x6u
 #endif
 
-/* Define the product name which is accessible through xSystemGetSystemInfo(). */
+/* Define the OS product name which is accessible through xSystemGetSystemInfo(). */
 #if !defined(OS_PRODUCT_NAME)
 #define OS_PRODUCT_NAME "HeliOS"
 #endif
 
-/* Define the product major version number which is accessible through
+/* Define the OS product major version number which is accessible through
 xSystemGetSystemInfo(). */
 #if !defined(OS_MAJOR_VERSION_NO)
 #define OS_MAJOR_VERSION_NO 0x0u
 #endif
 
-/* Define the product minor version number which is accessible through
+/* Define the OS product minor version number which is accessible through
 xSystemGetSystemInfo(). */
 #if !defined(OS_MINOR_VERSION_NO)
 #define OS_MINOR_VERSION_NO 0x3u
 #endif
 
-/* Define the product patch version number which is accessible through
+/* Define the OS product patch version number which is accessible through
 xSystemGetSystemInfo(). */
 #if !defined(OS_PATCH_VERSION_NO)
 #define OS_PATCH_VERSION_NO 0x1u
@@ -274,30 +274,28 @@ exit protected memory mode.
 
 NOTE: This should only be called from within xMemAlloc() and
 xMemFree() since both system calls will automatically exit
-privileged mode after they are done. */
+privileged mode before they return. */
 #if !defined(EXIT_PRIVILEGED)
 #define EXIT_PRIVILEGED() sysFlags.privileged = false
 #endif
 
-/* Define a macro which makes using the system flags more
-readable. The privileged system flag is used by xMemAlloc()
-and xMemFree() to determine when to set an entry in the heap
-to protected. */
+/* Define a macro to access the privileged system flag which is
+used by xMemAlloc() and xMemFree() to determine when to set an
+entry in the heap to protected. */
 #if !defined(SYSFLAG_PRIVILEGED)
 #define SYSFLAG_PRIVILEGED() sysFlags.privileged
 #endif
 
-/* Define a macro which makes using the system flags more
-readable. The running system flag is used by xTaskSuspendAll()
-and xTaskResumeAll() to control the scheduler. */
+/* Define a macro to access the running system flag which is used
+by xTaskStartScheduler() to indicate whether the scheduler is
+running. */
 #if !defined(SYSFLAG_RUNNING)
 #define SYSFLAG_RUNNING() sysFlags.running
 #endif
 
-/* Define a macro which makes using the system flags more
-readable. The overflow flag is used by the scheduler to determine
-when a task runtime has overflowed and all runtimes need to be
-reset. */
+/* Define a macro to access the overflow system flag which is used
+by the scheduler to determine when a task's runtime has overflowed
+and all runtimes need to be reset. */
 #if !defined(SYSFLAG_OVERFLOW)
 #define SYSFLAG_OVERFLOW() sysFlags.overflow
 #endif
@@ -314,7 +312,7 @@ concise */
 #define ISNULLPTR(p) ((NULL) == (p))
 #endif
 
-/* Define a assert macro if assertions are enabled through
+/* Define a macro to assert if assertions are enabled through
 the CONFIG_ENABLE_SYSTEM_ASSERT setting. */
 #if !defined(SYSASSERT)
 #if !defined(CONFIG_ENABLE_SYSTEM_ASSERT)
@@ -324,14 +322,14 @@ the CONFIG_ENABLE_SYSTEM_ASSERT setting. */
 #endif
 #endif
 
-/* CheckHeapHealth() option to only check the health of the heap
-and NOT also check a pointer at the same time. */
+/* Define a macro for the CheckHeapHealth() option to only check 
+ health of the heap and NOT at the same time check a pointer. */
 #if !defined(HEAP_CHECK_HEALTH_ONLY)
 #define HEAP_CHECK_HEALTH_ONLY 0x1u
 #endif
 
-/* CheckHeapHealth() option to check the health of the heap
-and also check a pointer at the same time. */
+/* Define a macro for the CheckHeapHealth() option to check the
+health of the heap AND at the same time check a pointer.. */
 #if !defined(HEAP_CHECK_HEALTH_AND_POINTER)
 #define HEAP_CHECK_HEALTH_AND_POINTER 0x2u
 #endif

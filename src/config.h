@@ -27,7 +27,7 @@
 #define CONFIG_H_
 
 /* The following configurable settings may be changed by the end-user
-to customize HeliOS for their specific application. */
+to customize the HeliOS kernel for their specific application. */
 
 /**
  * @brief Define to enable system assertions.
