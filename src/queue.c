@@ -567,7 +567,7 @@ QueueMessage_t *xQueueReceive(Queue_t *queue_) {
 
 
     /* Re-use some code and peek to see if there is a message
-    wiating in the queue.
+    waiting in the queue.
     
     NOTE: We don't need to allocate any heap memory since xQueuePeek()
     has already done that for us. */
