@@ -348,6 +348,9 @@ void xTimerReset(Timer_t *timer_) {
   return;
 }
 
+
+
+
 /* The xTimerStart() system call will place the timer in the running state. Neither xTaskStart() nor
 xTaskStop() will reset the timer. Timers can only be reset with xTimerReset(). */
 void xTimerStart(Timer_t *timer_) {
@@ -368,6 +371,9 @@ void xTimerStart(Timer_t *timer_) {
 
   return;
 }
+
+
+
 
 /* The xTimerStop() system call will place the timer in the stopped state. Neither xTaskStart() nor
 xTaskStop() will reset the timer. Timers can only be reset with xTimerReset(). */
@@ -391,30 +397,55 @@ void xTimerStop(Timer_t *timer_) {
 
 
 
+
+/* TimerListFindTimer() is used to search the timer list for a
+timer and returns RETURN_SUCCESS if the timer is found. It also
+always checks the health of the heap by calling HeapCheck(). */
 Base_t TimerListFindTimer(const Timer_t *timer_) {
+
+
   Base_t ret = RETURN_FAILURE;
+
 
   Timer_t *timerCursor = NULL;
 
+
+  /* Assert if the timer list is not initialized. */
   SYSASSERT(ISNOTNULLPTR(timerList));
 
+
+  /* Assert if the timer paramater is null. */
   SYSASSERT(ISNOTNULLPTR(timer_));
 
+
+  /* Check if the timer list is initialized and the timer pointer
+  is not null. */
   if ((ISNOTNULLPTR(timerList)) && (ISNOTNULLPTR(timer_))) {
 
+
+    /* Assert if the HeapCheck() fails on the health check or is unable
+    to find the entry for the heap pointer. */
     SYSASSERT(RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, timer_));
 
+
+    /* Check if HeapCheck() was successful. */
     if (RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, timer_)) {
 
       timerCursor = timerList->head;
 
+
+      /* Traverse the timer list while there is a timer
+      and the timer is not the timer we are looking for. */
       while ((ISNOTNULLPTR(timerCursor)) && (timerCursor != timer_)) {
 
         timerCursor = timerCursor->next;
       }
 
+
+      /* Assert if the timer was never found. */
       SYSASSERT(ISNOTNULLPTR(timerCursor));
 
+      /* Check if the timer was found. */
       if (ISNOTNULLPTR(timerCursor)) {
 
         ret = RETURN_SUCCESS;
