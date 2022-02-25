@@ -39,7 +39,9 @@ to customize the HeliOS kernel for their specific application. */
  * unable to be written to the serial bus in applications using the
  * Arduino platform/tool-chain. The CONFIG_ENABLE_ARDUINO_CPP_INTERFACE
  * builds the included arduino.cpp file to allow the kernel to call the
- * Arduino API through wrapper functions such as ArduinoAssert().
+ * Arduino API through wrapper functions such as ArduinoAssert(). The
+ * arduino.cpp file can be found in the /extras directory. It must
+ * be copied into the /src directory to be built.
  * 
  */
 /*
