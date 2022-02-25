@@ -31,6 +31,20 @@
 /* The following configurable settings may be changed by the end-user
 to customize the HeliOS kernel for their specific application. */
 
+/**
+ * @brief Define to enable the Arduino API C++ interface.
+ * 
+ * Because HeliOS kernel is written in C, the Arduino API cannot
+ * be called directly from the kernel. For example, assertions are
+ * unable to be written to the serial bus in applications using the
+ * Arduino platform/tool-chain. The CONFIG_ENABLE_ARDUINO_CPP_INTERFACE
+ * builds the included arduino.cpp file to allow the kernel to call the
+ * Arduino API through wrapper functions such as ArduinoAssert().
+ * 
+ */
+/*
+#define CONFIG_ENABLE_ARDUINO_CPP_INTERFACE
+*/
 
 
 
@@ -60,22 +74,20 @@ to customize the HeliOS kernel for their specific application. */
  * when CONFIG_ENABLE_SYSTEM_ASSERT is defined. Typically some sort
  * of output is generated over a serial or other interface. By default
  * the CONFIG_SYSTEM_ASSERT_BEHAVIOR is not defined.
+ * 
+ * @note In order to use the ArduinoAssert() functionality, the
+ * CONFIG_ENABLE_ARDUINO_CPP_INTERFACE setting must be enabled.
  *
  * @sa CONFIG_ENABLE_SYSTEM_ASSERT
+ * @sa CONFIG_ENABLE_ARDUINO_CPP_INTERFACE
  *
  * @code {.c}
- * #define CONFIG_SYSTEM_ASSERT_BEHAVIOR(f, l) \
- *   String file = String( f );                \
- *   String line = String( l , DEC);           \
- *   Serial.println("assert: " + file + ":" + line);
+ * #define CONFIG_SYSTEM_ASSERT_BEHAVIOR(f, l) ArduinoAssert( f, l )
  * @endcode
  *
  */
 /*
-#define CONFIG_SYSTEM_ASSERT_BEHAVIOR(f, l) \
-  String file = String( f );                \
-  String line = String( l , DEC);           \
-  Serial.println("assert: " + file + ":" + line);
+#define CONFIG_SYSTEM_ASSERT_BEHAVIOR(f, l) ArduinoAssert( f, l )
 */
 
 
