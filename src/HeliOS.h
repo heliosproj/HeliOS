@@ -135,7 +135,7 @@ typedef struct TaskRunTimeStats_s {
  */
 typedef struct TaskInfo_s {
   Base_t id;                         /**< The task identifier which is used by xTaskGetHandleById() to return the task handle. */
-  char name[CONFIG_TASK_NAME_BYTES]; /**< The name of the task which is used by xTaskGetHandleByName() to return the task handle. */
+  char name[CONFIG_TASK_NAME_BYTES]; /**< The name of the task which is used by xTaskGetHandleByName() to return the task handle. This is NOT a null terminated string. */
   TaskState_t state;                 /**< The state the task is in which is one of four states specified in the TaskState_t enumerated data type. */
   Time_t lastRunTime;                /**< The runtime duration in microseconds the last time the task was executed by the scheduler. */
   Time_t totalRunTime;               /**< The total runtime duration in microseconds the task has been executed by the scheduler. */
@@ -158,7 +158,7 @@ typedef struct TaskInfo_s {
  */
 typedef struct TaskNotification_s {
   Base_t notificationBytes;                                /**< The number of bytes in the notificationValue member that makes up the notification value. This cannot exceed CONFIG_NOTIFICATION_VALUE_BYTES. */
-  char notificationValue[CONFIG_NOTIFICATION_VALUE_BYTES]; /**< The char array that contains the actual notification value. */
+  char notificationValue[CONFIG_NOTIFICATION_VALUE_BYTES]; /**< The char array that contains the actual notification value. This is NOT a null terminated string. */
 } TaskNotification_t;
 
 /**
@@ -178,7 +178,7 @@ typedef struct TaskNotification_s {
  */
 typedef struct QueueMessage_s {
   Base_t messageBytes;                           /**< The number of bytes in the messageValue member that makes up the message value. This cannot exceed CONFIG_MESSAGE_VALUE_BYTES. */
-  char messageValue[CONFIG_MESSAGE_VALUE_BYTES]; /**< the char array that contains the actual message value. */
+  char messageValue[CONFIG_MESSAGE_VALUE_BYTES]; /**< the char array that contains the actual message value. This is NOT a null terminated string. */
 } QueueMessage_t;
 
 /**
@@ -195,7 +195,7 @@ typedef struct QueueMessage_s {
  *
  */
 typedef struct SystemInfo_s {
-  char productName[OS_PRODUCT_NAME_SIZE]; /**< The name of the operating system or product. This is always HeliOS. */
+  char productName[OS_PRODUCT_NAME_SIZE]; /**< The name of the operating system or product. Its length is defined by OS_PRODUCT_NAME_SIZE. This is NOT a null terminated string. */
   Base_t majorVersion;                /**< The major version number of HeliOS and is Symantec Versioning Specification (SemVer) compliant. */
   Base_t minorVersion;                /**< The minor version number of HeliOS and is Symantec Versioning Specification (SemVer) compliant. */
   Base_t patchVersion;                /**< The patch version number of HeliOS and is Symantec Versioning Specification (SemVer) compliant. */
@@ -223,7 +223,7 @@ typedef void Task_t;
  * The TaskParm_t type is used to pass a parameter to a task at the time of creation using
  * xTaskCreate(). A task parameter is a pointer of type void and can point to any number
  * of intrinsic types, arrays and/or user defined structures which can be passed to a
- * task. It is up the the end-user to manage allocate and free the memory related to
+ * task. It is up the the end-user to manage, allocate and free the memory related to
  * these objects using xMemAlloc() and xMemFree(). The TaskParm_t should be declared
  * as xTaskParm.
  *
@@ -271,7 +271,7 @@ typedef void Timer_t;
  *
  * A simple data type is often needed as an argument for a system call or a return type.
  * The xBase type is used in such a case where there are no other structural data
- * requirements.
+ * requirements is typically an unsigned 8-bit integer.
  *
  * @sa Base_t
  *
@@ -437,7 +437,7 @@ typedef Time_t xTime;
 /**
  * @brief Enumerated type for task states.
  *
- * A task can be in one of the four possible states defined in the xTaskState
+ * A task can be in one of the four possible states defined in the TaskState_t
  * enumerated type. The state of a task is changed by calling xTaskResume(),
  * xTaskSuspend() or xTaskWait().
  *
@@ -483,7 +483,7 @@ typedef SystemInfo_t *xSystemInfo;
  * @brief A C macro to simplify casting and dereferencing a task paramater.
  *
  * When a task paramater is passed to a task, it is passed as a pointer of
- * type void. To use the paramater it must first be casted to the correct type
+ * type void. To use the paramater, it must first be cast to the correct type
  * and dereferenced. The following is an example of how the DEREF_TASKPARM() C
  * macro simplifies that process.
  *
@@ -492,12 +492,17 @@ typedef SystemInfo_t *xSystemInfo;
  *  int i;
  *
  *  i = DEREF_TASKPARM(int, parm_);
+ * 
+ *  i++;
+ * 
+ *  DEREF_TASKPARM(int, parm_) = i;
  *
+ *  return;
  * }
  * @endcode
  * 
- * @param t The data type to case the task paramater to (e.g., int).
- * @param p The task pointer often named parm_.
+ * @param t The data type to cast the task paramater to (e.g., int).
+ * @param p The task pointer, often named parm_.
  */
 #if !defined(DEREF_TASKPARM)
 #define DEREF_TASKPARM(t, p) *((t *)p)
@@ -515,12 +520,13 @@ extern "C" {
  * The xSystemAssert() system call handles assertions. The xSystemAssert() system
  * call should not be called directly. Instead, the SYSASSERT() macro should be used.
  * The system assertion functionality will only work when the CONFIG_ENABLE_SYSTEM_ASSERT
- * setting is defined.
+ * and CONFIG_SYSTEM_ASSERT_BEHAVIOR settings are defined.
  *
  * @sa SYSASSERT
  * @sa CONFIG_ENABLE_SYSTEM_ASSERT
+ * @sa CONFIG_SYSTEM_ASSERT_BEHAVIOR
  *
- * @param file_ The is automatically defined by the compiler's definition of _FILE_
+ * @param file_ This is automatically defined by the compiler's definition of _FILE_
  * @param line_  This is automatically defined by the compiler's definition of _LINE_
  */
 void xSystemAssert(const char *file_, int line_);
@@ -528,10 +534,10 @@ void xSystemAssert(const char *file_, int line_);
 /**
  * @brief System call to allocate memory from the heap.
  *
- * The xMemAlloc() system call will allocate memory from the heap for HeliOS system
- * calls and end-user tasks. The size of the heap in bytes is dependent on the
- * CONFIG_HEAP_SIZE_IN_BLOCKS and CONFIG_HEAP_BLOCK_SIZE settings. xMemAlloc() automatically
- * clears the memory it allocates.
+ * The xMemAlloc() system call allocates memory from the heap for HeliOS system
+ * calls and end-user tasks. The size of the heap, in bytes, is dependent on the
+ * CONFIG_HEAP_SIZE_IN_BLOCKS and CONFIG_HEAP_BLOCK_SIZE settings. xMemAlloc()
+ * functions similarly to calloc() in that it clears the memory it allocates.
  *
  * @sa CONFIG_HEAP_SIZE_IN_BLOCKS
  * @sa CONFIG_HEAP_BLOCK_SIZE
@@ -544,7 +550,7 @@ void xSystemAssert(const char *file_, int line_);
  * @note HeliOS technically does not allocate memory from what is traditionally heap memory.
  * HeliOS uses a private "heap" which is actually static memory allocated at compile time. This
  * is done to maintain MISRA C:2012 compliance since standard library functions like malloc(),
- * cmalloc() and free() are not permitted.
+ * calloc() and free() are not permitted.
  */
 void *xMemAlloc(size_t size_);
 
@@ -558,24 +564,26 @@ void *xMemAlloc(size_t size_);
  *
  * @param ptr_ The pointer to the allocated heap memory to be freed.
  *
- * @warning xMemFree() cannot be used to free memory allocated by xTaskCreate(),
- * xTimerCreate() or xQueueCreate(). Memory allocated by those system calls must
- * be freed by their respective delete system calls.
+ * @warning xMemFree() cannot be used to free memory allocated for kernel objects.
+ * Memory allocated by xTaskCreate(), xTimerCreate() or xQueueCreate() must
+ * be freed by their respective delete system calls (i.e., xTaskDelete()).
  */
 void xMemFree(void *ptr_);
 
 /**
  * @brief System call to return the amount of allocated heap memory.
  *
- * The xMemGetUsed() system call returns the amount of heap memory in bytes
+ * The xMemGetUsed() system call returns the amount of heap memory, in bytes,
  * that is currently allocated. Calls to xMemAlloc() increases and xMemFree()
- * decreases the amount.
+ * decreases the amount of memory in use.
  *
  * @return size_t The amount of memory currently allocated in bytes. If no heap
  * memory is currently allocated, xMemGetUsed() will return zero.
  *
- * @note xMemGetUsed() also checks the health of the heap and will return zero if
- * it detects a consistency issue with the heap.
+ * @note xMemGetUsed() returns the amount of heap memory that is currently
+ * allocated to end-user objects AND kernel objects. However, only end-user
+ * objects may be freed using xMemFree(). Kernel objects must be freed using
+ * their respective delete system call (e.g., xTaskDelete()).
  */
 size_t xMemGetUsed(void);
 
@@ -587,7 +595,7 @@ size_t xMemGetUsed(void);
  * xMemGetSize() will return zero bytes.
  *
  * @param ptr_ The pointer to the allocated heap memory to obtain the size of the
- * memory that is allocated.
+ * memory, in bytes, that is allocated.
  * @return size_t The amount of memory currently allocated to the specific pointer in bytes. If
  * the pointer is invalid or null, xMemGetSize() will return zero.
  *
@@ -595,7 +603,8 @@ size_t xMemGetUsed(void);
  * base on sizeof(), xMemGetSize() will return the number of bytes allocated by the block(s)
  * that contain the structure. Assuming the default block size of 32, a 48 byte structure would require
  * TWO blocks so xMemGetSize() would return 64 - not 48. xMemGetSize() also checks the health of the
- * heap and will return zero if it detects a consistency issue with the heap.
+ * heap and will return zero if it detects a consistency issue with the heap. Thus, xMemGetSize()
+ * can be used to validate pointers before the objects they reference are accessed.
  */
 size_t xMemGetSize(void *ptr_);
 
@@ -614,7 +623,7 @@ size_t xMemGetSize(void *ptr_);
  * on the  setting CONFIG_QUEUE_MINIMUM_LIMIT.
  * @return xQueue A queue is returned if successful, otherwise null is returned if unsuccessful.
  *
- * @warning The message queue memory should only be freed by xQueueDelete() and NOT xMemFree().
+ * @warning The message queue memory can only be freed by xQueueDelete().
  */
 xQueue xQueueCreate(xBase limit_);
 
@@ -623,7 +632,8 @@ xQueue xQueueCreate(xBase limit_);
  *
  * The xQueueDelete() system call will delete a message queue created by xQueueCreate(). xQueueDelete()
  * will delete a queue regardless of how many messages the queue contains at the time xQueueDelete()
- * is called.
+ * is called. Any messages the message queue contains will be deleted in the process of deleting the
+ * message queue.
  *
  * @sa xQueueCreate()
  *
@@ -640,9 +650,6 @@ void xQueueDelete(xQueue queue_);
  * @param queue_ The queue to return the length of.
  * @return xBase The number of messages in the queue. If unsuccessful or if the queue is empty,
  * xQueueGetLength() returns zero.
- *
- * @note The xQueueGetLength() system call will also check the health of the queue and returns
- * zero if a consistency issues is detected.
  */
 xBase xQueueGetLength(xQueue queue_);
 
@@ -655,9 +662,6 @@ xBase xQueueGetLength(xQueue queue_);
  * @param queue_ The queue to determine whether it is empty.
  * @return xBase True if the queue is empty. False if the queue has one or more messages. xQueueIsQueueEmpty()
  * will also return false if the queue parameter is invalid.
- *
- * @note The xQueueIsQueueEmpty() will also check the health of the queue and return false
- * if a consistency issue is detected.
  */
 xBase xQueueIsQueueEmpty(xQueue queue_);
 
@@ -671,9 +675,6 @@ xBase xQueueIsQueueEmpty(xQueue queue_);
  * @param queue_ The queue to determine whether it is full.
  * @return xBase True if the queue is full. False if the queue has zero. xQueueIsQueueFull()
  * will also return false if the queue parameter is invalid.
- *
- * @note The xQueueIsQueueFull() will also check the health of the queue and return false
- * if a consistency issue is detected.
  */
 xBase xQueueIsQueueFull(xQueue queue_);
 
@@ -693,7 +694,7 @@ xBase xQueueMessagesWaiting(xQueue queue_);
  * @brief System call to send a message using a message queue.
  *
  * The xQueueSend() system call will send a message using the specified message queue. The size of the message
- * value is passed in the message bytes parameter. The maximum message value size in byes is dependent
+ * value is passed in the message bytes parameter. The maximum message value size in bytes is dependent
  * on the CONFIG_MESSAGE_VALUE_BYTES setting.
  *
  * @sa CONFIG_MESSAGE_VALUE_BYTES
@@ -704,9 +705,10 @@ xBase xQueueMessagesWaiting(xQueue queue_);
  * @param messageBytes_ The number of bytes contained in the message value. The number of bytes must be greater than
  * zero and less than or equal to the setting CONFIG_MESSAGE_VALUE_BYTES.
  * @param messageValue_ The message value. If the message value is greater than defined in CONFIG_MESSAGE_VALUE_BYTES,
- * only the number of bytes defined in CONFIG_MESSAGE_VALUE_BYTES will be copied into the message value.
- * @return xBase xQueueSend() returns true if the message was sent to the queue successfully. Otherwise
- * false if unsuccessful.
+ * only the number of bytes defined in CONFIG_MESSAGE_VALUE_BYTES will be copied into the message value. The message
+ * value is NOT a null terminated string.
+ * @return xBase xQueueSend() returns RETURN_SUCCESS if the message was sent to the queue successfully. Otherwise
+ * RETURN_FAILURE if unsuccessful.
  */
 xBase xQueueSend(xQueue queue_, xBase messageBytes_, const char *messageValue_);
 
@@ -759,15 +761,15 @@ xQueueMessage xQueueReceive(xQueue queue_);
  *
  * The xTaskStartScheduler() system call passes control to the HeliOS scheduler. This system
  * call will not return until xTaskSuspendAll() is called. If xTaskSuspendAll() is called, xTaskResumeAll()
- * must be called before xTaskStartScheduler() can be called again.
+ * must be called before xTaskStartScheduler() can be called again to continue executing tasks.
  *
  */
 void xTaskStartScheduler(void);
 
 /**
- * @brief System call to set scheduler running system flag to true.
+ * @brief System call to set scheduler state to running.
  *
- * The xTaskResumeAll() system call will set the scheduler system flag so the next
+ * The xTaskResumeAll() system call will set the scheduler state to running so the next
  * call to xTaskStartScheduler() will resume execute of all tasks. The state of each task
  * is not altered by xTaskSuspendAll() or xTaskResumeAll().
  *
@@ -776,9 +778,9 @@ void xTaskStartScheduler(void);
 void xTaskResumeAll(void);
 
 /**
- * @brief System call to set the scheduler running system flag to false.
+ * @brief System call to set the scheduler state to suspended.
  *
- * The xTaskSuspendAll() system call will set the scheduler running system flag to false
+ * The xTaskSuspendAll() system call will set the scheduler state to suspended
  * so the scheduler will stop and return. The state of each task is not altered by
  * xTaskSuspendAll() or xTaskResumeAll().
  *
@@ -809,7 +811,7 @@ xSystemInfo xSystemGetSystemInfo(void);
  * a task. They MUST be called outside of the scope of the HeliOS scheduler.
  *
  * @param name_ The ASCII name of the task which can be used by xTaskGetHandleByName() to obtain the task pointer. The
- * length of the name is depended on the CONFIG_TASK_NAME_BYTES. The task name is NOT a null terminated char array.
+ * length of the name is depended on the CONFIG_TASK_NAME_BYTES. The task name is NOT a null terminated char string.
  * @param callback_ The callback pointer to the task main function. This is the function that will be invoked
  * by the scheduler when a task is scheduled for execution.
  * @param taskParameter_ A pointer to any type or structure that the end-user wants to pass into the task as
@@ -823,7 +825,7 @@ xSystemInfo xSystemGetSystemInfo(void);
  * @sa CONFIG_TASK_NAME_BYTES
  *
  * @warning xTaskCreate() MUST be called outside the scope of the HeliOS scheduler (i.e., not from a task's main).
- * The task memory should only be freed by xTaskDelete() and NOT xMemFree().
+ * The task memory can only be freed by xTaskDelete().
  */
 xTask xTaskCreate(const char *name_, void (*callback_)(xTask, xTaskParm), xTaskParm taskParameter_);
 
