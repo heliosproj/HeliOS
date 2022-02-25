@@ -67,7 +67,7 @@ to customize the HeliOS kernel for their specific application. */
  * #define CONFIG_SYSTEM_ASSERT_BEHAVIOR(f, l) \
  *   String file = String( f );                \
  *   String line = String( l , DEC);           \
- *   Serial.println("assert: " + file + " " + line);
+ *   Serial.println("assert: " + file + ":" + line);
  * @endcode
  *
  */
@@ -75,7 +75,7 @@ to customize the HeliOS kernel for their specific application. */
 #define CONFIG_SYSTEM_ASSERT_BEHAVIOR(f, l) \
   String file = String( f );                \
   String line = String( l , DEC);           \
-  Serial.println("assert: " + file + " " + line);
+  Serial.println("assert: " + file + ":" + line);
 */
 
 
