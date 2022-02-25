@@ -40,7 +40,7 @@ The HeliOS 0.3.x series kernel was recently released and replaces the 0.2.x seri
 ***
 # Getting Started
 ## Documentation
-The HeliOS API is documented in the [HeliOS Developer's Guide](/doc/HeliOS_Developers_Guide.pdf), which is available in PDF format in the HeliOS sources tree under “doc”.
+The HeliOS API is documented in the [HeliOS Developer's Guide](/doc/HeliOS_Developers_Guide.pdf), which is available in PDF format in the HeliOS sources tree under “doc”. If you are in need of support, please refer to the "Contributing" section.
 ## Microcontroller Support
 Other than four define statements, HeliOS requires zero additional portability code. Currently HeliOS has built-in support for AVR, SAMD, SAM, ESP8266, ESP32 and Teensy 3/4/MM microcontrollers (though the latter is an ARM Cortex-M based development board). If using the Arduino platform/tool-chain, HeliOS should work right out of the box by adding HeliOS to the project from the [PlatformIO Registry](https://registry.platformio.org/libraries/mannypeterson/HeliOS) or [Arduino Library Manager](https://www.arduino.cc/reference/en/libraries/helios/).
 ## Adding Support
