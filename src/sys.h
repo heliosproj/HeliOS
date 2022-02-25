@@ -38,7 +38,7 @@
 extern "C" {
 #endif
 
-void xSystemAssert(const char *file_, int line_);
+void SystemAssert(const char *file_, int line_);
 void xSystemHalt(void);
 SystemInfo_t *xSystemGetSystemInfo(void);
 

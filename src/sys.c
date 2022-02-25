@@ -27,8 +27,7 @@
 #include "sys.h"
 
 /* "You are not expected to understand this."
-Thank you for the best OS on Earth, Dennis.
-May you forever rest in peace. */
+Thank you for the best OS on Earth, Dennis. */
 
 
 
@@ -42,13 +41,18 @@ SysFlags_t sysFlags = {
 
 
 
-/* The xSystemAssert() system call will be called when
+/* The SystemAssert() system call will be called when
 the SYSASSERT() macro evaluates false. In order for there
 to be any effect, CONFIG_ENABLE_SYSTEM_ASSERT and
-CONFIG_SYSTEM_ASSERT_BEHAVIOR must be defined. */
-void xSystemAssert(const char *file_, int line_) {
+CONFIG_SYSTEM_ASSERT_BEHAVIOR must be defined.
 
+SystemAssert() should NOT be called directly. Instead
+use the SYSASSERT() C macro. */
+void SystemAssert(const char *file_, int line_) {
 
+/* Do not modify this system call directly. Define
+the behavior (code) through the CONFIG_SYSTEM_ASSERT_BEHAVIOR
+setting. */
 
 #if defined(CONFIG_SYSTEM_ASSERT_BEHAVIOR)
   CONFIG_SYSTEM_ASSERT_BEHAVIOR(file_, line_);

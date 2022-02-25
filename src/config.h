@@ -37,8 +37,6 @@ to customize the HeliOS kernel for their specific application. */
  * must define CONFIG_SYSTEM_ASSERT_BEHAVIOR for there
  * to be an effect.
  * 
- * @sa xSystemAssert()
- * 
  */
 #define CONFIG_ENABLE_SYSTEM_ASSERT
 
@@ -46,17 +44,15 @@ to customize the HeliOS kernel for their specific application. */
  * @brief Define the system assertion behavior.
  * 
  * The CONFIG_SYSTEM_ASSERT_BEHAVIOR setting allows the end-user
- * to specify the behavior (code) of xSystemAssert() which is called
+ * to specify the behavior (code) of the assertion which is called
  * when CONFIG_ENABLE_SYSTEM_ASSERT is defined. Typically some sort
  * of output is generated over a serial or other interface.
  * 
  * @sa CONFIG_ENABLE_SYSTEM_ASSERT
- * @sa xSystemAssert()
  * 
  * @code {.c}
  * #define CONFIG_SYSTEM_ASSERT_BEHAVIOR(f, l) printf("assert %s:%d\n", f, l)
  * @endcode
- * 
  * 
  */
 #define CONFIG_SYSTEM_ASSERT_BEHAVIOR(f, l)

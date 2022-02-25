@@ -517,7 +517,7 @@ extern "C" {
 /**
  * @brief System call to handle assertions.
  *
- * The xSystemAssert() system call handles assertions. The xSystemAssert() system
+ * The SystemAssert() system call handles assertions. The SystemAssert() system
  * call should not be called directly. Instead, the SYSASSERT() macro should be used.
  * The system assertion functionality will only work when the CONFIG_ENABLE_SYSTEM_ASSERT
  * and CONFIG_SYSTEM_ASSERT_BEHAVIOR settings are defined.
@@ -529,7 +529,7 @@ extern "C" {
  * @param file_ This is automatically defined by the compiler's definition of _FILE_
  * @param line_  This is automatically defined by the compiler's definition of _LINE_
  */
-void xSystemAssert(const char *file_, int line_);
+void SystemAssert(const char *file_, int line_);
 
 /**
  * @brief System call to allocate memory from the heap.
@@ -851,7 +851,7 @@ void xTaskDelete(xTask task_);
  *
  * @sa CONFIG_TASK_NAME_BYTES
  *
- * @param name_ The ASCII name of the task to return the handle pointer for.
+ * @param name_ The ASCII name of the task to return the handle pointer for. The task name is NOT a null terminated string.
  * @return xTask A pointer to the task handle. xTaskGetHandleByName() returns null if the
  * name cannot be found.
  */
@@ -890,9 +890,6 @@ xTask xTaskGetHandleById(xBase id_);
  * currently no tasks then this will be null. This memory must be freed by xMemFree().
  *
  * @warning The memory allocated by xTaskGetAllRunTimeStats() must be freed by xMemFree().
- *
- * @note The xTaskGetAllRuntTimeStats() system call will also check the health of the task list and
- * will return null if a consistency issue is detected.
  */
 xTaskRunTimeStats xTaskGetAllRunTimeStats(xBase *tasks_);
 
@@ -921,14 +918,13 @@ xTaskRunTimeStats xTaskGetTaskRunTimeStats(xTask task_);
  * regardless of their state.
  *
  * @return xBase The number of tasks.
- *
- * @note The xTaskGetNumberOfTasks() system call will also check the health of the task list and
- * will return zero if a consistency issue is detected.
  */
 xBase xTaskGetNumberOfTasks(void);
 
 /**
- * @brief The xTaskGetTaskInfo() system call returns the xTaskInfo structure containing
+ * @brief System call to return the details of a task.
+ * 
+ * The xTaskGetTaskInfo() system call returns the xTaskInfo structure containing
  * the details of the task including its identifier, name, state and runtime statistics.
  *
  * @sa xTaskInfo
@@ -942,7 +938,9 @@ xBase xTaskGetNumberOfTasks(void);
 xTaskInfo xTaskGetTaskInfo(xTask task_);
 
 /**
- * @brief The xTaskGetAllTaskInfo() system call returns the xTaskInfo structure containing
+ * @brief System call to return the details of all tasks.
+ * 
+ * The xTaskGetAllTaskInfo() system call returns the xTaskInfo structure containing
  * the details of ALL tasks including their identifier, name, state and runtime statistics.
  *
  * @sa xTaskInfo
@@ -951,9 +949,6 @@ xTaskInfo xTaskGetTaskInfo(xTask task_);
  * upon return. If no tasks currently exist, this variable will not be modified.
  * @return xTaskInfo The xTaskInfo structure containing the tasks details. xTaskGetAllTaskInfo()
  * returns null if there no tasks or if a consistency issue is detected.
- *
- * @note The xTaskGetAllTaskInfo() system call will also check the health of the task list and
- * will return zero if a consistency issue is detected.
  *
  * @warning The memory allocated by xTaskGetAllTaskInfo() must be freed by xMemFree().
  */
@@ -977,7 +972,7 @@ xTaskState xTaskGetTaskState(xTask task_);
  *
  * The xTaskGetName() system call returns the ASCII name of the task. The size of the
  * task is dependent on the setting CONFIG_TASK_NAME_BYTES. The task name is NOT a null
- * terminated char array. The memory allocated for the char array must be freed by
+ * terminated char string. The memory allocated for the char array must be freed by
  * xMemFree() when no longer needed.
  *
  * @sa CONFIG_TASK_NAME_BYTES
@@ -985,7 +980,7 @@ xTaskState xTaskGetTaskState(xTask task_);
  *
  * @param task_ The task to return the name of.
  * @return char* A pointer to the char array containing the ASCII name of the task. The task name
- * is NOT a null terminated char array. xTaskGetName() will return null if the task cannot be found.
+ * is NOT a null terminated char string. xTaskGetName() will return null if the task cannot be found.
  *
  * @warning The memory allocated by xTaskGetName() must be free by xMemFree().
  */
@@ -1040,8 +1035,8 @@ xBase xTaskNotificationIsWaiting(xTask task_);
  * @param task_ The task to send the task notification to.
  * @param notificationBytes_ The number of bytes contained in the notification value. The number must be
  * between one and the CONFIG_NOTIFICATION_VALUE_BYTES setting.
- * @param notificationValue_ A char array containing the notification value.
- * @return xBase True if the direct to task notification was successfully given, false if not.
+ * @param notificationValue_ A char array containing the notification value. The notification value is NOT a null terminated string.
+ * @return xBase RETURN_SUCCESS if the direct to task notification was successfully given, RETURN_FAILURE if not.
  */
 Base_t xTaskNotifyGive(xTask task_, xBase notificationBytes_, const char *notificationValue_);
 
@@ -1192,7 +1187,7 @@ xSchedulerState xTaskGetSchedulerState(void);
  * @return xTimer The newly created timer. If the timer period parameter is less than zero
  * or xTimerCreate() was unable to allocate the required memory, xTimerCreate() will return null.
  *
- * @warning The timer memory should only be freed by xTimerDelete() and NOT xMemFree().
+ * @warning The timer memory can only be freed by xTimerDelete().
  */
 xTimer xTimerCreate(xTime timerPeriod_);
 
