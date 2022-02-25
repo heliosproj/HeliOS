@@ -43,6 +43,11 @@ to customize the HeliOS kernel for their specific application. */
  * arduino.cpp file can be found in the /extras directory. It must
  * be copied into the /src directory to be built.
  * 
+ * 
+ * @note Neither this setting nor the arduino.cpp file are needed
+ * if the end-user does not plan to use assertions on the Arduino
+ * platform/tool-chain.
+ * 
  */
 /*
 #define CONFIG_ENABLE_ARDUINO_CPP_INTERFACE
