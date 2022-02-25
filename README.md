@@ -1,6 +1,7 @@
 ![HeliOS](/extras/HeliOS_OG_Logo.png)
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://github.com/MannyPeterson/HeliOS/blob/master/LICENSE.md) ![GitHub last commit](https://img.shields.io/github/last-commit/MannyPeterson/HeliOS) ![GitHub release (latest by date)](https://img.shields.io/github/v/release/MannyPeterson/HeliOS) [![PlatformIO Registry](https://badges.registry.platformio.org/packages/mannypeterson/library/HeliOS.svg)](https://registry.platformio.org/libraries/mannypeterson/HeliOS) [![arduino-library-badge](https://www.ardu-badge.com/badge/HeliOS.svg?)](https://www.ardu-badge.com/HeliOS) ![GitHub stars](https://img.shields.io/github/stars/MannyPeterson/HeliOS?style=social) ![GitHub watchers](https://img.shields.io/github/watchers/MannyPeterson/HeliOS?style=social)
+***
 # Overview
 HeliOS is an embedded operating system that is free for everyone to use. While called an operating system, HeliOS is a multitasking kernel for use in embedded applications. Its rich, fully documented, API allows the user to control every aspect of the system and access kernel services for task (process) management, scheduler management, inter-process communication, memory management and more while maintaining a tiny footprint for a broad range of low-power embedded devices. HeliOS is also easily customized to fit the user’s specific needs through a single header file ([config.h](/src/config.h)).
 
@@ -35,7 +36,7 @@ The HeliOS 0.3.x series kernel was recently released and replaces the 0.2.x seri
 * **[Arduino Operating System: Best Options of 2021](https://all3dp.com/2/best-arduino-operating-system/)**
 
 * **[HeliOS is a Tiny Embedded OS Designed for Arduino Boards](https://news.knowledia.com/US/en/articles/helios-is-a-tiny-embedded-os-designed-for-arduino-boards-f35f44fe6c88759fa13d8781ce09ac985b2fdd3a)**
-
+***
 # Getting Started
 ## Documentation
 The HeliOS API is documented in the [HeliOS Developer's Guide](/doc/HeliOS_Developers_Guide.pdf), which is available in PDF format in the HeliOS sources tree under “doc”.
@@ -54,6 +55,7 @@ development board using the Arduino platform. */
 #define TIME_T_TYPE uint32_t
 ```
 Please note, when defining TIME_T_TYPE, use only an unsigned integer type. While 16-bit wide unsigned integers will work, 32-bits (uint32_t) wide or wider is preferred.
+***
 # Example
 Many embedded applications implement what is called a "super loop". A super loop is a loop that never exits (i.e., while(1){}) and contains most of the code executed by the microcontroller. The problem with super loops is they can grow out of control and become difficult to manage. This becomes especially challenging given the relatively few options for controlling timing (e.g., delay()). Unfortunately the use of delay() to control timing also means the microcontroller is unable to perform other operations (at least without the help of an ISR) until delay() returns. Below is an example of how easy it is to leverage the event-driven multitasking capabilities within HeliOS to implement the Arduino "Blink" example.
 ## Arduino "Blink" Example
@@ -149,6 +151,7 @@ void loop() {
   /* The loop function is not used and should remain empty. */
 }
 ```
+***
 # Releases
 All releases, including the current release, can be found [here](https://github.com/MannyPeterson/HeliOS/releases).
 * **0.3.1 - A lot of refactoring and code clean-up from the 0.3.0 release.**
@@ -160,11 +163,14 @@ All releases, including the current release, can be found [here](https://github.
 * 0.2.3 - Improved protection of system state, new examples, improved code documentation and some maintainability enhancements
 * 0.2.2 - Additional function calls, minor fixes and documentation enhancements
 * 0.2.1 - The first official release
+***
 # Contributing
 To contribute, create a pull request with your changes. Please fork from the **develop** branch only, as **master** is kept even with the current release.
+***
 # Copyright & License
 HeliOS Embedded Operating System Copyright (C) 2020-2022 Manny Peterson
 
 HeliOS is copyrighted open source software licensed under the Free Software Foundation's GNU General Public License (GPL) Version 3. The full license text can be found [here](/LICENSE.md).
-# Important
+***
+# Important Notice
 HeliOS is **not** certified for use in safety-critical applications. The HeliOS source code, whether in full or in part, must **never** be used in applications where a risk to life exists. In other words, do not use HeliOS in your project if there is even a remote chance someone might get hurt.
