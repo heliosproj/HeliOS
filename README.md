@@ -20,7 +20,7 @@ HeliOS is built to be robust. Each HeliOS release (0.3.0 and later) undergoes st
 Lastly, for PlatformIO and Arduino users, HeliOS is easily added to their embedded application. The current release of HeliOS is available directly through the [PlatformIO Registry](https://registry.platformio.org/libraries/mannypeterson/HeliOS) and the [Arduino Library Manager](https://www.arduino.cc/reference/en/libraries/helios/). For users of other embedded platforms and/or tool-chains, simply download the current [release](https://github.com/MannyPeterson/HeliOS/releases) of HeliOS from GitHub and add the sources to your project.
 ***
 # What's Happening
-The HeliOS 0.3.x series kernel was recently released and replaces the 0.2.x series kernel. With the 0.3.x series kernel, there have been significant changes to both the kernel internals and the API rendering it incompatible with applications built on 0.2.x. While the changes are significant, updating an application built with 0.2.x requires a minimal amount of time as all of the features of HeliOS 0.2.x have been retained in 0.3.x. The key difference is the breadth of features offered by the 0.3.x series kernel has been expanded and existing features rewritten. Along with 0.3.x is a complete [HeliOS Developer's Guide](/doc/HeliOS_Developers_Guide.pdf) to assist the user in building applications on 0.3.x. The focus for HeliOS development going forward will be expanding available example code, further enhancing documentation and addressing any quality issues. As always, contributions are welcome and anyone wishing to contribute to HeliOS should refer to the “Contributing” section.
+The HeliOS 0.3.x series kernel was recently released and replaces the 0.2.x series kernel. With the 0.3.x series kernel, there have been changes to both the kernel internals and the API rendering it incompatible with applications built on 0.2.x. While the changes are not insignificant, updating an application built with 0.2.x requires a minimal amount of time as all of the features of HeliOS 0.2.x have been retained in 0.3.x. The key difference is the breadth of features offered by the 0.3.x series kernel has been expanded and existing features rewritten. Along with 0.3.x is a complete [HeliOS Developer's Guide](/doc/HeliOS_Developers_Guide.pdf) to assist the user in building applications on 0.3.x. Going forward, development will be focused on refactoring, expanding the API, expanding configurable settings, improving documentation and addressing issues. **As always, contributions are welcome and anyone wishing to contribute to HeliOS should refer to the “Contributing” section.**
 ***
 # HeliOS Around The Web
 
@@ -155,7 +155,7 @@ void loop() {
 ***
 # Releases
 All releases, including the current release, can be found [here](https://github.com/MannyPeterson/HeliOS/releases).
-* **0.3.1 - A lot of refactoring and code clean-up from the 0.3.0 release.**
+* **0.3.1 - A lot of refactoring, code clean-up from the 0.3.0 release and code documentation/readability improvements.**
 * 0.3.0 - First release of the new 0.3.x series kernel (many new features, most of the kernel rewritten, new example code and new documentation)
 * 0.2.7 - Added a contributed example, privatized the list pointers for scheduler and added support for Teensy 3/4
 * 0.2.6 - Added built-in support for ESP8266 and minor internal updates
@@ -166,7 +166,7 @@ All releases, including the current release, can be found [here](https://github.
 * 0.2.1 - The first official release
 ***
 # Contributing
-To contribute, create a pull request with your changes. Please fork from the **develop** branch only, as **master** is kept even with the current release.
+To contribute, create a pull request with your changes. Please fork from the **develop** branch only, as **master** is kept even with the current release. If you would like to make a recommendation or are in need of support, please open an issue. If you are seeking support, please include your source code, details about your particular platform and/or toolchain and a detailed description of the issue you are facing. All pull requests and issues are responded to as quickly as possible.
 ***
 # Copyright & License
 HeliOS Embedded Operating System Copyright (C) 2020-2022 Manny Peterson

@@ -303,13 +303,13 @@ and all runtimes need to be reset. */
 /* Define a marco which makes null pointer checks more readable and
 concise */
 #if !defined(ISNOTNULLPTR)
-#define ISNOTNULLPTR(p) ((NULL) != (p))
+#define ISNOTNULLPTR(p) ((NULL) != ( p ))
 #endif
 
 /* Define a marco which makes null pointer checks more readable and
 concise */
 #if !defined(ISNULLPTR)
-#define ISNULLPTR(p) ((NULL) == (p))
+#define ISNULLPTR(p) ((NULL) == ( p ))
 #endif
 
 /* Define a macro to assert if assertions are enabled through
@@ -318,11 +318,13 @@ the CONFIG_ENABLE_SYSTEM_ASSERT setting. */
 #if !defined(CONFIG_ENABLE_SYSTEM_ASSERT)
 #define SYSASSERT(x)
 #else
-#define SYSASSERT(x) if (false == (x)) SystemAssert(__FILE__, __LINE__)
+#define SYSASSERT(x) \
+  if (false == ( x ))  \
+  SystemAssert(__FILE__, __LINE__)
 #endif
 #endif
 
-/* Define a macro for the CheckHeapHealth() option to only check 
+/* Define a macro for the CheckHeapHealth() option to only check
  health of the heap and NOT at the same time check a pointer. */
 #if !defined(HEAP_CHECK_HEALTH_ONLY)
 #define HEAP_CHECK_HEALTH_ONLY 0x1u
