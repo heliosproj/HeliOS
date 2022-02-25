@@ -29,7 +29,7 @@
 #include <limits.h>
 #include <stdint.h>
 
-#define OTHER_ARCH_LINUX
+
 
 /* Check that the system HeliOS is being targeted for has an
 8-bit wide byte. */
@@ -40,6 +40,8 @@
 #pragma message("WARNING: System may not have an 8-bit wide byte!")
 #endif
 #endif
+
+
 
 /* Definition blocks for embedded platform and/or tool-chain
 specific headers and functions to compile and run HeliOS. When a
@@ -173,7 +175,7 @@ to default to the Arduino platform and/or tool-chain. */
 
 #else
 
-#pragma message("WARNING: This embedded platform and/or tool-chain is not currently supported.")
+#pragma message("WARNING: This embedded platform and/or tool-chain is may not be supported.")
 
 #include <Arduino.h>
 
@@ -188,18 +190,26 @@ to default to the Arduino platform and/or tool-chain. */
 #if !defined(CONFIG_HEAP_SIZE_IN_BLOCKS)
 #define CONFIG_HEAP_SIZE_IN_BLOCKS 0x20u /* 32u */
 #endif
-
 #endif
+
+
+
 
 /* Define "true" if not defined. */
 #if !defined(true)
 #define true 0x1u
 #endif
 
+
+
+
 /* Define "false" if not defined. */
 #if !defined(false)
 #define false 0x0u
 #endif
+
+
+
 
 /* Define "NULL" if not defined. */
 #if !defined(NULL)
@@ -210,10 +220,16 @@ to default to the Arduino platform and/or tool-chain. */
 #endif
 #endif
 
+
+
+
 /* Define "zero" if not defined. */
 #if !defined(zero)
 #define zero 0x0u
 #endif
+
+
+
 
 /* Define a general return failure for
 return values. */
@@ -221,11 +237,17 @@ return values. */
 #define RETURN_FAILURE 0x0u
 #endif
 
+
+
+
 /* Define a general return success
 for return values. */
 #if !defined(RETURN_SUCCESS)
 #define RETURN_SUCCESS 0x1u
 #endif
+
+
+
 
 /* Define the raw size of the heap in bytes based on the number of blocks
 the heap contains and the size of each block in bytes. */
@@ -233,16 +255,25 @@ the heap contains and the size of each block in bytes. */
 #define HEAP_RAW_SIZE CONFIG_HEAP_SIZE_IN_BLOCKS *CONFIG_HEAP_BLOCK_SIZE
 #endif
 
+
+
+
 /* Define the size in bytes of the OS product name which is accessible through
 xSystemGetSystemInfo(). */
 #if !defined(OS_PRODUCT_NAME_SIZE)
 #define OS_PRODUCT_NAME_SIZE 0x6u
 #endif
 
+
+
+
 /* Define the OS product name which is accessible through xSystemGetSystemInfo(). */
 #if !defined(OS_PRODUCT_NAME)
 #define OS_PRODUCT_NAME "HeliOS"
 #endif
+
+
+
 
 /* Define the OS product major version number which is accessible through
 xSystemGetSystemInfo(). */
@@ -250,11 +281,17 @@ xSystemGetSystemInfo(). */
 #define OS_MAJOR_VERSION_NO 0x0u
 #endif
 
+
+
+
 /* Define the OS product minor version number which is accessible through
 xSystemGetSystemInfo(). */
 #if !defined(OS_MINOR_VERSION_NO)
 #define OS_MINOR_VERSION_NO 0x3u
 #endif
+
+
+
 
 /* Define the OS product patch version number which is accessible through
 xSystemGetSystemInfo(). */
@@ -262,12 +299,18 @@ xSystemGetSystemInfo(). */
 #define OS_PATCH_VERSION_NO 0x1u
 #endif
 
+
+
+
 /* Define the macro which sets the privileged flag to true when
 the next call to xMemAlloc() and xMemFree() is for protected
 memory. */
 #if !defined(ENTER_PRIVILEGED)
 #define ENTER_PRIVILEGED() sysFlags.privileged = true
 #endif
+
+
+
 
 /* Define the macro which sets the privileged flag to false to
 exit protected memory mode.
@@ -279,12 +322,18 @@ privileged mode before they return. */
 #define EXIT_PRIVILEGED() sysFlags.privileged = false
 #endif
 
+
+
+
 /* Define a macro to access the privileged system flag which is
 used by xMemAlloc() and xMemFree() to determine when to set an
 entry in the heap to protected. */
 #if !defined(SYSFLAG_PRIVILEGED)
 #define SYSFLAG_PRIVILEGED() sysFlags.privileged
 #endif
+
+
+
 
 /* Define a macro to access the running system flag which is used
 by xTaskStartScheduler() to indicate whether the scheduler is
@@ -293,6 +342,9 @@ running. */
 #define SYSFLAG_RUNNING() sysFlags.running
 #endif
 
+
+
+
 /* Define a macro to access the overflow system flag which is used
 by the scheduler to determine when a task's runtime has overflowed
 and all runtimes need to be reset. */
@@ -300,17 +352,26 @@ and all runtimes need to be reset. */
 #define SYSFLAG_OVERFLOW() sysFlags.overflow
 #endif
 
+
+
+
 /* Define a marco which makes null pointer checks more readable and
 concise */
 #if !defined(ISNOTNULLPTR)
 #define ISNOTNULLPTR(p) ((NULL) != ( p ))
 #endif
 
+
+
+
 /* Define a marco which makes null pointer checks more readable and
 concise */
 #if !defined(ISNULLPTR)
 #define ISNULLPTR(p) ((NULL) == ( p ))
 #endif
+
+
+
 
 /* Define a macro to assert if assertions are enabled through
 the CONFIG_ENABLE_SYSTEM_ASSERT setting. */
@@ -324,16 +385,21 @@ the CONFIG_ENABLE_SYSTEM_ASSERT setting. */
 #endif
 #endif
 
+
+
+
 /* Define a macro for the CheckHeapHealth() option to only check
  health of the heap and NOT at the same time check a pointer. */
 #if !defined(HEAP_CHECK_HEALTH_ONLY)
 #define HEAP_CHECK_HEALTH_ONLY 0x1u
 #endif
 
+
+
+
 /* Define a macro for the CheckHeapHealth() option to check the
 health of the heap AND at the same time check a pointer.. */
 #if !defined(HEAP_CHECK_HEALTH_AND_POINTER)
 #define HEAP_CHECK_HEALTH_AND_POINTER 0x2u
 #endif
-
 #endif
