@@ -52,7 +52,7 @@ void SystemAssert(const char *file_, int line_) {
 
 /* Do not modify this system call directly. Define
 the behavior (code) through the CONFIG_SYSTEM_ASSERT_BEHAVIOR
-setting. */
+setting in the config.h header file. */
 
 #if defined(CONFIG_SYSTEM_ASSERT_BEHAVIOR)
   CONFIG_SYSTEM_ASSERT_BEHAVIOR(file_, line_);

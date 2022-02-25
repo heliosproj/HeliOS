@@ -89,12 +89,12 @@ to customize the HeliOS kernel for their specific application. */
  * @sa CONFIG_ENABLE_ARDUINO_CPP_INTERFACE
  *
  * @code {.c}
- * #define CONFIG_SYSTEM_ASSERT_BEHAVIOR(f, l) ArduinoAssert( f, l )
+ * #define CONFIG_SYSTEM_ASSERT_BEHAVIOR(f, l) ArduinoAssert( f , l )
  * @endcode
  *
  */
 /*
-#define CONFIG_SYSTEM_ASSERT_BEHAVIOR(f, l) ArduinoAssert( f, l )
+#define CONFIG_SYSTEM_ASSERT_BEHAVIOR(f, l) ArduinoAssert( f , l )
 */
 
 
