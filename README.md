@@ -18,8 +18,6 @@ The HeliOS kernel includes built-in memory management that improves the safety m
 HeliOS is built to be robust. Each HeliOS release (0.3.0 and later) undergoes static analysis testing using a commercially licensed static analysis tool as well as MISRA C:2012 checks. While HeliOS is NOT certified for nor should be used (in full or in part) in any safety-critical application where a risk to life exists, user’s can be confident they are building their embedded application on a robust embedded operating system.
 
 Lastly, for PlatformIO and Arduino users, HeliOS is easily added to their embedded application. The current release of HeliOS is available directly through the [PlatformIO Registry](https://registry.platformio.org/libraries/mannypeterson/HeliOS) and the [Arduino Library Manager](https://www.arduino.cc/reference/en/libraries/helios/). For users of other embedded platforms and/or tool-chains, simply download the current [release](https://github.com/MannyPeterson/HeliOS/releases) of HeliOS from GitHub and add the sources to your project.
-
-**If you have not used [PlatformIO](https://platformio.org/) for embedded development, whether on Arduino or another platform, give it a try. [PlatformIO](https://platformio.org/) uses the Microsoft Visual Studio Code IDE and provides a superior development environment for embedded systems.**
 ***
 # What's Happening
 The HeliOS 0.3.x series kernel was recently released and replaces the 0.2.x series kernel. With the 0.3.x series kernel, there have been changes to both the kernel internals and the API rendering it incompatible with applications built on 0.2.x. While the changes are not insignificant, updating an application built with 0.2.x requires a minimal amount of time as all of the features of HeliOS 0.2.x have been retained in 0.3.x. The key difference is the breadth of features offered by the 0.3.x series kernel has been expanded and existing features rewritten. Along with 0.3.x is a complete [HeliOS Developer's Guide](/doc/HeliOS_Developers_Guide.pdf) to assist the user in building applications on 0.3.x. Going forward, development will be focused on refactoring, expanding the API, expanding configurable settings, improving documentation and addressing issues. **As always, contributions are welcome and anyone wishing to contribute to HeliOS should refer to the “Contributing” section.**
@@ -178,5 +176,3 @@ HeliOS is copyrighted open source software licensed under the Free Software Foun
 # Important Notice
 HeliOS is **not** certified for use in safety-critical applications. The HeliOS source code, whether in full or in part, must **never** be used in applications where a risk to life exists. In other words, do not use HeliOS in your project if there is even a remote chance someone might get hurt.
 ***
-# Trademarks
-Microsoft and Microsoft Visual Studio Code are trademarks of the Microsoft group of companies.
