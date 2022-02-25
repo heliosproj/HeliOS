@@ -42,7 +42,7 @@ The HeliOS 0.3.x series kernel was recently released and replaces the 0.2.x seri
 ## Documentation
 The HeliOS API is documented in the [HeliOS Developer's Guide](/doc/HeliOS_Developers_Guide.pdf), which is available in PDF format in the HeliOS sources tree under “doc”. If you are in need of support, please refer to the "Contributing" section.
 ## Microcontroller Support
-Other than four define statements, HeliOS requires zero additional portability code. Currently HeliOS has built-in support for AVR, SAMD, SAM, ESP8266, ESP32 and Teensy 3/4/MM microcontrollers (though the latter is an ARM Cortex-M based development board). If using the Arduino platform/tool-chain, HeliOS should work right out of the box by adding HeliOS to the project from the [PlatformIO Registry](https://registry.platformio.org/libraries/mannypeterson/HeliOS) or [Arduino Library Manager](https://www.arduino.cc/reference/en/libraries/helios/).
+Other than four define statements, HeliOS requires zero additional portability code. Currently HeliOS has built-in support for AVR, SAMD, SAM, ESP8266, ESP32 and Teensy 3.x/4.x/MicroMod microcontrollers (though the latter is an ARM Cortex-M based development board). If using the Arduino platform/tool-chain, HeliOS should work right out of the box by adding HeliOS to the project from the [PlatformIO Registry](https://registry.platformio.org/libraries/mannypeterson/HeliOS) or [Arduino Library Manager](https://www.arduino.cc/reference/en/libraries/helios/).
 ## Adding Support
 For most users this section is unnecessary to build HeliOS as HeliOS will fallback to a generic Arduino configuration if built-in support for the microcontroller does not exist. However, if HeliOS does not build for the user's specific microcontroller, adding support for other platforms and/or tool-chains only requires the user to define the following four defines (and any required headers for the defines) in [defines.h](/src/defines.h).
 ```C
@@ -166,7 +166,7 @@ All releases, including the current release, can be found [here](https://github.
 * 0.2.1 - The first official release
 ***
 # Contributing
-To contribute, create a pull request with your changes. Please fork from the **develop** branch only, as **master** is kept even with the current release. If you would like to make a recommendation or are in need of support, please open an issue. If you are seeking support, please include your source code, details about your particular platform and/or toolchain and a detailed description of the issue you are facing. All pull requests and issues are responded to as quickly as possible.
+To contribute, create a pull request with your changes. Please fork from the **develop** branch only, as **master** is kept even with the current release. If you would like to make a recommendation or are in need of support, please open an issue. If you are seeking support, please include your source code, details about your particular platform and/or tool-chain and a detailed description of the issue you are facing. All pull requests and issues are responded to as quickly as possible.
 ***
 # Copyright & License
 HeliOS Embedded Operating System Copyright (C) 2020-2022 Manny Peterson
