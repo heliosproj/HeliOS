@@ -19,7 +19,7 @@ HeliOS is built to be robust. Each HeliOS release (0.3.0 and later) undergoes st
 Lastly, for PlatformIO and Arduino users, HeliOS is easily added to their embedded application. The current release of HeliOS is available directly through the [PlatformIO Registry](https://registry.platformio.org/libraries/mannypeterson/HeliOS) and the [Arduino Library Manager](https://www.arduino.cc/reference/en/libraries/helios/). For users of other embedded platforms and/or tool-chains, simply download the current [release](https://github.com/MannyPeterson/HeliOS/releases) of HeliOS from GitHub and add the sources to your project.
 # What's Happening
 The HeliOS 0.3.x series kernel was recently released and replaces the 0.2.x series kernel. With the 0.3.x series kernel, there have been significant changes to both the kernel internals and the API rendering it incompatible with applications built on 0.2.x. While the changes are significant, updating an application built with 0.2.x requires a minimal amount of time as all of the features of HeliOS 0.2.x have been retained in 0.3.x. The key difference is the breadth of features offered by the 0.3.x series kernel has been expanded and existing features rewritten. Along with 0.3.x is a complete [HeliOS Developer's Guide](/doc/HeliOS_Developers_Guide.pdf) to assist the user in building applications on 0.3.x. The focus for HeliOS development going forward will be expanding available example code, further enhancing documentation and addressing any quality issues. As always, contributions are welcome and anyone wishing to contribute to HeliOS should refer to the “Contributing” section.
-# HeliOS On The Web
+# HeliOS Around The Web
 
 **[HeliOS is a Tiny Embedded OS Designed for Arduino Boards](https://www.cnx-software.com/2020/08/14/helios-is-a-tiny-embedded-os-designed-for-arduino-boards/)**
 
@@ -27,18 +27,13 @@ The HeliOS 0.3.x series kernel was recently released and replaces the 0.2.x seri
 
 **[Newly-Launched "Embedded OS" HeliOS Brings Simple Multitasking to Arduino Microcontrollers](https://www.hackster.io/news/newly-launched-embedded-os-helios-brings-simple-multitasking-to-arduino-microcontrollers-11f6b137b75c)**
 
+**[New HeliOS, an embedded OS for Arduino Boards](https://iot-industrial-devices.com/new-helios-an-embedded-os-for-arduino-boards/)**
 
-[New HeliOS, an embedded OS for Arduino Boards](https://iot-industrial-devices.com/new-helios-an-embedded-os-for-arduino-boards/)
+**[HeliOS is a small and simple embedded operating system for Arduino](https://twitter.com/arduino/status/1293910675312357376)**
 
+**[Arduino Operating System: Best Options of 2021](https://all3dp.com/2/best-arduino-operating-system/)**
 
-[HeliOS is a small and simple embedded operating system for Arduino](https://twitter.com/arduino/status/1293910675312357376)
-
-[Arduino Operating System: Best Options of 2021](https://all3dp.com/2/best-arduino-operating-system/)
-
-
-[HeliOS is a Tiny Embedded OS Designed for Arduino Boards](https://news.knowledia.com/US/en/articles/helios-is-a-tiny-embedded-os-designed-for-arduino-boards-f35f44fe6c88759fa13d8781ce09ac985b2fdd3a)
-
-
+**[HeliOS is a Tiny Embedded OS Designed for Arduino Boards](https://news.knowledia.com/US/en/articles/helios-is-a-tiny-embedded-os-designed-for-arduino-boards-f35f44fe6c88759fa13d8781ce09ac985b2fdd3a)**
 
 # Getting Started
 ## Documentation
