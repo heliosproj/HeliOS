@@ -190,11 +190,11 @@ void *xMemAlloc(size_t size_) {
 
         /* See if there is a candidate heap entry for the requested blocks by checking:
             1) The entry at the cursor is free.
-            2) The entry has enough blocks to cover the requested blocks with overhead.
+            2) The entry has enough blocks to cover the requested blocks.
             3) The entry has the fewest possible number of blocks based on our need (i.e., we don't
             want to use 12 free blocks if we just need 3 and there is 4 available somewhere else
-            in the healp). */
-        if ((true == entryCursor->free) && (requestedBlocksWithOverhead <= entryCursor->blocks) && (leastBlocks > entryCursor->blocks)) {
+            in the heap). */
+        if ((true == entryCursor->free) && (requestedBlocks <= entryCursor->blocks) && (leastBlocks > entryCursor->blocks)) {
 
 
           /* Seems like a good candidate so update the least blocks in case there is
