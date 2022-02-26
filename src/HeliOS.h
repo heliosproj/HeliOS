@@ -1298,6 +1298,12 @@ void xTimerStop(xTimer timer_);
  */
 void xSystemHalt(void);
 
+
+/* For debugging the heap only. */
+#if defined(MEMDUMP_)
+void memdump_(void); 
+#endif
+
 /* In the event HeliOS is compiled with a C++ compiler, make the system calls (written in C)
 visible to C++. */
 #ifdef __cplusplus

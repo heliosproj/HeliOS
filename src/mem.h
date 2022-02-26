@@ -47,6 +47,12 @@ void memcpy_(void *dest_, const void *src_, size_t n_);
 void memset_(void *dest_, uint16_t val_, size_t n_);
 uint16_t memcmp_(const void *s1_, const void *s2_, size_t n_);
 
+
+/* For debugging the heap only. */
+#if defined(MEMDUMP_)
+void memdump_(void);
+#endif
+
 #ifdef __cplusplus
 }  // extern "C" {
 #endif
