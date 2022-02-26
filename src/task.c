@@ -1127,10 +1127,6 @@ void xTaskStartScheduler(void) {
   if ((false == SYSFLAG_RUNNING()) && (ISNOTNULLPTR(taskList))) {
 
 
-    /* Disable interrupts while the scheduler runs. We do ENABLE
-    the interrupts before we call the task's main. */
-    DISABLE_INTERRUPTS();
-
 
     /* Now set the scheduler system flag to running because
     the scheduler IS running. */
@@ -1200,7 +1196,7 @@ void xTaskStartScheduler(void) {
 
     SYSFLAG_RUNNING() = false;
 
-    ENABLE_INTERRUPTS();
+
   }
 
   return;
@@ -1273,14 +1269,11 @@ void TaskRun(Task_t *task_) {
   /* Record the start time of the task. */
   taskStartTime = CURRENTTIME();
 
-  /* Enable interrupts for the task. */
-  ENABLE_INTERRUPTS();
+
 
   /* Call the task from its callback pointer. */
   (*task_->callback)(task_, task_->taskParameter);
 
-  /* Disable interrupts now that the task has returned. */
-  DISABLE_INTERRUPTS();
 
   /* Calculate the runtime and store it in last runtime. */
   task_->lastRunTime = CURRENTTIME() - taskStartTime;
