@@ -1,8 +1,8 @@
 /**
  * @file task.h
  * @author Manny Peterson (mannymsp@gmail.com)
- * @brief Kernel sources for tasks and task management in HeliOS
- * @version 0.3.0
+ * @brief Kernel sources for task management
+ * @version 0.3.1
  * @date 2022-01-31
  * 
  * @copyright
@@ -31,7 +31,7 @@
 #include "types.h"
 #include "mem.h"
 #include "queue.h"
-#include "sched.h"
+#include "sys.h"
 #include "timer.h"
 
 #ifdef __cplusplus
@@ -46,10 +46,10 @@ TaskRunTimeStats_t *xTaskGetAllRunTimeStats(Base_t *tasks_);
 TaskRunTimeStats_t *xTaskGetTaskRunTimeStats(Task_t *task_);
 Base_t xTaskGetNumberOfTasks(void);
 TaskInfo_t *xTaskGetTaskInfo(Task_t *task_);
+TaskInfo_t *xTaskGetAllTaskInfo(Base_t *tasks_);
 TaskState_t xTaskGetTaskState(Task_t *task_);
 char *xTaskGetName(Task_t *task_);
 Base_t xTaskGetId(Task_t *task_);
-char *xTaskList(void);
 void xTaskNotifyStateClear(Task_t *task_);
 Base_t xTaskNotificationIsWaiting(Task_t *task_);
 Base_t xTaskNotifyGive(Task_t *task_, Base_t notificationBytes_, const char *notificationValue_);
@@ -60,6 +60,14 @@ void xTaskWait(Task_t *task_);
 void xTaskChangePeriod(Task_t *task_, Time_t timerPeriod_);
 Time_t xTaskGetPeriod(Task_t *task_);
 void xTaskResetTimer(Task_t *task_);
+void xTaskStartScheduler(void);
+void RunTimeReset(void);
+Time_t CurrentTime(void);
+void TaskRun(Task_t *task_);
+void xTaskResumeAll(void);
+void xTaskSuspendAll(void);
+SchedulerState_t xTaskGetSchedulerState(void);
+Base_t TaskListFindTask(const Task_t *task_);
 
 #ifdef __cplusplus
 }  // extern "C" {

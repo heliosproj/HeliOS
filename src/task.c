@@ -1,8 +1,8 @@
 /**
  * @file task.c
  * @author Manny Peterson (mannymsp@gmail.com)
- * @brief Kernel sources for tasks and task management in HeliOS
- * @version 0.3.0
+ * @brief Kernel sources for task management
+ * @version 0.3.1
  * @date 2022-01-31
  *
  * @copyright
@@ -26,35 +26,83 @@
 
 #include "task.h"
 
+
+
 extern SysFlags_t sysFlags;
+
+
 
 /* Declare and initialize the task list to null. */
 TaskList_t *taskList = NULL;
+
+
+/* Declare and initialize the scheduler state to
+running. This is controlled with xTaskResumeAll()
+and xTaskSuspendAll(). */
+SchedulerState_t schedulerState = SchedulerStateRunning;
+
+
 
 /* The xTaskCreate() system call will create a new task. The task will be created with its
 state set to suspended. The xTaskCreate() and xTaskDelete() system calls cannot be called within
 a task. They MUST be called outside of the scope of the HeliOS scheduler. */
 Task_t *xTaskCreate(const char *name_, void (*callback_)(Task_t *, TaskParm_t *), TaskParm_t *taskParameter_) {
+
+
   Task_t *ret = NULL;
 
   Task_t *taskCursor = NULL;
 
-  /* Check if not in a critical section from CRITICAL_ENTER() and make sure the name and callback parameters
-  are not null. */
-  if ((SYSFLAG_CRITICAL() == false) && (ISNOTNULLPTR(name_)) && (ISNOTNULLPTR(callback_))) {
-    /* Check if the task list is null, if it is call xMemAlloc() to allocate
-    the dynamic memory for it. */
+  SYSASSERT(false == SYSFLAG_RUNNING());
+
+  SYSASSERT(ISNOTNULLPTR(name_));
+
+  SYSASSERT(ISNOTNULLPTR(callback_));
+
+
+
+
+  /* Make sure we aren't inside the scope of the scheduler and that the end-user didn't
+  pass any null pointers.
+
+  NOTE: It is okay for the task paramater to be null. */
+  if ((false == SYSFLAG_RUNNING()) && (ISNOTNULLPTR(name_)) && (ISNOTNULLPTR(callback_))) {
+
+
+    /* See if the task list needs to be created. */
     if (ISNULLPTR(taskList)) {
+
+
+      /* We are creating a kernel object here so enter privileged mode. */
+      ENTER_PRIVILEGED();
+
+
       taskList = (TaskList_t *)xMemAlloc(sizeof(TaskList_t));
     }
-    /* Check if the task list is still null in which case xMemAlloc() was unable to allocate
-    the required memory. Enable interrupts and return null. */
+
+
+    /* Assert if xMemAlloc() didn't do its job. */
+    SYSASSERT(ISNOTNULLPTR(taskList));
+
+
+    /* Check if xMemAlloc() did its job. */
     if (ISNOTNULLPTR(taskList)) {
+
+
+      /* We are creating a kernel object so enter privileged mode. */
+      ENTER_PRIVILEGED();
+
       ret = (Task_t *)xMemAlloc(sizeof(Task_t));
 
-      /* Check if the task is not null. If it is, then xMemAlloc() was unable to allocate the required
-      memory. */
+
+      /* Again, assert if xMemAlloc() didn't do its job. */
+      SYSASSERT(ISNOTNULLPTR(ret));
+
+
+      /* Check if xMemAlloc() did its job. If so, populate the task with all the
+      pertinent details. */
       if (ISNOTNULLPTR(ret)) {
+
         taskList->nextId++;
 
         ret->id = taskList->nextId;
@@ -71,16 +119,23 @@ Task_t *xTaskCreate(const char *name_, void (*callback_)(Task_t *, TaskParm_t *)
 
         taskCursor = taskList->head;
 
-        /* Check if the task list head is not null, if it is set it to the newly created task. If it
-        isn't null then append the newly created task to the task list. */
+        /* Check if this is the first task in the task list. If it is just set
+        the head to it. Otherwise we are going to have to traverse the list
+        to find the end. */
         if (ISNOTNULLPTR(taskList->head)) {
+
+
           /* If the task cursor is not null, continue to traverse the list to find the end. */
           while (ISNOTNULLPTR(taskCursor->next)) {
+
+
             taskCursor = taskCursor->next;
           }
 
           taskCursor->next = ret;
+
         } else {
+
           taskList->head = ret;
         }
 
@@ -92,45 +147,87 @@ Task_t *xTaskCreate(const char *name_, void (*callback_)(Task_t *, TaskParm_t *)
   return ret;
 }
 
+
+
 /* The xTaskDelete() system call will delete a task. The xTaskCreate() and xTaskDelete() system calls
 cannot be called within a task. They MUST be called outside of the scope of the HeliOS scheduler. */
 void xTaskDelete(Task_t *task_) {
+
+
   Task_t *taskCursor = NULL;
 
   Task_t *taskPrevious = NULL;
 
-  /* Check if not in a critical section from CRITICAL_ENTER() and make sure the task list is not null
-  and that the task parameter is also not null. */
-  if ((SYSFLAG_CRITICAL() == false) && (ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(task_))) {
-    taskCursor = taskList->head;
 
-    taskPrevious = NULL;
+  /* Assert if we are within the scope of the scheduler. */
+  SYSASSERT(false == SYSFLAG_RUNNING());
 
-    /* Check if the task cursor is not null and if the task cursor equals the task
-    to be deleted. */
-    if ((ISNOTNULLPTR(taskCursor)) && (taskCursor == task_)) {
-      taskList->head = taskCursor->next;
 
-      xMemFree(taskCursor);
+  /* Check to make sure we aren't in the scope of the scheduler. */
+  if (false == SYSFLAG_RUNNING()) {
 
-      taskList->length--;
 
-    } else {
-      /* While the task cursor is not null and the task cursor is not equal to the
-      task to be deleted. */
-      while ((ISNOTNULLPTR(taskCursor)) && (taskCursor != task_)) {
-        taskPrevious = taskCursor;
+    /* Assert if we can't find the task in the task list. */
+    SYSASSERT(RETURN_SUCCESS == TaskListFindTask(task_));
 
-        taskCursor = taskCursor->next;
-      }
 
-      /* If the task cursor is is not null, then delete the task otherwise return. */
-      if (ISNOTNULLPTR(taskCursor)) {
-        taskPrevious->next = taskCursor->next;
+    /* Check if the task is in the task list, if not then head toward
+    the exit. */
+    if (RETURN_SUCCESS == TaskListFindTask(task_)) {
+
+
+      taskCursor = taskList->head;
+
+
+      /* If the task is at the head of the task list then just remove
+      it and free its heap memory. */
+      if ((ISNOTNULLPTR(taskCursor)) && (taskCursor == task_)) {
+
+
+        taskList->head = taskCursor->next;
+
+
+        /* We are freeing a kernel object so enter privileged mode. */
+        ENTER_PRIVILEGED();
 
         xMemFree(taskCursor);
 
         taskList->length--;
+
+      } else {
+
+        /* Well, it wasn't at the head of the task list so now we have to
+        go hunt it down. */
+        while ((ISNOTNULLPTR(taskCursor)) && (taskCursor != task_)) {
+
+          taskPrevious = taskCursor;
+
+          taskCursor = taskCursor->next;
+        }
+
+
+        /* Assert if we didn't find it which should be impossible given
+        TaskListFindTask() found it. Maybe some cosmic rays bit flipped
+        the DRAM!? */
+        SYSASSERT(ISNOTNULLPTR(taskCursor));
+
+
+        /* Check if the task cursor points to something. That something should
+        be the task we want to free. */
+        if (ISNOTNULLPTR(taskCursor)) {
+
+          taskPrevious->next = taskCursor->next;
+
+
+          /* We are freeing a kernel object so enter privileged mode. */
+          ENTER_PRIVILEGED();
+
+
+          xMemFree(taskCursor);
+
+
+          taskList->length--;
+        }
       }
     }
   }
@@ -138,25 +235,44 @@ void xTaskDelete(Task_t *task_) {
   return;
 }
 
+
+
+
 /* The xTaskGetHandleByName() system call will return the task handle pointer to the
 task specified by its ASCII name. The length of the task name is dependent on the
 CONFIG_TASK_NAME_BYTES setting. The name is compared byte-for-byte so the name is
 case sensitive. */
 Task_t *xTaskGetHandleByName(const char *name_) {
+
+
   Task_t *ret = NULL;
 
   Task_t *taskCursor = NULL;
 
+
+  /* Assert if the task list has not been initialized. We wouldn't have to do this
+  if we called TaskListFindTask() but that isn't needed here. */
+  SYSASSERT(ISNOTNULLPTR(taskList));
+
+  /* Assert if the end-user passed a null pointer for the task name. */
+  SYSASSERT(ISNOTNULLPTR(name_));
+
   /* Check if the task list is not null and the name parameter is also not null. */
   if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(name_))) {
+
     taskCursor = taskList->head;
 
     /* While the task cursor is not null, scan the task list for the task name. */
     while (ISNOTNULLPTR(taskCursor)) {
+
       /* Compare the task name of the task pointed to by the task cursor against the
       name parameter. */
-      if (memcmp_(taskCursor->name, name_, CONFIG_TASK_NAME_BYTES) == zero) {
+      if (zero == memcmp_(taskCursor->name, name_, CONFIG_TASK_NAME_BYTES)) {
+
+
         ret = taskCursor;
+
+        break;
       }
 
       taskCursor = taskCursor->next;
@@ -166,23 +282,42 @@ Task_t *xTaskGetHandleByName(const char *name_) {
   return ret;
 }
 
+
+
+
 /* The xTaskGetHandleById() system call will return a pointer to the task handle
 specified by its identifier. */
 Task_t *xTaskGetHandleById(Base_t id_) {
+
+
   Task_t *ret = NULL;
 
   Task_t *taskCursor = NULL;
 
+  /* Assert if the task list has not been initialized. We wouldn't have to do this
+  if we called TaskListFindTask() but that isn't needed here. */
+  SYSASSERT(ISNOTNULLPTR(taskList));
+
+
+  /* Assert if the task identifier is zero because it shouldn't be. */
+  SYSASSERT(zero < id_);
+
   /* Check if the task list is not null and the identifier parameter is greater than
   zero. */
-  if (ISNOTNULLPTR(taskList)) {
+  if ((ISNOTNULLPTR(taskList)) && (zero < id_)) {
+
+
     taskCursor = taskList->head;
 
     /* While the task cursor is not null, check the task pointed to by the task cursor
     and compare its identifier against the identifier parameter being searched for. */
     while (ISNOTNULLPTR(taskCursor)) {
-      if (taskCursor->id == id_) {
+
+      if (id_ == taskCursor->id) {
+
         ret = taskCursor;
+
+        break;
       }
 
       taskCursor = taskCursor->next;
@@ -191,12 +326,17 @@ Task_t *xTaskGetHandleById(Base_t id_) {
 
   return ret;
 }
+
+
+
 
 /* The xTaskGetAllRunTimeStats() system call will return the runtime statistics for all
  of the tasks regardless of their state. The xTaskGetAllRunTimeStats() system call returns
  the xTaskRunTimeStats type. An xBase variable must be passed by reference to xTaskGetAllRunTimeStats()
  which will contain the number of tasks so the end-user can iterate through the tasks. */
 TaskRunTimeStats_t *xTaskGetAllRunTimeStats(Base_t *tasks_) {
+
+
   Base_t i = zero;
 
   Base_t tasks = zero;
@@ -205,30 +345,56 @@ TaskRunTimeStats_t *xTaskGetAllRunTimeStats(Base_t *tasks_) {
 
   TaskRunTimeStats_t *ret = NULL;
 
+
+  /* Assert if the task list has not been initialized. We wouldn't have to do this
+  if we called TaskListFindTask() but that isn't needed here. */
+  SYSASSERT(ISNOTNULLPTR(taskList));
+
+
+  /* Check to make sure the pointer for the pass-by-reference is not null. */
+  SYSASSERT(ISNOTNULLPTR(tasks_));
+
+
   /* Check if the task list is not null and the tasks parameter is not null. */
   if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(tasks_))) {
+
     taskCursor = taskList->head;
 
     /* While the task cursor is not null, continue to traverse the task list counting
     the number of tasks in the list. */
     while (ISNOTNULLPTR(taskCursor)) {
+
       tasks++;
 
       taskCursor = taskCursor->next;
     }
 
+
+    /* Assert if the tasks counted does not agree with the length of the task list. */
+    SYSASSERT(tasks == taskList->length);
+
     /* Check if the number of tasks is greater than zero and the length of the task list equals
     the number of tasks just counted (this is done as an integrity check). */
-    if ((tasks > zero) && (taskList->length == tasks)) {
+    if ((zero < tasks) && (tasks == taskList->length)) {
+
+
       ret = (TaskRunTimeStats_t *)xMemAlloc(tasks * sizeof(TaskRunTimeStats_t));
+
+      /* Assert if xMemAlloc() didn't do its job. */
+      SYSASSERT(ISNOTNULLPTR(ret));
+
 
       /* Check if xMemAlloc() successfully allocated the memory. */
       if (ISNOTNULLPTR(ret)) {
+
         taskCursor = taskList->head;
 
         /* While the task cursor is not null, continue to traverse the task list adding the
         runtime statistics of each task to the runtime stats array to be returned. */
         while (ISNOTNULLPTR(taskCursor)) {
+
+          ret[i].id = taskCursor->id;
+
           ret[i].lastRunTime = taskCursor->lastRunTime;
 
           ret[i].totalRunTime = taskCursor->totalRunTime;
@@ -241,6 +407,7 @@ TaskRunTimeStats_t *xTaskGetAllRunTimeStats(Base_t *tasks_) {
         *tasks_ = tasks;
 
       } else {
+
         *tasks_ = zero;
       }
     }
@@ -249,64 +416,85 @@ TaskRunTimeStats_t *xTaskGetAllRunTimeStats(Base_t *tasks_) {
   return ret;
 }
 
+
+
+
 /* The xTaskGetTaskRunTimeStats() system call returns the task runtime statistics for
 one task. The xTaskGetTaskRunTimeStats() system call returns the xTaskRunTimeStats type.
 The memory must be freed by calling xMemFree() after it is no longer needed. */
 TaskRunTimeStats_t *xTaskGetTaskRunTimeStats(Task_t *task_) {
-  Task_t *taskCursor = NULL;
 
   TaskRunTimeStats_t *ret = NULL;
 
-  /* Check if the task list and the task parameter is not null. */
-  if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(task_))) {
-    taskCursor = taskList->head;
 
-    /* While the task cursor is not null and the task cursor is not equal to the
-    task being searched for. */
-    while ((ISNOTNULLPTR(taskCursor)) && (taskCursor != task_)) {
-      taskCursor = taskCursor->next;
-    }
 
-    /* If the task cursor is null, the task could not be found so return null. */
-    if (ISNOTNULLPTR(taskCursor)) {
-      ret = (TaskRunTimeStats_t *)xMemAlloc(sizeof(TaskRunTimeStats_t));
+  /* Assert if the task cannot be found in the task list. */
+  SYSASSERT(RETURN_SUCCESS == TaskListFindTask(task_));
 
-      /* Check if xMemAlloc() successfully allocated the memory. */
-      if (ISNOTNULLPTR(ret)) {
-        ret->lastRunTime = taskCursor->lastRunTime;
+  /* Check if the task cannot be found in the task list. */
+  if (RETURN_SUCCESS == TaskListFindTask(task_)) {
 
-        ret->totalRunTime = taskCursor->totalRunTime;
-      }
+
+    ret = (TaskRunTimeStats_t *)xMemAlloc(sizeof(TaskRunTimeStats_t));
+
+
+    /* Assert if xMemAlloc() didn't do its job. */
+    SYSASSERT(ISNOTNULLPTR(ret));
+
+    /* Check if xMemAlloc() successfully allocated the memory. */
+    if (ISNOTNULLPTR(ret)) {
+
+      ret->id = task_->id;
+
+      ret->lastRunTime = task_->lastRunTime;
+
+      ret->totalRunTime = task_->totalRunTime;
     }
   }
 
   return ret;
 }
 
+
+
+
 /* The xTaskGetNumberOfTasks() system call returns the current number of tasks
 regardless of their state. */
 Base_t xTaskGetNumberOfTasks(void) {
+
+
   Base_t ret = zero;
 
   Base_t tasks = zero;
 
   Task_t *taskCursor = NULL;
 
-  /* Check if the task list is not null. */
+  /* Assert if the task list is not initialized. */
+  SYSASSERT(ISNOTNULLPTR(taskList));
+
+
+  /* Check if the task list is not initialized. */
   if (ISNOTNULLPTR(taskList)) {
+
     taskCursor = taskList->head;
 
     /* While the task cursor is not null, continue to count the number of
     tasks. */
     while (ISNOTNULLPTR(taskCursor)) {
+
       tasks++;
 
       taskCursor = taskCursor->next;
     }
 
+    /* Assert if the number of tasks counted does not agree with the task list
+    length. */
+    SYSASSERT(tasks == taskList->length);
+
     /* Check if the length of the task list equals the number of tasks counted
     (this is an integrity check). */
-    if (taskList->length == tasks) {
+    if (tasks == taskList->length) {
+
       ret = tasks;
     }
   }
@@ -314,40 +502,139 @@ Base_t xTaskGetNumberOfTasks(void) {
   return ret;
 }
 
+
+
+
 /* The xTaskGetTaskInfo() system call returns the xTaskInfo structure containing
 the details of the task including its identifier, name, state and runtime statistics. */
 TaskInfo_t *xTaskGetTaskInfo(Task_t *task_) {
+
+  TaskInfo_t *ret = NULL;
+
+
+
+  /* Assert if the task cannot be found. */
+  SYSASSERT(RETURN_SUCCESS == TaskListFindTask(task_));
+
+
+  /* Check if the task cannot be found. */
+  if (RETURN_SUCCESS == TaskListFindTask(task_)) {
+
+    ret = (TaskInfo_t *)xMemAlloc(sizeof(TaskInfo_t));
+
+
+    /* Assert if xMemAlloc() failed to do its one job in life. */
+    SYSASSERT(ISNOTNULLPTR(ret));
+
+    /* Check if the task info memory has been allocated by xMemAlloc(). if it
+    has then populate the task info and return. */
+    if (ISNOTNULLPTR(ret)) {
+
+
+      ret->id = task_->id;
+
+      ret->state = task_->state;
+
+      memcpy_(ret->name, task_->name, CONFIG_TASK_NAME_BYTES);
+
+      ret->lastRunTime = task_->lastRunTime;
+
+      ret->totalRunTime = task_->totalRunTime;
+    }
+  }
+
+  return ret;
+}
+
+
+
+
+/* The xTaskGetAllTaskInfo() system call returns the xTaskInfo structure containing
+the details of ALL tasks including its identifier, name, state and runtime statistics. */
+TaskInfo_t *xTaskGetAllTaskInfo(Base_t *tasks_) {
+
+
+  Base_t i = zero;
+
+  Base_t tasks = zero;
+
   Task_t *taskCursor = NULL;
 
   TaskInfo_t *ret = NULL;
 
-  /* Check if the task list is not null and the task parameter is not null. */
-  if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(task_))) {
+
+  /* Assert if the task list has not been initialized. */
+  SYSASSERT(ISNOTNULLPTR(taskList));
+
+
+  /* Assert if the end-user passed us a null pointer. */
+  SYSASSERT(ISNOTNULLPTR(tasks_));
+
+
+  /* Check if the task list is not null and the tasks parameter is not null. */
+  if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(tasks_))) {
+
     taskCursor = taskList->head;
 
-    /* While the task cursor is not null and the task cursor is not equal
-    to the task being searched for. */
-    while ((ISNOTNULLPTR(taskCursor)) && (taskCursor != task_)) {
+
+
+    /* While the task cursor is not null, continue to traverse the task list counting
+    the number of tasks in the list. */
+    while (ISNOTNULLPTR(taskCursor)) {
+
+      tasks++;
+
       taskCursor = taskCursor->next;
     }
 
-    /* Check if the task cursor is null, if so the task could not be found
-    so return null. */
-    if (ISNOTNULLPTR(taskCursor)) {
-      ret = (TaskInfo_t *)xMemAlloc(sizeof(TaskInfo_t));
 
-      /* Check if the task info memory has been allocated by xMemAlloc(). if it
-      has then populate the task info and return. */
+    /* Assert if the number of tasks counted disagrees with the length of the task list. */
+    SYSASSERT(tasks == taskList->length);
+
+    /* Check if the number of tasks is greater than zero and the length of the task list equals
+    the number of tasks just counted (this is done as an integrity check). */
+    if ((zero < tasks) && (tasks == taskList->length)) {
+
+
+
+      ret = (TaskInfo_t *)xMemAlloc(tasks * sizeof(TaskInfo_t));
+
+
+      /* Assert if xMemAlloc() didn't do its job. */
+      SYSASSERT(ISNOTNULLPTR(ret));
+
+      /* Check if xMemAlloc() successfully allocated the memory. */
       if (ISNOTNULLPTR(ret)) {
-        ret->id = taskCursor->id;
 
-        ret->state = taskCursor->state;
 
-        memcpy_(ret->name, taskCursor->name, CONFIG_TASK_NAME_BYTES);
+        taskCursor = taskList->head;
 
-        ret->lastRunTime = taskCursor->lastRunTime;
 
-        ret->totalRunTime = taskCursor->totalRunTime;
+        /* While the task cursor is not null, continue to traverse the task list adding the
+        runtime statistics of each task to the runtime stats array to be returned. */
+        while (ISNOTNULLPTR(taskCursor)) {
+
+
+          ret[i].id = taskCursor->id;
+
+          ret[i].state = taskCursor->state;
+
+          memcpy_(ret[i].name, taskCursor->name, CONFIG_TASK_NAME_BYTES);
+
+          ret[i].lastRunTime = taskCursor->lastRunTime;
+
+          ret[i].totalRunTime = taskCursor->totalRunTime;
+
+          taskCursor = taskCursor->next;
+
+          i++;
+        }
+
+        *tasks_ = tasks;
+
+      } else {
+
+        *tasks_ = zero;
       }
     }
   }
@@ -355,159 +642,155 @@ TaskInfo_t *xTaskGetTaskInfo(Task_t *task_) {
   return ret;
 }
 
+
+
 /* The xTaskGetTaskState() system call will return the state of the task. */
 TaskState_t xTaskGetTaskState(Task_t *task_) {
+
+
   TaskState_t ret = TaskStateError;
 
-  Task_t *taskCursor = NULL;
 
-  /* Check if the task list is not null and the task parameter is not null. */
-  if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(task_))) {
-    taskCursor = taskList->head;
 
-    /* While the task cursor is not null and the task cursor is not equal
-    to the task being searched for. */
-    while ((ISNOTNULLPTR(taskCursor)) && (taskCursor != task_)) {
-      taskCursor = taskCursor->next;
-    }
+  /* Assert if the task cannot be found. */
+  SYSASSERT(RETURN_SUCCESS == TaskListFindTask(task_));
 
-    /* Check if the task cursor is not null, if so return the tasks's state
-    otherwise return the error task state. */
-    if (ISNOTNULLPTR(taskCursor)) {
-      ret = taskCursor->state;
 
-    } else {
-      ret = TaskStateError;
-    }
+  /* Check to make sure the task was found. */
+  if (RETURN_SUCCESS == TaskListFindTask(task_)) {
+
+    ret = task_->state;
   }
+
 
   return ret;
 }
+
+
 
 /* The xTaskGetName() system call returns the ASCII name of the task. The size of the
 task is dependent on the setting CONFIG_TASK_NAME_BYTES. The task name is NOT a null
 terminated char array. */
 char *xTaskGetName(Task_t *task_) {
+
+
   char *ret = NULL;
 
-  Task_t *taskCursor = NULL;
 
-  /* Check if the task list is not null and the task parameter is not null. */
-  if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(task_))) {
-    taskCursor = taskList->head;
 
-    /* While the task cursor is not null and the task cursor is not equal
-    to the task being searched for. */
-    while ((ISNOTNULLPTR(taskCursor)) && (taskCursor != task_)) {
-      taskCursor = taskCursor->next;
-    }
+  /* Assert if the task cannot be found. */
+  SYSASSERT(RETURN_SUCCESS == TaskListFindTask(task_));
 
-    /* Check if the task cursor is not null, if so allocate memory for the
-    task name. */
-    if (ISNOTNULLPTR(taskCursor)) {
-      ret = (char *)xMemAlloc(CONFIG_TASK_NAME_BYTES);
 
-      /* Check if the task info memory has been allocated by xMemAlloc(). */
-      if (ISNOTNULLPTR(ret)) {
-        memcpy_(ret, taskCursor->name, CONFIG_TASK_NAME_BYTES);
-      }
+  /* Check if the task can be found. */
+  if (RETURN_SUCCESS == TaskListFindTask(task_)) {
+
+
+    ret = (char *)xMemAlloc(CONFIG_TASK_NAME_BYTES);
+
+
+    /* Assert if xMemAlloc() didn't do its job. */
+    SYSASSERT(ISNOTNULLPTR(ret));
+
+
+    /* Check if the task info memory has been allocated by xMemAlloc(). */
+    if (ISNOTNULLPTR(ret)) {
+
+
+
+      memcpy_(ret, task_->name, CONFIG_TASK_NAME_BYTES);
     }
   }
 
+
   return ret;
 }
+
+
 
 /* The xTaskGetId() system call returns the task identifier for the task. */
 Base_t xTaskGetId(Task_t *task_) {
+
+
   Base_t ret = zero;
 
-  Task_t *taskCursor = NULL;
 
-  /* Check if the task list is not null and the task parameter is not null. */
-  if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(task_))) {
-    taskCursor = taskList->head;
+  /* Assert if the task cannot be found. */
+  SYSASSERT(RETURN_SUCCESS == TaskListFindTask(task_));
 
-    /* While the task cursor is not null and the task cursor is not equal
-    to the task being searched for. */
-    while ((ISNOTNULLPTR(taskCursor)) && (taskCursor != task_)) {
-      taskCursor = taskCursor->next;
-    }
 
-    /* Check if the task cursor is not null, if so set the return value
-    to the task identifier. */
-    if (ISNOTNULLPTR(taskCursor)) {
-      ret = taskCursor->id;
-    }
+  /* Check that the task was found. */
+  if (RETURN_SUCCESS == TaskListFindTask(task_)) {
+
+    ret = task_->id;
   }
+
 
   return ret;
 }
 
-/* TO-DO: Implement xTaskList(). */
-char *xTaskList(void) {
-  return NULL;
-}
+
+
 
 /* The xTaskNotifyStateClear() system call will clear a waiting task notification if one
 exists without returning the notification. */
 void xTaskNotifyStateClear(Task_t *task_) {
-  Task_t *taskCursor = NULL;
 
-  /* Check if the task list is not null and the task parameter is not null. */
-  if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(task_))) {
-    taskCursor = taskList->head;
 
-    /* While the task cursor is not null and the task cursor is not equal
-    to the task being searched for. */
-    while ((ISNOTNULLPTR(taskCursor)) && (taskCursor != task_)) {
-      taskCursor = taskCursor->next;
-    }
+  /* Assert if the task cannot be found. */
+  SYSASSERT(RETURN_SUCCESS == TaskListFindTask(task_));
 
-    /* Check if the task cursor is not null, if so check if there is a waiting
-    notification. */
-    if (ISNOTNULLPTR(taskCursor)) {
-      /* If the task notification bytes are greater than zero, then there is a notification
-      to clear. */
-      if (taskCursor->notificationBytes > zero) {
-        taskCursor->notificationBytes = zero;
-        memset_(taskCursor->notificationValue, zero, CONFIG_NOTIFICATION_VALUE_BYTES);
-      }
+
+  /* Check if the task was found. */
+  if (RETURN_SUCCESS == TaskListFindTask(task_)) {
+
+
+    /* If the notification bytes are greater than zero then there
+    is a notification to be cleared. */
+    if (zero < task_->notificationBytes) {
+
+      task_->notificationBytes = zero;
+
+      memset_(task_->notificationValue, zero, CONFIG_NOTIFICATION_VALUE_BYTES);
     }
   }
 
+
   return;
 }
+
+
 
 /* The xTaskNotificationIsWaiting() system call will return true or false depending
 on whether there is a task notification waiting for the task. */
 Base_t xTaskNotificationIsWaiting(Task_t *task_) {
   Base_t ret = zero;
 
-  Task_t *taskCursor = NULL;
 
-  /* Check if the task list is not null and the task parameter is not null. */
-  if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(task_))) {
-    taskCursor = taskList->head;
 
-    /* While the task cursor is not null and the task cursor is not equal
-    to the task being searched for. */
-    while ((ISNOTNULLPTR(taskCursor)) && (taskCursor != task_)) {
-      taskCursor = taskCursor->next;
-    }
+  /* Assert if the task cannot be found. */
+  SYSASSERT(RETURN_SUCCESS == TaskListFindTask(task_));
 
-    /* Check if the task cursor is not null, if so check if there is a waiting
-    task notification. */
-    if (ISNOTNULLPTR(taskCursor)) {
-      /* Check if the notification bytes are greater than zero. If so, there is a notification
-      waiting so return true. */
-      if (taskCursor->notificationBytes > zero) {
-        ret = true;
-      }
+
+  /* Check if the task was found. */
+  if (RETURN_SUCCESS == TaskListFindTask(task_)) {
+
+
+    /* If there are notification bytes, there is a notification
+    waiting. */
+    if (zero < task_->notificationBytes) {
+
+
+      ret = true;
     }
   }
 
+
   return ret;
 }
+
+
+
 
 /* The xTaskNotifyGive() system call will send a task notification to the specified task. The
 task notification bytes is the number of bytes contained in the notification value. The number of
@@ -515,156 +798,172 @@ notification bytes must be between one and the CONFIG_NOTIFICATION_VALUE_BYTES s
 value must contain a pointer to a char array containing the notification value. If the task already
 has a waiting task notification, xTaskNotifyGive() will NOT overwrite the waiting task notification. */
 Base_t xTaskNotifyGive(Task_t *task_, Base_t notificationBytes_, const char *notificationValue_) {
-  Base_t ret = false;
 
-  Task_t *taskCursor = NULL;
+
+
+  Base_t ret = RETURN_FAILURE;
+
+  /* Assert if the notification bytes are zero. */
+  SYSASSERT(zero < notificationBytes_);
+
+  /* Assert if the notification bytes exceeds the setting
+  CONFIG_NOTIFICATION_VALUE_BYTES. */
+  SYSASSERT(CONFIG_NOTIFICATION_VALUE_BYTES > notificationBytes_);
+
+
+  /* Assert if the end-user passed us a null pointer for the
+  notification value. */
+  SYSASSERT(ISNOTNULLPTR(notificationValue_));
 
   /* Check if the task list is not null and the task parameter is not null, the notification bytes are between
   one and CONFIG_NOTIFICATION_VALUE_BYTES and that the notification value char array pointer is not null. */
-  if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(task_)) && (notificationBytes_ > zero) && (notificationBytes_ < CONFIG_NOTIFICATION_VALUE_BYTES) && (ISNOTNULLPTR(notificationValue_))) {
-    taskCursor = taskList->head;
+  if ((zero < notificationBytes_) && (CONFIG_NOTIFICATION_VALUE_BYTES > notificationBytes_) && (ISNOTNULLPTR(notificationValue_))) {
 
-    /* While the task cursor is not null and the task cursor is not equal
-    to the task being searched for. */
-    while ((ISNOTNULLPTR(taskCursor)) && (taskCursor != task_)) {
-      taskCursor = taskCursor->next;
-    }
 
-    /* Check if the task cursor is not null, if so add the task notification to the task. */
-    if (ISNOTNULLPTR(taskCursor)) {
-      /* If the notification bytes are zero then there is not a notification already waiting,
-      so copy the notification value into the task and set the notification bytes. */
-      if (taskCursor->notificationBytes == zero) {
-        taskCursor->notificationBytes = notificationBytes_;
+    /* Assert if we can't find the task to receive the notification. */
+    SYSASSERT(RETURN_SUCCESS == TaskListFindTask(task_));
 
-        memcpy_(taskCursor->notificationValue, notificationValue_, CONFIG_NOTIFICATION_VALUE_BYTES);
 
-        ret = true;
+    /* Check if the task can be found. */
+    if (RETURN_SUCCESS == TaskListFindTask(task_)) {
+
+
+      /* Make sure there isn't a waiting notification. xTaskNotifyGive will NOT
+      overwrite a waiting notification. */
+      if (zero == task_->notificationBytes) {
+
+        task_->notificationBytes = notificationBytes_;
+
+        memcpy_(task_->notificationValue, notificationValue_, CONFIG_NOTIFICATION_VALUE_BYTES);
+
+        ret = RETURN_SUCCESS;
       }
     }
   }
 
   return ret;
 }
+
+
 
 /* The xTaskNotifyTake() system call will return the waiting task notification if there
 is one. The xTaskNotifyTake() system call will return an xTaskNotification structure containing
 the notification bytes and its value. */
 TaskNotification_t *xTaskNotifyTake(Task_t *task_) {
-  Task_t *taskCursor = NULL;
 
   TaskNotification_t *ret = NULL;
 
-  /* Check if the task list is not null and the task parameter is not null. */
-  if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(task_))) {
-    taskCursor = taskList->head;
 
-    /* While the task cursor is not null and the task cursor is not equal
-    to the task being searched for. */
-    while ((ISNOTNULLPTR(taskCursor)) && (taskCursor != task_)) {
-      taskCursor = taskCursor->next;
-    }
 
-    /* Check if the task cursor is not null, if so check if there is a waiting
-    task notification. */
-    if (ISNOTNULLPTR(taskCursor)) {
-      /* Check if the notification bytes are greater than zero, if so there is a waiting task
-      notification. */
-      if (taskCursor->notificationBytes > zero) {
-        ret = (TaskNotification_t *)xMemAlloc(sizeof(TaskNotification_t));
+  /* Assert if the task cannot be found. */
+  SYSASSERT(RETURN_SUCCESS == TaskListFindTask(task_));
 
-        /* Check if xMemAlloc() successfully allocated the memory for the task notification
-        structure. */
-        if (ISNOTNULLPTR(ret)) {
-          ret->notificationBytes = taskCursor->notificationBytes;
 
-          memcpy_(ret->notificationValue, taskCursor->notificationValue, CONFIG_NOTIFICATION_VALUE_BYTES);
+  /* Check if the task cannot be found. */
+  if (RETURN_SUCCESS == TaskListFindTask(task_)) {
 
-          taskCursor->notificationBytes = zero;
+    /* If there are notification bytes, there is a notification
+    waiting. */
+    if (zero < task_->notificationBytes) {
 
-          memset_(taskCursor->notificationValue, zero, CONFIG_NOTIFICATION_VALUE_BYTES);
-        }
+
+
+      ret = (TaskNotification_t *)xMemAlloc(sizeof(TaskNotification_t));
+
+
+      /* Assert if xMemAlloc() didn't do its job. */
+      SYSASSERT(ISNOTNULLPTR(ret));
+
+      /* Check if xMemAlloc() successfully allocated the memory for the task notification
+      structure. */
+      if (ISNOTNULLPTR(ret)) {
+
+        ret->notificationBytes = task_->notificationBytes;
+
+        memcpy_(ret->notificationValue, task_->notificationValue, CONFIG_NOTIFICATION_VALUE_BYTES);
+
+        task_->notificationBytes = zero;
+
+        memset_(task_->notificationValue, zero, CONFIG_NOTIFICATION_VALUE_BYTES);
       }
     }
   }
 
+
   return ret;
 }
+
+
 
 /* The xTaskResume() system call will resume a suspended task. Tasks are suspended on creation
 so either xTaskResume() or xTaskWait() must be called to place the task in a state that the scheduler
 will execute. */
 void xTaskResume(Task_t *task_) {
-  Task_t *taskCursor = NULL;
 
-  /* Check if the task list is not null and the task parameter is not null. */
-  if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(task_))) {
-    taskCursor = taskList->head;
 
-    /* While the task cursor is not null and the task cursor is not equal
-    to the task being searched for. */
-    while ((ISNOTNULLPTR(taskCursor)) && (taskCursor != task_)) {
-      taskCursor = taskCursor->next;
-    }
 
-    /* Check if the task cursor is not null, if so set the task state. */
-    if (ISNOTNULLPTR(taskCursor)) {
-      taskCursor->state = TaskStateRunning;
-    }
+  /* Assert if the task cannot be found. */
+  SYSASSERT(RETURN_SUCCESS == TaskListFindTask(task_));
+
+  /* Check if the task can be found. */
+  if (RETURN_SUCCESS == TaskListFindTask(task_)) {
+
+    task_->state = TaskStateRunning;
   }
+
 
   return;
 }
+
+
+
 
 /* The xTaskSuspend() system call will suspend a task. A task that has been suspended
 will not be executed by the scheduler until xTaskResume() or xTaskWait() is called. */
 void xTaskSuspend(Task_t *task_) {
-  Task_t *taskCursor = NULL;
 
-  /* Check if the task list is not null and the task parameter is not null. */
-  if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(task_))) {
-    taskCursor = taskList->head;
 
-    /* While the task cursor is not null and the task cursor is not equal
-    to the task being searched for. */
-    while ((ISNOTNULLPTR(taskCursor)) && (taskCursor != task_)) {
-      taskCursor = taskCursor->next;
-    }
 
-    /* Check if the task cursor is not null, if so set the task state. */
-    if (ISNOTNULLPTR(taskCursor)) {
-      taskCursor->state = TaskStateSuspended;
-    }
+  /* Assert if the task cannot be found. */
+  SYSASSERT(RETURN_SUCCESS == TaskListFindTask(task_));
+
+
+  /* Check if the task can be found. */
+  if (RETURN_SUCCESS == TaskListFindTask(task_)) {
+
+    task_->state = TaskStateSuspended;
   }
+
 
   return;
 }
+
+
+
 
 /* The xTaskWait() system call will place a task in the waiting state. A task must
 be in the waiting state for event driven multitasking with either direct to task
 notifications OR setting the period on the task timer with xTaskChangePeriod(). A task
 in the waiting state will not be executed by the scheduler until an event has occurred. */
 void xTaskWait(Task_t *task_) {
-  Task_t *taskCursor = NULL;
 
-  /* Check if the task list is not null and the task parameter is not null. */
-  if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(task_))) {
-    taskCursor = taskList->head;
 
-    /* While the task cursor is not null and the task cursor is not equal
-    to the task being searched for. */
-    while ((ISNOTNULLPTR(taskCursor)) && (taskCursor != task_)) {
-      taskCursor = taskCursor->next;
-    }
+  /* Assert if the task cannot be found. */
+  SYSASSERT(RETURN_SUCCESS == TaskListFindTask(task_));
 
-    /* Check if the task cursor is not null, if so set the task state. */
-    if (ISNOTNULLPTR(taskCursor)) {
-      taskCursor->state = TaskStateWaiting;
-    }
+
+  /* Check if the task can be found. */
+  if (RETURN_SUCCESS == TaskListFindTask(task_)) {
+
+    task_->state = TaskStateWaiting;
   }
+
 
   return;
 }
+
+
+
 
 /* The xTaskChangePeriod() system call will change the period (microseconds) on the task timer
 for the specified task. The timer period must be greater than zero. To have any effect, the task
@@ -672,74 +971,355 @@ must be in the waiting state set by calling xTaskWait() on the task. Once the ti
 and the task is in the waiting state, the task will be executed every N microseconds based on the period.
 Changing the period to zero will prevent the task from being executed even if it is in the waiting state. */
 void xTaskChangePeriod(Task_t *task_, Time_t timerPeriod_) {
-  Task_t *taskCursor = NULL;
 
-  /* Check if the task list is not null and the task parameter is not null. */
-  if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(task_))) {
-    taskCursor = taskList->head;
 
-    /* While the task cursor is not null and the task cursor is not equal
-    to the task being searched for. */
-    while ((ISNOTNULLPTR(taskCursor)) && (taskCursor != task_)) {
-      taskCursor = taskCursor->next;
-    }
+  /* Assert if the task cannot be found. */
+  SYSASSERT(RETURN_SUCCESS == TaskListFindTask(task_));
 
-    /* Check if the task cursor is not null, if so set the task timer period. */
-    if (ISNOTNULLPTR(taskCursor)) {
-      taskCursor->timerPeriod = timerPeriod_;
-    }
+
+  /* Check if the task can be found. */
+  if (RETURN_SUCCESS == TaskListFindTask(task_)) {
+
+    task_->timerPeriod = timerPeriod_;
   }
+
 
   return;
 }
 
+
+
+
 /* The xTaskGetPeriod() will return the period for the timer for the specified task. See
 xTaskChangePeriod() for more information on how the task timer works. */
 Time_t xTaskGetPeriod(Task_t *task_) {
+
+
   Time_t ret = zero;
+
+
+  /* Assert if the task cannot be found. */
+  SYSASSERT(RETURN_SUCCESS == TaskListFindTask(task_));
+
+
+  /* Check if the task can be found. */
+  if (RETURN_SUCCESS == TaskListFindTask(task_)) {
+
+    ret = task_->timerPeriod;
+  }
+
+
+  return ret;
+}
+
+
+
+/* TaskListFindTask() is used to search the task list for a
+task and returns RETURN_SUCCESS if the task is found. It also
+always checks the health of the heap by calling HeapCheck(). */
+Base_t TaskListFindTask(const Task_t *task_) {
+
+
+  Base_t ret = RETURN_FAILURE;
 
   Task_t *taskCursor = NULL;
 
-  /* Check if the task list is not null and the task parameter is not null. */
+
+  /* Assert if the task list is not initialized. */
+  SYSASSERT(ISNOTNULLPTR(taskList));
+
+
+  /* Assert if the task pointer is null. */
+  SYSASSERT(ISNOTNULLPTR(task_));
+
+
+  /* Check if the task list is initialized and the task pointer is not null. */
   if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(task_))) {
-    taskCursor = taskList->head;
 
-    /* While the task cursor is not null and the task cursor is not equal
-    to the task being searched for. */
-    while ((ISNOTNULLPTR(taskCursor)) && (taskCursor != task_)) {
-      taskCursor = taskCursor->next;
-    }
 
-    /* Check if the task cursor is not null, if so set the return value to the
-    task timer period. */
-    if (ISNOTNULLPTR(taskCursor)) {
-      ret = taskCursor->timerPeriod;
+    /* Assert if HeapCheck() fails on the health check of the heap OR if
+    the task pointer's entry cannot be found in the heap. */
+    SYSASSERT(RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, task_));
+
+
+    /* Check if HeapCheck() passes on the health check and
+    the task pointer's entry can be found in the heap. */
+    if (RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, task_)) {
+
+
+      taskCursor = taskList->head;
+
+      /* Traverse the heap to find the task in the task list. */
+      while ((ISNOTNULLPTR(taskCursor)) && (taskCursor != task_)) {
+
+        taskCursor = taskCursor->next;
+      }
+
+
+      /* Assert if the task cannot be found. */
+      SYSASSERT(ISNOTNULLPTR(taskCursor));
+
+
+      /* Check if the task was found, if so then
+      return success! */
+      if (ISNOTNULLPTR(taskCursor)) {
+
+
+        ret = RETURN_SUCCESS;
+      }
     }
   }
 
   return ret;
 }
 
+
+
+
 /* The xTaskResetTimer() system call will reset the task timer. xTaskResetTimer() does not change
 the timer period or the task state when called. See xTaskChangePeriod() for more details on task timers. */
 void xTaskResetTimer(Task_t *task_) {
+
+
+
+  /* Assert if the task cannot be found. */
+  SYSASSERT(RETURN_SUCCESS == TaskListFindTask(task_));
+
+
+  /* Check if the task was found. */
+  if (RETURN_SUCCESS == TaskListFindTask(task_)) {
+
+    task_->timerStartTime = CURRENTTIME();
+  }
+
+  return;
+}
+
+
+
+
+/* The xTaskStartScheduler() system call passes control to the HeliOS scheduler. */
+void xTaskStartScheduler(void) {
+
+
+
+  Task_t *runTask = NULL;
+
   Task_t *taskCursor = NULL;
 
-  /* Check if the task list is not null and the task parameter is not null. */
-  if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(task_))) {
-    taskCursor = taskList->head;
+  /* Underflow unsigned least runtime to get maximum value */
+  Time_t leastRunTime = -1;
 
-    /* While the task cursor is not null and the task cursor is not equal
-    to the task being searched for. */
-    while ((ISNOTNULLPTR(taskCursor)) && (taskCursor != task_)) {
-      taskCursor = taskCursor->next;
+  /* Disable interrupts and set the critical section flag before entering into the scheduler main
+  loop. */
+
+
+  /* Assert if the scheduler is already running. */
+  SYSASSERT(false == SYSFLAG_RUNNING());
+
+
+  /* Assert if the task list has not been initialized. */
+  SYSASSERT(ISNOTNULLPTR(taskList));
+
+
+  /* Check that the scheduler is not already running and
+  that the task list is initialized. */
+  if ((false == SYSFLAG_RUNNING()) && (ISNOTNULLPTR(taskList))) {
+
+
+
+    /* Now set the scheduler system flag to running because
+    the scheduler IS running. */
+    SYSFLAG_RUNNING() = true;
+
+
+
+    /* Continue to loop while the scheduler running flag is true. */
+    while (SchedulerStateRunning == schedulerState) {
+
+
+      /* If the runtime overflow flag is true. Reset the runtimes on all of the tasks. */
+      if (SYSFLAG_OVERFLOW()) {
+
+        RunTimeReset();
+      }
+
+
+      taskCursor = taskList->head;
+
+      /* While the task cursor is not null (i.e., there are further tasks in the task list). */
+      while (ISNOTNULLPTR(taskCursor)) {
+
+
+        /* If the task pointed to by the task cursor is waiting and it has a notification waiting, then execute it. */
+        if ((TaskStateWaiting == taskCursor->state) && (zero < taskCursor->notificationBytes)) {
+
+          TaskRun(taskCursor);
+
+          /* If the task pointed to by the task cursor is waiting and its timer has expired, then execute it. */
+        } else if ((TaskStateWaiting == taskCursor->state) && (zero < taskCursor->timerPeriod) && ((CURRENTTIME() - taskCursor->timerStartTime) > taskCursor->timerPeriod)) {
+
+
+          TaskRun(taskCursor);
+
+          taskCursor->timerStartTime = CURRENTTIME();
+
+          /* If the task pointed to by the task cursor is running and it's total runtime is less than the
+          least runtime from previous tasks, then set the run task pointer to the task cursor. This logic
+          is used to achieve the runtime balancing. */
+        } else if ((TaskStateRunning == taskCursor->state) && (leastRunTime > taskCursor->totalRunTime)) {
+
+
+          leastRunTime = taskCursor->totalRunTime;
+
+          runTask = taskCursor;
+
+        } else {
+          /* Nothing to do here.. Just for MISRA C:2012 compliance. */
+        }
+
+        taskCursor = taskCursor->next;
+      }
+
+
+      /* If the run task pointer is not null, then there is a running tasks to execute. */
+      if (ISNOTNULLPTR(runTask)) {
+
+        TaskRun(runTask);
+
+        runTask = NULL;
+      }
+
+      leastRunTime = -1;
     }
 
-    /* Check if the task cursor is not null, if so set the start time to
-    the current time. */
-    if (ISNOTNULLPTR(taskCursor)) {
-      taskCursor->timerStartTime = CURRENTTIME();
-    }
+
+    SYSFLAG_RUNNING() = false;
+
+
   }
+
   return;
+}
+
+
+
+
+/* If the runtime overflow flag is set, then RunTimeReset() is called to reset all of the
+total runtimes on tasks to their last runtime. */
+void RunTimeReset(void) {
+
+
+  Task_t *taskCursor = NULL;
+
+
+
+  taskCursor = taskList->head;
+
+  /* While the task cursor is not null (i.e., there are further tasks in the task list). */
+  while (ISNOTNULLPTR(taskCursor)) {
+
+
+    taskCursor->totalRunTime = taskCursor->lastRunTime;
+
+    taskCursor = taskCursor->next;
+  }
+
+  SYSFLAG_OVERFLOW() = false;
+
+  return;
+}
+
+
+
+
+/* Used only for when testing HeliOS on Linux, then get the time from clock_gettime(). */
+Time_t CurrentTime(void) {
+
+#if defined(OTHER_ARCH_LINUX)
+
+  struct timespec t;
+
+  clock_gettime(CLOCK_MONOTONIC_RAW, &t);
+
+  return (t.tv_sec * 1000000) + (t.tv_nsec / 1000);
+
+#else
+
+  return zero;
+
+#endif
+}
+
+
+
+
+/* Called by the xTaskStartScheduler() system call, TaskRun() executes a task and updates all of its
+runtime statistics. */
+void TaskRun(Task_t *task_) {
+
+
+  Time_t taskStartTime = zero;
+
+  Time_t prevTotalRunTime = zero;
+
+  /* Record the total runtime before executing the task. */
+  prevTotalRunTime = task_->totalRunTime;
+
+  /* Record the start time of the task. */
+  taskStartTime = CURRENTTIME();
+
+
+
+  /* Call the task from its callback pointer. */
+  (*task_->callback)(task_, task_->taskParameter);
+
+
+  /* Calculate the runtime and store it in last runtime. */
+  task_->lastRunTime = CURRENTTIME() - taskStartTime;
+
+  /* Add last runtime to the total runtime. */
+  task_->totalRunTime += task_->lastRunTime;
+
+  /* Check if the new total runtime is less than the previous total runtime,
+  if so an overflow has occurred so set the runtime over flow system flag. */
+  if (task_->totalRunTime < prevTotalRunTime) {
+
+    SYSFLAG_OVERFLOW() = true;
+  }
+
+  return;
+}
+
+
+
+
+/* The xTaskResumeAll() system call will set the scheduler system flag so the next
+call to xTaskStartScheduler() will resume execute of all tasks. */
+void xTaskResumeAll(void) {
+
+
+  schedulerState = SchedulerStateRunning;
+
+  return;
+}
+
+
+
+
+/* The xTaskSuspendAll() system call will set the scheduler system flag so the scheduler
+will stop and return. */
+void xTaskSuspendAll(void) {
+
+  schedulerState = SchedulerStateSuspended;
+
+
+  return;
+}
+
+/* The xTaskGetSchedulerState() system call will return the state of the scheduler. */
+SchedulerState_t xTaskGetSchedulerState(void) {
+
+
+  return schedulerState;
 }

@@ -1,9 +1,9 @@
 /**
- * @file queue.h
+ * @file arduino.cpp
  * @author Manny Peterson (mannymsp@gmail.com)
- * @brief Kernel sources for message queues
+ * @brief Source code to allow the HeliOS kernel to interface with the C++ Arduino API.
  * @version 0.3.1
- * @date 2022-01-31
+ * @date 2022-02-25
  * 
  * @copyright
  * HeliOS Embedded Operating System
@@ -23,33 +23,28 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  * 
  */
-#ifndef QUEUE_H_
-#define QUEUE_H_
+
 
 #include "config.h"
-#include "defines.h"
-#include "types.h"
-#include "mem.h"
-#include "sys.h"
-#include "task.h"
-#include "timer.h"
+
+#if defined(CONFIG_ENABLE_ARDUINO_CPP_INTERFACE)
 
 #ifdef __cplusplus
-extern "C" {
+
+#include <Arduino.h>
+
+
+extern "C" void ArduinoAssert(const char *file_, int line_);
+
+
+void ArduinoAssert(const char *file_, int line_)
+{
+
+    Serial.println("assert: " + String(file_) + ":" + String(line_, DEC));
+
+    return;
+}
+
 #endif
 
-Queue_t *xQueueCreate(Base_t limit_);
-void xQueueDelete(Queue_t *queue_);
-Base_t xQueueGetLength(Queue_t *queue_);
-Base_t xQueueIsQueueEmpty(Queue_t *queue_);
-Base_t xQueueIsQueueFull(Queue_t *queue_);
-Base_t xQueueMessagesWaiting(Queue_t *queue_);
-Base_t xQueueSend(Queue_t *queue_, Base_t messageBytes_, const char *messageValue_);
-QueueMessage_t *xQueuePeek(Queue_t *queue_);
-void xQueueDropMessage(Queue_t *queue_);
-QueueMessage_t *xQueueReceive(Queue_t *queue_);
-
-#ifdef __cplusplus
-}  // extern "C" {
-#endif
 #endif

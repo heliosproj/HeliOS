@@ -1,8 +1,8 @@
 /**
  * @file types.h
  * @author Manny Peterson (mannymsp@gmail.com)
- * @brief Kernel header for all kernel type definitions in HeliOS
- * @version 0.3.0
+ * @brief Kernel header for kernel type definitions
+ * @version 0.3.1
  * @date 2022-01-31
  *
  * @copyright
@@ -36,8 +36,14 @@ typedef enum {
 } TaskState_t;
 
 typedef enum {
+  SchedulerStateError,
+  SchedulerStateSuspended,
+  SchedulerStateRunning
+} SchedulerState_t;
+
+typedef enum {
   TimerStateError,
-  TimerStateStopped,
+  TimerStateSuspended,
   TimerStateRunning
 } TimerState_t;
 
@@ -78,6 +84,7 @@ typedef struct Task_s {
 } Task_t;
 
 typedef struct TaskRunTimeStats_s {
+  Base_t id;
   Time_t lastRunTime;
   Time_t totalRunTime;
 } TaskRunTimeStats_t;
@@ -110,10 +117,9 @@ typedef struct TimerList_s {
 
 typedef struct SysFlags_s {
   Byte_t running : 1;
-  Byte_t critical : 1;
   Byte_t overflow : 1;
-  Byte_t protect : 1;
-  Byte_t reserved : 4;
+  Byte_t privileged : 1;
+  Byte_t reserved : 5;
 } SysFlags_t;
 
 typedef struct QueueMessage_s {
@@ -135,7 +141,7 @@ typedef struct Queue_s {
 } Queue_t;
 
 typedef struct SystemInfo_s {
-  char productName[PRODUCTNAME_SIZE];
+  char productName[OS_PRODUCT_NAME_SIZE];
   Base_t majorVersion;
   Base_t minorVersion;
   Base_t patchVersion;

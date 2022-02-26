@@ -1,8 +1,8 @@
 /**
  * @file mem.h
  * @author Manny Peterson (mannymsp@gmail.com)
- * @brief Kernel sources for the management of heap memory in HeliOS
- * @version 0.3.0
+ * @brief Kernel sources for memory management
+ * @version 0.3.1
  * @date 2022-01-31
  * 
  * @copyright
@@ -30,7 +30,7 @@
 #include "defines.h"
 #include "types.h"
 #include "queue.h"
-#include "sched.h"
+#include "sys.h"
 #include "task.h"
 #include "timer.h"
 
@@ -42,9 +42,16 @@ void *xMemAlloc(size_t size_);
 void xMemFree(void *ptr_);
 size_t xMemGetUsed(void);
 size_t xMemGetSize(void *ptr_);
+Base_t HeapCheck(const Base_t option_, const void *ptr_);
 void memcpy_(void *dest_, const void *src_, size_t n_);
 void memset_(void *dest_, uint16_t val_, size_t n_);
 uint16_t memcmp_(const void *s1_, const void *s2_, size_t n_);
+
+
+/* For debugging the heap only. */
+#if defined(MEMDUMP_)
+void memdump_(void);
+#endif
 
 #ifdef __cplusplus
 }  // extern "C" {

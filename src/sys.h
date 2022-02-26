@@ -1,30 +1,30 @@
 /**
- * @file sched.h
+ * @file sys.h
  * @author Manny Peterson (mannymsp@gmail.com)
- * @brief Kernel sources for the HeliOS scheduler
- * @version 0.3.0
+ * @brief Kernel sources system related calls
+ * @version 0.3.1
  * @date 2022-01-31
- * 
+ *
  * @copyright
  * HeliOS Embedded Operating System
  * Copyright (C) 2020-2022 Manny Peterson <mannymsp@gmail.com>
- *  
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *  
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *  
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- * 
+ *
  */
-#ifndef SCHED_H_
-#define SCHED_H_
+#ifndef SYS_H_
+#define SYS_H_
 
 #include "config.h"
 #include "defines.h"
@@ -38,15 +38,13 @@
 extern "C" {
 #endif
 
-void xTaskStartScheduler(void);
-void RunTimeReset(void);
-Time_t CurrentTime(void);
-void TaskRun(Task_t *task_);
-void xTaskResumeAll(void);
-void xTaskSuspendAll(void);
+void SystemAssert(const char *file_, int line_);
 void xSystemHalt(void);
-void xTaskStopScheduler(void);
 SystemInfo_t *xSystemGetSystemInfo(void);
+
+#if defined(CONFIG_ENABLE_ARDUINO_CPP_INTERFACE)
+void ArduinoAssert(const char *file_, int line_);
+#endif
 
 #ifdef __cplusplus
 }  // extern "C" {
