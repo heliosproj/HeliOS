@@ -1110,9 +1110,6 @@ void xTaskStartScheduler(void) {
   /* Underflow unsigned least runtime to get maximum value */
   Time_t leastRunTime = -1;
 
-  /* Disable interrupts and set the critical section flag before entering into the scheduler main
-  loop. */
-
 
   /* Assert if the scheduler is already running. */
   SYSASSERT(false == SYSFLAG_RUNNING());

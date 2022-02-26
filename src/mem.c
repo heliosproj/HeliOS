@@ -636,26 +636,49 @@ uint16_t memcmp_(const void *s1_, const void *s2_, size_t n_) {
 
 /* For debugging the heap only. */
 #if defined(MEMDUMP_)
+
 void memdump_(void) {
 
-  int k = 0;
+  uint16_t k = 0;
 
-  for (int i = 0; i < (int)(HEAP_RAW_SIZE / 16); i++) {
+  for (uint16_t i = 0; i < (HEAP_RAW_SIZE / MEMDUMP_ROW_WIDTH); i++) {
+
+
     printf("%p:", (heap + k));
 
-    for (int j = 0; j < 16; j++) {
+    for (uint16_t j = 0; j < MEMDUMP_ROW_WIDTH; j++) {
+
+
+
       if (*(heap + k) == 0) {
+
+
         printf(" --");
+
+
       } else {
+
+
         printf(" %02X", *(heap + k));
+
+
       }
 
       k++;
+
+
     }
 
+
+
     printf("\n");
+
+
   }
+
+
 
   return;
 }
+
 #endif

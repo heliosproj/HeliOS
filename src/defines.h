@@ -142,9 +142,8 @@ to default to the Arduino platform and/or tool-chain. */
 #endif
 
 /* Enable memdump_() on Linux for debugging. */
-#if !defined(MEMDUMP_)
 #define MEMDUMP_
-#endif
+#define MEMDUMP_ROW_WIDTH CONFIG_HEAP_BLOCK_SIZE
 
 #elif defined(ARDUINO_TEENSY_MICROMOD) || defined(ARDUINO_TEENSY40) || defined(ARDUINO_TEENSY41) || defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY35) || defined(ARDUINO_TEENSY31) || defined(ARDUINO_TEENSY32) || defined(ARDUINO_TEENSY30) || defined(ARDUINO_TEENSYLC)
 
@@ -257,7 +256,7 @@ for return values. */
 /* Define the raw size of the heap in bytes based on the number of blocks
 the heap contains and the size of each block in bytes. */
 #if !defined(HEAP_RAW_SIZE)
-#define HEAP_RAW_SIZE CONFIG_HEAP_SIZE_IN_BLOCKS *CONFIG_HEAP_BLOCK_SIZE
+#define HEAP_RAW_SIZE CONFIG_HEAP_SIZE_IN_BLOCKS * CONFIG_HEAP_BLOCK_SIZE
 #endif
 
 
