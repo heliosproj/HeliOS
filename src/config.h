@@ -44,9 +44,9 @@ to customize the HeliOS kernel for their specific application. */
  * be copied into the /src directory to be built.
  * 
  * 
- * @note Neither this setting nor the arduino.cpp file are needed
- * if the end-user does not plan to use assertions on the Arduino
- * platform/tool-chain.
+ * @note On some MCU's like the 8-bit AVRs, it is necessary to undefine
+ * the DISABLE_INTERRUPTS() macro because interrupts must be enabled
+ * to write to the serial bus.
  * 
  */
 /*
