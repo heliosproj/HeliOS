@@ -2,7 +2,7 @@
  * @file Blink.ino
  * @author Manny Peterson (mannymsp@gmail.com)
  * @brief Blink example code for Arduino
- * @version 0.3.0
+ * @version 0.3.2
  * @date 2022-02-14
  *
  * @copyright
