@@ -88,6 +88,7 @@
   "files.associations": {
     "task.h": "c",
     "sched.h": "c",
-    "queue.h": "c"
+    "queue.h": "c",
+    "cstdlib": "c"
   }
 }

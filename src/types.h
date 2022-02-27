@@ -81,11 +81,12 @@ typedef struct HeapEntry_s {
 
 
 
-typedef struct HeapList_s {
+typedef struct Heap_s {
   Byte_t heap[HEAP_RAW_SIZE];
-  HeapEntry_t *start;
+  HeapEntry_t *startEntry;
   Word_t entrySizeInBlocks;
-} HeapList_t;
+  Word_t freeBlocksRemaining;
+} Heap_t;
 
 
 typedef struct TaskNotification_s {

@@ -28,9 +28,10 @@
 
 
 
-static HeapList_t heapList ={
-  .entrySizeInBlocks = zero,
-  .start = NULL,
+static Heap_t heap = {
+    .freeBlocksRemaining = CONFIG_HEAP_SIZE_IN_BLOCKS,
+    .entrySizeInBlocks = zero,
+    .startEntry = NULL,
 };
 
 
@@ -74,11 +75,11 @@ void *xMemAlloc(size_t size_) {
 
     /* Figure out how many blocks are needed to store a heap entry by performing some
     division. */
-    if (zero == heapList.entrySizeInBlocks) {
+    if (zero == heap.entrySizeInBlocks) {
 
 
       /* Calculate the quotient portion of the blocks needed to store a heap entry. */
-      heapList.entrySizeInBlocks = (Word_t)sizeof(HeapEntry_t) / CONFIG_HEAP_BLOCK_SIZE;
+      heap.entrySizeInBlocks = (Word_t)sizeof(HeapEntry_t) / CONFIG_HEAP_BLOCK_SIZE;
 
 
 
@@ -88,7 +89,7 @@ void *xMemAlloc(size_t size_) {
 
 
         /* Add just one more block to cover the remainder. */
-        heapList.entrySizeInBlocks++;
+        heap.entrySizeInBlocks++;
       }
     }
 
@@ -99,33 +100,33 @@ void *xMemAlloc(size_t size_) {
 
     /* If the first heap entry contains zero blocks we know the heap has not been
     initialized, so do that now. */
-    if (NULL == heapList.start) {
+    if (ISNULLPTR(heap.startEntry)) {
 
-      heapList.start = (HeapEntry_t *)heapList.heap;
+      heap.startEntry = (HeapEntry_t *)heap.heap;
 
       /* Zero out the entire heap. */
-      memset_(heapList.start, zero, HEAP_RAW_SIZE);
+      memset_(heap.startEntry, zero, HEAP_RAW_SIZE);
 
 
       /* The first heap entry is free at this point so mark it as such. */
-      heapList.start->free = true;
+      heap.startEntry->free = true;
 
 
       /* The first heap entry is UN-protected at this point so mark it as such. For an entry to be marked protected,
       the system must be in privileged mode by calling ENTER_PRIVILEGED(). Only heap memory allocated to the kernel
       can be protected. Heap memory allocated by the end-user cannot be protected. */
-      heapList.start->protected = false;
+      heap.startEntry->protected = false;
 
 
 
       /* The first entry will contain all of the blocks in the heap at this point LESS
       the blocks required by the first heap entry. */
-      heapList.start->blocks = CONFIG_HEAP_SIZE_IN_BLOCKS;
+      heap.startEntry->blocks = CONFIG_HEAP_SIZE_IN_BLOCKS;
 
 
       /* There is only one heap entry at this point so set the pointer to the next
       entry to null. */
-      heapList.start->next = NULL;
+      heap.startEntry->next = NULL;
     }
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -158,7 +159,7 @@ void *xMemAlloc(size_t size_) {
         requestedBlocks++;
       }
 
-      requestedBlocks += heapList.entrySizeInBlocks;
+      requestedBlocks += heap.entrySizeInBlocks;
 
 
       /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -168,7 +169,7 @@ void *xMemAlloc(size_t size_) {
       * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
       /* Start off at the start of the heap. */
-      entryCursor = heapList.start;
+      entryCursor = heap.startEntry;
 
       /* While there is a heap entry, continue to traverse the heap. */
       while (ISNOTNULLPTR(entryCursor)) {
@@ -250,13 +251,13 @@ void *xMemAlloc(size_t size_) {
           entryCandidate->blocks = requestedBlocks;
 
           /* Clear the memory. */
-          memset_((void *)((Byte_t *)entryCandidate + (heapList.entrySizeInBlocks * CONFIG_HEAP_BLOCK_SIZE)), zero, (requestedBlocks - heapList.entrySizeInBlocks) * CONFIG_HEAP_BLOCK_SIZE);
+          memset_((void *)((Byte_t *)entryCandidate + (heap.entrySizeInBlocks * CONFIG_HEAP_BLOCK_SIZE)), zero, (requestedBlocks - heap.entrySizeInBlocks) * CONFIG_HEAP_BLOCK_SIZE);
 
 
           /* Since the heap entry sits in the block prior to the blocks allocated for the und user,
           we want to return a pointer to the start of the allocated space and NOT the heap entry
           itself. */
-          ret = (void *)((Byte_t *)entryCandidate + (heapList.entrySizeInBlocks * CONFIG_HEAP_BLOCK_SIZE));
+          ret = (void *)((Byte_t *)entryCandidate + (heap.entrySizeInBlocks * CONFIG_HEAP_BLOCK_SIZE));
 
         } else {
 
@@ -280,14 +281,14 @@ void *xMemAlloc(size_t size_) {
 
 
           /* Clear the memory. */
-          memset_((void *)((Byte_t *)entryCandidate + (heapList.entrySizeInBlocks * CONFIG_HEAP_BLOCK_SIZE)), zero, (requestedBlocks - heapList.entrySizeInBlocks) * CONFIG_HEAP_BLOCK_SIZE);
+          memset_((void *)((Byte_t *)entryCandidate + (heap.entrySizeInBlocks * CONFIG_HEAP_BLOCK_SIZE)), zero, (requestedBlocks - heap.entrySizeInBlocks) * CONFIG_HEAP_BLOCK_SIZE);
 
 
 
           /* Since the heap entry sits in the block prior to the blocks allocated for the und user,
           we want to return a pointer to the start of the allocated space and NOT the heap entry
           itself. */
-          ret = (void *)((Byte_t *)entryCandidate + (heapList.entrySizeInBlocks * CONFIG_HEAP_BLOCK_SIZE));
+          ret = (void *)((Byte_t *)entryCandidate + (heap.entrySizeInBlocks * CONFIG_HEAP_BLOCK_SIZE));
         }
       }
     }
@@ -331,7 +332,7 @@ void xMemFree(void *ptr_) {
 
     /* End-user gave us a pointer to the start of their allocated space in the heap, we
     need to move back one block to get to the heap entry. */
-    entryToFree = (HeapEntry_t *)((Byte_t *)ptr_ - (heapList.entrySizeInBlocks * CONFIG_HEAP_BLOCK_SIZE));
+    entryToFree = (HeapEntry_t *)((Byte_t *)ptr_ - (heap.entrySizeInBlocks * CONFIG_HEAP_BLOCK_SIZE));
 
 
     /* Assert if the heap entry is protected and we are not in privileged mode. */
@@ -381,7 +382,7 @@ size_t xMemGetUsed(void) {
   memory in use. Otherwise, just head toward the exit. */
   if (RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_ONLY, NULL)) {
 
-    entryCursor = heapList.start;
+    entryCursor = heap.startEntry;
 
     /* While we have a heap entry to read, keep traversing the heap. */
     while (ISNOTNULLPTR(entryCursor)) {
@@ -437,7 +438,7 @@ size_t xMemGetSize(void *ptr_) {
 
     /* The end-user's pointer points to the start of their allocated space, we
     need to move back one block to read the entry. */
-    entryToSize = (HeapEntry_t *)((Byte_t *)ptr_ - (heapList.entrySizeInBlocks * CONFIG_HEAP_BLOCK_SIZE));
+    entryToSize = (HeapEntry_t *)((Byte_t *)ptr_ - (heap.entrySizeInBlocks * CONFIG_HEAP_BLOCK_SIZE));
 
 
     /* The entry should not be free, also check if it is protected because if it is
@@ -480,6 +481,8 @@ Base_t HeapCheck(const Base_t option_, const void *ptr_) {
 
   Word_t blocks = zero;
 
+  Word_t freeBlocks = zero;
+
   Base_t ret = RETURN_FAILURE;
 
 
@@ -494,28 +497,39 @@ Base_t HeapCheck(const Base_t option_, const void *ptr_) {
 
 
     /* Assert if the heap has not been initialized. */
-    SYSASSERT(zero != start->blocks);
+    SYSASSERT(ISNOTNULLPTR(heap.startEntry));
 
 
     /* Check if the heap has been initialized, if it has then
     proceed with the checks. */
-    if (zero != heapList.start->blocks) {
+    if (ISNOTNULLPTR(heap.startEntry)) {
 
-      entryCursor = heapList.start;
+      entryCursor = heap.startEntry;
 
+
+      heap.freeBlocksRemaining = zero;
 
       /* If we need to also check that the end-user's pointer is valid at the same time,
       then we must calculate where its heap entry would be. */
       if (HEAP_CHECK_HEALTH_AND_POINTER == option_) {
 
-        entryToCheck = (HeapEntry_t *)((Byte_t *)ptr_ - (heapList.entrySizeInBlocks * CONFIG_HEAP_BLOCK_SIZE));
+        entryToCheck = (HeapEntry_t *)((Byte_t *)ptr_ - (heap.entrySizeInBlocks * CONFIG_HEAP_BLOCK_SIZE));
       }
+
 
       /* Traverse the heap and sum the blocks from
       each entry. */
       while (ISNOTNULLPTR(entryCursor)) {
 
         blocks += entryCursor->blocks;
+
+        if (true == entryCursor->free) {
+
+
+          freeBlocks =+ entryCursor->blocks;
+
+
+        }
 
         /* At the same time if we are checking for a pointer, let's find it. If
         found then set the pointer found variable to true. */
@@ -549,6 +563,8 @@ Base_t HeapCheck(const Base_t option_, const void *ptr_) {
         the pointer was valid then set the return value to success
         if the pointer's heap entry was found. */
         if ((HEAP_CHECK_HEALTH_ONLY == option_) || ((HEAP_CHECK_HEALTH_AND_POINTER == option_) && (true == ptrFound))) {
+
+          heap.freeBlocksRemaining = freeBlocks;
 
           ret = RETURN_SUCCESS;
         }
@@ -630,13 +646,13 @@ void memdump_(void) {
   for (Word_t i = zero; i < (HEAP_RAW_SIZE / MEMDUMP_ROW_WIDTH); i++) {
 
 
-    printf("%p:", (heapList.heap + k));
+    printf("%p:", (heap.heap + k));
 
     for (Word_t j = zero; j < MEMDUMP_ROW_WIDTH; j++) {
 
 
 
-      if (zero == *(heapList.heap + k)) {
+      if (zero == *(heap.heap + k)) {
 
 
         printf(" --");
@@ -645,8 +661,7 @@ void memdump_(void) {
       } else {
 
 
-        printf(" %02X", *(heapList.heap + k));
-
+        printf(" %02X", *(heap.heap + k));
       }
 
       k++;
@@ -657,7 +672,7 @@ void memdump_(void) {
     printf("\n");
   }
 
-
+  printf("free: %u\n", heap.freeBlocksRemaining);
 
   return;
 }
