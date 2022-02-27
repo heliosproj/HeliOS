@@ -34,6 +34,8 @@
 #include "task.h"
 #include "timer.h"
 
+extern SysFlags_t sysFlags;
+
 #ifdef __cplusplus
 extern "C" {
 #endif

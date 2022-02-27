@@ -28,12 +28,9 @@
 
 
 
-extern SysFlags_t sysFlags;
-
-
 
 /* Declare and initialize the task list to null. */
-TaskList_t *taskList = NULL;
+static TaskList_t *taskList = NULL;
 
 
 /* Declare and initialize the scheduler state to

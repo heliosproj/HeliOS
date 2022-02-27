@@ -29,13 +29,10 @@
 
 
 
-extern SysFlags_t sysFlags;
-
-
 
 
 /* Declare and initialize the task list to null. */
-TimerList_t *timerList = NULL;
+static TimerList_t *timerList = NULL;
 
 
 
