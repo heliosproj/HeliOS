@@ -78,13 +78,13 @@ void *xMemAlloc(size_t size_) {
 
 
       /* Calculate the quotient portion of the blocks needed to store a heap entry. */
-      heap.entrySizeInBlocks = (Word_t)sizeof(HeapEntry_t) / CONFIG_HEAP_BLOCK_SIZE;
+      heap.entrySizeInBlocks = ((Word_t)(sizeof(HeapEntry_t) / CONFIG_HEAP_BLOCK_SIZE));
 
 
 
       /* Calculate the remainder portion of the blocks needed to store a heap entry.
       If there is a remainder, then add one block to cover it. */
-      if (zero < ((Word_t)sizeof(HeapEntry_t) % CONFIG_HEAP_BLOCK_SIZE)) {
+      if (zero < ((Word_t)(sizeof(HeapEntry_t) % CONFIG_HEAP_BLOCK_SIZE))) {
 
 
         /* Add just one more block to cover the remainder. */
@@ -147,11 +147,11 @@ void *xMemAlloc(size_t size_) {
 
 
       /* Calculate the quotient portion of the requested blocks by performing some division. */
-      requestedBlocks = (Word_t)size_ / CONFIG_HEAP_BLOCK_SIZE;
+      requestedBlocks = ((Word_t)(size_ / CONFIG_HEAP_BLOCK_SIZE));
 
       /* Calculate the remainder portion of the requested blocks by performing some division. If
       there is a remainder then add just one more block. */
-      if (zero < ((Word_t)size_ % CONFIG_HEAP_SIZE_IN_BLOCKS)) {
+      if (zero < ((Word_t)(size_ % CONFIG_HEAP_SIZE_IN_BLOCKS))) {
 
 
         /* There was a remainder for the requested blocks so add one more block. */
@@ -198,6 +198,8 @@ void *xMemAlloc(size_t size_) {
       }
 
 
+      SYSASSERT(ISNOTNULLPTR(entryCandidate));
+
       /* If we found a candidate, then let's claim in for France. Otherwise just head
       toward the exit. */
       if (ISNOTNULLPTR(entryCandidate)) {
@@ -214,22 +216,29 @@ void *xMemAlloc(size_t size_) {
         if (ISNULLPTR(entryCandidate->next)) {
 
 
-          /* Let's update our candidate entry to point to the next entry which will contain
-          the remain blocks after we perform the split. */
-          entryCandidate->next = (HeapEntry_t *)((Byte_t *)entryCandidate + (requestedBlocks * CONFIG_HEAP_BLOCK_SIZE));
+          SYSASSERT(0x1u < ((Word_t)(entryCandidate->blocks - heap.entrySizeInBlocks)));
 
-          /* Our next entry is free so mark it as such. */
-          entryCandidate->next->free = true;
 
-          /* Our next entry is also UN-protected so mark it as such. */
-          entryCandidate->next->protected = false;
+          if (0x1u < ((Word_t)(entryCandidate->blocks - heap.entrySizeInBlocks))) {
 
-          /* Perform the split by calculating how many blocks the next entry will contain
-          after we take what we need. */
-          entryCandidate->next->blocks = entryCandidate->blocks - requestedBlocks;
+            /* Let's update our candidate entry to point to the next entry which will contain
+            the remain blocks after we perform the split. */
+            entryCandidate->next = (HeapEntry_t *)((Byte_t *)entryCandidate + (requestedBlocks * CONFIG_HEAP_BLOCK_SIZE));
 
-          /* Our next entry doesn't have a entry after it so set its "next" to null. */
-          entryCandidate->next->next = NULL;
+            /* Our next entry is free so mark it as such. */
+            entryCandidate->next->free = true;
+
+            /* Our next entry is also UN-protected so mark it as such. */
+            entryCandidate->next->protected = false;
+
+            /* Perform the split by calculating how many blocks the next entry will contain
+            after we take what we need. */
+            entryCandidate->next->blocks = entryCandidate->blocks - requestedBlocks;
+
+            /* Our next entry doesn't have a entry after it so set its "next" to null. */
+            entryCandidate->next->next = NULL;
+          }
+
 
           /* Since we will be using the candidate entry, mark it as no longer free. */
           entryCandidate->free = false;
@@ -522,7 +531,7 @@ Base_t HeapCheck(const Base_t option_, const void *ptr_) {
 
         blocks += entryCursor->blocks;
 
-  
+
 
         /* At the same time if we are checking for a pointer, let's find it. If
         found then set the pointer found variable to true. */
