@@ -373,10 +373,6 @@ size_t xMemGetUsed(void) {
 
   size_t ret = zero;
 
-  HeapEntry_t *entryCursor = NULL;
-
-  Word_t usedBlocks = zero;
-
 
   /* Assert if the heap does not pass its health check. */
   SYSASSERT(RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_ONLY, NULL));
@@ -386,26 +382,9 @@ size_t xMemGetUsed(void) {
   memory in use. Otherwise, just head toward the exit. */
   if (RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_ONLY, NULL)) {
 
-    entryCursor = heap.startEntry;
-
-    /* While we have a heap entry to read, keep traversing the heap. */
-    while (ISNOTNULLPTR(entryCursor)) {
-
-      /* If the heap entry we come across is free then let's add its blocks
-      to the used blocks. */
-      if (entryCursor->free == false) {
-
-        /* Sum the number of used blocks for each heap entry in use. */
-        usedBlocks += entryCursor->blocks;
-      }
-
-      /* Move on to the next heap entry. */
-      entryCursor = entryCursor->next;
-    }
-
     /* End-user is expecting bytes, so calculate it based on the
     block size. */
-    ret = usedBlocks * CONFIG_HEAP_BLOCK_SIZE;
+    ret = (CONFIG_HEAP_SIZE_IN_BLOCKS - heap.freeBlocksRemaining) * CONFIG_HEAP_BLOCK_SIZE;
   }
 
 
@@ -530,7 +509,7 @@ Base_t HeapCheck(const Base_t option_, const void *ptr_) {
         if (true == entryCursor->free) {
 
 
-          freeBlocks = +entryCursor->blocks;
+          freeBlocks += entryCursor->blocks;
         }
 
         /* At the same time if we are checking for a pointer, let's find it. If
@@ -675,6 +654,7 @@ void memdump_(void) {
   }
 
   printf("free: %u\n", heap.freeBlocksRemaining);
+
 
   return;
 }
