@@ -254,6 +254,8 @@ void *xMemAlloc(size_t size_) {
           memset_((void *)((Byte_t *)entryCandidate + (heap.entrySizeInBlocks * CONFIG_HEAP_BLOCK_SIZE)), zero, (requestedBlocks - heap.entrySizeInBlocks) * CONFIG_HEAP_BLOCK_SIZE);
 
 
+          heap.freeBlocksRemaining -= requestedBlocks;
+
           /* Since the heap entry sits in the block prior to the blocks allocated for the und user,
           we want to return a pointer to the start of the allocated space and NOT the heap entry
           itself. */
@@ -283,7 +285,7 @@ void *xMemAlloc(size_t size_) {
           /* Clear the memory. */
           memset_((void *)((Byte_t *)entryCandidate + (heap.entrySizeInBlocks * CONFIG_HEAP_BLOCK_SIZE)), zero, (requestedBlocks - heap.entrySizeInBlocks) * CONFIG_HEAP_BLOCK_SIZE);
 
-
+          heap.freeBlocksRemaining -= requestedBlocks;
 
           /* Since the heap entry sits in the block prior to the blocks allocated for the und user,
           we want to return a pointer to the start of the allocated space and NOT the heap entry
@@ -348,6 +350,8 @@ void xMemFree(void *ptr_) {
 
       /* Mark the entry as UN-protected. */
       entryToFree->protected = false;
+
+      heap.freeBlocksRemaining += entryToFree->blocks;
 
       /* Never change the entry's blocks!! */
     }
@@ -526,9 +530,7 @@ Base_t HeapCheck(const Base_t option_, const void *ptr_) {
         if (true == entryCursor->free) {
 
 
-          freeBlocks =+ entryCursor->blocks;
-
-
+          freeBlocks = +entryCursor->blocks;
         }
 
         /* At the same time if we are checking for a pointer, let's find it. If
