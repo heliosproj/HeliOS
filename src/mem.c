@@ -29,7 +29,6 @@
 
 
 static Heap_t heap = {
-    .freeBlocksRemaining = CONFIG_HEAP_SIZE_IN_BLOCKS,
     .entrySizeInBlocks = zero,
     .startEntry = NULL,
 };
@@ -254,7 +253,6 @@ void *xMemAlloc(size_t size_) {
           memset_((void *)((Byte_t *)entryCandidate + (heap.entrySizeInBlocks * CONFIG_HEAP_BLOCK_SIZE)), zero, (requestedBlocks - heap.entrySizeInBlocks) * CONFIG_HEAP_BLOCK_SIZE);
 
 
-          heap.freeBlocksRemaining -= requestedBlocks;
 
           /* Since the heap entry sits in the block prior to the blocks allocated for the und user,
           we want to return a pointer to the start of the allocated space and NOT the heap entry
@@ -285,7 +283,6 @@ void *xMemAlloc(size_t size_) {
           /* Clear the memory. */
           memset_((void *)((Byte_t *)entryCandidate + (heap.entrySizeInBlocks * CONFIG_HEAP_BLOCK_SIZE)), zero, (requestedBlocks - heap.entrySizeInBlocks) * CONFIG_HEAP_BLOCK_SIZE);
 
-          heap.freeBlocksRemaining -= requestedBlocks;
 
           /* Since the heap entry sits in the block prior to the blocks allocated for the und user,
           we want to return a pointer to the start of the allocated space and NOT the heap entry
@@ -351,7 +348,6 @@ void xMemFree(void *ptr_) {
       /* Mark the entry as UN-protected. */
       entryToFree->protected = false;
 
-      heap.freeBlocksRemaining += entryToFree->blocks;
 
       /* Never change the entry's blocks!! */
     }
@@ -373,6 +369,10 @@ size_t xMemGetUsed(void) {
 
   size_t ret = zero;
 
+  HeapEntry_t *entryCursor = NULL;
+
+  Word_t usedBlocks = zero;
+
 
   /* Assert if the heap does not pass its health check. */
   SYSASSERT(RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_ONLY, NULL));
@@ -382,9 +382,26 @@ size_t xMemGetUsed(void) {
   memory in use. Otherwise, just head toward the exit. */
   if (RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_ONLY, NULL)) {
 
+    entryCursor = heap.startEntry;
+
+    /* While we have a heap entry to read, keep traversing the heap. */
+    while (ISNOTNULLPTR(entryCursor)) {
+
+      /* If the heap entry we come across is free then let's add its blocks
+      to the used blocks. */
+      if (entryCursor->free == false) {
+
+        /* Sum the number of used blocks for each heap entry in use. */
+        usedBlocks += entryCursor->blocks;
+      }
+
+      /* Move on to the next heap entry. */
+      entryCursor = entryCursor->next;
+    }
+
     /* End-user is expecting bytes, so calculate it based on the
     block size. */
-    ret = (CONFIG_HEAP_SIZE_IN_BLOCKS - heap.freeBlocksRemaining) * CONFIG_HEAP_BLOCK_SIZE;
+    ret = usedBlocks * CONFIG_HEAP_BLOCK_SIZE;
   }
 
 
@@ -464,7 +481,6 @@ Base_t HeapCheck(const Base_t option_, const void *ptr_) {
 
   Word_t blocks = zero;
 
-  Word_t freeBlocks = zero;
 
   Base_t ret = RETURN_FAILURE;
 
@@ -490,7 +506,7 @@ Base_t HeapCheck(const Base_t option_, const void *ptr_) {
       entryCursor = heap.startEntry;
 
 
-      heap.freeBlocksRemaining = zero;
+
 
       /* If we need to also check that the end-user's pointer is valid at the same time,
       then we must calculate where its heap entry would be. */
@@ -506,11 +522,7 @@ Base_t HeapCheck(const Base_t option_, const void *ptr_) {
 
         blocks += entryCursor->blocks;
 
-        if (true == entryCursor->free) {
-
-
-          freeBlocks += entryCursor->blocks;
-        }
+  
 
         /* At the same time if we are checking for a pointer, let's find it. If
         found then set the pointer found variable to true. */
@@ -545,7 +557,6 @@ Base_t HeapCheck(const Base_t option_, const void *ptr_) {
         if the pointer's heap entry was found. */
         if ((HEAP_CHECK_HEALTH_ONLY == option_) || ((HEAP_CHECK_HEALTH_AND_POINTER == option_) && (true == ptrFound))) {
 
-          heap.freeBlocksRemaining = freeBlocks;
 
           ret = RETURN_SUCCESS;
         }
@@ -653,7 +664,6 @@ void memdump_(void) {
     printf("\n");
   }
 
-  printf("free: %u\n", heap.freeBlocksRemaining);
 
 
   return;

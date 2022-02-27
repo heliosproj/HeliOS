@@ -85,7 +85,6 @@ typedef struct Heap_s {
   Byte_t heap[HEAP_RAW_SIZE];
   HeapEntry_t *startEntry;
   Word_t entrySizeInBlocks;
-  Word_t freeBlocksRemaining;
 } Heap_t;
 
 
