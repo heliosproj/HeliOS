@@ -29,7 +29,7 @@
 #include <limits.h>
 #include <stdint.h>
 
-#define OTHER_ARCH_LINUX
+
 
 /* Check that the system HeliOS is being targeted for has an
 8-bit wide byte. */
@@ -138,7 +138,7 @@ to default to the Arduino platform and/or tool-chain. */
 #define TIME_T_TYPE uint64_t
 
 #if !defined(CONFIG_HEAP_SIZE_IN_BLOCKS)
-#define CONFIG_HEAP_SIZE_IN_BLOCKS 0x20u /* 512u */
+#define CONFIG_HEAP_SIZE_IN_BLOCKS 0x20u /* 32u */
 #endif
 
 /* Enable memdump_() on Linux for debugging. */
