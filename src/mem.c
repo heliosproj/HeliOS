@@ -97,10 +97,14 @@ void *xMemAlloc(size_t size_) {
     initializes the heap. This also only needs to be done once.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-    /* If the first heap entry contains zero blocks we know the heap has not been
-    initialized, so do that now. */
+    /* If the starting entry of the heap is null, the heap has not been initialized
+    so let's do that now. */
     if (ISNULLPTR(heap.startEntry)) {
 
+
+      /* Set the starting heap entry to the start of the heap. We do this so
+      we don't have to cast every time we want to reference the start of the
+      heap. */
       heap.startEntry = (HeapEntry_t *)heap.heap;
 
       /* Zero out the entire heap. */
@@ -118,8 +122,7 @@ void *xMemAlloc(size_t size_) {
 
 
 
-      /* The first entry will contain all of the blocks in the heap at this point LESS
-      the blocks required by the first heap entry. */
+      /* The first entry will contain all of the blocks in the heap at this point. */
       heap.startEntry->blocks = CONFIG_HEAP_SIZE_IN_BLOCKS;
 
 
@@ -142,8 +145,8 @@ void *xMemAlloc(size_t size_) {
 
 
       /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-       PHASE IV: Calculate how many blocks are needed for the requested size in bytes.
-       * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+      PHASE IV: Calculate how many blocks are needed for the requested size in bytes.
+      * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 
       /* Calculate the quotient portion of the requested blocks by performing some division. */
@@ -158,6 +161,8 @@ void *xMemAlloc(size_t size_) {
         requestedBlocks++;
       }
 
+
+      /* We need to include how many blocks we need for the heap entry. */
       requestedBlocks += heap.entrySizeInBlocks;
 
 
@@ -198,6 +203,7 @@ void *xMemAlloc(size_t size_) {
       }
 
 
+      /* Assert if a good candidate was never found. */
       SYSASSERT(ISNOTNULLPTR(entryCandidate));
 
       /* If we found a candidate, then let's claim in for France. Otherwise just head
@@ -216,9 +222,12 @@ void *xMemAlloc(size_t size_) {
         if (ISNULLPTR(entryCandidate->next)) {
 
 
+          /* Assert if we can't split the block because if there is only one block (not including
+          the heap entry) then you can't split it. */
           SYSASSERT(0x1u < ((Word_t)(entryCandidate->blocks - heap.entrySizeInBlocks)));
 
 
+          /* If there is only one block left, we can't split it so skip splitting the block. */
           if (0x1u < ((Word_t)(entryCandidate->blocks - heap.entrySizeInBlocks))) {
 
             /* Let's update our candidate entry to point to the next entry which will contain
@@ -254,8 +263,8 @@ void *xMemAlloc(size_t size_) {
             entryCandidate->protected = false;
           }
 
-          /* Update the candidate entry with how many blocks it contains - this is just the
-          number of blocks requested by the end-user. */
+          /* Update the candidate entry with how many blocks it contains including
+          the blocks required for the heap entry. */
           entryCandidate->blocks = requestedBlocks;
 
           /* Clear the memory. */
@@ -263,7 +272,7 @@ void *xMemAlloc(size_t size_) {
 
 
 
-          /* Since the heap entry sits in the block prior to the blocks allocated for the und user,
+          /* Since the heap entry sits in the block prior to the blocks allocated for the und-user,
           we want to return a pointer to the start of the allocated space and NOT the heap entry
           itself. */
           ret = (void *)((Byte_t *)entryCandidate + (heap.entrySizeInBlocks * CONFIG_HEAP_BLOCK_SIZE));
