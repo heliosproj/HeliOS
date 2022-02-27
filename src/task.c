@@ -808,7 +808,7 @@ Base_t xTaskNotifyGive(Task_t *task_, Base_t notificationBytes_, const char *not
 
   /* Assert if the notification bytes exceeds the setting
   CONFIG_NOTIFICATION_VALUE_BYTES. */
-  SYSASSERT(CONFIG_NOTIFICATION_VALUE_BYTES > notificationBytes_);
+  SYSASSERT(CONFIG_NOTIFICATION_VALUE_BYTES >= notificationBytes_);
 
 
   /* Assert if the end-user passed us a null pointer for the
@@ -817,7 +817,7 @@ Base_t xTaskNotifyGive(Task_t *task_, Base_t notificationBytes_, const char *not
 
   /* Check if the task list is not null and the task parameter is not null, the notification bytes are between
   one and CONFIG_NOTIFICATION_VALUE_BYTES and that the notification value char array pointer is not null. */
-  if ((zero < notificationBytes_) && (CONFIG_NOTIFICATION_VALUE_BYTES > notificationBytes_) && (ISNOTNULLPTR(notificationValue_))) {
+  if ((zero < notificationBytes_) && (CONFIG_NOTIFICATION_VALUE_BYTES >= notificationBytes_) && (ISNOTNULLPTR(notificationValue_))) {
 
 
     /* Assert if we can't find the task to receive the notification. */
