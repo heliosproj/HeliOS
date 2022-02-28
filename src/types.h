@@ -62,13 +62,12 @@ typedef enum {
 
 
 
-/* WARNING: Modifying these type defintions may cause serious headaches. You've been warned!
-typedef uint32_t Time_t; <-- Time_t is defined in defines.h and is platform and/or tool-chain dependent. */
+/* WARNING: Modifying these type defintions may cause serious headaches. You've been warned! */
 typedef void TaskParm_t;
 typedef uint8_t Base_t;
 typedef uint8_t Byte_t;
 typedef uint16_t Word_t; /* Here a "word" does NOT refer to the machine word. It just means two bytes. */
-typedef TIME_T_TYPE Time_t;
+typedef TIME_T_TYPE Time_t; /* TIME_T_TYPE is defined in the platform definitions in defines.h. */
 
 
 typedef struct HeapEntry_s {

@@ -230,42 +230,55 @@ void *xMemAlloc(size_t size_) {
           /* If there is only one block left, we can't split it so skip splitting the block. */
           if (0x1u < ((Word_t)(entryCandidate->blocks - heap.entrySizeInBlocks))) {
 
+
             /* Let's update our candidate entry to point to the next entry which will contain
             the remain blocks after we perform the split. */
             entryCandidate->next = (HeapEntry_t *)((Byte_t *)entryCandidate + (requestedBlocks * CONFIG_HEAP_BLOCK_SIZE));
 
+
             /* Our next entry is free so mark it as such. */
             entryCandidate->next->free = true;
 
+
             /* Our next entry is also UN-protected so mark it as such. */
             entryCandidate->next->protected = false;
+
 
             /* Perform the split by calculating how many blocks the next entry will contain
             after we take what we need. */
             entryCandidate->next->blocks = entryCandidate->blocks - requestedBlocks;
 
+
             /* Our next entry doesn't have a entry after it so set its "next" to null. */
             entryCandidate->next->next = NULL;
+
+
+            /* Update the candidate entry with how many blocks it contains including
+            the blocks required for the heap entry. */
+            entryCandidate->blocks = requestedBlocks;
           }
 
 
           /* Since we will be using the candidate entry, mark it as no longer free. */
           entryCandidate->free = false;
 
+
           /* If we are in privileged mode, then mark the candidate entry as protected.
           Otherwise, mark it as UN-protected. */
           if (true == SYSFLAG_PRIVILEGED()) {
 
+
             entryCandidate->protected = true;
+
 
           } else {
 
+
             entryCandidate->protected = false;
+
+
           }
 
-          /* Update the candidate entry with how many blocks it contains including
-          the blocks required for the heap entry. */
-          entryCandidate->blocks = requestedBlocks;
 
           /* Clear the memory. */
           memset_((void *)((Byte_t *)entryCandidate + (heap.entrySizeInBlocks * CONFIG_HEAP_BLOCK_SIZE)), zero, (requestedBlocks - heap.entrySizeInBlocks) * CONFIG_HEAP_BLOCK_SIZE);
@@ -290,11 +303,14 @@ void *xMemAlloc(size_t size_) {
           Otherwise, mark it as UN-protected. */
           if (true == SYSFLAG_PRIVILEGED()) {
 
+
             entryCandidate->protected = true;
+
 
           } else {
 
             entryCandidate->protected = false;
+
           }
 
 
@@ -306,6 +322,8 @@ void *xMemAlloc(size_t size_) {
           we want to return a pointer to the start of the allocated space and NOT the heap entry
           itself. */
           ret = (void *)((Byte_t *)entryCandidate + (heap.entrySizeInBlocks * CONFIG_HEAP_BLOCK_SIZE));
+
+          
         }
       }
     }
