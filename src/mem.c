@@ -154,7 +154,7 @@ void *xMemAlloc(size_t size_) {
 
       /* Calculate the remainder portion of the requested blocks by performing some division. If
       there is a remainder then add just one more block. */
-      if (zero < ((Word_t)(size_ % CONFIG_HEAP_SIZE_IN_BLOCKS))) {
+      if (zero < ((Word_t)(size_ % CONFIG_HEAP_BLOCK_SIZE))) {
 
 
         /* There was a remainder for the requested blocks so add one more block. */
