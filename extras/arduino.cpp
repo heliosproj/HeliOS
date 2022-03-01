@@ -2,7 +2,7 @@
  * @file arduino.cpp
  * @author Manny Peterson (mannymsp@gmail.com)
  * @brief Source code to allow the HeliOS kernel to interface with the C++ Arduino API.
- * @version 0.3.2
+ * @version 0.3.3
  * @date 2022-02-25
  * 
  * @copyright

@@ -2,7 +2,7 @@
  * @file Mem.ino
  * @author Manny Peterson (mannymsp@gmail.com)
  * @brief Example code to demonstrate how heap memory is managed in HeliOS
- * @version 0.3.2
+ * @version 0.3.3
  * @date 2022-02-14
  *
  * @copyright

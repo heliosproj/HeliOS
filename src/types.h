@@ -2,7 +2,7 @@
  * @file types.h
  * @author Manny Peterson (mannymsp@gmail.com)
  * @brief Kernel header for kernel type definitions
- * @version 0.3.2
+ * @version 0.3.3
  * @date 2022-01-31
  *
  * @copyright

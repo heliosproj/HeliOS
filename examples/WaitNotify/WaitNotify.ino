@@ -2,7 +2,7 @@
  * @file WaitNotify.ino
  * @author Manny Peterson (mannymsp@gmail.com)
  * @brief Example code to demonstrate direct-to-task notifications used in event-driven multitasking
- * @version 0.3.2
+ * @version 0.3.3
  * @date 2022-02-14
  *
  * @copyright

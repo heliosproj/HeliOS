@@ -2,7 +2,7 @@
  * @file mem.c
  * @author Manny Peterson (mannymsp@gmail.com)
  * @brief Kernel sources for memory management
- * @version 0.3.2
+ * @version 0.3.3
  * @date 2022-01-31
  *
  * @copyright
