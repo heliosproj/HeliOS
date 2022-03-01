@@ -2,7 +2,7 @@
  * @file timer.c
  * @author Manny Peterson (mannymsp@gmail.com)
  * @brief Kernel sources for timers
- * @version 0.3.1
+ * @version 0.3.2
  * @date 2022-01-31
  *
  * @copyright
@@ -29,13 +29,10 @@
 
 
 
-extern SysFlags_t sysFlags;
-
-
 
 
 /* Declare and initialize the task list to null. */
-TimerList_t *timerList = NULL;
+static TimerList_t *timerList = NULL;
 
 
 

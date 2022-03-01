@@ -2,7 +2,7 @@
  * @file queue.c
  * @author Manny Peterson (mannymsp@gmail.com)
  * @brief Kernel sources for message queues
- * @version 0.3.1
+ * @version 0.3.2
  * @date 2022-01-31
  *
  * @copyright
@@ -26,9 +26,6 @@
 
 #include "queue.h"
 
-
-
-extern SysFlags_t sysFlags;
 
 
 
