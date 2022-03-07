@@ -36,7 +36,7 @@ static TaskList_t *taskList = NULL;
 /* Declare and initialize the scheduler state to
 running. This is controlled with xTaskResumeAll()
 and xTaskSuspendAll(). */
-SchedulerState_t schedulerState = SchedulerStateRunning;
+static SchedulerState_t schedulerState = SchedulerStateRunning;
 
 
 
