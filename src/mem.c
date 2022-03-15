@@ -279,14 +279,14 @@ void *xMemAlloc(size_t size_) {
 
 
           /* Clear the memory. */
-          memset_((void *)((Byte_t *)entryCandidate + (heap.entrySizeInBlocks * CONFIG_HEAP_BLOCK_SIZE)), zero, (requestedBlocks - heap.entrySizeInBlocks) * CONFIG_HEAP_BLOCK_SIZE);
+          memset_(ENTRY2ADDR(entryCandidate), zero, (requestedBlocks - heap.entrySizeInBlocks) * CONFIG_HEAP_BLOCK_SIZE);
 
 
 
           /* Since the heap entry sits in the block prior to the blocks allocated for the und-user,
           we want to return a pointer to the start of the allocated space and NOT the heap entry
           itself. */
-          ret = (void *)((Byte_t *)entryCandidate + (heap.entrySizeInBlocks * CONFIG_HEAP_BLOCK_SIZE));
+          ret = ENTRY2ADDR(entryCandidate);
 
         } else {
 
@@ -312,13 +312,13 @@ void *xMemAlloc(size_t size_) {
 
 
           /* Clear the memory. */
-          memset_((void *)((Byte_t *)entryCandidate + (heap.entrySizeInBlocks * CONFIG_HEAP_BLOCK_SIZE)), zero, (requestedBlocks - heap.entrySizeInBlocks) * CONFIG_HEAP_BLOCK_SIZE);
+          memset_(ENTRY2ADDR(entryCandidate), zero, (requestedBlocks - heap.entrySizeInBlocks) * CONFIG_HEAP_BLOCK_SIZE);
 
 
           /* Since the heap entry sits in the block prior to the blocks allocated for the und user,
           we want to return a pointer to the start of the allocated space and NOT the heap entry
           itself. */
-          ret = (void *)((Byte_t *)entryCandidate + (heap.entrySizeInBlocks * CONFIG_HEAP_BLOCK_SIZE));
+          ret = ENTRY2ADDR(entryCandidate);
         }
       }
     }
@@ -363,7 +363,7 @@ void xMemFree(void *ptr_) {
 
     /* End-user gave us a pointer to the start of their allocated space in the heap, we
     need to move back one block to get to the heap entry. */
-    entryToFree = (HeapEntry_t *)((Byte_t *)ptr_ - (heap.entrySizeInBlocks * CONFIG_HEAP_BLOCK_SIZE));
+    entryToFree = ADDR2ENTRY(ptr_);
 
 
     /* Assert if the heap entry is protected and we are not in privileged mode. */
@@ -490,7 +490,7 @@ size_t xMemGetSize(void *ptr_) {
 
     /* The end-user's pointer points to the start of their allocated space, we
     need to move back one block to read the entry. */
-    entryToSize = (HeapEntry_t *)((Byte_t *)ptr_ - (heap.entrySizeInBlocks * CONFIG_HEAP_BLOCK_SIZE));
+    entryToSize = ADDR2ENTRY(ptr_);
 
 
     /* The entry should not be free, also check if it is protected because if it is
@@ -564,7 +564,8 @@ Base_t HeapCheck(const Base_t option_, const void *ptr_) {
       then we must calculate where its heap entry would be. */
       if (HEAP_CHECK_HEALTH_AND_POINTER == option_) {
 
-        entryToCheck = (HeapEntry_t *)((Byte_t *)ptr_ - (heap.entrySizeInBlocks * CONFIG_HEAP_BLOCK_SIZE));
+        entryToCheck = ADDR2ENTRY(ptr_);
+
       }
 
 

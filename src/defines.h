@@ -384,9 +384,7 @@ the CONFIG_ENABLE_SYSTEM_ASSERT setting. */
 #if !defined(CONFIG_ENABLE_SYSTEM_ASSERT)
 #define SYSASSERT(x)
 #else
-#define SYSASSERT(x) \
-  if (false == ( x ))  \
-  SystemAssert(__FILE__, __LINE__)
+#define SYSASSERT(x) if (false == ( x )) SystemAssert(__FILE__, __LINE__)
 #endif
 #endif
 
@@ -407,4 +405,22 @@ health of the heap AND at the same time check a pointer.. */
 #if !defined(HEAP_CHECK_HEALTH_AND_POINTER)
 #define HEAP_CHECK_HEALTH_AND_POINTER 0x2u
 #endif
+
+
+
+
+/* Define a macro to convert a heap memory address to it's corresponding
+heap entry. */
+#if !defined(ADDR2ENTRY)
+#define ADDR2ENTRY(x) (HeapEntry_t *)((Byte_t *)( x ) - (heap.entrySizeInBlocks * CONFIG_HEAP_BLOCK_SIZE))
+#endif
+
+
+
+/* Define a macro to convert a heap entry to it's corresponding heap memory
+address. */
+#if !defined(ENTRY2ADDR)
+#define ENTRY2ADDR(x) (void *)((Byte_t *)( x ) + (heap.entrySizeInBlocks * CONFIG_HEAP_BLOCK_SIZE))
+#endif
+
 #endif
