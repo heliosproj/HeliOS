@@ -275,8 +275,6 @@ void *xMemAlloc(size_t size_) {
 
 
             entryCandidate->protected = false;
-
-
           }
 
 
@@ -310,7 +308,6 @@ void *xMemAlloc(size_t size_) {
           } else {
 
             entryCandidate->protected = false;
-
           }
 
 
@@ -322,8 +319,6 @@ void *xMemAlloc(size_t size_) {
           we want to return a pointer to the start of the allocated space and NOT the heap entry
           itself. */
           ret = (void *)((Byte_t *)entryCandidate + (heap.entrySizeInBlocks * CONFIG_HEAP_BLOCK_SIZE));
-
-          
         }
       }
     }
@@ -365,6 +360,7 @@ void xMemFree(void *ptr_) {
 
 
 
+
     /* End-user gave us a pointer to the start of their allocated space in the heap, we
     need to move back one block to get to the heap entry. */
     entryToFree = (HeapEntry_t *)((Byte_t *)ptr_ - (heap.entrySizeInBlocks * CONFIG_HEAP_BLOCK_SIZE));
@@ -378,6 +374,8 @@ void xMemFree(void *ptr_) {
     if ((false == entryToFree->protected) || ((true == entryToFree->protected) && (true == SYSFLAG_PRIVILEGED()))) {
 
 
+
+
       /* Mark the entry as free. */
       entryToFree->free = true;
 
@@ -385,8 +383,26 @@ void xMemFree(void *ptr_) {
       entryToFree->protected = false;
 
 
-      /* Never change the entry's blocks!! */
+      /* Let's check to see if the entry we just freed can be consolidated with the next entry
+      to minimize fragmentation. To start we just need to see if there IS a next entry and
+      make sure it is free. */
+      if((ISNOTNULLPTR(entryToFree->next)) && (true == entryToFree->next->free)) {
+
+        /* It looks like the entry we just freed can be consolidated with the next entry
+        so add the next entry's blocks to the entry we just freed. */
+        entryToFree->blocks += entryToFree->next->blocks;
+
+
+        /* Now we just need to drop the next entry from the heap memory list by setting
+        the entry we just freed's next to the next next entry if that makes sense. :) */
+        entryToFree->next = entryToFree->next->next;
+
+        /* Done! */
+      }
+
     }
+
+
   }
 
 
