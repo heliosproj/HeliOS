@@ -57,6 +57,9 @@ void *xMemAlloc(size_t size_) {
   HeapEntry_t *entryCandidate = NULL;
 
 
+  HeapEntry_t *entryCandidateNext = NULL;
+
+
   /* Assert if the end-user tries to allocate zero bytes of heap memory. */
   SYSASSERT(zero < size_);
 
@@ -212,70 +215,60 @@ void *xMemAlloc(size_t size_) {
 
 
         /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-        PHASE VI: Found a good candidate so either reuse a free entry OR split the last
-        entry in the heap. Oh, and we need to clear the memory at the same time.
+        PHASE VI: Found a good candidate so either reuse the entry OR split the entry in
+        two if it is larger than we need. Oh, and we need to clear the memory too.
         * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 
-        /* Check if the candidate entry is the last entry in the heap, if it is we will
-        need to split the entry into two. */
-        if (ISNULLPTR(entryCandidate->next)) {
+        /* Check if there is any value in splitting the entry candidate in two. */
+        if ((heap.entrySizeInBlocks + 1) <= (entryCandidate->blocks - requestedBlocks)) {
 
 
-          /* Assert if we can't split the block because if there is only one block (not including
-          the heap entry) then you can't split it. */
-          SYSASSERT(0x1u < ((Word_t)(entryCandidate->blocks - heap.entrySizeInBlocks)));
+          /* Preserve the next entry after the entry candidate so it can be linked to
+          after we split the candidate entry in two. */
+          entryCandidateNext = entryCandidate->next;
 
 
-          /* If there is only one block left, we can't split it so skip splitting the block. */
-          if (0x1u < ((Word_t)(entryCandidate->blocks - heap.entrySizeInBlocks))) {
+          /* Calculate the location of the new entry that will containing the remaining
+          blocks not used in the candidate entry. */
+          entryCandidate->next = (HeapEntry_t *)((Byte_t *)entryCandidate + (requestedBlocks * CONFIG_HEAP_BLOCK_SIZE));
 
 
-            /* Let's update our candidate entry to point to the next entry which will contain
-            the remain blocks after we perform the split. */
-            entryCandidate->next = (HeapEntry_t *)((Byte_t *)entryCandidate + (requestedBlocks * CONFIG_HEAP_BLOCK_SIZE));
+          /* Set the split entry's next entry to the entry we preserved earlier - if that makes
+          any sense at all. */
+          entryCandidate->next->next = entryCandidateNext;
+
+          /* Mark the split entry as free. */
+          entryCandidate->next->free = true;
 
 
-            /* Our next entry is free so mark it as such. */
-            entryCandidate->next->free = true;
+          /* Mark the split entry as not protected. */
+          entryCandidate->next->protected = false;
 
 
-            /* Our next entry is also UN-protected so mark it as such. */
-            entryCandidate->next->protected = false;
+          /* Give the split entry the remaining blocks. */ 
+          entryCandidate->next->blocks = entryCandidate->blocks - requestedBlocks;
 
 
-            /* Perform the split by calculating how many blocks the next entry will contain
-            after we take what we need. */
-            entryCandidate->next->blocks = entryCandidate->blocks - requestedBlocks;
-
-
-            /* Our next entry doesn't have a entry after it so set its "next" to null. */
-            entryCandidate->next->next = NULL;
-
-
-            /* Update the candidate entry with how many blocks it contains including
-            the blocks required for the heap entry. */
-            entryCandidate->blocks = requestedBlocks;
-          }
-
-
-          /* Since we will be using the candidate entry, mark it as no longer free. */
+          /* Mark the candidate entry as no longer free. */
           entryCandidate->free = false;
 
 
-          /* If we are in privileged mode, then mark the candidate entry as protected.
-          Otherwise, mark it as UN-protected. */
+          /* Set the protection on the candidate entry if in privileged mode. */
           if (true == SYSFLAG_PRIVILEGED()) {
 
-
             entryCandidate->protected = true;
-
-
+          
           } else {
-
-
+          
             entryCandidate->protected = false;
+          
           }
+          
+          
+          /* Set the candidate entry's blocks to the requested blocks. */
+          entryCandidate->blocks = requestedBlocks;
+
 
 
           /* Clear the memory. */
@@ -283,22 +276,18 @@ void *xMemAlloc(size_t size_) {
 
 
 
-          /* Since the heap entry sits in the block prior to the blocks allocated for the und-user,
-          we want to return a pointer to the start of the allocated space and NOT the heap entry
-          itself. */
+          /* Set the return value to the address of the newly allocated heap memory. */
           ret = ENTRY2ADDR(entryCandidate);
+
+
 
         } else {
 
 
-          /* Looks like the candidate entry is not at the end so we just need to mark it
-          as taken. */
+          /* Nothing to split so just mark the candidate entry as not free. */
           entryCandidate->free = false;
 
-
-
-          /* If we are in privileged mode, then mark the candidate entry as protected.
-          Otherwise, mark it as UN-protected. */
+          /* Set the protection on the candidate entry if in privileged mode. */
           if (true == SYSFLAG_PRIVILEGED()) {
 
 
@@ -311,13 +300,12 @@ void *xMemAlloc(size_t size_) {
           }
 
 
+
           /* Clear the memory. */
           memset_(ENTRY2ADDR(entryCandidate), zero, (requestedBlocks - heap.entrySizeInBlocks) * CONFIG_HEAP_BLOCK_SIZE);
 
 
-          /* Since the heap entry sits in the block prior to the blocks allocated for the und user,
-          we want to return a pointer to the start of the allocated space and NOT the heap entry
-          itself. */
+          /* Set the return value to the address of the newly allocated heap memory. */
           ret = ENTRY2ADDR(entryCandidate);
         }
       }
@@ -386,7 +374,7 @@ void xMemFree(void *ptr_) {
       /* Let's check to see if the entry we just freed can be consolidated with the next entry
       to minimize fragmentation. To start we just need to see if there IS a next entry and
       make sure it is free. */
-      if((ISNOTNULLPTR(entryToFree->next)) && (true == entryToFree->next->free)) {
+      if ((ISNOTNULLPTR(entryToFree->next)) && (true == entryToFree->next->free)) {
 
         /* It looks like the entry we just freed can be consolidated with the next entry
         so add the next entry's blocks to the entry we just freed. */
@@ -399,10 +387,7 @@ void xMemFree(void *ptr_) {
 
         /* Done! */
       }
-
     }
-
-
   }
 
 
@@ -565,7 +550,6 @@ Base_t HeapCheck(const Base_t option_, const void *ptr_) {
       if (HEAP_CHECK_HEALTH_AND_POINTER == option_) {
 
         entryToCheck = ADDR2ENTRY(ptr_);
-
       }
 
 
