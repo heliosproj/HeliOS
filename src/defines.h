@@ -29,7 +29,6 @@
 #include <limits.h>
 #include <stdint.h>
 
-#define OTHER_ARCH_LINUX
 
 
 /* Check that the system HeliOS is being targeted for has an
