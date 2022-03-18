@@ -359,6 +359,15 @@ and all runtimes need to be reset. */
 
 
 
+/* Define a macro to access the corrupt system flag which is used
+by the memory management system calls to flag if corruption
+of the heap has been detected. */
+#if !defined(SYSFLAG_CORRUPT)
+#define SYSFLAG_CORRUPT() sysFlags.corrupt
+#endif
+
+
+
 /* Define a marco which makes null pointer checks more readable and
 concise */
 #if !defined(ISNOTNULLPTR)

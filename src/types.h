@@ -164,7 +164,8 @@ typedef struct SysFlags_s {
   Byte_t running : 1;
   Byte_t overflow : 1;
   Byte_t privileged : 1;
-  Byte_t reserved : 5;
+  Byte_t corrupt : 1;
+  Byte_t reserved : 4;
 } SysFlags_t;
 
 

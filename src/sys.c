@@ -36,7 +36,8 @@ Thank you for the best OS on Earth, Dennis. */
 SysFlags_t sysFlags = {
     .running = false,
     .overflow = false,
-    .privileged = false};
+    .privileged = false,
+    .corrupt = false};
 
 
 
