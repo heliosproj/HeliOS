@@ -124,7 +124,7 @@ to default to the Arduino platform and/or tool-chain. */
 #define CONFIG_HEAP_SIZE_IN_BLOCKS 0x80u /* 128u */
 #endif
 
-#elif defined(OTHER_ARCH_LINUX)
+#elif defined(OTHER_ARCH_DEBUG)
 
 #include <stdio.h>
 #include <time.h>
@@ -141,9 +141,10 @@ to default to the Arduino platform and/or tool-chain. */
 #define CONFIG_HEAP_SIZE_IN_BLOCKS 0x20u /* 32u */
 #endif
 
-/* Enable memdump_() on Linux for debugging. */
 #define MEMDUMP_
+
 #define MEMDUMP_ROW_WIDTH CONFIG_HEAP_BLOCK_SIZE
+
 
 #elif defined(ARDUINO_TEENSY_MICROMOD) || defined(ARDUINO_TEENSY40) || defined(ARDUINO_TEENSY41) || defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY35) || defined(ARDUINO_TEENSY31) || defined(ARDUINO_TEENSY32) || defined(ARDUINO_TEENSY30) || defined(ARDUINO_TEENSYLC)
 

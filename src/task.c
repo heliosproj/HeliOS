@@ -1230,7 +1230,7 @@ void RunTimeReset(void) {
 /* Used only for when testing HeliOS on Linux, then get the time from clock_gettime(). */
 Time_t CurrentTime(void) {
 
-#if defined(OTHER_ARCH_LINUX)
+#if defined(OTHER_ARCH_DEBUG)
 
   struct timespec t;
 

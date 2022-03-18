@@ -635,7 +635,7 @@ Base_t HeapCheck(const Base_t option_, const void *ptr_) {
 
         /* Assert if the pointer was not found if we
         were looking for it. */
-        SYSASSERT((HEAP_CHECK_HEALTH_ONLY == option_) || ((HEAP_CHECK_HEALTH_AND_POINTER == option_) && (true == ptrFound)));
+        SYSASSERT(((HEAP_CHECK_HEALTH_ONLY == option_) && (false == SYSFLAG_CORRUPT())) || ((HEAP_CHECK_HEALTH_AND_POINTER == option_) && (true == ptrFound) && (false == SYSFLAG_CORRUPT())));
 
 
 
@@ -643,7 +643,7 @@ Base_t HeapCheck(const Base_t option_, const void *ptr_) {
         return value to success OR if we are also checking that
         the pointer was valid then set the return value to success
         if the pointer's heap entry was found. */
-        if ((HEAP_CHECK_HEALTH_ONLY == option_) || ((HEAP_CHECK_HEALTH_AND_POINTER == option_) && (true == ptrFound))) {
+        if (((HEAP_CHECK_HEALTH_ONLY == option_) && (false == SYSFLAG_CORRUPT())) || ((HEAP_CHECK_HEALTH_AND_POINTER == option_) && (true == ptrFound) && (false == SYSFLAG_CORRUPT()))) {
 
 
           ret = RETURN_SUCCESS;
