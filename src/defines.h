@@ -135,7 +135,11 @@ to default to the Arduino platform and/or tool-chain. */
 
 #define ENABLE_INTERRUPTS()
 
-#define TIME_T_TYPE uint64_t
+#define TIME_T_TYPE uint32_t
+
+
+#define CONFIG_ENABLE_SYSTEM_ASSERT
+#define CONFIG_SYSTEM_ASSERT_BEHAVIOR(file_, line_) printf("assert: %s:%d\n", file_ , line_ )
 
 #if !defined(CONFIG_HEAP_SIZE_IN_BLOCKS)
 #define CONFIG_HEAP_SIZE_IN_BLOCKS 0x20u /* 32u */
@@ -180,7 +184,7 @@ to default to the Arduino platform and/or tool-chain. */
 
 #else
 
-#pragma message("WARNING: This embedded platform and/or tool-chain is may not be supported.")
+#pragma message("WARNING: This embedded platform and/or tool-chain may not be supported. Trying to build using the Arduino platform and/or tool-chain.")
 
 #include <Arduino.h>
 
