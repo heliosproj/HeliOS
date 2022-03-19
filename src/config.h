@@ -149,76 +149,47 @@ to customize the HeliOS kernel for their specific application. */
 
 
 
+
 /**
- * @brief Define the number of memory blocks available to tasks.
- *
- * Heap memory is used by tasks. Setting CONFIG_HEAP_SIZE_IN_BLOCKS
- * allows the end-user to define the size of the heap in blocks.
- * The size of a block in the heap is determined by the
- * CONFIG_MEMORY_BLOCK_SIZE setting which is represented in bytes.
- * The size of the heap needs to be adjusted to fit the memory
+ * @brief Define the number of memory blocks available in all memory regions.
+ * 
+ * The heap memory region is used by tasks. Whereas the kernel memory region
+ * is used solely by the kernel for kernel objects. The CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS
+ * setting allows the end-user to define the size, in blocks, of all memory
+ * regions thus effecting both the heap and kernel memory regions. The size
+ * of a memory block is defined by the CONFIG_MEMORY_REGION_BLOCK_SIZE setting.
+ * The size of all memory regions needs to be adjusted to fit the memory
  * requirements of the end-user's application. By default the
- * CONFIG_HEAP_SIZE_IN_BLOCKS setting is not defined. The literal
- * must be appended with "u" to maintain MISRA C:2012 compliance.
- *
- * @sa xMemAlloc()
- * @sa xMemFree()
- * @sa CONFIG_MEMORY_BLOCK_SIZE
- *
- * @note To use the platform and/or tool-chain defaults,
- * leave CONFIG_HEAP_SIZE_IN_BLOCKS undefined.
- *
+ * CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS is defined on a per platform and/or
+ * tool-chain basis therefor it is not defined here by default. The literal
+ * must be appended with a "u" to maintain MISRA C:2012 compliance.
+ * 
  */
 /*
-#define CONFIG_HEAP_SIZE_IN_BLOCKS 512u
+#define CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS 512u
 */
 
 
 
-/**
- * @brief Define the number of memory blocks available to the kernel.
- *
- * Kernel memory is only used by the kernel. The
- * CONFIG_KMEM_SIZE_IN_BLOCKS setting allows the end-user
- * to set the number of blocks allocated to the kernel
- * for kernel objects. The amount of kernel memory
- * needs to be adjusted to fit the memory requirements
- * of the end-user's application. By default the
- * CONFIG_KMEM_SIZE_IN_BLOCKS setting is not defined. The
- * literal must be appended with 'u" to maintain MISRA C:2012
- * compliance.
- * 
- * 
- * @sa CONFIG_MEMORY_BLOCK_SIZE
- *
- * @note To use the platform and/or tool-chain defaults,
- * leave CONFIG_KMEM_SIZE_IN_BLOCKS undefined.
- *
- */
-/*
-#define CONFIG_KMEM_SIZE_IN_BLOCKS 512u
-*/
-
-
 
 /**
- * @brief Define the memory block size in bytes.
+ * @brief Define the memory block size in bytes for all memory regions.
  *
- * Setting CONFIG_MEMORY_BLOCK_SIZE allows the end-user to
- * define the size of a memory block in bytes. The block size
- * should be set to achieve the best possible utilization
- * of memory. A block size that is too large will waste
- * memory for smaller memory requests. A block size that is too small
- * will waste memory on entries. The default value is 32 bytes. The
- * literal must be appended with "u" to maintain MISRA C:2012 compliance.
- *
+ * Setting CONFIG_MEMORY_REGION_BLOCK_SIZE allows the end-user to
+ * define the size of a memory region block in bytes. The memory region
+ * block size should be set to achieve the best possible utilization of
+ * the available memory. The CONFIG_MEMORY_REGION_BLOCK_SIZE setting
+ * effects both the heap and kernel memory regions. The default value
+ * is 32 bytes. The literal must be appended with a "u" to maintain
+ * MISRA C:2012 compliance.
+ * 
  * @sa xMemAlloc()
  * @sa xMemFree()
- * @sa CONFIG_HEAP_SIZE_IN_BLOCKS
+ * @sa CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS
  * @sa CONFIG_KMEM_SIZE_IN_BLOCKS
  *
  */
-#define CONFIG_MEMORY_BLOCK_SIZE 32u
+#define CONFIG_MEMORY_REGION_BLOCK_SIZE 32u
 
 
 

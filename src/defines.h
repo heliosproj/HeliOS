@@ -46,15 +46,15 @@
 /* Definition blocks for embedded platform and/or tool-chain
 specific headers and functions to compile and run HeliOS. When a
 new embedded platform and/or tool-chain is added, the following
-defines (with the exception of CONFIG_HEAP_SIZE_IN_BLOCKS) must
+defines (with the exception of CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS) must
 be included:
 
 * CURRENTTIME()
 * DISABLE_INTERRUPTS()
 * ENABLE_INTERRUPTS()
 * TIME_T_TYPE
-* CONFIG_HEAP_SIZE_IN_BLOCKS <- Optional. However, if defined
-  must be enclosed in an #if !defined(CONFIG_HEAP_SIZE_IN_BLOCKS)
+* CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS <- Optional. However, if defined
+  must be enclosed in an #if !defined(CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS)
   block.
 
 If no definition block for the embedded platform and/or tool-chain
@@ -72,13 +72,10 @@ to default to the Arduino platform and/or tool-chain. */
 
 #define TIME_T_TYPE uint32_t
 
-#if !defined(CONFIG_HEAP_SIZE_IN_BLOCKS)
-#define CONFIG_HEAP_SIZE_IN_BLOCKS 0x20u /* 32u */
+#if !defined(CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS)
+#define CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS 0x20u /* 32u */
 #endif
 
-#if !defined(CONFIG_KMEM_SIZE_IN_BLOCKS)
-#define CONFIG_KMEM_SIZE_IN_BLOCKS 0x20u /* 32u */
-#endif
 
 #elif defined(ARDUINO_ARCH_SAM)
 
@@ -92,13 +89,11 @@ to default to the Arduino platform and/or tool-chain. */
 
 #define TIME_T_TYPE uint32_t
 
-#if !defined(CONFIG_HEAP_SIZE_IN_BLOCKS)
-#define CONFIG_HEAP_SIZE_IN_BLOCKS 0x80u /* 128u */
+#if !defined(CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS)
+#define CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS 0x80u /* 128u */
 #endif
 
-#if !defined(CONFIG_KMEM_SIZE_IN_BLOCKS)
-#define CONFIG_KMEM_SIZE_IN_BLOCKS 0x80u /* 128u */
-#endif
+
 
 #elif defined(ARDUINO_ARCH_SAMD)
 
@@ -112,13 +107,11 @@ to default to the Arduino platform and/or tool-chain. */
 
 #define TIME_T_TYPE uint32_t
 
-#if !defined(CONFIG_HEAP_SIZE_IN_BLOCKS)
-#define CONFIG_HEAP_SIZE_IN_BLOCKS 0x80u /* 128u */
+#if !defined(CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS)
+#define CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS 0x80u /* 128u */
 #endif
 
-#if !defined(CONFIG_KMEM_SIZE_IN_BLOCKS)
-#define CONFIG_KMEM_SIZE_IN_BLOCKS 0x80u /* 128u */
-#endif
+
 
 #elif defined(ARDUINO_ARCH_ESP8266)
 
@@ -132,13 +125,11 @@ to default to the Arduino platform and/or tool-chain. */
 
 #define TIME_T_TYPE uint32_t
 
-#if !defined(CONFIG_HEAP_SIZE_IN_BLOCKS)
-#define CONFIG_HEAP_SIZE_IN_BLOCKS 0x80u /* 128u */
+#if !defined(CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS)
+#define CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS 0x80u /* 128u */
 #endif
 
-#if !defined(CONFIG_KMEM_SIZE_IN_BLOCKS)
-#define CONFIG_KMEM_SIZE_IN_BLOCKS 0x80u /* 128u */
-#endif
+
 
 #elif defined(OTHER_ARCH_DEBUG)
 
@@ -157,17 +148,15 @@ to default to the Arduino platform and/or tool-chain. */
 #define CONFIG_ENABLE_SYSTEM_ASSERT
 #define CONFIG_SYSTEM_ASSERT_BEHAVIOR(file_, line_) printf("assert: %s:%d\n", file_, line_)
 
-#if !defined(CONFIG_HEAP_SIZE_IN_BLOCKS)
-#define CONFIG_HEAP_SIZE_IN_BLOCKS 0x20u /* 32u */
+#if !defined(CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS)
+#define CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS 0x20u /* 32u */
 #endif
 
-#if !defined(CONFIG_KMEM_SIZE_IN_BLOCKS)
-#define CONFIG_KMEM_SIZE_IN_BLOCKS 0x20u /* 32u */
-#endif
+
 
 #define MEMDUMP_
 
-#define MEMDUMP_ROW_WIDTH CONFIG_MEMORY_BLOCK_SIZE
+#define MEMDUMP_ROW_WIDTH CONFIG_MEMORY_REGION_BLOCK_SIZE
 
 
 #elif defined(ARDUINO_TEENSY_MICROMOD) || defined(ARDUINO_TEENSY40) || defined(ARDUINO_TEENSY41) || defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY35) || defined(ARDUINO_TEENSY31) || defined(ARDUINO_TEENSY32) || defined(ARDUINO_TEENSY30) || defined(ARDUINO_TEENSYLC)
@@ -182,13 +171,11 @@ to default to the Arduino platform and/or tool-chain. */
 
 #define TIME_T_TYPE uint32_t
 
-#if !defined(CONFIG_HEAP_SIZE_IN_BLOCKS)
-#define CONFIG_HEAP_SIZE_IN_BLOCKS 0x200u /* 512u */
+#if !defined(CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS)
+#define CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS 0x200u /* 512u */
 #endif
 
-#if !defined(CONFIG_KMEM_SIZE_IN_BLOCKS)
-#define CONFIG_KMEM_SIZE_IN_BLOCKS 0x200u /* 512u */
-#endif
+
 
 #elif defined(ESP32)
 
@@ -202,13 +189,11 @@ to default to the Arduino platform and/or tool-chain. */
 
 #define TIME_T_TYPE uint32_t
 
-#if !defined(CONFIG_HEAP_SIZE_IN_BLOCKS)
-#define CONFIG_HEAP_SIZE_IN_BLOCKS 0x200u /* 512u */
+#if !defined(CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS)
+#define CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS 0x200u /* 512u */
 #endif
 
-#if !defined(CONFIG_KMEM_SIZE_IN_BLOCKS)
-#define CONFIG_KMEM_SIZE_IN_BLOCKS 0x200u /* 512u */
-#endif
+
 
 #else
 
@@ -224,13 +209,11 @@ to default to the Arduino platform and/or tool-chain. */
 
 #define TIME_T_TYPE uint32_t
 
-#if !defined(CONFIG_HEAP_SIZE_IN_BLOCKS)
-#define CONFIG_HEAP_SIZE_IN_BLOCKS 0x20u /* 32u */
+#if !defined(CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS)
+#define CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS 0x20u /* 32u */
 #endif
 
-#if !defined(CONFIG_KMEM_SIZE_IN_BLOCKS)
-#define CONFIG_KMEM_SIZE_IN_BLOCKS 0x20u /* 32u */
-#endif
+
 
 #endif
 
@@ -293,18 +276,10 @@ for return values. */
 
 /* Define the raw size of the heap in bytes based on the number of blocks
 the heap contains and the size of each block in bytes. */
-#if !defined(HEAP_RAW_SIZE)
-#define HEAP_RAW_SIZE CONFIG_HEAP_SIZE_IN_BLOCKS * CONFIG_MEMORY_BLOCK_SIZE
+#if !defined(ALL_MEMORY_REGIONS_SIZE_IN_BYTES)
+#define ALL_MEMORY_REGIONS_SIZE_IN_BYTES CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS * CONFIG_MEMORY_REGION_BLOCK_SIZE
 #endif
 
-
-
-
-/* Define the raw size of kernel memory in bytes based on the number of blocks
-the kernel memory contains and the size of each block in bytes. */
-#if !defined(KMEM_RAW_SIZE)
-#define KMEM_RAW_SIZE CONFIG_KMEM_SIZE_IN_BLOCKS * CONFIG_MEMORY_BLOCK_SIZE
-#endif
 
 
 
@@ -485,7 +460,7 @@ health of the heap AND at the same time check a pointer.. */
 /* Define a macro to convert a heap memory address to it's corresponding
 heap entry. */
 #if !defined(ADDR2ENTRY)
-#define ADDR2ENTRY(p, r) (MemoryEntry_t *)((Byte_t *)( p ) - (( r ).entrySizeInBlocks * CONFIG_MEMORY_BLOCK_SIZE))
+#define ADDR2ENTRY(p, r) (MemoryEntry_t *)((Byte_t *)( p ) - (( r ).entrySizeInBlocks * CONFIG_MEMORY_REGION_BLOCK_SIZE))
 #endif
 
 
@@ -493,7 +468,7 @@ heap entry. */
 /* Define a macro to convert a heap entry to it's corresponding heap memory
 address. */
 #if !defined(ENTRY2ADDR)
-#define ENTRY2ADDR(p, r) (void *)((Byte_t *)( p ) + (( r ).entrySizeInBlocks * CONFIG_MEMORY_BLOCK_SIZE))
+#define ENTRY2ADDR(p, r) (void *)((Byte_t *)( p ) + (( r ).entrySizeInBlocks * CONFIG_MEMORY_REGION_BLOCK_SIZE))
 #endif
 
 #endif

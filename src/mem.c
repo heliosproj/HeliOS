@@ -28,12 +28,12 @@
 
 
 
-static HeapMemoryRegion_t heap = {
+static MemoryRegion_t heap = {
     .entrySizeInBlocks = zero,
     .startEntry = NULL,
 };
 
-static KernelMemoryRegion_t kmem = {
+static MemoryRegion_t kmem = {
     .entrySizeInBlocks = zero,
     .startEntry = NULL,
 };
@@ -93,13 +93,13 @@ void *xMemAlloc(size_t size_) {
 
 
         /* Calculate the quotient portion of the blocks needed to store a heap entry. */
-        heap.entrySizeInBlocks = ((Word_t)(sizeof(MemoryEntry_t) / CONFIG_MEMORY_BLOCK_SIZE));
+        heap.entrySizeInBlocks = ((Word_t)(sizeof(MemoryEntry_t) / CONFIG_MEMORY_REGION_BLOCK_SIZE));
 
 
 
         /* Calculate the remainder portion of the blocks needed to store a heap entry.
         If there is a remainder, then add one block to cover it. */
-        if (zero < ((Word_t)(sizeof(MemoryEntry_t) % CONFIG_MEMORY_BLOCK_SIZE))) {
+        if (zero < ((Word_t)(sizeof(MemoryEntry_t) % CONFIG_MEMORY_REGION_BLOCK_SIZE))) {
 
 
           /* Add just one more block to cover the remainder. */
@@ -123,7 +123,7 @@ void *xMemAlloc(size_t size_) {
         heap.startEntry = (MemoryEntry_t *)heap.mem;
 
         /* Zero out the entire heap. */
-        memset_(heap.mem, zero, HEAP_RAW_SIZE);
+        memset_(heap.mem, zero, ALL_MEMORY_REGIONS_SIZE_IN_BYTES);
 
 
         /* The first heap entry is free at this point so mark it as such. */
@@ -138,7 +138,7 @@ void *xMemAlloc(size_t size_) {
 
 
         /* The first entry will contain all of the blocks in the heap at this point. */
-        heap.startEntry->blocks = CONFIG_HEAP_SIZE_IN_BLOCKS;
+        heap.startEntry->blocks = CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS;
 
 
         /* There is only one heap entry at this point so set the pointer to the next
@@ -165,11 +165,11 @@ void *xMemAlloc(size_t size_) {
 
 
         /* Calculate the quotient portion of the requested blocks by performing some division. */
-        requestedBlocks = ((Word_t)(size_ / CONFIG_MEMORY_BLOCK_SIZE));
+        requestedBlocks = ((Word_t)(size_ / CONFIG_MEMORY_REGION_BLOCK_SIZE));
 
         /* Calculate the remainder portion of the requested blocks by performing some division. If
         there is a remainder then add just one more block. */
-        if (zero < ((Word_t)(size_ % CONFIG_MEMORY_BLOCK_SIZE))) {
+        if (zero < ((Word_t)(size_ % CONFIG_MEMORY_REGION_BLOCK_SIZE))) {
 
 
           /* There was a remainder for the requested blocks so add one more block. */
@@ -243,7 +243,7 @@ void *xMemAlloc(size_t size_) {
 
             /* Calculate the location of the new entry that will containing the remaining
             blocks not used in the candidate entry. */
-            entryCandidate->next = (MemoryEntry_t *)((Byte_t *)entryCandidate + (requestedBlocks * CONFIG_MEMORY_BLOCK_SIZE));
+            entryCandidate->next = (MemoryEntry_t *)((Byte_t *)entryCandidate + (requestedBlocks * CONFIG_MEMORY_REGION_BLOCK_SIZE));
 
 
             /* Set the split entry's next entry to the entry we preserved earlier - if that makes
@@ -283,7 +283,7 @@ void *xMemAlloc(size_t size_) {
 
 
             /* Clear the memory. */
-            memset_(ENTRY2ADDR(entryCandidate, heap), zero, (requestedBlocks - heap.entrySizeInBlocks) * CONFIG_MEMORY_BLOCK_SIZE);
+            memset_(ENTRY2ADDR(entryCandidate, heap), zero, (requestedBlocks - heap.entrySizeInBlocks) * CONFIG_MEMORY_REGION_BLOCK_SIZE);
 
 
 
@@ -313,7 +313,7 @@ void *xMemAlloc(size_t size_) {
 
 
             /* Clear the memory. */
-            memset_(ENTRY2ADDR(entryCandidate, heap), zero, (requestedBlocks - heap.entrySizeInBlocks) * CONFIG_MEMORY_BLOCK_SIZE);
+            memset_(ENTRY2ADDR(entryCandidate, heap), zero, (requestedBlocks - heap.entrySizeInBlocks) * CONFIG_MEMORY_REGION_BLOCK_SIZE);
 
 
             /* Set the return value to the address of the newly allocated heap memory. */
@@ -463,7 +463,7 @@ size_t xMemGetUsed(void) {
 
       /* End-user is expecting bytes, so calculate it based on the
       block size. */
-      ret = usedBlocks * CONFIG_MEMORY_BLOCK_SIZE;
+      ret = usedBlocks * CONFIG_MEMORY_REGION_BLOCK_SIZE;
     }
   }
 
@@ -524,7 +524,7 @@ size_t xMemGetSize(void *ptr_) {
 
         /* The end-user is expecting us to return the number of bytes in used. So
         perform some advanced multiplication. */
-        ret = entryToSize->blocks * CONFIG_MEMORY_BLOCK_SIZE;
+        ret = entryToSize->blocks * CONFIG_MEMORY_REGION_BLOCK_SIZE;
       }
     }
   }
@@ -631,11 +631,11 @@ Base_t HeapCheck(const Base_t option_, const void *ptr_) {
 
       /* Assert if the blocks we summed while traversing the heap
       do not match what is expected. */
-      SYSASSERT(CONFIG_HEAP_SIZE_IN_BLOCKS == blocks);
+      SYSASSERT(CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS == blocks);
 
       /* Check if the blocks we summed while traversing the heap
       matches what we expected, if so proceed. */
-      if (CONFIG_HEAP_SIZE_IN_BLOCKS == blocks) {
+      if (CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS == blocks) {
 
 
         /* Assert if the pointer was not found if we
@@ -678,11 +678,11 @@ Base_t AddrCheck(const void *ptr_) {
 
 
   /* Assert if the address falls outside of the bounds of the heap space. */
-  SYSASSERT((ptr_ >= (void *)(heap.mem)) && (ptr_ < (void *)(heap.mem + HEAP_RAW_SIZE)));
+  SYSASSERT((ptr_ >= (void *)(heap.mem)) && (ptr_ < (void *)(heap.mem + ALL_MEMORY_REGIONS_SIZE_IN_BYTES)));
 
 
   /* Check if the address falls inside the bounds of the heap space. */
-  if ((ptr_ >= (void *)(heap.mem)) && (ptr_ < (void *)(heap.mem + HEAP_RAW_SIZE))) {
+  if ((ptr_ >= (void *)(heap.mem)) && (ptr_ < (void *)(heap.mem + ALL_MEMORY_REGIONS_SIZE_IN_BYTES))) {
 
 
     ret = RETURN_SUCCESS;
@@ -766,7 +766,7 @@ void memdump_(void) {
 
   Word_t k = zero;
 
-  for (Word_t i = zero; i < (HEAP_RAW_SIZE / MEMDUMP_ROW_WIDTH); i++) {
+  for (Word_t i = zero; i < (ALL_MEMORY_REGIONS_SIZE_IN_BYTES / MEMDUMP_ROW_WIDTH); i++) {
 
 
     printf("%p:", (heap.mem + k));

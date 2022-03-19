@@ -80,18 +80,13 @@ typedef struct MemoryEntry_s {
 
 
 
-typedef struct HeapMemoryRegion_s {
-  Byte_t mem[HEAP_RAW_SIZE];
+typedef struct MemoryRegion_s {
+  Byte_t mem[ALL_MEMORY_REGIONS_SIZE_IN_BYTES];
   MemoryEntry_t *startEntry;
   Word_t entrySizeInBlocks;
-} HeapMemoryRegion_t;
+} MemoryRegion_t;
 
 
-typedef struct KernelMemoryRegion_s {
-  Byte_t mem[KMEM_RAW_SIZE];
-  MemoryEntry_t *startEntry;
-  Word_t entrySizeInBlocks;
-} KernelMemoryRegion_t;
 
 
 typedef struct TaskNotification_s {
