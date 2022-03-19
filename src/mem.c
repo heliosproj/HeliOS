@@ -42,298 +42,13 @@ static MemoryRegion_t kernel = {
 };
 
 
-/* The xMemAlloc() system call will allocate heap memory and return a pointer
-to the newly allocated memory. */
+
+
 void *xMemAlloc(size_t size_) {
 
 
-  /* Disable interrupts because we can't be interrupted while modifying the heap. */
-  DISABLE_INTERRUPTS();
+  return calloc_(&heap, size_);
 
-  void *ret = NULL;
-
-  Word_t requestedBlocks = zero;
-
-
-  /* To get the maximum value of Word_t, we underflow the unsigned type. */
-  Word_t leastBlocks = -1;
-
-
-  MemoryEntry_t *entryCursor = NULL;
-
-
-  MemoryEntry_t *entryCandidate = NULL;
-
-
-  MemoryEntry_t *entryCandidateNext = NULL;
-
-
-  /* Assert if the end-user tries to allocate zero bytes of heap memory. */
-  SYSASSERT(zero < size_);
-
-
-  /* We can't allocate zero bytes of heap memory so just head toward the
-  return statement. */
-  if (zero < size_) {
-
-
-    /* Assert if the heap is corrupted. */
-    SYSASSERT(false == SYSFLAG_CORRUPT());
-
-
-    /* Check to make sure the heap is not corrupted before we do anything with
-    the heap. */
-    if (false == SYSFLAG_CORRUPT()) {
-
-      /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-      PHASE I: Determine how many blocks a heap entry requires. One block is generally
-      sufficient but we shouldn't assume. This only needs to be done once.
-      * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-      /* Figure out how many blocks are needed to store a heap entry by performing some
-      division. */
-      if (zero == heap.entrySize) {
-
-
-        /* Calculate the quotient portion of the blocks needed to store a heap entry. */
-        heap.entrySize = ((Word_t)(sizeof(MemoryEntry_t) / CONFIG_MEMORY_REGION_BLOCK_SIZE));
-
-
-
-        /* Calculate the remainder portion of the blocks needed to store a heap entry.
-        If there is a remainder, then add one block to cover it. */
-        if (zero < ((Word_t)(sizeof(MemoryEntry_t) % CONFIG_MEMORY_REGION_BLOCK_SIZE))) {
-
-
-          /* Add just one more block to cover the remainder. */
-          heap.entrySize++;
-        }
-      }
-
-      /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-      PHASE II: Determine if the first heap entry has been created. This effectively
-      initializes the heap. This also only needs to be done once.
-      * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-      /* If the starting entry of the heap is null, the heap has not been initialized
-      so let's do that now. */
-      if (ISNULLPTR(heap.start)) {
-
-
-        /* Set the starting heap entry to the start of the heap. We do this so
-        we don't have to cast every time we want to reference the start of the
-        heap. */
-        heap.start = (MemoryEntry_t *)heap.mem;
-
-        /* Zero out the entire heap. */
-        memset_(heap.mem, zero, ALL_MEMORY_REGIONS_SIZE_IN_BYTES);
-
-
-        /* The first heap entry is free at this point so mark it as such. */
-        heap.start->free = true;
-
-
-        /* The first heap entry is UN-protected at this point so mark it as such. For an entry to be marked protected,
-        the system must be in privileged mode by calling ENTER_PRIVILEGED(). Only heap memory allocated to the kernel
-        can be protected. Heap memory allocated by the end-user cannot be protected. */
-        heap.start->protected = false;
-
-
-
-        /* The first entry will contain all of the blocks in the heap at this point. */
-        heap.start->blocks = CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS;
-
-
-        /* There is only one heap entry at this point so set the pointer to the next
-        entry to null. */
-        heap.start->next = NULL;
-      }
-
-      /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-      PHASE III: Check the health of the heap by calling MemoryRegionCheck().
-      * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-
-      /* Assert if the heap is NOT healthy (i.e., contains consistency errors). */
-      SYSASSERT(RETURN_SUCCESS == MemoryRegionCheck(&heap, NULL, MEMORY_CHECK_REGION_OPTION_WO_ADDR));
-
-
-      /* If the heap is healthy, then proceed to phase IV. */
-      if (RETURN_SUCCESS == MemoryRegionCheck(&heap, NULL, MEMORY_CHECK_REGION_OPTION_WO_ADDR)) {
-
-
-        /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-        PHASE IV: Calculate how many blocks are needed for the requested size in bytes.
-        * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-
-        /* Calculate the quotient portion of the requested blocks by performing some division. */
-        requestedBlocks = ((Word_t)(size_ / CONFIG_MEMORY_REGION_BLOCK_SIZE));
-
-        /* Calculate the remainder portion of the requested blocks by performing some division. If
-        there is a remainder then add just one more block. */
-        if (zero < ((Word_t)(size_ % CONFIG_MEMORY_REGION_BLOCK_SIZE))) {
-
-
-          /* There was a remainder for the requested blocks so add one more block. */
-          requestedBlocks++;
-        }
-
-
-        /* We need to include how many blocks we need for the heap entry. */
-        requestedBlocks += heap.entrySize;
-
-
-        /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-        PHASE V: Scan the heap entries to find a heap entry that would be a good candidate
-        for the requested blocks. This may be the last entry in the heap OR an entry that
-        was recently freed by xMemFree().
-        * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-        /* Start off at the start of the heap. */
-        entryCursor = heap.start;
-
-        /* While there is a heap entry, continue to traverse the heap. */
-        while (ISNOTNULLPTR(entryCursor)) {
-
-
-          /* See if there is a candidate heap entry for the requested blocks by checking:
-              1) The entry at the cursor is free.
-              2) The entry has enough blocks to cover the requested blocks.
-              3) The entry has the fewest possible number of blocks based on our need (i.e., we don't
-              want to use 12 free blocks if we just need 3 and there is 4 available somewhere else
-              in the heap). */
-          if ((true == entryCursor->free) && (requestedBlocks <= entryCursor->blocks) && (leastBlocks > entryCursor->blocks)) {
-
-
-            /* Seems like a good candidate so update the least blocks in case there is
-            an even BETTER candidate. */
-            leastBlocks = entryCursor->blocks;
-
-
-            /* Keep a copy of the entry cursor as the best entry candidate in case we find out
-            that the candidate is the winner. */
-            entryCandidate = entryCursor;
-          }
-
-          /* Keep on move'n on. */
-          entryCursor = entryCursor->next;
-        }
-
-
-        /* Assert if a good candidate was never found. */
-        SYSASSERT(ISNOTNULLPTR(entryCandidate));
-
-        /* If we found a candidate, then let's claim in for France. Otherwise just head
-        toward the exit. */
-        if (ISNOTNULLPTR(entryCandidate)) {
-
-
-          /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-          PHASE VI: Found a good candidate so either reuse the entry OR split the entry in
-          two if it is larger than we need. Oh, and we need to clear the memory too.
-          * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-
-          /* Check if there is any value in splitting the entry candidate in two. */
-          if ((heap.entrySize + 1) <= (entryCandidate->blocks - requestedBlocks)) {
-
-
-            /* Preserve the next entry after the entry candidate so it can be linked to
-            after we split the candidate entry in two. */
-            entryCandidateNext = entryCandidate->next;
-
-
-            /* Calculate the location of the new entry that will containing the remaining
-            blocks not used in the candidate entry. */
-            entryCandidate->next = (MemoryEntry_t *)((Byte_t *)entryCandidate + (requestedBlocks * CONFIG_MEMORY_REGION_BLOCK_SIZE));
-
-
-            /* Set the split entry's next entry to the entry we preserved earlier - if that makes
-            any sense at all. */
-            entryCandidate->next->next = entryCandidateNext;
-
-            /* Mark the split entry as free. */
-            entryCandidate->next->free = true;
-
-
-            /* Mark the split entry as not protected. */
-            entryCandidate->next->protected = false;
-
-
-            /* Give the split entry the remaining blocks. */
-            entryCandidate->next->blocks = entryCandidate->blocks - requestedBlocks;
-
-
-            /* Mark the candidate entry as no longer free. */
-            entryCandidate->free = false;
-
-
-            /* Set the protection on the candidate entry if in privileged mode. */
-            if (true == SYSFLAG_PRIVILEGED()) {
-
-              entryCandidate->protected = true;
-
-            } else {
-
-              entryCandidate->protected = false;
-            }
-
-
-            /* Set the candidate entry's blocks to the requested blocks. */
-            entryCandidate->blocks = requestedBlocks;
-
-
-
-            /* Clear the memory. */
-            memset_(ENTRY2ADDR(entryCandidate, &heap), zero, (requestedBlocks - heap.entrySize) * CONFIG_MEMORY_REGION_BLOCK_SIZE);
-
-
-
-            /* Set the return value to the address of the newly allocated heap memory. */
-            ret = ENTRY2ADDR(entryCandidate, &heap);
-
-
-
-          } else {
-
-
-            /* Nothing to split so just mark the candidate entry as not free. */
-            entryCandidate->free = false;
-
-            /* Set the protection on the candidate entry if in privileged mode. */
-            if (true == SYSFLAG_PRIVILEGED()) {
-
-
-              entryCandidate->protected = true;
-
-
-            } else {
-
-              entryCandidate->protected = false;
-            }
-
-
-
-            /* Clear the memory. */
-            memset_(ENTRY2ADDR(entryCandidate, &heap), zero, (requestedBlocks - heap.entrySize) * CONFIG_MEMORY_REGION_BLOCK_SIZE);
-
-
-            /* Set the return value to the address of the newly allocated heap memory. */
-            ret = ENTRY2ADDR(entryCandidate, &heap);
-          }
-        }
-      }
-    }
-  }
-
-  /* Exit privileged mode and enable interrupts before returning. */
-
-  EXIT_PRIVILEGED();
-
-  ENABLE_INTERRUPTS();
-
-  return ret;
 }
 
 
@@ -750,7 +465,7 @@ void *calloc_(MemoryRegion_t *region_, size_t size_) {
   Word_t requested = zero;
 
 
-  /* To get the maximum value of Word_t, we underflow the unsigned type. */
+
   Word_t fewest = -1;
 
 
@@ -763,208 +478,175 @@ void *calloc_(MemoryRegion_t *region_, size_t size_) {
   MemoryEntry_t *candidateNext = NULL;
 
 
-  /* Assert if the end-user tries to allocate zero bytes of heap memory. */
   SYSASSERT(zero < size_);
 
 
-  /* We can't allocate zero bytes of heap memory so just head toward the
-  return statement. */
+
   if (zero < size_) {
 
 
-    /* Assert if the heap is corrupted. */
+
     SYSASSERT(false == SYSFLAG_CORRUPT());
 
 
-    /* Check to make sure the heap is not corrupted before we do anything with
-    the region_-> */
+
     if (false == SYSFLAG_CORRUPT()) {
 
-      /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-      PHASE I: Determine how many blocks a heap entry requires. One block is generally
-      sufficient but we shouldn't assume. This only needs to be done once.
-      * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-      /* Figure out how many blocks are needed to store a heap entry by performing some
-      division. */
+
       if (zero == region_->entrySize) {
 
 
-        /* Calculate the quotient portion of the blocks needed to store a heap entry. */
+
         region_->entrySize = ((Word_t)(sizeof(MemoryEntry_t) / CONFIG_MEMORY_REGION_BLOCK_SIZE));
 
 
 
-        /* Calculate the remainder portion of the blocks needed to store a heap entry.
-        If there is a remainder, then add one block to cover it. */
+
         if (zero < ((Word_t)(sizeof(MemoryEntry_t) % CONFIG_MEMORY_REGION_BLOCK_SIZE))) {
 
 
-          /* Add just one more block to cover the remainder. */
+
           region_->entrySize++;
         }
       }
 
-      /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-      PHASE II: Determine if the first heap entry has been created. This effectively
-      initializes the region_-> This also only needs to be done once.
-      * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-      /* If the starting entry of the heap is null, the heap has not been initialized
-      so let's do that now. */
       if (ISNULLPTR(region_->start)) {
 
 
-        /* Set the starting heap entry to the start of the region_-> We do this so
-        we don't have to cast every time we want to reference the start of the
-        region_-> */
+
         region_->start = (MemoryEntry_t *)region_->mem;
 
-        /* Zero out the entire region_-> */
+
         memset_(region_->mem, zero, ALL_MEMORY_REGIONS_SIZE_IN_BYTES);
 
 
-        /* The first heap entry is free at this point so mark it as such. */
         region_->start->free = true;
 
 
-        /* The first heap entry is UN-protected at this point so mark it as such. For an entry to be marked protected,
-        the system must be in privileged mode by calling ENTER_PRIVILEGED(). Only heap memory allocated to the kernel
-        can be protected. Heap memory allocated by the end-user cannot be protected. */
+
         region_->start->protected = false;
 
 
 
-        /* The first entry will contain all of the blocks in the heap at this point. */
+
         region_->start->blocks = CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS;
 
 
-        /* There is only one heap entry at this point so set the pointer to the next
-        entry to null. */
+
+
         region_->start->next = NULL;
       }
 
-      /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-      PHASE III: Check the health of the heap by calling MemoryRegionCheck().
-      * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 
-      /* Assert if the heap is NOT healthy (i.e., contains consistency errors). */
+
       SYSASSERT(RETURN_SUCCESS == MemoryRegionCheck(&heap, NULL, MEMORY_CHECK_REGION_OPTION_WO_ADDR));
 
 
-      /* If the heap is healthy, then proceed to phase IV. */
+
       if (RETURN_SUCCESS == MemoryRegionCheck(&heap, NULL, MEMORY_CHECK_REGION_OPTION_WO_ADDR)) {
 
 
-        /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-        PHASE IV: Calculate how many blocks are needed for the requested size in bytes.
-        * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-
-        /* Calculate the quotient portion of the requested blocks by performing some division. */
         requested = ((Word_t)(size_ / CONFIG_MEMORY_REGION_BLOCK_SIZE));
 
-        /* Calculate the remainder portion of the requested blocks by performing some division. If
-        there is a remainder then add just one more block. */
+
+
         if (zero < ((Word_t)(size_ % CONFIG_MEMORY_REGION_BLOCK_SIZE))) {
 
 
-          /* There was a remainder for the requested blocks so add one more block. */
+
           requested++;
         }
 
 
-        /* We need to include how many blocks we need for the heap entry. */
+
         requested += region_->entrySize;
 
 
-        /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-        PHASE V: Scan the heap entries to find a heap entry that would be a good candidate
-        for the requested blocks. This may be the last entry in the heap OR an entry that
-        was recently freed by xMemFree().
-        * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-        /* Start off at the start of the region_-> */
+
         cursor = region_->start;
 
-        /* While there is a heap entry, continue to traverse the region_-> */
+
+
+
         while (ISNOTNULLPTR(cursor)) {
 
 
-          /* See if there is a candidate heap entry for the requested blocks by checking:
-              1) The entry at the cursor is free.
-              2) The entry has enough blocks to cover the requested blocks.
-              3) The entry has the fewest possible number of blocks based on our need (i.e., we don't
-              want to use 12 free blocks if we just need 3 and there is 4 available somewhere else
-              in the heap). */
+
+
           if ((true == cursor->free) && (requested <= cursor->blocks) && (fewest > cursor->blocks)) {
 
 
-            /* Seems like a good candidate so update the least blocks in case there is
-            an even BETTER candidate. */
+
+
             fewest = cursor->blocks;
 
 
-            /* Keep a copy of the entry cursor as the best entry candidate in case we find out
-            that the candidate is the winner. */
+
             candidate = cursor;
           }
 
-          /* Keep on move'n on. */
+
+
+
           cursor = cursor->next;
         }
 
 
-        /* Assert if a good candidate was never found. */
+
         SYSASSERT(ISNOTNULLPTR(candidate));
 
-        /* If we found a candidate, then let's claim in for France. Otherwise just head
-        toward the exit. */
+
+
+
         if (ISNOTNULLPTR(candidate)) {
 
 
-          /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-          PHASE VI: Found a good candidate so either reuse the entry OR split the entry in
-          two if it is larger than we need. Oh, and we need to clear the memory too.
-          * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 
-          /* Check if there is any value in splitting the entry candidate in two. */
           if ((region_->entrySize + 1) <= (candidate->blocks - requested)) {
 
 
-            /* Preserve the next entry after the entry candidate so it can be linked to
-            after we split the candidate entry in two. */
+
+
             candidateNext = candidate->next;
 
 
-            /* Calculate the location of the new entry that will containing the remaining
-            blocks not used in the candidate entry. */
+
+
             candidate->next = (MemoryEntry_t *)((Byte_t *)candidate + (requested * CONFIG_MEMORY_REGION_BLOCK_SIZE));
 
 
-            /* Set the split entry's next entry to the entry we preserved earlier - if that makes
-            any sense at all. */
+
+
             candidate->next->next = candidateNext;
 
-            /* Mark the split entry as free. */
+
+
+
             candidate->next->free = true;
 
 
-            /* Mark the split entry as not protected. */
+
+
             candidate->next->protected = false;
 
 
-            /* Give the split entry the remaining blocks. */
+
+
             candidate->next->blocks = candidate->blocks - requested;
 
 
-            /* Mark the candidate entry as no longer free. */
+
+
             candidate->free = false;
 
 
-            /* Set the protection on the candidate entry if in privileged mode. */
+
             if (true == SYSFLAG_PRIVILEGED()) {
 
               candidate->protected = true;
@@ -975,17 +657,18 @@ void *calloc_(MemoryRegion_t *region_, size_t size_) {
             }
 
 
-            /* Set the candidate entry's blocks to the requested blocks. */
+
+
             candidate->blocks = requested;
 
 
 
-            /* Clear the memory. */
+
             memset_(ENTRY2ADDR(candidate, &heap), zero, (requested - region_->entrySize) * CONFIG_MEMORY_REGION_BLOCK_SIZE);
 
 
 
-            /* Set the return value to the address of the newly allocated heap memory. */
+
             ret = ENTRY2ADDR(candidate, &heap);
 
 
@@ -993,10 +676,11 @@ void *calloc_(MemoryRegion_t *region_, size_t size_) {
           } else {
 
 
-            /* Nothing to split so just mark the candidate entry as not free. */
+
             candidate->free = false;
 
-            /* Set the protection on the candidate entry if in privileged mode. */
+
+
             if (true == SYSFLAG_PRIVILEGED()) {
 
 
@@ -1010,11 +694,12 @@ void *calloc_(MemoryRegion_t *region_, size_t size_) {
 
 
 
-            /* Clear the memory. */
+
             memset_(ENTRY2ADDR(candidate, &heap), zero, (requested - region_->entrySize) * CONFIG_MEMORY_REGION_BLOCK_SIZE);
 
 
-            /* Set the return value to the address of the newly allocated heap memory. */
+
+
             ret = ENTRY2ADDR(candidate, &heap);
           }
         }
@@ -1022,16 +707,13 @@ void *calloc_(MemoryRegion_t *region_, size_t size_) {
     }
   }
 
-  /* Exit privileged mode and enable interrupts before returning. */
+
 
   EXIT_PRIVILEGED();
 
   ENABLE_INTERRUPTS();
 
   return ret;
-
-
-
 }
 
 
