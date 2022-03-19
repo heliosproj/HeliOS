@@ -816,7 +816,7 @@ void memdump_(void) {
 
   Word_t k = zero;
 
-  for (Word_t i = zero; i < (ALL_MEMORY_REGIONS_SIZE_IN_BYTES / MEMDUMP_ROW_WIDTH) + 1; i++) {
+  for (Word_t i = zero; i < (ALL_MEMORY_REGIONS_SIZE_IN_BYTES / MEMDUMP_ROW_WIDTH); i++) {
 
 
     printf("%p:", (heap.mem + k));
