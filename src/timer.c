@@ -397,7 +397,7 @@ void xTimerStop(Timer_t *timer_) {
 
 /* TimerListFindTimer() is used to search the timer list for a
 timer and returns RETURN_SUCCESS if the timer is found. It also
-always checks the health of the heap by calling HeapCheck(). */
+always checks the health of the heap by calling MemoryRegionCheck(). */
 Base_t TimerListFindTimer(const Timer_t *timer_) {
 
 
@@ -420,13 +420,13 @@ Base_t TimerListFindTimer(const Timer_t *timer_) {
   if ((ISNOTNULLPTR(timerList)) && (ISNOTNULLPTR(timer_))) {
 
 
-    /* Assert if the HeapCheck() fails on the health check or is unable
+    /* Assert if the MemoryRegionCheck() fails on the health check or is unable
     to find the entry for the heap pointer. */
-    SYSASSERT(RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, timer_));
+    SYSASSERT(RETURN_SUCCESS == MemoryRegionCheck(HEAP_CHECK_HEALTH_AND_POINTER, timer_));
 
 
-    /* Check if HeapCheck() was successful. */
-    if (RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, timer_)) {
+    /* Check if MemoryRegionCheck() was successful. */
+    if (RETURN_SUCCESS == MemoryRegionCheck(HEAP_CHECK_HEALTH_AND_POINTER, timer_)) {
 
       timerCursor = timerList->head;
 

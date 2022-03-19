@@ -562,13 +562,13 @@ void *xMemAlloc(size_t size_);
  *
  * @sa xMemAlloc()
  *
- * @param ptr_ The pointer to the allocated heap memory to be freed.
+ * @param addr_ The pointer to the allocated heap memory to be freed.
  *
  * @warning xMemFree() cannot be used to free memory allocated for kernel objects.
  * Memory allocated by xTaskCreate(), xTimerCreate() or xQueueCreate() must
  * be freed by their respective delete system calls (i.e., xTaskDelete()).
  */
-void xMemFree(void *ptr_);
+void xMemFree(void *addr_);
 
 /**
  * @brief System call to return the amount of allocated heap memory.
@@ -594,19 +594,19 @@ size_t xMemGetUsed(void);
  * is currently allocated to a specific pointer. If the pointer is null or invalid,
  * xMemGetSize() will return zero bytes.
  *
- * @param ptr_ The pointer to the allocated heap memory to obtain the size of the
+ * @param addr_ The pointer to the allocated heap memory to obtain the size of the
  * memory, in bytes, that is allocated.
  * @return size_t The amount of memory currently allocated to the specific pointer in bytes. If
  * the pointer is invalid or null, xMemGetSize() will return zero.
  *
- * @note If the pointer ptr_ points to a structure that, for example, is 48 bytes in size
+ * @note If the pointer addr_ points to a structure that, for example, is 48 bytes in size
  * base on sizeof(), xMemGetSize() will return the number of bytes allocated by the block(s)
  * that contain the structure. Assuming the default block size of 32, a 48 byte structure would require
  * TWO blocks so xMemGetSize() would return 64 - not 48. xMemGetSize() also checks the health of the
  * heap and will return zero if it detects a consistency issue with the heap. Thus, xMemGetSize()
  * can be used to validate pointers before the objects they reference are accessed.
  */
-size_t xMemGetSize(void *ptr_);
+size_t xMemGetSize(void *addr_);
 
 /**
  * @brief System call to create a new message queue.

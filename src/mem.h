@@ -39,11 +39,11 @@ extern "C" {
 #endif
 
 void *xMemAlloc(size_t size_);
-void xMemFree(void *ptr_);
+void xMemFree(void *addr_);
 size_t xMemGetUsed(void);
-size_t xMemGetSize(void *ptr_);
-Base_t HeapCheck(const Base_t option_, const void *ptr_);
-Base_t AddrCheck(const void *ptr_);
+size_t xMemGetSize(void *addr_);
+Base_t MemoryRegionCheck(const Base_t option_, const void *addr_);
+Base_t MemoryRegionCheckAddr(const void *addr_, const MemoryRegion_t *region_);
 void memcpy_(void *dest_, const void *src_, size_t n_);
 void memset_(void *dest_, uint16_t val_, size_t n_);
 uint16_t memcmp_(const void *s1_, const void *s2_, size_t n_);

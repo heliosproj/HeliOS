@@ -442,12 +442,12 @@ health of the heap AND at the same time check a pointer.. */
 #define MEMORY_CHECK_REGION_HEAP 0x0u
 #endif
 
-#if !defined(MEMORY_CHECK_REGION_KMEM)
-#define MEMORY_CHECK_REGION_KMEM 0x1u
+#if !defined(MEMORY_CHECK_REGION_KERNEL)
+#define MEMORY_CHECK_REGION_KERNEL 0x1u
 #endif
 
-#if !defined(MEMORY_CHECK_POINTER)
-#define MEMORY_CHECK_POINTER 0x2u
+#if !defined(MEMORY_CHECK_REGION_ADDR)
+#define MEMORY_CHECK_REGION_ADDR 0x2u
 #endif
 
 
@@ -460,7 +460,7 @@ health of the heap AND at the same time check a pointer.. */
 /* Define a macro to convert a heap memory address to it's corresponding
 heap entry. */
 #if !defined(ADDR2ENTRY)
-#define ADDR2ENTRY(p, r) (MemoryEntry_t *)((Byte_t *)( p ) - (( r ).entrySizeInBlocks * CONFIG_MEMORY_REGION_BLOCK_SIZE))
+#define ADDR2ENTRY(a, r) (MemoryEntry_t *)((Byte_t *)( a ) - (( r ).entrySizeInBlocks * CONFIG_MEMORY_REGION_BLOCK_SIZE))
 #endif
 
 
@@ -468,7 +468,7 @@ heap entry. */
 /* Define a macro to convert a heap entry to it's corresponding heap memory
 address. */
 #if !defined(ENTRY2ADDR)
-#define ENTRY2ADDR(p, r) (void *)((Byte_t *)( p ) + (( r ).entrySizeInBlocks * CONFIG_MEMORY_REGION_BLOCK_SIZE))
+#define ENTRY2ADDR(a, r) (void *)((Byte_t *)( a ) + (( r ).entrySizeInBlocks * CONFIG_MEMORY_REGION_BLOCK_SIZE))
 #endif
 
 #endif
