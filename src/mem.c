@@ -155,11 +155,11 @@ void *xMemAlloc(size_t size_) {
 
 
       /* Assert if the heap is NOT healthy (i.e., contains consistency errors). */
-      SYSASSERT(RETURN_SUCCESS == MemoryRegionCheck(&heap, NULL, MEMORY_CHECK_REGION_OPTION_NONE));
+      SYSASSERT(RETURN_SUCCESS == MemoryRegionCheck(&heap, NULL, MEMORY_CHECK_REGION_OPTION_WO_ADDR));
 
 
       /* If the heap is healthy, then proceed to phase IV. */
-      if (RETURN_SUCCESS == MemoryRegionCheck(&heap, NULL, MEMORY_CHECK_REGION_OPTION_NONE)) {
+      if (RETURN_SUCCESS == MemoryRegionCheck(&heap, NULL, MEMORY_CHECK_REGION_OPTION_WO_ADDR)) {
 
 
         /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -358,14 +358,14 @@ void xMemFree(void *addr_) {
 
     /* Assert if the heap doesn't pass its health check OR if the pointer the end-user
     passed to us isn't a good one. */
-    SYSASSERT(RETURN_SUCCESS == MemoryRegionCheck(&heap, addr_, MEMORY_CHECK_REGION_OPTION_ADDR));
+    SYSASSERT(RETURN_SUCCESS == MemoryRegionCheck(&heap, addr_, MEMORY_CHECK_REGION_OPTION_W_ADDR));
 
 
 
     /* Check if the heap is healthy and the pointer the end-user passed to us
     is a good one. If everything checks out, proceed with freeing the memory. Otherwise,
     head toward the exit. */
-    if (RETURN_SUCCESS == MemoryRegionCheck(&heap, addr_, MEMORY_CHECK_REGION_OPTION_ADDR)) {
+    if (RETURN_SUCCESS == MemoryRegionCheck(&heap, addr_, MEMORY_CHECK_REGION_OPTION_W_ADDR)) {
 
 
 
@@ -440,12 +440,12 @@ size_t xMemGetUsed(void) {
   if (false == SYSFLAG_CORRUPT()) {
 
     /* Assert if the heap does not pass its health check. */
-    SYSASSERT(RETURN_SUCCESS == MemoryRegionCheck(&heap, NULL, MEMORY_CHECK_REGION_OPTION_NONE));
+    SYSASSERT(RETURN_SUCCESS == MemoryRegionCheck(&heap, NULL, MEMORY_CHECK_REGION_OPTION_WO_ADDR));
 
 
     /* If the heap is healthy, we can proceed with calculating heap
     memory in use. Otherwise, just head toward the exit. */
-    if (RETURN_SUCCESS == MemoryRegionCheck(&heap, NULL, MEMORY_CHECK_REGION_OPTION_NONE)) {
+    if (RETURN_SUCCESS == MemoryRegionCheck(&heap, NULL, MEMORY_CHECK_REGION_OPTION_WO_ADDR)) {
 
       entryCursor = heap.startEntry;
 
@@ -499,13 +499,13 @@ size_t xMemGetSize(void *addr_) {
 
     /* Assert if the heap failed its health check OR if the end-user scammed
     us on the pointer. */
-    SYSASSERT(RETURN_SUCCESS == MemoryRegionCheck(&heap, addr_, MEMORY_CHECK_REGION_OPTION_ADDR));
+    SYSASSERT(RETURN_SUCCESS == MemoryRegionCheck(&heap, addr_, MEMORY_CHECK_REGION_OPTION_W_ADDR));
 
 
 
     /* If the heap passes its health check and the pointer the end-user passed
     us is valid, then continue. */
-    if (RETURN_SUCCESS == MemoryRegionCheck(&heap, addr_, MEMORY_CHECK_REGION_OPTION_ADDR)) {
+    if (RETURN_SUCCESS == MemoryRegionCheck(&heap, addr_, MEMORY_CHECK_REGION_OPTION_W_ADDR)) {
 
 
 
@@ -559,33 +559,33 @@ Base_t MemoryRegionCheck(const MemoryRegion_t *region_, const void *addr_, Base_
   Base_t ret = RETURN_FAILURE;
 
 
-  SYSASSERT((ISNOTNULLPTR(region_) && ISNULLPTR(addr_) && (MEMORY_CHECK_REGION_OPTION_NONE == option_)) || (ISNOTNULLPTR(region_) && ISNOTNULLPTR(addr_) && (MEMORY_CHECK_REGION_OPTION_ADDR == option_)));
+  SYSASSERT((ISNOTNULLPTR(region_) && ISNULLPTR(addr_) && (MEMORY_CHECK_REGION_OPTION_WO_ADDR == option_)) || (ISNOTNULLPTR(region_) && ISNOTNULLPTR(addr_) && (MEMORY_CHECK_REGION_OPTION_W_ADDR == option_)));
 
   /*
     condition #1
 
-    (ISNOTNULLPTR(region_) && ISNULLPTR(addr_) && (MEMORY_CHECK_REGION_OPTION_NONE == option_))
+    (ISNOTNULLPTR(region_) && ISNULLPTR(addr_) && (MEMORY_CHECK_REGION_OPTION_WO_ADDR == option_))
 
     region_ = is not null
 
     addr_ = is null
 
-    option_ = MEMORY_CHECK_REGION_OPTION_NONE
+    option_ = MEMORY_CHECK_REGION_OPTION_WO_ADDR
 
 
     condition #2
 
-    (ISNOTNULLPTR(region_) && ISNOTNULLPTR(addr_) && (MEMORY_CHECK_REGION_OPTION_ADDR == option_))
+    (ISNOTNULLPTR(region_) && ISNOTNULLPTR(addr_) && (MEMORY_CHECK_REGION_OPTION_W_ADDR == option_))
 
     region_ is not null
 
     addr_ is not null
 
-    option_ MEMORY_CHECK_REGION_OPTION_ADDR
+    option_ MEMORY_CHECK_REGION_OPTION_W_ADDR
 
   */
 
-  if ((ISNOTNULLPTR(region_) && ISNULLPTR(addr_) && (MEMORY_CHECK_REGION_OPTION_NONE == option_)) || (ISNOTNULLPTR(region_) && ISNOTNULLPTR(addr_) && (MEMORY_CHECK_REGION_OPTION_ADDR == option_))) {
+  if ((ISNOTNULLPTR(region_) && ISNULLPTR(addr_) && (MEMORY_CHECK_REGION_OPTION_WO_ADDR == option_)) || (ISNOTNULLPTR(region_) && ISNOTNULLPTR(addr_) && (MEMORY_CHECK_REGION_OPTION_W_ADDR == option_))) {
 
 
     SYSASSERT(ISNOTNULLPTR(region_->startEntry));
@@ -596,7 +596,7 @@ Base_t MemoryRegionCheck(const MemoryRegion_t *region_, const void *addr_, Base_
       entryCursor = region_->startEntry;
 
 
-      if (MEMORY_CHECK_REGION_OPTION_ADDR == option_) {
+      if (MEMORY_CHECK_REGION_OPTION_W_ADDR == option_) {
 
         entryToFind = ADDR2ENTRY(addr_, region_);
 
@@ -620,7 +620,7 @@ Base_t MemoryRegionCheck(const MemoryRegion_t *region_, const void *addr_, Base_
 
 
 
-          if ((MEMORY_CHECK_REGION_OPTION_ADDR == option_) && (entryCursor == entryToFind) && (false == entryCursor->free)) {
+          if ((MEMORY_CHECK_REGION_OPTION_W_ADDR == option_) && (entryCursor == entryToFind) && (false == entryCursor->free)) {
 
             found = true;
           }
@@ -647,20 +647,20 @@ Base_t MemoryRegionCheck(const MemoryRegion_t *region_, const void *addr_, Base_
         /*
         condition #1
 
-        ((MEMORY_CHECK_REGION_OPTION_NONE == option_) && (false == SYSFLAG_CORRUPT()))
+        ((MEMORY_CHECK_REGION_OPTION_WO_ADDR == option_) && (false == SYSFLAG_CORRUPT()))
 
-        option_ = MEMORY_CHECK_REGION_OPTION_NONE
+        option_ = MEMORY_CHECK_REGION_OPTION_WO_ADDR
 
         SYSFLAG_CORRUPT() = false
 
         found = N/A
 
 
-        ((MEMORY_CHECK_REGION_OPTION_ADDR == option_) && (false == SYSFLAG_CORRUPT()) && (true == found))
+        ((MEMORY_CHECK_REGION_OPTION_W_ADDR == option_) && (false == SYSFLAG_CORRUPT()) && (true == found))
 
         condition #2
 
-        option_ = MEMORY_CHECK_REGION_OPTION_ADDR
+        option_ = MEMORY_CHECK_REGION_OPTION_W_ADDR
 
         SYSFLAG_CORRUPT() = false
 
@@ -670,11 +670,11 @@ Base_t MemoryRegionCheck(const MemoryRegion_t *region_, const void *addr_, Base_
         */
 
 
-        SYSASSERT(((MEMORY_CHECK_REGION_OPTION_NONE == option_) && (false == SYSFLAG_CORRUPT())) || ((MEMORY_CHECK_REGION_OPTION_ADDR == option_) && (false == SYSFLAG_CORRUPT()) && (true == found)  ));
+        SYSASSERT(((MEMORY_CHECK_REGION_OPTION_WO_ADDR == option_) && (false == SYSFLAG_CORRUPT())) || ((MEMORY_CHECK_REGION_OPTION_W_ADDR == option_) && (false == SYSFLAG_CORRUPT()) && (true == found)  ));
 
 
 
-        if (((MEMORY_CHECK_REGION_OPTION_NONE == option_) && (false == SYSFLAG_CORRUPT())) || ((MEMORY_CHECK_REGION_OPTION_ADDR == option_) && (false == SYSFLAG_CORRUPT()) && (true == found))) {
+        if (((MEMORY_CHECK_REGION_OPTION_WO_ADDR == option_) && (false == SYSFLAG_CORRUPT())) || ((MEMORY_CHECK_REGION_OPTION_W_ADDR == option_) && (false == SYSFLAG_CORRUPT()) && (true == found))) {
 
 
           ret = RETURN_SUCCESS;
