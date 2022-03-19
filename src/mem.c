@@ -43,10 +43,12 @@ static MemoryRegion_t kernel = {
 
 
 
-
+/* System call used by end-user tasks to allocate memory
+from the heap memory region. */
 void *xMemAlloc(const size_t size_) {
 
-
+  /* Just call calloc_() with the heap memory region
+  to free from the heap. */
   return calloc_(&heap, size_);
 }
 
@@ -55,6 +57,9 @@ void *xMemAlloc(const size_t size_) {
 
 void xMemFree(const void *addr_) {
 
+
+  /* Just call free_() with the heap memory region to free
+  from the heap. */
   free_(&heap, addr_);
 
   return;
@@ -62,7 +67,8 @@ void xMemFree(const void *addr_) {
 
 
 
-
+/* System call to find out how much memory is allocated
+in the heap memory region. */
 size_t xMemGetUsed(void) {
 
 
@@ -76,31 +82,35 @@ size_t xMemGetUsed(void) {
 
 
 
-
+  /* Assert if any memory region is corrupt. */
   SYSASSERT(false == SYSFLAG_CORRUPT());
 
 
 
-
+  /* Check to make sure no memory regions are
+  corrupt before we do anything. */
   if (false == SYSFLAG_CORRUPT()) {
 
 
-
+    /* Assert if the check of the heap memory region fails. */
     SYSASSERT(RETURN_SUCCESS == MemoryRegionCheck(&heap, NULL, MEMORY_REGION_CHECK_OPTION_WO_ADDR));
 
 
 
-
+    /* Check if the heap memory region is consistent. */
     if (RETURN_SUCCESS == MemoryRegionCheck(&heap, NULL, MEMORY_REGION_CHECK_OPTION_WO_ADDR)) {
 
       cursor = heap.start;
 
 
-
+      /* Traverse the memory region as long as there is
+      something to traverse. */
       while (ISNOTNULLPTR(cursor)) {
 
 
 
+        /* If the entry pointed to by the cursor is not
+        free, then add its blocks to the used block count. */
         if (cursor->free == false) {
 
 
@@ -109,12 +119,14 @@ size_t xMemGetUsed(void) {
         }
 
 
-
+        /* Move on to the next entry. */
         cursor = cursor->next;
       }
 
 
 
+      /* The end-user is expecting bytes, not blocks so multiply
+      the block size by the number of used blocks. */
       ret = used * CONFIG_ALL_MEMORY_REGIONS_BLOCK_SIZE;
     }
   }
@@ -125,8 +137,9 @@ size_t xMemGetUsed(void) {
 
 
 
-/* The xMemGetSize() system call returns the amount of memory in bytes that
-is currently allocated to a specific pointer. */
+/* A system call used by end-user tasks to return the amount
+of memory in bytes assigned to an address in the heap memory
+region. */
 size_t xMemGetSize(const void *addr_) {
 
 
@@ -137,17 +150,18 @@ size_t xMemGetSize(const void *addr_) {
 
 
 
-
+  /* Assert if any memory region is corrupt. */
   SYSASSERT(false == SYSFLAG_CORRUPT());
 
 
 
-
+  /* Check to make sure no memory regions are
+  corrupt before we do anything. */
   if (false == SYSFLAG_CORRUPT()) {
 
 
 
-
+    /* WE LEFT OFF HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */
     SYSASSERT(RETURN_SUCCESS == MemoryRegionCheck(&heap, addr_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
 
 

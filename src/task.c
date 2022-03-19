@@ -1006,7 +1006,7 @@ Time_t xTaskGetPeriod(Task_t *task_) {
 
 /* TaskListFindTask() is used to search the task list for a
 task and returns RETURN_SUCCESS if the task is found. It also
-always checks the health of the heap by calling MemoryRegionCheckHeap(). */
+always checks the health of the heap by calling MemoryRegionCheckKernel(). */
 Base_t TaskListFindTask(const Task_t *task_) {
 
 
@@ -1027,14 +1027,14 @@ Base_t TaskListFindTask(const Task_t *task_) {
   if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(task_))) {
 
 
-    /* Assert if MemoryRegionCheckHeap() fails on the health check of the heap OR if
+    /* Assert if MemoryRegionCheckKernel() fails on the health check of the heap OR if
     the task pointer's entry cannot be found in the heap. */
-    SYSASSERT(RETURN_SUCCESS == MemoryRegionCheckHeap(task_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
+    SYSASSERT(RETURN_SUCCESS == MemoryRegionCheckKernel(task_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
 
 
-    /* Check if MemoryRegionCheckHeap() passes on the health check and
+    /* Check if MemoryRegionCheckKernel() passes on the health check and
     the task pointer's entry can be found in the heap. */
-    if (RETURN_SUCCESS == MemoryRegionCheckHeap(task_, MEMORY_REGION_CHECK_OPTION_W_ADDR)) {
+    if (RETURN_SUCCESS == MemoryRegionCheckKernel(task_, MEMORY_REGION_CHECK_OPTION_W_ADDR)) {
 
 
       taskCursor = taskList->head;
