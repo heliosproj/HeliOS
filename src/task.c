@@ -1036,12 +1036,12 @@ Base_t TaskListFindTask(const Task_t *task_) {
 
     /* Assert if MemoryRegionCheckHeap() fails on the health check of the heap OR if
     the task pointer's entry cannot be found in the heap. */
-    SYSASSERT(RETURN_SUCCESS == MemoryRegionCheckHeap(task_, MEMORY_CHECK_REGION_OPTION_W_ADDR));
+    SYSASSERT(RETURN_SUCCESS == MemoryRegionCheckHeap(task_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
 
 
     /* Check if MemoryRegionCheckHeap() passes on the health check and
     the task pointer's entry can be found in the heap. */
-    if (RETURN_SUCCESS == MemoryRegionCheckHeap(task_, MEMORY_CHECK_REGION_OPTION_W_ADDR)) {
+    if (RETURN_SUCCESS == MemoryRegionCheckHeap(task_, MEMORY_REGION_CHECK_OPTION_W_ADDR)) {
 
 
       taskCursor = taskList->head;

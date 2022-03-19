@@ -48,91 +48,17 @@ void *xMemAlloc(size_t size_) {
 
 
   return calloc_(&heap, size_);
-
 }
 
 
 
-/* The xMemFree() system call will free heap memory pointed to by the pointer parameter. */
+
 void xMemFree(void *addr_) {
 
-
-  /* Disable interrupts because we can't be interrupted while modifying the heap. */
-  DISABLE_INTERRUPTS();
-
-
-  MemoryEntry_t *entryToFree = NULL;
-
-  /* Assert if the heap is corrupted. */
-  SYSASSERT(false == SYSFLAG_CORRUPT());
-
-
-  /* Check to make sure the heap is not corrupted before we do anything with
-  the heap. */
-  if (false == SYSFLAG_CORRUPT()) {
-
-    /* Assert if the heap doesn't pass its health check OR if the pointer the end-user
-    passed to us isn't a good one. */
-    SYSASSERT(RETURN_SUCCESS == MemoryRegionCheck(&heap, addr_, MEMORY_CHECK_REGION_OPTION_W_ADDR));
-
-
-
-    /* Check if the heap is healthy and the pointer the end-user passed to us
-    is a good one. If everything checks out, proceed with freeing the memory. Otherwise,
-    head toward the exit. */
-    if (RETURN_SUCCESS == MemoryRegionCheck(&heap, addr_, MEMORY_CHECK_REGION_OPTION_W_ADDR)) {
-
-
-
-
-      /* End-user gave us a pointer to the start of their allocated space in the heap, we
-      need to move back one block to get to the heap entry. */
-      entryToFree = ADDR2ENTRY(addr_, &heap);
-
-
-      /* Assert if the heap entry is protected and we are not in privileged mode. */
-      SYSASSERT((false == entryToFree->protected) || ((true == entryToFree->protected) && (true == SYSFLAG_PRIVILEGED())));
-
-      /* Check if we are in privileged mode if the heap entry is protected. If it is not protected, that
-      is fine too. */
-      if ((false == entryToFree->protected) || ((true == entryToFree->protected) && (true == SYSFLAG_PRIVILEGED()))) {
-
-
-
-
-        /* Mark the entry as free. */
-        entryToFree->free = true;
-
-        /* Mark the entry as UN-protected. */
-        entryToFree->protected = false;
-
-
-        /* Let's check to see if the entry we just freed can be consolidated with the next entry
-        to minimize fragmentation. To start we just need to see if there IS a next entry and
-        make sure it is free. */
-        if ((ISNOTNULLPTR(entryToFree->next)) && (true == entryToFree->next->free)) {
-
-          /* It looks like the entry we just freed can be consolidated with the next entry
-          so add the next entry's blocks to the entry we just freed. */
-          entryToFree->blocks += entryToFree->next->blocks;
-
-
-          /* Now we just need to drop the next entry from the heap memory list by setting
-          the entry we just freed's next to the next next entry if that makes sense. :) */
-          entryToFree->next = entryToFree->next->next;
-
-          /* Done! */
-        }
-      }
-    }
-  }
-
-  /* Exit protect and enable interrupts before returning. */
-  EXIT_PRIVILEGED();
-
-  ENABLE_INTERRUPTS();
+  free_(&heap, addr_);
 
   return;
+
 }
 
 /* The xMemGetUsed() system call returns the amount of memory in bytes
@@ -155,12 +81,12 @@ size_t xMemGetUsed(void) {
   if (false == SYSFLAG_CORRUPT()) {
 
     /* Assert if the heap does not pass its health check. */
-    SYSASSERT(RETURN_SUCCESS == MemoryRegionCheck(&heap, NULL, MEMORY_CHECK_REGION_OPTION_WO_ADDR));
+    SYSASSERT(RETURN_SUCCESS == MemoryRegionCheck(&heap, NULL, MEMORY_REGION_CHECK_OPTION_WO_ADDR));
 
 
     /* If the heap is healthy, we can proceed with calculating heap
     memory in use. Otherwise, just head toward the exit. */
-    if (RETURN_SUCCESS == MemoryRegionCheck(&heap, NULL, MEMORY_CHECK_REGION_OPTION_WO_ADDR)) {
+    if (RETURN_SUCCESS == MemoryRegionCheck(&heap, NULL, MEMORY_REGION_CHECK_OPTION_WO_ADDR)) {
 
       entryCursor = heap.start;
 
@@ -214,13 +140,13 @@ size_t xMemGetSize(void *addr_) {
 
     /* Assert if the heap failed its health check OR if the end-user scammed
     us on the pointer. */
-    SYSASSERT(RETURN_SUCCESS == MemoryRegionCheck(&heap, addr_, MEMORY_CHECK_REGION_OPTION_W_ADDR));
+    SYSASSERT(RETURN_SUCCESS == MemoryRegionCheck(&heap, addr_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
 
 
 
     /* If the heap passes its health check and the pointer the end-user passed
     us is valid, then continue. */
-    if (RETURN_SUCCESS == MemoryRegionCheck(&heap, addr_, MEMORY_CHECK_REGION_OPTION_W_ADDR)) {
+    if (RETURN_SUCCESS == MemoryRegionCheck(&heap, addr_, MEMORY_REGION_CHECK_OPTION_W_ADDR)) {
 
 
 
@@ -283,33 +209,33 @@ Base_t MemoryRegionCheck(const MemoryRegion_t *region_, const void *addr_, Base_
   Base_t ret = RETURN_FAILURE;
 
 
-  SYSASSERT((ISNOTNULLPTR(region_) && ISNULLPTR(addr_) && (MEMORY_CHECK_REGION_OPTION_WO_ADDR == option_)) || (ISNOTNULLPTR(region_) && ISNOTNULLPTR(addr_) && (MEMORY_CHECK_REGION_OPTION_W_ADDR == option_)));
+  SYSASSERT((ISNOTNULLPTR(region_) && ISNULLPTR(addr_) && (MEMORY_REGION_CHECK_OPTION_WO_ADDR == option_)) || (ISNOTNULLPTR(region_) && ISNOTNULLPTR(addr_) && (MEMORY_REGION_CHECK_OPTION_W_ADDR == option_)));
 
   /*
     condition #1
 
-    (ISNOTNULLPTR(region_) && ISNULLPTR(addr_) && (MEMORY_CHECK_REGION_OPTION_WO_ADDR == option_))
+    (ISNOTNULLPTR(region_) && ISNULLPTR(addr_) && (MEMORY_REGION_CHECK_OPTION_WO_ADDR == option_))
 
     region_ = is not null
 
     addr_ = is null
 
-    option_ = MEMORY_CHECK_REGION_OPTION_WO_ADDR
+    option_ = MEMORY_REGION_CHECK_OPTION_WO_ADDR
 
 
     condition #2
 
-    (ISNOTNULLPTR(region_) && ISNOTNULLPTR(addr_) && (MEMORY_CHECK_REGION_OPTION_W_ADDR == option_))
+    (ISNOTNULLPTR(region_) && ISNOTNULLPTR(addr_) && (MEMORY_REGION_CHECK_OPTION_W_ADDR == option_))
 
     region_ is not null
 
     addr_ is not null
 
-    option_ MEMORY_CHECK_REGION_OPTION_W_ADDR
+    option_ MEMORY_REGION_CHECK_OPTION_W_ADDR
 
   */
 
-  if ((ISNOTNULLPTR(region_) && ISNULLPTR(addr_) && (MEMORY_CHECK_REGION_OPTION_WO_ADDR == option_)) || (ISNOTNULLPTR(region_) && ISNOTNULLPTR(addr_) && (MEMORY_CHECK_REGION_OPTION_W_ADDR == option_))) {
+  if ((ISNOTNULLPTR(region_) && ISNULLPTR(addr_) && (MEMORY_REGION_CHECK_OPTION_WO_ADDR == option_)) || (ISNOTNULLPTR(region_) && ISNOTNULLPTR(addr_) && (MEMORY_REGION_CHECK_OPTION_W_ADDR == option_))) {
 
 
     SYSASSERT(ISNOTNULLPTR(region_->start));
@@ -320,7 +246,7 @@ Base_t MemoryRegionCheck(const MemoryRegion_t *region_, const void *addr_, Base_
       cursor = region_->start;
 
 
-      if (MEMORY_CHECK_REGION_OPTION_W_ADDR == option_) {
+      if (MEMORY_REGION_CHECK_OPTION_W_ADDR == option_) {
 
         find = ADDR2ENTRY(addr_, region_);
       }
@@ -342,7 +268,7 @@ Base_t MemoryRegionCheck(const MemoryRegion_t *region_, const void *addr_, Base_
 
 
 
-          if ((MEMORY_CHECK_REGION_OPTION_W_ADDR == option_) && (cursor == find) && (false == cursor->free)) {
+          if ((MEMORY_REGION_CHECK_OPTION_W_ADDR == option_) && (cursor == find) && (false == cursor->free)) {
 
             found = true;
           }
@@ -369,20 +295,20 @@ Base_t MemoryRegionCheck(const MemoryRegion_t *region_, const void *addr_, Base_
         /*
         condition #1
 
-        ((MEMORY_CHECK_REGION_OPTION_WO_ADDR == option_) && (false == SYSFLAG_CORRUPT()))
+        ((MEMORY_REGION_CHECK_OPTION_WO_ADDR == option_) && (false == SYSFLAG_CORRUPT()))
 
-        option_ = MEMORY_CHECK_REGION_OPTION_WO_ADDR
+        option_ = MEMORY_REGION_CHECK_OPTION_WO_ADDR
 
         SYSFLAG_CORRUPT() = false
 
         found = N/A
 
 
-        ((MEMORY_CHECK_REGION_OPTION_W_ADDR == option_) && (false == SYSFLAG_CORRUPT()) && (true == found))
+        ((MEMORY_REGION_CHECK_OPTION_W_ADDR == option_) && (false == SYSFLAG_CORRUPT()) && (true == found))
 
         condition #2
 
-        option_ = MEMORY_CHECK_REGION_OPTION_W_ADDR
+        option_ = MEMORY_REGION_CHECK_OPTION_W_ADDR
 
         SYSFLAG_CORRUPT() = false
 
@@ -392,11 +318,11 @@ Base_t MemoryRegionCheck(const MemoryRegion_t *region_, const void *addr_, Base_
         */
 
 
-        SYSASSERT(((MEMORY_CHECK_REGION_OPTION_WO_ADDR == option_) && (false == SYSFLAG_CORRUPT())) || ((MEMORY_CHECK_REGION_OPTION_W_ADDR == option_) && (false == SYSFLAG_CORRUPT()) && (true == found)));
+        SYSASSERT(((MEMORY_REGION_CHECK_OPTION_WO_ADDR == option_) && (false == SYSFLAG_CORRUPT())) || ((MEMORY_REGION_CHECK_OPTION_W_ADDR == option_) && (false == SYSFLAG_CORRUPT()) && (true == found)));
 
 
 
-        if (((MEMORY_CHECK_REGION_OPTION_WO_ADDR == option_) && (false == SYSFLAG_CORRUPT())) || ((MEMORY_CHECK_REGION_OPTION_W_ADDR == option_) && (false == SYSFLAG_CORRUPT()) && (true == found))) {
+        if (((MEMORY_REGION_CHECK_OPTION_WO_ADDR == option_) && (false == SYSFLAG_CORRUPT())) || ((MEMORY_REGION_CHECK_OPTION_W_ADDR == option_) && (false == SYSFLAG_CORRUPT()) && (true == found))) {
 
 
           ret = RETURN_SUCCESS;
@@ -542,11 +468,11 @@ void *calloc_(MemoryRegion_t *region_, size_t size_) {
 
 
 
-      SYSASSERT(RETURN_SUCCESS == MemoryRegionCheck(&heap, NULL, MEMORY_CHECK_REGION_OPTION_WO_ADDR));
+      SYSASSERT(RETURN_SUCCESS == MemoryRegionCheck(&heap, NULL, MEMORY_REGION_CHECK_OPTION_WO_ADDR));
 
 
 
-      if (RETURN_SUCCESS == MemoryRegionCheck(&heap, NULL, MEMORY_CHECK_REGION_OPTION_WO_ADDR)) {
+      if (RETURN_SUCCESS == MemoryRegionCheck(&heap, NULL, MEMORY_REGION_CHECK_OPTION_WO_ADDR)) {
 
 
 
@@ -719,6 +645,86 @@ void *calloc_(MemoryRegion_t *region_, size_t size_) {
 
 
 void free_(MemoryRegion_t *region_, void *addr_) {
+
+
+
+  DISABLE_INTERRUPTS();
+
+
+  MemoryEntry_t *free = NULL;
+
+
+
+
+  SYSASSERT(false == SYSFLAG_CORRUPT());
+
+
+
+  if (false == SYSFLAG_CORRUPT()) {
+
+
+
+
+    SYSASSERT(RETURN_SUCCESS == MemoryRegionCheck(region_, addr_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
+
+
+
+
+
+    if (RETURN_SUCCESS == MemoryRegionCheck(region_, addr_, MEMORY_REGION_CHECK_OPTION_W_ADDR)) {
+
+
+
+
+
+      free = ADDR2ENTRY(addr_, region_);
+
+
+
+      SYSASSERT((false == free->protected) || ((true == free->protected) && (true == SYSFLAG_PRIVILEGED())));
+
+
+
+      if ((false == free->protected) || ((true == free->protected) && (true == SYSFLAG_PRIVILEGED()))) {
+
+
+
+
+
+        free->free = true;
+
+
+
+        free->protected = false;
+
+
+
+
+        if ((ISNOTNULLPTR(free->next)) && (true == free->next->free)) {
+
+  
+  
+          free->blocks += free->next->blocks;
+
+
+
+
+          free->next = free->next->next;
+
+
+
+        }
+      }
+    }
+  }
+
+
+
+  EXIT_PRIVILEGED();
+
+  ENABLE_INTERRUPTS();
+
+  return;
 }
 
 
