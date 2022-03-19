@@ -1300,7 +1300,7 @@ void xSystemHalt(void);
 
 
 /* For debugging the heap only. */
-#if defined(MEMDUMP_)
+#if defined(MEMDUMP_HEAP) || defined(MEMDUMP_KERNEL)
 void memdump_(void); 
 #endif
 

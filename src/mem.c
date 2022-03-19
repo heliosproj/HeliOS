@@ -742,22 +742,30 @@ uint16_t memcmp_(const void *s1_, const void *s2_, size_t n_) {
 
 
 
-#if defined(MEMDUMP_)
+#if defined(MEMDUMP_HEAP) || defined(MEMDUMP_KERNEL)
 
 void memdump_(void) {
 
   Word_t k = zero;
 
+  MemoryRegion_t *region = NULL;
+
+  #if defined(MEMDUMP_HEAP)
+  region = &heap;
+  #elif defined(MEMDUMP_KERNEL)
+  region = &kernel;
+  #endif
+
   for (Word_t i = zero; i < (ALL_MEMORY_REGIONS_SIZE_IN_BYTES / MEMDUMP_ROW_WIDTH); i++) {
 
 
-    printf("%p:", (heap.mem + k));
+    printf("%p:", (region->mem + k));
 
     for (Word_t j = zero; j < MEMDUMP_ROW_WIDTH; j++) {
 
 
 
-      if (zero == *(heap.mem + k)) {
+      if (zero == *(region->mem + k)) {
 
 
         printf(" --");
@@ -766,7 +774,7 @@ void memdump_(void) {
       } else {
 
 
-        printf(" %02X", *(heap.mem + k));
+        printf(" %02X", *(region->mem + k));
       }
 
       k++;

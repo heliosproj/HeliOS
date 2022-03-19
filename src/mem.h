@@ -58,7 +58,7 @@ uint16_t memcmp_(const void *s1_, const void *s2_, size_t n_);
 
 
 /* For debugging only. */
-#if defined(MEMDUMP_)
+#if defined(MEMDUMP_HEAP) || defined(MEMDUMP_KERNEL)
 void memdump_(void);
 #endif
 
