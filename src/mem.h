@@ -38,22 +38,24 @@
 extern "C" {
 #endif
 
-void *xMemAlloc(size_t size_);
-void xMemFree(void *addr_);
+void *xMemAlloc(const size_t size_);
+void xMemFree(const void *addr_);
 size_t xMemGetUsed(void);
-size_t xMemGetSize(void *addr_);
-Base_t MemoryRegionCheckHeap(const void *addr_, Base_t option_);
-Base_t MemoryRegionCheckKernel(const void *addr_, Base_t option_);
-Base_t MemoryRegionCheck(const MemoryRegion_t *region_, const void *addr_, Base_t option_);
+size_t xMemGetSize(const void *addr_);
+Base_t MemoryRegionCheckHeap(const void *addr_, const Base_t option_);
+Base_t MemoryRegionCheckKernel(const void *addr_, const Base_t option_);
+Base_t MemoryRegionCheck(const MemoryRegion_t *region_, const void *addr_, const Base_t option_);
 Base_t MemoryRegionCheckAddr(const MemoryRegion_t *region_, const void *addr_);
-void *calloc_(MemoryRegion_t *region_, size_t size_);
-void free_(MemoryRegion_t *region_, void *addr_);
+void *KernelAllocateMemory(const size_t size_);
+void KernelFreeMemory(const void *addr_);
+void *calloc_(MemoryRegion_t *region_, const size_t size_);
+void free_(const MemoryRegion_t *region_, const void *addr_);
 void memcpy_(void *dest_, const void *src_, size_t n_);
 void memset_(void *dest_, uint16_t val_, size_t n_);
 uint16_t memcmp_(const void *s1_, const void *s2_, size_t n_);
 
 
-/* For debugging the heap only. */
+/* For debugging only. */
 #if defined(MEMDUMP_)
 void memdump_(void);
 #endif

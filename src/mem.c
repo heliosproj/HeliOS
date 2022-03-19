@@ -44,7 +44,7 @@ static MemoryRegion_t kernel = {
 
 
 
-void *xMemAlloc(size_t size_) {
+void *xMemAlloc(const size_t size_) {
 
 
   return calloc_(&heap, size_);
@@ -53,14 +53,12 @@ void *xMemAlloc(size_t size_) {
 
 
 
-void xMemFree(void *addr_) {
+void xMemFree(const void *addr_) {
 
   free_(&heap, addr_);
 
   return;
-
 }
-
 
 
 
@@ -129,7 +127,7 @@ size_t xMemGetUsed(void) {
 
 /* The xMemGetSize() system call returns the amount of memory in bytes that
 is currently allocated to a specific pointer. */
-size_t xMemGetSize(void *addr_) {
+size_t xMemGetSize(const void *addr_) {
 
 
   size_t ret = zero;
@@ -155,13 +153,11 @@ size_t xMemGetSize(void *addr_) {
 
 
 
-
     if (RETURN_SUCCESS == MemoryRegionCheck(&heap, addr_, MEMORY_REGION_CHECK_OPTION_W_ADDR)) {
 
 
 
- 
- 
+
       tosize = ADDR2ENTRY(addr_, &heap);
 
 
@@ -177,9 +173,7 @@ size_t xMemGetSize(void *addr_) {
 
 
 
-
         ret = tosize->blocks * CONFIG_ALL_MEMORY_REGIONS_BLOCK_SIZE;
-        
       }
     }
   }
@@ -190,7 +184,7 @@ size_t xMemGetSize(void *addr_) {
 }
 
 
-Base_t MemoryRegionCheckHeap(const void *addr_, Base_t option_) {
+Base_t MemoryRegionCheckHeap(const void *addr_, const Base_t option_) {
 
   return MemoryRegionCheck(&heap, addr_, option_);
 }
@@ -198,14 +192,14 @@ Base_t MemoryRegionCheckHeap(const void *addr_, Base_t option_) {
 
 
 
-Base_t MemoryRegionCheckKernel(const void *addr_, Base_t option_) {
+Base_t MemoryRegionCheckKernel(const void *addr_, const Base_t option_) {
 
   return MemoryRegionCheck(&kernel, addr_, option_);
 }
 
 
 
-Base_t MemoryRegionCheck(const MemoryRegion_t *region_, const void *addr_, Base_t option_) {
+Base_t MemoryRegionCheck(const MemoryRegion_t *region_, const void *addr_, const Base_t option_) {
 
 
   MemoryEntry_t *cursor = NULL;
@@ -390,7 +384,7 @@ Base_t MemoryRegionCheckAddr(const MemoryRegion_t *region_, const void *addr_) {
 
 
 
-void *calloc_(MemoryRegion_t *region_, size_t size_) {
+void *calloc_(MemoryRegion_t *region_, const size_t size_) {
 
 
 
@@ -655,7 +649,7 @@ void *calloc_(MemoryRegion_t *region_, size_t size_) {
 
 
 
-void free_(MemoryRegion_t *region_, void *addr_) {
+void free_(const MemoryRegion_t *region_, const void *addr_) {
 
 
 
@@ -681,9 +675,7 @@ void free_(MemoryRegion_t *region_, void *addr_) {
 
 
 
-
     if (RETURN_SUCCESS == MemoryRegionCheck(region_, addr_, MEMORY_REGION_CHECK_OPTION_W_ADDR)) {
-
 
 
 
@@ -701,7 +693,6 @@ void free_(MemoryRegion_t *region_, void *addr_) {
 
 
 
-
         free->free = true;
 
 
@@ -713,17 +704,14 @@ void free_(MemoryRegion_t *region_, void *addr_) {
 
         if ((ISNOTNULLPTR(free->next)) && (true == free->next->free)) {
 
-  
-  
+
+
           free->blocks += free->next->blocks;
 
 
 
 
           free->next = free->next->next;
-
-
-
         }
       }
     }
@@ -737,6 +725,28 @@ void free_(MemoryRegion_t *region_, void *addr_) {
 
   return;
 }
+
+
+
+
+void *KernelAllocateMemory(size_t size_) {
+
+
+  return calloc_(&kernel, size_);
+}
+
+
+
+
+void KernelFreeMemory(const void *addr_) {
+
+  free_(&kernel, addr_);
+
+
+  return;
+}
+
+
 
 
 void memcpy_(void *dest_, const void *src_, size_t n_) {
@@ -806,7 +816,7 @@ void memdump_(void) {
 
   Word_t k = zero;
 
-  for (Word_t i = zero; i < (ALL_MEMORY_REGIONS_SIZE_IN_BYTES / MEMDUMP_ROW_WIDTH); i++) {
+  for (Word_t i = zero; i < (ALL_MEMORY_REGIONS_SIZE_IN_BYTES / MEMDUMP_ROW_WIDTH) + 1; i++) {
 
 
     printf("%p:", (heap.mem + k));

@@ -552,7 +552,7 @@ void SystemAssert(const char *file_, int line_);
  * is done to maintain MISRA C:2012 compliance since standard library functions like malloc(),
  * calloc() and free() are not permitted.
  */
-void *xMemAlloc(size_t size_);
+void *xMemAlloc(const size_t size_);
 
 /**
  * @brief System call to free memory allocated from the heap.
@@ -568,7 +568,7 @@ void *xMemAlloc(size_t size_);
  * Memory allocated by xTaskCreate(), xTimerCreate() or xQueueCreate() must
  * be freed by their respective delete system calls (i.e., xTaskDelete()).
  */
-void xMemFree(void *addr_);
+void xMemFree(const void *addr_);
 
 /**
  * @brief System call to return the amount of allocated heap memory.
@@ -606,7 +606,7 @@ size_t xMemGetUsed(void);
  * heap and will return zero if it detects a consistency issue with the heap. Thus, xMemGetSize()
  * can be used to validate pointers before the objects they reference are accessed.
  */
-size_t xMemGetSize(void *addr_);
+size_t xMemGetSize(const void *addr_);
 
 /**
  * @brief System call to create a new message queue.
