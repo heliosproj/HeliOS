@@ -634,59 +634,57 @@ Base_t MemoryRegionCheck(const MemoryRegion_t *region_, const void *addr_, Base_
 
           break;
         }
+      }
+
+      SYSASSERT(CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS == blocks);
+
+
+      if (CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS == blocks) {
+
+
+        /*
+        condition #1
+
+        ((MEMORY_CHECK_REGION_OPTION_NONE == option_) && (false == SYSFLAG_CORRUPT()))
+
+        option_ = MEMORY_CHECK_REGION_OPTION_NONE
+
+        SYSFLAG_CORRUPT() = false
+
+        found = N/A
+
+
+        ((MEMORY_CHECK_REGION_OPTION_ADDR == option_) && (false == SYSFLAG_CORRUPT()) && (true == found))
+
+        condition #2
+
+        option_ = MEMORY_CHECK_REGION_OPTION_ADDR
+
+        SYSFLAG_CORRUPT() = false
+
+        found = true
+
+
+        */
+
+
+        SYSASSERT(((MEMORY_CHECK_REGION_OPTION_NONE == option_) && (false == SYSFLAG_CORRUPT())) || ((MEMORY_CHECK_REGION_OPTION_ADDR == option_) && (false == SYSFLAG_CORRUPT()) && (true == found)));
 
 
 
-        SYSASSERT(CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS == blocks);
+
+        if (((MEMORY_CHECK_REGION_OPTION_NONE == option_) && (false == SYSFLAG_CORRUPT())) || ((MEMORY_CHECK_REGION_OPTION_ADDR == option_) && (false == SYSFLAG_CORRUPT()) && (true == found))) {
 
 
-        if (CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS == blocks) {
-
-
-          /*
-          condition #1
-
-          ((MEMORY_CHECK_REGION_OPTION_NONE == option_) && (false == SYSFLAG_CORRUPT()))
-
-          option_ = MEMORY_CHECK_REGION_OPTION_NONE
-
-          SYSFLAG_CORRUPT() = false
-
-          found = N/A
-
-
-          ((MEMORY_CHECK_REGION_OPTION_ADDR == option_) && (false == SYSFLAG_CORRUPT()) && (true == found))
-
-          condition #2
-
-          option_ = MEMORY_CHECK_REGION_OPTION_ADDR
-
-          SYSFLAG_CORRUPT() = false
-
-          found = true
-
-
-          */
-
-
-          SYSASSERT(((MEMORY_CHECK_REGION_OPTION_NONE == option_) && (false == SYSFLAG_CORRUPT())) || ((MEMORY_CHECK_REGION_OPTION_ADDR == option_) && (false == SYSFLAG_CORRUPT()) && (true == found)));
-
-
-
-
-          if (((MEMORY_CHECK_REGION_OPTION_NONE == option_) && (false == SYSFLAG_CORRUPT())) || ((MEMORY_CHECK_REGION_OPTION_ADDR == option_) && (false == SYSFLAG_CORRUPT()) && (true == found))) {
-
-
-            ret = RETURN_SUCCESS;
-          }
-
-
-
-        } else {
-
-
-          SYSFLAG_CORRUPT() = true;
+          ret = RETURN_SUCCESS;
         }
+
+
+
+      } else {
+
+
+        SYSFLAG_CORRUPT() = true;
       }
     }
   }
