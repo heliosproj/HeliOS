@@ -70,21 +70,28 @@ typedef uint16_t Word_t; /* Here a "word" does NOT refer to the machine word. It
 typedef TIME_T_TYPE Time_t; /* TIME_T_TYPE is defined in the platform definitions in defines.h. */
 
 
-typedef struct HeapEntry_s {
+typedef struct MemoryEntry_s {
   Byte_t free : 1;
   Byte_t protected : 1;
   Byte_t reserved : 6;
   Word_t blocks;
-  struct HeapEntry_s *next;
-} HeapEntry_t;
+  struct MemoryEntry_s *next;
+} MemoryEntry_t;
 
 
 
-typedef struct Heap_s {
-  Byte_t heap[HEAP_RAW_SIZE];
-  HeapEntry_t *startEntry;
+typedef struct HeapMemoryRegion_s {
+  Byte_t mem[HEAP_RAW_SIZE];
+  MemoryEntry_t *startEntry;
   Word_t entrySizeInBlocks;
-} Heap_t;
+} HeapMemoryRegion_t;
+
+
+typedef struct KernelMemoryRegion_s {
+  Byte_t mem[KMEM_RAW_SIZE];
+  MemoryEntry_t *startEntry;
+  Word_t entrySizeInBlocks;
+} KernelMemoryRegion_t;
 
 
 typedef struct TaskNotification_s {
