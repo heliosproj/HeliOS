@@ -422,11 +422,11 @@ Base_t TimerListFindTimer(const Timer_t *timer_) {
 
     /* Assert if the MemoryRegionCheck() fails on the health check or is unable
     to find the entry for the heap pointer. */
-    SYSASSERT(RETURN_SUCCESS == MemoryRegionCheck(HEAP_CHECK_HEALTH_AND_POINTER, timer_));
+    SYSASSERT(RETURN_SUCCESS == MemoryRegionCheckHeap(timer_, MEMORY_CHECK_REGION_OPTION_ADDR));
 
 
     /* Check if MemoryRegionCheck() was successful. */
-    if (RETURN_SUCCESS == MemoryRegionCheck(HEAP_CHECK_HEALTH_AND_POINTER, timer_)) {
+    if (RETURN_SUCCESS == MemoryRegionCheckHeap(timer_, MEMORY_CHECK_REGION_OPTION_ADDR)) {
 
       timerCursor = timerList->head;
 

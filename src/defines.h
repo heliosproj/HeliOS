@@ -29,7 +29,7 @@
 #include <limits.h>
 #include <stdint.h>
 
-
+#define OTHER_ARCH_DEBUG
 
 /* Check that the system HeliOS is being targeted for has an
 8-bit wide byte. */
@@ -438,7 +438,7 @@ the CONFIG_ENABLE_SYSTEM_ASSERT setting. */
 /* Define a macro to convert a heap memory address to it's corresponding
 heap entry. */
 #if !defined(ADDR2ENTRY)
-#define ADDR2ENTRY(a, r) (MemoryEntry_t *)((Byte_t *)( a ) - (( r ).entrySizeInBlocks * CONFIG_MEMORY_REGION_BLOCK_SIZE))
+#define ADDR2ENTRY(a, r) (MemoryEntry_t *)((Byte_t *)( a ) - (( r )->entrySizeInBlocks * CONFIG_MEMORY_REGION_BLOCK_SIZE))
 #endif
 
 
@@ -446,7 +446,7 @@ heap entry. */
 /* Define a macro to convert a heap entry to it's corresponding heap memory
 address. */
 #if !defined(ENTRY2ADDR)
-#define ENTRY2ADDR(a, r) (void *)((Byte_t *)( a ) + (( r ).entrySizeInBlocks * CONFIG_MEMORY_REGION_BLOCK_SIZE))
+#define ENTRY2ADDR(a, r) (void *)((Byte_t *)( a ) + (( r )->entrySizeInBlocks * CONFIG_MEMORY_REGION_BLOCK_SIZE))
 #endif
 
 #endif

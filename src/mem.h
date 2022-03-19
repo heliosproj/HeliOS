@@ -42,6 +42,7 @@ void *xMemAlloc(size_t size_);
 void xMemFree(void *addr_);
 size_t xMemGetUsed(void);
 size_t xMemGetSize(void *addr_);
+Base_t MemoryRegionCheckHeap(const void *addr_, Base_t option_);
 Base_t MemoryRegionCheck(const MemoryRegion_t *region_, const void *addr_, Base_t option_);
 Base_t MemoryRegionCheckAddr(const MemoryRegion_t *region_, const void *addr_);
 void memcpy_(void *dest_, const void *src_, size_t n_);

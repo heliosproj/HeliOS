@@ -155,11 +155,11 @@ void *xMemAlloc(size_t size_) {
 
 
       /* Assert if the heap is NOT healthy (i.e., contains consistency errors). */
-      SYSASSERT(RETURN_SUCCESS == MemoryRegionCheck(HEAP_CHECK_HEALTH_ONLY, NULL));
+      SYSASSERT(RETURN_SUCCESS == MemoryRegionCheck(&heap, NULL, MEMORY_CHECK_REGION_OPTION_NONE));
 
 
       /* If the heap is healthy, then proceed to phase IV. */
-      if (RETURN_SUCCESS == MemoryRegionCheck(HEAP_CHECK_HEALTH_ONLY, NULL)) {
+      if (RETURN_SUCCESS == MemoryRegionCheck(&heap, NULL, MEMORY_CHECK_REGION_OPTION_NONE)) {
 
 
         /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -286,12 +286,12 @@ void *xMemAlloc(size_t size_) {
 
 
             /* Clear the memory. */
-            memset_(ENTRY2ADDR(entryCandidate, heap), zero, (requestedBlocks - heap.entrySizeInBlocks) * CONFIG_MEMORY_REGION_BLOCK_SIZE);
+            memset_(ENTRY2ADDR(entryCandidate, &heap), zero, (requestedBlocks - heap.entrySizeInBlocks) * CONFIG_MEMORY_REGION_BLOCK_SIZE);
 
 
 
             /* Set the return value to the address of the newly allocated heap memory. */
-            ret = ENTRY2ADDR(entryCandidate, heap);
+            ret = ENTRY2ADDR(entryCandidate, &heap);
 
 
 
@@ -316,11 +316,11 @@ void *xMemAlloc(size_t size_) {
 
 
             /* Clear the memory. */
-            memset_(ENTRY2ADDR(entryCandidate, heap), zero, (requestedBlocks - heap.entrySizeInBlocks) * CONFIG_MEMORY_REGION_BLOCK_SIZE);
+            memset_(ENTRY2ADDR(entryCandidate, &heap), zero, (requestedBlocks - heap.entrySizeInBlocks) * CONFIG_MEMORY_REGION_BLOCK_SIZE);
 
 
             /* Set the return value to the address of the newly allocated heap memory. */
-            ret = ENTRY2ADDR(entryCandidate, heap);
+            ret = ENTRY2ADDR(entryCandidate, &heap);
           }
         }
       }
@@ -358,21 +358,21 @@ void xMemFree(void *addr_) {
 
     /* Assert if the heap doesn't pass its health check OR if the pointer the end-user
     passed to us isn't a good one. */
-    SYSASSERT(RETURN_SUCCESS == MemoryRegionCheck(HEAP_CHECK_HEALTH_AND_POINTER, addr_));
+    SYSASSERT(RETURN_SUCCESS == MemoryRegionCheck(&heap, addr_, MEMORY_CHECK_REGION_OPTION_ADDR));
 
 
 
     /* Check if the heap is healthy and the pointer the end-user passed to us
     is a good one. If everything checks out, proceed with freeing the memory. Otherwise,
     head toward the exit. */
-    if (RETURN_SUCCESS == MemoryRegionCheck(HEAP_CHECK_HEALTH_AND_POINTER, addr_)) {
+    if (RETURN_SUCCESS == MemoryRegionCheck(&heap, addr_, MEMORY_CHECK_REGION_OPTION_ADDR)) {
 
 
 
 
       /* End-user gave us a pointer to the start of their allocated space in the heap, we
       need to move back one block to get to the heap entry. */
-      entryToFree = ADDR2ENTRY(addr_, heap);
+      entryToFree = ADDR2ENTRY(addr_, &heap);
 
 
       /* Assert if the heap entry is protected and we are not in privileged mode. */
@@ -440,12 +440,12 @@ size_t xMemGetUsed(void) {
   if (false == SYSFLAG_CORRUPT()) {
 
     /* Assert if the heap does not pass its health check. */
-    SYSASSERT(RETURN_SUCCESS == MemoryRegionCheck(HEAP_CHECK_HEALTH_ONLY, NULL));
+    SYSASSERT(RETURN_SUCCESS == MemoryRegionCheck(&heap, NULL, MEMORY_CHECK_REGION_OPTION_NONE));
 
 
     /* If the heap is healthy, we can proceed with calculating heap
     memory in use. Otherwise, just head toward the exit. */
-    if (RETURN_SUCCESS == MemoryRegionCheck(HEAP_CHECK_HEALTH_ONLY, NULL)) {
+    if (RETURN_SUCCESS == MemoryRegionCheck(&heap, NULL, MEMORY_CHECK_REGION_OPTION_NONE)) {
 
       entryCursor = heap.startEntry;
 
@@ -499,19 +499,19 @@ size_t xMemGetSize(void *addr_) {
 
     /* Assert if the heap failed its health check OR if the end-user scammed
     us on the pointer. */
-    SYSASSERT(RETURN_SUCCESS == MemoryRegionCheck(HEAP_CHECK_HEALTH_AND_POINTER, addr_));
+    SYSASSERT(RETURN_SUCCESS == MemoryRegionCheck(&heap, addr_, MEMORY_CHECK_REGION_OPTION_ADDR));
 
 
 
     /* If the heap passes its health check and the pointer the end-user passed
     us is valid, then continue. */
-    if (RETURN_SUCCESS == MemoryRegionCheck(HEAP_CHECK_HEALTH_AND_POINTER, addr_)) {
+    if (RETURN_SUCCESS == MemoryRegionCheck(&heap, addr_, MEMORY_CHECK_REGION_OPTION_ADDR)) {
 
 
 
       /* The end-user's pointer points to the start of their allocated space, we
       need to move back one block to read the entry. */
-      entryToSize = ADDR2ENTRY(addr_, heap);
+      entryToSize = ADDR2ENTRY(addr_, &heap);
 
 
       /* The entry should not be free, also check if it is protected because if it is
@@ -538,11 +538,12 @@ size_t xMemGetSize(void *addr_) {
 }
 
 
+Base_t MemoryRegionCheckHeap(const void *addr_, Base_t option_) {
+
+  return MemoryRegionCheck(&heap, addr_, option_);
+}
 
 
-/* The CheckHeapHealth() function checks the health of the heap and optionally
-will check that a pointer is valid at the same time. CheckHeapHealth() does
-not respect the entry protected flag because it isn't changing anything. */
 Base_t MemoryRegionCheck(const MemoryRegion_t *region_, const void *addr_, Base_t option_) {
 
 
@@ -584,21 +585,20 @@ Base_t MemoryRegionCheck(const MemoryRegion_t *region_, const void *addr_, Base_
 
   */
 
-  if((ISNOTNULLPTR(region_) && ISNULLPTR(addr_) && (MEMORY_CHECK_REGION_OPTION_NONE == option_)) || (ISNOTNULLPTR(region_) && ISNOTNULLPTR(addr_) && (MEMORY_CHECK_REGION_OPTION_ADDR == option_))) {
+  if ((ISNOTNULLPTR(region_) && ISNULLPTR(addr_) && (MEMORY_CHECK_REGION_OPTION_NONE == option_)) || (ISNOTNULLPTR(region_) && ISNOTNULLPTR(addr_) && (MEMORY_CHECK_REGION_OPTION_ADDR == option_))) {
 
 
     SYSASSERT(ISNOTNULLPTR(region_->startEntry));
 
 
-    if(ISNOTNULLPTR(region_->startEntry)) {
+    if (ISNOTNULLPTR(region_->startEntry)) {
 
       entryCursor = region_->startEntry;
 
 
-      if(MEMORY_CHECK_REGION_OPTION_ADDR == option_) {
+      if (MEMORY_CHECK_REGION_OPTION_ADDR == option_) {
 
         entryToFind = ADDR2ENTRY(addr_, region_);
-
       }
 
 
@@ -637,182 +637,102 @@ Base_t MemoryRegionCheck(const MemoryRegion_t *region_, const void *addr_, Base_
 
 
 
-      SYSASSERT(CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS == blocks);
+        SYSASSERT(CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS == blocks);
 
 
-      if (CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS == blocks) {
-
-        /* I LEFT OFF HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */
-
-        SYSASSERT();
+        if (CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS == blocks) {
 
 
+          /*
+          condition #1
+
+          ((MEMORY_CHECK_REGION_OPTION_NONE == option_) && (false == SYSFLAG_CORRUPT()))
+
+          option_ = MEMORY_CHECK_REGION_OPTION_NONE
+
+          SYSFLAG_CORRUPT() = false
+
+          found = N/A
 
 
-        if () {
+          ((MEMORY_CHECK_REGION_OPTION_ADDR == option_) && (false == SYSFLAG_CORRUPT()) && (true == found))
+
+          condition #2
+
+          option_ = MEMORY_CHECK_REGION_OPTION_ADDR
+
+          SYSFLAG_CORRUPT() = false
+
+          found = true
 
 
-          ret = RETURN_SUCCESS;
-        }
+          */
 
 
-
-      } else {
-
-
-        SYSFLAG_CORRUPT() = true;
-      }
-
-
-    }
-
-  }
-
-
-  /* Assert if there is an invalid combination of arguments
-  passed to function. */
-  SYSASSERT(((HEAP_CHECK_HEALTH_ONLY == option_) && (ISNULLPTR(addr_))) || ((HEAP_CHECK_HEALTH_AND_POINTER == option_) && (ISNOTNULLPTR(addr_))));
-
-
-  /* Check if there is an invalid combination of arguments passed
-  to function before proceeding with checks. */
-  if (((HEAP_CHECK_HEALTH_ONLY == option_) && (ISNULLPTR(addr_))) || ((HEAP_CHECK_HEALTH_AND_POINTER == option_) && (ISNOTNULLPTR(addr_)))) {
-
-
-    /* Assert if the heap has not been initialized. */
-    SYSASSERT(ISNOTNULLPTR(heap.startEntry));
-
-
-    /* Check if the heap has been initialized, if it has then
-    proceed with the checks. */
-    if (ISNOTNULLPTR(heap.startEntry)) {
-
-      entryCursor = heap.startEntry;
+          SYSASSERT(((MEMORY_CHECK_REGION_OPTION_NONE == option_) && (false == SYSFLAG_CORRUPT())) || ((MEMORY_CHECK_REGION_OPTION_ADDR == option_) && (false == SYSFLAG_CORRUPT()) && (true == found)));
 
 
 
 
-      /* If we need to also check that the end-user's pointer is valid at the same time,
-      then we must calculate where its heap entry would be. */
-      if (HEAP_CHECK_HEALTH_AND_POINTER == option_) {
-
-        entryToFind = ADDR2ENTRY(addr_, heap);
-      }
+          if (((MEMORY_CHECK_REGION_OPTION_NONE == option_) && (false == SYSFLAG_CORRUPT())) || ((MEMORY_CHECK_REGION_OPTION_ADDR == option_) && (false == SYSFLAG_CORRUPT()) && (true == found))) {
 
 
-      /* Traverse the heap and sum the blocks from
-      each entry. */
-      while (ISNOTNULLPTR(entryCursor)) {
-
-
-        /* Use MemoryRegionCheckAddr() to make sure the entry cursor address falls
-        within the heap space. */
-        SYSASSERT(RETURN_SUCCESS == MemoryRegionCheckAddr(&heap, entryCursor));
-
-
-
-        /* Use MemoryRegionCheckAddr() to make sure the entry cursor address falls
-        within the heap space. */
-        if (RETURN_SUCCESS == MemoryRegionCheckAddr(&heap, entryCursor)) {
-
-          blocks += entryCursor->blocks;
-
-
-
-          /* At the same time if we are checking for a pointer, let's find it. If
-          found then set the pointer found variable to true. */
-          if ((HEAP_CHECK_HEALTH_AND_POINTER == option_) && (entryCursor == entryToFind) && (false == entryCursor->free)) {
-
-            found = true;
+            ret = RETURN_SUCCESS;
           }
 
-          /* Move on to the next heap entry. */
-          entryCursor = entryCursor->next;
+
 
         } else {
 
-          /* If the entry cursor address does not fall within the bounds of the
-          heap space, then set the heap corruption system flag because something is
-          wrong. Yes, MemoryRegionCheckAddr() would have set the flag too. */
+
           SYSFLAG_CORRUPT() = true;
-
-          /* The address of the entry cursor was invalid so stop traversing
-          the heap because something is wrong. */
-          break;
         }
-      }
-
-
-      /* Assert if the blocks we summed while traversing the heap
-      do not match what is expected. */
-      SYSASSERT(CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS == blocks);
-
-      /* Check if the blocks we summed while traversing the heap
-      matches what we expected, if so proceed. */
-      if (CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS == blocks) {
-
-
-        /* Assert if the pointer was not found if we
-        were looking for it. */
-        SYSASSERT(((HEAP_CHECK_HEALTH_ONLY == option_) && (false == SYSFLAG_CORRUPT())) || ((HEAP_CHECK_HEALTH_AND_POINTER == option_) && (true == found) && (false == SYSFLAG_CORRUPT())));
-
-
-
-        /* If we only have to check the heap health then set the
-        return value to success OR if we are also checking that
-        the pointer was valid then set the return value to success
-        if the pointer's heap entry was found. */
-        if (((HEAP_CHECK_HEALTH_ONLY == option_) && (false == SYSFLAG_CORRUPT())) || ((HEAP_CHECK_HEALTH_AND_POINTER == option_) && (true == found) && (false == SYSFLAG_CORRUPT()))) {
-
-
-          ret = RETURN_SUCCESS;
-        }
-
-
-        /* Else is never good. */
-      } else {
-
-        /* The number of blocks counted does not match the expected number of blocks
-        in the heap so something is wrong. So, set the heap corruption system flag. */
-        SYSFLAG_CORRUPT() = true;
       }
     }
   }
-
 
   return ret;
 }
 
 
-/* Function checks to make sure that an address is within the heap space. This function
-is only really used by MemoryRegionCheck(). It's not meant to be used elsewhere. */
+
 Base_t MemoryRegionCheckAddr(const MemoryRegion_t *region_, const void *addr_) {
+
+
+
 
   Base_t ret = RETURN_FAILURE;
 
 
-  /* Assert if the address falls outside of the bounds of the heap space. */
+
+
   SYSASSERT((addr_ >= (void *)(region_->mem)) && (addr_ < (void *)(region_->mem + ALL_MEMORY_REGIONS_SIZE_IN_BYTES)));
 
 
-  /* Check if the address falls inside the bounds of the heap space. */
+
+
   if ((addr_ >= (void *)(region_->mem)) && (addr_ < (void *)(region_->mem + ALL_MEMORY_REGIONS_SIZE_IN_BYTES))) {
 
 
     ret = RETURN_SUCCESS;
 
 
-    /* Else is never good. */
+
+
   } else {
 
 
-    /* If an address falls outside of the bounds of the heap space, set the heap corruption
-    system flag to true because something is very, very wrong. */
+
+
     SYSFLAG_CORRUPT() = true;
   }
 
+
   return ret;
 }
+
+
+
 
 /* A memory utility to copy memory between the source and destination pointers. */
 void memcpy_(void *dest_, const void *src_, size_t n_) {
@@ -829,6 +749,9 @@ void memcpy_(void *dest_, const void *src_, size_t n_) {
   return;
 }
 
+
+
+
 /* A memory utility to set the memory pointed to by the destination pointer
 to the specified value. */
 void memset_(void *dest_, uint16_t val_, size_t n_) {
@@ -842,6 +765,9 @@ void memset_(void *dest_, uint16_t val_, size_t n_) {
 
   return;
 }
+
+
+
 
 /* A memory utility to compare the contents of memory at two locations pointed to by
 the pointers s1 and s2. */
