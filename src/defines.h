@@ -419,35 +419,13 @@ the CONFIG_ENABLE_SYSTEM_ASSERT setting. */
 #endif
 
 
-
-
-/* Define a macro for the CheckHeapHealth() option to only check
- health of the heap and NOT at the same time check a pointer. */
-#if !defined(HEAP_CHECK_HEALTH_ONLY)
-#define HEAP_CHECK_HEALTH_ONLY 0x1u
+#if !defined(MEMORY_CHECK_REGION_OPTION_NONE)
+#define MEMORY_CHECK_REGION_OPTION_NONE 0x1u
 #endif
 
 
-
-
-/* Define a macro for the CheckHeapHealth() option to check the
-health of the heap AND at the same time check a pointer.. */
-#if !defined(HEAP_CHECK_HEALTH_AND_POINTER)
-#define HEAP_CHECK_HEALTH_AND_POINTER 0x2u
-#endif
-
-
-
-#if !defined(MEMORY_CHECK_REGION_HEAP)
-#define MEMORY_CHECK_REGION_HEAP 0x0u
-#endif
-
-#if !defined(MEMORY_CHECK_REGION_KERNEL)
-#define MEMORY_CHECK_REGION_KERNEL 0x1u
-#endif
-
-#if !defined(MEMORY_CHECK_REGION_ADDR)
-#define MEMORY_CHECK_REGION_ADDR 0x2u
+#if !defined(MEMORY_CHECK_REGION_OPTION_ADDR)
+#define MEMORY_CHECK_REGION_OPTION_ADDR 0x2u
 #endif
 
 

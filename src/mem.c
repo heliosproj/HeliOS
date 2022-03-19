@@ -543,19 +543,130 @@ size_t xMemGetSize(void *addr_) {
 /* The CheckHeapHealth() function checks the health of the heap and optionally
 will check that a pointer is valid at the same time. CheckHeapHealth() does
 not respect the entry protected flag because it isn't changing anything. */
-Base_t MemoryRegionCheck(const Base_t option_, const void *addr_) {
+Base_t MemoryRegionCheck(const MemoryRegion_t *region_, const void *addr_, Base_t option_) {
 
 
   MemoryEntry_t *entryCursor = NULL;
 
-  MemoryEntry_t *entryToCheck = NULL;
+  MemoryEntry_t *entryToFind = NULL;
 
-  Base_t ptrFound = false;
+  Base_t found = false;
 
   Word_t blocks = zero;
 
 
   Base_t ret = RETURN_FAILURE;
+
+
+  SYSASSERT((ISNOTNULLPTR(region_) && ISNULLPTR(addr_) && (MEMORY_CHECK_REGION_OPTION_NONE == option_)) || (ISNOTNULLPTR(region_) && ISNOTNULLPTR(addr_) && (MEMORY_CHECK_REGION_OPTION_ADDR == option_)));
+
+  /*
+    condition #1
+
+    (ISNOTNULLPTR(region_) && ISNULLPTR(addr_) && (MEMORY_CHECK_REGION_OPTION_NONE == option_))
+
+    region_ = is not null
+
+    addr_ = is null
+
+    option_ = MEMORY_CHECK_REGION_OPTION_NONE
+
+
+    condition #2
+
+    (ISNOTNULLPTR(region_) && ISNOTNULLPTR(addr_) && (MEMORY_CHECK_REGION_OPTION_ADDR == option_))
+
+    region_ is not null
+
+    addr_ is not null
+
+    option_ MEMORY_CHECK_REGION_OPTION_ADDR
+
+  */
+
+  if((ISNOTNULLPTR(region_) && ISNULLPTR(addr_) && (MEMORY_CHECK_REGION_OPTION_NONE == option_)) || (ISNOTNULLPTR(region_) && ISNOTNULLPTR(addr_) && (MEMORY_CHECK_REGION_OPTION_ADDR == option_))) {
+
+
+    SYSASSERT(ISNOTNULLPTR(region_->startEntry));
+
+
+    if(ISNOTNULLPTR(region_->startEntry)) {
+
+      entryCursor = region_->startEntry;
+
+
+      if(MEMORY_CHECK_REGION_OPTION_ADDR == option_) {
+
+        entryToFind = ADDR2ENTRY(addr_, region_);
+
+      }
+
+
+      while (ISNOTNULLPTR(entryCursor)) {
+
+
+
+        SYSASSERT(RETURN_SUCCESS == MemoryRegionCheckAddr(region_, entryCursor));
+
+
+
+
+        if (RETURN_SUCCESS == MemoryRegionCheckAddr(region_, entryCursor)) {
+
+          blocks += entryCursor->blocks;
+
+
+
+
+          if ((MEMORY_CHECK_REGION_OPTION_ADDR == option_) && (entryCursor == entryToFind) && (false == entryCursor->free)) {
+
+            found = true;
+          }
+
+
+          entryCursor = entryCursor->next;
+
+        } else {
+
+
+          SYSFLAG_CORRUPT() = true;
+
+
+          break;
+        }
+
+
+
+      SYSASSERT(CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS == blocks);
+
+
+      if (CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS == blocks) {
+
+        /* I LEFT OFF HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */
+
+        SYSASSERT();
+
+
+
+
+        if () {
+
+
+          ret = RETURN_SUCCESS;
+        }
+
+
+
+      } else {
+
+
+        SYSFLAG_CORRUPT() = true;
+      }
+
+
+    }
+
+  }
 
 
   /* Assert if there is an invalid combination of arguments
@@ -585,7 +696,7 @@ Base_t MemoryRegionCheck(const Base_t option_, const void *addr_) {
       then we must calculate where its heap entry would be. */
       if (HEAP_CHECK_HEALTH_AND_POINTER == option_) {
 
-        entryToCheck = ADDR2ENTRY(addr_, heap);
+        entryToFind = ADDR2ENTRY(addr_, heap);
       }
 
 
@@ -596,13 +707,13 @@ Base_t MemoryRegionCheck(const Base_t option_, const void *addr_) {
 
         /* Use MemoryRegionCheckAddr() to make sure the entry cursor address falls
         within the heap space. */
-        SYSASSERT(RETURN_SUCCESS == MemoryRegionCheckAddr(entryCursor, &heap));
+        SYSASSERT(RETURN_SUCCESS == MemoryRegionCheckAddr(&heap, entryCursor));
 
 
 
         /* Use MemoryRegionCheckAddr() to make sure the entry cursor address falls
         within the heap space. */
-        if (RETURN_SUCCESS == MemoryRegionCheckAddr(entryCursor, &heap)) {
+        if (RETURN_SUCCESS == MemoryRegionCheckAddr(&heap, entryCursor)) {
 
           blocks += entryCursor->blocks;
 
@@ -610,9 +721,9 @@ Base_t MemoryRegionCheck(const Base_t option_, const void *addr_) {
 
           /* At the same time if we are checking for a pointer, let's find it. If
           found then set the pointer found variable to true. */
-          if ((HEAP_CHECK_HEALTH_AND_POINTER == option_) && (entryCursor == entryToCheck) && (false == entryCursor->free)) {
+          if ((HEAP_CHECK_HEALTH_AND_POINTER == option_) && (entryCursor == entryToFind) && (false == entryCursor->free)) {
 
-            ptrFound = true;
+            found = true;
           }
 
           /* Move on to the next heap entry. */
@@ -643,7 +754,7 @@ Base_t MemoryRegionCheck(const Base_t option_, const void *addr_) {
 
         /* Assert if the pointer was not found if we
         were looking for it. */
-        SYSASSERT(((HEAP_CHECK_HEALTH_ONLY == option_) && (false == SYSFLAG_CORRUPT())) || ((HEAP_CHECK_HEALTH_AND_POINTER == option_) && (true == ptrFound) && (false == SYSFLAG_CORRUPT())));
+        SYSASSERT(((HEAP_CHECK_HEALTH_ONLY == option_) && (false == SYSFLAG_CORRUPT())) || ((HEAP_CHECK_HEALTH_AND_POINTER == option_) && (true == found) && (false == SYSFLAG_CORRUPT())));
 
 
 
@@ -651,14 +762,14 @@ Base_t MemoryRegionCheck(const Base_t option_, const void *addr_) {
         return value to success OR if we are also checking that
         the pointer was valid then set the return value to success
         if the pointer's heap entry was found. */
-        if (((HEAP_CHECK_HEALTH_ONLY == option_) && (false == SYSFLAG_CORRUPT())) || ((HEAP_CHECK_HEALTH_AND_POINTER == option_) && (true == ptrFound) && (false == SYSFLAG_CORRUPT()))) {
+        if (((HEAP_CHECK_HEALTH_ONLY == option_) && (false == SYSFLAG_CORRUPT())) || ((HEAP_CHECK_HEALTH_AND_POINTER == option_) && (true == found) && (false == SYSFLAG_CORRUPT()))) {
 
 
           ret = RETURN_SUCCESS;
         }
 
 
-      /* Else is never good. */
+        /* Else is never good. */
       } else {
 
         /* The number of blocks counted does not match the expected number of blocks
@@ -675,7 +786,7 @@ Base_t MemoryRegionCheck(const Base_t option_, const void *addr_) {
 
 /* Function checks to make sure that an address is within the heap space. This function
 is only really used by MemoryRegionCheck(). It's not meant to be used elsewhere. */
-Base_t MemoryRegionCheckAddr(const void *addr_, const MemoryRegion_t *region_) {
+Base_t MemoryRegionCheckAddr(const MemoryRegion_t *region_, const void *addr_) {
 
   Base_t ret = RETURN_FAILURE;
 
@@ -691,7 +802,7 @@ Base_t MemoryRegionCheckAddr(const void *addr_, const MemoryRegion_t *region_) {
     ret = RETURN_SUCCESS;
 
 
-  /* Else is never good. */
+    /* Else is never good. */
   } else {
 
 
