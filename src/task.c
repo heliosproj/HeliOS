@@ -70,11 +70,10 @@ Task_t *xTaskCreate(const char *name_, void (*callback_)(Task_t *, TaskParm_t *)
     if (ISNULLPTR(taskList)) {
 
 
-      /* We are creating a kernel object here so enter privileged mode. */
-      ENTER_PRIVILEGED();
 
 
-      taskList = (TaskList_t *)xMemAlloc(sizeof(TaskList_t));
+
+      taskList = (TaskList_t *)KernelAllocateMemory(sizeof(TaskList_t));
     }
 
 
@@ -86,10 +85,8 @@ Task_t *xTaskCreate(const char *name_, void (*callback_)(Task_t *, TaskParm_t *)
     if (ISNOTNULLPTR(taskList)) {
 
 
-      /* We are creating a kernel object so enter privileged mode. */
-      ENTER_PRIVILEGED();
 
-      ret = (Task_t *)xMemAlloc(sizeof(Task_t));
+      ret = (Task_t *)KernelAllocateMemory(sizeof(Task_t));
 
 
       /* Again, assert if xMemAlloc() didn't do its job. */
@@ -184,10 +181,8 @@ void xTaskDelete(Task_t *task_) {
         taskList->head = taskCursor->next;
 
 
-        /* We are freeing a kernel object so enter privileged mode. */
-        ENTER_PRIVILEGED();
 
-        xMemFree(taskCursor);
+        KernelFreeMemory(taskCursor);
 
         taskList->length--;
 
@@ -216,11 +211,9 @@ void xTaskDelete(Task_t *task_) {
           taskPrevious->next = taskCursor->next;
 
 
-          /* We are freeing a kernel object so enter privileged mode. */
-          ENTER_PRIVILEGED();
 
 
-          xMemFree(taskCursor);
+          KernelFreeMemory(taskCursor);
 
 
           taskList->length--;

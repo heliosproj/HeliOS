@@ -54,10 +54,8 @@ Timer_t *xTimerCreate(Time_t timerPeriod_) {
   /* Check if the timer list has been initialized. */
   if (ISNULLPTR(timerList)) {
 
-    /* Going to create a kernel object so enter privileged mode. */
-    ENTER_PRIVILEGED();
 
-    timerList = (TimerList_t *)xMemAlloc(sizeof(TimerList_t));
+    timerList = (TimerList_t *)KernelAllocateMemory(sizeof(TimerList_t));
   }
 
 
@@ -69,11 +67,10 @@ Timer_t *xTimerCreate(Time_t timerPeriod_) {
   if (ISNOTNULLPTR(timerList)) {
 
 
-    /* Going to create a kernel object so enter privileged mode. */
-    ENTER_PRIVILEGED();
 
 
-    ret = (Timer_t *)xMemAlloc(sizeof(Task_t));
+
+    ret = (Timer_t *)KernelAllocateMemory(sizeof(Task_t));
 
 
     /* Assert if xMemAlloc() didn't do its job. */
@@ -154,10 +151,9 @@ void xTimerDelete(Timer_t *timer_) {
       timerList->head = timerCursor->next;
 
 
-      /* Enter privileged mode to create a kernel object. */
-      ENTER_PRIVILEGED();
 
-      xMemFree(timerCursor);
+
+      KernelFreeMemory(timerCursor);
 
       timerList->length--;
 
@@ -188,11 +184,9 @@ void xTimerDelete(Timer_t *timer_) {
         timerPrevious->next = timerCursor->next;
 
 
-        /* Going to free a kernel object so enter privileged
-        mode. */
-        ENTER_PRIVILEGED();
 
-        xMemFree(timerCursor);
+
+        KernelFreeMemory(timerCursor);
 
         timerList->length--;
       }

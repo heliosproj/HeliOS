@@ -48,12 +48,10 @@ Queue_t *xQueueCreate(Base_t limit_) {
   if (CONFIG_QUEUE_MINIMUM_LIMIT <= limit_) {
 
 
-    /* Creating a kernel object so put ourselves in privileged
-    mode. */
-    ENTER_PRIVILEGED();
 
 
-    ret = (Queue_t *)xMemAlloc(sizeof(Queue_t));
+
+    ret = (Queue_t *)KernelAllocateMemory(sizeof(Queue_t));
 
 
     /* Assert if xMemAlloc() didn't return our requested
@@ -105,12 +103,9 @@ void xQueueDelete(Queue_t *queue_) {
     }
 
 
-    /* Freeing a kernel object so enter privileged mode. */
-    ENTER_PRIVILEGED();
 
 
-    /* Free the memory for the queue. */
-    xMemFree(queue_);
+    KernelFreeMemory(queue_);
   }
 
 
@@ -404,10 +399,9 @@ Base_t xQueueSend(Queue_t *queue_, Base_t messageBytes_, const char *messageValu
       if ((queue_->limit > queue_->length) && (messages == queue_->length)) {
 
 
-        /* Going to create a kernel object so enter privileged mode. */
-        ENTER_PRIVILEGED();
 
-        message = (Message_t *)xMemAlloc(sizeof(Message_t));
+
+        message = (Message_t *)KernelAllocateMemory(sizeof(Message_t));
 
 
         /* Assert if xMemAlloc() did not allocate our requested memory. */
@@ -531,11 +525,7 @@ void xQueueDropMessage(Queue_t *queue_) {
       queue_->length--;
 
 
-      /* To free the message kernel object we must go into
-      privileged mode. */
-      ENTER_PRIVILEGED();
-
-      xMemFree(message);
+      KernelFreeMemory(message);
     }
   }
 

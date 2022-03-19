@@ -163,12 +163,12 @@ size_t xMemGetSize(const void *addr_) {
 
 
 
-      SYSASSERT((false == tosize->free) && ((false == tosize->protected) || ((false == tosize->free) && (true == tosize->protected) && (true == SYSFLAG_PRIVILEGED()))));
+      SYSASSERT(false == tosize->free);
 
 
 
 
-      if ((false == tosize->free) && ((false == tosize->protected) || ((false == tosize->free) && (true == tosize->protected) && (true == SYSFLAG_PRIVILEGED())))) {
+      if (false == tosize->free) {
 
 
 
@@ -178,7 +178,7 @@ size_t xMemGetSize(const void *addr_) {
     }
   }
 
-  EXIT_PRIVILEGED();
+  
 
   return ret;
 }
@@ -216,29 +216,7 @@ Base_t MemoryRegionCheck(const MemoryRegion_t *region_, const void *addr_, const
 
   SYSASSERT((ISNOTNULLPTR(region_) && ISNULLPTR(addr_) && (MEMORY_REGION_CHECK_OPTION_WO_ADDR == option_)) || (ISNOTNULLPTR(region_) && ISNOTNULLPTR(addr_) && (MEMORY_REGION_CHECK_OPTION_W_ADDR == option_)));
 
-  /*
-    condition #1
 
-    (ISNOTNULLPTR(region_) && ISNULLPTR(addr_) && (MEMORY_REGION_CHECK_OPTION_WO_ADDR == option_))
-
-    region_ = is not null
-
-    addr_ = is null
-
-    option_ = MEMORY_REGION_CHECK_OPTION_WO_ADDR
-
-
-    condition #2
-
-    (ISNOTNULLPTR(region_) && ISNOTNULLPTR(addr_) && (MEMORY_REGION_CHECK_OPTION_W_ADDR == option_))
-
-    region_ is not null
-
-    addr_ is not null
-
-    option_ MEMORY_REGION_CHECK_OPTION_W_ADDR
-
-  */
 
   if ((ISNOTNULLPTR(region_) && ISNULLPTR(addr_) && (MEMORY_REGION_CHECK_OPTION_WO_ADDR == option_)) || (ISNOTNULLPTR(region_) && ISNOTNULLPTR(addr_) && (MEMORY_REGION_CHECK_OPTION_W_ADDR == option_))) {
 
@@ -296,31 +274,6 @@ Base_t MemoryRegionCheck(const MemoryRegion_t *region_, const void *addr_, const
 
       if (CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS == blocks) {
 
-
-        /*
-        condition #1
-
-        ((MEMORY_REGION_CHECK_OPTION_WO_ADDR == option_) && (false == SYSFLAG_CORRUPT()))
-
-        option_ = MEMORY_REGION_CHECK_OPTION_WO_ADDR
-
-        SYSFLAG_CORRUPT() = false
-
-        found = N/A
-
-
-        ((MEMORY_REGION_CHECK_OPTION_W_ADDR == option_) && (false == SYSFLAG_CORRUPT()) && (true == found))
-
-        condition #2
-
-        option_ = MEMORY_REGION_CHECK_OPTION_W_ADDR
-
-        SYSFLAG_CORRUPT() = false
-
-        found = true
-
-
-        */
 
 
         SYSASSERT(((MEMORY_REGION_CHECK_OPTION_WO_ADDR == option_) && (false == SYSFLAG_CORRUPT())) || ((MEMORY_REGION_CHECK_OPTION_W_ADDR == option_) && (false == SYSFLAG_CORRUPT()) && (true == found)));
@@ -457,8 +410,6 @@ void *calloc_(MemoryRegion_t *region_, const size_t size_) {
 
 
 
-        region_->start->protected = false;
-
 
 
 
@@ -564,9 +515,6 @@ void *calloc_(MemoryRegion_t *region_, const size_t size_) {
 
 
 
-            candidate->next->protected = false;
-
-
 
 
             candidate->next->blocks = candidate->blocks - requested;
@@ -577,15 +525,6 @@ void *calloc_(MemoryRegion_t *region_, const size_t size_) {
             candidate->free = false;
 
 
-
-            if (true == SYSFLAG_PRIVILEGED()) {
-
-              candidate->protected = true;
-
-            } else {
-
-              candidate->protected = false;
-            }
 
 
 
@@ -612,17 +551,6 @@ void *calloc_(MemoryRegion_t *region_, const size_t size_) {
 
 
 
-            if (true == SYSFLAG_PRIVILEGED()) {
-
-
-              candidate->protected = true;
-
-
-            } else {
-
-              candidate->protected = false;
-            }
-
 
 
 
@@ -640,7 +568,6 @@ void *calloc_(MemoryRegion_t *region_, const size_t size_) {
 
 
 
-  EXIT_PRIVILEGED();
 
   ENABLE_INTERRUPTS();
 
@@ -684,20 +611,8 @@ void free_(const MemoryRegion_t *region_, const void *addr_) {
 
 
 
-      SYSASSERT((false == free->protected) || ((true == free->protected) && (true == SYSFLAG_PRIVILEGED())));
-
-
-
-      if ((false == free->protected) || ((true == free->protected) && (true == SYSFLAG_PRIVILEGED()))) {
-
-
-
 
         free->free = true;
-
-
-
-        free->protected = false;
 
 
 
@@ -713,13 +628,12 @@ void free_(const MemoryRegion_t *region_, const void *addr_) {
 
           free->next = free->next->next;
         }
-      }
+      
     }
   }
 
 
 
-  EXIT_PRIVILEGED();
 
   ENABLE_INTERRUPTS();
 

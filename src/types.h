@@ -72,8 +72,7 @@ typedef TIME_T_TYPE Time_t; /* TIME_T_TYPE is defined in the platform definition
 
 typedef struct MemoryEntry_s {
   Byte_t free : 1;
-  Byte_t protected : 1;
-  Byte_t reserved : 6;
+  Byte_t reserved : 7;
   Word_t blocks;
   struct MemoryEntry_s *next;
 } MemoryEntry_t;

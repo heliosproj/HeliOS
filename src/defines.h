@@ -328,38 +328,6 @@ xSystemGetSystemInfo(). */
 
 
 
-/* Define the macro which sets the privileged flag to true when
-the next call to xMemAlloc() and xMemFree() is for protected
-memory. */
-#if !defined(ENTER_PRIVILEGED)
-#define ENTER_PRIVILEGED() sysFlags.privileged = true
-#endif
-
-
-
-
-/* Define the macro which sets the privileged flag to false to
-exit protected memory mode.
-
-NOTE: This should only be called from within xMemAlloc() and
-xMemFree() since both system calls will automatically exit
-privileged mode before they return. */
-#if !defined(EXIT_PRIVILEGED)
-#define EXIT_PRIVILEGED() sysFlags.privileged = false
-#endif
-
-
-
-
-/* Define a macro to access the privileged system flag which is
-used by xMemAlloc() and xMemFree() to determine when to set an
-entry in the heap to protected. */
-#if !defined(SYSFLAG_PRIVILEGED)
-#define SYSFLAG_PRIVILEGED() sysFlags.privileged
-#endif
-
-
-
 
 /* Define a macro to access the running system flag which is used
 by xTaskStartScheduler() to indicate whether the scheduler is
