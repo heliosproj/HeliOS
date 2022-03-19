@@ -599,6 +599,8 @@ Base_t MemoryRegionCheck(const MemoryRegion_t *region_, const void *addr_, Base_
       if (MEMORY_CHECK_REGION_OPTION_ADDR == option_) {
 
         entryToFind = ADDR2ENTRY(addr_, region_);
+
+
       }
 
 
@@ -668,8 +670,7 @@ Base_t MemoryRegionCheck(const MemoryRegion_t *region_, const void *addr_, Base_
         */
 
 
-        SYSASSERT(((MEMORY_CHECK_REGION_OPTION_NONE == option_) && (false == SYSFLAG_CORRUPT())) || ((MEMORY_CHECK_REGION_OPTION_ADDR == option_) && (false == SYSFLAG_CORRUPT()) && (true == found)));
-
+        SYSASSERT(((MEMORY_CHECK_REGION_OPTION_NONE == option_) && (false == SYSFLAG_CORRUPT())) || ((MEMORY_CHECK_REGION_OPTION_ADDR == option_) && (false == SYSFLAG_CORRUPT()) && (true == found)  ));
 
 
 
@@ -700,7 +701,6 @@ Base_t MemoryRegionCheckAddr(const MemoryRegion_t *region_, const void *addr_) {
 
 
   Base_t ret = RETURN_FAILURE;
-
 
 
 
