@@ -157,7 +157,7 @@ to customize the HeliOS kernel for their specific application. */
  * is used solely by the kernel for kernel objects. The CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS
  * setting allows the end-user to define the size, in blocks, of all memory
  * regions thus effecting both the heap and kernel memory regions. The size
- * of a memory block is defined by the CONFIG_MEMORY_REGION_BLOCK_SIZE setting.
+ * of a memory block is defined by the CONFIG_ALL_MEMORY_REGIONS_BLOCK_SIZE setting.
  * The size of all memory regions needs to be adjusted to fit the memory
  * requirements of the end-user's application. By default the
  * CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS is defined on a per platform and/or
@@ -175,10 +175,10 @@ to customize the HeliOS kernel for their specific application. */
 /**
  * @brief Define the memory block size in bytes for all memory regions.
  *
- * Setting CONFIG_MEMORY_REGION_BLOCK_SIZE allows the end-user to
+ * Setting CONFIG_ALL_MEMORY_REGIONS_BLOCK_SIZE allows the end-user to
  * define the size of a memory region block in bytes. The memory region
  * block size should be set to achieve the best possible utilization of
- * the available memory. The CONFIG_MEMORY_REGION_BLOCK_SIZE setting
+ * the available memory. The CONFIG_ALL_MEMORY_REGIONS_BLOCK_SIZE setting
  * effects both the heap and kernel memory regions. The default value
  * is 32 bytes. The literal must be appended with a "u" to maintain
  * MISRA C:2012 compliance.
@@ -189,7 +189,7 @@ to customize the HeliOS kernel for their specific application. */
  * @sa CONFIG_KMEM_SIZE_IN_BLOCKS
  *
  */
-#define CONFIG_MEMORY_REGION_BLOCK_SIZE 32u
+#define CONFIG_ALL_MEMORY_REGIONS_BLOCK_SIZE 32u
 
 
 

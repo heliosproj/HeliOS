@@ -107,7 +107,7 @@ size_t xMemGetUsed(void) {
 
       /* End-user is expecting bytes, so calculate it based on the
       block size. */
-      ret = usedBlocks * CONFIG_MEMORY_REGION_BLOCK_SIZE;
+      ret = usedBlocks * CONFIG_ALL_MEMORY_REGIONS_BLOCK_SIZE;
     }
   }
 
@@ -168,7 +168,7 @@ size_t xMemGetSize(void *addr_) {
 
         /* The end-user is expecting us to return the number of bytes in used. So
         perform some advanced multiplication. */
-        ret = entryToSize->blocks * CONFIG_MEMORY_REGION_BLOCK_SIZE;
+        ret = entryToSize->blocks * CONFIG_ALL_MEMORY_REGIONS_BLOCK_SIZE;
       }
     }
   }
@@ -424,12 +424,12 @@ void *calloc_(MemoryRegion_t *region_, size_t size_) {
 
 
 
-        region_->entrySize = ((Word_t)(sizeof(MemoryEntry_t) / CONFIG_MEMORY_REGION_BLOCK_SIZE));
+        region_->entrySize = ((Word_t)(sizeof(MemoryEntry_t) / CONFIG_ALL_MEMORY_REGIONS_BLOCK_SIZE));
 
 
 
 
-        if (zero < ((Word_t)(sizeof(MemoryEntry_t) % CONFIG_MEMORY_REGION_BLOCK_SIZE))) {
+        if (zero < ((Word_t)(sizeof(MemoryEntry_t) % CONFIG_ALL_MEMORY_REGIONS_BLOCK_SIZE))) {
 
 
 
@@ -476,11 +476,11 @@ void *calloc_(MemoryRegion_t *region_, size_t size_) {
 
 
 
-        requested = ((Word_t)(size_ / CONFIG_MEMORY_REGION_BLOCK_SIZE));
+        requested = ((Word_t)(size_ / CONFIG_ALL_MEMORY_REGIONS_BLOCK_SIZE));
 
 
 
-        if (zero < ((Word_t)(size_ % CONFIG_MEMORY_REGION_BLOCK_SIZE))) {
+        if (zero < ((Word_t)(size_ % CONFIG_ALL_MEMORY_REGIONS_BLOCK_SIZE))) {
 
 
 
@@ -544,7 +544,7 @@ void *calloc_(MemoryRegion_t *region_, size_t size_) {
 
 
 
-            candidate->next = (MemoryEntry_t *)((Byte_t *)candidate + (requested * CONFIG_MEMORY_REGION_BLOCK_SIZE));
+            candidate->next = (MemoryEntry_t *)((Byte_t *)candidate + (requested * CONFIG_ALL_MEMORY_REGIONS_BLOCK_SIZE));
 
 
 
@@ -590,7 +590,7 @@ void *calloc_(MemoryRegion_t *region_, size_t size_) {
 
 
 
-            memset_(ENTRY2ADDR(candidate, &heap), zero, (requested - region_->entrySize) * CONFIG_MEMORY_REGION_BLOCK_SIZE);
+            memset_(ENTRY2ADDR(candidate, &heap), zero, (requested - region_->entrySize) * CONFIG_ALL_MEMORY_REGIONS_BLOCK_SIZE);
 
 
 
@@ -621,7 +621,7 @@ void *calloc_(MemoryRegion_t *region_, size_t size_) {
 
 
 
-            memset_(ENTRY2ADDR(candidate, &heap), zero, (requested - region_->entrySize) * CONFIG_MEMORY_REGION_BLOCK_SIZE);
+            memset_(ENTRY2ADDR(candidate, &heap), zero, (requested - region_->entrySize) * CONFIG_ALL_MEMORY_REGIONS_BLOCK_SIZE);
 
 
 
