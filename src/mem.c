@@ -29,16 +29,16 @@
 
 
 static MemoryRegion_t heap = {
-    .entrySizeInBlocks = zero,
-    .startEntry = NULL,
+    .entrySize = zero,
+    .start = NULL,
 };
 
 
 
 
 static MemoryRegion_t kernel = {
-    .entrySizeInBlocks = zero,
-    .startEntry = NULL,
+    .entrySize = zero,
+    .start = NULL,
 };
 
 
@@ -92,11 +92,11 @@ void *xMemAlloc(size_t size_) {
 
       /* Figure out how many blocks are needed to store a heap entry by performing some
       division. */
-      if (zero == heap.entrySizeInBlocks) {
+      if (zero == heap.entrySize) {
 
 
         /* Calculate the quotient portion of the blocks needed to store a heap entry. */
-        heap.entrySizeInBlocks = ((Word_t)(sizeof(MemoryEntry_t) / CONFIG_MEMORY_REGION_BLOCK_SIZE));
+        heap.entrySize = ((Word_t)(sizeof(MemoryEntry_t) / CONFIG_MEMORY_REGION_BLOCK_SIZE));
 
 
 
@@ -106,7 +106,7 @@ void *xMemAlloc(size_t size_) {
 
 
           /* Add just one more block to cover the remainder. */
-          heap.entrySizeInBlocks++;
+          heap.entrySize++;
         }
       }
 
@@ -117,36 +117,36 @@ void *xMemAlloc(size_t size_) {
 
       /* If the starting entry of the heap is null, the heap has not been initialized
       so let's do that now. */
-      if (ISNULLPTR(heap.startEntry)) {
+      if (ISNULLPTR(heap.start)) {
 
 
         /* Set the starting heap entry to the start of the heap. We do this so
         we don't have to cast every time we want to reference the start of the
         heap. */
-        heap.startEntry = (MemoryEntry_t *)heap.mem;
+        heap.start = (MemoryEntry_t *)heap.mem;
 
         /* Zero out the entire heap. */
         memset_(heap.mem, zero, ALL_MEMORY_REGIONS_SIZE_IN_BYTES);
 
 
         /* The first heap entry is free at this point so mark it as such. */
-        heap.startEntry->free = true;
+        heap.start->free = true;
 
 
         /* The first heap entry is UN-protected at this point so mark it as such. For an entry to be marked protected,
         the system must be in privileged mode by calling ENTER_PRIVILEGED(). Only heap memory allocated to the kernel
         can be protected. Heap memory allocated by the end-user cannot be protected. */
-        heap.startEntry->protected = false;
+        heap.start->protected = false;
 
 
 
         /* The first entry will contain all of the blocks in the heap at this point. */
-        heap.startEntry->blocks = CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS;
+        heap.start->blocks = CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS;
 
 
         /* There is only one heap entry at this point so set the pointer to the next
         entry to null. */
-        heap.startEntry->next = NULL;
+        heap.start->next = NULL;
       }
 
       /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -181,7 +181,7 @@ void *xMemAlloc(size_t size_) {
 
 
         /* We need to include how many blocks we need for the heap entry. */
-        requestedBlocks += heap.entrySizeInBlocks;
+        requestedBlocks += heap.entrySize;
 
 
         /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -191,7 +191,7 @@ void *xMemAlloc(size_t size_) {
         * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
         /* Start off at the start of the heap. */
-        entryCursor = heap.startEntry;
+        entryCursor = heap.start;
 
         /* While there is a heap entry, continue to traverse the heap. */
         while (ISNOTNULLPTR(entryCursor)) {
@@ -236,7 +236,7 @@ void *xMemAlloc(size_t size_) {
 
 
           /* Check if there is any value in splitting the entry candidate in two. */
-          if ((heap.entrySizeInBlocks + 1) <= (entryCandidate->blocks - requestedBlocks)) {
+          if ((heap.entrySize + 1) <= (entryCandidate->blocks - requestedBlocks)) {
 
 
             /* Preserve the next entry after the entry candidate so it can be linked to
@@ -286,7 +286,7 @@ void *xMemAlloc(size_t size_) {
 
 
             /* Clear the memory. */
-            memset_(ENTRY2ADDR(entryCandidate, &heap), zero, (requestedBlocks - heap.entrySizeInBlocks) * CONFIG_MEMORY_REGION_BLOCK_SIZE);
+            memset_(ENTRY2ADDR(entryCandidate, &heap), zero, (requestedBlocks - heap.entrySize) * CONFIG_MEMORY_REGION_BLOCK_SIZE);
 
 
 
@@ -316,7 +316,7 @@ void *xMemAlloc(size_t size_) {
 
 
             /* Clear the memory. */
-            memset_(ENTRY2ADDR(entryCandidate, &heap), zero, (requestedBlocks - heap.entrySizeInBlocks) * CONFIG_MEMORY_REGION_BLOCK_SIZE);
+            memset_(ENTRY2ADDR(entryCandidate, &heap), zero, (requestedBlocks - heap.entrySize) * CONFIG_MEMORY_REGION_BLOCK_SIZE);
 
 
             /* Set the return value to the address of the newly allocated heap memory. */
@@ -447,7 +447,7 @@ size_t xMemGetUsed(void) {
     memory in use. Otherwise, just head toward the exit. */
     if (RETURN_SUCCESS == MemoryRegionCheck(&heap, NULL, MEMORY_CHECK_REGION_OPTION_WO_ADDR)) {
 
-      entryCursor = heap.startEntry;
+      entryCursor = heap.start;
 
       /* While we have a heap entry to read, keep traversing the heap. */
       while (ISNOTNULLPTR(entryCursor)) {
@@ -544,12 +544,21 @@ Base_t MemoryRegionCheckHeap(const void *addr_, Base_t option_) {
 }
 
 
+
+
+Base_t MemoryRegionCheckKernel(const void *addr_, Base_t option_) {
+
+  return MemoryRegionCheck(&kernel, addr_, option_);
+}
+
+
+
 Base_t MemoryRegionCheck(const MemoryRegion_t *region_, const void *addr_, Base_t option_) {
 
 
-  MemoryEntry_t *entryCursor = NULL;
+  MemoryEntry_t *cursor = NULL;
 
-  MemoryEntry_t *entryToFind = NULL;
+  MemoryEntry_t *find = NULL;
 
   Base_t found = false;
 
@@ -588,45 +597,43 @@ Base_t MemoryRegionCheck(const MemoryRegion_t *region_, const void *addr_, Base_
   if ((ISNOTNULLPTR(region_) && ISNULLPTR(addr_) && (MEMORY_CHECK_REGION_OPTION_WO_ADDR == option_)) || (ISNOTNULLPTR(region_) && ISNOTNULLPTR(addr_) && (MEMORY_CHECK_REGION_OPTION_W_ADDR == option_))) {
 
 
-    SYSASSERT(ISNOTNULLPTR(region_->startEntry));
+    SYSASSERT(ISNOTNULLPTR(region_->start));
 
 
-    if (ISNOTNULLPTR(region_->startEntry)) {
+    if (ISNOTNULLPTR(region_->start)) {
 
-      entryCursor = region_->startEntry;
+      cursor = region_->start;
 
 
       if (MEMORY_CHECK_REGION_OPTION_W_ADDR == option_) {
 
-        entryToFind = ADDR2ENTRY(addr_, region_);
-
-
+        find = ADDR2ENTRY(addr_, region_);
       }
 
 
-      while (ISNOTNULLPTR(entryCursor)) {
+      while (ISNOTNULLPTR(cursor)) {
 
 
 
-        SYSASSERT(RETURN_SUCCESS == MemoryRegionCheckAddr(region_, entryCursor));
-
-
-
-
-        if (RETURN_SUCCESS == MemoryRegionCheckAddr(region_, entryCursor)) {
-
-          blocks += entryCursor->blocks;
+        SYSASSERT(RETURN_SUCCESS == MemoryRegionCheckAddr(region_, cursor));
 
 
 
 
-          if ((MEMORY_CHECK_REGION_OPTION_W_ADDR == option_) && (entryCursor == entryToFind) && (false == entryCursor->free)) {
+        if (RETURN_SUCCESS == MemoryRegionCheckAddr(region_, cursor)) {
+
+          blocks += cursor->blocks;
+
+
+
+
+          if ((MEMORY_CHECK_REGION_OPTION_W_ADDR == option_) && (cursor == find) && (false == cursor->free)) {
 
             found = true;
           }
 
 
-          entryCursor = entryCursor->next;
+          cursor = cursor->next;
 
         } else {
 
@@ -670,7 +677,7 @@ Base_t MemoryRegionCheck(const MemoryRegion_t *region_, const void *addr_, Base_
         */
 
 
-        SYSASSERT(((MEMORY_CHECK_REGION_OPTION_WO_ADDR == option_) && (false == SYSFLAG_CORRUPT())) || ((MEMORY_CHECK_REGION_OPTION_W_ADDR == option_) && (false == SYSFLAG_CORRUPT()) && (true == found)  ));
+        SYSASSERT(((MEMORY_CHECK_REGION_OPTION_WO_ADDR == option_) && (false == SYSFLAG_CORRUPT())) || ((MEMORY_CHECK_REGION_OPTION_W_ADDR == option_) && (false == SYSFLAG_CORRUPT()) && (true == found)));
 
 
 
@@ -731,8 +738,15 @@ Base_t MemoryRegionCheckAddr(const MemoryRegion_t *region_, const void *addr_) {
 
 
 
+void *calloc_(const MemoryRegion_t *region_, size_t size_) {
+}
 
-/* A memory utility to copy memory between the source and destination pointers. */
+
+
+void free_(const MemoryRegion_t *region_, void *addr_) {
+}
+
+
 void memcpy_(void *dest_, const void *src_, size_t n_) {
 
   char *src = (char *)src_;
@@ -750,8 +764,6 @@ void memcpy_(void *dest_, const void *src_, size_t n_) {
 
 
 
-/* A memory utility to set the memory pointed to by the destination pointer
-to the specified value. */
 void memset_(void *dest_, uint16_t val_, size_t n_) {
 
   char *dest = (char *)dest_;
@@ -767,8 +779,6 @@ void memset_(void *dest_, uint16_t val_, size_t n_) {
 
 
 
-/* A memory utility to compare the contents of memory at two locations pointed to by
-the pointers s1 and s2. */
 uint16_t memcmp_(const void *s1_, const void *s2_, size_t n_) {
 
   uint16_t ret = zero;
@@ -797,7 +807,7 @@ uint16_t memcmp_(const void *s1_, const void *s2_, size_t n_) {
 }
 
 
-/* For debugging the heap only. */
+
 #if defined(MEMDUMP_)
 
 void memdump_(void) {

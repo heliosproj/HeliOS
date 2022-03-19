@@ -82,8 +82,8 @@ typedef struct MemoryEntry_s {
 
 typedef struct MemoryRegion_s {
   Byte_t mem[ALL_MEMORY_REGIONS_SIZE_IN_BYTES];
-  MemoryEntry_t *startEntry;
-  Word_t entrySizeInBlocks;
+  MemoryEntry_t *start;
+  Word_t entrySize;
 } MemoryRegion_t;
 
 
