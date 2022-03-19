@@ -414,7 +414,7 @@ the CONFIG_ENABLE_SYSTEM_ASSERT setting. */
 #if !defined(CONFIG_ENABLE_SYSTEM_ASSERT)
 #define SYSASSERT(x)
 #else
-#define SYSASSERT(x) if (false == (x)) SystemAssert(__FILE__, __LINE__)
+#define SYSASSERT(x) if (false == (x)) SystemAssert( __FILE__ , __LINE__ )
 #endif
 #endif
 
