@@ -61,53 +61,63 @@ void xMemFree(void *addr_) {
 
 }
 
-/* The xMemGetUsed() system call returns the amount of memory in bytes
-that is currently allocated. */
+
+
+
+
 size_t xMemGetUsed(void) {
 
 
   size_t ret = zero;
 
-  MemoryEntry_t *entryCursor = NULL;
 
-  Word_t usedBlocks = zero;
+  MemoryEntry_t *cursor = NULL;
 
-  /* Assert if the heap is corrupted. */
+
+  Word_t used = zero;
+
+
+
+
   SYSASSERT(false == SYSFLAG_CORRUPT());
 
 
-  /* Check to make sure the heap is not corrupted before we do anything with
-  the heap. */
+
+
   if (false == SYSFLAG_CORRUPT()) {
 
-    /* Assert if the heap does not pass its health check. */
+
+
     SYSASSERT(RETURN_SUCCESS == MemoryRegionCheck(&heap, NULL, MEMORY_REGION_CHECK_OPTION_WO_ADDR));
 
 
-    /* If the heap is healthy, we can proceed with calculating heap
-    memory in use. Otherwise, just head toward the exit. */
+
+
     if (RETURN_SUCCESS == MemoryRegionCheck(&heap, NULL, MEMORY_REGION_CHECK_OPTION_WO_ADDR)) {
 
-      entryCursor = heap.start;
+      cursor = heap.start;
 
-      /* While we have a heap entry to read, keep traversing the heap. */
-      while (ISNOTNULLPTR(entryCursor)) {
 
-        /* If the heap entry we come across is free then let's add its blocks
-        to the used blocks. */
-        if (entryCursor->free == false) {
 
-          /* Sum the number of used blocks for each heap entry in use. */
-          usedBlocks += entryCursor->blocks;
+      while (ISNOTNULLPTR(cursor)) {
+
+
+
+        if (cursor->free == false) {
+
+
+
+          used += cursor->blocks;
         }
 
-        /* Move on to the next heap entry. */
-        entryCursor = entryCursor->next;
+
+
+        cursor = cursor->next;
       }
 
-      /* End-user is expecting bytes, so calculate it based on the
-      block size. */
-      ret = usedBlocks * CONFIG_ALL_MEMORY_REGIONS_BLOCK_SIZE;
+
+
+      ret = used * CONFIG_ALL_MEMORY_REGIONS_BLOCK_SIZE;
     }
   }
 
@@ -125,50 +135,51 @@ size_t xMemGetSize(void *addr_) {
   size_t ret = zero;
 
 
-  MemoryEntry_t *entryToSize = NULL;
+  MemoryEntry_t *tosize = NULL;
 
 
 
-  /* Assert if the heap is corrupted. */
+
   SYSASSERT(false == SYSFLAG_CORRUPT());
 
 
-  /* Check to make sure the heap is not corrupted before we do anything with
-  the heap. */
+
+
   if (false == SYSFLAG_CORRUPT()) {
 
 
-    /* Assert if the heap failed its health check OR if the end-user scammed
-    us on the pointer. */
+
+
     SYSASSERT(RETURN_SUCCESS == MemoryRegionCheck(&heap, addr_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
 
 
 
-    /* If the heap passes its health check and the pointer the end-user passed
-    us is valid, then continue. */
+
+
     if (RETURN_SUCCESS == MemoryRegionCheck(&heap, addr_, MEMORY_REGION_CHECK_OPTION_W_ADDR)) {
 
 
 
-      /* The end-user's pointer points to the start of their allocated space, we
-      need to move back one block to read the entry. */
-      entryToSize = ADDR2ENTRY(addr_, &heap);
-
-
-      /* The entry should not be free, also check if it is protected because if it is
-      then we must be in privileged mode. */
-      SYSASSERT((false == entryToSize->free) && ((false == entryToSize->protected) || ((false == entryToSize->free) && (true == entryToSize->protected) && (true == SYSFLAG_PRIVILEGED()))));
-
-
-      /* The entry should not be free, also check if it is protected because if it is
-      then we must be in privileged mode. */
-      if ((false == entryToSize->free) && ((false == entryToSize->protected) || ((false == entryToSize->free) && (true == entryToSize->protected) && (true == SYSFLAG_PRIVILEGED())))) {
+ 
+ 
+      tosize = ADDR2ENTRY(addr_, &heap);
 
 
 
-        /* The end-user is expecting us to return the number of bytes in used. So
-        perform some advanced multiplication. */
-        ret = entryToSize->blocks * CONFIG_ALL_MEMORY_REGIONS_BLOCK_SIZE;
+
+      SYSASSERT((false == tosize->free) && ((false == tosize->protected) || ((false == tosize->free) && (true == tosize->protected) && (true == SYSFLAG_PRIVILEGED()))));
+
+
+
+
+      if ((false == tosize->free) && ((false == tosize->protected) || ((false == tosize->free) && (true == tosize->protected) && (true == SYSFLAG_PRIVILEGED())))) {
+
+
+
+
+
+        ret = tosize->blocks * CONFIG_ALL_MEMORY_REGIONS_BLOCK_SIZE;
+        
       }
     }
   }
