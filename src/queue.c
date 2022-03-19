@@ -462,7 +462,7 @@ QueueMessage_t *xQueuePeek(Queue_t *queue_) {
     if (ISNOTNULLPTR(queue_->head)) {
 
 
-      ret = (QueueMessage_t *)xMemAlloc(sizeof(QueueMessage_t));
+      ret = (QueueMessage_t *)HeapAllocateMemory(sizeof(QueueMessage_t));
 
 
       /* Assert if xMemAlloc() didn't do its job. */

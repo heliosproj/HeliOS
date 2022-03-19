@@ -48,6 +48,8 @@ Base_t MemoryRegionCheck(const MemoryRegion_t *region_, const void *addr_, const
 Base_t MemoryRegionCheckAddr(const MemoryRegion_t *region_, const void *addr_);
 void *KernelAllocateMemory(const size_t size_);
 void KernelFreeMemory(const void *addr_);
+void *HeapAllocateMemory(const size_t size_);
+void HeapFreeMemory(const void *addr_);
 void *calloc_(MemoryRegion_t *region_, const size_t size_);
 void free_(const MemoryRegion_t *region_, const void *addr_);
 void memcpy_(void *dest_, const void *src_, size_t n_);

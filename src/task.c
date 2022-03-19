@@ -425,7 +425,7 @@ TaskRunTimeStats_t *xTaskGetTaskRunTimeStats(Task_t *task_) {
   if (RETURN_SUCCESS == TaskListFindTask(task_)) {
 
 
-    ret = (TaskRunTimeStats_t *)xMemAlloc(sizeof(TaskRunTimeStats_t));
+    ret = (TaskRunTimeStats_t *)HeapAllocateMemory(sizeof(TaskRunTimeStats_t));
 
 
     /* Assert if xMemAlloc() didn't do its job. */
@@ -510,7 +510,7 @@ TaskInfo_t *xTaskGetTaskInfo(Task_t *task_) {
   /* Check if the task cannot be found. */
   if (RETURN_SUCCESS == TaskListFindTask(task_)) {
 
-    ret = (TaskInfo_t *)xMemAlloc(sizeof(TaskInfo_t));
+    ret = (TaskInfo_t *)HeapAllocateMemory(sizeof(TaskInfo_t));
 
 
     /* Assert if xMemAlloc() failed to do its one job in life. */
@@ -858,7 +858,7 @@ TaskNotification_t *xTaskNotifyTake(Task_t *task_) {
 
 
 
-      ret = (TaskNotification_t *)xMemAlloc(sizeof(TaskNotification_t));
+      ret = (TaskNotification_t *)HeapAllocateMemory(sizeof(TaskNotification_t));
 
 
       /* Assert if xMemAlloc() didn't do its job. */

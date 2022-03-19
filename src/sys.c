@@ -91,7 +91,7 @@ SystemInfo_t *xSystemGetSystemInfo(void) {
 
 
 
-  ret = (SystemInfo_t *)xMemAlloc(sizeof(SystemInfo_t));
+  ret = (SystemInfo_t *)HeapAllocateMemory(sizeof(SystemInfo_t));
 
 
 

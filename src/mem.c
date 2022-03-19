@@ -643,7 +643,7 @@ void free_(const MemoryRegion_t *region_, const void *addr_) {
 
 
 
-void *KernelAllocateMemory(size_t size_) {
+void *KernelAllocateMemory(const size_t size_) {
 
 
   return calloc_(&kernel, size_);
@@ -660,6 +660,24 @@ void KernelFreeMemory(const void *addr_) {
   return;
 }
 
+
+
+void *HeapAllocateMemory(const size_t size_) {
+
+
+  return calloc_(&heap, size_);
+}
+
+
+
+
+void HeapFreeMemory(const void *addr_) {
+
+  free_(&heap, addr_);
+
+
+  return;
+}
 
 
 
