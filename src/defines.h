@@ -154,7 +154,7 @@ to default to the Arduino platform and/or tool-chain. */
 
 
 
-#define MEMDUMP_HEAP  
+#define MEMDUMP_KERNEL
 
 #define MEMDUMP_ROW_WIDTH CONFIG_ALL_MEMORY_REGIONS_BLOCK_SIZE
 
@@ -396,10 +396,6 @@ the CONFIG_ENABLE_SYSTEM_ASSERT setting. */
 #define MEMORY_REGION_CHECK_OPTION_W_ADDR 0x2u
 #endif
 
-
-#define BITCHECK(x, n) (( x ) & (1 << ( n )))
-#define BITSET(x, n) (( x ) |= (1 << ( n )))
-#define BITUNSET(x, n) (( x ) &= ~(1 << ( n )))
 
 
 
