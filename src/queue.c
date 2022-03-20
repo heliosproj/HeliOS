@@ -442,9 +442,17 @@ Base_t xQueueSend(Queue_t *queue_, Base_t messageBytes_, const char *messageValu
   return ret;
 }
 
+
 /* The xQueuePeek() system call will return the next message in the queue without
 dropping the message. */
 QueueMessage_t *xQueuePeek(Queue_t *queue_) {
+
+  return _QueuePeek_(queue_);
+
+}
+
+
+QueueMessage_t *_QueuePeek_(Queue_t *queue_) {
   QueueMessage_t *ret = NULL;
 
 
@@ -487,6 +495,13 @@ QueueMessage_t *xQueuePeek(Queue_t *queue_) {
 /* The xQueueDropMessage() system call will drop the next message from the queue without
 returning the message. */
 void xQueueDropMessage(Queue_t *queue_) {
+
+  _QueueDropmessage_(queue_);
+
+  return;
+}
+
+void _QueueDropmessage_(Queue_t *queue_) {
 
 
   Message_t *message = NULL;
@@ -558,7 +573,7 @@ QueueMessage_t *xQueueReceive(Queue_t *queue_) {
     
     NOTE: We don't need to allocate any heap memory since xQueuePeek()
     has already done that for us. */
-    ret = xQueuePeek(queue_);
+    ret = _QueuePeek_(queue_);
 
 
     /* See if xQueuePeek() returned a message, if so we need to drop it
@@ -568,7 +583,7 @@ QueueMessage_t *xQueueReceive(Queue_t *queue_) {
 
       /* Re-use some code and just call xQueueDropMessage() to drop
       the message we just received. */
-      xQueueDropMessage(queue_);
+      _QueueDropmessage_(queue_);
     }
   }
 

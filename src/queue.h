@@ -48,6 +48,8 @@ Base_t xQueueSend(Queue_t *queue_, Base_t messageBytes_, const char *messageValu
 QueueMessage_t *xQueuePeek(Queue_t *queue_);
 void xQueueDropMessage(Queue_t *queue_);
 QueueMessage_t *xQueueReceive(Queue_t *queue_);
+void _QueueDropmessage_(Queue_t *queue_);
+QueueMessage_t *_QueuePeek_(Queue_t *queue_);
 
 #ifdef __cplusplus
 }  // extern "C" {
