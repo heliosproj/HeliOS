@@ -66,7 +66,8 @@ typedef enum {
 typedef void TaskParm_t;
 typedef uint8_t Base_t;
 typedef uint8_t Byte_t;
-typedef void *Addr_t;
+typedef void Addr_t;
+typedef size_t Size_t;
 typedef uint16_t Word_t; /* Here a "word" does NOT refer to the machine word. It just means two bytes. */
 typedef TIME_T_TYPE Time_t; /* TIME_T_TYPE is defined in the platform definitions in defines.h. */
 

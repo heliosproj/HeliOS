@@ -131,11 +131,11 @@ void xTimerDelete(Timer_t *timer_) {
 
   /* Assert if the timer cannot be found in the timer
   list. */
-  SYSASSERT(RETURN_SUCCESS == TimerListFindTimer(timer_));
+  SYSASSERT(RETURN_SUCCESS == _TimerListFindTimer_(timer_));
 
 
   /* Check if the timer was found in the timer list. */
-  if (RETURN_SUCCESS == TimerListFindTimer(timer_)) {
+  if (RETURN_SUCCESS == _TimerListFindTimer_(timer_)) {
 
 
 
@@ -208,11 +208,11 @@ void xTimerChangePeriod(Timer_t *timer_, Time_t timerPeriod_) {
 
 
   /* Assert if the timer cannot be found in the timer list. */
-  SYSASSERT(RETURN_SUCCESS == TimerListFindTimer(timer_));
+  SYSASSERT(RETURN_SUCCESS == _TimerListFindTimer_(timer_));
 
 
   /* Check if the timer was found in the timer list. */
-  if (RETURN_SUCCESS == TimerListFindTimer(timer_)) {
+  if (RETURN_SUCCESS == _TimerListFindTimer_(timer_)) {
 
     timer_->timerPeriod = timerPeriod_;
   }
@@ -232,10 +232,10 @@ Time_t xTimerGetPeriod(Timer_t *timer_) {
 
 
   /* Assert if the timer cannot be found in the timer list. */
-  SYSASSERT(RETURN_SUCCESS == TimerListFindTimer(timer_));
+  SYSASSERT(RETURN_SUCCESS == _TimerListFindTimer_(timer_));
 
   /* Check if the timer was found in the timer list. */
-  if (RETURN_SUCCESS == TimerListFindTimer(timer_)) {
+  if (RETURN_SUCCESS == _TimerListFindTimer_(timer_)) {
 
     ret = timer_->timerPeriod;
   }
@@ -256,10 +256,10 @@ Base_t xTimerIsTimerActive(Timer_t *timer_) {
 
 
   /* Assert if the timer cannot be found in the timer list. */
-  SYSASSERT(RETURN_SUCCESS == TimerListFindTimer(timer_));
+  SYSASSERT(RETURN_SUCCESS == _TimerListFindTimer_(timer_));
 
   /* Check if the timer was found in the timer list. */
-  if (RETURN_SUCCESS == TimerListFindTimer(timer_)) {
+  if (RETURN_SUCCESS == _TimerListFindTimer_(timer_)) {
 
     /* Check if the timer state is running, if so
     return true. */
@@ -286,11 +286,11 @@ Base_t xTimerHasTimerExpired(Timer_t *timer_) {
 
 
   /* Assert if the timer cannot be found in the timer list. */
-  SYSASSERT(RETURN_SUCCESS == TimerListFindTimer(timer_));
+  SYSASSERT(RETURN_SUCCESS == _TimerListFindTimer_(timer_));
 
 
   /* Check if the timer was found in the timer list. */
-  if (RETURN_SUCCESS == TimerListFindTimer(timer_)) {
+  if (RETURN_SUCCESS == _TimerListFindTimer_(timer_)) {
 
 
     /* Assert if the timer isn't running, it must be for the
@@ -326,12 +326,12 @@ void xTimerReset(Timer_t *timer_) {
 
 
   /* Assert if the timer cannot be found in the timer list. */
-  SYSASSERT(RETURN_SUCCESS == TimerListFindTimer(timer_));
+  SYSASSERT(RETURN_SUCCESS == _TimerListFindTimer_(timer_));
 
 
 
   /* Check if the timer was found in the timer list. */
-  if (RETURN_SUCCESS == TimerListFindTimer(timer_)) {
+  if (RETURN_SUCCESS == _TimerListFindTimer_(timer_)) {
 
     timer_->timerStartTime = CURRENTTIME();
   }
@@ -349,12 +349,12 @@ void xTimerStart(Timer_t *timer_) {
 
 
   /* Assert if the timer cannot be found in the timer list. */
-  SYSASSERT(RETURN_SUCCESS == TimerListFindTimer(timer_));
+  SYSASSERT(RETURN_SUCCESS == _TimerListFindTimer_(timer_));
 
 
 
   /* Check if the timer was found in the timer list. */
-  if (RETURN_SUCCESS == TimerListFindTimer(timer_)) {
+  if (RETURN_SUCCESS == _TimerListFindTimer_(timer_)) {
 
     timer_->state = TimerStateRunning;
   }
@@ -373,11 +373,11 @@ void xTimerStop(Timer_t *timer_) {
 
 
   /* Assert if the timer cannot be found in the timer list. */
-  SYSASSERT(RETURN_SUCCESS == TimerListFindTimer(timer_));
+  SYSASSERT(RETURN_SUCCESS == _TimerListFindTimer_(timer_));
 
 
   /* Check if the timer was found in the timer list. */
-  if (RETURN_SUCCESS == TimerListFindTimer(timer_)) {
+  if (RETURN_SUCCESS == _TimerListFindTimer_(timer_)) {
 
     timer_->state = TimerStateSuspended;
   }
@@ -389,10 +389,10 @@ void xTimerStop(Timer_t *timer_) {
 
 
 
-/* TimerListFindTimer() is used to search the timer list for a
+/* _TimerListFindTimer_() is used to search the timer list for a
 timer and returns RETURN_SUCCESS if the timer is found. It also
 always checks the health of the heap by calling _MemoryRegionCheckKernel_(). */
-Base_t TimerListFindTimer(const Timer_t *timer_) {
+Base_t _TimerListFindTimer_(const Timer_t *timer_) {
 
 
   Base_t ret = RETURN_FAILURE;

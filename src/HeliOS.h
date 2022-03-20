@@ -93,6 +93,10 @@ typedef uint8_t Base_t;
  */
 typedef TIME_T_TYPE Time_t;
 
+typedef size_t Size_t;
+typedef Size_t xSize;
+
+
 /**
  * @brief Data structure for task runtime statistics.
  *
@@ -276,7 +280,20 @@ typedef void Timer_t;
  * 
  * 
  */
-typedef void *xAddr;
+typedef void Addr_t;
+
+
+/**
+ * @brief Type defintion for the memory address data type.
+ * 
+ * The xAddr type is used to store a memory address and is used to pass memory
+ * addresses back and forth between system calls and the end-user application. It
+ * is not necessary to use the xAddr type within the end-user application as long
+ * as the type is not used to interact with a HeliOS system call.
+ * 
+ * 
+ */
+typedef Addr_t *xAddr;
 
 
 /**
@@ -530,7 +547,7 @@ extern "C" {
 /**
  * @brief System call to handle assertions.
  *
- * The SystemAssert() system call handles assertions. The SystemAssert() system
+ * The _SystemAssert_() system call handles assertions. The _SystemAssert_() system
  * call should not be called directly. Instead, the SYSASSERT() macro should be used.
  * The system assertion functionality will only work when the CONFIG_ENABLE_SYSTEM_ASSERT
  * and CONFIG_SYSTEM_ASSERT_BEHAVIOR settings are defined.
@@ -542,7 +559,7 @@ extern "C" {
  * @param file_ This is automatically defined by the compiler's definition of _FILE_
  * @param line_  This is automatically defined by the compiler's definition of _LINE_
  */
-void SystemAssert(const char *file_, int line_);
+void _SystemAssert_(const char *file_, int line_);
 
 /**
  * @brief System call to allocate memory from the heap.
@@ -557,7 +574,7 @@ void SystemAssert(const char *file_, int line_);
  * @sa xMemFree()
  *
  * @param size_ The amount (size) of the memory to be allocated from the heap in bytes.
- * @return void* If successful, xMemAlloc() returns a pointer to the newly allocated memory.
+ * @return xAddr If successful, xMemAlloc() returns a pointer to the newly allocated memory.
  * If unsuccessful, the system call will return null.
  *
  * @note HeliOS technically does not allocate memory from what is traditionally heap memory.
@@ -565,7 +582,7 @@ void SystemAssert(const char *file_, int line_);
  * is done to maintain MISRA C:2012 compliance since standard library functions like malloc(),
  * calloc() and free() are not permitted.
  */
-void *xMemAlloc(const size_t size_);
+xAddr xMemAlloc(const xSize size_);
 
 /**
  * @brief System call to free memory allocated from the heap.
@@ -581,7 +598,7 @@ void *xMemAlloc(const size_t size_);
  * Memory allocated by xTaskCreate(), xTimerCreate() or xQueueCreate() must
  * be freed by their respective delete system calls (i.e., xTaskDelete()).
  */
-void xMemFree(const void *addr_);
+void xMemFree(const xAddr addr_);
 
 /**
  * @brief System call to return the amount of allocated heap memory.
@@ -590,7 +607,7 @@ void xMemFree(const void *addr_);
  * that is currently allocated. Calls to xMemAlloc() increases and xMemFree()
  * decreases the amount of memory in use.
  *
- * @return size_t The amount of memory currently allocated in bytes. If no heap
+ * @return Size_t The amount of memory currently allocated in bytes. If no heap
  * memory is currently allocated, xMemGetUsed() will return zero.
  *
  * @note xMemGetUsed() returns the amount of heap memory that is currently
@@ -598,7 +615,7 @@ void xMemFree(const void *addr_);
  * objects may be freed using xMemFree(). Kernel objects must be freed using
  * their respective delete system call (e.g., xTaskDelete()).
  */
-size_t xMemGetUsed(void);
+xSize xMemGetUsed(void);
 
 /**
  * @brief System call to return the amount of heap memory allcoated for a pointer.
@@ -609,7 +626,7 @@ size_t xMemGetUsed(void);
  *
  * @param addr_ The pointer to the allocated heap memory to obtain the size of the
  * memory, in bytes, that is allocated.
- * @return size_t The amount of memory currently allocated to the specific pointer in bytes. If
+ * @return Size_t The amount of memory currently allocated to the specific pointer in bytes. If
  * the pointer is invalid or null, xMemGetSize() will return zero.
  *
  * @note If the pointer addr_ points to a structure that, for example, is 48 bytes in size
@@ -619,7 +636,7 @@ size_t xMemGetUsed(void);
  * heap and will return zero if it detects a consistency issue with the heap. Thus, xMemGetSize()
  * can be used to validate pointers before the objects they reference are accessed.
  */
-size_t xMemGetSize(const void *addr_);
+xSize xMemGetSize(const xAddr addr_);
 
 /**
  * @brief System call to create a new message queue.

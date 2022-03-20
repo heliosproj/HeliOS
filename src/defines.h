@@ -136,7 +136,7 @@ to default to the Arduino platform and/or tool-chain. */
 #include <stdio.h>
 #include <time.h>
 
-#define CURRENTTIME() CurrentTime()
+#define CURRENTTIME() _CurrentTime_()
 
 #define DISABLE_INTERRUPTS()
 
@@ -154,7 +154,7 @@ to default to the Arduino platform and/or tool-chain. */
 
 
 
-#define MEMDUMP_KERNEL
+#define MEMDUMP_HEAP
 
 #define MEMDUMP_ROW_WIDTH CONFIG_ALL_MEMORY_REGIONS_BLOCK_SIZE
 
@@ -382,7 +382,7 @@ the CONFIG_ENABLE_SYSTEM_ASSERT setting. */
 #if !defined(CONFIG_ENABLE_SYSTEM_ASSERT)
 #define SYSASSERT(x)
 #else
-#define SYSASSERT(x) if (false == (x)) SystemAssert( __FILE__ , __LINE__ )
+#define SYSASSERT(x) if (false == (x)) _SystemAssert_( __FILE__ , __LINE__ )
 #endif
 #endif
 

@@ -47,7 +47,7 @@ Base_t xTimerHasTimerExpired(Timer_t *timer_);
 void xTimerReset(Timer_t *timer_);
 void xTimerStart(Timer_t *timer_);
 void xTimerStop(Timer_t *timer_);
-Base_t TimerListFindTimer(const Timer_t *timer_);
+Base_t _TimerListFindTimer_(const Timer_t *timer_);
 
 #ifdef __cplusplus
 }  // extern "C" {

@@ -42,14 +42,14 @@ SysFlags_t sysFlags = {
 
 
 
-/* The SystemAssert() system call will be called when
+/* The _SystemAssert_() system call will be called when
 the SYSASSERT() macro evaluates false. In order for there
 to be any effect, CONFIG_ENABLE_SYSTEM_ASSERT and
 CONFIG_SYSTEM_ASSERT_BEHAVIOR must be defined.
 
-SystemAssert() should NOT be called directly. Instead
+_SystemAssert_() should NOT be called directly. Instead
 use the SYSASSERT() C macro. */
-void SystemAssert(const char *file_, int line_) {
+void _SystemAssert_(const char *file_, int line_) {
 
 /* Do not modify this system call directly. Define
 the behavior (code) through the CONFIG_SYSTEM_ASSERT_BEHAVIOR

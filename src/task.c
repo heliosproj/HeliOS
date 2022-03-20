@@ -162,12 +162,12 @@ void xTaskDelete(Task_t *task_) {
 
 
     /* Assert if we can't find the task in the task list. */
-    SYSASSERT(RETURN_SUCCESS == TaskListFindTask(task_));
+    SYSASSERT(RETURN_SUCCESS == _TaskListFindTask_(task_));
 
 
     /* Check if the task is in the task list, if not then head toward
     the exit. */
-    if (RETURN_SUCCESS == TaskListFindTask(task_)) {
+    if (RETURN_SUCCESS == _TaskListFindTask_(task_)) {
 
 
       taskCursor = taskList->head;
@@ -199,7 +199,7 @@ void xTaskDelete(Task_t *task_) {
 
 
         /* Assert if we didn't find it which should be impossible given
-        TaskListFindTask() found it. Maybe some cosmic rays bit flipped
+        _TaskListFindTask_() found it. Maybe some cosmic rays bit flipped
         the DRAM!? */
         SYSASSERT(ISNOTNULLPTR(taskCursor));
 
@@ -241,7 +241,7 @@ Task_t *xTaskGetHandleByName(const char *name_) {
 
 
   /* Assert if the task list has not been initialized. We wouldn't have to do this
-  if we called TaskListFindTask() but that isn't needed here. */
+  if we called _TaskListFindTask_() but that isn't needed here. */
   SYSASSERT(ISNOTNULLPTR(taskList));
 
   /* Assert if the end-user passed a null pointer for the task name. */
@@ -285,7 +285,7 @@ Task_t *xTaskGetHandleById(Base_t id_) {
   Task_t *taskCursor = NULL;
 
   /* Assert if the task list has not been initialized. We wouldn't have to do this
-  if we called TaskListFindTask() but that isn't needed here. */
+  if we called _TaskListFindTask_() but that isn't needed here. */
   SYSASSERT(ISNOTNULLPTR(taskList));
 
 
@@ -337,7 +337,7 @@ TaskRunTimeStats_t *xTaskGetAllRunTimeStats(Base_t *tasks_) {
 
 
   /* Assert if the task list has not been initialized. We wouldn't have to do this
-  if we called TaskListFindTask() but that isn't needed here. */
+  if we called _TaskListFindTask_() but that isn't needed here. */
   SYSASSERT(ISNOTNULLPTR(taskList));
 
 
@@ -419,10 +419,10 @@ TaskRunTimeStats_t *xTaskGetTaskRunTimeStats(Task_t *task_) {
 
 
   /* Assert if the task cannot be found in the task list. */
-  SYSASSERT(RETURN_SUCCESS == TaskListFindTask(task_));
+  SYSASSERT(RETURN_SUCCESS == _TaskListFindTask_(task_));
 
   /* Check if the task cannot be found in the task list. */
-  if (RETURN_SUCCESS == TaskListFindTask(task_)) {
+  if (RETURN_SUCCESS == _TaskListFindTask_(task_)) {
 
 
     ret = (TaskRunTimeStats_t *)_HeapAllocateMemory_(sizeof(TaskRunTimeStats_t));
@@ -504,11 +504,11 @@ TaskInfo_t *xTaskGetTaskInfo(Task_t *task_) {
 
 
   /* Assert if the task cannot be found. */
-  SYSASSERT(RETURN_SUCCESS == TaskListFindTask(task_));
+  SYSASSERT(RETURN_SUCCESS == _TaskListFindTask_(task_));
 
 
   /* Check if the task cannot be found. */
-  if (RETURN_SUCCESS == TaskListFindTask(task_)) {
+  if (RETURN_SUCCESS == _TaskListFindTask_(task_)) {
 
     ret = (TaskInfo_t *)_HeapAllocateMemory_(sizeof(TaskInfo_t));
 
@@ -643,11 +643,11 @@ TaskState_t xTaskGetTaskState(Task_t *task_) {
 
 
   /* Assert if the task cannot be found. */
-  SYSASSERT(RETURN_SUCCESS == TaskListFindTask(task_));
+  SYSASSERT(RETURN_SUCCESS == _TaskListFindTask_(task_));
 
 
   /* Check to make sure the task was found. */
-  if (RETURN_SUCCESS == TaskListFindTask(task_)) {
+  if (RETURN_SUCCESS == _TaskListFindTask_(task_)) {
 
     ret = task_->state;
   }
@@ -669,11 +669,11 @@ char *xTaskGetName(Task_t *task_) {
 
 
   /* Assert if the task cannot be found. */
-  SYSASSERT(RETURN_SUCCESS == TaskListFindTask(task_));
+  SYSASSERT(RETURN_SUCCESS == _TaskListFindTask_(task_));
 
 
   /* Check if the task can be found. */
-  if (RETURN_SUCCESS == TaskListFindTask(task_)) {
+  if (RETURN_SUCCESS == _TaskListFindTask_(task_)) {
 
 
     ret = (char *)xMemAlloc(CONFIG_TASK_NAME_BYTES);
@@ -706,11 +706,11 @@ Base_t xTaskGetId(Task_t *task_) {
 
 
   /* Assert if the task cannot be found. */
-  SYSASSERT(RETURN_SUCCESS == TaskListFindTask(task_));
+  SYSASSERT(RETURN_SUCCESS == _TaskListFindTask_(task_));
 
 
   /* Check that the task was found. */
-  if (RETURN_SUCCESS == TaskListFindTask(task_)) {
+  if (RETURN_SUCCESS == _TaskListFindTask_(task_)) {
 
     ret = task_->id;
   }
@@ -728,11 +728,11 @@ void xTaskNotifyStateClear(Task_t *task_) {
 
 
   /* Assert if the task cannot be found. */
-  SYSASSERT(RETURN_SUCCESS == TaskListFindTask(task_));
+  SYSASSERT(RETURN_SUCCESS == _TaskListFindTask_(task_));
 
 
   /* Check if the task was found. */
-  if (RETURN_SUCCESS == TaskListFindTask(task_)) {
+  if (RETURN_SUCCESS == _TaskListFindTask_(task_)) {
 
 
     /* If the notification bytes are greater than zero then there
@@ -759,11 +759,11 @@ Base_t xTaskNotificationIsWaiting(Task_t *task_) {
 
 
   /* Assert if the task cannot be found. */
-  SYSASSERT(RETURN_SUCCESS == TaskListFindTask(task_));
+  SYSASSERT(RETURN_SUCCESS == _TaskListFindTask_(task_));
 
 
   /* Check if the task was found. */
-  if (RETURN_SUCCESS == TaskListFindTask(task_)) {
+  if (RETURN_SUCCESS == _TaskListFindTask_(task_)) {
 
 
     /* If there are notification bytes, there is a notification
@@ -811,11 +811,11 @@ Base_t xTaskNotifyGive(Task_t *task_, Base_t notificationBytes_, const char *not
 
 
     /* Assert if we can't find the task to receive the notification. */
-    SYSASSERT(RETURN_SUCCESS == TaskListFindTask(task_));
+    SYSASSERT(RETURN_SUCCESS == _TaskListFindTask_(task_));
 
 
     /* Check if the task can be found. */
-    if (RETURN_SUCCESS == TaskListFindTask(task_)) {
+    if (RETURN_SUCCESS == _TaskListFindTask_(task_)) {
 
 
       /* Make sure there isn't a waiting notification. xTaskNotifyGive will NOT
@@ -846,11 +846,11 @@ TaskNotification_t *xTaskNotifyTake(Task_t *task_) {
 
 
   /* Assert if the task cannot be found. */
-  SYSASSERT(RETURN_SUCCESS == TaskListFindTask(task_));
+  SYSASSERT(RETURN_SUCCESS == _TaskListFindTask_(task_));
 
 
   /* Check if the task cannot be found. */
-  if (RETURN_SUCCESS == TaskListFindTask(task_)) {
+  if (RETURN_SUCCESS == _TaskListFindTask_(task_)) {
 
     /* If there are notification bytes, there is a notification
     waiting. */
@@ -893,10 +893,10 @@ void xTaskResume(Task_t *task_) {
 
 
   /* Assert if the task cannot be found. */
-  SYSASSERT(RETURN_SUCCESS == TaskListFindTask(task_));
+  SYSASSERT(RETURN_SUCCESS == _TaskListFindTask_(task_));
 
   /* Check if the task can be found. */
-  if (RETURN_SUCCESS == TaskListFindTask(task_)) {
+  if (RETURN_SUCCESS == _TaskListFindTask_(task_)) {
 
     task_->state = TaskStateRunning;
   }
@@ -915,11 +915,11 @@ void xTaskSuspend(Task_t *task_) {
 
 
   /* Assert if the task cannot be found. */
-  SYSASSERT(RETURN_SUCCESS == TaskListFindTask(task_));
+  SYSASSERT(RETURN_SUCCESS == _TaskListFindTask_(task_));
 
 
   /* Check if the task can be found. */
-  if (RETURN_SUCCESS == TaskListFindTask(task_)) {
+  if (RETURN_SUCCESS == _TaskListFindTask_(task_)) {
 
     task_->state = TaskStateSuspended;
   }
@@ -939,11 +939,11 @@ void xTaskWait(Task_t *task_) {
 
 
   /* Assert if the task cannot be found. */
-  SYSASSERT(RETURN_SUCCESS == TaskListFindTask(task_));
+  SYSASSERT(RETURN_SUCCESS == _TaskListFindTask_(task_));
 
 
   /* Check if the task can be found. */
-  if (RETURN_SUCCESS == TaskListFindTask(task_)) {
+  if (RETURN_SUCCESS == _TaskListFindTask_(task_)) {
 
     task_->state = TaskStateWaiting;
   }
@@ -964,11 +964,11 @@ void xTaskChangePeriod(Task_t *task_, Time_t timerPeriod_) {
 
 
   /* Assert if the task cannot be found. */
-  SYSASSERT(RETURN_SUCCESS == TaskListFindTask(task_));
+  SYSASSERT(RETURN_SUCCESS == _TaskListFindTask_(task_));
 
 
   /* Check if the task can be found. */
-  if (RETURN_SUCCESS == TaskListFindTask(task_)) {
+  if (RETURN_SUCCESS == _TaskListFindTask_(task_)) {
 
     task_->timerPeriod = timerPeriod_;
   }
@@ -989,11 +989,11 @@ Time_t xTaskGetPeriod(Task_t *task_) {
 
 
   /* Assert if the task cannot be found. */
-  SYSASSERT(RETURN_SUCCESS == TaskListFindTask(task_));
+  SYSASSERT(RETURN_SUCCESS == _TaskListFindTask_(task_));
 
 
   /* Check if the task can be found. */
-  if (RETURN_SUCCESS == TaskListFindTask(task_)) {
+  if (RETURN_SUCCESS == _TaskListFindTask_(task_)) {
 
     ret = task_->timerPeriod;
   }
@@ -1004,10 +1004,10 @@ Time_t xTaskGetPeriod(Task_t *task_) {
 
 
 
-/* TaskListFindTask() is used to search the task list for a
+/* _TaskListFindTask_() is used to search the task list for a
 task and returns RETURN_SUCCESS if the task is found. It also
 always checks the health of the heap by calling _MemoryRegionCheckKernel_(). */
-Base_t TaskListFindTask(const Task_t *task_) {
+Base_t _TaskListFindTask_(const Task_t *task_) {
 
 
   Base_t ret = RETURN_FAILURE;
@@ -1073,11 +1073,11 @@ void xTaskResetTimer(Task_t *task_) {
 
 
   /* Assert if the task cannot be found. */
-  SYSASSERT(RETURN_SUCCESS == TaskListFindTask(task_));
+  SYSASSERT(RETURN_SUCCESS == _TaskListFindTask_(task_));
 
 
   /* Check if the task was found. */
-  if (RETURN_SUCCESS == TaskListFindTask(task_)) {
+  if (RETURN_SUCCESS == _TaskListFindTask_(task_)) {
 
     task_->timerStartTime = CURRENTTIME();
   }
@@ -1128,7 +1128,7 @@ void xTaskStartScheduler(void) {
       /* If the runtime overflow flag is true. Reset the runtimes on all of the tasks. */
       if (SYSFLAG_OVERFLOW()) {
 
-        RunTimeReset();
+        _RunTimeReset_();
       }
 
 
@@ -1141,13 +1141,13 @@ void xTaskStartScheduler(void) {
         /* If the task pointed to by the task cursor is waiting and it has a notification waiting, then execute it. */
         if ((TaskStateWaiting == taskCursor->state) && (zero < taskCursor->notificationBytes)) {
 
-          TaskRun(taskCursor);
+          _TaskRun_(taskCursor);
 
           /* If the task pointed to by the task cursor is waiting and its timer has expired, then execute it. */
         } else if ((TaskStateWaiting == taskCursor->state) && (zero < taskCursor->timerPeriod) && ((CURRENTTIME() - taskCursor->timerStartTime) > taskCursor->timerPeriod)) {
 
 
-          TaskRun(taskCursor);
+          _TaskRun_(taskCursor);
 
           taskCursor->timerStartTime = CURRENTTIME();
 
@@ -1172,7 +1172,7 @@ void xTaskStartScheduler(void) {
       /* If the run task pointer is not null, then there is a running tasks to execute. */
       if (ISNOTNULLPTR(runTask)) {
 
-        TaskRun(runTask);
+        _TaskRun_(runTask);
 
         runTask = NULL;
       }
@@ -1192,9 +1192,9 @@ void xTaskStartScheduler(void) {
 
 
 
-/* If the runtime overflow flag is set, then RunTimeReset() is called to reset all of the
+/* If the runtime overflow flag is set, then _RunTimeReset_() is called to reset all of the
 total runtimes on tasks to their last runtime. */
-void RunTimeReset(void) {
+void _RunTimeReset_(void) {
 
 
   Task_t *taskCursor = NULL;
@@ -1221,7 +1221,7 @@ void RunTimeReset(void) {
 
 
 /* Used only for when testing HeliOS on Linux, then get the time from clock_gettime(). */
-Time_t CurrentTime(void) {
+Time_t _CurrentTime_(void) {
 
 #if defined(OTHER_ARCH_DEBUG)
 
@@ -1241,9 +1241,9 @@ Time_t CurrentTime(void) {
 
 
 
-/* Called by the xTaskStartScheduler() system call, TaskRun() executes a task and updates all of its
+/* Called by the xTaskStartScheduler() system call, _TaskRun_() executes a task and updates all of its
 runtime statistics. */
-void TaskRun(Task_t *task_) {
+void _TaskRun_(Task_t *task_) {
 
 
   Time_t taskStartTime = zero;

@@ -40,23 +40,23 @@ extern "C" {
 
 
 
-void *xMemAlloc(const size_t size_);
-void xMemFree(const void *addr_);
-size_t xMemGetUsed(void);
-size_t xMemGetSize(const void *addr_);
-Base_t _MemoryRegionCheck_(const volatile MemoryRegion_t *region_, const void *addr_, const Base_t option_);
-Base_t _MemoryRegionCheckAddr_(const volatile MemoryRegion_t *region_, const void *addr_);
-void *_calloc_(volatile MemoryRegion_t *region_, const size_t size_);
-void _free_(const volatile MemoryRegion_t *region_, const void *addr_);
-void *_KernelAllocateMemory_(const size_t size_);
-void _KernelFreeMemory_(const void *addr_);
-Base_t _MemoryRegionCheckKernel_(const void *addr_, const Base_t option_);
-void *_HeapAllocateMemory_(const size_t size_);
-void _HeapFreeMemory_(const void *addr_);
-Base_t _MemoryRegionCheckHeap_(const void *addr_, const Base_t option_);
-void _memcpy_(void *dest_, const void *src_, size_t n_);
-void _memset_(volatile void *dest_, uint16_t val_, size_t n_);
-uint16_t _memcmp_(const void *s1_, const void *s2_, size_t n_);
+Addr_t *xMemAlloc(const Size_t size_);
+void xMemFree(const Addr_t *addr_);
+Size_t xMemGetUsed(void);
+Size_t xMemGetSize(const Addr_t *addr_);
+Base_t _MemoryRegionCheck_(const volatile MemoryRegion_t *region_, const Addr_t *addr_, const Base_t option_);
+Base_t _MemoryRegionCheckAddr_(const volatile MemoryRegion_t *region_, const Addr_t *addr_);
+Addr_t *_calloc_(volatile MemoryRegion_t *region_, const Size_t size_);
+void _free_(const volatile MemoryRegion_t *region_, const Addr_t *addr_);
+Addr_t *_KernelAllocateMemory_(const Size_t size_);
+void _KernelFreeMemory_(const Addr_t *addr_);
+Base_t _MemoryRegionCheckKernel_(const Addr_t *addr_, const Base_t option_);
+Addr_t *_HeapAllocateMemory_(const Size_t size_);
+void _HeapFreeMemory_(const Addr_t *addr_);
+Base_t _MemoryRegionCheckHeap_(const Addr_t *addr_, const Base_t option_);
+void _memcpy_(Addr_t *dest_, const Addr_t *src_, Size_t n_);
+void _memset_(volatile Addr_t *dest_, uint16_t val_, Size_t n_);
+uint16_t _memcmp_(const Addr_t *s1_, const Addr_t *s2_, Size_t n_);
 
 
 

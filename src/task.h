@@ -61,13 +61,13 @@ void xTaskChangePeriod(Task_t *task_, Time_t timerPeriod_);
 Time_t xTaskGetPeriod(Task_t *task_);
 void xTaskResetTimer(Task_t *task_);
 void xTaskStartScheduler(void);
-void RunTimeReset(void);
-Time_t CurrentTime(void);
-void TaskRun(Task_t *task_);
+void _RunTimeReset_(void);
+Time_t _CurrentTime_(void);
+void _TaskRun_(Task_t *task_);
 void xTaskResumeAll(void);
 void xTaskSuspendAll(void);
 SchedulerState_t xTaskGetSchedulerState(void);
-Base_t TaskListFindTask(const Task_t *task_);
+Base_t _TaskListFindTask_(const Task_t *task_);
 
 #ifdef __cplusplus
 }  // extern "C" {
