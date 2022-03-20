@@ -28,7 +28,7 @@
 
 
 
-static MemoryRegion_t heap = {
+static volatile MemoryRegion_t heap = {
     .entrySize = zero,
     .start = NULL,
 };
@@ -36,7 +36,7 @@ static MemoryRegion_t heap = {
 
 
 
-static MemoryRegion_t kernel = {
+static volatile MemoryRegion_t kernel = {
     .entrySize = zero,
     .start = NULL,
 };
@@ -47,9 +47,9 @@ static MemoryRegion_t kernel = {
 from the heap memory region. */
 void *xMemAlloc(const size_t size_) {
 
-  /* Just call calloc_() with the heap memory region
+  /* Just call _calloc_() with the heap memory region
   to free from the heap. */
-  return calloc_(&heap, size_);
+  return _calloc_(&heap, size_);
 }
 
 
@@ -58,9 +58,9 @@ void *xMemAlloc(const size_t size_) {
 void xMemFree(const void *addr_) {
 
 
-  /* Just call free_() with the heap memory region to free
+  /* Just call _free_() with the heap memory region to free
   from the heap. */
-  free_(&heap, addr_);
+  _free_(&heap, addr_);
 
   return;
 }
@@ -93,12 +93,12 @@ size_t xMemGetUsed(void) {
 
 
     /* Assert if the check of the heap memory region fails. */
-    SYSASSERT(RETURN_SUCCESS == MemoryRegionCheck(&heap, NULL, MEMORY_REGION_CHECK_OPTION_WO_ADDR));
+    SYSASSERT(RETURN_SUCCESS == _MemoryRegionCheck_(&heap, NULL, MEMORY_REGION_CHECK_OPTION_WO_ADDR));
 
 
 
     /* Check if the heap memory region is consistent. */
-    if (RETURN_SUCCESS == MemoryRegionCheck(&heap, NULL, MEMORY_REGION_CHECK_OPTION_WO_ADDR)) {
+    if (RETURN_SUCCESS == _MemoryRegionCheck_(&heap, NULL, MEMORY_REGION_CHECK_OPTION_WO_ADDR)) {
 
       cursor = heap.start;
 
@@ -162,12 +162,12 @@ size_t xMemGetSize(const void *addr_) {
 
 
     /* I LEFT OFF HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */
-    SYSASSERT(RETURN_SUCCESS == MemoryRegionCheck(&heap, addr_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
+    SYSASSERT(RETURN_SUCCESS == _MemoryRegionCheck_(&heap, addr_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
 
 
 
 
-    if (RETURN_SUCCESS == MemoryRegionCheck(&heap, addr_, MEMORY_REGION_CHECK_OPTION_W_ADDR)) {
+    if (RETURN_SUCCESS == _MemoryRegionCheck_(&heap, addr_, MEMORY_REGION_CHECK_OPTION_W_ADDR)) {
 
 
 
@@ -192,28 +192,15 @@ size_t xMemGetSize(const void *addr_) {
     }
   }
 
-  
+
 
   return ret;
 }
 
 
-Base_t MemoryRegionCheckHeap(const void *addr_, const Base_t option_) {
-
-  return MemoryRegionCheck(&heap, addr_, option_);
-}
 
 
-
-
-Base_t MemoryRegionCheckKernel(const void *addr_, const Base_t option_) {
-
-  return MemoryRegionCheck(&kernel, addr_, option_);
-}
-
-
-
-Base_t MemoryRegionCheck(const MemoryRegion_t *region_, const void *addr_, const Base_t option_) {
+Base_t _MemoryRegionCheck_(const volatile MemoryRegion_t *region_, const void *addr_, const Base_t option_) {
 
 
   MemoryEntry_t *cursor = NULL;
@@ -253,12 +240,12 @@ Base_t MemoryRegionCheck(const MemoryRegion_t *region_, const void *addr_, const
 
 
 
-        SYSASSERT(RETURN_SUCCESS == MemoryRegionCheckAddr(region_, cursor));
+        SYSASSERT(RETURN_SUCCESS == _MemoryRegionCheckAddr_(region_, cursor));
 
 
 
 
-        if (RETURN_SUCCESS == MemoryRegionCheckAddr(region_, cursor)) {
+        if (RETURN_SUCCESS == _MemoryRegionCheckAddr_(region_, cursor)) {
 
           blocks += cursor->blocks;
 
@@ -293,12 +280,12 @@ Base_t MemoryRegionCheck(const MemoryRegion_t *region_, const void *addr_, const
         SYSASSERT(((MEMORY_REGION_CHECK_OPTION_WO_ADDR == option_) && (false == SYSFLAG_CORRUPT())) || ((MEMORY_REGION_CHECK_OPTION_W_ADDR == option_) && (false == SYSFLAG_CORRUPT()) && (true == found)));
 
 
-        /* TO-DO: FIX IT - THE MEMORY REGION IS _NOT_ CORRUPT JUST BECAUSE THE ADDRESS WAS NEVER FOUND. */
+
         if (((MEMORY_REGION_CHECK_OPTION_WO_ADDR == option_) && (false == SYSFLAG_CORRUPT())) || ((MEMORY_REGION_CHECK_OPTION_W_ADDR == option_) && (false == SYSFLAG_CORRUPT()) && (true == found))) {
 
 
           ret = RETURN_SUCCESS;
-        }
+        } /* Never us an else statement here to mark SYSFLAG_CORRUPT() = true. */
 
 
 
@@ -315,7 +302,7 @@ Base_t MemoryRegionCheck(const MemoryRegion_t *region_, const void *addr_, const
 
 
 
-Base_t MemoryRegionCheckAddr(const MemoryRegion_t *region_, const void *addr_) {
+Base_t _MemoryRegionCheckAddr_(const volatile MemoryRegion_t *region_, const void *addr_) {
 
 
 
@@ -351,7 +338,7 @@ Base_t MemoryRegionCheckAddr(const MemoryRegion_t *region_, const void *addr_) {
 
 
 
-void *calloc_(MemoryRegion_t *region_, const size_t size_) {
+void *_calloc_(volatile MemoryRegion_t *region_, const size_t size_) {
 
 
 
@@ -417,12 +404,10 @@ void *calloc_(MemoryRegion_t *region_, const size_t size_) {
         region_->start = (MemoryEntry_t *)region_->mem;
 
 
-        memset_(region_->mem, zero, ALL_MEMORY_REGIONS_SIZE_IN_BYTES);
+        _memset_(region_->mem, zero, ALL_MEMORY_REGIONS_SIZE_IN_BYTES);
 
 
         region_->start->free = true;
-
-
 
 
 
@@ -438,11 +423,11 @@ void *calloc_(MemoryRegion_t *region_, const size_t size_) {
 
 
 
-      SYSASSERT(RETURN_SUCCESS == MemoryRegionCheck(&heap, NULL, MEMORY_REGION_CHECK_OPTION_WO_ADDR));
+      SYSASSERT(RETURN_SUCCESS == _MemoryRegionCheck_(&heap, NULL, MEMORY_REGION_CHECK_OPTION_WO_ADDR));
 
 
 
-      if (RETURN_SUCCESS == MemoryRegionCheck(&heap, NULL, MEMORY_REGION_CHECK_OPTION_WO_ADDR)) {
+      if (RETURN_SUCCESS == _MemoryRegionCheck_(&heap, NULL, MEMORY_REGION_CHECK_OPTION_WO_ADDR)) {
 
 
 
@@ -529,8 +514,6 @@ void *calloc_(MemoryRegion_t *region_, const size_t size_) {
 
 
 
-
-
             candidate->next->blocks = candidate->blocks - requested;
 
 
@@ -541,14 +524,12 @@ void *calloc_(MemoryRegion_t *region_, const size_t size_) {
 
 
 
-
-
             candidate->blocks = requested;
 
 
 
 
-            memset_(ENTRY2ADDR(candidate, &heap), zero, (requested - region_->entrySize) * CONFIG_ALL_MEMORY_REGIONS_BLOCK_SIZE);
+            _memset_(ENTRY2ADDR(candidate, &heap), zero, (requested - region_->entrySize) * CONFIG_ALL_MEMORY_REGIONS_BLOCK_SIZE);
 
 
 
@@ -566,9 +547,7 @@ void *calloc_(MemoryRegion_t *region_, const size_t size_) {
 
 
 
-
-
-            memset_(ENTRY2ADDR(candidate, &heap), zero, (requested - region_->entrySize) * CONFIG_ALL_MEMORY_REGIONS_BLOCK_SIZE);
+            _memset_(ENTRY2ADDR(candidate, &heap), zero, (requested - region_->entrySize) * CONFIG_ALL_MEMORY_REGIONS_BLOCK_SIZE);
 
 
 
@@ -590,7 +569,7 @@ void *calloc_(MemoryRegion_t *region_, const size_t size_) {
 
 
 
-void free_(const MemoryRegion_t *region_, const void *addr_) {
+void _free_(const volatile MemoryRegion_t *region_, const void *addr_) {
 
 
 
@@ -611,12 +590,12 @@ void free_(const MemoryRegion_t *region_, const void *addr_) {
 
 
 
-    SYSASSERT(RETURN_SUCCESS == MemoryRegionCheck(region_, addr_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
+    SYSASSERT(RETURN_SUCCESS == _MemoryRegionCheck_(region_, addr_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
 
 
 
 
-    if (RETURN_SUCCESS == MemoryRegionCheck(region_, addr_, MEMORY_REGION_CHECK_OPTION_W_ADDR)) {
+    if (RETURN_SUCCESS == _MemoryRegionCheck_(region_, addr_, MEMORY_REGION_CHECK_OPTION_W_ADDR)) {
 
 
 
@@ -626,23 +605,22 @@ void free_(const MemoryRegion_t *region_, const void *addr_) {
 
 
 
-        free->free = true;
+      free->free = true;
 
 
 
 
-        if ((ISNOTNULLPTR(free->next)) && (true == free->next->free)) {
+      if ((ISNOTNULLPTR(free->next)) && (true == free->next->free)) {
 
 
 
-          free->blocks += free->next->blocks;
+        free->blocks += free->next->blocks;
 
 
 
 
-          free->next = free->next->next;
-        }
-      
+        free->next = free->next->next;
+      }
     }
   }
 
@@ -657,18 +635,42 @@ void free_(const MemoryRegion_t *region_, const void *addr_) {
 
 
 
-void *KernelAllocateMemory(const size_t size_) {
+void *_KernelAllocateMemory_(const size_t size_) {
 
 
-  return calloc_(&kernel, size_);
+  return _calloc_(&kernel, size_);
 }
 
 
 
 
-void KernelFreeMemory(const void *addr_) {
+void _KernelFreeMemory_(const void *addr_) {
 
-  free_(&kernel, addr_);
+  _free_(&kernel, addr_);
+
+
+  return;
+}
+
+
+Base_t _MemoryRegionCheckKernel_(const void *addr_, const Base_t option_) {
+
+  return _MemoryRegionCheck_(&kernel, addr_, option_);
+}
+
+
+void *_HeapAllocateMemory_(const size_t size_) {
+
+
+  return _calloc_(&heap, size_);
+}
+
+
+
+
+void _HeapFreeMemory_(const void *addr_) {
+
+  _free_(&heap, addr_);
 
 
   return;
@@ -676,26 +678,15 @@ void KernelFreeMemory(const void *addr_) {
 
 
 
-void *HeapAllocateMemory(const size_t size_) {
+Base_t _MemoryRegionCheckHeap_(const void *addr_, const Base_t option_) {
 
-
-  return calloc_(&heap, size_);
+  return _MemoryRegionCheck_(&heap, addr_, option_);
 }
 
 
 
 
-void HeapFreeMemory(const void *addr_) {
-
-  free_(&heap, addr_);
-
-
-  return;
-}
-
-
-
-void memcpy_(void *dest_, const void *src_, size_t n_) {
+void _memcpy_(void *dest_, const void *src_, size_t n_) {
 
   char *src = (char *)src_;
 
@@ -712,7 +703,7 @@ void memcpy_(void *dest_, const void *src_, size_t n_) {
 
 
 
-void memset_(void *dest_, uint16_t val_, size_t n_) {
+void _memset_(volatile void *dest_, uint16_t val_, size_t n_) {
 
   char *dest = (char *)dest_;
 
@@ -727,7 +718,7 @@ void memset_(void *dest_, uint16_t val_, size_t n_) {
 
 
 
-uint16_t memcmp_(const void *s1_, const void *s2_, size_t n_) {
+uint16_t _memcmp_(const void *s1_, const void *s2_, size_t n_) {
 
   uint16_t ret = zero;
 
@@ -758,17 +749,17 @@ uint16_t memcmp_(const void *s1_, const void *s2_, size_t n_) {
 
 #if defined(MEMDUMP_HEAP) || defined(MEMDUMP_KERNEL)
 
-void memdump_(void) {
+void _memdump_(void) {
 
   Word_t k = zero;
 
-  MemoryRegion_t *region = NULL;
+  volatile MemoryRegion_t *region = NULL;
 
-  #if defined(MEMDUMP_HEAP)
+#if defined(MEMDUMP_HEAP)
   region = &heap;
-  #elif defined(MEMDUMP_KERNEL)
+#elif defined(MEMDUMP_KERNEL)
   region = &kernel;
-  #endif
+#endif
 
   for (Word_t i = zero; i < (ALL_MEMORY_REGIONS_SIZE_IN_BYTES / MEMDUMP_ROW_WIDTH); i++) {
 

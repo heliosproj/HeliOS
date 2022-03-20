@@ -73,7 +73,7 @@ Task_t *xTaskCreate(const char *name_, void (*callback_)(Task_t *, TaskParm_t *)
 
 
 
-      taskList = (TaskList_t *)KernelAllocateMemory(sizeof(TaskList_t));
+      taskList = (TaskList_t *)_KernelAllocateMemory_(sizeof(TaskList_t));
     }
 
 
@@ -86,7 +86,7 @@ Task_t *xTaskCreate(const char *name_, void (*callback_)(Task_t *, TaskParm_t *)
 
 
 
-      ret = (Task_t *)KernelAllocateMemory(sizeof(Task_t));
+      ret = (Task_t *)_KernelAllocateMemory_(sizeof(Task_t));
 
 
       /* Again, assert if xMemAlloc() didn't do its job. */
@@ -101,7 +101,7 @@ Task_t *xTaskCreate(const char *name_, void (*callback_)(Task_t *, TaskParm_t *)
 
         ret->id = taskList->nextId;
 
-        memcpy_(ret->name, name_, CONFIG_TASK_NAME_BYTES);
+        _memcpy_(ret->name, name_, CONFIG_TASK_NAME_BYTES);
 
         ret->state = TaskStateSuspended;
 
@@ -182,7 +182,7 @@ void xTaskDelete(Task_t *task_) {
 
 
 
-        KernelFreeMemory(taskCursor);
+        _KernelFreeMemory_(taskCursor);
 
         taskList->length--;
 
@@ -213,7 +213,7 @@ void xTaskDelete(Task_t *task_) {
 
 
 
-          KernelFreeMemory(taskCursor);
+          _KernelFreeMemory_(taskCursor);
 
 
           taskList->length--;
@@ -257,7 +257,7 @@ Task_t *xTaskGetHandleByName(const char *name_) {
 
       /* Compare the task name of the task pointed to by the task cursor against the
       name parameter. */
-      if (zero == memcmp_(taskCursor->name, name_, CONFIG_TASK_NAME_BYTES)) {
+      if (zero == _memcmp_(taskCursor->name, name_, CONFIG_TASK_NAME_BYTES)) {
 
 
         ret = taskCursor;
@@ -425,7 +425,7 @@ TaskRunTimeStats_t *xTaskGetTaskRunTimeStats(Task_t *task_) {
   if (RETURN_SUCCESS == TaskListFindTask(task_)) {
 
 
-    ret = (TaskRunTimeStats_t *)HeapAllocateMemory(sizeof(TaskRunTimeStats_t));
+    ret = (TaskRunTimeStats_t *)_HeapAllocateMemory_(sizeof(TaskRunTimeStats_t));
 
 
     /* Assert if xMemAlloc() didn't do its job. */
@@ -510,7 +510,7 @@ TaskInfo_t *xTaskGetTaskInfo(Task_t *task_) {
   /* Check if the task cannot be found. */
   if (RETURN_SUCCESS == TaskListFindTask(task_)) {
 
-    ret = (TaskInfo_t *)HeapAllocateMemory(sizeof(TaskInfo_t));
+    ret = (TaskInfo_t *)_HeapAllocateMemory_(sizeof(TaskInfo_t));
 
 
     /* Assert if xMemAlloc() failed to do its one job in life. */
@@ -525,7 +525,7 @@ TaskInfo_t *xTaskGetTaskInfo(Task_t *task_) {
 
       ret->state = task_->state;
 
-      memcpy_(ret->name, task_->name, CONFIG_TASK_NAME_BYTES);
+      _memcpy_(ret->name, task_->name, CONFIG_TASK_NAME_BYTES);
 
       ret->lastRunTime = task_->lastRunTime;
 
@@ -609,7 +609,7 @@ TaskInfo_t *xTaskGetAllTaskInfo(Base_t *tasks_) {
 
           ret[i].state = taskCursor->state;
 
-          memcpy_(ret[i].name, taskCursor->name, CONFIG_TASK_NAME_BYTES);
+          _memcpy_(ret[i].name, taskCursor->name, CONFIG_TASK_NAME_BYTES);
 
           ret[i].lastRunTime = taskCursor->lastRunTime;
 
@@ -688,7 +688,7 @@ char *xTaskGetName(Task_t *task_) {
 
 
 
-      memcpy_(ret, task_->name, CONFIG_TASK_NAME_BYTES);
+      _memcpy_(ret, task_->name, CONFIG_TASK_NAME_BYTES);
     }
   }
 
@@ -741,7 +741,7 @@ void xTaskNotifyStateClear(Task_t *task_) {
 
       task_->notificationBytes = zero;
 
-      memset_(task_->notificationValue, zero, CONFIG_NOTIFICATION_VALUE_BYTES);
+      _memset_(task_->notificationValue, zero, CONFIG_NOTIFICATION_VALUE_BYTES);
     }
   }
 
@@ -824,7 +824,7 @@ Base_t xTaskNotifyGive(Task_t *task_, Base_t notificationBytes_, const char *not
 
         task_->notificationBytes = notificationBytes_;
 
-        memcpy_(task_->notificationValue, notificationValue_, CONFIG_NOTIFICATION_VALUE_BYTES);
+        _memcpy_(task_->notificationValue, notificationValue_, CONFIG_NOTIFICATION_VALUE_BYTES);
 
         ret = RETURN_SUCCESS;
       }
@@ -858,7 +858,7 @@ TaskNotification_t *xTaskNotifyTake(Task_t *task_) {
 
 
 
-      ret = (TaskNotification_t *)HeapAllocateMemory(sizeof(TaskNotification_t));
+      ret = (TaskNotification_t *)_HeapAllocateMemory_(sizeof(TaskNotification_t));
 
 
       /* Assert if xMemAlloc() didn't do its job. */
@@ -870,11 +870,11 @@ TaskNotification_t *xTaskNotifyTake(Task_t *task_) {
 
         ret->notificationBytes = task_->notificationBytes;
 
-        memcpy_(ret->notificationValue, task_->notificationValue, CONFIG_NOTIFICATION_VALUE_BYTES);
+        _memcpy_(ret->notificationValue, task_->notificationValue, CONFIG_NOTIFICATION_VALUE_BYTES);
 
         task_->notificationBytes = zero;
 
-        memset_(task_->notificationValue, zero, CONFIG_NOTIFICATION_VALUE_BYTES);
+        _memset_(task_->notificationValue, zero, CONFIG_NOTIFICATION_VALUE_BYTES);
       }
     }
   }
@@ -1006,7 +1006,7 @@ Time_t xTaskGetPeriod(Task_t *task_) {
 
 /* TaskListFindTask() is used to search the task list for a
 task and returns RETURN_SUCCESS if the task is found. It also
-always checks the health of the heap by calling MemoryRegionCheckKernel(). */
+always checks the health of the heap by calling _MemoryRegionCheckKernel_(). */
 Base_t TaskListFindTask(const Task_t *task_) {
 
 
@@ -1027,14 +1027,14 @@ Base_t TaskListFindTask(const Task_t *task_) {
   if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(task_))) {
 
 
-    /* Assert if MemoryRegionCheckKernel() fails on the health check of the heap OR if
+    /* Assert if _MemoryRegionCheckKernel_() fails on the health check of the heap OR if
     the task pointer's entry cannot be found in the heap. */
-    SYSASSERT(RETURN_SUCCESS == MemoryRegionCheckKernel(task_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
+    SYSASSERT(RETURN_SUCCESS == _MemoryRegionCheckKernel_(task_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
 
 
-    /* Check if MemoryRegionCheckKernel() passes on the health check and
+    /* Check if _MemoryRegionCheckKernel_() passes on the health check and
     the task pointer's entry can be found in the heap. */
-    if (RETURN_SUCCESS == MemoryRegionCheckKernel(task_, MEMORY_REGION_CHECK_OPTION_W_ADDR)) {
+    if (RETURN_SUCCESS == _MemoryRegionCheckKernel_(task_, MEMORY_REGION_CHECK_OPTION_W_ADDR)) {
 
 
       taskCursor = taskList->head;

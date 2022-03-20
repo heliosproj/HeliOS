@@ -51,7 +51,7 @@ Queue_t *xQueueCreate(Base_t limit_) {
 
 
 
-    ret = (Queue_t *)KernelAllocateMemory(sizeof(Queue_t));
+    ret = (Queue_t *)_KernelAllocateMemory_(sizeof(Queue_t));
 
 
     /* Assert if xMemAlloc() didn't return our requested
@@ -84,13 +84,13 @@ void xQueueDelete(Queue_t *queue_) {
 
   /* Assert if the heap fails its health check or if the queue pointer the end-user
   passed is invalid. */
-  SYSASSERT(RETURN_SUCCESS == MemoryRegionCheckKernel(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
+  SYSASSERT(RETURN_SUCCESS == _MemoryRegionCheckKernel_(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
 
 
 
   /* Check if the heap is health and the queue pointer the end-user passed is valid.
   If so, continue. Otherwise, head toward the exit. */
-  if (RETURN_SUCCESS == MemoryRegionCheckKernel(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR)) {
+  if (RETURN_SUCCESS == _MemoryRegionCheckKernel_(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR)) {
 
 
     /* If the queue contains messages, traverse the queue and drop the
@@ -105,7 +105,7 @@ void xQueueDelete(Queue_t *queue_) {
 
 
 
-    KernelFreeMemory(queue_);
+    _KernelFreeMemory_(queue_);
   }
 
 
@@ -128,12 +128,12 @@ Base_t xQueueGetLength(Queue_t *queue_) {
 
   /* Assert if the heap fails its health check or if the queue pointer the end-user
   passed is invalid. */
-  SYSASSERT(RETURN_SUCCESS == MemoryRegionCheckKernel(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
+  SYSASSERT(RETURN_SUCCESS == _MemoryRegionCheckKernel_(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
 
 
   /* Check if the heap is health and the queue pointer the end-user passed is valid.
   If so, continue. Otherwise, head toward the exit. */
-  if (RETURN_SUCCESS == MemoryRegionCheckKernel(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR)) {
+  if (RETURN_SUCCESS == _MemoryRegionCheckKernel_(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR)) {
 
 
     messageCursor = queue_->head;
@@ -182,12 +182,12 @@ Base_t xQueueIsQueueEmpty(Queue_t *queue_) {
 
   /* Assert if the heap fails its health check or if the queue pointer the end-user
   passed is invalid. */
-  SYSASSERT(RETURN_SUCCESS == MemoryRegionCheckKernel(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
+  SYSASSERT(RETURN_SUCCESS == _MemoryRegionCheckKernel_(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
 
 
   /* Check if the heap is health and the queue pointer the end-user passed is valid.
   If so, continue. Otherwise, head toward the exit. */
-  if (RETURN_SUCCESS == MemoryRegionCheckKernel(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR)) {
+  if (RETURN_SUCCESS == _MemoryRegionCheckKernel_(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR)) {
 
 
     messageCursor = queue_->head;
@@ -237,12 +237,12 @@ Base_t xQueueIsQueueFull(Queue_t *queue_) {
 
   /* Assert if the heap fails its health check or if the queue pointer the end-user
   passed is invalid. */
-  SYSASSERT(RETURN_SUCCESS == MemoryRegionCheckKernel(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
+  SYSASSERT(RETURN_SUCCESS == _MemoryRegionCheckKernel_(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
 
 
   /* Check if the heap is health and the queue pointer the end-user passed is valid.
   If so, continue. Otherwise, head toward the exit. */
-  if (RETURN_SUCCESS == MemoryRegionCheckKernel(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR)) {
+  if (RETURN_SUCCESS == _MemoryRegionCheckKernel_(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR)) {
 
     messageCursor = queue_->head;
 
@@ -292,13 +292,13 @@ Base_t xQueueMessagesWaiting(Queue_t *queue_) {
 
   /* Assert if the heap fails its health check or if the queue pointer the end-user
   passed is invalid. */
-  SYSASSERT(RETURN_SUCCESS == MemoryRegionCheckKernel(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
+  SYSASSERT(RETURN_SUCCESS == _MemoryRegionCheckKernel_(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
 
 
 
   /* Check if the heap is health and the queue pointer the end-user passed is valid.
   If so, continue. Otherwise, head toward the exit. */
-  if (RETURN_SUCCESS == MemoryRegionCheckKernel(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR)) {
+  if (RETURN_SUCCESS == _MemoryRegionCheckKernel_(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR)) {
 
     messageCursor = queue_->head;
 
@@ -368,11 +368,11 @@ Base_t xQueueSend(Queue_t *queue_, Base_t messageBytes_, const char *messageValu
 
     /* Assert if the heap fails its health check or if the queue pointer the end-user
     passed is invalid. */
-    SYSASSERT(RETURN_SUCCESS == MemoryRegionCheckKernel(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
+    SYSASSERT(RETURN_SUCCESS == _MemoryRegionCheckKernel_(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
 
     /* Check if the heap is health and the queue pointer the end-user passed is valid.
     If so, continue. Otherwise, head toward the exit. */
-    if (RETURN_SUCCESS == MemoryRegionCheckKernel(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR)) {
+    if (RETURN_SUCCESS == _MemoryRegionCheckKernel_(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR)) {
 
       messageCursor = queue_->head;
 
@@ -401,7 +401,7 @@ Base_t xQueueSend(Queue_t *queue_, Base_t messageBytes_, const char *messageValu
 
 
 
-        message = (Message_t *)KernelAllocateMemory(sizeof(Message_t));
+        message = (Message_t *)_KernelAllocateMemory_(sizeof(Message_t));
 
 
         /* Assert if xMemAlloc() did not allocate our requested memory. */
@@ -412,7 +412,7 @@ Base_t xQueueSend(Queue_t *queue_, Base_t messageBytes_, const char *messageValu
 
           message->messageBytes = messageBytes_;
 
-          memcpy_(message->messageValue, messageValue_, CONFIG_MESSAGE_VALUE_BYTES);
+          _memcpy_(message->messageValue, messageValue_, CONFIG_MESSAGE_VALUE_BYTES);
 
           message->next = NULL;
 
@@ -450,19 +450,19 @@ QueueMessage_t *xQueuePeek(Queue_t *queue_) {
 
   /* Assert if the heap fails its health check or if the queue pointer the end-user
   passed is invalid. */
-  SYSASSERT(RETURN_SUCCESS == MemoryRegionCheckKernel(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
+  SYSASSERT(RETURN_SUCCESS == _MemoryRegionCheckKernel_(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
 
 
   /* Check if the heap is health and the queue pointer the end-user passed is valid.
   If so, continue. Otherwise, head toward the exit. */
-  if (RETURN_SUCCESS == MemoryRegionCheckKernel(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR)) {
+  if (RETURN_SUCCESS == _MemoryRegionCheckKernel_(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR)) {
 
     /* If the head is not null, then there is a message waiting for us to
     peek at. */
     if (ISNOTNULLPTR(queue_->head)) {
 
 
-      ret = (QueueMessage_t *)HeapAllocateMemory(sizeof(QueueMessage_t));
+      ret = (QueueMessage_t *)_HeapAllocateMemory_(sizeof(QueueMessage_t));
 
 
       /* Assert if xMemAlloc() didn't do its job. */
@@ -475,7 +475,7 @@ QueueMessage_t *xQueuePeek(Queue_t *queue_) {
 
         ret->messageBytes = queue_->head->messageBytes;
 
-        memcpy_(ret->messageValue, queue_->head->messageValue, CONFIG_MESSAGE_VALUE_BYTES);
+        _memcpy_(ret->messageValue, queue_->head->messageValue, CONFIG_MESSAGE_VALUE_BYTES);
       }
     }
   }
@@ -495,13 +495,13 @@ void xQueueDropMessage(Queue_t *queue_) {
 
   /* Assert if the heap fails its health check or if the queue pointer the end-user
   passed is invalid. */
-  SYSASSERT(RETURN_SUCCESS == MemoryRegionCheckKernel(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
+  SYSASSERT(RETURN_SUCCESS == _MemoryRegionCheckKernel_(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
 
 
 
   /* Check if the heap is health and the queue pointer the end-user passed is valid.
   If so, continue. Otherwise, head toward the exit. */
-  if (RETURN_SUCCESS == MemoryRegionCheckKernel(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR)) {
+  if (RETURN_SUCCESS == _MemoryRegionCheckKernel_(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR)) {
 
 
 
@@ -525,7 +525,7 @@ void xQueueDropMessage(Queue_t *queue_) {
       queue_->length--;
 
 
-      KernelFreeMemory(message);
+      _KernelFreeMemory_(message);
     }
   }
 
@@ -544,13 +544,13 @@ QueueMessage_t *xQueueReceive(Queue_t *queue_) {
 
   /* Assert if the heap fails its health check or if the queue pointer the end-user
   passed is invalid. */
-  SYSASSERT(RETURN_SUCCESS == MemoryRegionCheckKernel(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
+  SYSASSERT(RETURN_SUCCESS == _MemoryRegionCheckKernel_(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
 
 
 
   /* Check if the heap is health and the queue pointer the end-user passed is valid.
   If so, continue. Otherwise, head toward the exit. */
-  if (RETURN_SUCCESS == MemoryRegionCheckKernel(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR)) {
+  if (RETURN_SUCCESS == _MemoryRegionCheckKernel_(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR)) {
 
 
     /* Re-use some code and peek to see if there is a message

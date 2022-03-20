@@ -66,6 +66,7 @@ typedef enum {
 typedef void TaskParm_t;
 typedef uint8_t Base_t;
 typedef uint8_t Byte_t;
+typedef void *Addr_t;
 typedef uint16_t Word_t; /* Here a "word" does NOT refer to the machine word. It just means two bytes. */
 typedef TIME_T_TYPE Time_t; /* TIME_T_TYPE is defined in the platform definitions in defines.h. */
 
@@ -80,7 +81,7 @@ typedef struct MemoryEntry_s {
 
 
 typedef struct MemoryRegion_s {
-  Byte_t mem[ALL_MEMORY_REGIONS_SIZE_IN_BYTES];
+  volatile Byte_t mem[ALL_MEMORY_REGIONS_SIZE_IN_BYTES];
   MemoryEntry_t *start;
   Word_t entrySize;
 } MemoryRegion_t;

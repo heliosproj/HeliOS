@@ -91,7 +91,7 @@ SystemInfo_t *xSystemGetSystemInfo(void) {
 
 
 
-  ret = (SystemInfo_t *)HeapAllocateMemory(sizeof(SystemInfo_t));
+  ret = (SystemInfo_t *)_HeapAllocateMemory_(sizeof(SystemInfo_t));
 
 
 
@@ -105,7 +105,7 @@ SystemInfo_t *xSystemGetSystemInfo(void) {
   if (ISNOTNULLPTR(ret)) {
 
 
-    memcpy_(ret->productName, OS_PRODUCT_NAME, OS_PRODUCT_NAME_SIZE);
+    _memcpy_(ret->productName, OS_PRODUCT_NAME, OS_PRODUCT_NAME_SIZE);
 
     ret->majorVersion = OS_MAJOR_VERSION_NO;
 

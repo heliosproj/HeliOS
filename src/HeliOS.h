@@ -267,6 +267,19 @@ typedef void Queue_t;
 typedef void Timer_t;
 
 /**
+ * @brief Type defintion for the memory address data type.
+ * 
+ * The xAddr type is used to store a memory address and is used to pass memory
+ * addresses back and forth between system calls and the end-user application. It
+ * is not necessary to use the xAddr type within the end-user application as long
+ * as the type is not used to interact with a HeliOS system call.
+ * 
+ * 
+ */
+typedef void *xAddr;
+
+
+/**
  * @brief Type definition for the base data type.
  *
  * A simple data type is often needed as an argument for a system call or a return type.
@@ -1301,7 +1314,7 @@ void xSystemHalt(void);
 
 /* For debugging the heap only. */
 #if defined(MEMDUMP_HEAP) || defined(MEMDUMP_KERNEL)
-void memdump_(void); 
+void _memdump_(void); 
 #endif
 
 /* In the event HeliOS is compiled with a C++ compiler, make the system calls (written in C)

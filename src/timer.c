@@ -55,7 +55,7 @@ Timer_t *xTimerCreate(Time_t timerPeriod_) {
   if (ISNULLPTR(timerList)) {
 
 
-    timerList = (TimerList_t *)KernelAllocateMemory(sizeof(TimerList_t));
+    timerList = (TimerList_t *)_KernelAllocateMemory_(sizeof(TimerList_t));
   }
 
 
@@ -70,7 +70,7 @@ Timer_t *xTimerCreate(Time_t timerPeriod_) {
 
 
 
-    ret = (Timer_t *)KernelAllocateMemory(sizeof(Task_t));
+    ret = (Timer_t *)_KernelAllocateMemory_(sizeof(Task_t));
 
 
     /* Assert if xMemAlloc() didn't do its job. */
@@ -153,7 +153,7 @@ void xTimerDelete(Timer_t *timer_) {
 
 
 
-      KernelFreeMemory(timerCursor);
+      _KernelFreeMemory_(timerCursor);
 
       timerList->length--;
 
@@ -186,7 +186,7 @@ void xTimerDelete(Timer_t *timer_) {
 
 
 
-        KernelFreeMemory(timerCursor);
+        _KernelFreeMemory_(timerCursor);
 
         timerList->length--;
       }
@@ -391,7 +391,7 @@ void xTimerStop(Timer_t *timer_) {
 
 /* TimerListFindTimer() is used to search the timer list for a
 timer and returns RETURN_SUCCESS if the timer is found. It also
-always checks the health of the heap by calling MemoryRegionCheckKernel(). */
+always checks the health of the heap by calling _MemoryRegionCheckKernel_(). */
 Base_t TimerListFindTimer(const Timer_t *timer_) {
 
 
@@ -414,13 +414,13 @@ Base_t TimerListFindTimer(const Timer_t *timer_) {
   if ((ISNOTNULLPTR(timerList)) && (ISNOTNULLPTR(timer_))) {
 
 
-    /* Assert if the MemoryRegionCheckKernel() fails on the health check or is unable
+    /* Assert if the _MemoryRegionCheckKernel_() fails on the health check or is unable
     to find the entry for the heap pointer. */
-    SYSASSERT(RETURN_SUCCESS == MemoryRegionCheckKernel(timer_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
+    SYSASSERT(RETURN_SUCCESS == _MemoryRegionCheckKernel_(timer_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
 
 
-    /* Check if MemoryRegionCheckKernel() was successful. */
-    if (RETURN_SUCCESS == MemoryRegionCheckKernel(timer_, MEMORY_REGION_CHECK_OPTION_W_ADDR)) {
+    /* Check if _MemoryRegionCheckKernel_() was successful. */
+    if (RETURN_SUCCESS == _MemoryRegionCheckKernel_(timer_, MEMORY_REGION_CHECK_OPTION_W_ADDR)) {
 
       timerCursor = timerList->head;
 
