@@ -154,7 +154,7 @@ to default to the Arduino platform and/or tool-chain. */
 
 
 
-#define MEMDUMP_HEAP
+#define MEMDUMP_KERNEL
 
 #define MEMDUMP_ROW_WIDTH CONFIG_ALL_MEMORY_REGIONS_BLOCK_SIZE
 
