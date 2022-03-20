@@ -361,7 +361,7 @@ of the heap has been detected. */
 /* Define a marco which makes null pointer checks more readable and
 concise */
 #if !defined(ISNOTNULLPTR)
-#define ISNOTNULLPTR(p) ((NULL) != ( p ))
+#define ISNOTNULLPTR(addr_) ((NULL) != ( addr_ ))
 #endif
 
 
@@ -370,7 +370,7 @@ concise */
 /* Define a marco which makes null pointer checks more readable and
 concise */
 #if !defined(ISNULLPTR)
-#define ISNULLPTR(p) ((NULL) == ( p ))
+#define ISNULLPTR(addr_) ((NULL) == ( addr_ ))
 #endif
 
 
@@ -380,9 +380,9 @@ concise */
 the CONFIG_ENABLE_SYSTEM_ASSERT setting. */
 #if !defined(SYSASSERT)
 #if !defined(CONFIG_ENABLE_SYSTEM_ASSERT)
-#define SYSASSERT(x)
+#define SYSASSERT(expr_)
 #else
-#define SYSASSERT(x) if (false == (x)) _SystemAssert_( __FILE__ , __LINE__ )
+#define SYSASSERT(expr_) if (false == ( expr_ )) _SystemAssert_( __FILE__ , __LINE__ )
 #endif
 #endif
 
@@ -402,7 +402,7 @@ the CONFIG_ENABLE_SYSTEM_ASSERT setting. */
 /* Define a macro to convert a heap memory address to it's corresponding
 heap entry. */
 #if !defined(ADDR2ENTRY)
-#define ADDR2ENTRY(a, r) (MemoryEntry_t *)((Byte_t *)( a ) - (( r )->entrySize * CONFIG_ALL_MEMORY_REGIONS_BLOCK_SIZE))
+#define ADDR2ENTRY(addr_, region_) (MemoryEntry_t *)((Byte_t *)( addr_ ) - (( region_ )->entrySize * CONFIG_ALL_MEMORY_REGIONS_BLOCK_SIZE))
 #endif
 
 
@@ -410,7 +410,7 @@ heap entry. */
 /* Define a macro to convert a heap entry to it's corresponding heap memory
 address. */
 #if !defined(ENTRY2ADDR)
-#define ENTRY2ADDR(a, r) (void *)((Byte_t *)( a ) + (( r )->entrySize * CONFIG_ALL_MEMORY_REGIONS_BLOCK_SIZE))
+#define ENTRY2ADDR(addr_, region_) (Addr_t *)((Byte_t *)( addr_ ) + (( region_ )->entrySize * CONFIG_ALL_MEMORY_REGIONS_BLOCK_SIZE))
 #endif
 
 #endif
