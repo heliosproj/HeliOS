@@ -49,7 +49,7 @@ new embedded platform and/or tool-chain is added, the following
 defines (with the exception of CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS) must
 be included:
 
-* SYSTICKS()
+* SYSTICK()
 * DISABLE_INTERRUPTS()
 * ENABLE_INTERRUPTS()
 * TIME_T_TYPE
@@ -64,11 +64,18 @@ to default to the Arduino platform and/or tool-chain. */
 
 #include <Arduino.h>
 
-#define SYSTICKS() micros()
+/*
+Need to import
 
-#define DISABLE_INTERRUPTS() noInterrupts()
+volatile unsigned long timer0_overflow_count
+*/
 
-#define ENABLE_INTERRUPTS() interrupts()
+
+#define SYSTICK() timer0_overflow_count
+
+#define DISABLE_INTERRUPTS() __asm__ __volatile__ ("cli")
+
+#define ENABLE_INTERRUPTS() __asm__ __volatile__ ("sei")
 
 #define TICKS_T_TYPE uint32_t
 
@@ -81,7 +88,7 @@ to default to the Arduino platform and/or tool-chain. */
 
 #include <Arduino.h>
 
-#define SYSTICKS() micros()
+#define SYSTICK() micros()
 
 #define DISABLE_INTERRUPTS() noInterrupts()
 
@@ -99,7 +106,7 @@ to default to the Arduino platform and/or tool-chain. */
 
 #include <Arduino.h>
 
-#define SYSTICKS() micros()
+#define SYSTICK() micros()
 
 #define DISABLE_INTERRUPTS() noInterrupts()
 
@@ -117,7 +124,7 @@ to default to the Arduino platform and/or tool-chain. */
 
 #include <Arduino.h>
 
-#define SYSTICKS() micros()
+#define SYSTICK() micros()
 
 #define DISABLE_INTERRUPTS() noInterrupts()
 
@@ -136,7 +143,7 @@ to default to the Arduino platform and/or tool-chain. */
 #include <stdio.h>
 #include <time.h>
 
-#define SYSTICKS() _SyntheticSysTicks_()
+#define SYSTICK() _SyntheticSysTick_()
 
 #define DISABLE_INTERRUPTS()
 
@@ -163,7 +170,7 @@ to default to the Arduino platform and/or tool-chain. */
 
 #include <Arduino.h>
 
-#define SYSTICKS() micros()
+#define SYSTICK() micros()
 
 #define DISABLE_INTERRUPTS() noInterrupts()
 
@@ -181,7 +188,7 @@ to default to the Arduino platform and/or tool-chain. */
 
 #include <Arduino.h>
 
-#define SYSTICKS() micros()
+#define SYSTICK() micros()
 
 #define DISABLE_INTERRUPTS() noInterrupts()
 
@@ -201,7 +208,7 @@ to default to the Arduino platform and/or tool-chain. */
 
 #include <Arduino.h>
 
-#define SYSTICKS() micros()
+#define SYSTICK() micros()
 
 #define DISABLE_INTERRUPTS() noInterrupts()
 

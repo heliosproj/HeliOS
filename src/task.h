@@ -62,7 +62,7 @@ Ticks_t xTaskGetPeriod(Task_t *task_);
 void xTaskResetTimer(Task_t *task_);
 void xTaskStartScheduler(void);
 void _RunTimeReset_(void);
-Ticks_t _SyntheticSysTicks_(void);
+Ticks_t _SyntheticSysTick_(void);
 void _TaskRun_(Task_t *task_);
 void xTaskResumeAll(void);
 void xTaskSuspendAll(void);
