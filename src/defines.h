@@ -49,10 +49,11 @@ new embedded platform and/or tool-chain is added, the following
 defines (with the exception of CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS) must
 be included:
 
+* SYSTICK_DECLARATION()
 * SYSTICK()
 * DISABLE_INTERRUPTS()
 * ENABLE_INTERRUPTS()
-* TIME_T_TYPE
+* TICKS_T_TYPE
 * CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS <- Optional. However, if defined
   must be enclosed in an #if !defined(CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS)
   block.
@@ -62,14 +63,7 @@ is matched, the "else" block will print a compiler warning and attempt
 to default to the Arduino platform and/or tool-chain. */
 #if defined(ARDUINO_ARCH_AVR)
 
-#include <Arduino.h>
-
-/*
-Need to import
-
-volatile unsigned long timer0_overflow_count
-*/
-
+#define SYSTICK_DECLARATION() extern volatile unsigned long timer0_overflow_count
 
 #define SYSTICK() timer0_overflow_count
 

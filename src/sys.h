@@ -45,7 +45,7 @@ void xSystemHalt(void);
 SystemInfo_t *xSystemGetSystemInfo(void);
 
 #if defined(CONFIG_ENABLE_ARDUINO_CPP_INTERFACE)
-void ArduinoAssert(const char *file_, int line_);
+void _ArduinoAssert_(const char *file_, int line_);
 #endif
 
 #ifdef __cplusplus

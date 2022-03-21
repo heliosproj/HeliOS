@@ -39,7 +39,7 @@ to customize the HeliOS kernel for their specific application. */
  * unable to be written to the serial bus in applications using the
  * Arduino platform/tool-chain. The CONFIG_ENABLE_ARDUINO_CPP_INTERFACE
  * builds the included arduino.cpp file to allow the kernel to call the
- * Arduino API through wrapper functions such as ArduinoAssert(). The
+ * Arduino API through wrapper functions such as _ArduinoAssert_(). The
  * arduino.cpp file can be found in the /extras directory. It must
  * be copied into the /src directory to be built.
  * 
@@ -82,19 +82,19 @@ to customize the HeliOS kernel for their specific application. */
  * of output is generated over a serial or other interface. By default
  * the CONFIG_SYSTEM_ASSERT_BEHAVIOR is not defined.
  * 
- * @note In order to use the ArduinoAssert() functionality, the
+ * @note In order to use the _ArduinoAssert_() functionality, the
  * CONFIG_ENABLE_ARDUINO_CPP_INTERFACE setting must be enabled.
  *
  * @sa CONFIG_ENABLE_SYSTEM_ASSERT
  * @sa CONFIG_ENABLE_ARDUINO_CPP_INTERFACE
  *
  * @code {.c}
- * #define CONFIG_SYSTEM_ASSERT_BEHAVIOR(f, l) ArduinoAssert( f , l )
+ * #define CONFIG_SYSTEM_ASSERT_BEHAVIOR(f, l) _ArduinoAssert_( f , l )
  * @endcode
  *
  */
 /*
-#define CONFIG_SYSTEM_ASSERT_BEHAVIOR(f, l) ArduinoAssert( f , l )
+#define CONFIG_SYSTEM_ASSERT_BEHAVIOR(f, l) _ArduinoAssert_( f , l )
 */
 
 
