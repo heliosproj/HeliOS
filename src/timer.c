@@ -85,7 +85,7 @@ Timer_t *xTimerCreate(Ticks_t timerPeriod_) {
 
       ret->timerPeriod = timerPeriod_;
 
-      ret->timerStartTime = CURRENTTIME();
+      ret->timerStartTime = SYSTICKS();
 
       ret->next = NULL;
 
@@ -307,7 +307,7 @@ Base_t xTimerHasTimerExpired(Timer_t *timer_) {
     /* The timer should be running, the timer period should be
     greater than zero and the elapsed time is greater than
     the timer period. If so, then return true. */
-    if ((TimerStateRunning == timer_->state) && (zero < timer_->timerPeriod) && ((CURRENTTIME() - timer_->timerStartTime) > timer_->timerPeriod)) {
+    if ((TimerStateRunning == timer_->state) && (zero < timer_->timerPeriod) && ((SYSTICKS() - timer_->timerStartTime) > timer_->timerPeriod)) {
 
       ret = true;
     }
@@ -333,7 +333,7 @@ void xTimerReset(Timer_t *timer_) {
   /* Check if the timer was found in the timer list. */
   if (RETURN_SUCCESS == _TimerListFindTimer_(timer_)) {
 
-    timer_->timerStartTime = CURRENTTIME();
+    timer_->timerStartTime = SYSTICKS();
   }
 
   return;

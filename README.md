@@ -50,7 +50,7 @@ For most users this section is unnecessary to build HeliOS as HeliOS will fallba
 development board using the Arduino platform. */
 #elif defined(ARDUINO_ARCH_SAMD)
 #include <Arduino.h>
-#define CURRENTTIME() micros()
+#define SYSTICKS() micros()
 #define DISABLE_INTERRUPTS() noInterrupts()
 #define ENABLE_INTERRUPTS() interrupts()
 #define TIME_T_TYPE uint32_t

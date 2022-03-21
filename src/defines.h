@@ -49,7 +49,7 @@ new embedded platform and/or tool-chain is added, the following
 defines (with the exception of CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS) must
 be included:
 
-* CURRENTTIME()
+* SYSTICKS()
 * DISABLE_INTERRUPTS()
 * ENABLE_INTERRUPTS()
 * TIME_T_TYPE
@@ -64,7 +64,7 @@ to default to the Arduino platform and/or tool-chain. */
 
 #include <Arduino.h>
 
-#define CURRENTTIME() micros()
+#define SYSTICKS() micros()
 
 #define DISABLE_INTERRUPTS() noInterrupts()
 
@@ -81,7 +81,7 @@ to default to the Arduino platform and/or tool-chain. */
 
 #include <Arduino.h>
 
-#define CURRENTTIME() micros()
+#define SYSTICKS() micros()
 
 #define DISABLE_INTERRUPTS() noInterrupts()
 
@@ -99,7 +99,7 @@ to default to the Arduino platform and/or tool-chain. */
 
 #include <Arduino.h>
 
-#define CURRENTTIME() micros()
+#define SYSTICKS() micros()
 
 #define DISABLE_INTERRUPTS() noInterrupts()
 
@@ -117,7 +117,7 @@ to default to the Arduino platform and/or tool-chain. */
 
 #include <Arduino.h>
 
-#define CURRENTTIME() micros()
+#define SYSTICKS() micros()
 
 #define DISABLE_INTERRUPTS() noInterrupts()
 
@@ -136,7 +136,7 @@ to default to the Arduino platform and/or tool-chain. */
 #include <stdio.h>
 #include <time.h>
 
-#define CURRENTTIME() _CurrentTime_()
+#define SYSTICKS() _SyntheticSysTicks_()
 
 #define DISABLE_INTERRUPTS()
 
@@ -163,7 +163,7 @@ to default to the Arduino platform and/or tool-chain. */
 
 #include <Arduino.h>
 
-#define CURRENTTIME() micros()
+#define SYSTICKS() micros()
 
 #define DISABLE_INTERRUPTS() noInterrupts()
 
@@ -181,7 +181,7 @@ to default to the Arduino platform and/or tool-chain. */
 
 #include <Arduino.h>
 
-#define CURRENTTIME() micros()
+#define SYSTICKS() micros()
 
 #define DISABLE_INTERRUPTS() noInterrupts()
 
@@ -201,7 +201,7 @@ to default to the Arduino platform and/or tool-chain. */
 
 #include <Arduino.h>
 
-#define CURRENTTIME() micros()
+#define SYSTICKS() micros()
 
 #define DISABLE_INTERRUPTS() noInterrupts()
 
