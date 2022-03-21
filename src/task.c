@@ -1079,7 +1079,7 @@ void xTaskResetTimer(Task_t *task_) {
   /* Check if the task was found. */
   if (RETURN_SUCCESS == _TaskListFindTask_(task_)) {
 
-    task_->timerStartTime = SYSTICK();
+    task_->timerStartTime = _SysGetSysTicks_();
   }
 
   return;
@@ -1144,12 +1144,12 @@ void xTaskStartScheduler(void) {
           _TaskRun_(taskCursor);
 
           /* If the task pointed to by the task cursor is waiting and its timer has expired, then execute it. */
-        } else if ((TaskStateWaiting == taskCursor->state) && (zero < taskCursor->timerPeriod) && ((SYSTICK() - taskCursor->timerStartTime) > taskCursor->timerPeriod)) {
+        } else if ((TaskStateWaiting == taskCursor->state) && (zero < taskCursor->timerPeriod) && ((_SysGetSysTicks_() - taskCursor->timerStartTime) > taskCursor->timerPeriod)) {
 
 
           _TaskRun_(taskCursor);
 
-          taskCursor->timerStartTime = SYSTICK();
+          taskCursor->timerStartTime = _SysGetSysTicks_();
 
           /* If the task pointed to by the task cursor is running and it's total runtime is less than the
           least runtime from previous tasks, then set the run task pointer to the task cursor. This logic
@@ -1220,27 +1220,6 @@ void _RunTimeReset_(void) {
 
 
 
-/* Used only for when testing HeliOS on Linux, then get the time from clock_gettime(). */
-Ticks_t _SyntheticSysTick_(void) {
-
-#if defined(OTHER_ARCH_DEBUG)
-
-  struct timespec t;
-
-  clock_gettime(CLOCK_MONOTONIC_RAW, &t);
-
-  return (t.tv_sec * 1000000) + (t.tv_nsec / 1000);
-
-#else
-
-  return zero;
-
-#endif
-}
-
-
-
-
 /* Called by the xTaskStartScheduler() system call, _TaskRun_() executes a task and updates all of its
 runtime statistics. */
 void _TaskRun_(Task_t *task_) {
@@ -1254,7 +1233,7 @@ void _TaskRun_(Task_t *task_) {
   prevTotalRunTime = task_->totalRunTime;
 
   /* Record the start time of the task. */
-  taskStartTime = SYSTICK();
+  taskStartTime = _SysGetSysTicks_();
 
 
 
@@ -1263,7 +1242,7 @@ void _TaskRun_(Task_t *task_) {
 
 
   /* Calculate the runtime and store it in last runtime. */
-  task_->lastRunTime = SYSTICK() - taskStartTime;
+  task_->lastRunTime = _SysGetSysTicks_() - taskStartTime;
 
   /* Add last runtime to the total runtime. */
   task_->totalRunTime += task_->lastRunTime;

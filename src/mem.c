@@ -747,30 +747,45 @@ uint16_t _memcmp_(const Addr_t *s1_, const Addr_t *s2_, Size_t n_) {
 
 
 
-#if defined(MEMDUMP_HEAP) || defined(MEMDUMP_KERNEL)
+#if defined(DEBUG)
 
-void _memdump_(void) {
+void _MemoryRegionDumpKernel_(void) {
 
-  Word_t k = zero;
-
-  volatile MemoryRegion_t *region = NULL;
-
-#if defined(MEMDUMP_HEAP)
-  region = &heap;
-#elif defined(MEMDUMP_KERNEL)
-  region = &kernel;
-#endif
-
-  for (Word_t i = zero; i < (ALL_MEMORY_REGIONS_SIZE_IN_BYTES / MEMDUMP_ROW_WIDTH); i++) {
+  _memdump_(&kernel);
 
 
-    printf("%p:", (region->mem + k));
-
-    for (Word_t j = zero; j < MEMDUMP_ROW_WIDTH; j++) {
+  return;
+}
 
 
 
-      if (zero == *(region->mem + k)) {
+void _MemoryRegionDumpHeap_(void) {
+
+  _memdump_(&heap);
+
+
+
+  return;
+}
+
+
+
+
+void _memdump_(const volatile MemoryRegion_t *region_) {
+
+  Size_t k = zero;
+
+
+  for (Size_t i = zero; i < (ALL_MEMORY_REGIONS_SIZE_IN_BYTES / CONFIG_ALL_MEMORY_REGIONS_BLOCK_SIZE); i++) {
+
+
+    printf("%p:", (region_->mem + k));
+
+    for (Size_t j = zero; j < CONFIG_ALL_MEMORY_REGIONS_BLOCK_SIZE; j++) {
+
+
+
+      if (zero == *(region_->mem + k)) {
 
 
         printf(" --");
@@ -779,7 +794,7 @@ void _memdump_(void) {
       } else {
 
 
-        printf(" %02X", *(region->mem + k));
+        printf(" %02X", *(region_->mem + k));
       }
 
       k++;

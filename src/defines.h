@@ -61,11 +61,12 @@ be included:
 If no definition block for the embedded platform and/or tool-chain
 is matched, the "else" block will print a compiler warning and attempt
 to default to the Arduino platform and/or tool-chain. */
+
+
+#define DEBUG
+
 #if defined(ARDUINO_ARCH_AVR)
 
-#define SYSTICK_DECLARATION() extern volatile unsigned long timer0_overflow_count
-
-#define SYSTICK() timer0_overflow_count
 
 #define DISABLE_INTERRUPTS() __asm__ __volatile__ ("cli")
 
@@ -79,72 +80,21 @@ to default to the Arduino platform and/or tool-chain. */
 
 
 #elif defined(ARDUINO_ARCH_SAM)
-
-#include <Arduino.h>
-
-#define SYSTICK() micros()
-
-#define DISABLE_INTERRUPTS() noInterrupts()
-
-#define ENABLE_INTERRUPTS() interrupts()
-
-#define TICKS_T_TYPE uint32_t
-
-#if !defined(CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS)
-#define CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS 0x80u /* 128u */
-#endif
-
-
-
 #elif defined(ARDUINO_ARCH_SAMD)
-
-#include <Arduino.h>
-
-#define SYSTICK() micros()
-
-#define DISABLE_INTERRUPTS() noInterrupts()
-
-#define ENABLE_INTERRUPTS() interrupts()
-
-#define TICKS_T_TYPE uint32_t
-
-#if !defined(CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS)
-#define CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS 0x80u /* 128u */
-#endif
-
-
-
 #elif defined(ARDUINO_ARCH_ESP8266)
+#elif defined(ARDUINO_TEENSY_MICROMOD) || defined(ARDUINO_TEENSY40) || defined(ARDUINO_TEENSY41) || defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY35) || defined(ARDUINO_TEENSY31) || defined(ARDUINO_TEENSY32) || defined(ARDUINO_TEENSY30) || defined(ARDUINO_TEENSYLC)
+#elif defined(ESP32)
+#elif defined(DEBUG)
 
-#include <Arduino.h>
-
-#define SYSTICK() micros()
-
-#define DISABLE_INTERRUPTS() noInterrupts()
-
-#define ENABLE_INTERRUPTS() interrupts()
-
-#define TICKS_T_TYPE uint32_t
-
-#if !defined(CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS)
-#define CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS 0x80u /* 128u */
-#endif
-
-
-
-#elif defined(OTHER_ARCH_DEBUG)
 
 #include <stdio.h>
 #include <time.h>
-
-#define SYSTICK() _SyntheticSysTick_()
 
 #define DISABLE_INTERRUPTS()
 
 #define ENABLE_INTERRUPTS()
 
 #define TICKS_T_TYPE uint32_t
-
 
 #define CONFIG_ENABLE_SYSTEM_ASSERT
 #define CONFIG_SYSTEM_ASSERT_BEHAVIOR(file_, line_) printf("assert: %s:%d\n", file_, line_)
@@ -154,69 +104,9 @@ to default to the Arduino platform and/or tool-chain. */
 #endif
 
 
-
-#define MEMDUMP_KERNEL
-
-#define MEMDUMP_ROW_WIDTH CONFIG_ALL_MEMORY_REGIONS_BLOCK_SIZE
-
-
-#elif defined(ARDUINO_TEENSY_MICROMOD) || defined(ARDUINO_TEENSY40) || defined(ARDUINO_TEENSY41) || defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY35) || defined(ARDUINO_TEENSY31) || defined(ARDUINO_TEENSY32) || defined(ARDUINO_TEENSY30) || defined(ARDUINO_TEENSYLC)
-
-#include <Arduino.h>
-
-#define SYSTICK() micros()
-
-#define DISABLE_INTERRUPTS() noInterrupts()
-
-#define ENABLE_INTERRUPTS() interrupts()
-
-#define TICKS_T_TYPE uint32_t
-
-#if !defined(CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS)
-#define CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS 0x200u /* 512u */
-#endif
-
-
-
-#elif defined(ESP32)
-
-#include <Arduino.h>
-
-#define SYSTICK() micros()
-
-#define DISABLE_INTERRUPTS() noInterrupts()
-
-#define ENABLE_INTERRUPTS() interrupts()
-
-#define TICKS_T_TYPE uint32_t
-
-#if !defined(CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS)
-#define CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS 0x200u /* 512u */
-#endif
-
-
-
 #else
-
-#pragma message("WARNING: This embedded platform and/or tool-chain may not be supported. Trying to build using the Arduino platform and/or tool-chain.")
-
-#include <Arduino.h>
-
-#define SYSTICK() micros()
-
-#define DISABLE_INTERRUPTS() noInterrupts()
-
-#define ENABLE_INTERRUPTS() interrupts()
-
-#define TICKS_T_TYPE uint32_t
-
-#if !defined(CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS)
-#define CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS 0x20u /* 32u */
 #endif
 
-
-
-#endif
 
 
 

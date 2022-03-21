@@ -31,13 +31,26 @@ Thank you for the best OS on Earth, Dennis. */
 
 
 
+#if defined(ARDUINO_ARCH_AVR)
+
+extern volatile unsigned long timer0_overflow_count;
+
+#elif defined(ARDUINO_ARCH_SAM)
+#elif defined(ARDUINO_ARCH_SAMD)
+#elif defined(ARDUINO_ARCH_ESP8266)
+#elif defined(ARDUINO_TEENSY_MICROMOD) || defined(ARDUINO_TEENSY40) || defined(ARDUINO_TEENSY41) || defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY35) || defined(ARDUINO_TEENSY31) || defined(ARDUINO_TEENSY32) || defined(ARDUINO_TEENSY30) || defined(ARDUINO_TEENSYLC)
+#elif defined(ESP32)
+#elif defined(DEBUG)
+#else
+#endif
+
+
 
 /* Declare and set the system flags to their default values. */
 SysFlags_t sysFlags = {
     .running = false,
     .overflow = false,
     .corrupt = false};
-
 
 
 
@@ -50,9 +63,9 @@ _SystemAssert_() should NOT be called directly. Instead
 use the SYSASSERT() C macro. */
 void _SystemAssert_(const char *file_, int line_) {
 
-/* Do not modify this system call directly. Define
-the behavior (code) through the CONFIG_SYSTEM_ASSERT_BEHAVIOR
-setting in the config.h header file. */
+  /* Do not modify this system call directly. Define
+  the behavior (code) through the CONFIG_SYSTEM_ASSERT_BEHAVIOR
+  setting in the config.h header file. */
 
 #if defined(CONFIG_SYSTEM_ASSERT_BEHAVIOR)
   CONFIG_SYSTEM_ASSERT_BEHAVIOR(file_, line_);
@@ -62,6 +75,36 @@ setting in the config.h header file. */
 
   return;
 }
+
+
+
+Ticks_t _SysGetSysTicks_(void) {
+
+#if defined(ARDUINO_ARCH_AVR)
+
+  return timer0_overflow_count;
+
+#elif defined(ARDUINO_ARCH_SAM)
+#elif defined(ARDUINO_ARCH_SAMD)
+#elif defined(ARDUINO_ARCH_ESP8266)
+#elif defined(ARDUINO_TEENSY_MICROMOD) || defined(ARDUINO_TEENSY40) || defined(ARDUINO_TEENSY41) || defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY35) || defined(ARDUINO_TEENSY31) || defined(ARDUINO_TEENSY32) || defined(ARDUINO_TEENSY30) || defined(ARDUINO_TEENSYLC)
+#elif defined(ESP32)
+#elif defined(DEBUG)
+
+  struct timespec t;
+
+  clock_gettime(CLOCK_MONOTONIC_RAW, &t);
+
+  return (t.tv_sec * 1000000) + (t.tv_nsec / 1000);
+
+#else
+
+  return zero;
+
+#endif
+}
+
+
 
 /* The xSystemHalt() system call halts the system. */
 void xSystemHalt(void) {
@@ -76,9 +119,6 @@ void xSystemHalt(void) {
   for (;;) {
     /* Do nothing - literally. */
   }
-
-
-
 }
 
 /* The xSystemGetSystemInfo() system call will return the type xSystemInfo containing

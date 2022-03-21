@@ -60,9 +60,10 @@ uint16_t _memcmp_(const Addr_t *s1_, const Addr_t *s2_, Size_t n_);
 
 
 
-/* For debugging only. */
-#if defined(MEMDUMP_HEAP) || defined(MEMDUMP_KERNEL)
-void _memdump_(void);
+#if defined(DEBUG)
+void _MemoryRegionDumpKernel_(void);
+void _MemoryRegionDumpHeap_(void);
+void _memdump_(const volatile MemoryRegion_t *region_);
 #endif
 
 #ifdef __cplusplus
