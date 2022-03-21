@@ -86,12 +86,12 @@ typedef uint8_t Base_t;
 /**
  * @brief Type definition for system time measured in microseconds.
  *
- * The Time_t type is used to store system time which is measured in microseconds
+ * The Ticks_t type is used to store system time which is measured in microseconds
  * from system initialization. Despite its name, this type does not store real time
  * clock (RTC) time or date information.
  *
  */
-typedef TIME_T_TYPE Time_t;
+typedef TICKS_T_TYPE Ticks_t;
 
 typedef size_t Size_t;
 typedef Size_t xSize;
@@ -115,8 +115,8 @@ typedef Size_t xSize;
  */
 typedef struct TaskRunTimeStats_s {
   Base_t id;           /**< The task identifier which is used by xTaskGetHandleById() to return the task handle. */
-  Time_t lastRunTime;  /**< The runtime duration in microseconds the last time the task was executed by the scheduler. */
-  Time_t totalRunTime; /**< The total runtime duration in microseconds the task has been executed by the scheduler. */
+  Ticks_t lastRunTime;  /**< The runtime duration in microseconds the last time the task was executed by the scheduler. */
+  Ticks_t totalRunTime; /**< The total runtime duration in microseconds the task has been executed by the scheduler. */
 } TaskRunTimeStats_t;
 
 /**
@@ -141,8 +141,8 @@ typedef struct TaskInfo_s {
   Base_t id;                         /**< The task identifier which is used by xTaskGetHandleById() to return the task handle. */
   char name[CONFIG_TASK_NAME_BYTES]; /**< The name of the task which is used by xTaskGetHandleByName() to return the task handle. This is NOT a null terminated string. */
   TaskState_t state;                 /**< The state the task is in which is one of four states specified in the TaskState_t enumerated data type. */
-  Time_t lastRunTime;                /**< The runtime duration in microseconds the last time the task was executed by the scheduler. */
-  Time_t totalRunTime;               /**< The total runtime duration in microseconds the task has been executed by the scheduler. */
+  Ticks_t lastRunTime;                /**< The runtime duration in microseconds the last time the task was executed by the scheduler. */
+  Ticks_t totalRunTime;               /**< The total runtime duration in microseconds the task has been executed by the scheduler. */
 } TaskInfo_t;
 
 /**
@@ -447,22 +447,22 @@ typedef TaskParm_t *xTaskParm;
 /**
  * @brief The type definition for time expressed in microseconds.
  *
- * The xTime type is used by several of the task and timer related system calls to express time.
+ * The xTicks type is used by several of the task and timer related system calls to express time.
  * The unit of measure for time is always microseconds.
  *
  */
-typedef TIME_T_TYPE Time_t;
+typedef TICKS_T_TYPE Ticks_t;
 
 /**
  * @brief The type definition for time expressed in microseconds.
  *
- * The xTime type is used by several of the task and timer related system calls to express time.
+ * The xTicks type is used by several of the task and timer related system calls to express time.
  * The unit of measure for time is always microseconds.
  *
- * @sa Time_t
+ * @sa Ticks_t
  *
  */
-typedef Time_t xTime;
+typedef Ticks_t xTicks;
 
 /**
  * @brief Enumerated type for task states.
@@ -1154,7 +1154,7 @@ void xTaskWait(xTask task_);
  * @param task_ The task to change the timer period for.
  * @param timerPeriod_ The timer period in microseconds.
  */
-void xTaskChangePeriod(xTask task_, xTime timerPeriod_);
+void xTaskChangePeriod(xTask task_, xTicks timerPeriod_);
 
 /**
  * @brief System call to get the task timer period.
@@ -1167,10 +1167,10 @@ void xTaskChangePeriod(xTask task_, xTime timerPeriod_);
  * @sa xTaskResetTimer()
  *
  * @param task_ The task to return the timer period for.
- * @return xTime The timer period in microseconds. xTaskGetPeriod() will return zero
+ * @return xTicks The timer period in microseconds. xTaskGetPeriod() will return zero
  * if the timer period is zero or if the task could not be found.
  */
-xTime xTaskGetPeriod(xTask task_);
+xTicks xTaskGetPeriod(xTask task_);
 
 /**
  * @brief System call to reset the task timer.
@@ -1219,7 +1219,7 @@ xSchedulerState xTaskGetSchedulerState(void);
  *
  * @warning The timer memory can only be freed by xTimerDelete().
  */
-xTimer xTimerCreate(xTime timerPeriod_);
+xTimer xTimerCreate(xTicks timerPeriod_);
 
 /**
  * @brief System call will delete a timer.
@@ -1245,7 +1245,7 @@ void xTimerDelete(xTimer timer_);
  * @param timer_ The timer to change the period for.
  * @param timerPeriod_ The timer period in is microseconds. Timer period must be zero or greater.
  */
-void xTimerChangePeriod(xTimer timer_, xTime timerPeriod_);
+void xTimerChangePeriod(xTimer timer_, xTicks timerPeriod_);
 
 /**
  * @brief System call to get the period of a timer.
@@ -1254,10 +1254,10 @@ void xTimerChangePeriod(xTimer timer_, xTime timerPeriod_);
  * for the specified timer.
  *
  * @param timer_ The timer to get the timer period for.
- * @return xTime The timer period. If the timer cannot be found, xTimerGetPeriod()
+ * @return xTicks The timer period. If the timer cannot be found, xTimerGetPeriod()
  * will return zero.
  */
-xTime xTimerGetPeriod(xTimer timer_);
+xTicks xTimerGetPeriod(xTimer timer_);
 
 /**
  * @brief System call to check if a timer is active.

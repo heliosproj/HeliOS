@@ -70,7 +70,7 @@ to default to the Arduino platform and/or tool-chain. */
 
 #define ENABLE_INTERRUPTS() interrupts()
 
-#define TIME_T_TYPE uint32_t
+#define TICKS_T_TYPE uint32_t
 
 #if !defined(CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS)
 #define CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS 0x20u /* 32u */
@@ -87,7 +87,7 @@ to default to the Arduino platform and/or tool-chain. */
 
 #define ENABLE_INTERRUPTS() interrupts()
 
-#define TIME_T_TYPE uint32_t
+#define TICKS_T_TYPE uint32_t
 
 #if !defined(CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS)
 #define CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS 0x80u /* 128u */
@@ -105,7 +105,7 @@ to default to the Arduino platform and/or tool-chain. */
 
 #define ENABLE_INTERRUPTS() interrupts()
 
-#define TIME_T_TYPE uint32_t
+#define TICKS_T_TYPE uint32_t
 
 #if !defined(CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS)
 #define CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS 0x80u /* 128u */
@@ -123,7 +123,7 @@ to default to the Arduino platform and/or tool-chain. */
 
 #define ENABLE_INTERRUPTS() interrupts()
 
-#define TIME_T_TYPE uint32_t
+#define TICKS_T_TYPE uint32_t
 
 #if !defined(CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS)
 #define CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS 0x80u /* 128u */
@@ -142,7 +142,7 @@ to default to the Arduino platform and/or tool-chain. */
 
 #define ENABLE_INTERRUPTS()
 
-#define TIME_T_TYPE uint32_t
+#define TICKS_T_TYPE uint32_t
 
 
 #define CONFIG_ENABLE_SYSTEM_ASSERT
@@ -169,7 +169,7 @@ to default to the Arduino platform and/or tool-chain. */
 
 #define ENABLE_INTERRUPTS() interrupts()
 
-#define TIME_T_TYPE uint32_t
+#define TICKS_T_TYPE uint32_t
 
 #if !defined(CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS)
 #define CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS 0x200u /* 512u */
@@ -187,7 +187,7 @@ to default to the Arduino platform and/or tool-chain. */
 
 #define ENABLE_INTERRUPTS() interrupts()
 
-#define TIME_T_TYPE uint32_t
+#define TICKS_T_TYPE uint32_t
 
 #if !defined(CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS)
 #define CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS 0x200u /* 512u */
@@ -207,7 +207,7 @@ to default to the Arduino platform and/or tool-chain. */
 
 #define ENABLE_INTERRUPTS() interrupts()
 
-#define TIME_T_TYPE uint32_t
+#define TICKS_T_TYPE uint32_t
 
 #if !defined(CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS)
 #define CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS 0x20u /* 32u */

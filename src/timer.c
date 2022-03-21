@@ -43,7 +43,7 @@ static TimerList_t *timerList = NULL;
  time period represented in microseconds. The memory allocated by xTimerCreate() must
  be freed by xTimerDelete(). Unlike tasks, timers may be created and deleted within
  tasks. */
-Timer_t *xTimerCreate(Time_t timerPeriod_) {
+Timer_t *xTimerCreate(Ticks_t timerPeriod_) {
 
 
   Timer_t *ret = NULL;
@@ -203,7 +203,7 @@ void xTimerDelete(Timer_t *timer_) {
 /* The xTimerChangePeriod() system call will change the period of the specified timer.
 The timer period is measured in microseconds. If the timer period is zero, the xTimerHasTimerExpired()
 system call will always return false. */
-void xTimerChangePeriod(Timer_t *timer_, Time_t timerPeriod_) {
+void xTimerChangePeriod(Timer_t *timer_, Ticks_t timerPeriod_) {
 
 
 
@@ -226,9 +226,9 @@ void xTimerChangePeriod(Timer_t *timer_, Time_t timerPeriod_) {
 
 /* The xTimerGetPeriod() system call will return the current timer period
 for the specified timer. */
-Time_t xTimerGetPeriod(Timer_t *timer_) {
+Ticks_t xTimerGetPeriod(Timer_t *timer_) {
 
-  Time_t ret = zero;
+  Ticks_t ret = zero;
 
 
   /* Assert if the timer cannot be found in the timer list. */

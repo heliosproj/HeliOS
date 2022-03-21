@@ -960,7 +960,7 @@ for the specified task. The timer period must be greater than zero. To have any 
 must be in the waiting state set by calling xTaskWait() on the task. Once the timer period is set
 and the task is in the waiting state, the task will be executed every N microseconds based on the period.
 Changing the period to zero will prevent the task from being executed even if it is in the waiting state. */
-void xTaskChangePeriod(Task_t *task_, Time_t timerPeriod_) {
+void xTaskChangePeriod(Task_t *task_, Ticks_t timerPeriod_) {
 
 
   /* Assert if the task cannot be found. */
@@ -982,10 +982,10 @@ void xTaskChangePeriod(Task_t *task_, Time_t timerPeriod_) {
 
 /* The xTaskGetPeriod() will return the period for the timer for the specified task. See
 xTaskChangePeriod() for more information on how the task timer works. */
-Time_t xTaskGetPeriod(Task_t *task_) {
+Ticks_t xTaskGetPeriod(Task_t *task_) {
 
 
-  Time_t ret = zero;
+  Ticks_t ret = zero;
 
 
   /* Assert if the task cannot be found. */
@@ -1098,7 +1098,7 @@ void xTaskStartScheduler(void) {
   Task_t *taskCursor = NULL;
 
   /* Underflow unsigned least runtime to get maximum value */
-  Time_t leastRunTime = -1;
+  Ticks_t leastRunTime = -1;
 
 
   /* Assert if the scheduler is already running. */
@@ -1221,7 +1221,7 @@ void _RunTimeReset_(void) {
 
 
 /* Used only for when testing HeliOS on Linux, then get the time from clock_gettime(). */
-Time_t _CurrentTime_(void) {
+Ticks_t _CurrentTime_(void) {
 
 #if defined(OTHER_ARCH_DEBUG)
 
@@ -1246,9 +1246,9 @@ runtime statistics. */
 void _TaskRun_(Task_t *task_) {
 
 
-  Time_t taskStartTime = zero;
+  Ticks_t taskStartTime = zero;
 
-  Time_t prevTotalRunTime = zero;
+  Ticks_t prevTotalRunTime = zero;
 
   /* Record the total runtime before executing the task. */
   prevTotalRunTime = task_->totalRunTime;

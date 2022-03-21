@@ -69,7 +69,7 @@ typedef uint8_t Byte_t;
 typedef void Addr_t;
 typedef size_t Size_t;
 typedef uint16_t Word_t; /* Here a "word" does NOT refer to the machine word. It just means two bytes. */
-typedef TIME_T_TYPE Time_t; /* TIME_T_TYPE is defined in the platform definitions in defines.h. */
+typedef TICKS_T_TYPE Ticks_t; /* TICKS_T_TYPE is defined in the platform definitions in defines.h. */
 
 
 typedef struct MemoryEntry_s {
@@ -106,10 +106,10 @@ typedef struct Task_s {
   void (*callback)(struct Task_s *, TaskParm_t *);
   Base_t notificationBytes;
   char notificationValue[CONFIG_NOTIFICATION_VALUE_BYTES];
-  Time_t lastRunTime;
-  Time_t totalRunTime;
-  Time_t timerPeriod;
-  Time_t timerStartTime;
+  Ticks_t lastRunTime;
+  Ticks_t totalRunTime;
+  Ticks_t timerPeriod;
+  Ticks_t timerStartTime;
   struct Task_s *next;
 } Task_t;
 
@@ -118,8 +118,8 @@ typedef struct Task_s {
 
 typedef struct TaskRunTimeStats_s {
   Base_t id;
-  Time_t lastRunTime;
-  Time_t totalRunTime;
+  Ticks_t lastRunTime;
+  Ticks_t totalRunTime;
 } TaskRunTimeStats_t;
 
 
@@ -129,8 +129,8 @@ typedef struct TaskInfo_s {
   Base_t id;
   char name[CONFIG_TASK_NAME_BYTES];
   TaskState_t state;
-  Time_t lastRunTime;
-  Time_t totalRunTime;
+  Ticks_t lastRunTime;
+  Ticks_t totalRunTime;
 } TaskInfo_t;
 
 
@@ -147,8 +147,8 @@ typedef struct TaskList_s {
 
 typedef struct Timer_s {
   TimerState_t state;
-  Time_t timerPeriod;
-  Time_t timerStartTime;
+  Ticks_t timerPeriod;
+  Ticks_t timerStartTime;
   struct Timer_s *next;
 } Timer_t;
 

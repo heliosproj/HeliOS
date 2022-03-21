@@ -38,10 +38,10 @@
 extern "C" {
 #endif
 
-Timer_t *xTimerCreate(Time_t timerPeriod_);
+Timer_t *xTimerCreate(Ticks_t timerPeriod_);
 void xTimerDelete(Timer_t *timer_);
-void xTimerChangePeriod(Timer_t *timer_, Time_t timerPeriod_);
-Time_t xTimerGetPeriod(Timer_t *timer_);
+void xTimerChangePeriod(Timer_t *timer_, Ticks_t timerPeriod_);
+Ticks_t xTimerGetPeriod(Timer_t *timer_);
 Base_t xTimerIsTimerActive(Timer_t *timer_);
 Base_t xTimerHasTimerExpired(Timer_t *timer_);
 void xTimerReset(Timer_t *timer_);
