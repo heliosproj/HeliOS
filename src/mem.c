@@ -48,13 +48,14 @@ from the heap memory region. */
 Addr_t *xMemAlloc(const Size_t size_) {
 
   /* Just call _calloc_() with the heap memory region
-  to free from the heap. */
+  to allocate memory from the heap. */
   return _calloc_(&heap, size_);
 }
 
 
 
-
+/* System call used by end-user tasks to free memory from
+the heap memory region. */
 void xMemFree(const Addr_t *addr_) {
 
 
@@ -285,7 +286,7 @@ Base_t _MemoryRegionCheck_(const volatile MemoryRegion_t *region_, const Addr_t 
 
 
           ret = RETURN_SUCCESS;
-        } /* Never us an else statement here to mark SYSFLAG_CORRUPT() = true. */
+        } /* Never use an else statement here to mark SYSFLAG_CORRUPT() = true. */
 
 
 
