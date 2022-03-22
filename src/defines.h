@@ -29,7 +29,6 @@
 #include <limits.h>
 #include <stdint.h>
 
-#define OTHER_ARCH_DEBUG
 
 /* Check that the system HeliOS is being targeted for has an
 8-bit wide byte. */
@@ -43,34 +42,14 @@
 
 
 
-/* Definition blocks for embedded platform and/or tool-chain
-specific headers and functions to compile and run HeliOS. When a
-new embedded platform and/or tool-chain is added, the following
-defines (with the exception of CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS) must
-be included:
 
-* SYSTICK_DECLARATION()
-* SYSTICK()
-* DISABLE_INTERRUPTS()
-* ENABLE_INTERRUPTS()
-* TICKS_T_TYPE
-* CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS <- Optional. However, if defined
-  must be enclosed in an #if !defined(CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS)
-  block.
-
-If no definition block for the embedded platform and/or tool-chain
-is matched, the "else" block will print a compiler warning and attempt
-to default to the Arduino platform and/or tool-chain. */
-
-
-#define DEBUG
 
 #if defined(ARDUINO_ARCH_AVR)
 
 
-#define DISABLE_INTERRUPTS() __asm__ __volatile__ ("cli")
+#define DISABLE_INTERRUPTS() __asm__ __volatile__("cli")
 
-#define ENABLE_INTERRUPTS() __asm__ __volatile__ ("sei")
+#define ENABLE_INTERRUPTS() __asm__ __volatile__("sei")
 
 #define TICKS_T_TYPE uint32_t
 
@@ -84,6 +63,7 @@ to default to the Arduino platform and/or tool-chain. */
 #elif defined(ARDUINO_ARCH_ESP8266)
 #elif defined(ARDUINO_TEENSY_MICROMOD) || defined(ARDUINO_TEENSY40) || defined(ARDUINO_TEENSY41) || defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY35) || defined(ARDUINO_TEENSY31) || defined(ARDUINO_TEENSY32) || defined(ARDUINO_TEENSY30) || defined(ARDUINO_TEENSYLC)
 #elif defined(ESP32)
+#elif defined(CMSIS_ARM_CORTEXM)
 #elif defined(DEBUG)
 
 
@@ -105,6 +85,10 @@ to default to the Arduino platform and/or tool-chain. */
 
 
 #else
+
+
+
+
 #endif
 
 

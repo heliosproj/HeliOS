@@ -90,5 +90,8 @@
     "sched.h": "c",
     "queue.h": "c",
     "cstdlib": "c"
-  }
+  },
+  "C_Cpp.default.defines": [
+    "DEBUG"
+  ]
 }
