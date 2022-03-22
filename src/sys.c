@@ -40,6 +40,19 @@ extern volatile unsigned long timer0_overflow_count;
 #elif defined(ARDUINO_ARCH_ESP8266)
 #elif defined(ARDUINO_TEENSY_MICROMOD) || defined(ARDUINO_TEENSY40) || defined(ARDUINO_TEENSY41) || defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY35) || defined(ARDUINO_TEENSY31) || defined(ARDUINO_TEENSY32) || defined(ARDUINO_TEENSY30) || defined(ARDUINO_TEENSYLC)
 #elif defined(ESP32)
+#elif defined(CMSIS_ARM_CORTEXM)
+
+static volatile Ticks_t sysTicks = zero;
+
+
+void SysTick_Handler(void) {
+
+  sysTicks++;
+
+
+  return;
+}
+
 #elif defined(DEBUG)
 #else
 #endif
@@ -89,6 +102,10 @@ Ticks_t _SysGetSysTicks_(void) {
 #elif defined(ARDUINO_ARCH_ESP8266)
 #elif defined(ARDUINO_TEENSY_MICROMOD) || defined(ARDUINO_TEENSY40) || defined(ARDUINO_TEENSY41) || defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY35) || defined(ARDUINO_TEENSY31) || defined(ARDUINO_TEENSY32) || defined(ARDUINO_TEENSY30) || defined(ARDUINO_TEENSYLC)
 #elif defined(ESP32)
+#elif defined(CMSIS_ARM_CORTEXM)
+
+  return sysTicks;
+
 #elif defined(DEBUG)
 
   struct timespec t;

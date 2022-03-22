@@ -64,6 +64,33 @@
 #elif defined(ARDUINO_TEENSY_MICROMOD) || defined(ARDUINO_TEENSY40) || defined(ARDUINO_TEENSY41) || defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY35) || defined(ARDUINO_TEENSY31) || defined(ARDUINO_TEENSY32) || defined(ARDUINO_TEENSY30) || defined(ARDUINO_TEENSYLC)
 #elif defined(ESP32)
 #elif defined(CMSIS_ARM_CORTEXM)
+
+/* ld linker script section
+
+  .kernel_mem_region (NOLOAD):
+  {
+    . = ALIGN(0x8000);
+    _start_kernel_mem_region = .;
+    *(.kernel_mem_region*);
+    . = ALIGN(0x8000);
+    _end_kernel_mem_region = .;
+    _size_kernel_mem_region = _end_kernel_mem_region - _start_kernel_mem_region;
+  } > RAM
+
+*/
+
+#define DISABLE_INTERRUPTS() __disable_irq()
+
+#define ENABLE_INTERRUPTS() __enable_irq()
+
+#define TICKS_T_TYPE uint32_t
+
+#if !defined(CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS)
+#define CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS 0x20u /* 32u */
+#endif
+
+
+
 #elif defined(DEBUG)
 
 
