@@ -47,6 +47,8 @@
 #if defined(ARDUINO_ARCH_AVR)
 
 
+#include <Arduino.h>
+
 #define DISABLE_INTERRUPTS() __asm__ __volatile__("cli")
 
 #define ENABLE_INTERRUPTS() __asm__ __volatile__("sei")
@@ -54,7 +56,7 @@
 #define TICKS_T_TYPE uint32_t
 
 #if !defined(CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS)
-#define CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS 0x20u /* 32u */
+#define CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS 0x18u /* 24u */
 #endif
 
 
