@@ -545,6 +545,12 @@ extern "C" {
 #endif
 
 /**
+ * @brief System call to initialize the system.
+ * 
+ */
+void xSystemInit(void);
+
+/**
  * @brief System call to handle assertions.
  *
  * The _SystemAssert_() system call handles assertions. The _SystemAssert_() system
