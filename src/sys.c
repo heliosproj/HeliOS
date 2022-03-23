@@ -40,7 +40,7 @@ extern volatile unsigned long timer0_overflow_count;
 #elif defined(ARDUINO_ARCH_ESP8266)
 #elif defined(ARDUINO_TEENSY_MICROMOD) || defined(ARDUINO_TEENSY40) || defined(ARDUINO_TEENSY41) || defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY35) || defined(ARDUINO_TEENSY31) || defined(ARDUINO_TEENSY32) || defined(ARDUINO_TEENSY30) || defined(ARDUINO_TEENSYLC)
 #elif defined(ESP32)
-#elif defined(__CM_CMSIS_VERSION)
+#elif defined(STM32)
 
 static volatile Ticks_t sysTicks = zero;
 
@@ -105,7 +105,7 @@ Ticks_t _SysGetSysTicks_(void) {
 #elif defined(ARDUINO_ARCH_ESP8266)
 #elif defined(ARDUINO_TEENSY_MICROMOD) || defined(ARDUINO_TEENSY40) || defined(ARDUINO_TEENSY41) || defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY35) || defined(ARDUINO_TEENSY31) || defined(ARDUINO_TEENSY32) || defined(ARDUINO_TEENSY30) || defined(ARDUINO_TEENSYLC)
 #elif defined(ESP32)
-#elif defined(__CM_CMSIS_VERSION)
+#elif defined(STM32)
 
   return sysTicks;
 
@@ -134,7 +134,7 @@ void xSystemInit(void) {
 #elif defined(ARDUINO_ARCH_ESP8266)
 #elif defined(ARDUINO_TEENSY_MICROMOD) || defined(ARDUINO_TEENSY40) || defined(ARDUINO_TEENSY41) || defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY35) || defined(ARDUINO_TEENSY31) || defined(ARDUINO_TEENSY32) || defined(ARDUINO_TEENSY30) || defined(ARDUINO_TEENSYLC)
 #elif defined(ESP32)
-#elif defined(__CM_CMSIS_VERSION)
+#elif defined(STM32)
 
   SysTick_Config(SYSTEM_CORE_CLOCK_FREQUENCY / SYSTEM_CORE_CLOCK_PRESCALER);
 
