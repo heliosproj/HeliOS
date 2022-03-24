@@ -37,7 +37,7 @@
 
 
 
-#if defined(ARDUINO_ARCH_AVR)
+#if defined(ARDUINO_ARCH_AVR) /* TESTED 2022-03-24 */
 
 extern unsigned long timer0_overflow_count;
 
@@ -87,7 +87,7 @@ extern uint32_t systick_millis_count;
 
 #define ENABLE_INTERRUPTS()
 
-#elif defined(STM32)
+#elif defined(STM32) /* TESTED 2022-03-24 */
 
 /* ld linker script section
 
@@ -113,7 +113,7 @@ extern uint32_t systick_millis_count;
 
 #define SYSTEM_CORE_CLOCK_PRESCALER 0x3E8u /* 1000u */
 
-#elif defined(DEBUG_ON)
+#elif defined(DEBUG_ON) /* TESTED 2022-03-24 */
 
 #include <stdio.h>
 #include <time.h>
