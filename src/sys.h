@@ -29,6 +29,7 @@
 #include "config.h"
 #include "defines.h"
 #include "types.h"
+#include "port.h"
 #include "mem.h"
 #include "queue.h"
 #include "task.h"
@@ -41,8 +42,6 @@ extern "C" {
 #endif
 
 void _SystemAssert_(const char *file_, int line_);
-Ticks_t _SysGetSysTicks_(void);
-void xSystemInit(void);
 void xSystemHalt(void);
 SystemInfo_t *xSystemGetSystemInfo(void);
 

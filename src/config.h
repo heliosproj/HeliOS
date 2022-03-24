@@ -165,9 +165,7 @@ to customize the HeliOS kernel for their specific application. */
  * must be appended with a "u" to maintain MISRA C:2012 compliance.
  * 
  */
-/*
-#define CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS 512u
-*/
+#define CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS 24u
 
 
 

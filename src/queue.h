@@ -29,6 +29,7 @@
 #include "config.h"
 #include "defines.h"
 #include "types.h"
+#include "port.h"
 #include "mem.h"
 #include "sys.h"
 #include "task.h"

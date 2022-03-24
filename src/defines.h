@@ -28,6 +28,7 @@
 
 #include <limits.h>
 #include <stdint.h>
+#include <stddef.h>
 
 
 /* Check that the system HeliOS is being targeted for has an
@@ -43,91 +44,7 @@
 
 
 
-
-#if defined(ARDUINO_ARCH_AVR)
-
-
-#include <Arduino.h>
-
-#define DISABLE_INTERRUPTS() __asm__ __volatile__("cli")
-
-#define ENABLE_INTERRUPTS() __asm__ __volatile__("sei")
-
 #define TICKS_T_TYPE uint32_t
-
-#if !defined(CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS)
-#define CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS 0x18u /* 24u */
-#endif
-
-
-#elif defined(ARDUINO_ARCH_SAM)
-#elif defined(ARDUINO_ARCH_SAMD)
-#elif defined(ARDUINO_ARCH_ESP8266)
-#elif defined(ARDUINO_TEENSY_MICROMOD) || defined(ARDUINO_TEENSY40) || defined(ARDUINO_TEENSY41) || defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY35) || defined(ARDUINO_TEENSY31) || defined(ARDUINO_TEENSY32) || defined(ARDUINO_TEENSY30) || defined(ARDUINO_TEENSYLC)
-#elif defined(ESP32)
-#elif defined(STM32)
-
-/* ld linker script section
-
-  .kernel_mem_region (NOLOAD):
-  {
-    . = ALIGN(0x8000);
-    _start_kernel_mem_region = .;
-    *(.kernel_mem_region*);
-    . = ALIGN(0x8000);
-    _end_kernel_mem_region = .;
-    _size_kernel_mem_region = _end_kernel_mem_region - _start_kernel_mem_region;
-  } > RAM
-
-*/
-
-#include "stm32f429xx.h"
-
-#define DISABLE_INTERRUPTS() __disable_irq()
-
-#define ENABLE_INTERRUPTS() __enable_irq()
-
-#define SYSTEM_CORE_CLOCK_FREQUENCY 0xF42400u /* 16000000u */
-
-#define SYSTEM_CORE_CLOCK_PRESCALER 0x3E8u /* 1000 */
-
-#define TICKS_T_TYPE uint32_t
-
-#if !defined(CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS)
-#define CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS 0x400u /* 1024u */
-#endif
-
-
-
-#elif defined(DEBUG_ON)
-
-
-#include <stdio.h>
-#include <time.h>
-
-#define DISABLE_INTERRUPTS()
-
-#define ENABLE_INTERRUPTS()
-
-#define TICKS_T_TYPE uint32_t
-
-#define CONFIG_ENABLE_SYSTEM_ASSERT
-#define CONFIG_SYSTEM_ASSERT_BEHAVIOR(file_, line_) printf("assert: %s:%d\n", file_, line_)
-
-#if !defined(CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS)
-#define CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS 0x20u /* 32u */
-#endif
-
-
-#else
-
-
-
-
-#endif
-
-
-
 
 
 /* Define "true" if not defined. */
@@ -184,16 +101,6 @@ for return values. */
 
 
 
-/* Define the raw size of the heap in bytes based on the number of blocks
-the heap contains and the size of each block in bytes. */
-#if !defined(ALL_MEMORY_REGIONS_SIZE_IN_BYTES)
-#define ALL_MEMORY_REGIONS_SIZE_IN_BYTES CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS * CONFIG_ALL_MEMORY_REGIONS_BLOCK_SIZE
-#endif
-
-
-
-
-
 /* Define the size in bytes of the OS product name which is accessible through
 xSystemGetSystemInfo(). */
 #if !defined(OS_PRODUCT_NAME_SIZE)
@@ -236,6 +143,12 @@ xSystemGetSystemInfo(). */
 #endif
 
 
+
+/* Define the raw size of the heap in bytes based on the number of blocks
+the heap contains and the size of each block in bytes. */
+#if !defined(ALL_MEMORY_REGIONS_SIZE_IN_BYTES)
+#define ALL_MEMORY_REGIONS_SIZE_IN_BYTES CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS * CONFIG_ALL_MEMORY_REGIONS_BLOCK_SIZE
+#endif
 
 
 

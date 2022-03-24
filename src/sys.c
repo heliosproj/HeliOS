@@ -31,37 +31,6 @@ Thank you for the best OS on Earth, Dennis. */
 
 
 
-#if defined(ARDUINO_ARCH_AVR)
-
-extern volatile unsigned long timer0_overflow_count;
-
-#elif defined(ARDUINO_ARCH_SAM)
-#elif defined(ARDUINO_ARCH_SAMD)
-#elif defined(ARDUINO_ARCH_ESP8266)
-#elif defined(ARDUINO_TEENSY_MICROMOD) || defined(ARDUINO_TEENSY40) || defined(ARDUINO_TEENSY41) || defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY35) || defined(ARDUINO_TEENSY31) || defined(ARDUINO_TEENSY32) || defined(ARDUINO_TEENSY30) || defined(ARDUINO_TEENSYLC)
-#elif defined(ESP32)
-#elif defined(STM32)
-
-static volatile Ticks_t sysTicks = zero;
-
-
-void SysTick_Handler(void) {
-
-  DISABLE_INTERRUPTS();
-
-  sysTicks++;
-
-  ENABLE_INTERRUPTS();
-
-  return;
-}
-
-#elif defined(DEBUG_ON)
-#else
-#endif
-
-
-
 /* Declare and set the system flags to their default values. */
 SysFlags_t sysFlags = {
     .running = false,
@@ -94,62 +63,6 @@ void _SystemAssert_(const char *file_, int line_) {
 
 
 
-Ticks_t _SysGetSysTicks_(void) {
-
-#if defined(ARDUINO_ARCH_AVR)
-
-  return timer0_overflow_count;
-
-#elif defined(ARDUINO_ARCH_SAM)
-#elif defined(ARDUINO_ARCH_SAMD)
-#elif defined(ARDUINO_ARCH_ESP8266)
-#elif defined(ARDUINO_TEENSY_MICROMOD) || defined(ARDUINO_TEENSY40) || defined(ARDUINO_TEENSY41) || defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY35) || defined(ARDUINO_TEENSY31) || defined(ARDUINO_TEENSY32) || defined(ARDUINO_TEENSY30) || defined(ARDUINO_TEENSYLC)
-#elif defined(ESP32)
-#elif defined(STM32)
-
-  return sysTicks;
-
-#elif defined(DEBUG_ON)
-
-  struct timespec t;
-
-  clock_gettime(CLOCK_MONOTONIC_RAW, &t);
-
-  return (t.tv_sec * 1000000) + (t.tv_nsec / 1000);
-
-#else
-
-  return zero;
-
-#endif
-}
-
-
-
-void xSystemInit(void) {
-
-#if defined(ARDUINO_ARCH_AVR)
-#elif defined(ARDUINO_ARCH_SAM)
-#elif defined(ARDUINO_ARCH_SAMD)
-#elif defined(ARDUINO_ARCH_ESP8266)
-#elif defined(ARDUINO_TEENSY_MICROMOD) || defined(ARDUINO_TEENSY40) || defined(ARDUINO_TEENSY41) || defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY35) || defined(ARDUINO_TEENSY31) || defined(ARDUINO_TEENSY32) || defined(ARDUINO_TEENSY30) || defined(ARDUINO_TEENSYLC)
-#elif defined(ESP32)
-#elif defined(STM32)
-
-  SysTick_Config(SYSTEM_CORE_CLOCK_FREQUENCY / SYSTEM_CORE_CLOCK_PRESCALER);
-
-  return;
-
-#elif defined(DEBUG_ON)
-#else
-
-  return;
-
-#endif
-}
-
-
-
 
 /* The xSystemHalt() system call halts the system. */
 void xSystemHalt(void) {
@@ -165,6 +78,9 @@ void xSystemHalt(void) {
     /* Do nothing - literally. */
   }
 }
+
+
+
 
 /* The xSystemGetSystemInfo() system call will return the type xSystemInfo containing
 information about the system including the OS (product) name, its version and how many tasks
