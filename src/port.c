@@ -59,7 +59,7 @@ void _SysInit_(void) {
 
 Ticks_t _SysGetSysTicks_(void) {
 
-  return zero;
+  return millis();
 
 }
 

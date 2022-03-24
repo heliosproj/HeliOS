@@ -70,9 +70,13 @@ void _SysInit_(void);
 
 #elif defined(ARDUINO_ARCH_SAMD)
 
-#define DISABLE_INTERRUPTS()
+#include <Arduino.h>
 
-#define ENABLE_INTERRUPTS()
+extern unsigned long millis(void);
+
+#define DISABLE_INTERRUPTS() __disable_irq()
+
+#define ENABLE_INTERRUPTS() __enable_irq()
 
 Ticks_t _SysGetSysTicks_(void);
 
