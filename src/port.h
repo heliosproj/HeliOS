@@ -42,9 +42,13 @@ extern "C" {
 
 #if defined(ARDUINO_ARCH_AVR)
 
-#define DISABLE_INTERRUPTS()
+#include <Arduino.h>
 
-#define ENABLE_INTERRUPTS()
+extern volatile unsigned long timer0_overflow_count;
+
+#define DISABLE_INTERRUPTS() __asm__ __volatile__("cli")
+
+#define ENABLE_INTERRUPTS() __asm__ __volatile__("sei")
 
 Ticks_t _SysGetSysTicks_(void);
 
@@ -52,9 +56,13 @@ void _SysInit_(void);
 
 #elif defined(ARDUINO_ARCH_SAM)
 
-#define DISABLE_INTERRUPTS()
+#include <Arduino.h>
 
-#define ENABLE_INTERRUPTS()
+extern uint32_t GetTickCount(void);
+
+#define DISABLE_INTERRUPTS() __disable_irq()
+
+#define ENABLE_INTERRUPTS() __enable_irq()
 
 Ticks_t _SysGetSysTicks_(void);
 

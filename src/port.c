@@ -29,8 +29,6 @@
 
 #if defined(ARDUINO_ARCH_AVR)
 
-extern volatile unsigned long timer0_overflow_count;
-
 Ticks_t _SysGetSysTicks_(void) {
 
   return timer0_overflow_count;
@@ -47,7 +45,7 @@ void _SysInit_(void) {
 
 Ticks_t _SysGetSysTicks_(void) {
 
-  return zero;
+  return GetTickCount();
 
 }
 
