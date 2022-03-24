@@ -36,9 +36,6 @@
 #include "timer.h"
 
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 #if defined(ARDUINO_ARCH_AVR)
 
@@ -50,10 +47,6 @@ extern volatile unsigned long timer0_overflow_count;
 
 #define ENABLE_INTERRUPTS() __asm__ __volatile__("sei")
 
-Ticks_t _SysGetSysTicks_(void);
-
-void _SysInit_(void);
-
 #elif defined(ARDUINO_ARCH_SAM)
 
 #include <Arduino.h>
@@ -63,10 +56,6 @@ extern uint32_t GetTickCount(void);
 #define DISABLE_INTERRUPTS() __disable_irq()
 
 #define ENABLE_INTERRUPTS() __enable_irq()
-
-Ticks_t _SysGetSysTicks_(void);
-
-void _SysInit_(void);
 
 #elif defined(ARDUINO_ARCH_SAMD)
 
@@ -78,19 +67,11 @@ extern unsigned long millis(void);
 
 #define ENABLE_INTERRUPTS() __enable_irq()
 
-Ticks_t _SysGetSysTicks_(void);
-
-void _SysInit_(void);
-
 #elif defined(ARDUINO_ARCH_ESP8266)
 
 #define DISABLE_INTERRUPTS()
 
 #define ENABLE_INTERRUPTS()
-
-Ticks_t _SysGetSysTicks_(void);
-
-void _SysInit_(void);
 
 #elif defined(ARDUINO_TEENSY_MICROMOD) || defined(ARDUINO_TEENSY40) || defined(ARDUINO_TEENSY41) || defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY35) || defined(ARDUINO_TEENSY31) || defined(ARDUINO_TEENSY32) || defined(ARDUINO_TEENSY30) || defined(ARDUINO_TEENSYLC)
 
@@ -102,19 +83,11 @@ extern volatile uint32_t systick_millis_count;
 
 #define ENABLE_INTERRUPTS() __enable_irq()
 
-Ticks_t _SysGetSysTicks_(void);
-
-void _SysInit_(void);
-
 #elif defined(ESP32)
 
 #define DISABLE_INTERRUPTS()
 
 #define ENABLE_INTERRUPTS()
-
-Ticks_t _SysGetSysTicks_(void);
-
-void _SysInit_(void);
 
 #elif defined(STM32)
 
@@ -142,10 +115,6 @@ void _SysInit_(void);
 
 #define SYSTEM_CORE_CLOCK_PRESCALER 0x3E8u /* 1000u */
 
-Ticks_t _SysGetSysTicks_(void);
-
-void _SysInit_(void);
-
 #elif defined(DEBUG_ON)
 
 #include <stdio.h>
@@ -159,14 +128,16 @@ void _SysInit_(void);
 
 #define CONFIG_SYSTEM_ASSERT_BEHAVIOR(file_, line_) printf("assert: %s:%d\n", file_, line_)
 
-Ticks_t _SysGetSysTicks_(void);
-
-void _SysInit_(void);
-
 #endif
 
 
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+Ticks_t _SysGetSysTicks_(void);
+void _SysInit_(void);
 
 #ifdef __cplusplus
 }  // extern "C" {
