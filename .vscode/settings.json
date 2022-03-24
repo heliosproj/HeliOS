@@ -82,16 +82,9 @@
     }
   ],
   "cSpell.words": [
-    "datastructure",
     "Manny"
   ],
-  "files.associations": {
-    "task.h": "c",
-    "sched.h": "c",
-    "queue.h": "c",
-    "cstdlib": "c"
-  },
   "C_Cpp.default.defines": [
-    "DEBUG"
+    "DEBUG_ON"
   ]
 }

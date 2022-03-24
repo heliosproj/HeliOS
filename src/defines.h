@@ -99,7 +99,7 @@
 
 
 
-#elif defined(DEBUG)
+#elif defined(DEBUG_ON)
 
 
 #include <stdio.h>

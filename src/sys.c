@@ -56,7 +56,7 @@ void SysTick_Handler(void) {
   return;
 }
 
-#elif defined(DEBUG)
+#elif defined(DEBUG_ON)
 #else
 #endif
 
@@ -109,7 +109,7 @@ Ticks_t _SysGetSysTicks_(void) {
 
   return sysTicks;
 
-#elif defined(DEBUG)
+#elif defined(DEBUG_ON)
 
   struct timespec t;
 
@@ -140,7 +140,7 @@ void xSystemInit(void) {
 
   return;
 
-#elif defined(DEBUG)
+#elif defined(DEBUG_ON)
 #else
 
   return;

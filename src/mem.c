@@ -748,7 +748,7 @@ uint16_t _memcmp_(const Addr_t *s1_, const Addr_t *s2_, Size_t n_) {
 
 
 
-#if defined(DEBUG)
+#if defined(DEBUG_ON)
 
 void _MemoryRegionDumpKernel_(void) {
 

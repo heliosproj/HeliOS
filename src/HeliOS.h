@@ -1335,7 +1335,7 @@ void xTimerStop(xTimer timer_);
 void xSystemHalt(void);
 
 
-#if defined(DEBUG)
+#if defined(DEBUG_ON)
 void _MemoryRegionDumpKernel_(void);
 void _MemoryRegionDumpHeap_(void);
 #endif
