@@ -44,9 +44,6 @@
 
 
 
-#define TICKS_T_TYPE uint32_t
-
-
 /* Define "true" if not defined. */
 #if !defined(true)
 #define true 0x1u

@@ -91,7 +91,7 @@ typedef uint8_t Base_t;
  * clock (RTC) time or date information.
  *
  */
-typedef TICKS_T_TYPE Ticks_t;
+typedef uint32_t Ticks_t;
 
 typedef size_t Size_t;
 typedef Size_t xSize;
@@ -443,15 +443,6 @@ typedef Task_t *xTask;
  *
  */
 typedef TaskParm_t *xTaskParm;
-
-/**
- * @brief The type definition for time expressed in microseconds.
- *
- * The xTicks type is used by several of the task and timer related system calls to express time.
- * The unit of measure for time is always microseconds.
- *
- */
-typedef TICKS_T_TYPE Ticks_t;
 
 /**
  * @brief The type definition for time expressed in microseconds.

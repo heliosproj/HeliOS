@@ -69,7 +69,7 @@ typedef uint8_t Byte_t;
 typedef void Addr_t;
 typedef size_t Size_t;
 typedef uint16_t Word_t; /* Here a "word" does NOT refer to the machine word. It just means two bytes. */
-typedef TICKS_T_TYPE Ticks_t; /* TICKS_T_TYPE is defined in the platform definitions in defines.h. */
+typedef uint32_t Ticks_t;
 
 
 typedef struct MemoryEntry_s {
