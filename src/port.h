@@ -39,9 +39,7 @@
 
 #if defined(ARDUINO_ARCH_AVR)
 
-#include <Arduino.h>
-
-extern volatile unsigned long timer0_overflow_count;
+extern unsigned long timer0_overflow_count;
 
 #define DISABLE_INTERRUPTS() __asm__ __volatile__("cli")
 
@@ -77,7 +75,7 @@ extern unsigned long millis(void);
 
 #include <Arduino.h>
 
-extern volatile uint32_t systick_millis_count;
+extern uint32_t systick_millis_count;
 
 #define DISABLE_INTERRUPTS() __disable_irq()
 
