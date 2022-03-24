@@ -48,7 +48,7 @@ extern "C" {
 
 Ticks_t _SysGetSysTicks_(void);
 
-void xSystemInit(void);
+void _SysInit_(void);
 
 #elif defined(ARDUINO_ARCH_SAM)
 
@@ -58,7 +58,7 @@ void xSystemInit(void);
 
 Ticks_t _SysGetSysTicks_(void);
 
-void xSystemInit(void);
+void _SysInit_(void);
 
 #elif defined(ARDUINO_ARCH_SAMD)
 
@@ -68,7 +68,7 @@ void xSystemInit(void);
 
 Ticks_t _SysGetSysTicks_(void);
 
-void xSystemInit(void);
+void _SysInit_(void);
 
 #elif defined(ARDUINO_ARCH_ESP8266)
 
@@ -78,7 +78,7 @@ void xSystemInit(void);
 
 Ticks_t _SysGetSysTicks_(void);
 
-void xSystemInit(void);
+void _SysInit_(void);
 
 #elif defined(ARDUINO_TEENSY_MICROMOD) || defined(ARDUINO_TEENSY40) || defined(ARDUINO_TEENSY41) || defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY35) || defined(ARDUINO_TEENSY31) || defined(ARDUINO_TEENSY32) || defined(ARDUINO_TEENSY30) || defined(ARDUINO_TEENSYLC)
 
@@ -88,7 +88,7 @@ void xSystemInit(void);
 
 Ticks_t _SysGetSysTicks_(void);
 
-void xSystemInit(void);
+void _SysInit_(void);
 
 #elif defined(ESP32)
 
@@ -98,7 +98,7 @@ void xSystemInit(void);
 
 Ticks_t _SysGetSysTicks_(void);
 
-void xSystemInit(void);
+void _SysInit_(void);
 
 #elif defined(STM32)
 
@@ -124,11 +124,11 @@ void xSystemInit(void);
 
 #define SYSTEM_CORE_CLOCK_FREQUENCY 0xF42400u /* 16000000u */
 
-#define SYSTEM_CORE_CLOCK_PRESCALER 0x3E8u /* 1000 */
+#define SYSTEM_CORE_CLOCK_PRESCALER 0x3E8u /* 1000u */
 
 Ticks_t _SysGetSysTicks_(void);
 
-void xSystemInit(void);
+void _SysInit_(void);
 
 #elif defined(DEBUG_ON)
 
@@ -145,7 +145,7 @@ void xSystemInit(void);
 
 Ticks_t _SysGetSysTicks_(void);
 
-void xSystemInit(void);
+void _SysInit_(void);
 
 #endif
 

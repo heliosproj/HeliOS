@@ -37,7 +37,7 @@ Ticks_t _SysGetSysTicks_(void) {
 
 }
 
-void xSystemInit(void) {
+void _SysInit_(void) {
 
 	return;
 
@@ -51,7 +51,7 @@ Ticks_t _SysGetSysTicks_(void) {
 
 }
 
-void xSystemInit(void) {
+void _SysInit_(void) {
 
 	return;
 
@@ -65,7 +65,7 @@ Ticks_t _SysGetSysTicks_(void) {
 
 }
 
-void xSystemInit(void) {
+void _SysInit_(void) {
 
 	return;
 
@@ -79,7 +79,7 @@ Ticks_t _SysGetSysTicks_(void) {
 
 }
 
-void xSystemInit(void) {
+void _SysInit_(void) {
 
 	return;
 
@@ -93,7 +93,7 @@ Ticks_t _SysGetSysTicks_(void) {
 
 }
 
-void xSystemInit(void) {
+void _SysInit_(void) {
 
 	return;
 
@@ -107,7 +107,7 @@ Ticks_t _SysGetSysTicks_(void) {
 
 }
 
-void xSystemInit(void) {
+void _SysInit_(void) {
 
 	return;
 
@@ -134,7 +134,7 @@ Ticks_t _SysGetSysTicks_(void) {
 
 }
 
-void xSystemInit(void) {
+void _SysInit_(void) {
 
 	SysTick_Config(SYSTEM_CORE_CLOCK_FREQUENCY / SYSTEM_CORE_CLOCK_PRESCALER);
 
@@ -154,7 +154,7 @@ Ticks_t _SysGetSysTicks_(void) {
 
 }
 
-void xSystemInit(void) {
+void _SysInit_(void) {
 
 	return;
 

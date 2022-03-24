@@ -63,6 +63,14 @@ void _SystemAssert_(const char *file_, int line_) {
 
 
 
+void xSystemInit(void) {
+
+  _SysInit_();
+
+  return;
+}
+
+
 
 /* The xSystemHalt() system call halts the system. */
 void xSystemHalt(void) {
