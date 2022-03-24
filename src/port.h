@@ -94,9 +94,13 @@ void _SysInit_(void);
 
 #elif defined(ARDUINO_TEENSY_MICROMOD) || defined(ARDUINO_TEENSY40) || defined(ARDUINO_TEENSY41) || defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY35) || defined(ARDUINO_TEENSY31) || defined(ARDUINO_TEENSY32) || defined(ARDUINO_TEENSY30) || defined(ARDUINO_TEENSYLC)
 
-#define DISABLE_INTERRUPTS()
+#include <Arduino.h>
 
-#define ENABLE_INTERRUPTS()
+extern volatile uint32_t systick_millis_count;
+
+#define DISABLE_INTERRUPTS() __disable_irq()
+
+#define ENABLE_INTERRUPTS() __enable_irq()
 
 Ticks_t _SysGetSysTicks_(void);
 
