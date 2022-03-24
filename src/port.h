@@ -55,7 +55,7 @@ extern uint32_t GetTickCount(void);
 
 #define ENABLE_INTERRUPTS() __enable_irq()
 
-#elif defined(ARDUINO_ARCH_SAMD)
+#elif defined(ARDUINO_ARCH_SAMD) /* TESTED 2022-03-24 */
 
 #include <Arduino.h>
 
