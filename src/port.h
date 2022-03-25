@@ -220,9 +220,9 @@ extern uint32_t systick_millis_count;
 
 #include "stm32f429xx.h"
 
-#define DISABLE_INTERRUPTS() __asm volatile ("cpsid i")
+#define DISABLE_INTERRUPTS() __disable_irq()
 
-#define ENABLE_INTERRUPTS() __asm volatile ("cpsie i")
+#define ENABLE_INTERRUPTS() __enable_irq()
 
 #define SYSTEM_CORE_CLOCK_FREQUENCY 0xF42400u /* 16000000u */
 

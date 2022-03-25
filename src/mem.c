@@ -162,32 +162,35 @@ Size_t xMemGetSize(const Addr_t *addr_) {
 
 
 
-    /* I LEFT OFF HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */
+    /* Assert if the heap memory region fails its consistency check OR if the memory address is not
+    valid for the heap memory region. */
     SYSASSERT(RETURN_SUCCESS == _MemoryRegionCheck_(&heap, addr_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
 
 
 
-
+    /* Check if the heap memory region is consistent AND if the memory address is valid for the heap
+    memory region. */
     if (RETURN_SUCCESS == _MemoryRegionCheck_(&heap, addr_, MEMORY_REGION_CHECK_OPTION_W_ADDR)) {
 
 
 
-
+      /* Get the memory region entry for the address to get the size of. */
       tosize = ADDR2ENTRY(addr_, &heap);
 
 
 
-
+      /* Assert if it is free. */
       SYSASSERT(false == tosize->free);
 
 
 
-
+      /* Check to make sure the entry is not free. */
       if (false == tosize->free) {
 
 
 
-
+        /* The end-user is expecting the size in bytes so multiple the block
+        size by the number of blocks the entry contains. */
         ret = tosize->blocks * CONFIG_ALL_MEMORY_REGIONS_BLOCK_SIZE;
       }
     }
@@ -200,7 +203,9 @@ Size_t xMemGetSize(const Addr_t *addr_) {
 
 
 
-
+/* The _MemoryRegionCheck_() function checks the consistency of a memory region. If specified, it will also check
+that an address points to valid memory that was previously allocated by _calloc_() for the respective memory
+region. */
 Base_t _MemoryRegionCheck_(const volatile MemoryRegion_t *region_, const Addr_t *addr_, const Base_t option_) {
 
 
@@ -216,83 +221,117 @@ Base_t _MemoryRegionCheck_(const volatile MemoryRegion_t *region_, const Addr_t 
   Base_t ret = RETURN_FAILURE;
 
 
+  /* Assert if there is an invalid combination of arguments. */
   SYSASSERT((ISNOTNULLPTR(region_) && ISNULLPTR(addr_) && (MEMORY_REGION_CHECK_OPTION_WO_ADDR == option_)) || (ISNOTNULLPTR(region_) && ISNOTNULLPTR(addr_) && (MEMORY_REGION_CHECK_OPTION_W_ADDR == option_)));
 
 
-
+  /* Check if the combination of arguments is valid. */
   if ((ISNOTNULLPTR(region_) && ISNULLPTR(addr_) && (MEMORY_REGION_CHECK_OPTION_WO_ADDR == option_)) || (ISNOTNULLPTR(region_) && ISNOTNULLPTR(addr_) && (MEMORY_REGION_CHECK_OPTION_W_ADDR == option_))) {
 
 
+    /* Assert if the starting entry of the memory region has not been set. */
     SYSASSERT(ISNOTNULLPTR(region_->start));
 
 
+    /* Check if the starting entry of the memory region has been set. if it hasn't then
+    the memory region hasn't been initialized. */
     if (ISNOTNULLPTR(region_->start)) {
 
       cursor = region_->start;
 
 
+      /* Check if we will also be checking if an address is a valid
+      address that points to allocated memory in the memory region. */
       if (MEMORY_REGION_CHECK_OPTION_W_ADDR == option_) {
 
         find = ADDR2ENTRY(addr_, region_);
       }
 
 
+      /* Traverse the memory region's entries if there is
+      an entry. */
       while (ISNOTNULLPTR(cursor)) {
 
 
 
+        /* Assert if the memory address of the cursor is outside of the scope
+        of the memory region. */
         SYSASSERT(RETURN_SUCCESS == _MemoryRegionCheckAddr_(region_, cursor));
 
 
 
-
+        /* Check if the memory address of the cursor is inside the scope of the
+        memory region, this is important in case an entry is corrupt we don't
+        want to inadvertently access some other area of memory. */
         if (RETURN_SUCCESS == _MemoryRegionCheckAddr_(region_, cursor)) {
 
           blocks += cursor->blocks;
 
 
 
-
+          /* If we are also checking if an address is valid, let's see if the entry for the address matches
+          the entry we are currently on and that entry is NOT free. If that is the case, let's flag that
+          we found what we are looking for. */
           if ((MEMORY_REGION_CHECK_OPTION_W_ADDR == option_) && (cursor == find) && (false == cursor->free)) {
 
             found = true;
           }
 
 
+
+          /* Move on to the next entry. */
           cursor = cursor->next;
 
         } else {
 
 
+          /* The address of the memory entry was outside of the scope of the memory region
+          so the memory region is corrupt, so mark the corrupt system flag. */
           SYSFLAG_CORRUPT() = true;
 
 
+          /* No point in continuing to traverse the memory entries in the memory region
+          so break out of the loop. */
           break;
         }
       }
 
+
+      /* Assert if the memory region blocks does not match the setting because this would
+      indicate a serious issued. */
       SYSASSERT(CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS == blocks);
 
 
+      /* Check if the number of blocks in the memory region matches the setting before
+      we give the memory region a clean bill of health. */
       if (CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS == blocks) {
 
 
-
+        /* Assert if the memory region is flagged corrupt or if the address we were looking
+        for was not found. */
         SYSASSERT(((MEMORY_REGION_CHECK_OPTION_WO_ADDR == option_) && (false == SYSFLAG_CORRUPT())) || ((MEMORY_REGION_CHECK_OPTION_W_ADDR == option_) && (false == SYSFLAG_CORRUPT()) && (true == found)));
 
 
-
+        /* Check that the memory region is not flagged corrupt and we found the memory address
+        we were looking before. */
         if (((MEMORY_REGION_CHECK_OPTION_WO_ADDR == option_) && (false == SYSFLAG_CORRUPT())) || ((MEMORY_REGION_CHECK_OPTION_W_ADDR == option_) && (false == SYSFLAG_CORRUPT()) && (true == found))) {
 
 
+          /* Things look good so set the return value to success. */
           ret = RETURN_SUCCESS;
-        } /* Never use an else statement here to mark SYSFLAG_CORRUPT() = true. */
+
+
+
+        } /* Never use an else statement here to mark SYSFLAG_CORRUPT() = true. Just because an address wasn't
+          found does not mean the memory region is corrupt. */
 
 
 
       } else {
 
 
+        /* The number of blocks counted in the memory region does not match the setting
+        so something is seriously wrong, so set the corrupt system flag. */
         SYSFLAG_CORRUPT() = true;
       }
     }
@@ -303,6 +342,8 @@ Base_t _MemoryRegionCheck_(const volatile MemoryRegion_t *region_, const Addr_t 
 
 
 
+/* Function to check if an address falls within the scope of a memory region. This
+function is used exclusively by _MemoryRegionCheck_(). */
 Base_t _MemoryRegionCheckAddr_(const volatile MemoryRegion_t *region_, const Addr_t *addr_) {
 
 
@@ -311,12 +352,13 @@ Base_t _MemoryRegionCheckAddr_(const volatile MemoryRegion_t *region_, const Add
   Base_t ret = RETURN_FAILURE;
 
 
-
+  /* Assert if the address is outside of the scope of the memory region. */
   SYSASSERT((addr_ >= (Addr_t *)(region_->mem)) && (addr_ < (Addr_t *)(region_->mem + ALL_MEMORY_REGIONS_SIZE_IN_BYTES)));
 
 
 
-
+  /* Check if the address is inside the scope of the memory region, if it is
+  then return success. */
   if ((addr_ >= (Addr_t *)(region_->mem)) && (addr_ < (Addr_t *)(region_->mem + ALL_MEMORY_REGIONS_SIZE_IN_BYTES))) {
 
 
@@ -325,12 +367,6 @@ Base_t _MemoryRegionCheckAddr_(const volatile MemoryRegion_t *region_, const Add
 
 
 
-  } else {
-
-
-
-
-    SYSFLAG_CORRUPT() = true;
   }
 
 
