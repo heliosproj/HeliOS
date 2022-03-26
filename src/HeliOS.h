@@ -84,16 +84,36 @@ typedef enum {
 typedef uint8_t Base_t;
 
 /**
- * @brief Type definition for system time measured in microseconds.
+ * @brief Type definition for system ticks.
  *
- * The Ticks_t type is used to store system time which is measured in microseconds
- * from system initialization. Despite its name, this type does not store real time
- * clock (RTC) time or date information.
+ * The Ticks_t type is used to store system ticks which is often one millisecond per
+ * tick depending on core frequency and prescaler settings.
+ * 
+ * @sa xTicks
  *
  */
 typedef uint32_t Ticks_t;
 
+
+/**
+ * @brief The type defintion for storing the size of some object in memory.
+ * 
+ * The Size_t type is used to store the size of an object in memory and is
+ * always represented in bytes. Size_t should always be declared as xSize.
+ * 
+ * @sa xSize
+ * 
+ */
 typedef size_t Size_t;
+
+
+/**
+ * @brief The type defintion for storing the size of some object in memory.
+ * 
+ * The xSize type is used to store the size of an object in memory and is
+ * always represented in bytes.
+ * 
+ */
 typedef Size_t xSize;
 
 
