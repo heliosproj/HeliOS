@@ -1177,6 +1177,7 @@ void xTaskStartScheduler(void) {
         runTask = NULL;
       }
 
+      /* Underflow unsigned least runtime to get maximum value */
       leastRunTime = -1;
     }
 

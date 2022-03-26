@@ -44,8 +44,8 @@ the SYSASSERT() macro evaluates false. In order for there
 to be any effect, CONFIG_ENABLE_SYSTEM_ASSERT and
 CONFIG_SYSTEM_ASSERT_BEHAVIOR must be defined.
 
-_SystemAssert_() should NOT be called directly. Instead
-use the SYSASSERT() C macro. */
+_SystemAssert_() should NOT be called directly because it is an INTERNAL
+function name and may change in future releases. Instead use the SYSASSERT() C macro. */
 void _SystemAssert_(const char *file_, int line_) {
 
   /* Do not modify this system call directly. Define
@@ -62,7 +62,7 @@ void _SystemAssert_(const char *file_, int line_) {
 }
 
 
-
+/* The xSystemInit() system call initializes the system. */
 void xSystemInit(void) {
 
   _SysInit_();

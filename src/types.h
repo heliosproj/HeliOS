@@ -68,7 +68,8 @@ typedef uint8_t Base_t;
 typedef uint8_t Byte_t;
 typedef void Addr_t;
 typedef size_t Size_t;
-typedef uint16_t Word_t; /* Here a "word" does NOT refer to the machine word. It just means two bytes. */
+typedef uint16_t Word_t; /* Here a "word" does NOT refer to the machine word. It just means two bytes
+which on 32-bit architectures is arguable a "halfword". */
 typedef uint32_t Ticks_t;
 
 
