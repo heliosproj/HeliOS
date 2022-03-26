@@ -955,10 +955,10 @@ void xTaskWait(Task_t *task_) {
 
 
 
-/* The xTaskChangePeriod() system call will change the period (microseconds) on the task timer
+/* The xTaskChangePeriod() system call will change the period (ticks) on the task timer
 for the specified task. The timer period must be greater than zero. To have any effect, the task
 must be in the waiting state set by calling xTaskWait() on the task. Once the timer period is set
-and the task is in the waiting state, the task will be executed every N microseconds based on the period.
+and the task is in the waiting state, the task will be executed every N ticks based on the period.
 Changing the period to zero will prevent the task from being executed even if it is in the waiting state. */
 void xTaskChangePeriod(Task_t *task_, Ticks_t timerPeriod_) {
 

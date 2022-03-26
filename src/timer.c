@@ -40,7 +40,7 @@ static TimerList_t *timerList = NULL;
 /* The xTimerCreate() system call will create a new timer. Timers differ from
  task timers in that they do not create events that effect the scheduling of a task.
  Timers can be used by tasks to initiate various task activities based on a specified
- time period represented in microseconds. The memory allocated by xTimerCreate() must
+ time period represented in ticks. The memory allocated by xTimerCreate() must
  be freed by xTimerDelete(). Unlike tasks, timers may be created and deleted within
  tasks. */
 Timer_t *xTimerCreate(Ticks_t timerPeriod_) {
@@ -201,7 +201,7 @@ void xTimerDelete(Timer_t *timer_) {
 
 
 /* The xTimerChangePeriod() system call will change the period of the specified timer.
-The timer period is measured in microseconds. If the timer period is zero, the xTimerHasTimerExpired()
+The timer period is measured in ticks. If the timer period is zero, the xTimerHasTimerExpired()
 system call will always return false. */
 void xTimerChangePeriod(Timer_t *timer_, Ticks_t timerPeriod_) {
 

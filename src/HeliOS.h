@@ -84,11 +84,11 @@ typedef enum {
 typedef uint8_t Base_t;
 
 /**
- * @brief Type definition for system ticks.
+ * @brief The type definition for time expressed in ticks.
  *
- * The Ticks_t type is used to store system ticks which is often one millisecond per
- * tick depending on core frequency and prescaler settings.
- * 
+ * The xTicks type is used by several of the task and timer related system calls to express time.
+ * The unit of measure for time is always ticks.
+ *
  * @sa xTicks
  *
  */
@@ -135,8 +135,8 @@ typedef Size_t xSize;
  */
 typedef struct TaskRunTimeStats_s {
   Base_t id;           /**< The task identifier which is used by xTaskGetHandleById() to return the task handle. */
-  Ticks_t lastRunTime;  /**< The runtime duration in microseconds the last time the task was executed by the scheduler. */
-  Ticks_t totalRunTime; /**< The total runtime duration in microseconds the task has been executed by the scheduler. */
+  Ticks_t lastRunTime;  /**< The runtime duration in ticks the last time the task was executed by the scheduler. */
+  Ticks_t totalRunTime; /**< The total runtime duration in ticks the task has been executed by the scheduler. */
 } TaskRunTimeStats_t;
 
 /**
@@ -161,8 +161,8 @@ typedef struct TaskInfo_s {
   Base_t id;                         /**< The task identifier which is used by xTaskGetHandleById() to return the task handle. */
   char name[CONFIG_TASK_NAME_BYTES]; /**< The name of the task which is used by xTaskGetHandleByName() to return the task handle. This is NOT a null terminated string. */
   TaskState_t state;                 /**< The state the task is in which is one of four states specified in the TaskState_t enumerated data type. */
-  Ticks_t lastRunTime;                /**< The runtime duration in microseconds the last time the task was executed by the scheduler. */
-  Ticks_t totalRunTime;               /**< The total runtime duration in microseconds the task has been executed by the scheduler. */
+  Ticks_t lastRunTime;                /**< The runtime duration in ticks the last time the task was executed by the scheduler. */
+  Ticks_t totalRunTime;               /**< The total runtime duration in ticks the task has been executed by the scheduler. */
 } TaskInfo_t;
 
 /**
@@ -465,10 +465,10 @@ typedef Task_t *xTask;
 typedef TaskParm_t *xTaskParm;
 
 /**
- * @brief The type definition for time expressed in microseconds.
+ * @brief The type definition for time expressed in ticks.
  *
  * The xTicks type is used by several of the task and timer related system calls to express time.
- * The unit of measure for time is always microseconds.
+ * The unit of measure for time is always ticks.
  *
  * @sa Ticks_t
  *
@@ -557,6 +557,10 @@ extern "C" {
 
 /**
  * @brief System call to initialize the system.
+ * 
+ * The xSystemInit() system call initializes the required interrupt handlers and
+ * memory and must be called prior to calling any other system call.
+ * 
  * 
  */
 void xSystemInit(void);
@@ -1157,10 +1161,10 @@ void xTaskWait(xTask task_);
 /**
  * @brief System call to set the task timer period.
  *
- * The xTaskChangePeriod() system call will change the period (microseconds) on the task timer
+ * The xTaskChangePeriod() system call will change the period (ticks) on the task timer
  * for the specified task. The timer period must be greater than zero. To have any effect, the task
  * must be in the waiting state set by calling xTaskWait() on the task. Once the timer period is set
- * and the task is in the waiting state, the task will be executed every timerPeriod_ microseconds.
+ * and the task is in the waiting state, the task will be executed every timerPeriod_ ticks.
  * Changing the period to zero will prevent the task from being executed even if it is in the waiting state
  * unless it were to receive a direct to task notification.
  *
@@ -1169,7 +1173,7 @@ void xTaskWait(xTask task_);
  * @sa xTaskResetTimer()
  *
  * @param task_ The task to change the timer period for.
- * @param timerPeriod_ The timer period in microseconds.
+ * @param timerPeriod_ The timer period in ticks.
  */
 void xTaskChangePeriod(xTask task_, xTicks timerPeriod_);
 
@@ -1184,7 +1188,7 @@ void xTaskChangePeriod(xTask task_, xTicks timerPeriod_);
  * @sa xTaskResetTimer()
  *
  * @param task_ The task to return the timer period for.
- * @return xTicks The timer period in microseconds. xTaskGetPeriod() will return zero
+ * @return xTicks The timer period in ticks. xTaskGetPeriod() will return zero
  * if the timer period is zero or if the task could not be found.
  */
 xTicks xTaskGetPeriod(xTask task_);
@@ -1223,14 +1227,14 @@ xSchedulerState xTaskGetSchedulerState(void);
  * The xTimerCreate() system call will create a new timer. Timers differ from
  * task timers in that they do not create events that effect the scheduling of a task.
  * Timers can be used by tasks to initiate various task activities based on a specified
- * time period represented in microseconds. The memory allocated by xTimerCreate() must
+ * time period represented in ticks. The memory allocated by xTimerCreate() must
  * be freed by xTimerDelete(). Unlike tasks, timers may be created and deleted within
  * tasks.
  *
  * @sa xTimer
  * @sa xTimerDelete()
  *
- * @param timerPeriod_ The number of microseconds before the timer expires.
+ * @param timerPeriod_ The number of ticks before the timer expires.
  * @return xTimer The newly created timer. If the timer period parameter is less than zero
  * or xTimerCreate() was unable to allocate the required memory, xTimerCreate() will return null.
  *
@@ -1254,13 +1258,13 @@ void xTimerDelete(xTimer timer_);
  * @brief System call to change the period of a timer.
  *
  * The xTimerChangePeriod() system call will change the period of the specified timer.
- * The timer period is measured in microseconds. If the timer period is zero, the xTimerHasTimerExpired()
+ * The timer period is measured in ticks. If the timer period is zero, the xTimerHasTimerExpired()
  * system call will always return false.
  *
  * @sa xTimerHasTimerExpired()
  *
  * @param timer_ The timer to change the period for.
- * @param timerPeriod_ The timer period in is microseconds. Timer period must be zero or greater.
+ * @param timerPeriod_ The timer period in is ticks. Timer period must be zero or greater.
  */
 void xTimerChangePeriod(xTimer timer_, xTicks timerPeriod_);
 
