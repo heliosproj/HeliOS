@@ -13,7 +13,7 @@ One important aspect of multitasking in HeliOS is it does not rely on context sw
 
 HeliOS also provides services for two inter-process communication models. The first, as discussed previously, is direct-to-task notifications. Direct-to-task notifications are an efficient communication channel between tasks that prevent a task from consuming runtime when there is nothing for the task to process. The second model is message queues. Message queues can be created at runtime and can be shared among any number of tasks. Queues are highly flexible FIFO communication channels that require very little code to implement. Finally, while technically not one of HeliOS’s models for inter-process communication, HeliOS supports task parameters that can be leveraged for rudimentary inter-process communication if so desired.
 
-The HeliOS kernel includes built-in memory management that improves the safety margin of dynamically allocated memory. While HeliOS’s dynamic memory allocation allocates “heap” memory, the heap in HeliOS is not a true heap. HeliOS uses a private heap that is implemented as static memory allocated at compile time. HeliOS does not use the standard library malloc() and free() functions and it is recommended that the user also avoid those functions in favor of HeliOS’s memory management services. HeliOS also maintains a separate memory region for kernel objects which reduces the risk that memory access, in the user's application, would corrupt critical kernel objects.
+The HeliOS kernel includes built-in memory management that improves the safety margin of dynamically allocated memory. While HeliOS’s dynamic memory allocation allocates “heap” memory, the heap in HeliOS is not a true heap. HeliOS uses a private heap that is implemented as static memory allocated at compile time. HeliOS does not use the standard library malloc() and free() functions and it is recommended that the user also avoid those functions in favor of HeliOS’s memory management system calls. HeliOS also maintains a separate memory region for kernel objects which reduces the risk that memory access, in the user's application, would corrupt critical kernel objects.
 
 HeliOS is built to be robust. HeliOS (0.3.0 and later) has undergone static analysis testing using a commercially licensed static analysis tool as well as MISRA C:2012 checks. While HeliOS is NOT certified for nor should be used (in full or in part) in any safety-critical application where a risk to life exists, user’s can be confident they are building their embedded application on a robust embedded operating system.
 
@@ -150,9 +150,9 @@ void loop() {
 ***
 # Releases
 All releases, including the current release, can be found [here](https://github.com/MannyPeterson/HeliOS/releases).
-* **0.3.3 - TBD**
-* 0.3.2 - Some fixes to the memory management system calls and related functions.
-* 0.3.1 - A lot of refactoring, code clean-up from the 0.3.0 release and code documentation/readability improvements.
+* **0.3.3 - Multi-region memory support, memory defragmentation, CMSIS support, new portability layer and other code improvements**
+* 0.3.2 - Some fixes to the memory management system calls and related functions
+* 0.3.1 - A lot of refactoring, code clean-up from the 0.3.0 release and code documentation/readability improvements
 * 0.3.0 - First release of the new 0.3.x series kernel (many new features, most of the kernel rewritten, new example code and new documentation)
 * 0.2.7 - Added a contributed example, privatized the list pointers for scheduler and added support for Teensy 3/4
 * 0.2.6 - Added built-in support for ESP8266 and minor internal updates
