@@ -202,7 +202,7 @@ extern uint32_t systick_millis_count;
 
 #define ENABLE_INTERRUPTS()
 
-#elif defined(STM32) /* TESTED 2022-03-24 */
+#elif defined(CMSIS_ARCH_CORTEXM) /* TESTED 2022-03-24 */
 
 /* ld linker script section
 
@@ -218,7 +218,20 @@ extern uint32_t systick_millis_count;
 
 */
 
+/*
+  *** START SECTION: ADD VENDOR HEADER HERE ***
+
+  Example: For the STM32 F4292ZI MCU, the following
+  include line would have to be added.
+
+  #include "stm32f429xx.h"
+*/
 #include "stm32f429xx.h"
+/*
+  *** END SECTION: ADD VENDOR HEADER HERE ***
+*/
+
+
 
 #define DISABLE_INTERRUPTS() __disable_irq()
 

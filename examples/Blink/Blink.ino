@@ -63,6 +63,10 @@ void setup() {
 
   pinMode(LED_BUILTIN, OUTPUT);
 
+  /* Call xSystemInit() to initialize any interrupt handlers and/or
+  memory required by HeliOS to execute on the target platform/architecture. */
+  xSystemInit();
+
   /* Create a new HeliOS task, give it an ASCII name, a reference to
   the task's main function and a reference to the task's parameter - in
   this case the state of the LED. */

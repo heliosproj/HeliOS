@@ -111,7 +111,7 @@ void _SysInit_(void) {
 
 }
 
-#elif defined(STM32)
+#elif defined(CMSIS_ARCH_CORTEXM)
 
 static volatile Ticks_t sysTicks = zero;
 

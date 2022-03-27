@@ -76,6 +76,10 @@ void setup() {
 
   Serial.begin(9600);
 
+  /* Call xSystemInit() to initialize any interrupt handlers and/or
+  memory required by HeliOS to execute on the target platform/architecture. */
+  xSystemInit();
+
   /* Create two tasks, one to send the direct-to-task notification, the
   other to receive it. */
   xTask sender = xTaskCreate("SENDER", taskSender_main, NULL);

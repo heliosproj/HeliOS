@@ -38,6 +38,10 @@ void setup() {
 
   Serial.begin(9600);
 
+  /* Call xSystemInit() to initialize any interrupt handlers and/or
+  memory required by HeliOS to execute on the target platform/architecture. */
+  xSystemInit();
+
   /* Create a task to demonstrate event driven multitasking using
   a task timer. */
   xTask task = xTaskCreate("PRINT", taskPrint_main, NULL);

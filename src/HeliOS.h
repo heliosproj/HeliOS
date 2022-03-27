@@ -543,7 +543,7 @@ typedef SystemInfo_t *xSystemInfo;
  * @endcode
  * 
  * @param t The data type to cast the task paramater to (e.g., int).
- * @param p The task pointer, often named parm_.
+ * @param p The task pointer, typically named parm_.
  */
 #if !defined(DEREF_TASKPARM)
 #define DEREF_TASKPARM(t, p) *((t *)p)
@@ -861,13 +861,13 @@ xSystemInfo xSystemGetSystemInfo(void);
  * state set to suspended. The xTaskCreate() and xTaskDelete() system calls cannot be called within
  * a task. They MUST be called outside of the scope of the HeliOS scheduler.
  *
- * @param name_ The ASCII name of the task which can be used by xTaskGetHandleByName() to obtain the task pointer. The
+ * @param name_ The ASCII name of the task which can be used by xTaskGetHandleByName() to obtain the task handle. The
  * length of the name is depended on the CONFIG_TASK_NAME_BYTES. The task name is NOT a null terminated char string.
- * @param callback_ The callback pointer to the task main function. This is the function that will be invoked
+ * @param callback_ The address of the task main function. This is the function that will be invoked
  * by the scheduler when a task is scheduled for execution.
  * @param taskParameter_ A pointer to any type or structure that the end-user wants to pass into the task as
  * a parameter. The task parameter is not required and may simply be set to null.
- * @return xTask A pointer to the newly created task.
+ * @return xTask A handle to the newly created task.
  *
  * @sa xTask
  * @sa xTaskParm
@@ -886,7 +886,7 @@ xTask xTaskCreate(const char *name_, void (*callback_)(xTask, xTaskParm), xTaskP
  * The xTaskDelete() system call will delete a task. The xTaskCreate() and xTaskDelete() system calls
  * cannot be called within a task. They MUST be called outside of the scope of the HeliOS scheduler.
  *
- * @param task_ A pointer to the task to be deleted.
+ * @param task_ The handle of the task to be deleted.
  *
  * @warning xTaskDelete() MUST be called outside the scope of the HeliOS scheduler (i.e., not from a task's main).
  */
@@ -895,30 +895,29 @@ void xTaskDelete(xTask task_);
 /**
  * @brief System call to get a task's handle by its ASCII name.
  *
- * The xTaskGetHandleByName() system call will return the task handle pointer to the
+ * The xTaskGetHandleByName() system call will return the task handle of the
  * task specified by its ASCII name. The length of the task name is dependent on the
  * CONFIG_TASK_NAME_BYTES setting. The name is compared byte-for-byte so the name is
  * case sensitive.
  *
  * @sa CONFIG_TASK_NAME_BYTES
  *
- * @param name_ The ASCII name of the task to return the handle pointer for. The task name is NOT a null terminated string.
- * @return xTask A pointer to the task handle. xTaskGetHandleByName() returns null if the
- * name cannot be found.
+ * @param name_ The ASCII name of the task to return the handle of. The task name is NOT a null terminated string.
+ * @return xTask The task handle. xTaskGetHandleByName() returns null if the name cannot be found.
  */
 xTask xTaskGetHandleByName(const char *name_);
 
 /**
  * @brief System call to get a task's handle by its task identifier.
  *
- * The xTaskGetHandleById() system call will return a pointer to the task handle
- * specified by its identifier.
+ * The xTaskGetHandleById() system call will return the task handle of the task specified
+ * by identifier identifier.
  *
  * @sa xBase
  *
- * @param id_ The identifier of the task to return the handle pointer for.
- * @return xTask A  pointer to the task handle. xTaskGetHandleById() returns null if the
- * the task identifier cannot be found.
+ * @param id_ The identifier of the task to return the handle of.
+ * @return xTask The task handle. xTaskGetHandleById() returns null if the the task identifier
+ * cannot be found.
  */
 xTask xTaskGetHandleById(xBase id_);
 

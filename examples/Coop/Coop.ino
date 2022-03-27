@@ -54,6 +54,10 @@ void setup() {
 
   Serial.begin(9600);
 
+  /* Call xSystemInit() to initialize any interrupt handlers and/or
+  memory required by HeliOS to execute on the target platform/architecture. */
+  xSystemInit();
+
   /* Create a new HeliOS task, give it an ASCII name, a reference to
   the task's main function. Since no task paramater is desired,
   simply set the task paramater argument to NULL. */
