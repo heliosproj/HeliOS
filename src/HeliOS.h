@@ -296,7 +296,7 @@ typedef void Timer_t;
  * The xAddr type is used to store a memory address and is used to pass memory
  * addresses back and forth between system calls and the end-user application. It
  * is not necessary to use the xAddr type within the end-user application as long
- * as the type is not used to interact with a HeliOS system call.
+ * as the type is not used to interact with the HeliOS kernel through system calls.
  * 
  * 
  */
@@ -309,7 +309,7 @@ typedef void Addr_t;
  * The xAddr type is used to store a memory address and is used to pass memory
  * addresses back and forth between system calls and the end-user application. It
  * is not necessary to use the xAddr type within the end-user application as long
- * as the type is not used to interact with a HeliOS system call.
+ * as the type is not used to interact with the HeliOS kernel through system calls.
  * 
  * 
  */
@@ -595,7 +595,7 @@ void _SystemAssert_(const char *file_, int line_);
  * @sa xMemFree()
  *
  * @param size_ The amount (size) of the memory to be allocated from the heap in bytes.
- * @return xAddr If successful, xMemAlloc() returns a pointer to the newly allocated memory.
+ * @return xAddr If successful, xMemAlloc() returns the address of the newly allocated memory.
  * If unsuccessful, the system call will return null.
  *
  * @note HeliOS technically does not allocate memory from what is traditionally heap memory.
@@ -613,7 +613,7 @@ xAddr xMemAlloc(const xSize size_);
  *
  * @sa xMemAlloc()
  *
- * @param addr_ The pointer to the allocated heap memory to be freed.
+ * @param addr_ The address of the allocated heap memory to be freed.
  *
  * @warning xMemFree() cannot be used to free memory allocated for kernel objects.
  * Memory allocated by xTaskCreate(), xTimerCreate() or xQueueCreate() must
@@ -639,23 +639,23 @@ void xMemFree(const xAddr addr_);
 xSize xMemGetUsed(void);
 
 /**
- * @brief System call to return the amount of heap memory allcoated for a pointer.
+ * @brief System call to return the amount of heap memory allcoated for a given address.
  *
  * The xMemGetSize() system call returns the amount of heap memory in bytes that
- * is currently allocated to a specific pointer. If the pointer is null or invalid,
+ * is currently allocated to a specific address. If the address is null or invalid,
  * xMemGetSize() will return zero bytes.
  *
- * @param addr_ The pointer to the allocated heap memory to obtain the size of the
+ * @param addr_ The address of the allocated heap memory to obtain the size of the
  * memory, in bytes, that is allocated.
- * @return Size_t The amount of memory currently allocated to the specific pointer in bytes. If
- * the pointer is invalid or null, xMemGetSize() will return zero.
+ * @return Size_t The amount of memory currently allocated to the specific address in bytes. If
+ * the address is invalid or null, xMemGetSize() will return zero.
  *
- * @note If the pointer addr_ points to a structure that, for example, is 48 bytes in size
+ * @note If the address addr_ points to a structure that, for example, is 48 bytes in size
  * base on sizeof(), xMemGetSize() will return the number of bytes allocated by the block(s)
  * that contain the structure. Assuming the default block size of 32, a 48 byte structure would require
  * TWO blocks so xMemGetSize() would return 64 - not 48. xMemGetSize() also checks the health of the
  * heap and will return zero if it detects a consistency issue with the heap. Thus, xMemGetSize()
- * can be used to validate pointers before the objects they reference are accessed.
+ * can be used to validate addresses before the objects they reference are accessed.
  */
 xSize xMemGetSize(const xAddr addr_);
 
