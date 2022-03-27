@@ -101,7 +101,7 @@ void _SysInit_(void) {
 
 Ticks_t _SysGetSysTicks_(void) {
 
-  return zero;
+	return (Ticks_t) (esp_timer_get_time() / 1000ULL);
 
 }
 

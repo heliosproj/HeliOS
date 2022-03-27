@@ -198,6 +198,34 @@ extern uint32_t systick_millis_count;
 
 #elif defined(ESP32)
 
+/*
+
+  https://github.com/espressif/arduino-esp32/blob/master/cores/esp32/esp32-hal-misc.c
+
+  Copyright 2015-2016 Espressif Systems (Shanghai) PTE LTD
+
+  unsigned long ARDUINO_ISR_ATTR millis()
+  {
+      return (unsigned long) (esp_timer_get_time() / 1000ULL);
+  }
+
+*/
+
+extern int64_t esp_timer_get_time(void);
+
+/*
+
+  https://github.com/espressif/arduino-esp32/blob/master/cores/esp32/Arduino.h
+
+  Copyright (c) 2005-2013 Arduino Team.  All right reserved.
+
+  #define sei()
+  #define cli()
+  #define interrupts() sei()
+  #define noInterrupts() cli()
+
+*/
+
 #define DISABLE_INTERRUPTS()
 
 #define ENABLE_INTERRUPTS()
