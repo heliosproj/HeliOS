@@ -156,6 +156,19 @@ extern unsigned long millis(void);
 
 #elif defined(ARDUINO_ARCH_ESP8266)
 
+/*
+
+https://github.com/esp8266/Arduino/blob/master/cores/esp8266/core_esp8266_wiring.cpp
+
+Copyright (c) 2014 Ivan Grokhotkov. All rights reserved.
+
+unsigned long IRAM_ATTR micros() {
+    return system_get_time();
+}
+
+*/
+extern unsigned long micros();
+
 #define DISABLE_INTERRUPTS()
 
 #define ENABLE_INTERRUPTS()

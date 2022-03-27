@@ -73,7 +73,7 @@ void _SysInit_(void) {
 
 Ticks_t _SysGetSysTicks_(void) {
 
-  return zero;
+  return (Ticks_t)(micros() / 1000ULL);
 
 }
 
