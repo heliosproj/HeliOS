@@ -154,7 +154,7 @@ extern unsigned long millis(void);
 
 #define ENABLE_INTERRUPTS() __asm volatile ("cpsie i")
 
-#elif defined(ARDUINO_ARCH_ESP8266)
+#elif defined(ARDUINO_ARCH_ESP8266) /* *** NOT TESTED *** */
 
 /*
 
@@ -169,9 +169,9 @@ unsigned long IRAM_ATTR micros() {
 */
 extern unsigned long micros();
 
-#define DISABLE_INTERRUPTS()
+#define DISABLE_INTERRUPTS() __asm__ __volatile__("rsil 15")
 
-#define ENABLE_INTERRUPTS()
+#define ENABLE_INTERRUPTS() __asm__ __volatile__("rsil 0")
 
 #elif defined(ARDUINO_TEENSY_MICROMOD) || defined(ARDUINO_TEENSY40) || defined(ARDUINO_TEENSY41) || defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY35) || defined(ARDUINO_TEENSY31) || defined(ARDUINO_TEENSY32) || defined(ARDUINO_TEENSY30) || defined(ARDUINO_TEENSYLC) /* TESTED 2022-03-24 */
 
@@ -209,7 +209,7 @@ extern uint32_t systick_millis_count;
 
 #define ENABLE_INTERRUPTS() __asm volatile ("cpsie i")
 
-#elif defined(ESP32)
+#elif defined(ESP32)  /* *** NOT TESTED *** */
 
 /*
 
@@ -239,9 +239,9 @@ extern int64_t esp_timer_get_time(void);
 
 */
 
-#define DISABLE_INTERRUPTS()
+#define DISABLE_INTERRUPTS() __asm__ __volatile__("rsil 15")
 
-#define ENABLE_INTERRUPTS()
+#define ENABLE_INTERRUPTS() __asm__ __volatile__("rsil 0")
 
 #elif defined(CMSIS_ARCH_CORTEXM) /* TESTED 2022-03-24 */
 
