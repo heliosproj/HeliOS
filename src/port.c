@@ -99,17 +99,7 @@ void _SysInit_(void) {
 
 #elif defined(ESP32)
 
-Ticks_t _SysGetSysTicks_(void) {
-
-	return (Ticks_t) (esp_timer_get_time() / 1000ULL);
-
-}
-
-void _SysInit_(void) {
-
-	return;
-
-}
+/* Not supported. */
 
 #elif defined(CMSIS_ARCH_CORTEXM)
 

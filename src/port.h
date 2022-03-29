@@ -209,39 +209,13 @@ extern uint32_t systick_millis_count;
 
 #define ENABLE_INTERRUPTS() __asm volatile ("cpsie i")
 
-#elif defined(ESP32)  /* *** NOT TESTED *** */
+#elif defined(ESP32)
 
-/*
+#pragma message("WARNING: The ESP32 Arduino core uses FreeRTOS. HeliOS and FreeRTOS cannot coexist in the same application. If your application requires an embedded operating system, use the built-in FreeRTOS included with the ESP32 Arduino core.")
 
-  https://github.com/espressif/arduino-esp32/blob/master/cores/esp32/esp32-hal-misc.c
+#define DISABLE_INTERRUPTS()
 
-  Copyright 2015-2016 Espressif Systems (Shanghai) PTE LTD
-
-  unsigned long ARDUINO_ISR_ATTR millis()
-  {
-      return (unsigned long) (esp_timer_get_time() / 1000ULL);
-  }
-
-*/
-
-extern int64_t esp_timer_get_time(void);
-
-/*
-
-  https://github.com/espressif/arduino-esp32/blob/master/cores/esp32/Arduino.h
-
-  Copyright (c) 2005-2013 Arduino Team.  All right reserved.
-
-  #define sei()
-  #define cli()
-  #define interrupts() sei()
-  #define noInterrupts() cli()
-
-*/
-
-#define DISABLE_INTERRUPTS() __asm__ __volatile__("rsil 15")
-
-#define ENABLE_INTERRUPTS() __asm__ __volatile__("rsil 0")
+#define ENABLE_INTERRUPTS()
 
 #elif defined(CMSIS_ARCH_CORTEXM) /* TESTED 2022-03-24 */
 
