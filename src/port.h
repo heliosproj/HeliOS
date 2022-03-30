@@ -169,9 +169,9 @@ unsigned long IRAM_ATTR micros() {
 */
 extern unsigned long micros();
 
-#define DISABLE_INTERRUPTS() __asm__ __volatile__("rsil 15")
+#define DISABLE_INTERRUPTS() __asm__ __volatile__("rsil a2, 15")
 
-#define ENABLE_INTERRUPTS() __asm__ __volatile__("rsil 0")
+#define ENABLE_INTERRUPTS() __asm__ __volatile__("rsil  a2, 0")
 
 #elif defined(ARDUINO_TEENSY_MICROMOD) || defined(ARDUINO_TEENSY40) || defined(ARDUINO_TEENSY41) || defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY35) || defined(ARDUINO_TEENSY31) || defined(ARDUINO_TEENSY32) || defined(ARDUINO_TEENSY30) || defined(ARDUINO_TEENSYLC) /* TESTED 2022-03-24 */
 
