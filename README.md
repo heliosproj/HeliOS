@@ -175,3 +175,6 @@ HeliOS is copyrighted open source software licensed under the Free Software Foun
 # Important Notice
 HeliOS is **not** certified for use in safety-critical applications. The HeliOS source code, whether in full or in part, must **never** be used in applications where a risk to life exists. In other words, do not use HeliOS in your project if there is even a remote chance someone might get hurt.
 ***
+# Other Notice
+This project is not affiliated in any way, past or present, with the Unix-like operating system HeliOS developed by Tim King of Perihelion Ltd. or Axel Muhr's work on [Helios-NG](https://github.com/axelmuhr/Helios-NG). Any resemblance is strictly coincidental.
+***
