@@ -83,7 +83,7 @@ typedef struct MemoryEntry_s {
 
 
 typedef struct MemoryRegion_s {
-  volatile Byte_t mem[ALL_MEMORY_REGIONS_SIZE_IN_BYTES];
+  volatile Byte_t mem[MEMORY_REGION_SIZE_IN_BYTES];
   MemoryEntry_t *start;
   Word_t entrySize;
 } MemoryRegion_t;

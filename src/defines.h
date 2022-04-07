@@ -143,8 +143,8 @@ xSystemGetSystemInfo(). */
 
 /* Define the raw size of the heap in bytes based on the number of blocks
 the heap contains and the size of each block in bytes. */
-#if !defined(ALL_MEMORY_REGIONS_SIZE_IN_BYTES)
-#define ALL_MEMORY_REGIONS_SIZE_IN_BYTES CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS * CONFIG_ALL_MEMORY_REGIONS_BLOCK_SIZE
+#if !defined(MEMORY_REGION_SIZE_IN_BYTES)
+#define MEMORY_REGION_SIZE_IN_BYTES CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS * CONFIG_MEMORY_REGION_BLOCK_SIZE
 #endif
 
 
@@ -222,7 +222,7 @@ the CONFIG_ENABLE_SYSTEM_ASSERT setting. */
 /* Define a macro to convert a heap memory address to it's corresponding
 heap entry. */
 #if !defined(ADDR2ENTRY)
-#define ADDR2ENTRY(addr_, region_) (MemoryEntry_t *)((Byte_t *)( addr_ ) - (( region_ )->entrySize * CONFIG_ALL_MEMORY_REGIONS_BLOCK_SIZE))
+#define ADDR2ENTRY(addr_, region_) (MemoryEntry_t *)((Byte_t *)( addr_ ) - (( region_ )->entrySize * CONFIG_MEMORY_REGION_BLOCK_SIZE))
 #endif
 
 
@@ -230,7 +230,7 @@ heap entry. */
 /* Define a macro to convert a heap entry to it's corresponding heap memory
 address. */
 #if !defined(ENTRY2ADDR)
-#define ENTRY2ADDR(addr_, region_) (Addr_t *)((Byte_t *)( addr_ ) + (( region_ )->entrySize * CONFIG_ALL_MEMORY_REGIONS_BLOCK_SIZE))
+#define ENTRY2ADDR(addr_, region_) (Addr_t *)((Byte_t *)( addr_ ) + (( region_ )->entrySize * CONFIG_MEMORY_REGION_BLOCK_SIZE))
 #endif
 
 #endif

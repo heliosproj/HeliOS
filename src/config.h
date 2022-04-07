@@ -154,18 +154,18 @@ to customize the HeliOS kernel for their specific application. */
  * @brief Define the number of memory blocks available in all memory regions.
  * 
  * The heap memory region is used by tasks. Whereas the kernel memory region
- * is used solely by the kernel for kernel objects. The CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS
+ * is used solely by the kernel for kernel objects. The CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS
  * setting allows the end-user to define the size, in blocks, of all memory
  * regions thus effecting both the heap and kernel memory regions. The size
- * of a memory block is defined by the CONFIG_ALL_MEMORY_REGIONS_BLOCK_SIZE setting.
+ * of a memory block is defined by the CONFIG_MEMORY_REGION_BLOCK_SIZE setting.
  * The size of all memory regions needs to be adjusted to fit the memory
  * requirements of the end-user's application. By default the
- * CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS is defined on a per platform and/or
+ * CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS is defined on a per platform and/or
  * tool-chain basis therefor it is not defined here by default. The literal
  * must be appended with a "u" to maintain MISRA C:2012 compliance.
  * 
  */
-#define CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS 24u
+#define CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS 24u
 
 
 
@@ -173,21 +173,21 @@ to customize the HeliOS kernel for their specific application. */
 /**
  * @brief Define the memory block size in bytes for all memory regions.
  *
- * Setting CONFIG_ALL_MEMORY_REGIONS_BLOCK_SIZE allows the end-user to
+ * Setting CONFIG_MEMORY_REGION_BLOCK_SIZE allows the end-user to
  * define the size of a memory region block in bytes. The memory region
  * block size should be set to achieve the best possible utilization of
- * the available memory. The CONFIG_ALL_MEMORY_REGIONS_BLOCK_SIZE setting
+ * the available memory. The CONFIG_MEMORY_REGION_BLOCK_SIZE setting
  * effects both the heap and kernel memory regions. The default value
  * is 32 bytes. The literal must be appended with a "u" to maintain
  * MISRA C:2012 compliance.
  * 
  * @sa xMemAlloc()
  * @sa xMemFree()
- * @sa CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS
+ * @sa CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS
  * @sa CONFIG_KMEM_SIZE_IN_BLOCKS
  *
  */
-#define CONFIG_ALL_MEMORY_REGIONS_BLOCK_SIZE 32u
+#define CONFIG_MEMORY_REGION_BLOCK_SIZE 32u
 
 
 

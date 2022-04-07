@@ -587,11 +587,11 @@ void _SystemAssert_(const char *file_, int line_);
  *
  * The xMemAlloc() system call allocates memory from the heap for HeliOS system
  * calls and end-user tasks. The size of the heap, in bytes, is dependent on the
- * CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS and CONFIG_ALL_MEMORY_REGIONS_BLOCK_SIZE settings. xMemAlloc()
+ * CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS and CONFIG_MEMORY_REGION_BLOCK_SIZE settings. xMemAlloc()
  * functions similarly to calloc() in that it clears the memory it allocates.
  *
- * @sa CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS
- * @sa CONFIG_ALL_MEMORY_REGIONS_BLOCK_SIZE
+ * @sa CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS
+ * @sa CONFIG_MEMORY_REGION_BLOCK_SIZE
  * @sa xMemFree()
  *
  * @param size_ The amount (size) of the memory to be allocated from the heap in bytes.

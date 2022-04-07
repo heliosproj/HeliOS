@@ -128,7 +128,7 @@ Size_t xMemGetUsed(void) {
 
       /* The end-user is expecting bytes, not blocks so multiply
       the block size by the number of used blocks. */
-      ret = used * CONFIG_ALL_MEMORY_REGIONS_BLOCK_SIZE;
+      ret = used * CONFIG_MEMORY_REGION_BLOCK_SIZE;
     }
   }
 
@@ -191,7 +191,7 @@ Size_t xMemGetSize(const Addr_t *addr_) {
 
         /* The end-user is expecting the size in bytes so multiple the block
         size by the number of blocks the entry contains. */
-        ret = tosize->blocks * CONFIG_ALL_MEMORY_REGIONS_BLOCK_SIZE;
+        ret = tosize->blocks * CONFIG_MEMORY_REGION_BLOCK_SIZE;
       }
     }
   }
@@ -299,12 +299,12 @@ Base_t _MemoryRegionCheck_(const volatile MemoryRegion_t *region_, const Addr_t 
 
       /* Assert if the memory region blocks does not match the setting because this would
       indicate a serious issued. */
-      SYSASSERT(CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS == blocks);
+      SYSASSERT(CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS == blocks);
 
 
       /* Check if the number of blocks in the memory region matches the setting before
       we give the memory region a clean bill of health. */
-      if (CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS == blocks) {
+      if (CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS == blocks) {
 
 
         /* Assert if the memory region is flagged corrupt or if the address we were looking
@@ -353,13 +353,13 @@ Base_t _MemoryRegionCheckAddr_(const volatile MemoryRegion_t *region_, const Add
 
 
   /* Assert if the address is outside of the scope of the memory region. */
-  SYSASSERT((addr_ >= (Addr_t *)(region_->mem)) && (addr_ < (Addr_t *)(region_->mem + ALL_MEMORY_REGIONS_SIZE_IN_BYTES)));
+  SYSASSERT((addr_ >= (Addr_t *)(region_->mem)) && (addr_ < (Addr_t *)(region_->mem + MEMORY_REGION_SIZE_IN_BYTES)));
 
 
 
   /* Check if the address is inside the scope of the memory region, if it is
   then return success. */
-  if ((addr_ >= (Addr_t *)(region_->mem)) && (addr_ < (Addr_t *)(region_->mem + ALL_MEMORY_REGIONS_SIZE_IN_BYTES))) {
+  if ((addr_ >= (Addr_t *)(region_->mem)) && (addr_ < (Addr_t *)(region_->mem + MEMORY_REGION_SIZE_IN_BYTES))) {
 
 
     ret = RETURN_SUCCESS;
@@ -423,12 +423,12 @@ Addr_t *_calloc_(volatile MemoryRegion_t *region_, const Size_t size_) {
 
 
         /* Calculate the quotient part of the blocks. */
-        region_->entrySize = ((Word_t)(sizeof(MemoryEntry_t) / CONFIG_ALL_MEMORY_REGIONS_BLOCK_SIZE));
+        region_->entrySize = ((Word_t)(sizeof(MemoryEntry_t) / CONFIG_MEMORY_REGION_BLOCK_SIZE));
 
 
 
         /* Check if there is a remainder, if so we need to add one block. */
-        if (zero < ((Word_t)(sizeof(MemoryEntry_t) % CONFIG_ALL_MEMORY_REGIONS_BLOCK_SIZE))) {
+        if (zero < ((Word_t)(sizeof(MemoryEntry_t) % CONFIG_MEMORY_REGION_BLOCK_SIZE))) {
 
 
 
@@ -449,7 +449,7 @@ Addr_t *_calloc_(volatile MemoryRegion_t *region_, const Size_t size_) {
 
 
         /* Zero out all of the memory in the memory region. */
-        _memset_(region_->mem, zero, ALL_MEMORY_REGIONS_SIZE_IN_BYTES);
+        _memset_(region_->mem, zero, MEMORY_REGION_SIZE_IN_BYTES);
 
         /* Mark the first entry in the memory region free. */
         region_->start->free = true;
@@ -457,7 +457,7 @@ Addr_t *_calloc_(volatile MemoryRegion_t *region_, const Size_t size_) {
 
 
         /* Give the first entry in the memory region all of the blocks. */
-        region_->start->blocks = CONFIG_ALL_MEMORY_REGIONS_SIZE_IN_BLOCKS;
+        region_->start->blocks = CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS;
 
 
 
@@ -476,11 +476,11 @@ Addr_t *_calloc_(volatile MemoryRegion_t *region_, const Size_t size_) {
 
 
         /* Calculate the number of blocks requested. */
-        requested = ((Word_t)(size_ / CONFIG_ALL_MEMORY_REGIONS_BLOCK_SIZE));
+        requested = ((Word_t)(size_ / CONFIG_MEMORY_REGION_BLOCK_SIZE));
 
 
         /* Check if there is a remainder, if so add one more block. */
-        if (zero < ((Word_t)(size_ % CONFIG_ALL_MEMORY_REGIONS_BLOCK_SIZE))) {
+        if (zero < ((Word_t)(size_ % CONFIG_MEMORY_REGION_BLOCK_SIZE))) {
 
 
 
@@ -546,7 +546,7 @@ Addr_t *_calloc_(volatile MemoryRegion_t *region_, const Size_t size_) {
 
 
             /* Calculate the location of the new entry based on the blocks requested. */
-            candidate->next = (MemoryEntry_t *)((Byte_t *)candidate + (requested * CONFIG_ALL_MEMORY_REGIONS_BLOCK_SIZE));
+            candidate->next = (MemoryEntry_t *)((Byte_t *)candidate + (requested * CONFIG_MEMORY_REGION_BLOCK_SIZE));
 
 
 
@@ -577,7 +577,7 @@ Addr_t *_calloc_(volatile MemoryRegion_t *region_, const Size_t size_) {
 
 
             /* Clear the memory allocated. */
-            _memset_(ENTRY2ADDR(candidate, region_), zero, (requested - region_->entrySize) * CONFIG_ALL_MEMORY_REGIONS_BLOCK_SIZE);
+            _memset_(ENTRY2ADDR(candidate, region_), zero, (requested - region_->entrySize) * CONFIG_MEMORY_REGION_BLOCK_SIZE);
 
 
 
@@ -596,7 +596,7 @@ Addr_t *_calloc_(volatile MemoryRegion_t *region_, const Size_t size_) {
 
 
             /* Clear the memory allocated. */
-            _memset_(ENTRY2ADDR(candidate, region_), zero, (requested - region_->entrySize) * CONFIG_ALL_MEMORY_REGIONS_BLOCK_SIZE);
+            _memset_(ENTRY2ADDR(candidate, region_), zero, (requested - region_->entrySize) * CONFIG_MEMORY_REGION_BLOCK_SIZE);
 
 
 
@@ -842,12 +842,12 @@ void _memdump_(const volatile MemoryRegion_t *region_) {
   Size_t k = zero;
 
 
-  for (Size_t i = zero; i < (ALL_MEMORY_REGIONS_SIZE_IN_BYTES / CONFIG_ALL_MEMORY_REGIONS_BLOCK_SIZE); i++) {
+  for (Size_t i = zero; i < (MEMORY_REGION_SIZE_IN_BYTES / CONFIG_MEMORY_REGION_BLOCK_SIZE); i++) {
 
 
     printf("%p:", (region_->mem + k));
 
-    for (Size_t j = zero; j < CONFIG_ALL_MEMORY_REGIONS_BLOCK_SIZE; j++) {
+    for (Size_t j = zero; j < CONFIG_MEMORY_REGION_BLOCK_SIZE; j++) {
 
 
 
