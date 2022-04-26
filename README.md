@@ -5,22 +5,24 @@
 # Overview
 HeliOS is an embedded operating system that is free for everyone to use. While called an operating system, HeliOS is a multitasking kernel for use in embedded applications. Its rich, fully documented, API allows the user to control every aspect of the system and access kernel services for task (process) management, scheduler management, inter-process communication, memory management and more while maintaining a tiny footprint for a broad range of low-power embedded devices. HeliOS is also easily customized to fit the user’s specific needs through a single header file ([config.h](/src/config.h)).
 
-HeliOS supports two multitasking models that can be leveraged concurrently within the same application. The first multitasking model is event-driven. When a task is placed in the "waiting" state, the task will only respond to task events. HeliOS supports two types of task events. The first is direct-to-task notifications, which allow one task to send a notification to another task. In this scenario, the HeliOS scheduler will wake the recipient task and schedule it for execution. After the recipient task clears the direct-to-task notification, the recipient task will return to sleep until another notification is received. The second type of task event is timer based. Task timers can be configured to tell HeliOS to schedule the task to run every so many microseconds, though task timers should not be confused with application timers (or simply timers) as HeliOS supports both.
+HeliOS supports two multitasking models that can be leveraged concurrently within the same application. The first multitasking model is event-driven. When a task is placed in the "waiting" state, the task will only respond to task events. HeliOS supports two types of task events. The first is direct-to-task notifications, which allow one task to send a notification to another task. In this scenario, the HeliOS scheduler will wake the recipient task and schedule it for execution. After the recipient task clears the direct-to-task notification, the recipient task will return to sleep until another notification is received. The second type of task event is timer based. Task timers can be configured to tell HeliOS to schedule the task to run every so many ticks (typically milliseconds), though task timers should not be confused with application timers (or simply timers) as HeliOS supports both.
 
 The second model for multitasking is a conventional cooperative model. In this model, cooperative tasks are always scheduled to run, unless suspended. Additionally, the cooperative model in HeliOS contains a unique scheduler feature that builds on the traditional cooperative model. In most cooperatively scheduled multitasking models, a simple round-robin approach is used (i.e., each task is executed consecutively). However, the HeliOS scheduler uses a “runtime balanced” algorithm for scheduling cooperative tasks. In other words, tasks that consume more runtime are deprioritized (i.e., executed less frequently) in favor of tasks that consume less runtime. This design prevents long running tasks from monopolizing the system’s execution time. Event-driven and cooperatively scheduled tasks run together seamlessly, although event-driven tasks always receive execution priority over cooperatively scheduled tasks.
 
-One important aspect of multitasking in HeliOS is it does not rely on context switching. This reduces the need for the user to manage access to shared resources in a “thread safe” way using mutexes and semaphores. This also eliminates the need for the “port” or portability code required to save the context during a context switch and to utilize ISR’s for “tick” timers. As a result, the user can focus his or her development effort on their specific application without having to contend with concurrent access to shared resources.
+One important aspect of multitasking in HeliOS is it does not rely on context switching. This reduces the need for the user to manage access to shared resources in a “thread safe” way using mutexes and semaphores. This also eliminates the need for the “port” or portability code required to save the context during a context switch. As a result, the user can focus his or her development effort on their specific application without having to contend with concurrent access to shared resources.
 
 HeliOS also provides services for two inter-process communication models. The first, as discussed previously, is direct-to-task notifications. Direct-to-task notifications are an efficient communication channel between tasks that prevent a task from consuming runtime when there is nothing for the task to process. The second model is message queues. Message queues can be created at runtime and can be shared among any number of tasks. Queues are highly flexible FIFO communication channels that require very little code to implement. Finally, while technically not one of HeliOS’s models for inter-process communication, HeliOS supports task parameters that can be leveraged for rudimentary inter-process communication if so desired.
 
-The HeliOS kernel includes built-in memory management that improves the safety margin of dynamically allocated memory. While HeliOS’s dynamic memory allocation allocates “heap” memory, the heap in HeliOS is not a true heap. HeliOS uses a private heap that is implemented as static memory allocated at compile time. HeliOS does not use the standard library malloc() and free() functions and it is recommended that the user also avoid those functions in favor of HeliOS’s memory management services. HeliOS does implement a pseudo “protected memory" feature that protects memory it allocates but not to the same extent as an MPU or MMU. The implementation of MPU or MMU features in an embedded operating system is complex, costly in terms of performance and requires extensive portability code. Memory that is marked as protected in HeliOS is reserved for the kernel and reduces the risk of critical kernel resources being inadvertently freed by the user.
+The HeliOS kernel includes built-in memory management that improves the safety margin of dynamically allocated memory. While HeliOS’s dynamic memory allocation allocates “heap” memory, the heap in HeliOS is not a true heap. HeliOS uses a private heap that is implemented as static memory allocated at compile time. HeliOS does not use the standard library malloc() and free() functions and it is recommended that the user also avoid those functions in favor of HeliOS’s memory management system calls. HeliOS also maintains a separate memory region for kernel objects which reduces the risk that memory access, in the user's application, would corrupt critical kernel objects.
 
-HeliOS is built to be robust. Each HeliOS release (0.3.0 and later) undergoes static analysis testing using a commercially licensed static analysis tool as well as MISRA C:2012 checks. While HeliOS is NOT certified for nor should be used (in full or in part) in any safety-critical application where a risk to life exists, user’s can be confident they are building their embedded application on a robust embedded operating system.
+HeliOS is built to be robust. HeliOS (0.3.0 and later) has undergone static analysis testing using a commercially licensed static analysis tool as well as MISRA C:2012 checks. While HeliOS is NOT certified for nor should be used (in full or in part) in any safety-critical application where a risk to life exists, user’s can be confident they are building their embedded application on a robust embedded operating system.
 
 Lastly, for PlatformIO and Arduino users, HeliOS is easily added to their embedded application. The current release of HeliOS is available directly through the [PlatformIO Registry](https://registry.platformio.org/libraries/mannypeterson/HeliOS) and the [Arduino Library Manager](https://www.arduino.cc/reference/en/libraries/helios/). For users of other embedded platforms and/or tool-chains, simply download the current [release](https://github.com/MannyPeterson/HeliOS/releases) of HeliOS from GitHub and add the sources to your project.
 ***
 # What's Happening
-The HeliOS 0.3.x series kernel was recently released and replaces the 0.2.x series kernel. With the 0.3.x series kernel, there have been changes to both the kernel internals and the API rendering it incompatible with applications built on 0.2.x. While the changes are not insignificant, updating an application built with 0.2.x requires a minimal amount of time as all of the features of HeliOS 0.2.x have been retained in 0.3.x. The key difference is the breadth of features offered by the 0.3.x series kernel has been expanded and existing features rewritten. Along with 0.3.x is a complete [HeliOS Developer's Guide](/doc/HeliOS_Developers_Guide.pdf) to assist the user in building applications on 0.3.x. Going forward, development will be focused on refactoring, expanding the API, expanding configurable settings, improving documentation and addressing issues. **As always, contributions are welcome and anyone wishing to contribute to HeliOS should refer to the “Contributing” section.**
+The HeliOS 0.3.x series kernel was recently released and replaces the 0.2.x series kernel. With the 0.3.x series kernel, there have been changes to both the kernel internals and the API rendering it incompatible with applications built on 0.2.x. Despite the changes to the API, updating an application built with 0.2.x requires a minimal amount of time. A complete [HeliOS Developer's Guide](/doc/HeliOS_Developers_Guide.pdf) is available to assist the user in building applications on 0.3.x.
+
+For the very latest on what development is occurring, please check out the [HeliOS Trello board](https://trello.com/b/XNKDpuGR/helios). **As always, contributions are welcome and anyone wishing to contribute to HeliOS should refer to the “Contributing” section.**
 ***
 # HeliOS Around The Web
 
@@ -40,22 +42,13 @@ The HeliOS 0.3.x series kernel was recently released and replaces the 0.2.x seri
 ***
 # Getting Started
 ## Documentation
-The HeliOS API is documented in the [HeliOS Developer's Guide](/doc/HeliOS_Developers_Guide.pdf), which is available in PDF format in the HeliOS sources tree under “doc”. If you are in need of support, please refer to the "Contributing" section.
+The HeliOS API is documented in the [HeliOS Developer's Guide](/doc/HeliOS_Developers_Guide.pdf), which is available in PDF format in the HeliOS source tree under “doc”. If you are in need of support, please refer to the "Contributing" section.
 ## Microcontroller Support
-Other than four define statements, HeliOS requires zero additional portability code. Currently HeliOS has built-in support for AVR, SAMD, SAM, ESP8266, ESP32 and Teensy 3.x/4.x/MicroMod microcontrollers (though the latter is an ARM Cortex-M based development board). If using the Arduino platform/tool-chain, HeliOS should work right out of the box by adding HeliOS to the project from the [PlatformIO Registry](https://registry.platformio.org/libraries/mannypeterson/HeliOS) or [Arduino Library Manager](https://www.arduino.cc/reference/en/libraries/helios/).
-## Adding Support
-For most users this section is unnecessary to build HeliOS as HeliOS will fallback to a generic Arduino configuration if built-in support for the microcontroller does not exist. However, if HeliOS does not build for the user's specific microcontroller, adding support for other platforms and/or tool-chains only requires the user to define the following four defines (and any required headers for the defines) in [defines.h](/src/defines.h).
-```C
-/* Example defines for a Microchip SAM D MCU based
-development board using the Arduino platform. */
-#elif defined(ARDUINO_ARCH_SAMD)
-#include <Arduino.h>
-#define CURRENTTIME() micros()
-#define DISABLE_INTERRUPTS() noInterrupts()
-#define ENABLE_INTERRUPTS() interrupts()
-#define TIME_T_TYPE uint32_t
-```
-Please note, when defining TIME_T_TYPE, use only an unsigned integer type. While 16-bit wide unsigned integers will work, 32-bits (uint32_t) wide or wider is preferred.
+If using the Arduino platform/tool-chain, HeliOS should work right out of the box for AVR, SAM, SAMD, ESP8266, and Teensy 3.x/4.x/MicroMod microcontrollers (though the latter is an ARM Cortex-M based development board) by adding HeliOS to the project from the [PlatformIO Registry](https://registry.platformio.org/libraries/mannypeterson/HeliOS) or [Arduino Library Manager](https://www.arduino.cc/reference/en/libraries/helios/).
+
+If more advanced features are desired, HeliOS also has built-in support for CMSIS on ARM Cortex-M microcontrollers. To build HeliOS using CMSIS, the user must have the CMSIS core headers as well as the vendor headers for the specific microcontroller. The CMSIS core headers, including the vendor headers, are typically available for download from the vendor's website. Once the correct headers have been obtained, the headers must be placed in the project's include directory, the vendor's header file must be added to the file ([port.h](/src/port.h)) at the marked location and the project must be built with the "-DCMSIS_ARCH_CORTEXM" gcc flag. Depending on the microcontroller, the SYSTEM_CORE_CLOCK_FREQUENCY and SYSTEM_CORE_CLOCK_PRESCALER definitions may need to be changed if millisecond time resolution is desired. The default system core clock frequency is 16 Mhz with a prescaler of 1,000.
+
+Please note, HeliOS does not have built-in support for ESP32. This is because the ESP32 Arduino core is dependent on FreeRTOS. HeliOS and FreeRTOS cannot coexist in the same application. To target ESP32, HeliOS must be built using Espressif's SDK without the ESP32 Arduino core. The files [port.h](/src/port.h) and [port.c](/src/port.c) will also need to be updated with the necessary code to control interrupts and access the MCU's tick timer. Espressif's SDK can be found [here](https://idf.espressif.com/).
 ***
 # Example
 Many embedded applications implement what is called a "super loop". A super loop is a loop that never exits (i.e., while(1){}) and contains most of the code executed by the microcontroller. The problem with super loops is they can grow out of control and become difficult to manage. This becomes especially challenging given the relatively few options for controlling timing (e.g., delay()). Unfortunately the use of delay() to control timing also means the microcontroller is unable to perform other operations (at least without the help of an ISR) until delay() returns. Below is an example of how easy it is to leverage the event-driven multitasking capabilities within HeliOS to implement the Arduino "Blink" example.
@@ -115,6 +108,10 @@ void setup() {
 
   pinMode(LED_BUILTIN, OUTPUT);
 
+  /* Call xSystemInit() to initialize any interrupt handlers and/or
+  memory required by HeliOS to execute on the target platform/architecture. */
+  xSystemInit();
+
   /* Create a new HeliOS task, give it an ASCII name, a reference to
   the task's main function and a reference to the task's parameter - in
   this case the state of the LED. */
@@ -155,8 +152,9 @@ void loop() {
 ***
 # Releases
 All releases, including the current release, can be found [here](https://github.com/MannyPeterson/HeliOS/releases).
-* **0.3.2 - Some fixes to the memory management system calls and related functions.**
-* 0.3.1 - A lot of refactoring, code clean-up from the 0.3.0 release and code documentation/readability improvements.
+* **0.3.3 - Multi-region memory support, memory defragmentation, CMSIS support, new portability layer and other code improvements**
+* 0.3.2 - Some fixes to the memory management system calls and related functions
+* 0.3.1 - A lot of refactoring, code clean-up from the 0.3.0 release and code documentation/readability improvements
 * 0.3.0 - First release of the new 0.3.x series kernel (many new features, most of the kernel rewritten, new example code and new documentation)
 * 0.2.7 - Added a contributed example, privatized the list pointers for scheduler and added support for Teensy 3/4
 * 0.2.6 - Added built-in support for ESP8266 and minor internal updates
@@ -176,4 +174,7 @@ HeliOS is copyrighted open source software licensed under the Free Software Foun
 ***
 # Important Notice
 HeliOS is **not** certified for use in safety-critical applications. The HeliOS source code, whether in full or in part, must **never** be used in applications where a risk to life exists. In other words, do not use HeliOS in your project if there is even a remote chance someone might get hurt.
+***
+# Other Notice
+This project is not affiliated in any way, past or present, with the Unix-like operating system HeliOS developed by Tim King of Perihelion Ltd. or Axel Muhr's work on [Helios-NG](https://github.com/axelmuhr/Helios-NG). Any resemblance is strictly coincidental.
 ***

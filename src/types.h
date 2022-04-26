@@ -2,7 +2,7 @@
  * @file types.h
  * @author Manny Peterson (mannymsp@gmail.com)
  * @brief Kernel header for kernel type definitions
- * @version 0.3.2
+ * @version 0.3.3
  * @date 2022-01-31
  *
  * @copyright
@@ -66,25 +66,29 @@ typedef enum {
 typedef void TaskParm_t;
 typedef uint8_t Base_t;
 typedef uint8_t Byte_t;
-typedef uint16_t Word_t; /* Here a "word" does NOT refer to the machine word. It just means two bytes. */
-typedef TIME_T_TYPE Time_t; /* TIME_T_TYPE is defined in the platform definitions in defines.h. */
+typedef void Addr_t;
+typedef size_t Size_t;
+typedef uint16_t Word_t; /* Here a "word" does NOT refer to the machine word. It just means two bytes
+which on 32-bit architectures is arguable a "halfword". */
+typedef uint32_t Ticks_t;
 
 
-typedef struct HeapEntry_s {
+typedef struct MemoryEntry_s {
   Byte_t free : 1;
-  Byte_t protected : 1;
-  Byte_t reserved : 6;
+  Byte_t reserved : 7;
   Word_t blocks;
-  struct HeapEntry_s *next;
-} HeapEntry_t;
+  struct MemoryEntry_s *next;
+} MemoryEntry_t;
 
 
 
-typedef struct Heap_s {
-  Byte_t heap[HEAP_RAW_SIZE];
-  HeapEntry_t *startEntry;
-  Word_t entrySizeInBlocks;
-} Heap_t;
+typedef struct MemoryRegion_s {
+  volatile Byte_t mem[MEMORY_REGION_SIZE_IN_BYTES];
+  MemoryEntry_t *start;
+  Word_t entrySize;
+} MemoryRegion_t;
+
+
 
 
 typedef struct TaskNotification_s {
@@ -103,10 +107,10 @@ typedef struct Task_s {
   void (*callback)(struct Task_s *, TaskParm_t *);
   Base_t notificationBytes;
   char notificationValue[CONFIG_NOTIFICATION_VALUE_BYTES];
-  Time_t lastRunTime;
-  Time_t totalRunTime;
-  Time_t timerPeriod;
-  Time_t timerStartTime;
+  Ticks_t lastRunTime;
+  Ticks_t totalRunTime;
+  Ticks_t timerPeriod;
+  Ticks_t timerStartTime;
   struct Task_s *next;
 } Task_t;
 
@@ -115,8 +119,8 @@ typedef struct Task_s {
 
 typedef struct TaskRunTimeStats_s {
   Base_t id;
-  Time_t lastRunTime;
-  Time_t totalRunTime;
+  Ticks_t lastRunTime;
+  Ticks_t totalRunTime;
 } TaskRunTimeStats_t;
 
 
@@ -126,8 +130,8 @@ typedef struct TaskInfo_s {
   Base_t id;
   char name[CONFIG_TASK_NAME_BYTES];
   TaskState_t state;
-  Time_t lastRunTime;
-  Time_t totalRunTime;
+  Ticks_t lastRunTime;
+  Ticks_t totalRunTime;
 } TaskInfo_t;
 
 
@@ -144,8 +148,8 @@ typedef struct TaskList_s {
 
 typedef struct Timer_s {
   TimerState_t state;
-  Time_t timerPeriod;
-  Time_t timerStartTime;
+  Ticks_t timerPeriod;
+  Ticks_t timerStartTime;
   struct Timer_s *next;
 } Timer_t;
 
@@ -163,7 +167,7 @@ typedef struct TimerList_s {
 typedef struct SysFlags_s {
   Byte_t running : 1;
   Byte_t overflow : 1;
-  Byte_t privileged : 1;
+  Byte_t corrupt : 1;
   Byte_t reserved : 5;
 } SysFlags_t;
 

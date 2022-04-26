@@ -2,7 +2,7 @@
  * @file sys.c
  * @author Manny Peterson (mannymsp@gmail.com)
  * @brief Kernel sources system related calls
- * @version 0.3.2
+ * @version 0.3.3
  * @date 2022-01-31
  *
  * @copyright
@@ -31,28 +31,26 @@ Thank you for the best OS on Earth, Dennis. */
 
 
 
-
 /* Declare and set the system flags to their default values. */
 SysFlags_t sysFlags = {
     .running = false,
     .overflow = false,
-    .privileged = false};
+    .corrupt = false};
 
 
 
-
-/* The SystemAssert() system call will be called when
+/* The _SystemAssert_() system call will be called when
 the SYSASSERT() macro evaluates false. In order for there
 to be any effect, CONFIG_ENABLE_SYSTEM_ASSERT and
 CONFIG_SYSTEM_ASSERT_BEHAVIOR must be defined.
 
-SystemAssert() should NOT be called directly. Instead
-use the SYSASSERT() C macro. */
-void SystemAssert(const char *file_, int line_) {
+_SystemAssert_() should NOT be called directly because it is an INTERNAL
+function name and may change in future releases. Instead use the SYSASSERT() C macro. */
+void _SystemAssert_(const char *file_, int line_) {
 
-/* Do not modify this system call directly. Define
-the behavior (code) through the CONFIG_SYSTEM_ASSERT_BEHAVIOR
-setting in the config.h header file. */
+  /* Do not modify this system call directly. Define
+  the behavior (code) through the CONFIG_SYSTEM_ASSERT_BEHAVIOR
+  setting in the config.h header file. */
 
 #if defined(CONFIG_SYSTEM_ASSERT_BEHAVIOR)
   CONFIG_SYSTEM_ASSERT_BEHAVIOR(file_, line_);
@@ -62,6 +60,17 @@ setting in the config.h header file. */
 
   return;
 }
+
+
+/* The xSystemInit() system call initializes the system. */
+void xSystemInit(void) {
+
+  _SysInit_();
+
+  return;
+}
+
+
 
 /* The xSystemHalt() system call halts the system. */
 void xSystemHalt(void) {
@@ -76,10 +85,10 @@ void xSystemHalt(void) {
   for (;;) {
     /* Do nothing - literally. */
   }
-
-
-
 }
+
+
+
 
 /* The xSystemGetSystemInfo() system call will return the type xSystemInfo containing
 information about the system including the OS (product) name, its version and how many tasks
@@ -90,7 +99,7 @@ SystemInfo_t *xSystemGetSystemInfo(void) {
 
 
 
-  ret = (SystemInfo_t *)xMemAlloc(sizeof(SystemInfo_t));
+  ret = (SystemInfo_t *)_HeapAllocateMemory_(sizeof(SystemInfo_t));
 
 
 
@@ -104,7 +113,7 @@ SystemInfo_t *xSystemGetSystemInfo(void) {
   if (ISNOTNULLPTR(ret)) {
 
 
-    memcpy_(ret->productName, OS_PRODUCT_NAME, OS_PRODUCT_NAME_SIZE);
+    _memcpy_(ret->productName, OS_PRODUCT_NAME, OS_PRODUCT_NAME_SIZE);
 
     ret->majorVersion = OS_MAJOR_VERSION_NO;
 

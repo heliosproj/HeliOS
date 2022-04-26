@@ -2,7 +2,7 @@
  * @file Blink.ino
  * @author Manny Peterson (mannymsp@gmail.com)
  * @brief Blink example code for Arduino
- * @version 0.3.2
+ * @version 0.3.3
  * @date 2022-02-14
  *
  * @copyright
@@ -62,6 +62,10 @@ void setup() {
   int ledState = 0;
 
   pinMode(LED_BUILTIN, OUTPUT);
+
+  /* Call xSystemInit() to initialize any interrupt handlers and/or
+  memory required by HeliOS to execute on the target platform/architecture. */
+  xSystemInit();
 
   /* Create a new HeliOS task, give it an ASCII name, a reference to
   the task's main function and a reference to the task's parameter - in

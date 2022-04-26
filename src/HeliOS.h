@@ -2,7 +2,7 @@
  * @file HeliOS.h
  * @author Manny Peterson (mannymsp@gmail.com)
  * @brief Header file for end-user application code
- * @version 0.3.2
+ * @version 0.3.3
  * @date 2022-01-31
  *
  * @copyright
@@ -84,14 +84,38 @@ typedef enum {
 typedef uint8_t Base_t;
 
 /**
- * @brief Type definition for system time measured in microseconds.
+ * @brief The type definition for time expressed in ticks.
  *
- * The Time_t type is used to store system time which is measured in microseconds
- * from system initialization. Despite its name, this type does not store real time
- * clock (RTC) time or date information.
+ * The xTicks type is used by several of the task and timer related system calls to express time.
+ * The unit of measure for time is always ticks.
+ *
+ * @sa xTicks
  *
  */
-typedef TIME_T_TYPE Time_t;
+typedef uint32_t Ticks_t;
+
+
+/**
+ * @brief The type defintion for storing the size of some object in memory.
+ * 
+ * The Size_t type is used to store the size of an object in memory and is
+ * always represented in bytes. Size_t should always be declared as xSize.
+ * 
+ * @sa xSize
+ * 
+ */
+typedef size_t Size_t;
+
+
+/**
+ * @brief The type defintion for storing the size of some object in memory.
+ * 
+ * The xSize type is used to store the size of an object in memory and is
+ * always represented in bytes.
+ * 
+ */
+typedef Size_t xSize;
+
 
 /**
  * @brief Data structure for task runtime statistics.
@@ -111,8 +135,8 @@ typedef TIME_T_TYPE Time_t;
  */
 typedef struct TaskRunTimeStats_s {
   Base_t id;           /**< The task identifier which is used by xTaskGetHandleById() to return the task handle. */
-  Time_t lastRunTime;  /**< The runtime duration in microseconds the last time the task was executed by the scheduler. */
-  Time_t totalRunTime; /**< The total runtime duration in microseconds the task has been executed by the scheduler. */
+  Ticks_t lastRunTime;  /**< The runtime duration in ticks the last time the task was executed by the scheduler. */
+  Ticks_t totalRunTime; /**< The total runtime duration in ticks the task has been executed by the scheduler. */
 } TaskRunTimeStats_t;
 
 /**
@@ -137,8 +161,8 @@ typedef struct TaskInfo_s {
   Base_t id;                         /**< The task identifier which is used by xTaskGetHandleById() to return the task handle. */
   char name[CONFIG_TASK_NAME_BYTES]; /**< The name of the task which is used by xTaskGetHandleByName() to return the task handle. This is NOT a null terminated string. */
   TaskState_t state;                 /**< The state the task is in which is one of four states specified in the TaskState_t enumerated data type. */
-  Time_t lastRunTime;                /**< The runtime duration in microseconds the last time the task was executed by the scheduler. */
-  Time_t totalRunTime;               /**< The total runtime duration in microseconds the task has been executed by the scheduler. */
+  Ticks_t lastRunTime;                /**< The runtime duration in ticks the last time the task was executed by the scheduler. */
+  Ticks_t totalRunTime;               /**< The total runtime duration in ticks the task has been executed by the scheduler. */
 } TaskInfo_t;
 
 /**
@@ -265,6 +289,32 @@ typedef void Queue_t;
  *
  */
 typedef void Timer_t;
+
+/**
+ * @brief Type defintion for the memory address data type.
+ * 
+ * The xAddr type is used to store a memory address and is used to pass memory
+ * addresses back and forth between system calls and the end-user application. It
+ * is not necessary to use the xAddr type within the end-user application as long
+ * as the type is not used to interact with the HeliOS kernel through system calls.
+ * 
+ * 
+ */
+typedef void Addr_t;
+
+
+/**
+ * @brief Type defintion for the memory address data type.
+ * 
+ * The xAddr type is used to store a memory address and is used to pass memory
+ * addresses back and forth between system calls and the end-user application. It
+ * is not necessary to use the xAddr type within the end-user application as long
+ * as the type is not used to interact with the HeliOS kernel through system calls.
+ * 
+ * 
+ */
+typedef Addr_t *xAddr;
+
 
 /**
  * @brief Type definition for the base data type.
@@ -415,24 +465,15 @@ typedef Task_t *xTask;
 typedef TaskParm_t *xTaskParm;
 
 /**
- * @brief The type definition for time expressed in microseconds.
+ * @brief The type definition for time expressed in ticks.
  *
- * The xTime type is used by several of the task and timer related system calls to express time.
- * The unit of measure for time is always microseconds.
+ * The xTicks type is used by several of the task and timer related system calls to express time.
+ * The unit of measure for time is always ticks.
  *
- */
-typedef TIME_T_TYPE Time_t;
-
-/**
- * @brief The type definition for time expressed in microseconds.
- *
- * The xTime type is used by several of the task and timer related system calls to express time.
- * The unit of measure for time is always microseconds.
- *
- * @sa Time_t
+ * @sa Ticks_t
  *
  */
-typedef Time_t xTime;
+typedef Ticks_t xTicks;
 
 /**
  * @brief Enumerated type for task states.
@@ -502,7 +543,7 @@ typedef SystemInfo_t *xSystemInfo;
  * @endcode
  * 
  * @param t The data type to cast the task paramater to (e.g., int).
- * @param p The task pointer, often named parm_.
+ * @param p The task pointer, typically named parm_.
  */
 #if !defined(DEREF_TASKPARM)
 #define DEREF_TASKPARM(t, p) *((t *)p)
@@ -515,9 +556,19 @@ extern "C" {
 #endif
 
 /**
+ * @brief System call to initialize the system.
+ * 
+ * The xSystemInit() system call initializes the required interrupt handlers and
+ * memory and must be called prior to calling any other system call.
+ * 
+ * 
+ */
+void xSystemInit(void);
+
+/**
  * @brief System call to handle assertions.
  *
- * The SystemAssert() system call handles assertions. The SystemAssert() system
+ * The _SystemAssert_() system call handles assertions. The _SystemAssert_() system
  * call should not be called directly. Instead, the SYSASSERT() macro should be used.
  * The system assertion functionality will only work when the CONFIG_ENABLE_SYSTEM_ASSERT
  * and CONFIG_SYSTEM_ASSERT_BEHAVIOR settings are defined.
@@ -529,22 +580,22 @@ extern "C" {
  * @param file_ This is automatically defined by the compiler's definition of _FILE_
  * @param line_  This is automatically defined by the compiler's definition of _LINE_
  */
-void SystemAssert(const char *file_, int line_);
+void _SystemAssert_(const char *file_, int line_);
 
 /**
  * @brief System call to allocate memory from the heap.
  *
  * The xMemAlloc() system call allocates memory from the heap for HeliOS system
  * calls and end-user tasks. The size of the heap, in bytes, is dependent on the
- * CONFIG_HEAP_SIZE_IN_BLOCKS and CONFIG_HEAP_BLOCK_SIZE settings. xMemAlloc()
+ * CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS and CONFIG_MEMORY_REGION_BLOCK_SIZE settings. xMemAlloc()
  * functions similarly to calloc() in that it clears the memory it allocates.
  *
- * @sa CONFIG_HEAP_SIZE_IN_BLOCKS
- * @sa CONFIG_HEAP_BLOCK_SIZE
+ * @sa CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS
+ * @sa CONFIG_MEMORY_REGION_BLOCK_SIZE
  * @sa xMemFree()
  *
  * @param size_ The amount (size) of the memory to be allocated from the heap in bytes.
- * @return void* If successful, xMemAlloc() returns a pointer to the newly allocated memory.
+ * @return xAddr If successful, xMemAlloc() returns the address of the newly allocated memory.
  * If unsuccessful, the system call will return null.
  *
  * @note HeliOS technically does not allocate memory from what is traditionally heap memory.
@@ -552,7 +603,7 @@ void SystemAssert(const char *file_, int line_);
  * is done to maintain MISRA C:2012 compliance since standard library functions like malloc(),
  * calloc() and free() are not permitted.
  */
-void *xMemAlloc(size_t size_);
+xAddr xMemAlloc(const xSize size_);
 
 /**
  * @brief System call to free memory allocated from the heap.
@@ -562,13 +613,13 @@ void *xMemAlloc(size_t size_);
  *
  * @sa xMemAlloc()
  *
- * @param ptr_ The pointer to the allocated heap memory to be freed.
+ * @param addr_ The address of the allocated heap memory to be freed.
  *
  * @warning xMemFree() cannot be used to free memory allocated for kernel objects.
  * Memory allocated by xTaskCreate(), xTimerCreate() or xQueueCreate() must
  * be freed by their respective delete system calls (i.e., xTaskDelete()).
  */
-void xMemFree(void *ptr_);
+void xMemFree(const xAddr addr_);
 
 /**
  * @brief System call to return the amount of allocated heap memory.
@@ -577,7 +628,7 @@ void xMemFree(void *ptr_);
  * that is currently allocated. Calls to xMemAlloc() increases and xMemFree()
  * decreases the amount of memory in use.
  *
- * @return size_t The amount of memory currently allocated in bytes. If no heap
+ * @return Size_t The amount of memory currently allocated in bytes. If no heap
  * memory is currently allocated, xMemGetUsed() will return zero.
  *
  * @note xMemGetUsed() returns the amount of heap memory that is currently
@@ -585,28 +636,28 @@ void xMemFree(void *ptr_);
  * objects may be freed using xMemFree(). Kernel objects must be freed using
  * their respective delete system call (e.g., xTaskDelete()).
  */
-size_t xMemGetUsed(void);
+xSize xMemGetUsed(void);
 
 /**
- * @brief System call to return the amount of heap memory allcoated for a pointer.
+ * @brief System call to return the amount of heap memory allcoated for a given address.
  *
  * The xMemGetSize() system call returns the amount of heap memory in bytes that
- * is currently allocated to a specific pointer. If the pointer is null or invalid,
+ * is currently allocated to a specific address. If the address is null or invalid,
  * xMemGetSize() will return zero bytes.
  *
- * @param ptr_ The pointer to the allocated heap memory to obtain the size of the
+ * @param addr_ The address of the allocated heap memory to obtain the size of the
  * memory, in bytes, that is allocated.
- * @return size_t The amount of memory currently allocated to the specific pointer in bytes. If
- * the pointer is invalid or null, xMemGetSize() will return zero.
+ * @return Size_t The amount of memory currently allocated to the specific address in bytes. If
+ * the address is invalid or null, xMemGetSize() will return zero.
  *
- * @note If the pointer ptr_ points to a structure that, for example, is 48 bytes in size
+ * @note If the address addr_ points to a structure that, for example, is 48 bytes in size
  * base on sizeof(), xMemGetSize() will return the number of bytes allocated by the block(s)
  * that contain the structure. Assuming the default block size of 32, a 48 byte structure would require
  * TWO blocks so xMemGetSize() would return 64 - not 48. xMemGetSize() also checks the health of the
  * heap and will return zero if it detects a consistency issue with the heap. Thus, xMemGetSize()
- * can be used to validate pointers before the objects they reference are accessed.
+ * can be used to validate addresses before the objects they reference are accessed.
  */
-size_t xMemGetSize(void *ptr_);
+xSize xMemGetSize(const xAddr addr_);
 
 /**
  * @brief System call to create a new message queue.
@@ -810,13 +861,13 @@ xSystemInfo xSystemGetSystemInfo(void);
  * state set to suspended. The xTaskCreate() and xTaskDelete() system calls cannot be called within
  * a task. They MUST be called outside of the scope of the HeliOS scheduler.
  *
- * @param name_ The ASCII name of the task which can be used by xTaskGetHandleByName() to obtain the task pointer. The
+ * @param name_ The ASCII name of the task which can be used by xTaskGetHandleByName() to obtain the task handle. The
  * length of the name is depended on the CONFIG_TASK_NAME_BYTES. The task name is NOT a null terminated char string.
- * @param callback_ The callback pointer to the task main function. This is the function that will be invoked
+ * @param callback_ The address of the task main function. This is the function that will be invoked
  * by the scheduler when a task is scheduled for execution.
  * @param taskParameter_ A pointer to any type or structure that the end-user wants to pass into the task as
  * a parameter. The task parameter is not required and may simply be set to null.
- * @return xTask A pointer to the newly created task.
+ * @return xTask A handle to the newly created task.
  *
  * @sa xTask
  * @sa xTaskParm
@@ -835,7 +886,7 @@ xTask xTaskCreate(const char *name_, void (*callback_)(xTask, xTaskParm), xTaskP
  * The xTaskDelete() system call will delete a task. The xTaskCreate() and xTaskDelete() system calls
  * cannot be called within a task. They MUST be called outside of the scope of the HeliOS scheduler.
  *
- * @param task_ A pointer to the task to be deleted.
+ * @param task_ The handle of the task to be deleted.
  *
  * @warning xTaskDelete() MUST be called outside the scope of the HeliOS scheduler (i.e., not from a task's main).
  */
@@ -844,30 +895,29 @@ void xTaskDelete(xTask task_);
 /**
  * @brief System call to get a task's handle by its ASCII name.
  *
- * The xTaskGetHandleByName() system call will return the task handle pointer to the
+ * The xTaskGetHandleByName() system call will return the task handle of the
  * task specified by its ASCII name. The length of the task name is dependent on the
  * CONFIG_TASK_NAME_BYTES setting. The name is compared byte-for-byte so the name is
  * case sensitive.
  *
  * @sa CONFIG_TASK_NAME_BYTES
  *
- * @param name_ The ASCII name of the task to return the handle pointer for. The task name is NOT a null terminated string.
- * @return xTask A pointer to the task handle. xTaskGetHandleByName() returns null if the
- * name cannot be found.
+ * @param name_ The ASCII name of the task to return the handle of. The task name is NOT a null terminated string.
+ * @return xTask The task handle. xTaskGetHandleByName() returns null if the name cannot be found.
  */
 xTask xTaskGetHandleByName(const char *name_);
 
 /**
  * @brief System call to get a task's handle by its task identifier.
  *
- * The xTaskGetHandleById() system call will return a pointer to the task handle
- * specified by its identifier.
+ * The xTaskGetHandleById() system call will return the task handle of the task specified
+ * by identifier identifier.
  *
  * @sa xBase
  *
- * @param id_ The identifier of the task to return the handle pointer for.
- * @return xTask A  pointer to the task handle. xTaskGetHandleById() returns null if the
- * the task identifier cannot be found.
+ * @param id_ The identifier of the task to return the handle of.
+ * @return xTask The task handle. xTaskGetHandleById() returns null if the the task identifier
+ * cannot be found.
  */
 xTask xTaskGetHandleById(xBase id_);
 
@@ -1110,10 +1160,10 @@ void xTaskWait(xTask task_);
 /**
  * @brief System call to set the task timer period.
  *
- * The xTaskChangePeriod() system call will change the period (microseconds) on the task timer
+ * The xTaskChangePeriod() system call will change the period (ticks) on the task timer
  * for the specified task. The timer period must be greater than zero. To have any effect, the task
  * must be in the waiting state set by calling xTaskWait() on the task. Once the timer period is set
- * and the task is in the waiting state, the task will be executed every timerPeriod_ microseconds.
+ * and the task is in the waiting state, the task will be executed every timerPeriod_ ticks.
  * Changing the period to zero will prevent the task from being executed even if it is in the waiting state
  * unless it were to receive a direct to task notification.
  *
@@ -1122,9 +1172,9 @@ void xTaskWait(xTask task_);
  * @sa xTaskResetTimer()
  *
  * @param task_ The task to change the timer period for.
- * @param timerPeriod_ The timer period in microseconds.
+ * @param timerPeriod_ The timer period in ticks.
  */
-void xTaskChangePeriod(xTask task_, xTime timerPeriod_);
+void xTaskChangePeriod(xTask task_, xTicks timerPeriod_);
 
 /**
  * @brief System call to get the task timer period.
@@ -1137,10 +1187,10 @@ void xTaskChangePeriod(xTask task_, xTime timerPeriod_);
  * @sa xTaskResetTimer()
  *
  * @param task_ The task to return the timer period for.
- * @return xTime The timer period in microseconds. xTaskGetPeriod() will return zero
+ * @return xTicks The timer period in ticks. xTaskGetPeriod() will return zero
  * if the timer period is zero or if the task could not be found.
  */
-xTime xTaskGetPeriod(xTask task_);
+xTicks xTaskGetPeriod(xTask task_);
 
 /**
  * @brief System call to reset the task timer.
@@ -1176,20 +1226,20 @@ xSchedulerState xTaskGetSchedulerState(void);
  * The xTimerCreate() system call will create a new timer. Timers differ from
  * task timers in that they do not create events that effect the scheduling of a task.
  * Timers can be used by tasks to initiate various task activities based on a specified
- * time period represented in microseconds. The memory allocated by xTimerCreate() must
+ * time period represented in ticks. The memory allocated by xTimerCreate() must
  * be freed by xTimerDelete(). Unlike tasks, timers may be created and deleted within
  * tasks.
  *
  * @sa xTimer
  * @sa xTimerDelete()
  *
- * @param timerPeriod_ The number of microseconds before the timer expires.
+ * @param timerPeriod_ The number of ticks before the timer expires.
  * @return xTimer The newly created timer. If the timer period parameter is less than zero
  * or xTimerCreate() was unable to allocate the required memory, xTimerCreate() will return null.
  *
  * @warning The timer memory can only be freed by xTimerDelete().
  */
-xTimer xTimerCreate(xTime timerPeriod_);
+xTimer xTimerCreate(xTicks timerPeriod_);
 
 /**
  * @brief System call will delete a timer.
@@ -1207,15 +1257,15 @@ void xTimerDelete(xTimer timer_);
  * @brief System call to change the period of a timer.
  *
  * The xTimerChangePeriod() system call will change the period of the specified timer.
- * The timer period is measured in microseconds. If the timer period is zero, the xTimerHasTimerExpired()
+ * The timer period is measured in ticks. If the timer period is zero, the xTimerHasTimerExpired()
  * system call will always return false.
  *
  * @sa xTimerHasTimerExpired()
  *
  * @param timer_ The timer to change the period for.
- * @param timerPeriod_ The timer period in is microseconds. Timer period must be zero or greater.
+ * @param timerPeriod_ The timer period in is ticks. Timer period must be zero or greater.
  */
-void xTimerChangePeriod(xTimer timer_, xTime timerPeriod_);
+void xTimerChangePeriod(xTimer timer_, xTicks timerPeriod_);
 
 /**
  * @brief System call to get the period of a timer.
@@ -1224,10 +1274,10 @@ void xTimerChangePeriod(xTimer timer_, xTime timerPeriod_);
  * for the specified timer.
  *
  * @param timer_ The timer to get the timer period for.
- * @return xTime The timer period. If the timer cannot be found, xTimerGetPeriod()
+ * @return xTicks The timer period. If the timer cannot be found, xTimerGetPeriod()
  * will return zero.
  */
-xTime xTimerGetPeriod(xTimer timer_);
+xTicks xTimerGetPeriod(xTimer timer_);
 
 /**
  * @brief System call to check if a timer is active.
@@ -1299,9 +1349,9 @@ void xTimerStop(xTimer timer_);
 void xSystemHalt(void);
 
 
-/* For debugging the heap only. */
-#if defined(MEMDUMP_)
-void memdump_(void); 
+#if defined(DEBUG_ON)
+void _MemoryRegionDumpKernel_(void);
+void _MemoryRegionDumpHeap_(void);
 #endif
 
 /* In the event HeliOS is compiled with a C++ compiler, make the system calls (written in C)

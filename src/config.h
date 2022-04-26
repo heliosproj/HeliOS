@@ -2,7 +2,7 @@
  * @file config.h
  * @author Manny Peterson (mannymsp@gmail.com)
  * @brief Kernel header file for user definable settings
- * @version 0.3.2
+ * @version 0.3.3
  * @date 2022-01-31
  *
  * @copyright
@@ -39,7 +39,7 @@ to customize the HeliOS kernel for their specific application. */
  * unable to be written to the serial bus in applications using the
  * Arduino platform/tool-chain. The CONFIG_ENABLE_ARDUINO_CPP_INTERFACE
  * builds the included arduino.cpp file to allow the kernel to call the
- * Arduino API through wrapper functions such as ArduinoAssert(). The
+ * Arduino API through wrapper functions such as _ArduinoAssert_(). The
  * arduino.cpp file can be found in the /extras directory. It must
  * be copied into the /src directory to be built.
  * 
@@ -82,19 +82,19 @@ to customize the HeliOS kernel for their specific application. */
  * of output is generated over a serial or other interface. By default
  * the CONFIG_SYSTEM_ASSERT_BEHAVIOR is not defined.
  * 
- * @note In order to use the ArduinoAssert() functionality, the
+ * @note In order to use the _ArduinoAssert_() functionality, the
  * CONFIG_ENABLE_ARDUINO_CPP_INTERFACE setting must be enabled.
  *
  * @sa CONFIG_ENABLE_SYSTEM_ASSERT
  * @sa CONFIG_ENABLE_ARDUINO_CPP_INTERFACE
  *
  * @code {.c}
- * #define CONFIG_SYSTEM_ASSERT_BEHAVIOR(f, l) ArduinoAssert( f , l )
+ * #define CONFIG_SYSTEM_ASSERT_BEHAVIOR(f, l) _ArduinoAssert_( f , l )
  * @endcode
  *
  */
 /*
-#define CONFIG_SYSTEM_ASSERT_BEHAVIOR(f, l) ArduinoAssert( f , l )
+#define CONFIG_SYSTEM_ASSERT_BEHAVIOR(f, l) _ArduinoAssert_( f , l )
 */
 
 
@@ -149,49 +149,44 @@ to customize the HeliOS kernel for their specific application. */
 
 
 
+
 /**
- * @brief Define the number of blocks in the heap.
- *
- * Setting CONFIG_HEAP_SIZE_IN_BLOCKS allows the end-user to
- * define the size of the heap in blocks. The size of a block
- * in the heap is determined by the CONFIG_HEAP_BLOCK_SIZE which
- * is represented in bytes. The size of the heap needs to be
- * adjusted to fit the memory requirements of the end-user's
- * application. By default the CONFIG_HEAP_SIZE_IN_BLOCKS
- * setting is not defined. The literal must be appended with "u"
- * to maintain MISRA C:2012 compliance.
- *
- * @sa xMemAlloc()
- * @sa xMemFree()
- * @sa CONFIG_HEAP_BLOCK_SIZE
- *
- * @note To use the platform and/or tool-chain defaults,
- * leave CONFIG_HEAP_SIZE_IN_BLOCKS undefined.
- *
+ * @brief Define the number of memory blocks available in all memory regions.
+ * 
+ * The heap memory region is used by tasks. Whereas the kernel memory region
+ * is used solely by the kernel for kernel objects. The CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS
+ * setting allows the end-user to define the size, in blocks, of all memory
+ * regions thus effecting both the heap and kernel memory regions. The size
+ * of a memory block is defined by the CONFIG_MEMORY_REGION_BLOCK_SIZE setting.
+ * The size of all memory regions needs to be adjusted to fit the memory
+ * requirements of the end-user's application. By default the
+ * CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS is defined on a per platform and/or
+ * tool-chain basis therefor it is not defined here by default. The literal
+ * must be appended with a "u" to maintain MISRA C:2012 compliance.
+ * 
  */
-/*
-#define CONFIG_HEAP_SIZE_IN_BLOCKS 512u
-*/
+#define CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS 24u
+
 
 
 
 /**
- * @brief Define the heap block size in bytes.
+ * @brief Define the memory block size in bytes for all memory regions.
  *
- * Setting CONFIG_HEAP_BLOCK_SIZE allows the end-user to
- * define the size of a heap block in bytes. The block size
- * should be set to achieve the best possible utilization
- * of the heap. A block size that is too large will waste the
- * heap for smaller requests for heap. A block size that is too small
- * will waste heap on entries. The default value is 32 bytes. The
- * literal must be appended with "u" to maintain MISRA C:2012 compliance.
- *
+ * Setting CONFIG_MEMORY_REGION_BLOCK_SIZE allows the end-user to
+ * define the size of a memory region block in bytes. The memory region
+ * block size should be set to achieve the best possible utilization of
+ * the available memory. The CONFIG_MEMORY_REGION_BLOCK_SIZE setting
+ * effects both the heap and kernel memory regions. The default value
+ * is 32 bytes. The literal must be appended with a "u" to maintain
+ * MISRA C:2012 compliance.
+ * 
  * @sa xMemAlloc()
  * @sa xMemFree()
- * @sa CONFIG_HEAP_SIZE_IN_BLOCKS
+ * @sa CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS
  *
  */
-#define CONFIG_HEAP_BLOCK_SIZE 32u
+#define CONFIG_MEMORY_REGION_BLOCK_SIZE 32u
 
 
 

@@ -2,7 +2,7 @@
  * @file sys.h
  * @author Manny Peterson (mannymsp@gmail.com)
  * @brief Kernel sources system related calls
- * @version 0.3.2
+ * @version 0.3.3
  * @date 2022-01-31
  *
  * @copyright
@@ -29,6 +29,7 @@
 #include "config.h"
 #include "defines.h"
 #include "types.h"
+#include "port.h"
 #include "mem.h"
 #include "queue.h"
 #include "task.h"
@@ -40,12 +41,13 @@ extern SysFlags_t sysFlags;
 extern "C" {
 #endif
 
-void SystemAssert(const char *file_, int line_);
+void _SystemAssert_(const char *file_, int line_);
+void xSystemInit(void);
 void xSystemHalt(void);
 SystemInfo_t *xSystemGetSystemInfo(void);
 
 #if defined(CONFIG_ENABLE_ARDUINO_CPP_INTERFACE)
-void ArduinoAssert(const char *file_, int line_);
+void _ArduinoAssert_(const char *file_, int line_);
 #endif
 
 #ifdef __cplusplus

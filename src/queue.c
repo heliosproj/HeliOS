@@ -2,7 +2,7 @@
  * @file queue.c
  * @author Manny Peterson (mannymsp@gmail.com)
  * @brief Kernel sources for message queues
- * @version 0.3.2
+ * @version 0.3.3
  * @date 2022-01-31
  *
  * @copyright
@@ -48,12 +48,10 @@ Queue_t *xQueueCreate(Base_t limit_) {
   if (CONFIG_QUEUE_MINIMUM_LIMIT <= limit_) {
 
 
-    /* Creating a kernel object so put ourselves in privileged
-    mode. */
-    ENTER_PRIVILEGED();
 
 
-    ret = (Queue_t *)xMemAlloc(sizeof(Queue_t));
+
+    ret = (Queue_t *)_KernelAllocateMemory_(sizeof(Queue_t));
 
 
     /* Assert if xMemAlloc() didn't return our requested
@@ -86,13 +84,13 @@ void xQueueDelete(Queue_t *queue_) {
 
   /* Assert if the heap fails its health check or if the queue pointer the end-user
   passed is invalid. */
-  SYSASSERT(RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_));
+  SYSASSERT(RETURN_SUCCESS == _MemoryRegionCheckKernel_(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
 
 
 
   /* Check if the heap is health and the queue pointer the end-user passed is valid.
   If so, continue. Otherwise, head toward the exit. */
-  if (RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_)) {
+  if (RETURN_SUCCESS == _MemoryRegionCheckKernel_(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR)) {
 
 
     /* If the queue contains messages, traverse the queue and drop the
@@ -105,12 +103,9 @@ void xQueueDelete(Queue_t *queue_) {
     }
 
 
-    /* Freeing a kernel object so enter privileged mode. */
-    ENTER_PRIVILEGED();
 
 
-    /* Free the memory for the queue. */
-    xMemFree(queue_);
+    _KernelFreeMemory_(queue_);
   }
 
 
@@ -133,12 +128,12 @@ Base_t xQueueGetLength(Queue_t *queue_) {
 
   /* Assert if the heap fails its health check or if the queue pointer the end-user
   passed is invalid. */
-  SYSASSERT(RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_));
+  SYSASSERT(RETURN_SUCCESS == _MemoryRegionCheckKernel_(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
 
 
   /* Check if the heap is health and the queue pointer the end-user passed is valid.
   If so, continue. Otherwise, head toward the exit. */
-  if (RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_)) {
+  if (RETURN_SUCCESS == _MemoryRegionCheckKernel_(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR)) {
 
 
     messageCursor = queue_->head;
@@ -187,12 +182,12 @@ Base_t xQueueIsQueueEmpty(Queue_t *queue_) {
 
   /* Assert if the heap fails its health check or if the queue pointer the end-user
   passed is invalid. */
-  SYSASSERT(RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_));
+  SYSASSERT(RETURN_SUCCESS == _MemoryRegionCheckKernel_(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
 
 
   /* Check if the heap is health and the queue pointer the end-user passed is valid.
   If so, continue. Otherwise, head toward the exit. */
-  if (RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_)) {
+  if (RETURN_SUCCESS == _MemoryRegionCheckKernel_(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR)) {
 
 
     messageCursor = queue_->head;
@@ -242,12 +237,12 @@ Base_t xQueueIsQueueFull(Queue_t *queue_) {
 
   /* Assert if the heap fails its health check or if the queue pointer the end-user
   passed is invalid. */
-  SYSASSERT(RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_));
+  SYSASSERT(RETURN_SUCCESS == _MemoryRegionCheckKernel_(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
 
 
   /* Check if the heap is health and the queue pointer the end-user passed is valid.
   If so, continue. Otherwise, head toward the exit. */
-  if (RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_)) {
+  if (RETURN_SUCCESS == _MemoryRegionCheckKernel_(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR)) {
 
     messageCursor = queue_->head;
 
@@ -297,13 +292,13 @@ Base_t xQueueMessagesWaiting(Queue_t *queue_) {
 
   /* Assert if the heap fails its health check or if the queue pointer the end-user
   passed is invalid. */
-  SYSASSERT(RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_));
+  SYSASSERT(RETURN_SUCCESS == _MemoryRegionCheckKernel_(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
 
 
 
   /* Check if the heap is health and the queue pointer the end-user passed is valid.
   If so, continue. Otherwise, head toward the exit. */
-  if (RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_)) {
+  if (RETURN_SUCCESS == _MemoryRegionCheckKernel_(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR)) {
 
     messageCursor = queue_->head;
 
@@ -373,11 +368,11 @@ Base_t xQueueSend(Queue_t *queue_, Base_t messageBytes_, const char *messageValu
 
     /* Assert if the heap fails its health check or if the queue pointer the end-user
     passed is invalid. */
-    SYSASSERT(RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_));
+    SYSASSERT(RETURN_SUCCESS == _MemoryRegionCheckKernel_(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
 
     /* Check if the heap is health and the queue pointer the end-user passed is valid.
     If so, continue. Otherwise, head toward the exit. */
-    if (RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_)) {
+    if (RETURN_SUCCESS == _MemoryRegionCheckKernel_(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR)) {
 
       messageCursor = queue_->head;
 
@@ -404,10 +399,9 @@ Base_t xQueueSend(Queue_t *queue_, Base_t messageBytes_, const char *messageValu
       if ((queue_->limit > queue_->length) && (messages == queue_->length)) {
 
 
-        /* Going to create a kernel object so enter privileged mode. */
-        ENTER_PRIVILEGED();
 
-        message = (Message_t *)xMemAlloc(sizeof(Message_t));
+
+        message = (Message_t *)_KernelAllocateMemory_(sizeof(Message_t));
 
 
         /* Assert if xMemAlloc() did not allocate our requested memory. */
@@ -418,7 +412,7 @@ Base_t xQueueSend(Queue_t *queue_, Base_t messageBytes_, const char *messageValu
 
           message->messageBytes = messageBytes_;
 
-          memcpy_(message->messageValue, messageValue_, CONFIG_MESSAGE_VALUE_BYTES);
+          _memcpy_(message->messageValue, messageValue_, CONFIG_MESSAGE_VALUE_BYTES);
 
           message->next = NULL;
 
@@ -448,27 +442,35 @@ Base_t xQueueSend(Queue_t *queue_, Base_t messageBytes_, const char *messageValu
   return ret;
 }
 
+
 /* The xQueuePeek() system call will return the next message in the queue without
 dropping the message. */
 QueueMessage_t *xQueuePeek(Queue_t *queue_) {
+
+  return _QueuePeek_(queue_);
+
+}
+
+
+QueueMessage_t *_QueuePeek_(Queue_t *queue_) {
   QueueMessage_t *ret = NULL;
 
 
   /* Assert if the heap fails its health check or if the queue pointer the end-user
   passed is invalid. */
-  SYSASSERT(RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_));
+  SYSASSERT(RETURN_SUCCESS == _MemoryRegionCheckKernel_(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
 
 
   /* Check if the heap is health and the queue pointer the end-user passed is valid.
   If so, continue. Otherwise, head toward the exit. */
-  if (RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_)) {
+  if (RETURN_SUCCESS == _MemoryRegionCheckKernel_(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR)) {
 
     /* If the head is not null, then there is a message waiting for us to
     peek at. */
     if (ISNOTNULLPTR(queue_->head)) {
 
 
-      ret = (QueueMessage_t *)xMemAlloc(sizeof(QueueMessage_t));
+      ret = (QueueMessage_t *)_HeapAllocateMemory_(sizeof(QueueMessage_t));
 
 
       /* Assert if xMemAlloc() didn't do its job. */
@@ -481,7 +483,7 @@ QueueMessage_t *xQueuePeek(Queue_t *queue_) {
 
         ret->messageBytes = queue_->head->messageBytes;
 
-        memcpy_(ret->messageValue, queue_->head->messageValue, CONFIG_MESSAGE_VALUE_BYTES);
+        _memcpy_(ret->messageValue, queue_->head->messageValue, CONFIG_MESSAGE_VALUE_BYTES);
       }
     }
   }
@@ -494,6 +496,13 @@ QueueMessage_t *xQueuePeek(Queue_t *queue_) {
 returning the message. */
 void xQueueDropMessage(Queue_t *queue_) {
 
+  _QueueDropmessage_(queue_);
+
+  return;
+}
+
+void _QueueDropmessage_(Queue_t *queue_) {
+
 
   Message_t *message = NULL;
 
@@ -501,13 +510,13 @@ void xQueueDropMessage(Queue_t *queue_) {
 
   /* Assert if the heap fails its health check or if the queue pointer the end-user
   passed is invalid. */
-  SYSASSERT(RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_));
+  SYSASSERT(RETURN_SUCCESS == _MemoryRegionCheckKernel_(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
 
 
 
   /* Check if the heap is health and the queue pointer the end-user passed is valid.
   If so, continue. Otherwise, head toward the exit. */
-  if (RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_)) {
+  if (RETURN_SUCCESS == _MemoryRegionCheckKernel_(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR)) {
 
 
 
@@ -531,11 +540,7 @@ void xQueueDropMessage(Queue_t *queue_) {
       queue_->length--;
 
 
-      /* To free the message kernel object we must go into
-      privileged mode. */
-      ENTER_PRIVILEGED();
-
-      xMemFree(message);
+      _KernelFreeMemory_(message);
     }
   }
 
@@ -554,13 +559,13 @@ QueueMessage_t *xQueueReceive(Queue_t *queue_) {
 
   /* Assert if the heap fails its health check or if the queue pointer the end-user
   passed is invalid. */
-  SYSASSERT(RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_));
+  SYSASSERT(RETURN_SUCCESS == _MemoryRegionCheckKernel_(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
 
 
 
   /* Check if the heap is health and the queue pointer the end-user passed is valid.
   If so, continue. Otherwise, head toward the exit. */
-  if (RETURN_SUCCESS == HeapCheck(HEAP_CHECK_HEALTH_AND_POINTER, queue_)) {
+  if (RETURN_SUCCESS == _MemoryRegionCheckKernel_(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR)) {
 
 
     /* Re-use some code and peek to see if there is a message
@@ -568,7 +573,7 @@ QueueMessage_t *xQueueReceive(Queue_t *queue_) {
     
     NOTE: We don't need to allocate any heap memory since xQueuePeek()
     has already done that for us. */
-    ret = xQueuePeek(queue_);
+    ret = _QueuePeek_(queue_);
 
 
     /* See if xQueuePeek() returned a message, if so we need to drop it
@@ -578,7 +583,7 @@ QueueMessage_t *xQueueReceive(Queue_t *queue_) {
 
       /* Re-use some code and just call xQueueDropMessage() to drop
       the message we just received. */
-      xQueueDropMessage(queue_);
+      _QueueDropmessage_(queue_);
     }
   }
 

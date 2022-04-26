@@ -41,7 +41,7 @@
     "custom"
   ],
   "doxdocgen.file.fileTemplate": "@file {name}",
-  "doxdocgen.file.versionTag": "@version 0.3.2",
+  "doxdocgen.file.versionTag": "@version 0.3.3",
   "doxdocgen.generic.authorEmail": "mannymsp@gmail.com",
   "doxdocgen.generic.authorName": "Manny Peterson",
   "doxdocgen.generic.authorTag": "@author {author} ({email})",
@@ -82,13 +82,9 @@
     }
   ],
   "cSpell.words": [
-    "datastructure",
     "Manny"
   ],
-  "files.associations": {
-    "task.h": "c",
-    "sched.h": "c",
-    "queue.h": "c",
-    "cstdlib": "c"
-  }
+  "C_Cpp.default.defines": [
+    "DEBUG_ON"
+  ]
 }

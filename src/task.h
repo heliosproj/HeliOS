@@ -2,7 +2,7 @@
  * @file task.h
  * @author Manny Peterson (mannymsp@gmail.com)
  * @brief Kernel sources for task management
- * @version 0.3.2
+ * @version 0.3.3
  * @date 2022-01-31
  * 
  * @copyright
@@ -29,6 +29,7 @@
 #include "config.h"
 #include "defines.h"
 #include "types.h"
+#include "port.h"
 #include "mem.h"
 #include "queue.h"
 #include "sys.h"
@@ -57,17 +58,16 @@ TaskNotification_t *xTaskNotifyTake(Task_t *task_);
 void xTaskResume(Task_t *task_);
 void xTaskSuspend(Task_t *task_);
 void xTaskWait(Task_t *task_);
-void xTaskChangePeriod(Task_t *task_, Time_t timerPeriod_);
-Time_t xTaskGetPeriod(Task_t *task_);
+void xTaskChangePeriod(Task_t *task_, Ticks_t timerPeriod_);
+Ticks_t xTaskGetPeriod(Task_t *task_);
 void xTaskResetTimer(Task_t *task_);
 void xTaskStartScheduler(void);
-void RunTimeReset(void);
-Time_t CurrentTime(void);
-void TaskRun(Task_t *task_);
+void _RunTimeReset_(void);
+void _TaskRun_(Task_t *task_);
 void xTaskResumeAll(void);
 void xTaskSuspendAll(void);
 SchedulerState_t xTaskGetSchedulerState(void);
-Base_t TaskListFindTask(const Task_t *task_);
+Base_t _TaskListFindTask_(const Task_t *task_);
 
 #ifdef __cplusplus
 }  // extern "C" {

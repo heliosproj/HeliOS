@@ -2,7 +2,7 @@
  * @file WaitNotify.ino
  * @author Manny Peterson (mannymsp@gmail.com)
  * @brief Example code to demonstrate direct-to-task notifications used in event-driven multitasking
- * @version 0.3.2
+ * @version 0.3.3
  * @date 2022-02-14
  *
  * @copyright
@@ -75,6 +75,10 @@ void taskReceiver_main(xTask task_, xTaskParm parm_) {
 void setup() {
 
   Serial.begin(9600);
+
+  /* Call xSystemInit() to initialize any interrupt handlers and/or
+  memory required by HeliOS to execute on the target platform/architecture. */
+  xSystemInit();
 
   /* Create two tasks, one to send the direct-to-task notification, the
   other to receive it. */
