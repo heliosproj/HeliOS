@@ -184,7 +184,6 @@ to customize the HeliOS kernel for their specific application. */
  * @sa xMemAlloc()
  * @sa xMemFree()
  * @sa CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS
- * @sa CONFIG_KMEM_SIZE_IN_BLOCKS
  *
  */
 #define CONFIG_MEMORY_REGION_BLOCK_SIZE 32u
