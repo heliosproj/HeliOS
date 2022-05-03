@@ -152,7 +152,8 @@ void loop() {
 ***
 # Releases
 All releases, including the current release, can be found [here](https://github.com/MannyPeterson/HeliOS/releases).
-* **0.3.3 - Multi-region memory support, memory defragmentation, CMSIS support, new portability layer and other code improvements**
+* **0.3.4 - TBD**
+* 0.3.3 - Multi-region memory support, memory defragmentation, CMSIS support, new portability layer and other code improvements
 * 0.3.2 - Some fixes to the memory management system calls and related functions
 * 0.3.1 - A lot of refactoring, code clean-up from the 0.3.0 release and code documentation/readability improvements
 * 0.3.0 - First release of the new 0.3.x series kernel (many new features, most of the kernel rewritten, new example code and new documentation)

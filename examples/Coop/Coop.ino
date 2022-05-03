@@ -2,7 +2,7 @@
  * @file Coop.ino
  * @author Manny Peterson (mannymsp@gmail.com)
  * @brief Example code for cooperative multitasking
- * @version 0.3.3
+ * @version 0.3.4
  * @date 2022-02-14
  *
  * @copyright
