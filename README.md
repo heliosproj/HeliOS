@@ -125,10 +125,10 @@ void setup() {
     events. */
     xTaskWait(blink);
 
-    /* Set the task timer period to one second. The HeliOS scheduler
-    will execute the task every second until the task is either suspended,
+    /* Set the task timer period to 1,000 ticks. The HeliOS scheduler
+    will execute the task every 1,000 ticks until the task is either suspended,
     its task timer period is changed or the task is deleted. */
-    xTaskChangePeriod(blink, 1000000);
+    xTaskChangePeriod(blink, 1000);
 
     /* Pass control to the HeliOS scheduler. The HeliOS scheduler will
     not relinquish control unless xTaskSuspendAll() is called. */
