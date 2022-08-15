@@ -84,6 +84,16 @@ typedef enum {
 typedef uint8_t Base_t;
 
 /**
+ * @brief Type defintion for the double word data type
+ * 
+ * Word here does NOT refer to the machine word size. It just means two bytes. A
+ * double word is four bytes.
+ * 
+ * @sa xDWord
+ */
+typedef uint32_t DWord_t;
+
+/**
  * @brief The type definition for time expressed in ticks.
  *
  * The xTicks type is used by several of the task and timer related system calls to express time.
@@ -93,7 +103,6 @@ typedef uint8_t Base_t;
  *
  */
 typedef uint32_t Ticks_t;
-
 
 /**
  * @brief The type defintion for storing the size of some object in memory.
@@ -106,7 +115,6 @@ typedef uint32_t Ticks_t;
  */
 typedef size_t Size_t;
 
-
 /**
  * @brief The type defintion for storing the size of some object in memory.
  * 
@@ -115,7 +123,6 @@ typedef size_t Size_t;
  * 
  */
 typedef Size_t xSize;
-
 
 /**
  * @brief Data structure for task runtime statistics.
@@ -227,6 +234,27 @@ typedef struct SystemInfo_s {
 } SystemInfo_t;
 
 /**
+ * @brief Data structure for statistics on a memory region.
+ * 
+ * The MemoryRegionStats_t data structure is used to store statistics about a HeliOS
+ * memory region. Statistics can be obtained for the heap and kernel memory regions.
+ * 
+ * @sa xMemGetHeapStats()
+ * @sa xMemGetKernelStats()
+ * @sa xMemoryRegionStats
+ * 
+ */
+typedef struct MemoryRegionStats_s {
+  DWord_t largestFreeEntryInBytes;
+  DWord_t smallestFreeEntryInBytes;
+  DWord_t numberOfFreeBlocks;
+  DWord_t availableSpaceInBytes;
+  DWord_t successfulAllocations;
+  DWord_t successfulFrees;
+  DWord_t minimumEverFreeBytesRemaining;
+} MemoryRegionStats_t;
+
+/**
  * @brief Stub type definition for the task type.
  *
  * The Task_t type is a stub type definition for the internal task data structure and is treated
@@ -302,7 +330,6 @@ typedef void Timer_t;
  */
 typedef void Addr_t;
 
-
 /**
  * @brief Type defintion for the memory address data type.
  * 
@@ -315,7 +342,6 @@ typedef void Addr_t;
  */
 typedef Addr_t *xAddr;
 
-
 /**
  * @brief Type definition for the base data type.
  *
@@ -327,6 +353,16 @@ typedef Addr_t *xAddr;
  *
  */
 typedef Base_t xBase;
+
+/**
+ * @brief Type defintion for the double word data type
+ * 
+ * Word here does NOT refer to the machine word size. It just means two bytes. A
+ * double word is four bytes.
+ * 
+ * @sa DWord_t
+ */
+typedef DWord_t xDWord;
 
 /**
  * @brief Stub type definition for the timer type.
@@ -429,6 +465,19 @@ typedef TaskInfo_t *xTaskInfo;
  *
  */
 typedef TaskRunTimeStats_t *xTaskRunTimeStats;
+
+/**
+ * @brief Data structure for statistics on a memory region.
+ * 
+ * The xMemoryRegionStats data structure is used to store statistics about a HeliOS
+ * memory region. Statistics can be obtained for the heap and kernel memory regions.
+ * 
+ * @sa xMemGetHeapStats()
+ * @sa xMemGetKernelStats()
+ * @sa MemoryRegionStats_t
+ * 
+ */
+typedef MemoryRegionStats_t *xMemoryRegionStats;
 
 /**
  * @brief Stub type definition for the task type.
@@ -660,6 +709,37 @@ xSize xMemGetUsed(void);
 xSize xMemGetSize(const xAddr addr_);
 
 /**
+ * @brief System call to obtain statistics on the heap.
+ * 
+ * The xMemGetHeapStats() system call will return statistics about the heap
+ * so the end-user can better understand the state of the heap.
+ * 
+ * @sa xMemoryRegionStats
+ * 
+ * @return xMemoryRegionStats Returns the xMemoryRegionStats structure or null
+ * if unsuccesful.
+ * 
+ * @warning The memory allocated by xMemGetHeapStats() must be freed by xMemFree().
+ */
+xMemoryRegionStats xMemGetHeapStats(void);
+
+/**
+ * @brief System call to obtain statistics on the kernel memory region.
+ * 
+ * The xMemGetKernelStats() system call will return statistics about the kernel
+ * memory region so the end-user can better understand the state of kernel
+ * memory.
+ * 
+ * @sa xMemoryRegionStats
+ * 
+ * @return xMemoryRegionStats Returns the xMemoryRegionStats structure or null
+ * if unsuccesful.
+ * 
+ * @warning The memory allocated by xMemGetKernelStats() must be freed by xMemFree().
+ */
+xMemoryRegionStats xMemGetKernelStats(void);
+
+/**
  * @brief System call to create a new message queue.
  *
  * The xQueueCreate() system call creates a message queue for inter-task
@@ -806,6 +886,26 @@ void xQueueDropMessage(xQueue queue_);
  * @warning The memory allocated by xQueueReceive() must be freed by xMemFree().
  */
 xQueueMessage xQueueReceive(xQueue queue_);
+
+/**
+ * @brief System call to LOCK the message queue.
+ * 
+ * The xQueueLockQueue() system call will lock the message queue. Locking a message queue
+ * will prevent xQueueSend() from sending messages to the queue.
+ * 
+ * @param queue_ The queue to lock.
+ */
+void xQueueLockQueue(xQueue queue_);
+
+/**
+ * @brief System call to UNLOCk the message queue.
+ * 
+ * The xQueueUnLockQueue() system call will unlock the message queue. Unlocking a message queue
+ * will allow xQueueSend() to send messages to the queue.
+ * 
+ * @param queue_ The queue to unlock.
+ */
+void xQueueUnLockQueue(xQueue queue_);
 
 /**
  * @brief System call to pass control to the HeliOS scheduler.
