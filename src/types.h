@@ -68,16 +68,15 @@ typedef uint8_t Base_t;
 typedef uint8_t Byte_t;
 typedef void Addr_t;
 typedef size_t Size_t;
-typedef uint16_t Word_t; /* Here a "word" does NOT refer to the machine word. It just means two bytes
-which on 32-bit architectures is arguable a "halfword". */
-typedef uint32_t DWord_t;
+typedef uint16_t HWord_t;
+typedef uint32_t Word_t;
 typedef uint32_t Ticks_t;
 
 
 typedef struct MemoryEntry_s {
   Byte_t free : 1;
   Byte_t reserved : 7;
-  Word_t blocks;
+  HWord_t blocks;
   struct MemoryEntry_s *next;
 } MemoryEntry_t;
 
@@ -86,10 +85,10 @@ typedef struct MemoryEntry_s {
 typedef struct MemoryRegion_s {
   volatile Byte_t mem[MEMORY_REGION_SIZE_IN_BYTES];
   MemoryEntry_t *start;
-  Word_t entrySize;
-  Word_t allocations;
-  Word_t frees;
-  DWord_t minAvailableEver;
+  HWord_t entrySize;
+  HWord_t allocations;
+  HWord_t frees;
+  Word_t minAvailableEver;
 } MemoryRegion_t;
 
 
@@ -130,13 +129,13 @@ typedef struct TaskRunTimeStats_s {
 
 
 typedef struct MemoryRegionStats_s {
-  DWord_t largestFreeEntryInBytes;
-  DWord_t smallestFreeEntryInBytes;
-  DWord_t numberOfFreeBlocks;
-  DWord_t availableSpaceInBytes;
-  DWord_t successfulAllocations;
-  DWord_t successfulFrees;
-  DWord_t minimumEverFreeBytesRemaining;
+  Word_t largestFreeEntryInBytes;
+  Word_t smallestFreeEntryInBytes;
+  Word_t numberOfFreeBlocks;
+  Word_t availableSpaceInBytes;
+  Word_t successfulAllocations;
+  Word_t successfulFrees;
+  Word_t minimumEverFreeBytesRemaining;
 } MemoryRegionStats_t;
 
 

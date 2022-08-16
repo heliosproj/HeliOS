@@ -83,7 +83,7 @@ Size_t xMemGetUsed(void) {
   MemoryEntry_t *cursor = NULL;
 
 
-  Word_t used = zero;
+  HWord_t used = zero;
 
 
 
@@ -219,7 +219,7 @@ Base_t _MemoryRegionCheck_(const volatile MemoryRegion_t *region_, const Addr_t 
 
   Base_t found = false;
 
-  Word_t blocks = zero;
+  HWord_t blocks = zero;
 
 
   Base_t ret = RETURN_FAILURE;
@@ -385,14 +385,14 @@ Addr_t *_calloc_(volatile MemoryRegion_t *region_, const Size_t size_) {
 
   Addr_t *ret = NULL;
 
-  Word_t requested = zero;
+  HWord_t requested = zero;
 
-  DWord_t free = zero;
+  HWord_t free = zero;
 
 
   /* Intentionally underflow an unsigned data type
   to get its maximum value. */
-  Word_t fewest = -1;
+  HWord_t fewest = -1;
 
 
   MemoryEntry_t *cursor = NULL;
@@ -429,12 +429,12 @@ Addr_t *_calloc_(volatile MemoryRegion_t *region_, const Size_t size_) {
 
 
         /* Calculate the quotient part of the blocks. */
-        region_->entrySize = ((Word_t)(sizeof(MemoryEntry_t) / CONFIG_MEMORY_REGION_BLOCK_SIZE));
+        region_->entrySize = ((HWord_t)(sizeof(MemoryEntry_t) / CONFIG_MEMORY_REGION_BLOCK_SIZE));
 
 
 
         /* Check if there is a remainder, if so we need to add one block. */
-        if (zero < ((Word_t)(sizeof(MemoryEntry_t) % CONFIG_MEMORY_REGION_BLOCK_SIZE))) {
+        if (zero < ((HWord_t)(sizeof(MemoryEntry_t) % CONFIG_MEMORY_REGION_BLOCK_SIZE))) {
 
 
 
@@ -482,11 +482,11 @@ Addr_t *_calloc_(volatile MemoryRegion_t *region_, const Size_t size_) {
 
 
         /* Calculate the number of blocks requested. */
-        requested = ((Word_t)(size_ / CONFIG_MEMORY_REGION_BLOCK_SIZE));
+        requested = ((HWord_t)(size_ / CONFIG_MEMORY_REGION_BLOCK_SIZE));
 
 
         /* Check if there is a remainder, if so add one more block. */
-        if (zero < ((Word_t)(size_ % CONFIG_MEMORY_REGION_BLOCK_SIZE))) {
+        if (zero < ((HWord_t)(size_ % CONFIG_MEMORY_REGION_BLOCK_SIZE))) {
 
 
 

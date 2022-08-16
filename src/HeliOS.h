@@ -84,14 +84,13 @@ typedef enum {
 typedef uint8_t Base_t;
 
 /**
- * @brief Type defintion for the double word data type
+ * @brief Type defintion for the word data type
  * 
- * Word here does NOT refer to the machine word size. It just means two bytes. A
- * double word is four bytes.
+ * A word is a 32-bit data type in HeliOS.
  * 
- * @sa xDWord
+ * @sa xWord
  */
-typedef uint32_t DWord_t;
+typedef uint32_t Word_t;
 
 /**
  * @brief The type definition for time expressed in ticks.
@@ -245,13 +244,13 @@ typedef struct SystemInfo_s {
  * 
  */
 typedef struct MemoryRegionStats_s {
-  DWord_t largestFreeEntryInBytes;
-  DWord_t smallestFreeEntryInBytes;
-  DWord_t numberOfFreeBlocks;
-  DWord_t availableSpaceInBytes;
-  DWord_t successfulAllocations;
-  DWord_t successfulFrees;
-  DWord_t minimumEverFreeBytesRemaining;
+  Word_t largestFreeEntryInBytes;
+  Word_t smallestFreeEntryInBytes;
+  Word_t numberOfFreeBlocks;
+  Word_t availableSpaceInBytes;
+  Word_t successfulAllocations;
+  Word_t successfulFrees;
+  Word_t minimumEverFreeBytesRemaining;
 } MemoryRegionStats_t;
 
 /**
@@ -355,14 +354,13 @@ typedef Addr_t *xAddr;
 typedef Base_t xBase;
 
 /**
- * @brief Type defintion for the double word data type
+ * @brief Type defintion for the word data type
  * 
- * Word here does NOT refer to the machine word size. It just means two bytes. A
- * double word is four bytes.
+ * A word is a 32-bit data type in HeliOS.
  * 
- * @sa DWord_t
+ * @sa Word_t
  */
-typedef DWord_t xDWord;
+typedef Word_t xWord;
 
 /**
  * @brief Stub type definition for the timer type.
