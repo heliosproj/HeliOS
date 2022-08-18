@@ -1,0 +1,22 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "HeliOS Test (debug/gdb)",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${fileDirname}/main",
+            "args": [],
+            "cwd": "${fileDirname}",
+            "environment": [],
+            "MIMode": "gdb",
+            "miDebuggerPath": "/usr/bin/gdb",
+            "setupCommands": [
+                {
+                    "text": "-enable-pretty-printing",
+                }
+            ],
+            "preLaunchTask": "HeliOS Test (build/gcc)"
+        }
+    ]
+}

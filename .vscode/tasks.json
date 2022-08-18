@@ -1,0 +1,31 @@
+{
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "HeliOS Test (build/gcc)",
+            "command": "/usr/bin/gcc",
+            "args": [
+                "-fdiagnostics-color=always",
+                "-g",
+                "-I",
+                "${fileDirname}",
+                "-DCONFIG_ENABLE_SYSTEM_ASSERT",
+                "-DPOSIX_ARCH_OTHER",
+                "-o",
+                "${fileDirname}/${fileBasenameNoExtension}",
+                "${fileDirname}/*.c"
+            ],
+            "options": {
+                "cwd": "${fileDirname}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ],
+    "version": "2.0.0"
+}
