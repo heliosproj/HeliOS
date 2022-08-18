@@ -85,6 +85,6 @@
     "Manny"
   ],
   "C_Cpp.default.defines": [
-    "DEBUG_ON"
+    "POSIX_ARCH_OTHER"
   ]
 }

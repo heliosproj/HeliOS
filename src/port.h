@@ -256,7 +256,7 @@ extern uint32_t systick_millis_count;
 
 #define SYSTEM_CORE_CLOCK_PRESCALER 0x3E8u /* 1000u */
 
-#elif defined(DEBUG_ON) /* TESTED 2022-03-24 */
+#elif defined(POSIX_ARCH_OTHER) /* TESTED 2022-03-24 */
 
 #include <stdio.h>
 #include <time.h>
@@ -264,8 +264,6 @@ extern uint32_t systick_millis_count;
 #define DISABLE_INTERRUPTS()
 
 #define ENABLE_INTERRUPTS()
-
-#define CONFIG_ENABLE_SYSTEM_ASSERT
 
 #define CONFIG_SYSTEM_ASSERT_BEHAVIOR(file_, line_) printf("assert: %s:%d\n", file_, line_)
 
