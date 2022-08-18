@@ -8,15 +8,15 @@
                 "-fdiagnostics-color=always",
                 "-g",
                 "-I",
-                "${fileDirname}",
+                "${workspaceFolder}/src",
                 "-DCONFIG_ENABLE_SYSTEM_ASSERT",
                 "-DPOSIX_ARCH_OTHER",
                 "-o",
-                "${fileDirname}/${fileBasenameNoExtension}",
-                "${fileDirname}/*.c"
+                "${workspaceFolder}/bin/${fileBasenameNoExtension}",
+                "${workspaceFolder}/src/*.c"
             ],
             "options": {
-                "cwd": "${fileDirname}"
+                "cwd": "${workspaceFolder}/src"
             },
             "problemMatcher": [
                 "$gcc"

@@ -1,6 +1,8 @@
+/bin/**
 /.vscode/**
 !.gitignore
 !.gitattributes
+!/bin/.gitkeep
 !/.vscode/
 !/.vscode/settings.json
 !/.vscode/tasks.json
