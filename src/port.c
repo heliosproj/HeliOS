@@ -130,7 +130,7 @@ void _SysInit_(void) {
 
 }
 
-#elif defined(DEBUG_ON)
+#elif defined(POSIX_ARCH_OTHER)
 
 Ticks_t _SysGetSysTicks_(void) {
 
