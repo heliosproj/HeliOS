@@ -26,6 +26,8 @@
 #ifndef DEFINES_H_
 #define DEFINES_H_
 
+#include "posix.h"
+
 #include <limits.h>
 #include <stdint.h>
 #include <stddef.h>

@@ -26,6 +26,8 @@
 #ifndef HELIOS_H_
 #define HELIOS_H_
 
+#include "posix.h"
+
 #include <stdint.h>
 
 #include "config.h"

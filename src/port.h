@@ -258,11 +258,7 @@ extern uint32_t systick_millis_count;
 
 #elif defined(POSIX_ARCH_OTHER) /* TESTED 2022-03-24 */
 
-#ifdef _POSIX_C_SOURCE
-#undef _POSIX_C_SOURCE
-#endif
-
-#define _POSIX_C_SOURCE 200809L
+#include "posix.h"
 
 #include <stdio.h>
 #include <sys/time.h>
