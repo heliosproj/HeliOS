@@ -63,7 +63,7 @@ MemoryRegionStats_t *xMemGetKernelStats(void);
 MemoryRegionStats_t *_MemGetRegionStats_(const volatile MemoryRegion_t *region_);
 
 
-#if defined(DEBUG_ON)
+#if defined(POSIX_ARCH_OTHER)
 void _MemoryRegionDumpKernel_(void);
 void _MemoryRegionDumpHeap_(void);
 void _memdump_(const volatile MemoryRegion_t *region_);
