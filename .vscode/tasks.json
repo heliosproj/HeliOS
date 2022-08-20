@@ -6,14 +6,18 @@
             "command": "/usr/bin/gcc",
             "args": [
                 "-fdiagnostics-color=always",
-                "-g",
+                "-O0",
+                "-ggdb",
+                "-Wall",
+                "-Wextra",
                 "-I",
                 "${workspaceFolder}/src",
                 "-DCONFIG_ENABLE_SYSTEM_ASSERT",
                 "-DPOSIX_ARCH_OTHER",
                 "-o",
-                "${workspaceFolder}/bin/${fileBasenameNoExtension}",
-                "${workspaceFolder}/src/*.c"
+                "${workspaceFolder}/extras/test/bin/${fileBasenameNoExtension}",
+                "${workspaceFolder}/src/*.c",
+                "${workspaceFolder}/extras/test/src/*.c"
             ],
             "options": {
                 "cwd": "${workspaceFolder}/src"
