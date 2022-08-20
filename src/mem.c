@@ -781,11 +781,13 @@ Base_t _MemoryRegionCheckHeap_(const Addr_t *addr_, const Base_t option_) {
 address to another. */
 void _memcpy_(Addr_t *dest_, const Addr_t *src_, Size_t n_) {
 
+  Size_t i = zero;
+
   char *src = (char *)src_;
 
   char *dest = (char *)dest_;
 
-  for (Size_t i = zero; i < n_; i++) {
+  for (i = zero; i < n_; i++) {
 
     dest[i] = src[i];
   }
@@ -799,9 +801,11 @@ void _memcpy_(Addr_t *dest_, const Addr_t *src_, Size_t n_) {
 at the location specified as the address to the defined value. */
 void _memset_(volatile Addr_t *dest_, uint16_t val_, Size_t n_) {
 
+  Size_t i = zero;
+
   char *dest = (char *)dest_;
 
-  for (Size_t i = zero; i < n_; i++) {
+  for (i = zero; i < n_; i++) {
 
     dest[i] = (char)val_;
   }
@@ -814,6 +818,8 @@ void _memset_(volatile Addr_t *dest_, uint16_t val_, Size_t n_) {
 /* Similar to the standard libc function, _memcmp_() compares the contents
 of two memory locations pointed. */
 uint16_t _memcmp_(const Addr_t *s1_, const Addr_t *s2_, Size_t n_) {
+  
+  Size_t i = zero;
 
   uint16_t ret = zero;
 
@@ -821,7 +827,7 @@ uint16_t _memcmp_(const Addr_t *s1_, const Addr_t *s2_, Size_t n_) {
 
   char *s2 = (char *)s2_;
 
-  for (Size_t i = zero; i < n_; i++) {
+  for (i = zero; i < n_; i++) {
 
     if (*s1 != *s2) {
 
@@ -975,7 +981,7 @@ MemoryRegionStats_t *_MemGetRegionStats_(const volatile MemoryRegion_t *region_)
 
 
 
-#if defined(DEBUG_ON)
+#if defined(POSIX_ARCH_OTHER)
 
 /* Just a debugging function to dump the contents of kernel memory. */
 void _MemoryRegionDumpKernel_(void) {
@@ -1002,15 +1008,21 @@ void _MemoryRegionDumpHeap_(void) {
 /* Function to dump the memory of the specified memory region. */
 void _memdump_(const volatile MemoryRegion_t *region_) {
 
+
+  Size_t i = zero;
+
+  Size_t j = zero;
+  
   Size_t k = zero;
 
 
-  for (Size_t i = zero; i < (MEMORY_REGION_SIZE_IN_BYTES / CONFIG_MEMORY_REGION_BLOCK_SIZE); i++) {
+
+  for (i = zero; i < (MEMORY_REGION_SIZE_IN_BYTES / CONFIG_MEMORY_REGION_BLOCK_SIZE); i++) {
 
 
     printf("%p:", (region_->mem + k));
 
-    for (Size_t j = zero; j < CONFIG_MEMORY_REGION_BLOCK_SIZE; j++) {
+    for (j = zero; j < CONFIG_MEMORY_REGION_BLOCK_SIZE; j++) {
 
 
 
