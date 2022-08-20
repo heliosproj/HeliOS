@@ -2,7 +2,7 @@
     "tasks": [
         {
             "type": "shell",
-            "label": "HeliOS Test (build/gcc)",
+            "label": "HeliOS Unit Test (build/gcc)",
             "command": "/usr/bin/gcc",
             "args": [
                 "-fdiagnostics-color=always",

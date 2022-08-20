@@ -2,7 +2,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "HeliOS Test (debug/gdb)",
+            "name": "HeliOS Unit Test (debug/gdb)",
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/extras/test/bin/test",
@@ -16,7 +16,7 @@
                     "text": "-enable-pretty-printing",
                 }
             ],
-            "preLaunchTask": "HeliOS Test (build/gcc)"
+            "preLaunchTask": "HeliOS Unit Test (build/gcc)"
         }
     ]
 }

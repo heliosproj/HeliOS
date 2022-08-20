@@ -1,7 +1,7 @@
 /**
  * @file test.c
  * @author Manny Peterson (mannymsp@gmail.com)
- * @brief Source code for test suite
+ * @brief Source code for unit testing
  * @version 0.3.4
  * @date 2022-08-19
  * 
