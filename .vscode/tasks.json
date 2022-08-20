@@ -8,6 +8,7 @@
                 "-fdiagnostics-color=always",
                 "-O0",
                 "-ggdb",
+                "-std=c89",
                 "-Wall",
                 "-Wextra",
                 "-I",

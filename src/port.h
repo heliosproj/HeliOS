@@ -119,9 +119,9 @@ extern unsigned long timer0_overflow_count;
 
 extern uint32_t GetTickCount(void);
 
-#define DISABLE_INTERRUPTS() __asm volatile ("cpsid i")
+#define DISABLE_INTERRUPTS() __asm volatile("cpsid i")
 
-#define ENABLE_INTERRUPTS() __asm volatile ("cpsie i")
+#define ENABLE_INTERRUPTS() __asm volatile("cpsie i")
 
 #elif defined(ARDUINO_ARCH_SAMD) /* TESTED 2022-03-24 */
 
@@ -150,9 +150,9 @@ extern uint32_t GetTickCount(void);
 
 extern unsigned long millis(void);
 
-#define DISABLE_INTERRUPTS() __asm volatile ("cpsid i")
+#define DISABLE_INTERRUPTS() __asm volatile("cpsid i")
 
-#define ENABLE_INTERRUPTS() __asm volatile ("cpsie i")
+#define ENABLE_INTERRUPTS() __asm volatile("cpsie i")
 
 #elif defined(ARDUINO_ARCH_ESP8266) /* *** NOT TESTED *** */
 
@@ -205,9 +205,9 @@ extern unsigned long micros();
 
 extern uint32_t systick_millis_count;
 
-#define DISABLE_INTERRUPTS() __asm volatile ("cpsid i")
+#define DISABLE_INTERRUPTS() __asm volatile("cpsid i")
 
-#define ENABLE_INTERRUPTS() __asm volatile ("cpsie i")
+#define ENABLE_INTERRUPTS() __asm volatile("cpsie i")
 
 #elif defined(ESP32)
 
@@ -243,8 +243,8 @@ extern uint32_t systick_millis_count;
 */
 #include "stm32f429xx.h"
 /*
-  *** END SECTION: ADD VENDOR HEADER HERE ***
-*/
+ *** END SECTION: ADD VENDOR HEADER HERE ***
+ */
 
 
 
@@ -261,11 +261,16 @@ extern uint32_t systick_millis_count;
 #include <stdio.h>
 #include <time.h>
 
+struct timespec {
+  __time_t tv_sec;
+  __syscall_slong_t tv_nsec;
+};
+
 #define DISABLE_INTERRUPTS()
 
 #define ENABLE_INTERRUPTS()
 
-#define CONFIG_SYSTEM_ASSERT_BEHAVIOR(file_, line_) printf("assert: %s:%d\n", file_, line_)
+#define CONFIG_SYSTEM_ASSERT_BEHAVIOR(f, l) printf("assert: %s:%d\n", f , l )
 
 #endif
 
