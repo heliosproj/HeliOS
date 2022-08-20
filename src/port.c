@@ -136,7 +136,7 @@ Ticks_t _SysGetSysTicks_(void) {
 
 	struct timespec t;
 
-	clock_gettime(0x4, &t);
+	clock_gettime(CLOCK_MONOTONIC_RAW, &t);
 
 	return (t.tv_sec * 1000000) + (t.tv_nsec / 1000);
 

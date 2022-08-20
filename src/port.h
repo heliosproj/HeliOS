@@ -261,11 +261,6 @@ extern uint32_t systick_millis_count;
 #include <stdio.h>
 #include <time.h>
 
-struct timespec {
-  __time_t tv_sec;
-  __syscall_slong_t tv_nsec;
-};
-
 #define DISABLE_INTERRUPTS()
 
 #define ENABLE_INTERRUPTS()
