@@ -16,9 +16,9 @@
                 "-DCONFIG_ENABLE_SYSTEM_ASSERT",
                 "-DPOSIX_ARCH_OTHER",
                 "-o",
-                "${workspaceFolder}/extras/test/bin/${fileBasenameNoExtension}",
+                "${workspaceFolder}/extras/test/bin/test",
                 "${workspaceFolder}/src/*.c",
-                "${workspaceFolder}/extras/test/src/*.c"
+                "${workspaceFolder}/extras/test/src/test.c"
             ],
             "options": {
                 "cwd": "${workspaceFolder}/src"
