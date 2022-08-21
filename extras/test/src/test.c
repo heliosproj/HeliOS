@@ -136,6 +136,16 @@ int main(int argc, char **argv) {
 
   /* END: MEMORY UNIT TESTS */
 
+
+  /* BEGIN: QUEUE UNIT TESTS */
+
+  xQueue queue01 = NULL;
+
+  
+
+
+  /* END: QUEUE UNIT TESTS */
+
   SYSASSERT(zero == ret);
 
   return ret;
