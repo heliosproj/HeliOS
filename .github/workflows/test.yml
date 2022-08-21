@@ -25,7 +25,9 @@ jobs:
         shell: bash
         run: echo ::set-output name=stdout::$(${{github.workspace}}/extras/test/bin/test)
 
-      - name: Check for asserts
+      - name: Check HeliOS unit tests for asserts...
         if: ${{ contains(steps.run-test.outputs.stdout, 'assert:')}}
         shell: bash
-        run: exit 1
+        run: |
+          echo ::get-output name=stdout:: 
+          exit 1
