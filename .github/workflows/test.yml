@@ -3,9 +3,9 @@ name: HeliOS Build & Run Unit Tests
 on:
 
   push:
-    branches: [ "test" ]
+    branches: [ master, develop ]
   pull_request:
-    branches: [ "test" ]
+    branches: [ master, develop ]
 
   workflow_dispatch:
 
