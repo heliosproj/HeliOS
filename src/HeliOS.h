@@ -87,9 +87,9 @@ typedef uint8_t Base_t;
 
 /**
  * @brief Type defintion for the word data type
- * 
+ *
  * A word is a 32-bit data type in HeliOS.
- * 
+ *
  * @sa xWord
  */
 typedef uint32_t Word_t;
@@ -107,21 +107,21 @@ typedef uint32_t Ticks_t;
 
 /**
  * @brief The type defintion for storing the size of some object in memory.
- * 
+ *
  * The Size_t type is used to store the size of an object in memory and is
  * always represented in bytes. Size_t should always be declared as xSize.
- * 
+ *
  * @sa xSize
- * 
+ *
  */
 typedef size_t Size_t;
 
 /**
  * @brief The type defintion for storing the size of some object in memory.
- * 
+ *
  * The xSize type is used to store the size of an object in memory and is
  * always represented in bytes.
- * 
+ *
  */
 typedef Size_t xSize;
 
@@ -142,7 +142,7 @@ typedef Size_t xSize;
  *
  */
 typedef struct TaskRunTimeStats_s {
-  Base_t id;           /**< The task identifier which is used by xTaskGetHandleById() to return the task handle. */
+  Base_t id;            /**< The task identifier which is used by xTaskGetHandleById() to return the task handle. */
   Ticks_t lastRunTime;  /**< The runtime duration in ticks the last time the task was executed by the scheduler. */
   Ticks_t totalRunTime; /**< The total runtime duration in ticks the task has been executed by the scheduler. */
 } TaskRunTimeStats_t;
@@ -169,8 +169,8 @@ typedef struct TaskInfo_s {
   Base_t id;                         /**< The task identifier which is used by xTaskGetHandleById() to return the task handle. */
   char name[CONFIG_TASK_NAME_BYTES]; /**< The name of the task which is used by xTaskGetHandleByName() to return the task handle. This is NOT a null terminated string. */
   TaskState_t state;                 /**< The state the task is in which is one of four states specified in the TaskState_t enumerated data type. */
-  Ticks_t lastRunTime;                /**< The runtime duration in ticks the last time the task was executed by the scheduler. */
-  Ticks_t totalRunTime;               /**< The total runtime duration in ticks the task has been executed by the scheduler. */
+  Ticks_t lastRunTime;               /**< The runtime duration in ticks the last time the task was executed by the scheduler. */
+  Ticks_t totalRunTime;              /**< The total runtime duration in ticks the task has been executed by the scheduler. */
 } TaskInfo_t;
 
 /**
@@ -228,22 +228,22 @@ typedef struct QueueMessage_s {
  */
 typedef struct SystemInfo_s {
   char productName[OS_PRODUCT_NAME_SIZE]; /**< The name of the operating system or product. Its length is defined by OS_PRODUCT_NAME_SIZE. This is NOT a null terminated string. */
-  Base_t majorVersion;                /**< The major version number of HeliOS and is Symantec Versioning Specification (SemVer) compliant. */
-  Base_t minorVersion;                /**< The minor version number of HeliOS and is Symantec Versioning Specification (SemVer) compliant. */
-  Base_t patchVersion;                /**< The patch version number of HeliOS and is Symantec Versioning Specification (SemVer) compliant. */
-  Base_t numberOfTasks;               /**< The number of tasks presently in a suspended, running or waiting state. */
+  Base_t majorVersion;                    /**< The major version number of HeliOS and is Symantec Versioning Specification (SemVer) compliant. */
+  Base_t minorVersion;                    /**< The minor version number of HeliOS and is Symantec Versioning Specification (SemVer) compliant. */
+  Base_t patchVersion;                    /**< The patch version number of HeliOS and is Symantec Versioning Specification (SemVer) compliant. */
+  Base_t numberOfTasks;                   /**< The number of tasks presently in a suspended, running or waiting state. */
 } SystemInfo_t;
 
 /**
  * @brief Data structure for statistics on a memory region.
- * 
+ *
  * The MemoryRegionStats_t data structure is used to store statistics about a HeliOS
  * memory region. Statistics can be obtained for the heap and kernel memory regions.
- * 
+ *
  * @sa xMemGetHeapStats()
  * @sa xMemGetKernelStats()
  * @sa xMemoryRegionStats
- * 
+ *
  */
 typedef struct MemoryRegionStats_s {
   Word_t largestFreeEntryInBytes;
@@ -321,25 +321,25 @@ typedef void Timer_t;
 
 /**
  * @brief Type defintion for the memory address data type.
- * 
+ *
  * The xAddr type is used to store a memory address and is used to pass memory
  * addresses back and forth between system calls and the end-user application. It
  * is not necessary to use the xAddr type within the end-user application as long
  * as the type is not used to interact with the HeliOS kernel through system calls.
- * 
- * 
+ *
+ *
  */
 typedef void Addr_t;
 
 /**
  * @brief Type defintion for the memory address data type.
- * 
+ *
  * The xAddr type is used to store a memory address and is used to pass memory
  * addresses back and forth between system calls and the end-user application. It
  * is not necessary to use the xAddr type within the end-user application as long
  * as the type is not used to interact with the HeliOS kernel through system calls.
- * 
- * 
+ *
+ *
  */
 typedef Addr_t *xAddr;
 
@@ -357,9 +357,9 @@ typedef Base_t xBase;
 
 /**
  * @brief Type defintion for the word data type
- * 
+ *
  * A word is a 32-bit data type in HeliOS.
- * 
+ *
  * @sa Word_t
  */
 typedef Word_t xWord;
@@ -468,14 +468,14 @@ typedef TaskRunTimeStats_t *xTaskRunTimeStats;
 
 /**
  * @brief Data structure for statistics on a memory region.
- * 
+ *
  * The xMemoryRegionStats data structure is used to store statistics about a HeliOS
  * memory region. Statistics can be obtained for the heap and kernel memory regions.
- * 
+ *
  * @sa xMemGetHeapStats()
  * @sa xMemGetKernelStats()
  * @sa MemoryRegionStats_t
- * 
+ *
  */
 typedef MemoryRegionStats_t *xMemoryRegionStats;
 
@@ -582,20 +582,20 @@ typedef SystemInfo_t *xSystemInfo;
  *  int i;
  *
  *  i = DEREF_TASKPARM(int, parm_);
- * 
+ *
  *  i++;
- * 
+ *
  *  DEREF_TASKPARM(int, parm_) = i;
  *
  *  return;
  * }
  * @endcode
- * 
+ *
  * @param t The data type to cast the task paramater to (e.g., int).
  * @param p The task pointer, typically named parm_.
  */
 #if !defined(DEREF_TASKPARM)
-#define DEREF_TASKPARM(t, p) *((t *)p)
+#define DEREF_TASKPARM(t, p) *(( t *) p )
 #endif
 
 /* In the event HeliOS is compiled with a C++ compiler, make the system calls (written in C)
@@ -606,11 +606,11 @@ extern "C" {
 
 /**
  * @brief System call to initialize the system.
- * 
+ *
  * The xSystemInit() system call initializes the required interrupt handlers and
  * memory and must be called prior to calling any other system call.
- * 
- * 
+ *
+ *
  */
 void xSystemInit(void);
 
@@ -710,31 +710,31 @@ xSize xMemGetSize(const xAddr addr_);
 
 /**
  * @brief System call to obtain statistics on the heap.
- * 
+ *
  * The xMemGetHeapStats() system call will return statistics about the heap
  * so the end-user can better understand the state of the heap.
- * 
+ *
  * @sa xMemoryRegionStats
- * 
+ *
  * @return xMemoryRegionStats Returns the xMemoryRegionStats structure or null
  * if unsuccesful.
- * 
+ *
  * @warning The memory allocated by xMemGetHeapStats() must be freed by xMemFree().
  */
 xMemoryRegionStats xMemGetHeapStats(void);
 
 /**
  * @brief System call to obtain statistics on the kernel memory region.
- * 
+ *
  * The xMemGetKernelStats() system call will return statistics about the kernel
  * memory region so the end-user can better understand the state of kernel
  * memory.
- * 
+ *
  * @sa xMemoryRegionStats
- * 
+ *
  * @return xMemoryRegionStats Returns the xMemoryRegionStats structure or null
  * if unsuccesful.
- * 
+ *
  * @warning The memory allocated by xMemGetKernelStats() must be freed by xMemFree().
  */
 xMemoryRegionStats xMemGetKernelStats(void);
@@ -889,20 +889,20 @@ xQueueMessage xQueueReceive(xQueue queue_);
 
 /**
  * @brief System call to LOCK the message queue.
- * 
+ *
  * The xQueueLockQueue() system call will lock the message queue. Locking a message queue
  * will prevent xQueueSend() from sending messages to the queue.
- * 
+ *
  * @param queue_ The queue to lock.
  */
 void xQueueLockQueue(xQueue queue_);
 
 /**
  * @brief System call to UNLOCk the message queue.
- * 
+ *
  * The xQueueUnLockQueue() system call will unlock the message queue. Unlocking a message queue
  * will allow xQueueSend() to send messages to the queue.
- * 
+ *
  * @param queue_ The queue to unlock.
  */
 void xQueueUnLockQueue(xQueue queue_);
@@ -1073,7 +1073,7 @@ xBase xTaskGetNumberOfTasks(void);
 
 /**
  * @brief System call to return the details of a task.
- * 
+ *
  * The xTaskGetTaskInfo() system call returns the xTaskInfo structure containing
  * the details of the task including its identifier, name, state and runtime statistics.
  *
@@ -1089,7 +1089,7 @@ xTaskInfo xTaskGetTaskInfo(xTask task_);
 
 /**
  * @brief System call to return the details of all tasks.
- * 
+ *
  * The xTaskGetAllTaskInfo() system call returns the xTaskInfo structure containing
  * the details of ALL tasks including their identifier, name, state and runtime statistics.
  *

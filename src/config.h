@@ -33,7 +33,7 @@ to customize the HeliOS kernel for their specific application. */
 
 /**
  * @brief Define to enable the Arduino API C++ interface.
- * 
+ *
  * Because HeliOS kernel is written in C, the Arduino API cannot
  * be called directly from the kernel. For example, assertions are
  * unable to be written to the serial bus in applications using the
@@ -42,15 +42,17 @@ to customize the HeliOS kernel for their specific application. */
  * Arduino API through wrapper functions such as _ArduinoAssert_(). The
  * arduino.cpp file can be found in the /extras directory. It must
  * be copied into the /src directory to be built.
- * 
- * 
+ *
+ *
  * @note On some MCU's like the 8-bit AVRs, it is necessary to undefine
  * the DISABLE_INTERRUPTS() macro because interrupts must be enabled
  * to write to the serial bus.
- * 
+ *
  */
 /*
+#if !defined(CONFIG_ENABLE_ARDUINO_CPP_INTERFACE)
 #define CONFIG_ENABLE_ARDUINO_CPP_INTERFACE
+#endif
 */
 
 
@@ -68,7 +70,9 @@ to customize the HeliOS kernel for their specific application. */
  *
  */
 /*
+#if !defined(CONFIG_ENABLE_SYSTEM_ASSERT)
 #define CONFIG_ENABLE_SYSTEM_ASSERT
+#endif
 */
 
 
@@ -81,7 +85,7 @@ to customize the HeliOS kernel for their specific application. */
  * when CONFIG_ENABLE_SYSTEM_ASSERT is defined. Typically some sort
  * of output is generated over a serial or other interface. By default
  * the CONFIG_SYSTEM_ASSERT_BEHAVIOR is not defined.
- * 
+ *
  * @note In order to use the _ArduinoAssert_() functionality, the
  * CONFIG_ENABLE_ARDUINO_CPP_INTERFACE setting must be enabled.
  *
@@ -94,9 +98,10 @@ to customize the HeliOS kernel for their specific application. */
  *
  */
 /*
+#if !defined(CONFIG_SYSTEM_ASSERT_BEHAVIOR)
 #define CONFIG_SYSTEM_ASSERT_BEHAVIOR(f, l) _ArduinoAssert_( f , l )
+#endif
 */
-
 
 
 /**
@@ -111,7 +116,9 @@ to customize the HeliOS kernel for their specific application. */
  * @sa xQueueMessage
  *
  */
-#define CONFIG_MESSAGE_VALUE_BYTES 8u
+#if !defined(CONFIG_MESSAGE_VALUE_BYTES)
+#define CONFIG_MESSAGE_VALUE_BYTES 0x8u /* 8 */
+#endif
 
 
 
@@ -127,7 +134,9 @@ to customize the HeliOS kernel for their specific application. */
  *
  * @sa xTaskNotification
  */
-#define CONFIG_NOTIFICATION_VALUE_BYTES 8u
+#if !defined(CONFIG_NOTIFICATION_VALUE_BYTES)
+#define CONFIG_NOTIFICATION_VALUE_BYTES 0x8u /* 8 */
+#endif
 
 
 
@@ -144,15 +153,16 @@ to customize the HeliOS kernel for their specific application. */
  * @sa xTaskInfo
  *
  */
-#define CONFIG_TASK_NAME_BYTES 8u
-
+#if !defined(CONFIG_TASK_NAME_BYTES)
+#define CONFIG_TASK_NAME_BYTES 0x8u /* 8 */
+#endif
 
 
 
 
 /**
  * @brief Define the number of memory blocks available in all memory regions.
- * 
+ *
  * The heap memory region is used by tasks. Whereas the kernel memory region
  * is used solely by the kernel for kernel objects. The CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS
  * setting allows the end-user to define the size, in blocks, of all memory
@@ -163,10 +173,11 @@ to customize the HeliOS kernel for their specific application. */
  * CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS is defined on a per platform and/or
  * tool-chain basis therefor it is not defined here by default. The literal
  * must be appended with a "u" to maintain MISRA C:2012 compliance.
- * 
+ *
  */
-#define CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS 24u
-
+#if !defined(CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS)
+#define CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS 0x18u /* 24 */
+#endif
 
 
 
@@ -180,14 +191,15 @@ to customize the HeliOS kernel for their specific application. */
  * effects both the heap and kernel memory regions. The default value
  * is 32 bytes. The literal must be appended with a "u" to maintain
  * MISRA C:2012 compliance.
- * 
+ *
  * @sa xMemAlloc()
  * @sa xMemFree()
  * @sa CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS
  *
  */
-#define CONFIG_MEMORY_REGION_BLOCK_SIZE 32u
-
+#if !defined(CONFIG_MEMORY_REGION_BLOCK_SIZE)
+#define CONFIG_MEMORY_REGION_BLOCK_SIZE 0x20u /* 32 */
+#endif
 
 
 
@@ -207,5 +219,8 @@ to customize the HeliOS kernel for their specific application. */
  * @sa xQueueCreate()
  *
  */
-#define CONFIG_QUEUE_MINIMUM_LIMIT 5u
+#if !defined(CONFIG_QUEUE_MINIMUM_LIMIT)
+#define CONFIG_QUEUE_MINIMUM_LIMIT 0x5u /* 5 */
+#endif
+
 #endif
