@@ -14,9 +14,8 @@ jobs:
     runs-on: ubuntu-22.04
     
     outputs:
-      blah:
-        description: blah
-        value: ${{ steps.run-test.outputs.stdout }}
+      stdout: ${{ steps.run-test.outputs.stdout }}
+      
     steps:
       - uses: actions/checkout@v3
 
