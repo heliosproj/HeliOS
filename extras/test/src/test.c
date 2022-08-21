@@ -141,8 +141,12 @@ int main(int argc, char **argv) {
 
   xQueue queue01 = NULL;
 
-  
-  /*xQueueDelete(queue01);*/
+  queue01 = xQueueCreate(1);
+  if (ISNULLPTR(queue01)) {
+    ret++;
+  }
+
+  xQueueDelete(queue01);
 
 
   /* END: QUEUE UNIT TESTS */
