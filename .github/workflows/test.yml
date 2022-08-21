@@ -26,6 +26,6 @@ jobs:
         run: echo ::set-output name=stdout::$(${{github.workspace}}/extras/test/bin/test)
 
       - name: Check for asserts
-        if ${{ contains(steps.run-test.outputs.stdout, 'assert:')}}
+        if: ${{ contains(steps.run-test.outputs.stdout, 'assert:')}}
         shell: bash
         run: echo FAILURE!!
