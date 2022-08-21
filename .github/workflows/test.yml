@@ -29,5 +29,5 @@ jobs:
         if: ${{ contains(steps.run-test.outputs.stdout, 'assert:')}}
         shell: bash
         run: |
-          echo ::get-output name=stdout:: 
+          echo ${{steps.run-test.outputs.stdout}} 
           exit 1
