@@ -32,4 +32,4 @@ jobs:
         run: ${{github.workspace}}/extras/test/bin/test
 
       - name: Try reading output
-        run: echo ${{join(steps.run_test.outputs.*, '\n')}}
+        run: echo ${{join(steps.run-test.outputs.*, '\n')}}
