@@ -12,7 +12,11 @@ on:
 jobs:
   build-test: 
     runs-on: ubuntu-22.04
-
+    
+    outputs:
+      blah:
+        description: blah
+        value: ${{ steps.run-test.outputs.stdout }}
     steps:
       - uses: actions/checkout@v3
 
@@ -32,4 +36,5 @@ jobs:
         run: ${{github.workspace}}/extras/test/bin/test
 
       - name: Try reading output
-        run: echo ${{join(steps.run-test.outputs.*, '\n')}}
+        shell: bash
+        run: echo ${{steps.run-test.outputs.stdout}}
