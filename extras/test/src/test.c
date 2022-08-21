@@ -136,6 +136,21 @@ int main(int argc, char **argv) {
 
   /* END: MEMORY UNIT TESTS */
 
+
+  /* BEGIN: QUEUE UNIT TESTS */
+
+  xQueue queue01 = NULL;
+
+  queue01 = xQueueCreate(1);
+  if (ISNULLPTR(queue01)) {
+    ret++;
+  }
+
+  xQueueDelete(queue01);
+
+
+  /* END: QUEUE UNIT TESTS */
+
   SYSASSERT(zero == ret);
 
   return ret;
