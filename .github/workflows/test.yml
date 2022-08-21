@@ -24,7 +24,7 @@ jobs:
 
       - name: Build HeliOS unit tests...
         shell: bash
-        run: gcc -fdiagnostics-color=always -O0 -ggdb -std=c89 -Wall -Wextra -I ${{github.workspace}}/src -DPOSIX_ARCH_OTHER -DCONFIG_MEMORY_REGION_SIZE_IN_BLOCKS=0x1C20u -DCONFIG_ENABLE_SYSTEM_ASSERT -o ${{github.workspace}}/extras/test/bin/test ${{github.workspace}}/src/*.c ${{github.workspace}}/extras/test/src/test.c 
+        run: echo "::set-output name=stdout::$(gcc -fdiagnostics-color=always -O0 -ggdb -std=c89 -Wall -Wextra -I ${{github.workspace}}/src -DPOSIX_ARCH_OTHER -DCONFIG_MEMORY_REGION_SIZE_IN_BLOCKS=0x1C20u -DCONFIG_ENABLE_SYSTEM_ASSERT -o ${{github.workspace}}/extras/test/bin/test ${{github.workspace}}/src/*.c ${{github.workspace}}/extras/test/src/test.c)\n"
 
       - name: Run HeliOS unit tests...
         id: run-test
