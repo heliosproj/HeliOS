@@ -29,7 +29,7 @@ jobs:
       - name: Run HeliOS unit tests...
         id: run-test
         shell: bash
-        run: echo "::set-output name=stdout::$(${{github.workspace}}/extras/test/bin/test)\n"
+        run: echo ::set-output name=stdout::$(${{github.workspace}}/extras/test/bin/test)
 
       - name: Try reading output
         shell: bash
