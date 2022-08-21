@@ -1,4 +1,4 @@
-name: HeliOS Build & Run Unit Tests
+name: HeliOS CI Workflow
 
 on:
 
