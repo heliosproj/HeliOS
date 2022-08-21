@@ -13,6 +13,9 @@ jobs:
   build-test: 
     runs-on: ubuntu-22.04
 
+    outputs:
+      output1: ${{ steps.run-test.outputs.test }}
+
     steps:
       - uses: actions/checkout@v3
 
@@ -32,4 +35,4 @@ jobs:
         run: ${{github.workspace}}/extras/test/bin/test
 
       - name: Try reading output
-        run: echo ${{steps.run-test.outputs.*}}
+        run: echo ${{steps.run-test.outputs.output1}}
