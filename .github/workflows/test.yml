@@ -12,10 +12,7 @@ on:
 jobs:
   build-test: 
     runs-on: ubuntu-22.04
-    
-    outputs:
-      stdout: ${{ steps.run-test.outputs.stdout }}
-      
+
     steps:
       - uses: actions/checkout@v3
 
