@@ -28,4 +28,4 @@ jobs:
       - name: Check for asserts
         if: ${{ contains(steps.run-test.outputs.stdout, 'asssert:')}}
         shell: bash
-        run: echo FAILURE!!
+        run: exit 1
