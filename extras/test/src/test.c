@@ -149,5 +149,5 @@ int main(int argc, char **argv) {
 
   SYSASSERT(zero == ret);
 
-  return 1;
+  return ret;
 }
