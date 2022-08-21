@@ -24,12 +24,12 @@ jobs:
 
       - name: Build HeliOS unit tests...
         shell: bash
-        run: echo "::set-output name=stdout::$(gcc -fdiagnostics-color=always -O0 -ggdb -std=c89 -Wall -Wextra -I ${{github.workspace}}/src -DPOSIX_ARCH_OTHER -DCONFIG_MEMORY_REGION_SIZE_IN_BLOCKS=0x1C20u -DCONFIG_ENABLE_SYSTEM_ASSERT -o ${{github.workspace}}/extras/test/bin/test ${{github.workspace}}/src/*.c ${{github.workspace}}/extras/test/src/test.c)\n"
+        run: gcc -fdiagnostics-color=always -O0 -ggdb -std=c89 -Wall -Wextra -I ${{github.workspace}}/src -DPOSIX_ARCH_OTHER -DCONFIG_MEMORY_REGION_SIZE_IN_BLOCKS=0x1C20u -DCONFIG_ENABLE_SYSTEM_ASSERT -o ${{github.workspace}}/extras/test/bin/test ${{github.workspace}}/src/*.c ${{github.workspace}}/extras/test/src/test.c
 
       - name: Run HeliOS unit tests...
         id: run-test
         shell: bash
-        run: ${{github.workspace}}/extras/test/bin/test
+        run: echo "::set-output name=stdout::$(${{github.workspace}}/extras/test/bin/test)\n"
 
       - name: Try reading output
         shell: bash
