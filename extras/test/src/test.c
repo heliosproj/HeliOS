@@ -142,7 +142,7 @@ int main(int argc, char **argv) {
   xQueue queue01 = NULL;
 
   
-  xQueueDelete(queue01);
+  /*xQueueDelete(queue01);*/
 
 
   /* END: QUEUE UNIT TESTS */
