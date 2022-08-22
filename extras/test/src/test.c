@@ -146,31 +146,35 @@ int main(int argc, char **argv) {
     ret++;
   }
 
-  if (RETURN_FAILURE == xQueueSend(queue01, 13, "HELLO WORLD 1")) {
+  if (RETURN_FAILURE == xQueueSend(queue01, 8, "MESSAGE1")) {
     ret++;
   }
 
-  if (RETURN_FAILURE == xQueueSend(queue01, 13, "HELLO WORLD 2")) {
+  if (RETURN_FAILURE == xQueueSend(queue01, 8, "MESSAGE2")) {
     ret++;
   }
 
-  if (RETURN_FAILURE == xQueueSend(queue01, 13, "HELLO WORLD 3")) {
+  if (RETURN_FAILURE == xQueueSend(queue01, 8, "MESSAGE3")) {
     ret++;
   }
 
-  if (RETURN_FAILURE == xQueueSend(queue01, 13, "HELLO WORLD 4")) {
+  if (RETURN_FAILURE == xQueueSend(queue01, 8, "MESSAGE4")) {
     ret++;
   }
 
-  if (RETURN_FAILURE == xQueueSend(queue01, 13, "HELLO WORLD 5")) {
+  if (RETURN_FAILURE == xQueueSend(queue01, 8, "MESSAGE5")) {
     ret++;
   }
 
-  if (RETURN_FAILURE == xQueueSend(queue01, 13, "HELLO WORLD 6")) {
+  if (RETURN_FAILURE == xQueueSend(queue01, 8, "MESSAGE6")) {
     ret++;
   }
 
-  if (0x6u != xQueueGetLength(queue01)) {
+  if (RETURN_FAILURE == xQueueSend(queue01, 8, "MESSAGE7")) {
+    ret++;
+  }
+
+  if (0x7u != xQueueGetLength(queue01)) {
     ret++;
   }
 
