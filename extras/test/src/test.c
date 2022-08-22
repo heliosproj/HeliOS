@@ -30,10 +30,8 @@
 
 #include <stdio.h>
 
-void task_main(xTask task_, xTaskParm parm_) {
-
-  return;
-}
+int memcmp(const void *s1_, const void *s2_, size_t n_);
+void task_main(xTask task_, xTaskParm parm_);
 
 int main(int argc, char **argv) {
 
@@ -178,12 +176,125 @@ int main(int argc, char **argv) {
     ret++;
   }
 
+  if (true == xQueueIsQueueEmpty(queue01)) {
+    ret++;
+  }
+
+  if (false == xQueueIsQueueFull(queue01)) {
+    ret++;
+  }
+
+  if (false == xQueueMessagesWaiting(queue01)) {
+    ret++;
+  }
+
+  xQueueMessage queue02 = NULL;
+
+  queue02 = xQueuePeek(queue01);
+  if (ISNULLPTR(queue02)) {
+    ret++;
+  }
+
+  if (0x8u != queue02->messageBytes) {
+    ret++;
+  }
+
+  if (0x0u != memcmp("MESSAGE1", queue02->messageValue, 8)) {
+    ret++;
+  }
+
+  xMemFree(queue02);
+
+  queue02 = xQueueReceive(queue01);
+  if (ISNULLPTR(queue02)) {
+    ret++;
+  }
+
+  if (0x8u != queue02->messageBytes) {
+    ret++;
+  }
+
+  if (0x0u != memcmp("MESSAGE1", queue02->messageValue, 8)) {
+    ret++;
+  }
+
+  xMemFree(queue02);
+
+  xQueueDropMessage(queue01);
+
+  if (0x5u != xQueueGetLength(queue01)) {
+    ret++;
+  }
+
   xQueueDelete(queue01);
 
+  queue01 = xQueueCreate(5);
+  if (ISNULLPTR(queue01)) {
+    ret++;
+  }
+
+  if (RETURN_FAILURE == xQueueSend(queue01, 8, "MESSAGE1")) {
+    ret++;
+  }
+
+  xQueueLockQueue(queue01);
+
+  if (RETURN_SUCCESS == xQueueSend(queue01, 8, "MESSAGE2")) {
+    ret++;
+  }
+
+  xQueueUnLockQueue(queue01);
+
+  if (RETURN_FAILURE == xQueueSend(queue01, 8, "MESSAGE3")) {
+    ret++;
+  }
+
+  if (0x2u != xQueueGetLength(queue01)) {
+    ret++;
+  }
+
+  xQueueDelete(queue01);
 
   /* END: QUEUE UNIT TESTS */
 
   SYSASSERT(zero == ret);
+
+  return ret;
+}
+
+
+
+void task_main(xTask task_, xTaskParm parm_) {
+
+  return;
+}
+
+
+
+int memcmp(const void *s1_, const void *s2_, size_t n_) {
+
+  size_t i = zero;
+
+  int ret = zero;
+
+  char *s1 = (char *)s1_;
+
+  char *s2 = (char *)s2_;
+
+  for (i = zero; i < n_; i++) {
+
+    if (*s1 != *s2) {
+
+      ret = *s1 - *s2;
+
+      break;
+    }
+
+    s1++;
+
+    s2++;
+  }
+
 
   return ret;
 }
