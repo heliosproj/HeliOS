@@ -255,7 +255,16 @@ int main(int argc, char **argv) {
 
   xQueueDelete(queue01);
 
+  if (RETURN_SUCCESS == xQueueSend(queue01, 8, "MESSAGE4")) {
+    ret++;
+  }
+
   /* END: QUEUE UNIT TESTS */
+
+  /* BEGIN: TASK UNIT TESTS */
+
+
+  /* END: TASK UNIT TESTS */
 
   SYSASSERT(zero == ret);
 
