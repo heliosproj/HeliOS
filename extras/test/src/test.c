@@ -146,6 +146,34 @@ int main(int argc, char **argv) {
     ret++;
   }
 
+  if (RETURN_FAILURE == xQueueSend(queue01, 13, "HELLO WORLD 1")) {
+    ret++;
+  }
+
+  if (RETURN_FAILURE == xQueueSend(queue01, 13, "HELLO WORLD 2")) {
+    ret++;
+  }
+
+  if (RETURN_FAILURE == xQueueSend(queue01, 13, "HELLO WORLD 3")) {
+    ret++;
+  }
+
+  if (RETURN_FAILURE == xQueueSend(queue01, 13, "HELLO WORLD 4")) {
+    ret++;
+  }
+
+  if (RETURN_FAILURE == xQueueSend(queue01, 13, "HELLO WORLD 5")) {
+    ret++;
+  }
+
+  if (RETURN_FAILURE == xQueueSend(queue01, 13, "HELLO WORLD 6")) {
+    ret++;
+  }
+
+  if (0x6u != xQueueGetLength(queue01)) {
+    ret++;
+  }
+
   xQueueDelete(queue01);
 
 
