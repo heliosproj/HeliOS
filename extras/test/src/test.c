@@ -141,7 +141,7 @@ int main(int argc, char **argv) {
 
   xQueue queue01 = NULL;
 
-  queue01 = xQueueCreate(1);
+  queue01 = xQueueCreate(5);
   if (ISNULLPTR(queue01)) {
     ret++;
   }
