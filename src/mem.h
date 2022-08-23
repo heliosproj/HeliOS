@@ -2,7 +2,7 @@
  * @file mem.h
  * @author Manny Peterson (mannymsp@gmail.com)
  * @brief Kernel sources for memory management
- * @version 0.3.3
+ * @version 0.3.4
  * @date 2022-01-31
  *
  * @copyright
@@ -48,7 +48,7 @@ Size_t xMemGetSize(const Addr_t *addr_);
 Base_t _MemoryRegionCheck_(const volatile MemoryRegion_t *region_, const Addr_t *addr_, const Base_t option_);
 Base_t _MemoryRegionCheckAddr_(const volatile MemoryRegion_t *region_, const Addr_t *addr_);
 Addr_t *_calloc_(volatile MemoryRegion_t *region_, const Size_t size_);
-void _free_(const volatile MemoryRegion_t *region_, const Addr_t *addr_);
+void _free_(volatile MemoryRegion_t *region_, const Addr_t *addr_);
 Addr_t *_KernelAllocateMemory_(const Size_t size_);
 void _KernelFreeMemory_(const Addr_t *addr_);
 Base_t _MemoryRegionCheckKernel_(const Addr_t *addr_, const Base_t option_);
@@ -58,10 +58,12 @@ Base_t _MemoryRegionCheckHeap_(const Addr_t *addr_, const Base_t option_);
 void _memcpy_(Addr_t *dest_, const Addr_t *src_, Size_t n_);
 void _memset_(volatile Addr_t *dest_, uint16_t val_, Size_t n_);
 uint16_t _memcmp_(const Addr_t *s1_, const Addr_t *s2_, Size_t n_);
+MemoryRegionStats_t *xMemGetHeapStats(void);
+MemoryRegionStats_t *xMemGetKernelStats(void);
+MemoryRegionStats_t *_MemGetRegionStats_(const volatile MemoryRegion_t *region_);
 
 
-
-#if defined(DEBUG_ON)
+#if defined(POSIX_ARCH_OTHER)
 void _MemoryRegionDumpKernel_(void);
 void _MemoryRegionDumpHeap_(void);
 void _memdump_(const volatile MemoryRegion_t *region_);

@@ -2,7 +2,7 @@
  * @file port.h
  * @author Manny Peterson (mannymsp@gmail.com)
  * @brief Kernel sources for portability layer
- * @version 0.3.3
+ * @version 0.3.4
  * @date 2022-03-24
  *
  * @copyright
@@ -119,9 +119,9 @@ extern unsigned long timer0_overflow_count;
 
 extern uint32_t GetTickCount(void);
 
-#define DISABLE_INTERRUPTS() __asm volatile ("cpsid i")
+#define DISABLE_INTERRUPTS() __asm volatile("cpsid i")
 
-#define ENABLE_INTERRUPTS() __asm volatile ("cpsie i")
+#define ENABLE_INTERRUPTS() __asm volatile("cpsie i")
 
 #elif defined(ARDUINO_ARCH_SAMD) /* TESTED 2022-03-24 */
 
@@ -150,11 +150,11 @@ extern uint32_t GetTickCount(void);
 
 extern unsigned long millis(void);
 
-#define DISABLE_INTERRUPTS() __asm volatile ("cpsid i")
+#define DISABLE_INTERRUPTS() __asm volatile("cpsid i")
 
-#define ENABLE_INTERRUPTS() __asm volatile ("cpsie i")
+#define ENABLE_INTERRUPTS() __asm volatile("cpsie i")
 
-#elif defined(ARDUINO_ARCH_ESP8266) /* *** NOT TESTED *** */
+#elif defined(ARDUINO_ARCH_ESP8266) /* TESTED 2022-08-22 */
 
 /*
 
@@ -167,11 +167,15 @@ unsigned long IRAM_ATTR micros() {
 }
 
 */
-extern unsigned long micros();
+#include "core_esp8266_features.h"
 
-#define DISABLE_INTERRUPTS() __asm__ __volatile__("rsil a2, 15")
+typedef uint32_t uint32;
+extern uint32 system_get_time(void);
+extern void yield(void);
 
-#define ENABLE_INTERRUPTS() __asm__ __volatile__("rsil  a2, 0")
+#define DISABLE_INTERRUPTS() xt_rsil(15)
+
+#define ENABLE_INTERRUPTS() xt_rsil(0)
 
 #elif defined(ARDUINO_TEENSY_MICROMOD) || defined(ARDUINO_TEENSY40) || defined(ARDUINO_TEENSY41) || defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY35) || defined(ARDUINO_TEENSY31) || defined(ARDUINO_TEENSY32) || defined(ARDUINO_TEENSY30) || defined(ARDUINO_TEENSYLC) /* TESTED 2022-03-24 */
 
@@ -205,9 +209,9 @@ extern unsigned long micros();
 
 extern uint32_t systick_millis_count;
 
-#define DISABLE_INTERRUPTS() __asm volatile ("cpsid i")
+#define DISABLE_INTERRUPTS() __asm volatile("cpsid i")
 
-#define ENABLE_INTERRUPTS() __asm volatile ("cpsie i")
+#define ENABLE_INTERRUPTS() __asm volatile("cpsie i")
 
 #elif defined(ESP32)
 
@@ -243,8 +247,8 @@ extern uint32_t systick_millis_count;
 */
 #include "stm32f429xx.h"
 /*
-  *** END SECTION: ADD VENDOR HEADER HERE ***
-*/
+ *** END SECTION: ADD VENDOR HEADER HERE ***
+ */
 
 
 
@@ -256,18 +260,18 @@ extern uint32_t systick_millis_count;
 
 #define SYSTEM_CORE_CLOCK_PRESCALER 0x3E8u /* 1000u */
 
-#elif defined(DEBUG_ON) /* TESTED 2022-03-24 */
+#elif defined(POSIX_ARCH_OTHER) /* TESTED 2022-03-24 */
+
+#include "posix.h"
 
 #include <stdio.h>
-#include <time.h>
+#include <sys/time.h>
 
 #define DISABLE_INTERRUPTS()
 
 #define ENABLE_INTERRUPTS()
 
-#define CONFIG_ENABLE_SYSTEM_ASSERT
-
-#define CONFIG_SYSTEM_ASSERT_BEHAVIOR(file_, line_) printf("assert: %s:%d\n", file_, line_)
+#define CONFIG_SYSTEM_ASSERT_BEHAVIOR(f, l) printf("assert: %s:%d\n", f , l )
 
 #endif
 

@@ -2,7 +2,7 @@
  * @file mem.c
  * @author Manny Peterson (mannymsp@gmail.com)
  * @brief Kernel sources for memory management
- * @version 0.3.3
+ * @version 0.3.4
  * @date 2022-01-31
  *
  * @copyright
@@ -31,7 +31,9 @@
 static volatile MemoryRegion_t heap = {
     .entrySize = zero,
     .start = NULL,
-};
+    .allocations = zero,
+    .frees = zero,
+    .minAvailableEver = CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS * CONFIG_MEMORY_REGION_BLOCK_SIZE};
 
 
 
@@ -39,7 +41,9 @@ static volatile MemoryRegion_t heap = {
 static volatile MemoryRegion_t kernel = {
     .entrySize = zero,
     .start = NULL,
-};
+    .allocations = zero,
+    .frees = zero,
+    .minAvailableEver = CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS * CONFIG_MEMORY_REGION_BLOCK_SIZE};
 
 
 
@@ -79,7 +83,7 @@ Size_t xMemGetUsed(void) {
   MemoryEntry_t *cursor = NULL;
 
 
-  Word_t used = zero;
+  HWord_t used = zero;
 
 
 
@@ -112,7 +116,7 @@ Size_t xMemGetUsed(void) {
 
         /* If the entry pointed to by the cursor is not
         free, then add its blocks to the used block count. */
-        if (cursor->free == false) {
+        if (false == cursor->free) {
 
 
 
@@ -215,7 +219,7 @@ Base_t _MemoryRegionCheck_(const volatile MemoryRegion_t *region_, const Addr_t 
 
   Base_t found = false;
 
-  Word_t blocks = zero;
+  HWord_t blocks = zero;
 
 
   Base_t ret = RETURN_FAILURE;
@@ -381,12 +385,14 @@ Addr_t *_calloc_(volatile MemoryRegion_t *region_, const Size_t size_) {
 
   Addr_t *ret = NULL;
 
-  Word_t requested = zero;
+  HWord_t requested = zero;
+
+  HWord_t free = zero;
 
 
   /* Intentionally underflow an unsigned data type
   to get its maximum value. */
-  Word_t fewest = -1;
+  HWord_t fewest = -1;
 
 
   MemoryEntry_t *cursor = NULL;
@@ -423,12 +429,12 @@ Addr_t *_calloc_(volatile MemoryRegion_t *region_, const Size_t size_) {
 
 
         /* Calculate the quotient part of the blocks. */
-        region_->entrySize = ((Word_t)(sizeof(MemoryEntry_t) / CONFIG_MEMORY_REGION_BLOCK_SIZE));
+        region_->entrySize = ((HWord_t)(sizeof(MemoryEntry_t) / CONFIG_MEMORY_REGION_BLOCK_SIZE));
 
 
 
         /* Check if there is a remainder, if so we need to add one block. */
-        if (zero < ((Word_t)(sizeof(MemoryEntry_t) % CONFIG_MEMORY_REGION_BLOCK_SIZE))) {
+        if (zero < ((HWord_t)(sizeof(MemoryEntry_t) % CONFIG_MEMORY_REGION_BLOCK_SIZE))) {
 
 
 
@@ -476,11 +482,11 @@ Addr_t *_calloc_(volatile MemoryRegion_t *region_, const Size_t size_) {
 
 
         /* Calculate the number of blocks requested. */
-        requested = ((Word_t)(size_ / CONFIG_MEMORY_REGION_BLOCK_SIZE));
+        requested = ((HWord_t)(size_ / CONFIG_MEMORY_REGION_BLOCK_SIZE));
 
 
         /* Check if there is a remainder, if so add one more block. */
-        if (zero < ((Word_t)(size_ % CONFIG_MEMORY_REGION_BLOCK_SIZE))) {
+        if (zero < ((HWord_t)(size_ % CONFIG_MEMORY_REGION_BLOCK_SIZE))) {
 
 
 
@@ -518,6 +524,12 @@ Addr_t *_calloc_(volatile MemoryRegion_t *region_, const Size_t size_) {
           }
 
 
+          /* Count how many blocks are free so we can update the mininum bytes free ever
+          for the memory region. */
+          if (true == cursor->free) {
+
+            free += cursor->blocks;
+          }
 
 
           cursor = cursor->next;
@@ -604,6 +616,23 @@ Addr_t *_calloc_(volatile MemoryRegion_t *region_, const Size_t size_) {
             newly allocated memory. */
             ret = ENTRY2ADDR(candidate, region_);
           }
+
+          /* Update some memory region statistics before we are done. */
+
+          /* Increment the allocations count for the region. */
+          region_->allocations++;
+
+
+          /* We just allocated memory, so subtract back out the requested blocks
+          before we set the mininum bytes available ever. */
+          free -= requested;
+
+
+          if ((free * CONFIG_MEMORY_REGION_BLOCK_SIZE) < region_->minAvailableEver) {
+
+
+            region_->minAvailableEver = (free * CONFIG_MEMORY_REGION_BLOCK_SIZE);
+          }
         }
       }
     }
@@ -619,7 +648,7 @@ Addr_t *_calloc_(volatile MemoryRegion_t *region_, const Size_t size_) {
 
 
 /* Function to free memory allocated by _calloc_(). */
-void _free_(const volatile MemoryRegion_t *region_, const Addr_t *addr_) {
+void _free_(volatile MemoryRegion_t *region_, const Addr_t *addr_) {
 
 
   /* Need to disable interrupts while modifying entries in
@@ -662,6 +691,7 @@ void _free_(const volatile MemoryRegion_t *region_, const Addr_t *addr_) {
       free->free = true;
 
 
+      region_->frees++;
 
       /* Is there a next entry and is it free? If so, let's merge the
       two entries to reduce fragmentation. */
@@ -751,11 +781,13 @@ Base_t _MemoryRegionCheckHeap_(const Addr_t *addr_, const Base_t option_) {
 address to another. */
 void _memcpy_(Addr_t *dest_, const Addr_t *src_, Size_t n_) {
 
+  Size_t i = zero;
+
   char *src = (char *)src_;
 
   char *dest = (char *)dest_;
 
-  for (Size_t i = zero; i < n_; i++) {
+  for (i = zero; i < n_; i++) {
 
     dest[i] = src[i];
   }
@@ -769,9 +801,11 @@ void _memcpy_(Addr_t *dest_, const Addr_t *src_, Size_t n_) {
 at the location specified as the address to the defined value. */
 void _memset_(volatile Addr_t *dest_, uint16_t val_, Size_t n_) {
 
+  Size_t i = zero;
+
   char *dest = (char *)dest_;
 
-  for (Size_t i = zero; i < n_; i++) {
+  for (i = zero; i < n_; i++) {
 
     dest[i] = (char)val_;
   }
@@ -784,6 +818,8 @@ void _memset_(volatile Addr_t *dest_, uint16_t val_, Size_t n_) {
 /* Similar to the standard libc function, _memcmp_() compares the contents
 of two memory locations pointed. */
 uint16_t _memcmp_(const Addr_t *s1_, const Addr_t *s2_, Size_t n_) {
+  
+  Size_t i = zero;
 
   uint16_t ret = zero;
 
@@ -791,7 +827,7 @@ uint16_t _memcmp_(const Addr_t *s1_, const Addr_t *s2_, Size_t n_) {
 
   char *s2 = (char *)s2_;
 
-  for (Size_t i = zero; i < n_; i++) {
+  for (i = zero; i < n_; i++) {
 
     if (*s1 != *s2) {
 
@@ -811,8 +847,141 @@ uint16_t _memcmp_(const Addr_t *s1_, const Addr_t *s2_, Size_t n_) {
 }
 
 
+/* Return the memory region statistics for the heap. */
+MemoryRegionStats_t *xMemGetHeapStats(void) {
 
-#if defined(DEBUG_ON)
+
+  return _MemGetRegionStats_(&heap);
+}
+
+
+/* Return the memory region stastics for the kernel */
+MemoryRegionStats_t *xMemGetKernelStats(void) {
+
+  return _MemGetRegionStats_(&kernel);
+}
+
+
+
+/* Return the memory region statistics for the specified memory region. */
+MemoryRegionStats_t *_MemGetRegionStats_(const volatile MemoryRegion_t *region_) {
+
+  MemoryEntry_t *cursor = NULL;
+
+  MemoryRegionStats_t *ret = NULL;
+
+
+  /* We can't do anything if the region_ pointer is null so assert if it is. */
+  SYSASSERT(ISNOTNULLPTR(region_));
+
+
+  /* We can't do anything if the region pointer is null so check before we proceed. */
+  if (ISNOTNULLPTR(region_)) {
+
+
+    /* Assert if any memory region is corrupt. */
+    SYSASSERT(false == SYSFLAG_CORRUPT());
+
+
+
+    /* Check to make sure no memory regions are
+    corrupt before we do anything. */
+    if (false == SYSFLAG_CORRUPT()) {
+
+
+      /* Assert if the check if the memory region fails. */
+      SYSASSERT(RETURN_SUCCESS == _MemoryRegionCheck_(region_, NULL, MEMORY_REGION_CHECK_OPTION_WO_ADDR));
+
+
+
+      /* Check if the memory region is consistent. */
+      if (RETURN_SUCCESS == _MemoryRegionCheck_(region_, NULL, MEMORY_REGION_CHECK_OPTION_WO_ADDR)) {
+
+        /* Allocate heap memory for the MemoryRegionStats_t structure. */
+        ret = (MemoryRegionStats_t *)_HeapAllocateMemory_(sizeof(MemoryRegionStats_t));
+
+
+        /* Assert if _HeapAllocateMemory_() failed to allocate the memory. */
+        SYSASSERT(ISNOTNULLPTR(ret));
+
+
+        /* Check to make sure _HeapAllocateMemory_() did its job. */
+        if (ISNOTNULLPTR(ret)) {
+
+          cursor = region_->start;
+
+          /*
+
+            MemoryRegionStats_t contains these elements which
+            we need to fill-in before returning.
+
+            largestFreeEntryInBytes;
+            smallestFreeEntryInBytes;
+            numberOfFreeBlocks;
+            availableSpaceInBytes;
+            successfulAllocations;
+            successfulFrees;
+            minimumEverFreeBytesRemaining;
+          */
+
+          /* Clear the structure to make sure everything is zero. */
+          _memset_(ret, zero, sizeof(MemoryRegionStats_t));
+
+
+
+          /* Intentionally underflow Word_t to get its max value. */
+          ret->smallestFreeEntryInBytes = -1;
+
+
+          /* Set the number of allocations from the region. */
+          ret->successfulAllocations = region_->allocations;
+
+
+          /* Set the number of frees from the region. */
+          ret->successfulFrees = region_->frees;
+
+
+          /* Set the minimum ever free bytes remaining for the region. */
+          ret->minimumEverFreeBytesRemaining = region_->minAvailableEver;
+
+
+          /* Traverse the memory region as long as there is
+          something to traverse. */
+          while (ISNOTNULLPTR(cursor)) {
+
+            if (true == cursor->free) {
+
+
+              if (ret->largestFreeEntryInBytes < (cursor->blocks * CONFIG_MEMORY_REGION_BLOCK_SIZE)) {
+
+                ret->largestFreeEntryInBytes = cursor->blocks * CONFIG_MEMORY_REGION_BLOCK_SIZE;
+              }
+
+
+              if (ret->smallestFreeEntryInBytes > (cursor->blocks * CONFIG_MEMORY_REGION_BLOCK_SIZE)) {
+
+                ret->smallestFreeEntryInBytes = cursor->blocks * CONFIG_MEMORY_REGION_BLOCK_SIZE;
+              }
+
+
+              ret->numberOfFreeBlocks += cursor->blocks;
+            }
+
+            ret->availableSpaceInBytes = ret->numberOfFreeBlocks * CONFIG_MEMORY_REGION_BLOCK_SIZE;
+
+            /* Move on to the next entry. */
+            cursor = cursor->next;
+          }
+        }
+      }
+    }
+  }
+  return ret;
+}
+
+
+
+#if defined(POSIX_ARCH_OTHER)
 
 /* Just a debugging function to dump the contents of kernel memory. */
 void _MemoryRegionDumpKernel_(void) {
@@ -839,15 +1008,21 @@ void _MemoryRegionDumpHeap_(void) {
 /* Function to dump the memory of the specified memory region. */
 void _memdump_(const volatile MemoryRegion_t *region_) {
 
+
+  Size_t i = zero;
+
+  Size_t j = zero;
+  
   Size_t k = zero;
 
 
-  for (Size_t i = zero; i < (MEMORY_REGION_SIZE_IN_BYTES / CONFIG_MEMORY_REGION_BLOCK_SIZE); i++) {
+
+  for (i = zero; i < (MEMORY_REGION_SIZE_IN_BYTES / CONFIG_MEMORY_REGION_BLOCK_SIZE); i++) {
 
 
     printf("%p:", (region_->mem + k));
 
-    for (Size_t j = zero; j < CONFIG_MEMORY_REGION_BLOCK_SIZE; j++) {
+    for (j = zero; j < CONFIG_MEMORY_REGION_BLOCK_SIZE; j++) {
 
 
 

@@ -1,9 +1,9 @@
 /**
- * @file timer.h
+ * @file posix.h
  * @author Manny Peterson (mannymsp@gmail.com)
- * @brief Kernel sources for timers
+ * @brief POSIX header file to use POSIX definitions in header files
  * @version 0.3.4
- * @date 2022-01-31
+ * @date 2022-08-20
  *
  * @copyright
  * HeliOS Embedded Operating System
@@ -23,34 +23,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
-#ifndef TIMER_H_
-#define TIMER_H_
 
-#include "config.h"
-#include "defines.h"
-#include "types.h"
-#include "port.h"
-#include "mem.h"
-#include "queue.h"
-#include "sys.h"
-#include "task.h"
+#ifndef POSIX_H_
+#define POSIX_H_
 
-#ifdef __cplusplus
-extern "C" {
+#if defined(POSIX_ARCH_OTHER)
+#if defined(_POSIX_C_SOURCE)
+#undef _POSIX_C_SOURCE
+#endif
+#define _POSIX_C_SOURCE 200809L
 #endif
 
-Timer_t *xTimerCreate(Ticks_t timerPeriod_);
-void xTimerDelete(Timer_t *timer_);
-void xTimerChangePeriod(Timer_t *timer_, Ticks_t timerPeriod_);
-Ticks_t xTimerGetPeriod(Timer_t *timer_);
-Base_t xTimerIsTimerActive(Timer_t *timer_);
-Base_t xTimerHasTimerExpired(Timer_t *timer_);
-void xTimerReset(Timer_t *timer_);
-void xTimerStart(Timer_t *timer_);
-void xTimerStop(Timer_t *timer_);
-Base_t _TimerListFindTimer_(const Timer_t *timer_);
 
-#ifdef __cplusplus
-}  // extern "C" {
-#endif
 #endif

@@ -2,7 +2,7 @@
  * @file defines.h
  * @author Manny Peterson (mannymsp@gmail.com)
  * @brief Kernel header for macros and definitions
- * @version 0.3.3
+ * @version 0.3.4
  * @date 2022-01-31
  *
  * @copyright
@@ -26,6 +26,8 @@
 #ifndef DEFINES_H_
 #define DEFINES_H_
 
+#include "posix.h"
+
 #include <limits.h>
 #include <stdint.h>
 #include <stddef.h>
@@ -46,7 +48,7 @@
 
 /* Define "true" if not defined. */
 #if !defined(true)
-#define true 0x1u
+#define true 0x1u /* 1 */
 #endif
 
 
@@ -54,7 +56,7 @@
 
 /* Define "false" if not defined. */
 #if !defined(false)
-#define false 0x0u
+#define false 0x0u /* 0 */
 #endif
 
 
@@ -63,9 +65,9 @@
 /* Define "NULL" if not defined. */
 #if !defined(NULL)
 #if !defined(__cplusplus)
-#define NULL ((void *)0x0)
+#define NULL ((void *)0x0) /* 0 */
 #else
-#define NULL 0x0
+#define NULL 0x0 /* 0 */
 #endif
 #endif
 
@@ -74,7 +76,7 @@
 
 /* Define "zero" if not defined. */
 #if !defined(zero)
-#define zero 0x0u
+#define zero 0x0u /* 0 */
 #endif
 
 
@@ -83,7 +85,7 @@
 /* Define a general return failure for
 return values. */
 #if !defined(RETURN_FAILURE)
-#define RETURN_FAILURE 0x0u
+#define RETURN_FAILURE 0x0u /* 0 */
 #endif
 
 
@@ -92,7 +94,7 @@ return values. */
 /* Define a general return success
 for return values. */
 #if !defined(RETURN_SUCCESS)
-#define RETURN_SUCCESS 0x1u
+#define RETURN_SUCCESS 0x1u /* 1 */
 #endif
 
 
@@ -101,7 +103,7 @@ for return values. */
 /* Define the size in bytes of the OS product name which is accessible through
 xSystemGetSystemInfo(). */
 #if !defined(OS_PRODUCT_NAME_SIZE)
-#define OS_PRODUCT_NAME_SIZE 0x6u
+#define OS_PRODUCT_NAME_SIZE 0x6u /* 6 */
 #endif
 
 
@@ -118,7 +120,7 @@ xSystemGetSystemInfo(). */
 /* Define the OS product major version number which is accessible through
 xSystemGetSystemInfo(). */
 #if !defined(OS_MAJOR_VERSION_NO)
-#define OS_MAJOR_VERSION_NO 0x0u
+#define OS_MAJOR_VERSION_NO 0x0u /* 0 */
 #endif
 
 
@@ -127,7 +129,7 @@ xSystemGetSystemInfo(). */
 /* Define the OS product minor version number which is accessible through
 xSystemGetSystemInfo(). */
 #if !defined(OS_MINOR_VERSION_NO)
-#define OS_MINOR_VERSION_NO 0x3u
+#define OS_MINOR_VERSION_NO 0x3u /* 3 */
 #endif
 
 
@@ -136,7 +138,7 @@ xSystemGetSystemInfo(). */
 /* Define the OS product patch version number which is accessible through
 xSystemGetSystemInfo(). */
 #if !defined(OS_PATCH_VERSION_NO)
-#define OS_PATCH_VERSION_NO 0x3u
+#define OS_PATCH_VERSION_NO 0x4u /* 4 */
 #endif
 
 
@@ -208,12 +210,12 @@ the CONFIG_ENABLE_SYSTEM_ASSERT setting. */
 
 
 #if !defined(MEMORY_REGION_CHECK_OPTION_WO_ADDR)
-#define MEMORY_REGION_CHECK_OPTION_WO_ADDR 0x1u
+#define MEMORY_REGION_CHECK_OPTION_WO_ADDR 0x1u /* 1 */
 #endif
 
 
 #if !defined(MEMORY_REGION_CHECK_OPTION_W_ADDR)
-#define MEMORY_REGION_CHECK_OPTION_W_ADDR 0x2u
+#define MEMORY_REGION_CHECK_OPTION_W_ADDR 0x2u /* 2 */
 #endif
 
 

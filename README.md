@@ -125,10 +125,10 @@ void setup() {
     events. */
     xTaskWait(blink);
 
-    /* Set the task timer period to one second. The HeliOS scheduler
-    will execute the task every second until the task is either suspended,
+    /* Set the task timer period to 1,000 ticks. The HeliOS scheduler
+    will execute the task every 1,000 ticks until the task is either suspended,
     its task timer period is changed or the task is deleted. */
-    xTaskChangePeriod(blink, 1000000);
+    xTaskChangePeriod(blink, 1000);
 
     /* Pass control to the HeliOS scheduler. The HeliOS scheduler will
     not relinquish control unless xTaskSuspendAll() is called. */
@@ -152,7 +152,8 @@ void loop() {
 ***
 # Releases
 All releases, including the current release, can be found [here](https://github.com/MannyPeterson/HeliOS/releases).
-* **0.3.3 - Multi-region memory support, memory defragmentation, CMSIS support, new portability layer and other code improvements**
+* **0.3.4 - Corrected "blink" example in readme and in examples, fixed ESP8266 support, added queue locking and other improvements**
+* 0.3.3 - Multi-region memory support, memory defragmentation, CMSIS support, new portability layer and other code improvements
 * 0.3.2 - Some fixes to the memory management system calls and related functions
 * 0.3.1 - A lot of refactoring, code clean-up from the 0.3.0 release and code documentation/readability improvements
 * 0.3.0 - First release of the new 0.3.x series kernel (many new features, most of the kernel rewritten, new example code and new documentation)

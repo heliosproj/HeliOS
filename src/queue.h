@@ -2,7 +2,7 @@
  * @file queue.h
  * @author Manny Peterson (mannymsp@gmail.com)
  * @brief Kernel sources for message queues
- * @version 0.3.3
+ * @version 0.3.4
  * @date 2022-01-31
  * 
  * @copyright
@@ -51,6 +51,8 @@ void xQueueDropMessage(Queue_t *queue_);
 QueueMessage_t *xQueueReceive(Queue_t *queue_);
 void _QueueDropmessage_(Queue_t *queue_);
 QueueMessage_t *_QueuePeek_(Queue_t *queue_);
+void xQueueLockQueue(Queue_t *queue_);
+void xQueueUnLockQueue(Queue_t *queue_);
 
 #ifdef __cplusplus
 }  // extern "C" {

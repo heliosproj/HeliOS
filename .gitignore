@@ -1,5 +1,8 @@
 /.vscode/**
+/extras/test/bin/**
 !.gitignore
 !.gitattributes
-!/.vscode/
 !/.vscode/settings.json
+!/.vscode/tasks.json
+!/.vscode/launch.json
+!/extras/test/bin/.gitkeep
