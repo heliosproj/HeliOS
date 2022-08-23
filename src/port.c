@@ -66,8 +66,10 @@ void _SysInit_(void) {
 #elif defined(ARDUINO_ARCH_ESP8266)
 
 Ticks_t _SysGetSysTicks_(void) {
+  
+  yield();
 
-  return (Ticks_t)(micros() / 1000ULL);
+  return (Ticks_t)(system_get_time() / 1000ULL);
 }
 
 void _SysInit_(void) {
