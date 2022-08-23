@@ -41,7 +41,7 @@
     "custom"
   ],
   "doxdocgen.file.fileTemplate": "@file {name}",
-  "doxdocgen.file.versionTag": "@version 0.3.4",
+  "doxdocgen.file.versionTag": "@version 0.3.5",
   "doxdocgen.generic.authorEmail": "mannymsp@gmail.com",
   "doxdocgen.generic.authorName": "Manny Peterson",
   "doxdocgen.generic.authorTag": "@author {author} ({email})",

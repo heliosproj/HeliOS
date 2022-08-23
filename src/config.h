@@ -2,7 +2,7 @@
  * @file config.h
  * @author Manny Peterson (mannymsp@gmail.com)
  * @brief Kernel header file for user definable settings
- * @version 0.3.4
+ * @version 0.3.5
  * @date 2022-01-31
  *
  * @copyright

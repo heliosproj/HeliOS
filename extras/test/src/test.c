@@ -2,7 +2,7 @@
  * @file test.c
  * @author Manny Peterson (mannymsp@gmail.com)
  * @brief Source code for unit testing
- * @version 0.3.4
+ * @version 0.3.5
  * @date 2022-08-19
  *
  * @copyright

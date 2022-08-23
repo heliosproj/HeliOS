@@ -2,7 +2,7 @@
  * @file port.h
  * @author Manny Peterson (mannymsp@gmail.com)
  * @brief Kernel sources for portability layer
- * @version 0.3.4
+ * @version 0.3.5
  * @date 2022-03-24
  *
  * @copyright

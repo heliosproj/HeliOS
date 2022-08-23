@@ -2,7 +2,7 @@
  * @file sys.h
  * @author Manny Peterson (mannymsp@gmail.com)
  * @brief Kernel sources system related calls
- * @version 0.3.4
+ * @version 0.3.5
  * @date 2022-01-31
  *
  * @copyright

@@ -2,7 +2,7 @@
  * @file defines.h
  * @author Manny Peterson (mannymsp@gmail.com)
  * @brief Kernel header for macros and definitions
- * @version 0.3.4
+ * @version 0.3.5
  * @date 2022-01-31
  *
  * @copyright
@@ -138,7 +138,7 @@ xSystemGetSystemInfo(). */
 /* Define the OS product patch version number which is accessible through
 xSystemGetSystemInfo(). */
 #if !defined(OS_PATCH_VERSION_NO)
-#define OS_PATCH_VERSION_NO 0x4u /* 4 */
+#define OS_PATCH_VERSION_NO 0x5u /* 5 */
 #endif
 
 

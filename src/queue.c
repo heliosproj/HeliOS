@@ -2,7 +2,7 @@
  * @file queue.c
  * @author Manny Peterson (mannymsp@gmail.com)
  * @brief Kernel sources for message queues
- * @version 0.3.4
+ * @version 0.3.5
  * @date 2022-01-31
  *
  * @copyright
