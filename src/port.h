@@ -154,7 +154,7 @@ extern unsigned long millis(void);
 
 #define ENABLE_INTERRUPTS() __asm volatile("cpsie i")
 
-#elif defined(ARDUINO_ARCH_ESP8266) /* *** NOT TESTED *** */
+#elif defined(ARDUINO_ARCH_ESP8266) /* TESTED 2022-08-22 */
 
 /*
 
