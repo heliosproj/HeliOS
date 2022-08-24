@@ -270,7 +270,7 @@ int main(int argc, char **argv) {
 
   unit_try(RETURN_SUCCESS == xQueueSend(queue01, 8, "MESSAGE3"));
 
-  unit_try(0x20u == xQueueGetLength(queue01));
+  unit_try(0x2u == xQueueGetLength(queue01));
 
   unit_end();
 
@@ -281,6 +281,8 @@ int main(int argc, char **argv) {
   xQueueDelete(queue01);
 
   unit_try(RETURN_FAILURE == xQueueSend(queue01, 8, "MESSAGE4"));
+
+  unit_end();
 
 
 
