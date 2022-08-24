@@ -36,6 +36,8 @@ void unit_init(void) {
 
 
     unit = (unit_t *)calloc(1, sizeof(unit_t));
+
+    printf("unit: intializing...\n");
   }
 
 
@@ -56,6 +58,8 @@ void unit_begin(const char *name_) {
 
 
     unit->failed = false;
+
+    printf("unit: begin: %s\n", unit->name);
   }
 
   return;
@@ -82,7 +86,7 @@ void unit_end(void) {
     if (true == unit->failed) {
 
 
-      printf("unit: failed: %s\n", unit->name);
+      printf("unit: end: %s failed\n", unit->name);
 
 
 
@@ -90,6 +94,8 @@ void unit_end(void) {
 
 
     } else {
+
+      printf("unit: end: %s\n", unit->name);
 
       unit->pass++;
     }
