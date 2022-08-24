@@ -286,6 +286,17 @@ int main(int argc, char **argv) {
 
 
 
+  unit_begin("xTimerCreate()");
+
+  xTimer timer01 = NULL;
+
+  timer01 = xTimerCreate(1000);
+
+  unit_try(NULL != timer01);
+
+  unit_end();
+
+
   unit_exit();
 
   return 0;
