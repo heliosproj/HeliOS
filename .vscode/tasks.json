@@ -19,7 +19,7 @@
                 "-o",
                 "${workspaceFolder}/extras/test/bin/test",
                 "${workspaceFolder}/src/*.c",
-                "${workspaceFolder}/extras/test/src/test.c"
+                "${workspaceFolder}/extras/test/src/*.c"
             ],
             "options": {
                 "cwd": "${workspaceFolder}/src"
