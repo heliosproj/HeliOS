@@ -132,6 +132,8 @@ void unit_exit(void) {
 
     printf("unit: exiting...\n");
 
+    free(unit);
+
     if (0x0 < unit->fail) {
 
 

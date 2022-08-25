@@ -26,6 +26,8 @@
 #ifndef UNIT_H_
 #define UNIT_H_
 
+#include "posix.h"
+
 #include <stdint.h>
 #include <inttypes.h>
 #include <string.h>
