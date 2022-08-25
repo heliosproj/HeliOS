@@ -371,12 +371,28 @@ int main(int argc, char **argv) {
 
   unit_end();
 
-  
 
+  unit_begin("xTaskCreate()");
 
+  xTask task01 = NULL;
+
+  task01 = xTaskCreate("TASK01", task_main, NULL);
+
+  unit_try(NULL != task01);
 
   unit_end();
 
+
+
+  unit_begin("xTaskGetHandleByName()");
+
+  xTask task02 = NULL;
+
+  task02 = xTaskGetHandleByName("TASK01");
+
+  unit_try(task02 == task01);
+
+  unit_end();
 
 
   unit_exit();
