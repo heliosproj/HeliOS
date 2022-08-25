@@ -395,6 +395,24 @@ int main(int argc, char **argv) {
   unit_end();
 
 
+
+  unit_begin("xTaskGetHandleById()");
+
+  task02 = NULL;
+
+  xBase task03 = 0x0;
+
+  task03 = xTaskGetId(task01);
+
+  task02 = xTaskGetHandleById(task03);
+
+  unit_try(task02 == task01);
+
+  unit_end();
+
+
+
+
   unit_exit();
 
   return 0;
