@@ -139,11 +139,11 @@ int main(int argc, char **argv) {
 
   xQueue queue01 = NULL;
 
-  queue01 = xQueueCreate(4);
+  queue01 = xQueueCreate(0x4);
 
   unit_try(NULL == queue01);
 
-  queue01 = xQueueCreate(7);
+  queue01 = xQueueCreate(0x7);
 
   unit_try(NULL != queue01);
 
@@ -153,21 +153,21 @@ int main(int argc, char **argv) {
 
   unit_begin("xQueueSend()");
 
-  unit_try(RETURN_SUCCESS == xQueueSend(queue01, 8, "MESSAGE1"));
+  unit_try(RETURN_SUCCESS == xQueueSend(queue01, 0x8, "MESSAGE1"));
 
-  unit_try(RETURN_SUCCESS == xQueueSend(queue01, 8, "MESSAGE2"));
+  unit_try(RETURN_SUCCESS == xQueueSend(queue01, 0x8, "MESSAGE2"));
 
-  unit_try(RETURN_SUCCESS == xQueueSend(queue01, 8, "MESSAGE3"));
+  unit_try(RETURN_SUCCESS == xQueueSend(queue01, 0x8, "MESSAGE3"));
 
-  unit_try(RETURN_SUCCESS == xQueueSend(queue01, 8, "MESSAGE4"));
+  unit_try(RETURN_SUCCESS == xQueueSend(queue01, 0x8, "MESSAGE4"));
 
-  unit_try(RETURN_SUCCESS == xQueueSend(queue01, 8, "MESSAGE5"));
+  unit_try(RETURN_SUCCESS == xQueueSend(queue01, 0x8, "MESSAGE5"));
 
-  unit_try(RETURN_SUCCESS == xQueueSend(queue01, 8, "MESSAGE6"));
+  unit_try(RETURN_SUCCESS == xQueueSend(queue01, 0x8, "MESSAGE6"));
 
-  unit_try(RETURN_SUCCESS == xQueueSend(queue01, 8, "MESSAGE7"));
+  unit_try(RETURN_SUCCESS == xQueueSend(queue01, 0x8, "MESSAGE7"));
 
-  unit_try(RETURN_FAILURE == xQueueSend(queue01, 8, "MESSAGE8"));
+  unit_try(RETURN_FAILURE == xQueueSend(queue01, 0x8, "MESSAGE8"));
 
   unit_end();
 
@@ -215,7 +215,7 @@ int main(int argc, char **argv) {
 
   unit_try(0x8u == queue02->messageBytes);
 
-  unit_try(0x0u == strncmp("MESSAGE1", queue02->messageValue, 8));
+  unit_try(0x0u == strncmp("MESSAGE1", queue02->messageValue, 0x8));
 
   xMemFree(queue02);
 
@@ -231,7 +231,7 @@ int main(int argc, char **argv) {
 
   unit_try(0x8u == queue02->messageBytes);
 
-  unit_try(0x0u == strncmp("MESSAGE1", queue02->messageValue, 8));
+  unit_try(0x0u == strncmp("MESSAGE1", queue02->messageValue, 0x8));
 
   xMemFree(queue02);
 
@@ -257,11 +257,11 @@ int main(int argc, char **argv) {
 
   unit_try(NULL != queue01);
 
-  unit_try(RETURN_SUCCESS == xQueueSend(queue01, 8, "MESSAGE1"));
+  unit_try(RETURN_SUCCESS == xQueueSend(queue01, 0x8, "MESSAGE1"));
 
   xQueueLockQueue(queue01);
 
-  unit_try(RETURN_FAILURE == xQueueSend(queue01, 8, "MESSAGE2"));
+  unit_try(RETURN_FAILURE == xQueueSend(queue01, 0x8, "MESSAGE2"));
 
   unit_end();
 
@@ -271,7 +271,7 @@ int main(int argc, char **argv) {
 
   xQueueUnLockQueue(queue01);
 
-  unit_try(RETURN_SUCCESS == xQueueSend(queue01, 8, "MESSAGE3"));
+  unit_try(RETURN_SUCCESS == xQueueSend(queue01, 0x8, "MESSAGE3"));
 
   unit_try(0x2u == xQueueGetLength(queue01));
 
@@ -283,7 +283,7 @@ int main(int argc, char **argv) {
 
   xQueueDelete(queue01);
 
-  unit_try(RETURN_FAILURE == xQueueSend(queue01, 8, "MESSAGE4"));
+  unit_try(RETURN_FAILURE == xQueueSend(queue01, 0x8, "MESSAGE4"));
 
   unit_end();
 
@@ -480,9 +480,63 @@ int main(int argc, char **argv) {
 
   unit_try(0x2 == task07->id);
 
-  unit_try(0x0 == strncmp("TASK01", task07->name, 6));
+  unit_try(0x0 == strncmp("TASK01", task07->name, 0x6));
 
   unit_try(TaskStateSuspended == task07->state);
+
+  xMemFree(task07);
+
+  unit_end();
+
+
+
+  unit_begin("xTaskGetAllTaskInfo()");
+
+  task07 = NULL;
+
+  task07 = xTaskGetAllTaskInfo(&task06);
+
+  unit_try(NULL != task07);
+
+  unit_try(0x1 == task06);
+
+  unit_try(0x2 == task07->id);
+
+  unit_try(0x0 == strncmp("TASK01", task07->name, 0x6));
+
+  unit_try(TaskStateSuspended == task07->state);
+
+  xMemFree(task07);
+
+  unit_end();
+
+
+
+  unit_begin("xTaskGetTaskState()");
+
+  unit_try(TaskStateSuspended == xTaskGetTaskState(task01));
+
+  unit_end();
+
+
+
+  unit_begin("xTaskGetName()");
+
+  char *task08;
+
+  task08 = xTaskGetName(task01);
+
+  unit_try(NULL != task08);
+
+  unit_try(0x0 == strncmp("TASK01", task08, 0x6));
+
+  unit_end();
+
+
+
+  unit_begin("xTaskGetId()");
+
+  unit_try(0x2 == xTaskGetId(task01));
 
   unit_end();
 

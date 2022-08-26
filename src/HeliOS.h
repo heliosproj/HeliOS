@@ -1102,7 +1102,7 @@ xTaskInfo xTaskGetTaskInfo(xTask task_);
  *
  * @warning The memory allocated by xTaskGetAllTaskInfo() must be freed by xMemFree().
  */
-xTaskInfo *xTaskGetAllTaskInfo(xBase *tasks_);
+xTaskInfo xTaskGetAllTaskInfo(xBase *tasks_);
 
 /**
  * @brief System call to return the state of a task.
