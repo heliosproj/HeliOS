@@ -372,6 +372,17 @@ int main(int argc, char **argv) {
   unit_end();
 
 
+
+  unit_begin("xTimerDelete()");
+
+  xTimerDelete(timer01);
+
+  unit_try(0x0 == xTimerGetPeriod(timer01));
+
+  unit_end();
+
+
+
   unit_begin("xTaskCreate()");
 
   xTask task01 = NULL;
@@ -411,6 +422,54 @@ int main(int argc, char **argv) {
   unit_end();
 
 
+
+  unit_begin("xTaskGetAllRunTimeStats()");
+
+  xTaskRunTimeStats task04 = NULL;
+  xBase task05 = 0;
+
+  task04 = xTaskGetAllRunTimeStats(&task05);
+
+  unit_try(NULL != task04);
+
+  unit_try(0x1 == task05);
+
+  unit_try(0x2 == task04[0].id);
+
+  xMemFree(task04);
+
+  unit_end();
+
+
+
+  unit_begin("xTaskGetTaskRunTimeStats()");
+
+  task04 = NULL;
+
+  task04 = xTaskGetTaskRunTimeStats(task01);
+
+  unit_try(NULL != task04);
+
+  unit_try(0x2 == task04->id);
+
+  xMemFree(task04);
+
+  unit_end();
+
+
+
+  unit_begin("xTaskGetNumberOfTasks()");
+
+  xBase task06 = 0;
+
+  task06 = xTaskGetNumberOfTasks();
+
+  unit_try(0x1 == task06);
+
+  unit_end();
+
+
+  
 
 
   unit_exit();
