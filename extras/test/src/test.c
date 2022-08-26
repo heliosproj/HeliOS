@@ -469,7 +469,24 @@ int main(int argc, char **argv) {
   unit_end();
 
 
-  
+
+  unit_begin("xTaskGetTaskInfo()");
+
+  xTaskInfo task07 = NULL;
+
+  task07 = xTaskGetTaskInfo(task01);
+
+  unit_try(NULL != task07);
+
+  unit_try(0x2 == task07->id);
+
+  unit_try(0x0 == strncmp("TASK01", task07->name, 6));
+
+  unit_try(TaskStateSuspended == task07->state);
+
+  unit_end();
+
+
 
 
   unit_exit();
