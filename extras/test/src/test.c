@@ -618,6 +618,54 @@ int main(int argc, char **argv) {
 
 
 
+  unit_begin("xTaskChangePeriod()");
+
+  xTaskChangePeriod(task01, 0xD05);
+
+  unit_try(0xD05 == xTaskGetPeriod(task01));
+
+  unit_end();
+
+
+
+  unit_begin("xTaskGetPeriod()");
+
+  xTaskChangePeriod(task01, 0x1E61);
+
+  unit_try(0x1E61 == xTaskGetPeriod(task01));
+
+  unit_end();
+
+
+
+  unit_begin("xTaskResetTimer()");
+
+  xTaskResetTimer(task01);
+
+  unit_end();
+
+
+
+  unit_begin("Timer event");
+
+  xTaskDelete(task01);
+
+  xTask task10 = NULL;
+
+  task10 = xTaskCreate("TASK10", task_main, NULL);
+
+  unit_try(NULL != task10);
+
+  xTaskChangePeriod(task10, 0xBB8);
+
+  xTaskWait(task10);
+
+  xTaskStartScheduler();
+
+  unit_end();
+
+
+
 
   unit_exit();
 
@@ -627,6 +675,8 @@ int main(int argc, char **argv) {
 
 
 void task_main(xTask task_, xTaskParm parm_) {
+
+  xTaskSuspendAll();
 
   return;
 }
