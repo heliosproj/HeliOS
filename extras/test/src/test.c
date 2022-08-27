@@ -542,6 +542,82 @@ int main(int argc, char **argv) {
 
 
 
+  unit_begin("xTaskNotifyGive()");
+
+  unit_try(RETURN_SUCCESS == xTaskNotifyGive(task01, 0x7, "MESSAGE"));
+
+  unit_end();
+
+
+
+  unit_begin("xTaskNotificationIsWaiting()");
+
+  unit_try(true == xTaskNotificationIsWaiting(task01));
+
+  unit_end();
+
+
+
+  unit_begin("xTaskNotifyStateClear()");
+
+  xTaskNotifyStateClear(task01);
+
+  unit_try(false == xTaskNotificationIsWaiting(task01));
+
+  unit_end();
+
+
+
+  unit_begin("xTaskNotifyTake()");
+
+  xTaskNotification task09 = NULL;
+
+  unit_try(RETURN_SUCCESS == xTaskNotifyGive(task01, 0x7, "MESSAGE"));
+
+  task09 = xTaskNotifyTake(task01);
+
+  unit_try(NULL != task09);
+
+  unit_try(0x7 == task09->notificationBytes);
+
+  unit_try(0x0 == strncmp("MESSAGE", task09->notificationValue, 0x7));
+
+  xMemFree(task09);
+
+  unit_end();
+
+
+
+  unit_begin("xTaskResume()");
+
+  xTaskResume(task01);
+
+  unit_try(TaskStateRunning == xTaskGetTaskState(task01));
+
+  unit_end();
+
+
+
+  unit_begin("xTaskSuspend()");
+
+  xTaskSuspend(task01);
+
+  unit_try(TaskStateSuspended == xTaskGetTaskState(task01));
+
+  unit_end();
+
+
+
+  unit_begin("xTaskWait()");
+
+  xTaskWait(task01);
+
+  unit_try(TaskStateWaiting == xTaskGetTaskState(task01));
+
+  unit_end();
+
+
+
 
   unit_exit();
 
