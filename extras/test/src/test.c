@@ -646,7 +646,23 @@ int main(int argc, char **argv) {
 
 
 
-  unit_begin("Timer event");
+  unit_begin("xTaskGetSchedulerState()");
+
+  xTaskSuspendAll();
+
+  unit_try(SchedulerStateSuspended == xTaskGetSchedulerState());
+
+  xTaskResumeAll();
+
+  unit_try(SchedulerStateRunning == xTaskGetSchedulerState());
+
+  unit_end();
+
+
+
+  unit_begin("Unit test for task timer event");
+
+  xTaskResumeAll();
 
   xTaskDelete(task01);
 
@@ -660,7 +676,39 @@ int main(int argc, char **argv) {
 
   xTaskWait(task10);
 
+  xTaskResetTimer(task10);
+
   xTaskStartScheduler();
+
+  xTaskDelete(task10);
+
+  unit_end();
+
+
+
+  unit_begin("Unit test for direct to task notification event");
+
+  xTaskResumeAll();
+
+  xTask task11 = NULL;
+
+  task11 = xTaskCreate("TASK11", task_main, NULL);
+
+  unit_try(NULL != task11);
+
+  xTaskWait(task11);
+
+  xTaskNotifyGive(task11, 0x7, "MESSAGE");
+
+  unit_try(true == xTaskNotificationIsWaiting(task11));
+
+  xTaskResumeAll();
+
+  xTaskStartScheduler();
+
+  unit_try(false == xTaskNotificationIsWaiting(task11));
+
+  xTaskDelete(task11);
 
   unit_end();
 
@@ -675,6 +723,8 @@ int main(int argc, char **argv) {
 
 
 void task_main(xTask task_, xTaskParm parm_) {
+
+  xTaskNotifyStateClear(task_);
 
   xTaskSuspendAll();
 

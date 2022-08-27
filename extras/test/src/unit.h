@@ -35,7 +35,7 @@
 #include <stdio.h>
 
 #if !defined(UNIT_NAME_LENGTH)
-#define UNIT_NAME_LENGTH 0x20 /* 32 */
+#define UNIT_NAME_LENGTH 0x40 /* 64 */
 #endif
 
 #if !defined(true)
