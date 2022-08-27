@@ -72,7 +72,6 @@ Task_t *xTaskCreate(const char *name_, void (*callback_)(Task_t *, TaskParm_t *)
 
 
 
-
       taskList = (TaskList_t *)_KernelAllocateMemory_(sizeof(TaskList_t));
     }
 
@@ -1183,8 +1182,6 @@ void xTaskStartScheduler(void) {
 
 
     SYSFLAG_RUNNING() = false;
-
-
   }
 
   return;
@@ -1290,3 +1287,13 @@ SchedulerState_t xTaskGetSchedulerState(void) {
 
   return schedulerState;
 }
+
+
+#if defined(POSIX_ARCH_OTHER)
+void __TaskStateClear__(void) {
+
+  taskList = NULL;
+
+  return;
+}
+#endif

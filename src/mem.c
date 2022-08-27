@@ -818,7 +818,7 @@ void _memset_(volatile Addr_t *dest_, uint16_t val_, Size_t n_) {
 /* Similar to the standard libc function, _memcmp_() compares the contents
 of two memory locations pointed. */
 uint16_t _memcmp_(const Addr_t *s1_, const Addr_t *s2_, Size_t n_) {
-  
+
   Size_t i = zero;
 
   uint16_t ret = zero;
@@ -983,20 +983,37 @@ MemoryRegionStats_t *_MemGetRegionStats_(const volatile MemoryRegion_t *region_)
 
 #if defined(POSIX_ARCH_OTHER)
 
-/* Just a debugging function to dump the contents of kernel memory. */
-void _MemoryRegionDumpKernel_(void) {
+void __MemoryClear__(void) {
 
-  _memdump_(&kernel);
+
+  _memset_(&heap, 0x0, sizeof(MemoryRegion_t));
+
+  heap.minAvailableEver = CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS * CONFIG_MEMORY_REGION_BLOCK_SIZE;
+
+  _memset_(&kernel, 0x0, sizeof(MemoryRegion_t));
+
+  kernel.minAvailableEver = CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS * CONFIG_MEMORY_REGION_BLOCK_SIZE;
+
+  return;
+}
+
+
+
+/* Just a debugging function to dump the contents of kernel memory. */
+void __MemoryRegionDumpKernel__(void) {
+
+  __memdump__(&kernel);
 
 
   return;
 }
 
 
-/* Just a debugging function to dump the onents of heap memory. */
-void _MemoryRegionDumpHeap_(void) {
 
-  _memdump_(&heap);
+/* Just a debugging function to dump the onents of heap memory. */
+void __MemoryRegionDumpHeap__(void) {
+
+  __memdump__(&heap);
 
 
 
@@ -1006,13 +1023,13 @@ void _MemoryRegionDumpHeap_(void) {
 
 
 /* Function to dump the memory of the specified memory region. */
-void _memdump_(const volatile MemoryRegion_t *region_) {
+void __memdump__(const volatile MemoryRegion_t *region_) {
 
 
   Size_t i = zero;
 
   Size_t j = zero;
-  
+
   Size_t k = zero;
 
 

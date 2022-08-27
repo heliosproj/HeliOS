@@ -126,3 +126,14 @@ SystemInfo_t *xSystemGetSystemInfo(void) {
 
   return ret;
 }
+
+
+
+#if defined(POSIX_ARCH_OTHER)
+void __SysStateClear__(void) {
+
+  _memset_(&sysFlags, 0x0, sizeof(SysFlags_t));
+
+  return;
+}
+#endif

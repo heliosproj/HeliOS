@@ -50,6 +50,10 @@ SystemInfo_t *xSystemGetSystemInfo(void);
 void _ArduinoAssert_(const char *file_, int line_);
 #endif
 
+#if defined(POSIX_ARCH_OTHER)
+void __SysStateClear__(void);
+#endif
+
 #ifdef __cplusplus
 }  // extern "C" {
 #endif

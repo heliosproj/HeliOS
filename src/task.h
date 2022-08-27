@@ -69,6 +69,11 @@ void xTaskSuspendAll(void);
 SchedulerState_t xTaskGetSchedulerState(void);
 Base_t _TaskListFindTask_(const Task_t *task_);
 
+
+#if defined(POSIX_ARCH_OTHER)
+void __TaskStateClear__(void);
+#endif
+
 #ifdef __cplusplus
 }  // extern "C" {
 #endif

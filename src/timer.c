@@ -29,8 +29,6 @@
 
 
 
-
-
 /* Declare and initialize the task list to null. */
 static TimerList_t *timerList = NULL;
 
@@ -65,7 +63,6 @@ Timer_t *xTimerCreate(Ticks_t timerPeriod_) {
 
   /* Check if xMemAlloc() did its job. */
   if (ISNOTNULLPTR(timerList)) {
-
 
 
 
@@ -446,3 +443,14 @@ Base_t _TimerListFindTimer_(const Timer_t *timer_) {
 
   return ret;
 }
+
+
+
+#if defined(POSIX_ARCH_OTHER)
+void __TimerStateClear__(void) {
+
+  timerList = NULL;
+
+  return;
+}
+#endif

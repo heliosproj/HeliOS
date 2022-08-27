@@ -363,8 +363,12 @@ Base_t xQueueSend(Queue_t *queue_, Base_t messageBytes_, const char *messageValu
   value. */
   SYSASSERT(ISNOTNULLPTR(messageValue_));
 
+  /* Assert if the user passed an invaid queue. */
+  SYSASSERT(RETURN_SUCCESS == _MemoryRegionCheckKernel_(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
+
+
   /* Check if the message bytes is within parameters and the message value is not null. */
-  if ((zero < messageBytes_) && (CONFIG_MESSAGE_VALUE_BYTES >= messageBytes_) && (ISNOTNULLPTR(messageValue_))) {
+  if ((RETURN_SUCCESS == _MemoryRegionCheckKernel_(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR)) && (zero < messageBytes_) && (CONFIG_MESSAGE_VALUE_BYTES >= messageBytes_) && (ISNOTNULLPTR(messageValue_))) {
 
 
     /* Assert if the queue is locked (locked queues can not SEND messages). */
@@ -617,7 +621,6 @@ void xQueueLockQueue(Queue_t *queue_) {
     SYSASSERT(false == queue_->locked);
 
     queue_->locked = true;
-
   }
 
 
@@ -643,7 +646,6 @@ void xQueueUnLockQueue(Queue_t *queue_) {
     SYSASSERT(true == queue_->locked);
 
     queue_->locked = false;
-
   }
 
 

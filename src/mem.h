@@ -64,9 +64,10 @@ MemoryRegionStats_t *_MemGetRegionStats_(const volatile MemoryRegion_t *region_)
 
 
 #if defined(POSIX_ARCH_OTHER)
-void _MemoryRegionDumpKernel_(void);
-void _MemoryRegionDumpHeap_(void);
-void _memdump_(const volatile MemoryRegion_t *region_);
+void __MemoryClear__(void);
+void __MemoryRegionDumpKernel__(void);
+void __MemoryRegionDumpHeap__(void);
+void __memdump__(const volatile MemoryRegion_t *region_);
 #endif
 
 #ifdef __cplusplus

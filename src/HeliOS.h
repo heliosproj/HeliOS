@@ -1449,9 +1449,13 @@ void xTimerStop(xTimer timer_);
 void xSystemHalt(void);
 
 
-#if defined(DEBUG_ON)
-void _MemoryRegionDumpKernel_(void);
-void _MemoryRegionDumpHeap_(void);
+#if defined(POSIX_ARCH_OTHER)
+void __MemoryClear__(void);
+void __SysStateClear__(void);
+void __TimerStateClear__(void);
+void __TaskStateClear__(void);
+void __MemoryRegionDumpKernel__(void);
+void __MemoryRegionDumpHeap__(void);
 #endif
 
 /* In the event HeliOS is compiled with a C++ compiler, make the system calls (written in C)

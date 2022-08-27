@@ -29,16 +29,48 @@
 
 #include <unistd.h>
 
-
-
 void task_main(xTask task_, xTaskParm parm_);
+void memory_harness(void);
+void queue_harness(void);
+void timer_harness(void);
+void task_harness(void);
 
 int main(int argc, char **argv) {
 
-
-
   unit_init();
 
+  memory_harness();
+
+  queue_harness();
+
+  timer_harness();
+
+  task_harness();
+
+  unit_exit();
+
+  return 0;
+}
+
+
+
+void task_main(xTask task_, xTaskParm parm_) {
+
+  xTaskNotifyStateClear(task_);
+
+  xTaskSuspendAll();
+
+  return;
+}
+
+
+void memory_harness(void) {
+
+
+  __MemoryClear__();
+  __SysStateClear__();
+  __TimerStateClear__();
+  __TaskStateClear__();
 
 
   unit_begin("xMemAlloc()");
@@ -133,7 +165,17 @@ int main(int argc, char **argv) {
 
   unit_end();
 
+  return;
+}
 
+
+
+void queue_harness(void) {
+
+  __MemoryClear__();
+  __SysStateClear__();
+  __TimerStateClear__();
+  __TaskStateClear__();
 
   unit_begin("xQueueCreate()");
 
@@ -288,6 +330,20 @@ int main(int argc, char **argv) {
   unit_end();
 
 
+  return;
+}
+
+
+
+void timer_harness(void) {
+
+
+
+  __MemoryClear__();
+  __SysStateClear__();
+  __TimerStateClear__();
+  __TaskStateClear__();
+
 
   unit_begin("xTimerCreate()");
 
@@ -381,6 +437,16 @@ int main(int argc, char **argv) {
 
   unit_end();
 
+  return;
+}
+
+
+void task_harness(void) {
+
+  __MemoryClear__();
+  __SysStateClear__();
+  __TimerStateClear__();
+  __TaskStateClear__();
 
 
   unit_begin("xTaskCreate()");
@@ -434,7 +500,7 @@ int main(int argc, char **argv) {
 
   unit_try(0x1 == task05);
 
-  unit_try(0x2 == task04[0].id);
+  unit_try(0x1 == task04[0].id);
 
   xMemFree(task04);
 
@@ -450,7 +516,7 @@ int main(int argc, char **argv) {
 
   unit_try(NULL != task04);
 
-  unit_try(0x2 == task04->id);
+  unit_try(0x1 == task04->id);
 
   xMemFree(task04);
 
@@ -478,7 +544,7 @@ int main(int argc, char **argv) {
 
   unit_try(NULL != task07);
 
-  unit_try(0x2 == task07->id);
+  unit_try(0x1 == task07->id);
 
   unit_try(0x0 == strncmp("TASK01", task07->name, 0x6));
 
@@ -500,7 +566,7 @@ int main(int argc, char **argv) {
 
   unit_try(0x1 == task06);
 
-  unit_try(0x2 == task07->id);
+  unit_try(0x1 == task07->id);
 
   unit_try(0x0 == strncmp("TASK01", task07->name, 0x6));
 
@@ -536,7 +602,7 @@ int main(int argc, char **argv) {
 
   unit_begin("xTaskGetId()");
 
-  unit_try(0x2 == xTaskGetId(task01));
+  unit_try(0x1 == xTaskGetId(task01));
 
   unit_end();
 
@@ -711,22 +777,6 @@ int main(int argc, char **argv) {
   xTaskDelete(task11);
 
   unit_end();
-
-
-
-
-  unit_exit();
-
-  return 0;
-}
-
-
-
-void task_main(xTask task_, xTaskParm parm_) {
-
-  xTaskNotifyStateClear(task_);
-
-  xTaskSuspendAll();
 
   return;
 }
