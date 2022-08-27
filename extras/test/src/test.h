@@ -1,9 +1,9 @@
 /**
- * @file test.c
+ * @file test.h
  * @author Manny Peterson (mannymsp@gmail.com)
- * @brief Source code for HeliOS unit testing
+ * @brief
  * @version 0.3.5
- * @date 2022-08-23
+ * @date 2022-08-27
  *
  * @copyright
  * HeliOS Embedded Operating System
@@ -23,49 +23,27 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
-#include "test.h"
+#ifndef TEST_H_
+#define TEST_H_
 
-int main(int argc, char **argv) {
-
-  unit_init();
-
-
-
-  reset();
-
-  memory_harness();
+#include "HeliOS.h"
+#include "unit.h"
+#include "memory_harness.h"
+#include "queue_harness.h"
+#include "task_harness.h"
+#include "timer_harness.h"
 
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-  reset();
+int main(int argc, char **argv);
+void reset(void);
 
-  queue_harness();
-
-
-
-  reset();
-
-  timer_harness();
-
-
-
-  reset();
-
-  task_harness();
+#ifdef __cplusplus
+}  // extern "C" {
+#endif
 
 
-
-  unit_exit();
-
-  return 0;
-}
-
-void reset(void) {
-
-  __MemoryClear__();
-  __SysStateClear__();
-  __TaskStateClear__();
-  __TimerStateClear__();
-
-  return;
-}
+#endif
