@@ -11,6 +11,7 @@
                 "-std=c89",
                 "-Wall",
                 "-Wextra",
+                "-Wno-unused-parameter",
                 "-I",
                 "${workspaceFolder}/src",
                 "-I",
