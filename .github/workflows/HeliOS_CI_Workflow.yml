@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-test: 
+  build-test-doc: 
     runs-on: ubuntu-22.04
 
     steps:
