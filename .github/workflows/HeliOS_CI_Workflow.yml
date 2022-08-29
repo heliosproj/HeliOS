@@ -3,9 +3,9 @@ name: HeliOS CI Workflow
 on:
 
   push:
-    branches: [ master, develop ]
+    branches: [ develop ]
   pull_request:
-    branches: [ master, develop ]
+    branches: [ develop ]
 
   workflow_dispatch:
 
@@ -24,6 +24,17 @@ jobs:
       - name: Run HeliOS unit tests...
         shell: bash
         run: ${{github.workspace}}/extras/test/bin/test
+
+      - name: Install Cppcheck...
+        shell: bash
+        run: |
+          sudo apt update
+          sudo apt -y cppcheck
+      
+      - name: Run Cppcheck...
+        shell: bash
+        run: |
+          cppcheck --quiet --language=c --platform=unix64 --max-ctu-depth=8 --cppcheck-build-dir=${{github.workspace}}/build --template="::{severity} file={file},line={line},col={column}::{message}" --enable=all --std=c89 -DPOSIX_ARCH_OTHER ${{github.workspace}}/src/
 
       - name: Install Doxygen and LaTeX...
         shell: bash
