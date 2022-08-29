@@ -50,7 +50,7 @@ QueueMessage_t *xQueuePeek(Queue_t *queue_);
 void xQueueDropMessage(Queue_t *queue_);
 QueueMessage_t *xQueueReceive(Queue_t *queue_);
 void _QueueDropmessage_(Queue_t *queue_);
-QueueMessage_t *_QueuePeek_(Queue_t *queue_);
+QueueMessage_t *__QueuePeek__(Queue_t *queue_);
 void xQueueLockQueue(Queue_t *queue_);
 void xQueueUnLockQueue(Queue_t *queue_);
 

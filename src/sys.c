@@ -39,14 +39,14 @@ SysFlags_t sysFlags = {
 
 
 
-/* The _SystemAssert_() system call will be called when
+/* The __SystemAssert__() system call will be called when
 the SYSASSERT() macro evaluates false. In order for there
 to be any effect, CONFIG_ENABLE_SYSTEM_ASSERT and
 CONFIG_SYSTEM_ASSERT_BEHAVIOR must be defined.
 
-_SystemAssert_() should NOT be called directly because it is an INTERNAL
+__SystemAssert__() should NOT be called directly because it is an INTERNAL
 function name and may change in future releases. Instead use the SYSASSERT() C macro. */
-void _SystemAssert_(const char *file_, int line_) {
+void __SystemAssert__(const char *file_, int line_) {
 
   /* Do not modify this system call directly. Define
   the behavior (code) through the CONFIG_SYSTEM_ASSERT_BEHAVIOR
@@ -65,7 +65,7 @@ void _SystemAssert_(const char *file_, int line_) {
 /* The xSystemInit() system call initializes the system. */
 void xSystemInit(void) {
 
-  _SysInit_();
+  __SysInit__();
 
   return;
 }
@@ -99,7 +99,7 @@ SystemInfo_t *xSystemGetSystemInfo(void) {
 
 
 
-  ret = (SystemInfo_t *)_HeapAllocateMemory_(sizeof(SystemInfo_t));
+  ret = (SystemInfo_t *)__HeapAllocateMemory__(sizeof(SystemInfo_t));
 
 
 
@@ -113,7 +113,7 @@ SystemInfo_t *xSystemGetSystemInfo(void) {
   if (ISNOTNULLPTR(ret)) {
 
 
-    _memcpy_(ret->productName, OS_PRODUCT_NAME, OS_PRODUCT_NAME_SIZE);
+    __memcpy__(ret->productName, OS_PRODUCT_NAME, OS_PRODUCT_NAME_SIZE);
 
     ret->majorVersion = OS_MAJOR_VERSION_NO;
 
@@ -132,7 +132,7 @@ SystemInfo_t *xSystemGetSystemInfo(void) {
 #if defined(POSIX_ARCH_OTHER)
 void __SysStateClear__(void) {
 
-  _memset_(&sysFlags, 0x0, sizeof(SysFlags_t));
+  __memset__(&sysFlags, 0x0, sizeof(SysFlags_t));
 
   return;
 }

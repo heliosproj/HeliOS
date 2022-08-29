@@ -281,8 +281,8 @@ extern uint32_t systick_millis_count;
 extern "C" {
 #endif
 
-Ticks_t _SysGetSysTicks_(void);
-void _SysInit_(void);
+Ticks_t __SysGetSysTicks__(void);
+void __SysInit__(void);
 
 #ifdef __cplusplus
 }  // extern "C" {

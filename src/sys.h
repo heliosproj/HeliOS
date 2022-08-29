@@ -41,13 +41,13 @@ extern SysFlags_t sysFlags;
 extern "C" {
 #endif
 
-void _SystemAssert_(const char *file_, int line_);
+void __SystemAssert__(const char *file_, int line_);
 void xSystemInit(void);
 void xSystemHalt(void);
 SystemInfo_t *xSystemGetSystemInfo(void);
 
 #if defined(CONFIG_ENABLE_ARDUINO_CPP_INTERFACE)
-void _ArduinoAssert_(const char *file_, int line_);
+void __ArduinoAssert__(const char *file_, int line_);
 #endif
 
 #if defined(POSIX_ARCH_OTHER)

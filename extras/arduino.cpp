@@ -34,10 +34,10 @@
 #include <Arduino.h>
 
 
-extern "C" void _ArduinoAssert_(const char *file_, int line_);
+extern "C" void __ArduinoAssert__(const char *file_, int line_);
 
 
-void _ArduinoAssert_(const char *file_, int line_)
+void __ArduinoAssert__(const char *file_, int line_)
 {
 
     Serial.println("assert: " + String(file_) + ":" + String(line_, DEC));
