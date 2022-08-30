@@ -271,7 +271,7 @@ extern uint32_t systick_millis_count;
 
 #define ENABLE_INTERRUPTS()
 
-#define CONFIG_SYSTEM_ASSERT_BEHAVIOR(f, l) printf("\033[0;31mkernel:\033[0;36m assert at %s:%d\n\033[0;37m", f, l)
+#define CONFIG_SYSTEM_ASSERT_BEHAVIOR(f, l) printf("kernel: assert at %s:%d\n", f , l )
 
 #endif
 
