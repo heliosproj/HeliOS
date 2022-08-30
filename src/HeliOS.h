@@ -595,7 +595,7 @@ typedef SystemInfo_t *xSystemInfo;
  * @param p The task pointer, typically named parm_.
  */
 #if !defined(DEREF_TASKPARM)
-#define DEREF_TASKPARM(t, p) *(( t *) p )
+#define DEREF_TASKPARM(t, p) *((t *)p)
 #endif
 
 /* In the event HeliOS is compiled with a C++ compiler, make the system calls (written in C)
@@ -1447,6 +1447,34 @@ void xTimerStop(xTimer timer_);
  *
  */
 void xSystemHalt(void);
+
+/**
+ * @brief The xTaskChangeWDPeriod() will change the period on the task watchdog timer.
+ *
+ * The xTaskChangeWDPeriod() system call will change the task watchdog timer period. The period,
+ * measured in ticks, must be greater than zero to have any effect. If the tasks last runtime
+ * exceeds the task watchdog timer period, the task will automatically be placed in a suspended
+ * state.
+ *
+ * @sa xTaskGetWDPeriod()
+ * @param task_ The task to change the task watchdog timer for.
+ * @param wdTimerPeriod_  The task watchdog timer period which is measured in ticks. If zero, the task watchdog timer will not have any effect.
+ */
+void xTaskChangeWDPeriod(xTask *task_, xTicks wdTimerPeriod_);
+
+
+
+
+/**
+ * @brief The xTaskGetWDPeriod() return the current task watchdog timer.
+ *
+ * The xTaskGetWDPeriod() will return the current task watchdog timer for the task.
+ *
+ * @sa xTaskChangeWDPeriod()
+ * @param task_ The task to get the task watchdog timer period for.
+ * @return Ticks_t  The task watchdog timer period which is measured in ticks.
+ */
+Ticks_t xTaskGetWDPeriod(Task_t *task_);
 
 
 #if defined(POSIX_ARCH_OTHER)

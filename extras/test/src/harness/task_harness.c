@@ -360,12 +360,58 @@ void task_harness(void) {
 
   unit_end();
 
+
+
+
+  unit_begin("Unit test for task watchdog timer");
+
+  xTaskResumeAll();
+
+  xTask task12 = NULL;
+
+  task12 = xTaskCreate("TASK12", task_harness_task2, NULL);
+
+  unit_try(NULL != task12);
+
+  xTaskChangeWDPeriod(task12, 0x7D0u);
+
+  xTaskResume(task12);
+
+  unit_try(TaskStateRunning == xTaskGetTaskState(task12));
+
+  xTaskStartScheduler();
+
+  unit_try(TaskStateSuspended == xTaskGetTaskState(task12));
+
+  unit_end();
+
+
+
+
+  unit_begin("xTaskGetWDPeriod()");
+
+  unit_try(0x7D0u == xTaskGetWDPeriod(task12));
+
+  unit_end();
+
+
+
+
   return;
 }
 
 void task_harness_task(xTask task_, xTaskParm parm_) {
 
   xTaskNotifyStateClear(task_);
+
+  xTaskSuspendAll();
+
+  return;
+}
+
+void task_harness_task2(xTask task_, xTaskParm parm_) {
+
+  sleep(3);
 
   xTaskSuspendAll();
 

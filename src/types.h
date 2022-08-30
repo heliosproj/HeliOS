@@ -114,6 +114,7 @@ typedef struct Task_s {
   Ticks_t totalRunTime;
   Ticks_t timerPeriod;
   Ticks_t timerStartTime;
+  Ticks_t wdTimerPeriod;
   struct Task_s *next;
 } Task_t;
 

@@ -979,6 +979,28 @@ void xTaskChangePeriod(Task_t *task_, Ticks_t timerPeriod_) {
 
 
 
+/* The xTaskChangeWDPeriod() system call will change the task watchdog timer period. The period,
+measured in ticks, must be greater than zero to have any effect. If the tasks last runtime
+exceeds the task watchdog timer period, the task will automatically be placed in a suspended
+state. */
+void xTaskChangeWDPeriod(Task_t *task_, Ticks_t wdTimerPeriod_) {
+
+  /* Assert if the task cannot be found. */
+  SYSASSERT(RETURN_SUCCESS == __TaskListFindTask__(task_));
+
+
+  /* Check if the task can be found. */
+  if (RETURN_SUCCESS == __TaskListFindTask__(task_)) {
+
+    task_->wdTimerPeriod = wdTimerPeriod_;
+  }
+
+
+  return;
+}
+
+
+
 /* The xTaskGetPeriod() will return the period for the timer for the specified task. See
 xTaskChangePeriod() for more information on how the task timer works. */
 Ticks_t xTaskGetPeriod(Task_t *task_) {
@@ -1227,8 +1249,12 @@ void __TaskRun__(Task_t *task_) {
 
   Ticks_t prevTotalRunTime = zero;
 
+
+
   /* Record the total runtime before executing the task. */
   prevTotalRunTime = task_->totalRunTime;
+
+
 
   /* Record the start time of the task. */
   taskStartTime = __SysGetSysTicks__();
@@ -1245,12 +1271,23 @@ void __TaskRun__(Task_t *task_) {
   /* Add last runtime to the total runtime. */
   task_->totalRunTime += task_->lastRunTime;
 
+
+  /* Check if the task watchdog timer is set and see if the task's last runtime
+  exceeded it. If it did, set the task state to suspended. */
+  if ((zero != task_->wdTimerPeriod) && (task_->lastRunTime > task_->wdTimerPeriod)) {
+
+
+    task_->state = TaskStateSuspended;
+  }
+
   /* Check if the new total runtime is less than the previous total runtime,
   if so an overflow has occurred so set the runtime over flow system flag. */
   if (task_->totalRunTime < prevTotalRunTime) {
 
     SYSFLAG_OVERFLOW() = true;
   }
+
+
 
   return;
 }
@@ -1286,6 +1323,28 @@ SchedulerState_t xTaskGetSchedulerState(void) {
 
 
   return schedulerState;
+}
+
+/* The xTaskGetWDPeriod() system call will return the current task watchdog
+timer period. */
+Ticks_t xTaskGetWDPeriod(Task_t *task_) {
+
+
+  Ticks_t ret = zero;
+
+
+  /* Assert if the task cannot be found. */
+  SYSASSERT(RETURN_SUCCESS == __TaskListFindTask__(task_));
+
+
+  /* Check if the task can be found. */
+  if (RETURN_SUCCESS == __TaskListFindTask__(task_)) {
+
+    ret = task_->wdTimerPeriod;
+  }
+
+
+  return ret;
 }
 
 

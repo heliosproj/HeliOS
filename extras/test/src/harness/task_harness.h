@@ -37,6 +37,7 @@ extern "C" {
 
 void task_harness(void);
 void task_harness_task(xTask task_, xTaskParm parm_);
+void task_harness_task2(xTask task_, xTaskParm parm_);
 
 #ifdef __cplusplus
 }  // extern "C" {
