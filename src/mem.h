@@ -45,22 +45,23 @@ Addr_t *xMemAlloc(const Size_t size_);
 void xMemFree(const Addr_t *addr_);
 Size_t xMemGetUsed(void);
 Size_t xMemGetSize(const Addr_t *addr_);
-Base_t _MemoryRegionCheck_(const volatile MemoryRegion_t *region_, const Addr_t *addr_, const Base_t option_);
-Base_t _MemoryRegionCheckAddr_(const volatile MemoryRegion_t *region_, const Addr_t *addr_);
-Addr_t *_calloc_(volatile MemoryRegion_t *region_, const Size_t size_);
-void _free_(volatile MemoryRegion_t *region_, const Addr_t *addr_);
-Addr_t *_KernelAllocateMemory_(const Size_t size_);
-void _KernelFreeMemory_(const Addr_t *addr_);
-Base_t _MemoryRegionCheckKernel_(const Addr_t *addr_, const Base_t option_);
-Addr_t *_HeapAllocateMemory_(const Size_t size_);
-void _HeapFreeMemory_(const Addr_t *addr_);
-Base_t _MemoryRegionCheckHeap_(const Addr_t *addr_, const Base_t option_);
-void _memcpy_(Addr_t *dest_, const Addr_t *src_, Size_t n_);
-void _memset_(volatile Addr_t *dest_, uint16_t val_, Size_t n_);
-uint16_t _memcmp_(const Addr_t *s1_, const Addr_t *s2_, Size_t n_);
+Base_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, const Addr_t *addr_, const Base_t option_);
+Base_t __MemoryRegionCheckAddr__(const volatile MemoryRegion_t *region_, const Addr_t *addr_);
+Addr_t *__calloc__(volatile MemoryRegion_t *region_, const Size_t size_);
+void __free__(volatile MemoryRegion_t *region_, const Addr_t *addr_);
+Addr_t *__KernelAllocateMemory__(const Size_t size_);
+void __KernelFreeMemory__(const Addr_t *addr_);
+Base_t __MemoryRegionCheckKernel__(const Addr_t *addr_, const Base_t option_);
+Addr_t *__HeapAllocateMemory__(const Size_t size_);
+void __HeapFreeMemory__(const Addr_t *addr_);
+Base_t __MemoryRegionCheckHeap__(const Addr_t *addr_, const Base_t option_);
+void __memcpy__(Addr_t *dest_, const Addr_t *src_, Size_t n_);
+void __memset__(volatile Addr_t *dest_, uint16_t val_, Size_t n_);
+uint16_t __memcmp__(const Addr_t *s1_, const Addr_t *s2_, Size_t n_);
 MemoryRegionStats_t *xMemGetHeapStats(void);
 MemoryRegionStats_t *xMemGetKernelStats(void);
-MemoryRegionStats_t *_MemGetRegionStats_(const volatile MemoryRegion_t *region_);
+MemoryRegionStats_t *__MemGetRegionStats__(const volatile MemoryRegion_t *region_);
+void __DefragMemoryRegion__(volatile MemoryRegion_t *region_);
 
 
 #if defined(POSIX_ARCH_OTHER)

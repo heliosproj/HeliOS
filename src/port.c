@@ -29,62 +29,62 @@
 
 #if defined(ARDUINO_ARCH_AVR)
 
-Ticks_t _SysGetSysTicks_(void) {
+Ticks_t __SysGetSysTicks__(void) {
 
   return timer0_overflow_count;
 }
 
-void _SysInit_(void) {
+void __SysInit__(void) {
 
   return;
 }
 
 #elif defined(ARDUINO_ARCH_SAM)
 
-Ticks_t _SysGetSysTicks_(void) {
+Ticks_t __SysGetSysTicks__(void) {
 
   return GetTickCount();
 }
 
-void _SysInit_(void) {
+void __SysInit__(void) {
 
   return;
 }
 
 #elif defined(ARDUINO_ARCH_SAMD)
 
-Ticks_t _SysGetSysTicks_(void) {
+Ticks_t __SysGetSysTicks__(void) {
 
   return millis();
 }
 
-void _SysInit_(void) {
+void __SysInit__(void) {
 
   return;
 }
 
 #elif defined(ARDUINO_ARCH_ESP8266)
 
-Ticks_t _SysGetSysTicks_(void) {
+Ticks_t __SysGetSysTicks__(void) {
   
   yield();
 
   return (Ticks_t)(system_get_time() / 1000ULL);
 }
 
-void _SysInit_(void) {
+void __SysInit__(void) {
 
   return;
 }
 
 #elif defined(ARDUINO_TEENSY_MICROMOD) || defined(ARDUINO_TEENSY40) || defined(ARDUINO_TEENSY41) || defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY35) || defined(ARDUINO_TEENSY31) || defined(ARDUINO_TEENSY32) || defined(ARDUINO_TEENSY30) || defined(ARDUINO_TEENSYLC)
 
-Ticks_t _SysGetSysTicks_(void) {
+Ticks_t __SysGetSysTicks__(void) {
 
   return systick_millis_count;
 }
 
-void _SysInit_(void) {
+void __SysInit__(void) {
 
   return;
 }
@@ -108,12 +108,12 @@ void SysTick_Handler(void) {
   return;
 }
 
-Ticks_t _SysGetSysTicks_(void) {
+Ticks_t __SysGetSysTicks__(void) {
 
   return sysTicks;
 }
 
-void _SysInit_(void) {
+void __SysInit__(void) {
 
   SysTick_Config(SYSTEM_CORE_CLOCK_FREQUENCY / SYSTEM_CORE_CLOCK_PRESCALER);
 
@@ -122,7 +122,7 @@ void _SysInit_(void) {
 
 #elif defined(POSIX_ARCH_OTHER)
 
-Ticks_t _SysGetSysTicks_(void) {
+Ticks_t __SysGetSysTicks__(void) {
 
   struct timeval t;
 
@@ -132,7 +132,7 @@ Ticks_t _SysGetSysTicks_(void) {
   return (t.tv_sec) * 1000 + (t.tv_usec) / 1000;
 }
 
-void _SysInit_(void) {
+void __SysInit__(void) {
 
   return;
 }

@@ -29,6 +29,12 @@
 #include "HeliOS.h"
 #include "unit.h"
 
+typedef struct MemoryTest_s {
+  Size_t size;
+  Size_t blocks;
+  void* ptr;
+} MemoryTest_t;
+
 
 #ifdef __cplusplus
 extern "C" {

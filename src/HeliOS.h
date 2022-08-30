@@ -617,7 +617,7 @@ void xSystemInit(void);
 /**
  * @brief System call to handle assertions.
  *
- * The _SystemAssert_() system call handles assertions. The _SystemAssert_() system
+ * The __SystemAssert__() system call handles assertions. The __SystemAssert__() system
  * call should not be called directly. Instead, the SYSASSERT() macro should be used.
  * The system assertion functionality will only work when the CONFIG_ENABLE_SYSTEM_ASSERT
  * and CONFIG_SYSTEM_ASSERT_BEHAVIOR settings are defined.
@@ -629,7 +629,7 @@ void xSystemInit(void);
  * @param file_ This is automatically defined by the compiler's definition of _FILE_
  * @param line_  This is automatically defined by the compiler's definition of _LINE_
  */
-void _SystemAssert_(const char *file_, int line_);
+void __SystemAssert__(const char *file_, int line_);
 
 /**
  * @brief System call to allocate memory from the heap.
