@@ -36,11 +36,12 @@ void memory_harness(void) {
   unit_begin("Unit test for memory region defragmentation routine");
 
   Size_t i = zero;
+  Size_t used = zero;
 
   for (i = 0; i < 0x20u; i++) {
     tests[i].size = sizes[i];
 
-    tests[i].blocks = (sizes[i] / CONFIG_MEMORY_REGION_BLOCK_SIZE) + 1;
+    tests[i].blocks = (sizes[i] / CONFIG_MEMORY_REGION_BLOCK_SIZE) + 1; /* ... + 1; Assuming a memory region entry only takes one (1) block - that may not always be true. */
 
     if (zero < ((Size_t)(sizes[i] % CONFIG_MEMORY_REGION_BLOCK_SIZE))) {
       tests[i].blocks += 1;
@@ -50,14 +51,21 @@ void memory_harness(void) {
 
     unit_try(NULL != tests[i].ptr);
 
+    used += tests[i].blocks * CONFIG_MEMORY_REGION_BLOCK_SIZE;
+
+    unit_try(used == xMemGetUsed());
+
     unit_try((tests[i].blocks * CONFIG_MEMORY_REGION_BLOCK_SIZE) == xMemGetSize(tests[i].ptr));
   }
 
   unit_try(NULL == (void *)xMemAlloc(0x99999u));
 
+
   for (i = 0; i < 0x20u; i++) {
     xMemFree(tests[order[i]].ptr);
   }
+
+  unit_try(0x0u == xMemGetUsed());
 
   unit_end();
 
