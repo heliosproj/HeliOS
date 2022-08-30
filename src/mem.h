@@ -53,7 +53,7 @@ Addr_t *__KernelAllocateMemory__(const Size_t size_);
 void __KernelFreeMemory__(const Addr_t *addr_);
 Base_t __MemoryRegionCheckKernel__(const Addr_t *addr_, const Base_t option_);
 Addr_t *__HeapAllocateMemory__(const Size_t size_);
-void _HeapFreeMemory_(const Addr_t *addr_);
+void __HeapFreeMemory__(const Addr_t *addr_);
 Base_t __MemoryRegionCheckHeap__(const Addr_t *addr_, const Base_t option_);
 void __memcpy__(Addr_t *dest_, const Addr_t *src_, Size_t n_);
 void __memset__(volatile Addr_t *dest_, uint16_t val_, Size_t n_);
@@ -61,6 +61,7 @@ uint16_t __memcmp__(const Addr_t *s1_, const Addr_t *s2_, Size_t n_);
 MemoryRegionStats_t *xMemGetHeapStats(void);
 MemoryRegionStats_t *xMemGetKernelStats(void);
 MemoryRegionStats_t *__MemGetRegionStats__(const volatile MemoryRegion_t *region_);
+void __DefragMemoryRegion__(volatile MemoryRegion_t *region_);
 
 
 #if defined(POSIX_ARCH_OTHER)

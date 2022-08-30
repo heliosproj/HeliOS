@@ -624,7 +624,7 @@ Addr_t *__calloc__(volatile MemoryRegion_t *region_, const Size_t size_) {
 
 
           /* We just allocated memory, so subtract back out the requested blocks
-          before we set the mininum bytes available ever. */
+          before we set the minimum bytes available ever. */
           free -= requested;
 
 
@@ -686,27 +686,16 @@ void __free__(volatile MemoryRegion_t *region_, const Addr_t *addr_) {
       free = ADDR2ENTRY(addr_, region_);
 
 
-
       /* Mark the memory entry as free. */
       free->free = true;
 
 
       region_->frees++;
 
-      /* Is there a next entry and is it free? If so, let's merge the
-      two entries to reduce fragmentation. */
-      if ((ISNOTNULLPTR(free->next)) && (true == free->next->free)) {
 
-
-        /* Add the blocks from the subsequent entry to the
-        current entry. */
-        free->blocks += free->next->blocks;
-
-
-
-        /* Just drop the entry just as you would in a linked list. */
-        free->next = free->next->next;
-      }
+      /* After freeing blocks we should defrag the memory
+      region. */
+      __DefragMemoryRegion__(region_);
     }
   }
 
@@ -723,7 +712,6 @@ void __free__(volatile MemoryRegion_t *region_, const Addr_t *addr_) {
 /* A wrapper function for __calloc__() because the memory
 regions cannot be accessed outside the scope of mem.c. */
 Addr_t *__KernelAllocateMemory__(const Size_t size_) {
-
 
   return __calloc__(&kernel, size_);
 }
@@ -760,7 +748,7 @@ Addr_t *__HeapAllocateMemory__(const Size_t size_) {
 
 /* A wrapper function for __free__() because the memory
 regions cannot be accessed outside the scope of mem.c. */
-void _HeapFreeMemory_(const Addr_t *addr_) {
+void __HeapFreeMemory__(const Addr_t *addr_) {
 
   __free__(&heap, addr_);
 
@@ -979,6 +967,74 @@ MemoryRegionStats_t *__MemGetRegionStats__(const volatile MemoryRegion_t *region
   return ret;
 }
 
+
+/* Defrag an entire memory region to reduce memory fragmentation. */
+void __DefragMemoryRegion__(volatile MemoryRegion_t *region_) {
+
+
+  MemoryEntry_t *cursor = NULL;
+
+
+
+  /* We can't do anything if the region_ pointer is null so assert if it is. */
+  SYSASSERT(ISNOTNULLPTR(region_));
+
+
+  /* We can't do anything if the region pointer is null so check before we proceed. */
+  if (ISNOTNULLPTR(region_)) {
+
+
+    /* Assert if any memory region is corrupt. */
+    SYSASSERT(false == SYSFLAG_CORRUPT());
+
+
+
+    /* Check to make sure no memory regions are
+    corrupt before we do anything. */
+    if (false == SYSFLAG_CORRUPT()) {
+
+
+      /* Assert if the check if the memory region fails. */
+      SYSASSERT(RETURN_SUCCESS == __MemoryRegionCheck__(region_, NULL, MEMORY_REGION_CHECK_OPTION_WO_ADDR));
+
+
+
+      /* Check if the memory region is consistent. */
+      if (RETURN_SUCCESS == __MemoryRegionCheck__(region_, NULL, MEMORY_REGION_CHECK_OPTION_WO_ADDR)) {
+
+        cursor = region_->start;
+
+        /* Traverse the memory region as long as there is
+        something to traverse. */
+        while (ISNOTNULLPTR(cursor)) {
+
+
+          /* If the current entry is free AND the subsequent entry is free,
+          we can merge the two. */
+          if ((ISNOTNULLPTR(cursor)) && (ISNOTNULLPTR(cursor->next)) && (true == cursor->free) && (true == cursor->next->free)) {
+
+
+            /* Add the blocks from the subsequent entry to the
+            current entry. */
+            cursor->blocks += cursor->next->blocks;
+
+            /* Just drop the "next" entry just as you would in a linked list. */
+            cursor->next = cursor->next->next;
+
+
+          } else {
+
+
+            /* Move on to the next entry. */
+            cursor = cursor->next;
+          }
+        }
+      }
+    }
+  }
+
+  return;
+}
 
 
 #if defined(POSIX_ARCH_OTHER)
