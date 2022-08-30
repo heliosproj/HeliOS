@@ -26,7 +26,43 @@
 
 #include "memory_harness.h"
 
+static Size_t sizes[0x20u] = {0x2532u, 0x1832u, 0x132u, 0x2932u, 0x332u, 0x1432u, 0x1332u, 0x532u, 0x1732u, 0x932u, 0x1432u, 0x2232u, 0x1432u, 0x3132u, 0x032u, 0x1132u, 0x632u, 0x932u, 0x1532u, 0x632u, 0x1832u, 0x132u, 0x1332u, 0x3132u, 0x2732u, 0x1532u, 0x2432u, 0x2932u, 0x2432u, 0x2932u, 0x3032u, 0x2332u};
+static Size_t order[0x20u] = {0x02u, 0x16u, 0x07u, 0x0Cu, 0x06u, 0x00u, 0x0Du, 0x18u, 0x10u, 0x08u, 0x0Au, 0x1Eu, 0x0Bu, 0x0Eu, 0x03u, 0x09u, 0x19u, 0x05u, 0x1Cu, 0x1Du, 0x0Fu, 0x01u, 0x1Au, 0x04u, 0x13u, 0x11u, 0x1Fu, 0x12u, 0x17u, 0x15u, 0x14u, 0x1Bu};
+static MemoryTest_t tests[0x20u];
+
+
 void memory_harness(void) {
+
+  unit_begin("Unit test for memory region defragmentation routine");
+
+  Size_t i = zero;
+
+  for (i = 0; i < 0x20u; i++) {
+    tests[i].size = sizes[i];
+
+    tests[i].blocks = (sizes[i] / CONFIG_MEMORY_REGION_BLOCK_SIZE) + 1;
+
+    if (zero < ((Size_t)(sizes[i] % CONFIG_MEMORY_REGION_BLOCK_SIZE))) {
+      tests[i].blocks += 1;
+    }
+
+    tests[i].ptr = (void *)xMemAlloc(sizes[i]);
+
+    unit_try(NULL != tests[i].ptr);
+
+    unit_try((tests[i].blocks * CONFIG_MEMORY_REGION_BLOCK_SIZE) == xMemGetSize(tests[i].ptr));
+  }
+
+  unit_try(NULL == (void *)xMemAlloc(0x99999u));
+
+  for (i = 0; i < 0x20u; i++) {
+    xMemFree(tests[order[i]].ptr);
+  }
+
+  unit_end();
+
+
+
 
   unit_begin("xMemAlloc()");
 
@@ -74,9 +110,9 @@ void memory_harness(void) {
 
   unit_try(0x63A0u == mem02->smallestFreeEntryInBytes);
 
-  unit_try(0x2u == mem02->successfulAllocations);
+  unit_try(0x22u == mem02->successfulAllocations);
 
-  unit_try(0x0u == mem02->successfulFrees);
+  unit_try(0x20u == mem02->successfulFrees);
 
   unit_end();
 

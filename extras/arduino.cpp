@@ -40,7 +40,7 @@ extern "C" void __ArduinoAssert__(const char *file_, int line_);
 void __ArduinoAssert__(const char *file_, int line_)
 {
 
-    Serial.println("assert: " + String(file_) + ":" + String(line_, DEC));
+    Serial.println("kernel: assert at " + String(file_) + ":" + String(line_, DEC));
 
     return;
 }
