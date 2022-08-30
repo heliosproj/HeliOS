@@ -1474,7 +1474,7 @@ void xTaskChangeWDPeriod(xTask *task_, xTicks wdTimerPeriod_);
  * @param task_ The task to get the task watchdog timer period for.
  * @return Ticks_t  The task watchdog timer period which is measured in ticks.
  */
-Ticks_t xTaskGetWDPeriod(Task_t *task_);
+xTicks xTaskGetWDPeriod(xTask *task_);
 
 
 #if defined(POSIX_ARCH_OTHER)
