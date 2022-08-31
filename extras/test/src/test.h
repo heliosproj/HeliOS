@@ -32,6 +32,7 @@
 #include "queue_harness.h"
 #include "task_harness.h"
 #include "timer_harness.h"
+#include "stream_harness.h"
 
 
 #ifdef __cplusplus

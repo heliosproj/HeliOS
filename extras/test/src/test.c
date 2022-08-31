@@ -54,6 +54,11 @@ int main(int argc, char **argv) {
   task_harness();
 
 
+  reset();
+
+  stream_harness();
+
+
 
   unit_exit();
 

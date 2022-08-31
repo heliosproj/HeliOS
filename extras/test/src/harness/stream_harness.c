@@ -1,9 +1,9 @@
 /**
- * @file sys.h
+ * @file stream_harness.c
  * @author Manny Peterson (mannymsp@gmail.com)
- * @brief Kernel sources system related calls
+ * @brief
  * @version 0.3.5
- * @date 2022-01-31
+ * @date 2022-08-30
  *
  * @copyright
  * HeliOS Embedded Operating System
@@ -23,39 +23,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
-#ifndef SYS_H_
-#define SYS_H_
 
-#include "config.h"
-#include "defines.h"
-#include "types.h"
-#include "port.h"
-#include "mem.h"
-#include "queue.h"
-#include "stream.h"
-#include "task.h"
-#include "timer.h"
+#include "stream_harness.h"
 
-extern SysFlags_t sysFlags;
+void stream_harness(void) {
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 
-void __SystemAssert__(const char *file_, int line_);
-void xSystemInit(void);
-void xSystemHalt(void);
-SystemInfo_t *xSystemGetSystemInfo(void);
 
-#if defined(CONFIG_ENABLE_ARDUINO_CPP_INTERFACE)
-void __ArduinoAssert__(const char *file_, int line_);
-#endif
-
-#if defined(POSIX_ARCH_OTHER)
-void __SysStateClear__(void);
-#endif
-
-#ifdef __cplusplus
-}  // extern "C" {
-#endif
-#endif
+  return;
+}

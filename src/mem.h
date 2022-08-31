@@ -31,6 +31,7 @@
 #include "types.h"
 #include "port.h"
 #include "queue.h"
+#include "stream.h"
 #include "sys.h"
 #include "task.h"
 #include "timer.h"

@@ -86,8 +86,5 @@
   ],
   "C_Cpp.default.defines": [
     "POSIX_ARCH_OTHER"
-  ],
-  "files.associations": {
-    "task_harness.h": "c"
-  }
+  ]
 }
