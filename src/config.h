@@ -223,4 +223,14 @@ to customize the HeliOS kernel for their specific application. */
 #define CONFIG_QUEUE_MINIMUM_LIMIT 0x5u /* 5 */
 #endif
 
+
+/**
+ * @brief 
+ * 
+ */
+#if !defined(CONFIG_STREAM_BUFFER_BYTES)
+#define CONFIG_STREAM_BUFFER_BYTES 0x20u /* 32 */
+#endif
+
+
 #endif

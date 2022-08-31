@@ -94,6 +94,27 @@ typedef uint8_t Base_t;
  */
 typedef uint32_t Word_t;
 
+
+/**
+ * @brief Type defintion for the byte data type
+ *
+ * A byte is an 8-bit data type in HeliOS.
+ *
+ * @sa xByte
+ */
+typedef uint8_t Byte_t;
+
+
+/**
+ * @brief Type defintion for the half-word data type
+ *
+ * A half-word is a 16-bit data type in HeliOS.
+ *
+ * @sa xHWord
+ */
+typedef uint16_t HWord_t;
+
+
 /**
  * @brief The type definition for time expressed in ticks.
  *
@@ -270,6 +291,17 @@ typedef struct MemoryRegionStats_s {
  */
 typedef void Task_t;
 
+
+
+/**
+ * @brief
+ *
+ */
+typedef void StreamBuffer_t;
+
+
+
+
 /**
  * @brief Type definition for the task parameter.
  *
@@ -363,6 +395,16 @@ typedef Base_t xBase;
  * @sa Word_t
  */
 typedef Word_t xWord;
+
+
+/**
+ * @brief Type defintion for the half-word data type
+ *
+ * A half-word is a 16-bit data type in HeliOS.
+ *
+ * @sa HWord_t
+ */
+typedef HWord_t xHWord;
 
 /**
  * @brief Stub type definition for the timer type.
@@ -495,6 +537,16 @@ typedef MemoryRegionStats_t *xMemoryRegionStats;
  */
 typedef Task_t *xTask;
 
+
+/**
+ * @brief
+ *
+ */
+typedef StreamBuffer_t *xStreamBuffer;
+
+
+
+
 /**
  * @brief Type definition for the task parameter.
  *
@@ -523,6 +575,15 @@ typedef TaskParm_t *xTaskParm;
  *
  */
 typedef Ticks_t xTicks;
+
+/**
+ * @brief Type defintion for the byte data type
+ *
+ * A byte is an 8-bit data type in HeliOS.
+ *
+ * @sa Byte_t
+ */
+typedef Byte_t xByte;
 
 /**
  * @brief Enumerated type for task states.
@@ -1475,6 +1536,81 @@ void xTaskChangeWDPeriod(xTask *task_, xTicks wdTimerPeriod_);
  * @return Ticks_t  The task watchdog timer period which is measured in ticks.
  */
 xTicks xTaskGetWDPeriod(xTask *task_);
+
+
+/**
+ * @brief 
+ * 
+ * @return xStreamBuffer 
+ */
+xStreamBuffer xStreamCreate(void);
+
+
+
+/**
+ * @brief
+ *
+ * @param stream_
+ */
+void xStreamDelete(xStreamBuffer stream_);
+
+
+
+/**
+ * @brief 
+ * 
+ * @param stream_ 
+ * @param byte_ 
+ * @return xBase 
+ */
+xBase xStreamSend(xStreamBuffer stream_, xByte byte_);
+
+
+/**
+ * @brief 
+ * 
+ * @param stream_ 
+ * @param bytes_ 
+ * @return xByte* 
+ */
+xByte *xStreamReceive(xStreamBuffer stream_, HWord_t *bytes_);
+
+
+
+/**
+ * @brief 
+ * 
+ * @param stream_ 
+ * @return xHWord 
+ */
+xHWord xStreamBytesAvailable(xStreamBuffer stream_);
+
+
+/**
+ * @brief
+ *
+ * @param stream_
+ */
+void xStreamReset(xStreamBuffer stream_);
+
+
+
+/**
+ * @brief
+ *
+ * @param stream_
+ * @return xBase
+ */
+xBase xStreamIsEmpty(xStreamBuffer stream_);
+
+
+/**
+ * @brief
+ *
+ * @param steam_
+ * @return xBase
+ */
+xBase xStreamIsFull(xStreamBuffer steam_);
 
 
 #if defined(POSIX_ARCH_OTHER)

@@ -224,4 +224,15 @@ typedef struct SystemInfo_s {
   Base_t patchVersion;
   Base_t numberOfTasks;
 } SystemInfo_t;
+
+
+
+typedef struct StreamBuffer_s {
+  Byte_t buffer[CONFIG_STREAM_BUFFER_BYTES];
+  HWord_t head;
+  HWord_t tail;
+  HWord_t length;
+} StreamBuffer_t;
+
+
 #endif

@@ -24,6 +24,7 @@
  *
  */
 #ifndef STREAM_H_
+#define STREAM_H_
 
 #include "config.h"
 #include "defines.h"
@@ -35,12 +36,20 @@
 #include "task.h"
 #include "timer.h"
 
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-
-
+StreamBuffer_t *xStreamCreate(void);
+void xStreamDelete(StreamBuffer_t *stream_);
+Base_t xStreamSend(StreamBuffer_t *stream_, Byte_t byte_);
+Byte_t *xStreamReceive(StreamBuffer_t *stream_, HWord_t *bytes_);
+HWord_t xStreamBytesAvailable(StreamBuffer_t *stream_);
+void xStreamReset(StreamBuffer_t *stream_);
+Base_t xStreamIsEmpty(StreamBuffer_t *stream_);
+Base_t xStreamIsFull(StreamBuffer_t *steam_);
 
 #ifdef __cplusplus
 }  // extern "C" {
