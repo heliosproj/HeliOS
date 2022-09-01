@@ -54,12 +54,12 @@ Queue_t *xQueueCreate(Base_t limit_) {
 
 
     /* Assert if xMemAlloc() didn't return our requested
-    heap memory. */
+    kernel memory. */
     SYSASSERT(ISNOTNULLPTR(ret));
 
 
     /* Check if xMemAlloc() returned our requested
-    heap memory. */
+    kernel memory. */
     if (ISNOTNULLPTR(ret)) {
 
 
