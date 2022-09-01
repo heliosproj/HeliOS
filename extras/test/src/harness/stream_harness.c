@@ -119,5 +119,17 @@ void stream_harness(void) {
 
 
 
+  unit_begin("xStreamDelete()");
+
+  xStreamReset(stream01);
+
+  xStreamDelete(stream01);
+
+  unit_try(RETURN_FAILURE == xStreamSend(stream01, zero));
+
+  unit_end();
+
+
+
   return;
 }
