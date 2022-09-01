@@ -205,10 +205,8 @@ HWord_t xStreamBytesAvailable(StreamBuffer_t *stream_) {
   if (RETURN_SUCCESS == __MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR)) {
 
 
-    /* Check to make sure our stream buffer is less than
-    CONFIG_STREAM_BUFFER_BYTES in length before we attempt
-    to write a byte to it. */
-    if (CONFIG_STREAM_BUFFER_BYTES > stream_->length) {
+
+    if (zero < stream_->length) {
 
       ret = stream_->length;
     }
