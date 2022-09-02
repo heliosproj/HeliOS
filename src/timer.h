@@ -30,6 +30,7 @@
 #include "defines.h"
 #include "types.h"
 #include "port.h"
+#include "driver.h"
 #include "mem.h"
 #include "queue.h"
 #include "stream.h"
