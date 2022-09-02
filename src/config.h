@@ -240,4 +240,15 @@ to customize the HeliOS kernel for their specific application. */
 #endif
 
 
+/**
+ * @brief Enable task watchdog timers.
+ * 
+ * Defining CONFIG_TASK_WD_TIMER_ENABLE will enable the
+ * task wathdog timer feature. The default is enabled.
+ * 
+ */
+#if !defined(CONFIG_TASK_WD_TIMER_ENABLE)
+#define CONFIG_TASK_WD_TIMER_ENABLE
+#endif
+
 #endif

@@ -1271,7 +1271,7 @@ void __TaskRun__(Task_t *task_) {
   /* Add last runtime to the total runtime. */
   task_->totalRunTime += task_->lastRunTime;
 
-
+#if defined(CONFIG_TASK_WD_TIMER_ENABLE)
   /* Check if the task watchdog timer is set and see if the task's last runtime
   exceeded it. If it did, set the task state to suspended. */
   if ((zero != task_->wdTimerPeriod) && (task_->lastRunTime > task_->wdTimerPeriod)) {
@@ -1279,6 +1279,7 @@ void __TaskRun__(Task_t *task_) {
 
     task_->state = TaskStateSuspended;
   }
+#endif
 
   /* Check if the new total runtime is less than the previous total runtime,
   if so an overflow has occurred so set the runtime over flow system flag. */
