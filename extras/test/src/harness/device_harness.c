@@ -26,10 +26,26 @@
 
 #include "device_harness.h"
 
+xBase device_self_register(void);
+
 
 void device_harness(void) {
 
+  unit_begin("xDeviceRegisterDevice()");
 
+
+  unit_try(RETURN_SUCCESS == xDeviceRegisterDevice(device_self_register));
+
+  unit_end();
 
   return;
 }
+
+
+xBase device_self_register(void) {
+
+  printf("DEVICE HERE!\n");
+  return RETURN_SUCCESS;
+}
+
+

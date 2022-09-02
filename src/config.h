@@ -251,4 +251,12 @@ to customize the HeliOS kernel for their specific application. */
 #define CONFIG_TASK_WD_TIMER_ENABLE
 #endif
 
+/**
+ * @brief 
+ * 
+ */
+#if !defined(CONFIG_DEVICE_NAME_BYTES)
+#define CONFIG_DEVICE_NAME_BYTES 0x8u /* 8 */
+#endif
+
 #endif

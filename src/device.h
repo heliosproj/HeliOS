@@ -37,53 +37,28 @@
 #include "task.h"
 #include "timer.h"
 
-#if !defined(CONFIG_DEVICE_NAME_BYTES)
-#define CONFIG_DEVICE_NAME_BYTES 0x8u /* 8 */
-#endif
 
-typedef enum {
-  DeviceStateError,
-  DeviceStateSuspended,
-  DeviceStateRunning
-} DeviceState_t;
-
-typedef enum {
-  DeviceModeReadOnly,
-  DeviceModeWriteOnly,
-  DeviceModeReadWrite
-} DeviceMode_t;
-
-typedef struct Device_s {
-  HWord_t uid;
-  char name[CONFIG_DEVICE_NAME_BYTES];
-  DeviceState_t state;
-  DeviceMode_t mode;
-  Word_t bytesWritten;
-  Word_t bytesRead;
-  Byte_t (*init)(struct Device_s *device_);
-  Byte_t (*config)(struct Device_s *device_, void *config_);
-  Byte_t (*read)(struct Device_s *device_, HWord_t *bytes_, void *data_);
-  Byte_t (*write)(struct Device_s *device_, HWord_t *bytes_, void *data_);
-} Device_t;
-
-typedef Device_t *xDevice;
-
-/*
-
-  The only parameters the kernel will respect are state and mode,
-  everything else is up to the device driver.
-
-  xDeviceInitDevice()
-  xDeviceConfigDevice()
-  xDeviceRead()
-  xDeviceWrite()
-
-
-*/
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+
+
+Base_t xDeviceRegisterDevice(Base_t (*device_self_register_)());
+Base_t __RegisterDevice__(HWord_t uid_,
+                        const char *name_,
+                        DeviceState_t state_,
+                        DeviceMode_t mode_,
+                        Byte_t (*init_)(struct Device_s *device_),
+                        Byte_t (*config_)(struct Device_s *device_, void *config_),
+                        Byte_t (*read_)(struct Device_s *device_, HWord_t *bytes_, void *data_),
+                        Byte_t (*write_)(struct Device_s *device_, HWord_t *bytes_, void *data_));
+
+
+Base_t xDeviceConfigDevice(HWord_t uid_, void *config_);
+Base_t xDeviceRead(HWord_t uid_, HWord_t *bytes_, void *data_);
+Base_t xDeviceWrite(HWord_t uid_, HWord_t *bytes_, void *data_);
 
 
 #ifdef __cplusplus

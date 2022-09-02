@@ -1645,6 +1645,14 @@ xBase xStreamIsEmpty(xStreamBuffer stream_);
  */
 xBase xStreamIsFull(xStreamBuffer steam_);
 
+/**
+ * @brief 
+ * 
+ * @param device_init_ 
+ * @return Base_t 
+ */
+Base_t xDeviceRegisterDevice(Base_t (*device_init_)());
+
 #if defined(POSIX_ARCH_OTHER)
 void __MemoryClear__(void);
 void __SysStateClear__(void);
