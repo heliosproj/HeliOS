@@ -267,13 +267,13 @@ typedef struct SystemInfo_s {
  *
  */
 typedef struct MemoryRegionStats_s {
-  Word_t largestFreeEntryInBytes;
-  Word_t smallestFreeEntryInBytes;
-  Word_t numberOfFreeBlocks;
-  Word_t availableSpaceInBytes;
-  Word_t successfulAllocations;
-  Word_t successfulFrees;
-  Word_t minimumEverFreeBytesRemaining;
+  Word_t largestFreeEntryInBytes;       /**< The largest free entry in bytes. */
+  Word_t smallestFreeEntryInBytes;      /**< The smallest free entry in bytes. */
+  Word_t numberOfFreeBlocks;            /**< Number of free blocks - see CONFIG_MEMORY_REGION_BLOCK_SIZE for block size in bytes. */
+  Word_t availableSpaceInBytes;         /**< Amount of free memory in bytes (i.e., numberOfFreeBlocks * CONFIG_MEMORY_REGION_BLOCK_SIZE). */
+  Word_t successfulAllocations;         /**< Number of successful memory allocations. */
+  Word_t successfulFrees;               /**< Number of successful memory "frees". */
+  Word_t minimumEverFreeBytesRemaining; /**< Lowest water level since system initialization of free bytes of memory. */
 } MemoryRegionStats_t;
 
 /**
@@ -291,16 +291,21 @@ typedef struct MemoryRegionStats_s {
  */
 typedef void Task_t;
 
-
-
 /**
- * @brief
+ * @brief Stub type defintion for a stream buffer type.
+ *
+ * The StreamBuffer_t type is a stub defintion for the internal stream buffer data structure
+ * and is treated as a handle by most of the stream system calls. The members of this
+ * data structure are not accessible. The StreamBuffer_t type should be declared
+ * as xStreamBuffer.
+ *
+ * @sa xStreamBuffer
+ * @sa xStreamDelete()
+ *
+ * @warning The memory allocated for an instance of the xStreamBuffer must be freed by xStreamDelete()
  *
  */
 typedef void StreamBuffer_t;
-
-
-
 
 /**
  * @brief Type definition for the task parameter.
@@ -395,7 +400,6 @@ typedef Base_t xBase;
  * @sa Word_t
  */
 typedef Word_t xWord;
-
 
 /**
  * @brief Type defintion for the half-word data type
@@ -537,15 +541,20 @@ typedef MemoryRegionStats_t *xMemoryRegionStats;
  */
 typedef Task_t *xTask;
 
-
 /**
- * @brief
+ * @brief Stub type defintion for a stream buffer type.
+ *
+ * The xStreamBuffer type is a stub defintion for the internal stream buffer data structure
+ * and is treated as a handle by most of the stream system calls. The members of this
+ * data structure are not accessible.
+ *
+ * @sa StreamBuffer_t
+ * @sa xStreamDelete()
+ *
+ * @warning The memory allocated for an instance of the xStreamBuffer must be freed by xStreamDelete()
  *
  */
 typedef StreamBuffer_t *xStreamBuffer;
-
-
-
 
 /**
  * @brief Type definition for the task parameter.
@@ -1523,9 +1532,6 @@ void xSystemHalt(void);
  */
 void xTaskChangeWDPeriod(xTask *task_, xTicks wdTimerPeriod_);
 
-
-
-
 /**
  * @brief The xTaskGetWDPeriod() return the current task watchdog timer.
  *
@@ -1537,81 +1543,107 @@ void xTaskChangeWDPeriod(xTask *task_, xTicks wdTimerPeriod_);
  */
 xTicks xTaskGetWDPeriod(xTask *task_);
 
-
 /**
- * @brief 
+ * @brief The xStreamCreate() system call will create a new stream buffer
  * 
- * @return xStreamBuffer 
+ * The xStreamCreate() system call will create a new stream buffer. The
+ * memory for a stream buffer is allocated from kernel memory and therefor
+ * cannot be freed by calling xMemFree().
+ *
+ * @return xStreamBuffer The newly created stream buffer.
+ * 
+ * @warning The stream buffer created by xStreamCreate() must
+ * be freed by calling xStreamDelete().
  */
 xStreamBuffer xStreamCreate(void);
 
-
-
 /**
- * @brief
+ * @brief The xStreamDelete() system call will delete a stream buffer
+ * 
+ * The xStreamDelete() system call will delete a stream buffer and
+ * free its memory. Once a stream buffer is deleted, it can not
+ * be written to or read from.
  *
- * @param stream_
+ * @param stream_ The stream buffer to operate on.
  */
 void xStreamDelete(xStreamBuffer stream_);
 
-
-
 /**
- * @brief 
+ * @brief The xStreamSend() system call will write one byte to the stream buffer
  * 
- * @param stream_ 
- * @param byte_ 
- * @return xBase 
+ * The xStreamSend() system call will write one byte to the stream buffer. If the
+ * stream buffer's length is equal to CONFIG_STREAM_BUFFER_BYTES (i.e., full) then
+ * the byte will not be written to the stream buffer and xStreamSend() will return
+ * RETURN_FAILURE.
+ *
+ * @param stream_
+ * @param byte_
+ * @return xBase
  */
 xBase xStreamSend(xStreamBuffer stream_, xByte byte_);
 
-
 /**
- * @brief 
+ * @brief The xStreamReceive() system call will return the contents of the stream buffer
  * 
- * @param stream_ 
- * @param bytes_ 
- * @return xByte* 
+ * The xStreamReceive() system call will return the contents of the stream buffer. The
+ * contents are returned as a byte array whose length is known by the bytes_ paramater.
+ * Because the byte array is stored in the heap, it must be freed by calling xMemFree().
+ * 
+ * @param stream_ The stream to operate on.
+ * @param bytes_ The number of bytes returned (i.e., length of the byte array) by xStreamReceive().
+ * @return xByte* The byte array containing the contents of the stream buffer.
+ * 
+ * @warning The byte array returned by xStreamReceive() must be freed by calling xMemFree().
  */
 xByte *xStreamReceive(xStreamBuffer stream_, HWord_t *bytes_);
 
-
-
 /**
- * @brief 
+ * @brief The xStreamBytesAvailable() system call returns the length of the stream buffer
  * 
- * @param stream_ 
- * @return xHWord 
+ * The xStreamBytesAvailable() system call will return the length of the stream buffer
+ * in bytes (i.e., bytes available to be received by xStreamReceive()). 
+ *
+ * @param stream_ The stream to operate on.
+ * @return xHWord The length of the stream buffer in bytes.
  */
 xHWord xStreamBytesAvailable(xStreamBuffer stream_);
 
-
 /**
- * @brief
+ * @brief The xStreamReset() system call will reset a stream buffer
+ * 
+ * The xStreamRest() system call will clear the contents of the stream buffer
+ * and reset its length to zero.
  *
- * @param stream_
+ * @param stream_ The stream buffer to operate on.
  */
 void xStreamReset(xStreamBuffer stream_);
 
-
-
 /**
- * @brief
+ * @brief The xStreamIsEmpty() system call returns true if the stream buffer is empty
  *
- * @param stream_
- * @return xBase
+ * The xStreamIsEmpty() system call is used to determine if the stream buffer is empty.
+ * A stream buffer is considered empty when it's length is equal to zero. If the buffer
+ * is greater than zero in length, xStreamIsEmpty() will return false.
+ *
+ * @param steam_ The stream buffer to operate on.
+ * @return xBase Returns true if the stream buffer length is equal to zero
+ * in length, otherwise xStreamIsEmpty() will return false.
  */
 xBase xStreamIsEmpty(xStreamBuffer stream_);
 
-
 /**
- * @brief
+ * @brief The xStreamIsFull() system call returns true if the stream buffer is full
  *
- * @param steam_
- * @return xBase
+ * The xStreamIsFull() system call is used to determine if the stream buffer is full.
+ * A stream buffer is considered full when it's length is equal to CONFIG_STREAM_BUFFER_BYTES.
+ * If the buffer is less than CONFIG_STREAM_BUFFER_BYTES in length, xStreamIsFull()
+ * will return false.
+ *
+ * @param steam_ The stream buffer to operate on.
+ * @return xBase Returns true if the stream buffer is equal to CONFIG_STREAM_BUFFER_BYTES
+ * in length, otherwise xStreamIsFull() will return false.
  */
 xBase xStreamIsFull(xStreamBuffer steam_);
-
 
 #if defined(POSIX_ARCH_OTHER)
 void __MemoryClear__(void);

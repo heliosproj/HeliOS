@@ -225,7 +225,14 @@ to customize the HeliOS kernel for their specific application. */
 
 
 /**
- * @brief 
+ * @brief Define the length of the stream buffer.
+ * 
+ * Setting CONFIG_STREAM_BUFFER_BYTES will define the length
+ * of stream buffers created by xStreamCreate(). When the length
+ * of the stream buffer reaches this value, it is considered
+ * full and can no longer be written to by calling xStreamSend().
+ * The default value is 32. The literal must be appended with "u" to maintain
+ * MISRA C:2012 compliance.
  * 
  */
 #if !defined(CONFIG_STREAM_BUFFER_BYTES)
