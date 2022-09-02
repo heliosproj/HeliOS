@@ -29,7 +29,7 @@
 #include "config.h"
 #include "defines.h"
 #include "types.h"
-#include "driver.h"
+#include "device.h"
 #include "mem.h"
 #include "queue.h"
 #include "stream.h"

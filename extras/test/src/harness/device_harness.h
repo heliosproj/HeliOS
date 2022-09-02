@@ -1,9 +1,9 @@
 /**
- * @file driver.h
+ * @file device_harness.h
  * @author Manny Peterson (mannymsp@gmail.com)
- * @brief Kernel source code for IO drivers
+ * @brief 
  * @version 0.3.5
- * @date 2022-09-01
+ * @date 2022-09-02
  * 
  * @copyright
  * HeliOS Embedded Operating System
@@ -23,29 +23,22 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  * 
  */
-#ifndef DRIVER_H_
-#define DRIVER_H_
+#ifndef DEVICE_HARNESS_H_
+#define DEVICE_HARNESS_H_
 
-#include "config.h"
-#include "defines.h"
-#include "types.h"
-#include "port.h"
-#include "mem.h"
-#include "queue.h"
-#include "stream.h"
-#include "sys.h"
-#include "task.h"
-#include "timer.h"
+
+#include "HeliOS.h"
+#include "unit.h"
 
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+void device_harness(void);
 
 #ifdef __cplusplus
 }  // extern "C" {
 #endif
-
 
 #endif

@@ -1,7 +1,7 @@
 /**
- * @file driver.c
+ * @file device.c
  * @author Manny Peterson (mannymsp@gmail.com)
- * @brief Kernel source code for IO drivers
+ * @brief Kernel source code for device drivers
  * @version 0.3.5
  * @date 2022-09-01
  * 
@@ -24,4 +24,4 @@
  * 
  */
 
-#include "driver.h"
+#include "device.h"

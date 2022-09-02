@@ -1,9 +1,9 @@
 /**
- * @file test.h
+ * @file device_harness.c
  * @author Manny Peterson (mannymsp@gmail.com)
  * @brief
  * @version 0.3.5
- * @date 2022-08-27
+ * @date 2022-09-02
  *
  * @copyright
  * HeliOS Embedded Operating System
@@ -23,29 +23,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
-#ifndef TEST_H_
-#define TEST_H_
 
-#include "HeliOS.h"
-#include "unit.h"
-#include "memory_harness.h"
-#include "queue_harness.h"
-#include "task_harness.h"
-#include "timer_harness.h"
-#include "stream_harness.h"
 #include "device_harness.h"
 
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-int main(int argc, char **argv);
-void reset(void);
-
-#ifdef __cplusplus
-}  // extern "C" {
-#endif
+void device_harness(void) {
 
 
-#endif
+
+  return;
+}

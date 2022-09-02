@@ -59,6 +59,10 @@ int main(int argc, char **argv) {
   stream_harness();
 
 
+  reset();
+
+  device_harness();
+
 
   unit_exit();
 
