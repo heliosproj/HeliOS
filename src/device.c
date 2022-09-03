@@ -80,52 +80,58 @@ Base_t __RegisterDevice__(HWord_t uid_,
 
     if (ISNOTNULLPTR(deviceList)) {
 
+      device = __DeviceListFind__(uid_);
 
-      device = (Device_t *)__KernelAllocateMemory__(sizeof(Device_t));
+      SYSASSERT(ISNULLPTR(device));
 
+      if (ISNULLPTR(device)) {
 
-
-      SYSASSERT(ISNOTNULLPTR(device));
-
-
-
-      if (ISNOTNULLPTR(device)) {
-
-        device->uid = uid_;
-        __memcpy__(device->name, name_, CONFIG_DEVICE_NAME_BYTES);
-        device->state = state_;
-        device->mode = mode_;
-        device->bytesWritten = zero;
-        device->bytesRead = zero;
-        device->init = init_;
-        device->config = config_;
-        device->read = read_;
-        device->write = write_;
+        device = (Device_t *)__KernelAllocateMemory__(sizeof(Device_t));
 
 
 
-        cursor = deviceList->head;
+        SYSASSERT(ISNOTNULLPTR(device));
 
 
-        if (ISNOTNULLPTR(deviceList->head)) {
+
+        if (ISNOTNULLPTR(device)) {
+
+          device->uid = uid_;
+          __memcpy__(device->name, name_, CONFIG_DEVICE_NAME_BYTES);
+          device->state = state_;
+          device->mode = mode_;
+          device->bytesWritten = zero;
+          device->bytesRead = zero;
+          device->init = init_;
+          device->config = config_;
+          device->read = read_;
+          device->write = write_;
 
 
-          while (ISNOTNULLPTR(cursor->next)) {
+
+          cursor = deviceList->head;
 
 
-            cursor = cursor->next;
+          if (ISNOTNULLPTR(deviceList->head)) {
+
+
+            while (ISNOTNULLPTR(cursor->next)) {
+
+
+              cursor = cursor->next;
+            }
+
+            cursor->next = device;
+
+          } else {
+
+            deviceList->head = device;
           }
 
-          cursor->next = device;
+          deviceList->length++;
 
-        } else {
-
-          deviceList->head = device;
+          ret = RETURN_SUCCESS;
         }
-
-        deviceList->length++;
-
-        ret = RETURN_SUCCESS;
       }
     }
   }
