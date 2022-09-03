@@ -29,19 +29,18 @@
 #include "config.h"
 #include "defines.h"
 #include "types.h"
+#include "port.h"
+#include "device.h"
+#include "mem.h"
+#include "queue.h"
+#include "stream.h"
+#include "sys.h"
+#include "task.h"
+#include "timer.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-Base_t __RegisterDevice__(HWord_t uid_,
-                          const char *name_,
-                          DeviceState_t state_,
-                          DeviceMode_t mode_,
-                          Base_t (*init_)(Device_t *device_),
-                          Base_t (*config_)(Device_t *device_, void *config_),
-                          Base_t (*read_)(Device_t *device_, HWord_t *bytes_, void *data_),
-                          Base_t (*write_)(Device_t *device_, HWord_t *bytes_, void *data_));
 
 Base_t loopback_self_register(void);
 Base_t loopback_init(Device_t *device_);
@@ -52,6 +51,4 @@ Base_t loopback_write(Device_t *device_, HWord_t *bytes_, void *data_);
 #ifdef __cplusplus
 }  // extern "C" {
 #endif
-
-
 #endif

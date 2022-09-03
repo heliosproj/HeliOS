@@ -26,8 +26,9 @@
 
 #include "loopback.h"
 
-#define LENGTH 0x20u
-char *loopback_buffer[LENGTH];
+#define BUFFER_LENGTH 0xFFu
+static char loopback_buffer[BUFFER_LENGTH];
+static HWord_t loopback_buffer_bytes = zero;
 
 
 Base_t loopback_self_register(void) {
@@ -43,7 +44,7 @@ Base_t loopback_self_register(void) {
 Base_t loopback_init(Device_t *device_) {
   Base_t ret = RETURN_SUCCESS;
 
-  __memset__(loopback_buffer, zero, LENGTH);
+  __memset__(loopback_buffer, zero, BUFFER_LENGTH);
 
   return ret;
 }
@@ -60,9 +61,11 @@ Base_t loopback_config(Device_t *device_, void *config_) {
 
 
 Base_t loopback_read(Device_t *device_, HWord_t *bytes_, void *data_) {
-
   Base_t ret = RETURN_SUCCESS;
 
+  *bytes_ = loopback_buffer_bytes;
+
+  __memcpy__(data_, loopback_buffer, *bytes_);
 
   return ret;
 }
@@ -72,6 +75,9 @@ Base_t loopback_read(Device_t *device_, HWord_t *bytes_, void *data_) {
 Base_t loopback_write(Device_t *device_, HWord_t *bytes_, void *data_) {
   Base_t ret = RETURN_SUCCESS;
 
+  loopback_buffer_bytes = *bytes_;
+
+  __memcpy__(loopback_buffer, data_, *bytes_);
 
   return ret;
 }

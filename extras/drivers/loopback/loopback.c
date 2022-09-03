@@ -24,12 +24,17 @@
  *
  */
 
-#include "driver.h"
+#include "loopback.h"
+
+#define BUFFER_LENGTH 0xFFu
+static char loopback_buffer[BUFFER_LENGTH];
+static HWord_t loopback_buffer_bytes = zero;
+
 
 Base_t loopback_self_register(void) {
   Base_t ret = RETURN_FAILURE;
 
-  ret = __RegisterDevice__(0x1u, "LOOPBACK", DeviceStateRunning, DeviceModeReadWrite, device_init, device_config, device_read, device_write);
+  ret = __RegisterDevice__(0xFFu, "LOOPBACK", DeviceStateRunning, DeviceModeReadWrite, loopback_init, loopback_config, loopback_read, loopback_write);
 
   return ret;
 }
@@ -37,8 +42,9 @@ Base_t loopback_self_register(void) {
 
 
 Base_t loopback_init(Device_t *device_) {
-  Base_t ret = RETURN_FAILURE;
+  Base_t ret = RETURN_SUCCESS;
 
+  __memset__(loopback_buffer, zero, BUFFER_LENGTH);
 
   return ret;
 }
@@ -46,7 +52,7 @@ Base_t loopback_init(Device_t *device_) {
 
 
 Base_t loopback_config(Device_t *device_, void *config_) {
-  Base_t ret = RETURN_FAILURE;
+  Base_t ret = RETURN_SUCCESS;
 
 
   return ret;
@@ -55,9 +61,11 @@ Base_t loopback_config(Device_t *device_, void *config_) {
 
 
 Base_t loopback_read(Device_t *device_, HWord_t *bytes_, void *data_) {
+  Base_t ret = RETURN_SUCCESS;
 
-  Base_t ret = RETURN_FAILURE;
+  *bytes_ = loopback_buffer_bytes;
 
+  __memcpy__(data_, loopback_buffer, *bytes_);
 
   return ret;
 }
@@ -65,8 +73,11 @@ Base_t loopback_read(Device_t *device_, HWord_t *bytes_, void *data_) {
 
 
 Base_t loopback_write(Device_t *device_, HWord_t *bytes_, void *data_) {
-  Base_t ret = RETURN_FAILURE;
+  Base_t ret = RETURN_SUCCESS;
 
+  loopback_buffer_bytes = *bytes_;
+
+  __memcpy__(loopback_buffer, data_, *bytes_);
 
   return ret;
 }

@@ -51,6 +51,4 @@ Base_t loopback_write(Device_t *device_, HWord_t *bytes_, void *data_);
 #ifdef __cplusplus
 }  // extern "C" {
 #endif
-
-
 #endif

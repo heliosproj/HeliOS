@@ -40,17 +40,17 @@ void device_harness(void) {
 
   unit_begin("xDeviceWrite()");
 
-  HWord_t bytes = 0x8u;
+  HWord_t bytes1 = 0x26u;
 
-  Byte_t *data = NULL;
+  Byte_t *data1 = NULL;
 
-  data = (Byte_t *)xMemAlloc(bytes);
+  data1 = (Byte_t *)xMemAlloc(bytes1);
 
-  memcpy(data, "1234567\0", bytes);
+  memcpy(data1, "THIS IS A TEST OF THE LOOPBACK DEVICE\0", bytes1);
 
-  unit_try(RETURN_SUCCESS == xDeviceWrite(0xFFu, &bytes, data));
+  unit_try(RETURN_SUCCESS == xDeviceWrite(0xFFu, &bytes1, data1));
 
-  xMemFree(data);
+  xMemFree(data1);
 
   unit_end();
 
@@ -58,7 +58,7 @@ void device_harness(void) {
 
   unit_begin("xDeviceRead()");
 
-  HWord_t bytes2 = 0x10u;
+  HWord_t bytes2 = 0x26u;
 
   Byte_t *data2 = NULL;
 
@@ -66,14 +66,14 @@ void device_harness(void) {
 
   unit_try(RETURN_SUCCESS == xDeviceRead(0xFFu, &bytes2, data2));
 
-  printf("[%s]\n", data2);
+  unit_try(0x26u == bytes2);
+
+  unit_try(zero == strncmp((char *)data2, "THIS IS A TEST OF THE LOOPBACK DEVICE\0", bytes2));
 
   xMemFree(data2);
-
 
   unit_end();
 
 
   return;
 }
-

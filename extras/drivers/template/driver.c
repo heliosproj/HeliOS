@@ -1,7 +1,7 @@
 /**
  * @file driver.c
  * @author Manny Peterson (mannymsp@gmail.com)
- * @brief Template for a HeliOS device driver.
+ * @brief Template for HeliOS device drivers
  * @version 0.3.5
  * @date 2022-09-02
  *
@@ -26,10 +26,11 @@
 
 #include "driver.h"
 
+
 Base_t device_self_register(void) {
   Base_t ret = RETURN_FAILURE;
 
-  ret = __RegisterDevice__(0x1u, "TEMPLATE", DeviceStateRunning, DeviceModeReadWrite, device_init, device_config, device_read, device_write);
+  ret = __RegisterDevice__(0x1u, "DEV_TEMP", DeviceStateRunning, DeviceModeReadWrite, device_init, device_config, device_read, device_write);
 
   return ret;
 }
@@ -37,7 +38,7 @@ Base_t device_self_register(void) {
 
 
 Base_t device_init(Device_t *device_) {
-  Base_t ret = RETURN_FAILURE;
+  Base_t ret = RETURN_SUCCESS;
 
 
   return ret;
@@ -46,7 +47,7 @@ Base_t device_init(Device_t *device_) {
 
 
 Base_t device_config(Device_t *device_, void *config_) {
-  Base_t ret = RETURN_FAILURE;
+  Base_t ret = RETURN_SUCCESS;
 
 
   return ret;
@@ -55,8 +56,7 @@ Base_t device_config(Device_t *device_, void *config_) {
 
 
 Base_t device_read(Device_t *device_, HWord_t *bytes_, void *data_) {
-
-  Base_t ret = RETURN_FAILURE;
+  Base_t ret = RETURN_SUCCESS;
 
 
   return ret;
@@ -65,7 +65,8 @@ Base_t device_read(Device_t *device_, HWord_t *bytes_, void *data_) {
 
 
 Base_t device_write(Device_t *device_, HWord_t *bytes_, void *data_) {
-  Base_t ret = RETURN_FAILURE;
+  Base_t ret = RETURN_SUCCESS;
+
 
 
   return ret;
