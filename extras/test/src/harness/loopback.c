@@ -1,7 +1,7 @@
 /**
- * @file device_harness.c
+ * @file loopback.c
  * @author Manny Peterson (mannymsp@gmail.com)
- * @brief
+ * @brief Driver for HeliOS loopback device
  * @version 0.3.5
  * @date 2022-09-02
  *
@@ -24,56 +24,54 @@
  *
  */
 
-#include "device_harness.h"
+#include "loopback.h"
+
+#define LENGTH 0x20u
+char *loopback_buffer[LENGTH];
 
 
-void device_harness(void) {
+Base_t loopback_self_register(void) {
+  Base_t ret = RETURN_FAILURE;
 
-  unit_begin("xDeviceRegisterDevice()");
+  ret = __RegisterDevice__(0xFFu, "LOOPBACK", DeviceStateRunning, DeviceModeReadWrite, loopback_init, loopback_config, loopback_read, loopback_write);
 
-
-  unit_try(RETURN_SUCCESS == xDeviceRegisterDevice(loopback_self_register));
-
-  unit_end();
-
-
-
-  unit_begin("xDeviceWrite()");
-
-  HWord_t bytes = 0x8u;
-
-  Byte_t *data = NULL;
-
-  data = (Byte_t *)xMemAlloc(bytes);
-
-  memcpy(data, "1234567\0", bytes);
-
-  unit_try(RETURN_SUCCESS == xDeviceWrite(0xFFu, &bytes, data));
-
-  xMemFree(data);
-
-  unit_end();
-
-
-
-  unit_begin("xDeviceRead()");
-
-  HWord_t bytes2 = 0x10u;
-
-  Byte_t *data2 = NULL;
-
-  data2 = (Byte_t *)xMemAlloc(bytes2);
-
-  unit_try(RETURN_SUCCESS == xDeviceRead(0xFFu, &bytes2, data2));
-
-  printf("[%s]\n", data2);
-
-  xMemFree(data2);
-
-
-  unit_end();
-
-
-  return;
+  return ret;
 }
 
+
+
+Base_t loopback_init(Device_t *device_) {
+  Base_t ret = RETURN_SUCCESS;
+
+  __memset__(loopback_buffer, zero, LENGTH);
+
+  return ret;
+}
+
+
+
+Base_t loopback_config(Device_t *device_, void *config_) {
+  Base_t ret = RETURN_SUCCESS;
+
+
+  return ret;
+}
+
+
+
+Base_t loopback_read(Device_t *device_, HWord_t *bytes_, void *data_) {
+
+  Base_t ret = RETURN_SUCCESS;
+
+
+  return ret;
+}
+
+
+
+Base_t loopback_write(Device_t *device_, HWord_t *bytes_, void *data_) {
+  Base_t ret = RETURN_SUCCESS;
+
+
+  return ret;
+}

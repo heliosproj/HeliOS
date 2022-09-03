@@ -26,7 +26,6 @@
 #ifndef TEST_H_
 #define TEST_H_
 
-#include "HeliOS.h"
 #include "unit.h"
 #include "memory_harness.h"
 #include "queue_harness.h"
@@ -34,7 +33,6 @@
 #include "timer_harness.h"
 #include "stream_harness.h"
 #include "device_harness.h"
-
 
 #ifdef __cplusplus
 extern "C" {
@@ -46,6 +44,4 @@ void reset(void);
 #ifdef __cplusplus
 }  // extern "C" {
 #endif
-
-
 #endif

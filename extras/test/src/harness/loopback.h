@@ -1,7 +1,7 @@
 /**
- * @file device_harness.c
+ * @file loopback.h
  * @author Manny Peterson (mannymsp@gmail.com)
- * @brief
+ * @brief Driver for HeliOS loopback device
  * @version 0.3.5
  * @date 2022-09-02
  *
@@ -23,57 +23,34 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
+#ifndef LOOPBACK_H_
+#define LOOPBACK_H_
 
-#include "device_harness.h"
+#include "config.h"
+#include "defines.h"
+#include "types.h"
+#include "port.h"
+#include "device.h"
+#include "mem.h"
+#include "queue.h"
+#include "stream.h"
+#include "sys.h"
+#include "task.h"
+#include "timer.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-void device_harness(void) {
+Base_t loopback_self_register(void);
+Base_t loopback_init(Device_t *device_);
+Base_t loopback_config(Device_t *device_, void *config_);
+Base_t loopback_read(Device_t *device_, HWord_t *bytes_, void *data_);
+Base_t loopback_write(Device_t *device_, HWord_t *bytes_, void *data_);
 
-  unit_begin("xDeviceRegisterDevice()");
-
-
-  unit_try(RETURN_SUCCESS == xDeviceRegisterDevice(loopback_self_register));
-
-  unit_end();
-
-
-
-  unit_begin("xDeviceWrite()");
-
-  HWord_t bytes = 0x8u;
-
-  Byte_t *data = NULL;
-
-  data = (Byte_t *)xMemAlloc(bytes);
-
-  memcpy(data, "1234567\0", bytes);
-
-  unit_try(RETURN_SUCCESS == xDeviceWrite(0xFFu, &bytes, data));
-
-  xMemFree(data);
-
-  unit_end();
+#ifdef __cplusplus
+}  // extern "C" {
+#endif
 
 
-
-  unit_begin("xDeviceRead()");
-
-  HWord_t bytes2 = 0x10u;
-
-  Byte_t *data2 = NULL;
-
-  data2 = (Byte_t *)xMemAlloc(bytes2);
-
-  unit_try(RETURN_SUCCESS == xDeviceRead(0xFFu, &bytes2, data2));
-
-  printf("[%s]\n", data2);
-
-  xMemFree(data2);
-
-
-  unit_end();
-
-
-  return;
-}
-
+#endif

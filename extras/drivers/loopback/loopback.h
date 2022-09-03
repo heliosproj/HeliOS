@@ -1,9 +1,9 @@
 /**
- * @file task_harness.h
+ * @file loopback.h
  * @author Manny Peterson (mannymsp@gmail.com)
- * @brief
+ * @brief Driver for HeliOS loopback device
  * @version 0.3.5
- * @date 2022-08-27
+ * @date 2022-09-02
  *
  * @copyright
  * HeliOS Embedded Operating System
@@ -23,32 +23,35 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
-#ifndef TASK_HARNESS_H_
-#define TASK_HARNESS_H_
+#ifndef LOOPBACK_H_
+#define LOOPBACK_H_
 
 #include "config.h"
 #include "defines.h"
 #include "types.h"
-#include "port.h"
-#include "device.h"
-#include "mem.h"
-#include "queue.h"
-#include "stream.h"
-#include "sys.h"
-#include "task.h"
-#include "timer.h"
-
-#include "unit.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-void task_harness(void);
-void task_harness_task(Task_t* task_, TaskParm_t* parm_);
-void task_harness_task2(Task_t* task_, TaskParm_t* parm_);
+Base_t __RegisterDevice__(HWord_t uid_,
+                          const char *name_,
+                          DeviceState_t state_,
+                          DeviceMode_t mode_,
+                          Base_t (*init_)(Device_t *device_),
+                          Base_t (*config_)(Device_t *device_, void *config_),
+                          Base_t (*read_)(Device_t *device_, HWord_t *bytes_, void *data_),
+                          Base_t (*write_)(Device_t *device_, HWord_t *bytes_, void *data_));
+
+Base_t loopback_self_register(void);
+Base_t loopback_init(Device_t *device_);
+Base_t loopback_config(Device_t *device_, void *config_);
+Base_t loopback_read(Device_t *device_, HWord_t *bytes_, void *data_);
+Base_t loopback_write(Device_t *device_, HWord_t *bytes_, void *data_);
 
 #ifdef __cplusplus
 }  // extern "C" {
 #endif
+
+
 #endif

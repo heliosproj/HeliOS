@@ -33,7 +33,7 @@ void task_harness(void) {
 
   unit_begin("xTaskCreate()");
 
-  xTask task01 = NULL;
+  Task_t *task01 = NULL;
 
   task01 = xTaskCreate("TASK01", task_harness_task, NULL);
 
@@ -45,7 +45,7 @@ void task_harness(void) {
 
   unit_begin("xTaskGetHandleByName()");
 
-  xTask task02 = NULL;
+  Task_t *task02 = NULL;
 
   task02 = xTaskGetHandleByName("TASK01");
 
@@ -59,7 +59,7 @@ void task_harness(void) {
 
   task02 = NULL;
 
-  xBase task03 = 0x0;
+  Base_t task03 = 0x0;
 
   task03 = xTaskGetId(task01);
 
@@ -73,8 +73,8 @@ void task_harness(void) {
 
   unit_begin("xTaskGetAllRunTimeStats()");
 
-  xTaskRunTimeStats task04 = NULL;
-  xBase task05 = 0;
+  TaskRunTimeStats_t *task04 = NULL;
+  Base_t task05 = 0;
 
   task04 = xTaskGetAllRunTimeStats(&task05);
 
@@ -108,7 +108,7 @@ void task_harness(void) {
 
   unit_begin("xTaskGetNumberOfTasks()");
 
-  xBase task06 = 0;
+  Base_t task06 = 0;
 
   task06 = xTaskGetNumberOfTasks();
 
@@ -120,7 +120,7 @@ void task_harness(void) {
 
   unit_begin("xTaskGetTaskInfo()");
 
-  xTaskInfo task07 = NULL;
+  TaskInfo_t *task07 = NULL;
 
   task07 = xTaskGetTaskInfo(task01);
 
@@ -218,7 +218,7 @@ void task_harness(void) {
 
   unit_begin("xTaskNotifyTake()");
 
-  xTaskNotification task09 = NULL;
+  TaskNotification_t *task09 = NULL;
 
   unit_try(RETURN_SUCCESS == xTaskNotifyGive(task01, 0x7, "MESSAGE"));
 
@@ -314,7 +314,7 @@ void task_harness(void) {
 
   xTaskDelete(task01);
 
-  xTask task10 = NULL;
+  Task_t *task10 = NULL;
 
   task10 = xTaskCreate("TASK10", task_harness_task, NULL);
 
@@ -338,7 +338,7 @@ void task_harness(void) {
 
   xTaskResumeAll();
 
-  xTask task11 = NULL;
+  Task_t *task11 = NULL;
 
   task11 = xTaskCreate("TASK11", task_harness_task, NULL);
 
@@ -367,7 +367,7 @@ void task_harness(void) {
 
   xTaskResumeAll();
 
-  xTask task12 = NULL;
+  Task_t *task12 = NULL;
 
   task12 = xTaskCreate("TASK12", task_harness_task2, NULL);
 
@@ -400,7 +400,7 @@ void task_harness(void) {
   return;
 }
 
-void task_harness_task(xTask task_, xTaskParm parm_) {
+void task_harness_task(Task_t *task_, TaskParm_t *parm_) {
 
   xTaskNotifyStateClear(task_);
 
@@ -409,7 +409,7 @@ void task_harness_task(xTask task_, xTaskParm parm_) {
   return;
 }
 
-void task_harness_task2(xTask task_, xTaskParm parm_) {
+void task_harness_task2(Task_t *task_, TaskParm_t *parm_) {
 
   sleep(3);
 

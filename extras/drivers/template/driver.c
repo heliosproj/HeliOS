@@ -1,7 +1,7 @@
 /**
- * @file device_harness.c
+ * @file driver.c
  * @author Manny Peterson (mannymsp@gmail.com)
- * @brief
+ * @brief Template for a HeliOS device driver.
  * @version 0.3.5
  * @date 2022-09-02
  *
@@ -24,56 +24,49 @@
  *
  */
 
-#include "device_harness.h"
+#include "driver.h"
 
+Base_t device_self_register(void) {
+  Base_t ret = RETURN_FAILURE;
 
-void device_harness(void) {
+  ret = __RegisterDevice__(0x1u, "TEMPLATE", DeviceStateRunning, DeviceModeReadWrite, device_init, device_config, device_read, device_write);
 
-  unit_begin("xDeviceRegisterDevice()");
-
-
-  unit_try(RETURN_SUCCESS == xDeviceRegisterDevice(loopback_self_register));
-
-  unit_end();
-
-
-
-  unit_begin("xDeviceWrite()");
-
-  HWord_t bytes = 0x8u;
-
-  Byte_t *data = NULL;
-
-  data = (Byte_t *)xMemAlloc(bytes);
-
-  memcpy(data, "1234567\0", bytes);
-
-  unit_try(RETURN_SUCCESS == xDeviceWrite(0xFFu, &bytes, data));
-
-  xMemFree(data);
-
-  unit_end();
-
-
-
-  unit_begin("xDeviceRead()");
-
-  HWord_t bytes2 = 0x10u;
-
-  Byte_t *data2 = NULL;
-
-  data2 = (Byte_t *)xMemAlloc(bytes2);
-
-  unit_try(RETURN_SUCCESS == xDeviceRead(0xFFu, &bytes2, data2));
-
-  printf("[%s]\n", data2);
-
-  xMemFree(data2);
-
-
-  unit_end();
-
-
-  return;
+  return ret;
 }
 
+
+
+Base_t device_init(Device_t *device_) {
+  Base_t ret = RETURN_FAILURE;
+
+
+  return ret;
+}
+
+
+
+Base_t device_config(Device_t *device_, void *config_) {
+  Base_t ret = RETURN_FAILURE;
+
+
+  return ret;
+}
+
+
+
+Base_t device_read(Device_t *device_, HWord_t *bytes_, void *data_) {
+
+  Base_t ret = RETURN_FAILURE;
+
+
+  return ret;
+}
+
+
+
+Base_t device_write(Device_t *device_, HWord_t *bytes_, void *data_) {
+  Base_t ret = RETURN_FAILURE;
+
+
+  return ret;
+}

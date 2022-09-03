@@ -74,9 +74,9 @@ void memory_harness(void) {
 
   unit_begin("xMemAlloc()");
 
-  xBase *mem01 = NULL;
+  Base_t *mem01 = NULL;
 
-  mem01 = (xBase *)xMemAlloc(0x32000u);
+  mem01 = (Base_t *)xMemAlloc(0x32000u);
 
   unit_try(NULL != mem01);
 
@@ -102,7 +102,7 @@ void memory_harness(void) {
 
   unit_begin("xMemGetHeapStats()");
 
-  xMemoryRegionStats mem02 = NULL;
+  MemoryRegionStats_t *mem02 = NULL;
 
   mem02 = xMemGetHeapStats();
 
@@ -128,9 +128,9 @@ void memory_harness(void) {
 
   unit_begin("xMemGetKernelStats()");
 
-  xMemoryRegionStats mem03 = NULL;
+  MemoryRegionStats_t *mem03 = NULL;
 
-  xTask mem04 = NULL;
+  Task_t *mem04 = NULL;
 
   mem04 = xTaskCreate("NONE", memory_harness_task, NULL);
 
@@ -167,7 +167,7 @@ void memory_harness(void) {
   return;
 }
 
-void memory_harness_task(xTask task_, xTaskParm parm_) {
+void memory_harness_task(Task_t *task_, TaskParm_t *parm_) {
 
   xTaskSuspendAll();
 

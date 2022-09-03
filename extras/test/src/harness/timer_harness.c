@@ -32,7 +32,7 @@ void timer_harness(void) {
 
   unit_begin("xTimerCreate()");
 
-  xTimer timer01 = NULL;
+  Timer_t * timer01 = NULL;
 
   timer01 = xTimerCreate(0x3E8);
 
@@ -118,7 +118,7 @@ void timer_harness(void) {
 
   xTimerDelete(timer01);
 
-  unit_try(0x0 == xTimerGetPeriod(timer01));
+  unit_try(0x0u == xTimerGetPeriod(timer01));
 
   unit_end();
 
