@@ -45,6 +45,8 @@ extern "C" {
 
 
 Base_t xDeviceRegisterDevice(Base_t (*device_self_register_)());
+Base_t xDeviceInitDevice(HWord_t uid_);
+Base_t xDeviceConfigDevice(HWord_t uid_, Size_t size_, void *config_);
 Base_t xDeviceWrite(HWord_t uid_, HWord_t *bytes_, Byte_t *data_);
 Base_t xDeviceRead(HWord_t uid_, HWord_t *bytes_, Byte_t *data_);
 Base_t __RegisterDevice__(HWord_t uid_,
@@ -66,6 +68,4 @@ void __DeviceStateClear__(void);
 #ifdef __cplusplus
 }  // extern "C" {
 #endif
-
-
 #endif

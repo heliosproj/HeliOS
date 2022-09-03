@@ -182,10 +182,9 @@ Base_t xDeviceWrite(HWord_t uid_, HWord_t *bytes_, Byte_t *data_) {
         device->bytesWritten += *bytes_;
 
         SYSASSERT(RETURN_SUCCESS == ret);
+
+        __KernelFreeMemory__(data);
       }
-
-
-      __KernelFreeMemory__(data);
     }
   }
 
@@ -236,10 +235,9 @@ Base_t xDeviceRead(HWord_t uid_, HWord_t *bytes_, Byte_t *data_) {
         device->bytesRead += *bytes_;
 
         SYSASSERT(RETURN_SUCCESS == ret);
+
+        __KernelFreeMemory__(data);
       }
-
-
-      __KernelFreeMemory__(data);
     }
   }
 
@@ -289,6 +287,83 @@ Device_t *__DeviceListFind__(HWord_t uid_) {
   return ret;
 }
 
+Base_t xDeviceInitDevice(HWord_t uid_) {
+
+  Base_t ret = RETURN_FAILURE;
+
+  Device_t *device = NULL;
+
+  SYSASSERT(zero < uid_);
+
+  if (zero < uid_) {
+
+    device = __DeviceListFind__(uid_);
+
+    SYSASSERT(ISNOTNULLPTR(device));
+
+
+    if (ISNOTNULLPTR(device)) {
+
+      ret = (*device->init)(device);
+
+      SYSASSERT(RETURN_SUCCESS == ret);
+    }
+  }
+
+
+  return ret;
+}
+Base_t xDeviceConfigDevice(HWord_t uid_, Size_t size_, void *config_) {
+
+
+  Base_t ret = RETURN_FAILURE;
+
+  Device_t *device = NULL;
+
+  void *config = NULL;
+
+  SYSASSERT(zero < uid_);
+
+  SYSASSERT(zero < size_);
+
+  SYSASSERT(ISNOTNULLPTR(config_));
+
+  SYSASSERT(RETURN_SUCCESS == __MemoryRegionCheckHeap__(config_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
+
+  if ((zero < uid_) && (zero < size_) && (ISNOTNULLPTR(config_)) && (RETURN_SUCCESS == __MemoryRegionCheckHeap__(config_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
+
+    device = __DeviceListFind__(uid_);
+
+    SYSASSERT(ISNOTNULLPTR(device));
+
+
+    if (ISNOTNULLPTR(device)) {
+
+      config = (void *)__KernelAllocateMemory__(size_);
+
+      SYSASSERT(ISNOTNULLPTR(config));
+
+      if (ISNOTNULLPTR(config)) {
+
+        __memcpy__(config, config_, size_);
+
+
+        ret = (*device->config)(device, config);
+
+
+        __memcpy__(config_, config, size_);
+
+
+        SYSASSERT(RETURN_SUCCESS == ret);
+
+        __KernelFreeMemory__(config);
+      }
+    }
+  }
+
+
+  return ret;
+}
 
 #if defined(POSIX_ARCH_OTHER)
 void __DeviceStateClear__(void) {
