@@ -44,13 +44,32 @@ void device_harness(void) {
 
   xByte *data = NULL;
 
-  data = (xByte *)xMemAlloc(0x8u);
+  data = (xByte *)xMemAlloc(bytes);
 
-  memcpy(data, "1234567\0", 0x8u);
+  memcpy(data, "1234567\0", bytes);
 
   unit_try(RETURN_SUCCESS == xDeviceWrite(0x9u, &bytes, data));
 
   xMemFree(data);
+
+  unit_end();
+
+
+
+  unit_begin("xDeviceRead()");
+
+  xHWord bytes2 = 0x10u;
+
+  xByte *data2 = NULL;
+
+  data2 = (xByte *)xMemAlloc(bytes2);
+
+  unit_try(RETURN_SUCCESS == xDeviceRead(0x8u, &bytes2, data2));
+
+  printf("[%s]\n", data2);
+
+  xMemFree(data2);
+
 
   unit_end();
 
@@ -68,6 +87,23 @@ xBase device_self_register(void) {
 }
 
 
+Base_t device_read(Device_t *device_, HWord_t *bytes_, void *data_) {
+
+  memcpy(data_, "654321\0", 0x8u);
+
+  *bytes_ = 0x7u;
+
+  return RETURN_SUCCESS;
+}
+
+
+Base_t device_write(Device_t *device_, HWord_t *bytes_, void *data_) {
+
+  printf("[%s]\n", (char *)data_);
+
+  return RETURN_SUCCESS;
+}
+
 
 Base_t device_init(Device_t *device_) {
 
@@ -78,18 +114,6 @@ Base_t device_init(Device_t *device_) {
 Base_t device_config(Device_t *device_, void *config_) {
 
   printf("DEVICE CONFIG!!!\n");
-
-  return RETURN_SUCCESS;
-}
-Base_t device_read(Device_t *device_, HWord_t *bytes_, void *data_) {
-
-  printf("DEVICE READ!!!\n");
-
-  return RETURN_SUCCESS;
-}
-Base_t device_write(Device_t *device_, HWord_t *bytes_, void *data_) {
-
-  printf("[%s]\n", (char *)data_);
 
   return RETURN_SUCCESS;
 }
