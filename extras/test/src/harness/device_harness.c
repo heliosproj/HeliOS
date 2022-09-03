@@ -64,7 +64,7 @@ void device_harness(void) {
 
   data2 = (xByte *)xMemAlloc(bytes2);
 
-  unit_try(RETURN_SUCCESS == xDeviceRead(0x8u, &bytes2, data2));
+  unit_try(RETURN_SUCCESS == xDeviceRead(0x9u, &bytes2, data2));
 
   printf("[%s]\n", data2);
 
