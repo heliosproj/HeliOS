@@ -145,13 +145,16 @@ Base_t xDeviceWrite(HWord_t uid_, HWord_t *bytes_, Byte_t *data_) {
 
   SYSASSERT(zero < uid_);
 
+  SYSASSERT(ISNOTNULLPTR(bytes_));
+
   SYSASSERT(zero < *bytes_);
 
   SYSASSERT(ISNOTNULLPTR(data_));
 
   SYSASSERT(RETURN_SUCCESS == __MemoryRegionCheckHeap__(data_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
 
-  if ((zero < uid_) && (zero < *bytes_) && (ISNOTNULLPTR(data_)) && (RETURN_SUCCESS == __MemoryRegionCheckHeap__(data_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
+  if ((zero < uid_) && (ISNOTNULLPTR(bytes_)) && (zero < *bytes_) && (ISNOTNULLPTR(data_)) && (RETURN_SUCCESS == __MemoryRegionCheckHeap__(data_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
+
 
     device = __DeviceListFind__(uid_);
 
@@ -169,6 +172,62 @@ Base_t xDeviceWrite(HWord_t uid_, HWord_t *bytes_, Byte_t *data_) {
         __memcpy__(data, data_, *bytes_);
 
         ret = (*device->write)(device, bytes_, data);
+
+        device->bytesWritten += *bytes_;
+
+        SYSASSERT(RETURN_SUCCESS == ret);
+      }
+
+
+      __KernelFreeMemory__(data);
+    }
+  }
+
+
+
+  return ret;
+}
+
+Base_t xDeviceRead(HWord_t uid_, HWord_t *bytes_, Byte_t *data_) {
+
+
+  Base_t ret = RETURN_FAILURE;
+
+  Device_t *device = NULL;
+
+  Byte_t *data = NULL;
+
+  SYSASSERT(zero < uid_);
+
+  SYSASSERT(ISNOTNULLPTR(bytes_));
+
+  SYSASSERT(zero < *bytes_);
+
+  SYSASSERT(ISNOTNULLPTR(data_));
+
+  SYSASSERT(RETURN_SUCCESS == __MemoryRegionCheckHeap__(data_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
+
+  if ((zero < uid_) && (ISNOTNULLPTR(bytes_)) && (zero < *bytes_) && (ISNOTNULLPTR(data_)) && (RETURN_SUCCESS == __MemoryRegionCheckHeap__(data_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
+
+
+    device = __DeviceListFind__(uid_);
+
+
+    SYSASSERT(ISNOTNULLPTR(device));
+
+    if (ISNOTNULLPTR(device)) {
+
+      data = (Byte_t *)__KernelAllocateMemory__(*bytes_);
+
+      SYSASSERT(ISNOTNULLPTR(data));
+
+      if (ISNOTNULLPTR(data)) {
+
+        ret = (*device->read)(device, bytes_, data);
+
+        __memcpy__(data_, data, *bytes_);
+
+        device->bytesRead += *bytes_;
 
         SYSASSERT(RETURN_SUCCESS == ret);
       }
@@ -223,3 +282,13 @@ Device_t *__DeviceListFind__(HWord_t uid_) {
 
   return ret;
 }
+
+
+#if defined(POSIX_ARCH_OTHER)
+void __DeviceStateClear__(void) {
+
+  deviceList = NULL;
+
+  return;
+}
+#endif

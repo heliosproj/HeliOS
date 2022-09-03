@@ -46,6 +46,7 @@ extern "C" {
 
 Base_t xDeviceRegisterDevice(Base_t (*device_self_register_)());
 Base_t xDeviceWrite(HWord_t uid_, HWord_t *bytes_, Byte_t *data_);
+Base_t xDeviceRead(HWord_t uid_, HWord_t *bytes_, Byte_t *data_);
 Base_t __RegisterDevice__(HWord_t uid_,
                           const char *name_,
                           DeviceState_t state_,
@@ -56,6 +57,9 @@ Base_t __RegisterDevice__(HWord_t uid_,
                           Base_t (*write_)(Device_t *device_, HWord_t *bytes_, void *data_));
 Device_t *__DeviceListFind__(HWord_t uid_);
 
+#if defined(POSIX_ARCH_OTHER)
+void __DeviceStateClear__(void);
+#endif
 
 
 
