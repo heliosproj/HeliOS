@@ -48,7 +48,7 @@ Task_t *xTaskCreate(const char *name_, void (*callback_)(Task_t *, TaskParm_t *)
 
   Task_t *ret = NULL;
 
-  Task_t *taskCursor = NULL;
+  Task_t *cursor = NULL;
 
   SYSASSERT(false == SYSFLAG_RUNNING());
 
@@ -110,7 +110,7 @@ Task_t *xTaskCreate(const char *name_, void (*callback_)(Task_t *, TaskParm_t *)
 
         ret->next = NULL;
 
-        taskCursor = taskList->head;
+        cursor = taskList->head;
 
         /* Check if this is the first task in the task list. If it is just set
         the head to it. Otherwise we are going to have to traverse the list
@@ -119,13 +119,13 @@ Task_t *xTaskCreate(const char *name_, void (*callback_)(Task_t *, TaskParm_t *)
 
 
           /* If the task cursor is not null, continue to traverse the list to find the end. */
-          while (ISNOTNULLPTR(taskCursor->next)) {
+          while (ISNOTNULLPTR(cursor->next)) {
 
 
-            taskCursor = taskCursor->next;
+            cursor = cursor->next;
           }
 
-          taskCursor->next = ret;
+          cursor->next = ret;
 
         } else {
 
@@ -147,7 +147,7 @@ cannot be called within a task. They MUST be called outside of the scope of the 
 void xTaskDelete(Task_t *task_) {
 
 
-  Task_t *taskCursor = NULL;
+  Task_t *cursor = NULL;
 
   Task_t *taskPrevious = NULL;
 
@@ -169,19 +169,19 @@ void xTaskDelete(Task_t *task_) {
     if (RETURN_SUCCESS == __TaskListFindTask__(task_)) {
 
 
-      taskCursor = taskList->head;
+      cursor = taskList->head;
 
 
       /* If the task is at the head of the task list then just remove
       it and free its heap memory. */
-      if ((ISNOTNULLPTR(taskCursor)) && (taskCursor == task_)) {
+      if ((ISNOTNULLPTR(cursor)) && (cursor == task_)) {
 
 
-        taskList->head = taskCursor->next;
+        taskList->head = cursor->next;
 
 
 
-        __KernelFreeMemory__(taskCursor);
+        __KernelFreeMemory__(cursor);
 
         taskList->length--;
 
@@ -189,30 +189,30 @@ void xTaskDelete(Task_t *task_) {
 
         /* Well, it wasn't at the head of the task list so now we have to
         go hunt it down. */
-        while ((ISNOTNULLPTR(taskCursor)) && (taskCursor != task_)) {
+        while ((ISNOTNULLPTR(cursor)) && (cursor != task_)) {
 
-          taskPrevious = taskCursor;
+          taskPrevious = cursor;
 
-          taskCursor = taskCursor->next;
+          cursor = cursor->next;
         }
 
 
         /* Assert if we didn't find it which should be impossible given
         __TaskListFindTask__() found it. Maybe some cosmic rays bit flipped
         the DRAM!? */
-        SYSASSERT(ISNOTNULLPTR(taskCursor));
+        SYSASSERT(ISNOTNULLPTR(cursor));
 
 
         /* Check if the task cursor points to something. That something should
         be the task we want to free. */
-        if (ISNOTNULLPTR(taskCursor)) {
+        if (ISNOTNULLPTR(cursor)) {
 
-          taskPrevious->next = taskCursor->next;
-
-
+          taskPrevious->next = cursor->next;
 
 
-          __KernelFreeMemory__(taskCursor);
+
+
+          __KernelFreeMemory__(cursor);
 
 
           taskList->length--;
@@ -236,7 +236,7 @@ Task_t *xTaskGetHandleByName(const char *name_) {
 
   Task_t *ret = NULL;
 
-  Task_t *taskCursor = NULL;
+  Task_t *cursor = NULL;
 
 
   /* Assert if the task list has not been initialized. We wouldn't have to do this
@@ -249,22 +249,22 @@ Task_t *xTaskGetHandleByName(const char *name_) {
   /* Check if the task list is not null and the name parameter is also not null. */
   if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(name_))) {
 
-    taskCursor = taskList->head;
+    cursor = taskList->head;
 
     /* While the task cursor is not null, scan the task list for the task name. */
-    while (ISNOTNULLPTR(taskCursor)) {
+    while (ISNOTNULLPTR(cursor)) {
 
       /* Compare the task name of the task pointed to by the task cursor against the
       name parameter. */
-      if (zero == __memcmp__(taskCursor->name, name_, CONFIG_TASK_NAME_BYTES)) {
+      if (zero == __memcmp__(cursor->name, name_, CONFIG_TASK_NAME_BYTES)) {
 
 
-        ret = taskCursor;
+        ret = cursor;
 
         break;
       }
 
-      taskCursor = taskCursor->next;
+      cursor = cursor->next;
     }
   }
 
@@ -281,7 +281,7 @@ Task_t *xTaskGetHandleById(Base_t id_) {
 
   Task_t *ret = NULL;
 
-  Task_t *taskCursor = NULL;
+  Task_t *cursor = NULL;
 
   /* Assert if the task list has not been initialized. We wouldn't have to do this
   if we called __TaskListFindTask__() but that isn't needed here. */
@@ -296,20 +296,20 @@ Task_t *xTaskGetHandleById(Base_t id_) {
   if ((ISNOTNULLPTR(taskList)) && (zero < id_)) {
 
 
-    taskCursor = taskList->head;
+    cursor = taskList->head;
 
     /* While the task cursor is not null, check the task pointed to by the task cursor
     and compare its identifier against the identifier parameter being searched for. */
-    while (ISNOTNULLPTR(taskCursor)) {
+    while (ISNOTNULLPTR(cursor)) {
 
-      if (id_ == taskCursor->id) {
+      if (id_ == cursor->id) {
 
-        ret = taskCursor;
+        ret = cursor;
 
         break;
       }
 
-      taskCursor = taskCursor->next;
+      cursor = cursor->next;
     }
   }
 
@@ -330,7 +330,7 @@ TaskRunTimeStats_t *xTaskGetAllRunTimeStats(Base_t *tasks_) {
 
   Base_t tasks = zero;
 
-  Task_t *taskCursor = NULL;
+  Task_t *cursor = NULL;
 
   TaskRunTimeStats_t *ret = NULL;
 
@@ -347,15 +347,15 @@ TaskRunTimeStats_t *xTaskGetAllRunTimeStats(Base_t *tasks_) {
   /* Check if the task list is not null and the tasks parameter is not null. */
   if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(tasks_))) {
 
-    taskCursor = taskList->head;
+    cursor = taskList->head;
 
     /* While the task cursor is not null, continue to traverse the task list counting
     the number of tasks in the list. */
-    while (ISNOTNULLPTR(taskCursor)) {
+    while (ISNOTNULLPTR(cursor)) {
 
       tasks++;
 
-      taskCursor = taskCursor->next;
+      cursor = cursor->next;
     }
 
 
@@ -376,19 +376,19 @@ TaskRunTimeStats_t *xTaskGetAllRunTimeStats(Base_t *tasks_) {
       /* Check if xMemAlloc() successfully allocated the memory. */
       if (ISNOTNULLPTR(ret)) {
 
-        taskCursor = taskList->head;
+        cursor = taskList->head;
 
         /* While the task cursor is not null, continue to traverse the task list adding the
         runtime statistics of each task to the runtime stats array to be returned. */
-        while (ISNOTNULLPTR(taskCursor)) {
+        while (ISNOTNULLPTR(cursor)) {
 
-          ret[i].id = taskCursor->id;
+          ret[i].id = cursor->id;
 
-          ret[i].lastRunTime = taskCursor->lastRunTime;
+          ret[i].lastRunTime = cursor->lastRunTime;
 
-          ret[i].totalRunTime = taskCursor->totalRunTime;
+          ret[i].totalRunTime = cursor->totalRunTime;
 
-          taskCursor = taskCursor->next;
+          cursor = cursor->next;
 
           i++;
         }
@@ -456,7 +456,7 @@ Base_t xTaskGetNumberOfTasks(void) {
 
   Base_t tasks = zero;
 
-  Task_t *taskCursor = NULL;
+  Task_t *cursor = NULL;
 
   /* Assert if the task list is not initialized. */
   SYSASSERT(ISNOTNULLPTR(taskList));
@@ -465,15 +465,15 @@ Base_t xTaskGetNumberOfTasks(void) {
   /* Check if the task list is not initialized. */
   if (ISNOTNULLPTR(taskList)) {
 
-    taskCursor = taskList->head;
+    cursor = taskList->head;
 
     /* While the task cursor is not null, continue to count the number of
     tasks. */
-    while (ISNOTNULLPTR(taskCursor)) {
+    while (ISNOTNULLPTR(cursor)) {
 
       tasks++;
 
-      taskCursor = taskCursor->next;
+      cursor = cursor->next;
     }
 
     /* Assert if the number of tasks counted does not agree with the task list
@@ -547,7 +547,7 @@ TaskInfo_t *xTaskGetAllTaskInfo(Base_t *tasks_) {
 
   Base_t tasks = zero;
 
-  Task_t *taskCursor = NULL;
+  Task_t *cursor = NULL;
 
   TaskInfo_t *ret = NULL;
 
@@ -563,17 +563,17 @@ TaskInfo_t *xTaskGetAllTaskInfo(Base_t *tasks_) {
   /* Check if the task list is not null and the tasks parameter is not null. */
   if ((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(tasks_))) {
 
-    taskCursor = taskList->head;
+    cursor = taskList->head;
 
 
 
     /* While the task cursor is not null, continue to traverse the task list counting
     the number of tasks in the list. */
-    while (ISNOTNULLPTR(taskCursor)) {
+    while (ISNOTNULLPTR(cursor)) {
 
       tasks++;
 
-      taskCursor = taskCursor->next;
+      cursor = cursor->next;
     }
 
 
@@ -596,25 +596,25 @@ TaskInfo_t *xTaskGetAllTaskInfo(Base_t *tasks_) {
       if (ISNOTNULLPTR(ret)) {
 
 
-        taskCursor = taskList->head;
+        cursor = taskList->head;
 
 
         /* While the task cursor is not null, continue to traverse the task list adding the
         runtime statistics of each task to the runtime stats array to be returned. */
-        while (ISNOTNULLPTR(taskCursor)) {
+        while (ISNOTNULLPTR(cursor)) {
 
 
-          ret[i].id = taskCursor->id;
+          ret[i].id = cursor->id;
 
-          ret[i].state = taskCursor->state;
+          ret[i].state = cursor->state;
 
-          __memcpy__(ret[i].name, taskCursor->name, CONFIG_TASK_NAME_BYTES);
+          __memcpy__(ret[i].name, cursor->name, CONFIG_TASK_NAME_BYTES);
 
-          ret[i].lastRunTime = taskCursor->lastRunTime;
+          ret[i].lastRunTime = cursor->lastRunTime;
 
-          ret[i].totalRunTime = taskCursor->totalRunTime;
+          ret[i].totalRunTime = cursor->totalRunTime;
 
-          taskCursor = taskCursor->next;
+          cursor = cursor->next;
 
           i++;
         }
@@ -1033,7 +1033,7 @@ Base_t __TaskListFindTask__(const Task_t *task_) {
 
   Base_t ret = RETURN_FAILURE;
 
-  Task_t *taskCursor = NULL;
+  Task_t *cursor = NULL;
 
 
   /* Assert if the task list is not initialized. */
@@ -1058,22 +1058,22 @@ Base_t __TaskListFindTask__(const Task_t *task_) {
     if (RETURN_SUCCESS == __MemoryRegionCheckKernel__(task_, MEMORY_REGION_CHECK_OPTION_W_ADDR)) {
 
 
-      taskCursor = taskList->head;
+      cursor = taskList->head;
 
       /* Traverse the heap to find the task in the task list. */
-      while ((ISNOTNULLPTR(taskCursor)) && (taskCursor != task_)) {
+      while ((ISNOTNULLPTR(cursor)) && (cursor != task_)) {
 
-        taskCursor = taskCursor->next;
+        cursor = cursor->next;
       }
 
 
       /* Assert if the task cannot be found. */
-      SYSASSERT(ISNOTNULLPTR(taskCursor));
+      SYSASSERT(ISNOTNULLPTR(cursor));
 
 
       /* Check if the task was found, if so then
       return success! */
-      if (ISNOTNULLPTR(taskCursor)) {
+      if (ISNOTNULLPTR(cursor)) {
 
 
         ret = RETURN_SUCCESS;
@@ -1116,7 +1116,7 @@ void xTaskStartScheduler(void) {
 
   Task_t *runTask = NULL;
 
-  Task_t *taskCursor = NULL;
+  Task_t *cursor = NULL;
 
   /* Underflow unsigned least runtime to get maximum value */
   Ticks_t leastRunTime = -1;
@@ -1153,40 +1153,40 @@ void xTaskStartScheduler(void) {
       }
 
 
-      taskCursor = taskList->head;
+      cursor = taskList->head;
 
       /* While the task cursor is not null (i.e., there are further tasks in the task list). */
-      while (ISNOTNULLPTR(taskCursor)) {
+      while (ISNOTNULLPTR(cursor)) {
 
 
         /* If the task pointed to by the task cursor is waiting and it has a notification waiting, then execute it. */
-        if ((TaskStateWaiting == taskCursor->state) && (zero < taskCursor->notificationBytes)) {
+        if ((TaskStateWaiting == cursor->state) && (zero < cursor->notificationBytes)) {
 
-          __TaskRun__(taskCursor);
+          __TaskRun__(cursor);
 
           /* If the task pointed to by the task cursor is waiting and its timer has expired, then execute it. */
-        } else if ((TaskStateWaiting == taskCursor->state) && (zero < taskCursor->timerPeriod) && ((__SysGetSysTicks__() - taskCursor->timerStartTime) > taskCursor->timerPeriod)) {
+        } else if ((TaskStateWaiting == cursor->state) && (zero < cursor->timerPeriod) && ((__SysGetSysTicks__() - cursor->timerStartTime) > cursor->timerPeriod)) {
 
 
-          __TaskRun__(taskCursor);
+          __TaskRun__(cursor);
 
-          taskCursor->timerStartTime = __SysGetSysTicks__();
+          cursor->timerStartTime = __SysGetSysTicks__();
 
           /* If the task pointed to by the task cursor is running and it's total runtime is less than the
           least runtime from previous tasks, then set the run task pointer to the task cursor. This logic
           is used to achieve the runtime balancing. */
-        } else if ((TaskStateRunning == taskCursor->state) && (leastRunTime > taskCursor->totalRunTime)) {
+        } else if ((TaskStateRunning == cursor->state) && (leastRunTime > cursor->totalRunTime)) {
 
 
-          leastRunTime = taskCursor->totalRunTime;
+          leastRunTime = cursor->totalRunTime;
 
-          runTask = taskCursor;
+          runTask = cursor;
 
         } else {
           /* Nothing to do here.. Just for MISRA C:2012 compliance. */
         }
 
-        taskCursor = taskCursor->next;
+        cursor = cursor->next;
       }
 
 
@@ -1217,19 +1217,19 @@ total runtimes on tasks to their last runtime. */
 void __RunTimeReset__(void) {
 
 
-  Task_t *taskCursor = NULL;
+  Task_t *cursor = NULL;
 
 
 
-  taskCursor = taskList->head;
+  cursor = taskList->head;
 
   /* While the task cursor is not null (i.e., there are further tasks in the task list). */
-  while (ISNOTNULLPTR(taskCursor)) {
+  while (ISNOTNULLPTR(cursor)) {
 
 
-    taskCursor->totalRunTime = taskCursor->lastRunTime;
+    cursor->totalRunTime = cursor->lastRunTime;
 
-    taskCursor = taskCursor->next;
+    cursor = cursor->next;
   }
 
   SYSFLAG_OVERFLOW() = false;

@@ -46,7 +46,7 @@ Timer_t *xTimerCreate(Ticks_t timerPeriod_) {
 
   Timer_t *ret = NULL;
 
-  Timer_t *timerCursor = NULL;
+  Timer_t *cursor = NULL;
 
 
   /* Check if the timer list has been initialized. */
@@ -86,7 +86,7 @@ Timer_t *xTimerCreate(Ticks_t timerPeriod_) {
 
       ret->next = NULL;
 
-      timerCursor = timerList->head;
+      cursor = timerList->head;
 
 
       /* Check if the head of the timer list is null. If so, iterate through the
@@ -94,12 +94,12 @@ Timer_t *xTimerCreate(Ticks_t timerPeriod_) {
       if (ISNOTNULLPTR(timerList->head)) {
 
         /* While the next timer is not null. */
-        while (ISNOTNULLPTR(timerCursor->next)) {
+        while (ISNOTNULLPTR(cursor->next)) {
 
-          timerCursor = timerCursor->next;
+          cursor = cursor->next;
         }
 
-        timerCursor->next = ret;
+        cursor->next = ret;
 
       } else {
 
@@ -119,7 +119,7 @@ Timer_t *xTimerCreate(Ticks_t timerPeriod_) {
 /* The xTimerDelete() system call will delete a timer. For more information on timers see the
 xTaskTimerCreate() system call. */
 void xTimerDelete(Timer_t *timer_) {
-  Timer_t *timerCursor = NULL;
+  Timer_t *cursor = NULL;
 
 
 
@@ -136,21 +136,21 @@ void xTimerDelete(Timer_t *timer_) {
 
 
 
-    timerCursor = timerList->head;
+    cursor = timerList->head;
 
     timerPrevious = NULL;
 
     /* Check if the timer cursor is not null a if the timer cursor equals
     the timer parameter. */
-    if ((ISNOTNULLPTR(timerCursor)) && (timerCursor == timer_)) {
+    if ((ISNOTNULLPTR(cursor)) && (cursor == timer_)) {
 
 
-      timerList->head = timerCursor->next;
+      timerList->head = cursor->next;
 
 
 
 
-      __KernelFreeMemory__(timerCursor);
+      __KernelFreeMemory__(cursor);
 
       timerList->length--;
 
@@ -159,31 +159,31 @@ void xTimerDelete(Timer_t *timer_) {
 
       /* While the timer cursor is not null and the timer cursor is not
       equal to the timer parameter, continue to scan the timer list. */
-      while ((ISNOTNULLPTR(timerCursor)) && (timerCursor != timer_)) {
+      while ((ISNOTNULLPTR(cursor)) && (cursor != timer_)) {
 
 
-        timerPrevious = timerCursor;
+        timerPrevious = cursor;
 
-        timerCursor = timerCursor->next;
+        cursor = cursor->next;
       }
 
 
       /* Assert if the timer is not found though this
       shouldn't ever happen. */
-      SYSASSERT(ISNOTNULLPTR(timerCursor));
+      SYSASSERT(ISNOTNULLPTR(cursor));
 
 
       /* Check if the timer was found, if so drop it from
       the timer list and free its memory. */
-      if (ISNOTNULLPTR(timerCursor)) {
+      if (ISNOTNULLPTR(cursor)) {
 
 
-        timerPrevious->next = timerCursor->next;
+        timerPrevious->next = cursor->next;
 
 
 
 
-        __KernelFreeMemory__(timerCursor);
+        __KernelFreeMemory__(cursor);
 
         timerList->length--;
       }
@@ -395,7 +395,7 @@ Base_t __TimerListFindTimer__(const Timer_t *timer_) {
   Base_t ret = RETURN_FAILURE;
 
 
-  Timer_t *timerCursor = NULL;
+  Timer_t *cursor = NULL;
 
 
   /* Assert if the timer list is not initialized. */
@@ -419,22 +419,22 @@ Base_t __TimerListFindTimer__(const Timer_t *timer_) {
     /* Check if __MemoryRegionCheckKernel__() was successful. */
     if (RETURN_SUCCESS == __MemoryRegionCheckKernel__(timer_, MEMORY_REGION_CHECK_OPTION_W_ADDR)) {
 
-      timerCursor = timerList->head;
+      cursor = timerList->head;
 
 
       /* Traverse the timer list while there is a timer
       and the timer is not the timer we are looking for. */
-      while ((ISNOTNULLPTR(timerCursor)) && (timerCursor != timer_)) {
+      while ((ISNOTNULLPTR(cursor)) && (cursor != timer_)) {
 
-        timerCursor = timerCursor->next;
+        cursor = cursor->next;
       }
 
 
       /* Assert if the timer was never found. */
-      SYSASSERT(ISNOTNULLPTR(timerCursor));
+      SYSASSERT(ISNOTNULLPTR(cursor));
 
       /* Check if the timer was found. */
-      if (ISNOTNULLPTR(timerCursor)) {
+      if (ISNOTNULLPTR(cursor)) {
 
         ret = RETURN_SUCCESS;
       }
