@@ -1645,6 +1645,34 @@ xBase xStreamIsEmpty(xStreamBuffer stream_);
  */
 xBase xStreamIsFull(xStreamBuffer steam_);
 
+/**
+ * @brief 
+ * 
+ * @param device_self_register_ 
+ * @return xBase 
+ */
+xBase xDeviceRegisterDevice(xBase (*device_self_register_)());
+
+/**
+ * @brief 
+ * 
+ * @param uid_ 
+ * @param bytes_ 
+ * @param data_ 
+ * @return xBase 
+ */
+xBase xDeviceWrite(xHWord uid_, xHWord *bytes_, xByte *data_);
+
+/**
+ * @brief 
+ * 
+ * @param uid_ 
+ * @param bytes_ 
+ * @param data_ 
+ * @return xBase 
+ */
+xBase xDeviceRead(xHWord uid_, xHWord *bytes_, xByte *data_);
+
 #if defined(POSIX_ARCH_OTHER)
 void __MemoryClear__(void);
 void __SysStateClear__(void);
@@ -1652,10 +1680,9 @@ void __TimerStateClear__(void);
 void __TaskStateClear__(void);
 void __MemoryRegionDumpKernel__(void);
 void __MemoryRegionDumpHeap__(void);
+void __DeviceStateClear__(void);
 #endif
 
-/* In the event HeliOS is compiled with a C++ compiler, make the system calls (written in C)
-visible to C++. */
 #ifdef __cplusplus
 }  // extern "C" {
 #endif

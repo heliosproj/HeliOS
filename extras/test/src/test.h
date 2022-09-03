@@ -33,6 +33,7 @@
 #include "task_harness.h"
 #include "timer_harness.h"
 #include "stream_harness.h"
+#include "device_harness.h"
 
 
 #ifdef __cplusplus

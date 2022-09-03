@@ -59,6 +59,10 @@ int main(int argc, char **argv) {
   stream_harness();
 
 
+  reset();
+
+  device_harness();
+
 
   unit_exit();
 
@@ -71,6 +75,7 @@ void reset(void) {
   __SysStateClear__();
   __TaskStateClear__();
   __TimerStateClear__();
+  __DeviceStateClear__();
 
   return;
 }

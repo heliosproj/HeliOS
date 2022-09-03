@@ -1,9 +1,9 @@
 /**
- * @file timer.h
+ * @file device.h
  * @author Manny Peterson (mannymsp@gmail.com)
- * @brief Kernel sources for timers
+ * @brief Kernel source code for device drivers
  * @version 0.3.5
- * @date 2022-01-31
+ * @date 2022-09-01
  *
  * @copyright
  * HeliOS Embedded Operating System
@@ -23,40 +23,49 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
-#ifndef TIMER_H_
-#define TIMER_H_
+#ifndef DEVICE_H_
+#define DEVICE_H_
 
 #include "config.h"
 #include "defines.h"
 #include "types.h"
 #include "port.h"
-#include "device.h"
 #include "mem.h"
 #include "queue.h"
 #include "stream.h"
 #include "sys.h"
 #include "task.h"
+#include "timer.h"
+
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-Timer_t *xTimerCreate(Ticks_t timerPeriod_);
-void xTimerDelete(Timer_t *timer_);
-void xTimerChangePeriod(Timer_t *timer_, Ticks_t timerPeriod_);
-Ticks_t xTimerGetPeriod(Timer_t *timer_);
-Base_t xTimerIsTimerActive(Timer_t *timer_);
-Base_t xTimerHasTimerExpired(Timer_t *timer_);
-void xTimerReset(Timer_t *timer_);
-void xTimerStart(Timer_t *timer_);
-void xTimerStop(Timer_t *timer_);
-Base_t __TimerListFindTimer__(const Timer_t *timer_);
+
+Base_t xDeviceRegisterDevice(Base_t (*device_self_register_)());
+Base_t xDeviceWrite(HWord_t uid_, HWord_t *bytes_, Byte_t *data_);
+Base_t xDeviceRead(HWord_t uid_, HWord_t *bytes_, Byte_t *data_);
+Base_t __RegisterDevice__(HWord_t uid_,
+                          const char *name_,
+                          DeviceState_t state_,
+                          DeviceMode_t mode_,
+                          Base_t (*init_)(Device_t *device_),
+                          Base_t (*config_)(Device_t *device_, void *config_),
+                          Base_t (*read_)(Device_t *device_, HWord_t *bytes_, void *data_),
+                          Base_t (*write_)(Device_t *device_, HWord_t *bytes_, void *data_));
+Device_t *__DeviceListFind__(HWord_t uid_);
 
 #if defined(POSIX_ARCH_OTHER)
-void __TimerStateClear__(void);
+void __DeviceStateClear__(void);
 #endif
+
+
 
 #ifdef __cplusplus
 }  // extern "C" {
 #endif
+
+
 #endif

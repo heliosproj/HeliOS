@@ -31,7 +31,9 @@
 
 #include <stdint.h>
 
-
+/*
+ *     WARNING: MODIFYING THIS FILE MAY HAVE DISASTROUS CONSEQUENCES. YOU'VE BEEN WARNED.
+ */
 
 
 typedef enum {
@@ -60,9 +62,19 @@ typedef enum {
 } TimerState_t;
 
 
+typedef enum {
+  DeviceStateError,
+  DeviceStateSuspended,
+  DeviceStateRunning
+} DeviceState_t;
+
+typedef enum {
+  DeviceModeReadOnly,
+  DeviceModeWriteOnly,
+  DeviceModeReadWrite
+} DeviceMode_t;
 
 
-/* WARNING: Modifying these type defintions may cause serious headaches. You've been warned! */
 typedef void TaskParm_t;
 typedef uint8_t Base_t;
 typedef uint8_t Byte_t;
@@ -71,6 +83,21 @@ typedef size_t Size_t;
 typedef uint16_t HWord_t;
 typedef uint32_t Word_t;
 typedef uint32_t Ticks_t;
+
+
+typedef struct Device_s {
+  HWord_t uid;
+  char name[CONFIG_DEVICE_NAME_BYTES];
+  DeviceState_t state;
+  DeviceMode_t mode;
+  Word_t bytesWritten;
+  Word_t bytesRead;
+  Byte_t (*init)(struct Device_s *device_);
+  Byte_t (*config)(struct Device_s *device_, void *config_);
+  Byte_t (*read)(struct Device_s *device_, HWord_t *bytes_, void *data_);
+  Byte_t (*write)(struct Device_s *device_, HWord_t *bytes_, void *data_);
+  struct Device_s *next;
+} Device_t;
 
 
 typedef struct MemoryEntry_s {
@@ -158,6 +185,12 @@ typedef struct TaskList_s {
   Task_t *head;
 } TaskList_t;
 
+
+
+typedef struct DeviceList_s {
+  Base_t length;
+  Device_t *head;
+} DeviceList_t;
 
 
 
