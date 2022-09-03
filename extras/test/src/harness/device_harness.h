@@ -31,10 +31,54 @@
 #include "unit.h"
 
 
+typedef enum {
+  DeviceStateError,
+  DeviceStateSuspended,
+  DeviceStateRunning
+} DeviceState_t;
+
+typedef enum {
+  DeviceModeReadOnly,
+  DeviceModeWriteOnly,
+  DeviceModeReadWrite
+} DeviceMode_t;
+
+typedef struct Device_s {
+  HWord_t uid;
+  char name[CONFIG_DEVICE_NAME_BYTES];
+  DeviceState_t state;
+  DeviceMode_t mode;
+  Word_t bytesWritten;
+  Word_t bytesRead;
+  Byte_t (*init)(struct Device_s *device_);
+  Byte_t (*config)(struct Device_s *device_, void *config_);
+  Byte_t (*read)(struct Device_s *device_, HWord_t *bytes_, void *data_);
+  Byte_t (*write)(struct Device_s *device_, HWord_t *bytes_, void *data_);
+} Device_t;
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+
+
+
+Base_t __RegisterDevice__(HWord_t uid_,
+                          const char *name_,
+                          DeviceState_t state_,
+                          DeviceMode_t mode_,
+                          Base_t (*init_)(Device_t *device_),
+                          Base_t (*config_)(Device_t *device_, void *config_),
+                          Base_t (*read_)(Device_t *device_, HWord_t *bytes_, void *data_),
+                          Base_t (*write_)(Device_t *device_, HWord_t *bytes_, void *data_));
+
+
+xBase device_self_register(void);
+Base_t device_init(Device_t *device_);
+Base_t device_config(Device_t *device_, void *config_);
+Base_t device_read(Device_t *device_, HWord_t *bytes_, void *data_);
+Base_t device_write(Device_t *device_, HWord_t *bytes_, void *data_);
 void device_harness(void);
 
 #ifdef __cplusplus

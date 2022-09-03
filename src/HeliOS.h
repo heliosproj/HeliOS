@@ -1648,10 +1648,20 @@ xBase xStreamIsFull(xStreamBuffer steam_);
 /**
  * @brief 
  * 
- * @param device_init_ 
- * @return Base_t 
+ * @param device_self_register_ 
+ * @return xBase 
  */
-Base_t xDeviceRegisterDevice(Base_t (*device_init_)());
+xBase xDeviceRegisterDevice(xBase (*device_self_register_)());
+
+/**
+ * @brief 
+ * 
+ * @param uid_ 
+ * @param bytes_ 
+ * @param data_ 
+ * @return xBase 
+ */
+xBase xDeviceWrite(xHWord uid_, xHWord *bytes_, xByte *data_);
 
 #if defined(POSIX_ARCH_OTHER)
 void __MemoryClear__(void);

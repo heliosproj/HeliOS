@@ -26,8 +26,6 @@
 
 #include "device_harness.h"
 
-xBase device_self_register(void);
-
 
 void device_harness(void) {
 
@@ -38,14 +36,60 @@ void device_harness(void) {
 
   unit_end();
 
+
+
+  unit_begin("xDeviceWrite()");
+
+  xHWord bytes = 0x8u;
+
+  xByte *data = NULL;
+
+  data = (xByte *)xMemAlloc(0x8u);
+
+  memcpy(data, "1234567\0", 0x8u);
+
+  unit_try(RETURN_SUCCESS == xDeviceWrite(0x9u, &bytes, data));
+
+  xMemFree(data);
+
+  unit_end();
+
   return;
 }
 
 
 xBase device_self_register(void) {
+  xBase ret = RETURN_FAILURE;
 
-  printf("DEVICE HERE!\n");
-  return RETURN_SUCCESS;
+  ret = __RegisterDevice__(0x9u, "12345678", DeviceStateRunning, DeviceModeReadWrite, device_init, device_config, device_read, device_write);
+
+
+  return ret;
 }
 
 
+
+Base_t device_init(Device_t *device_) {
+
+  printf("DEVICE INIT!!!\n");
+
+  return RETURN_SUCCESS;
+}
+Base_t device_config(Device_t *device_, void *config_) {
+
+  printf("DEVICE CONFIG!!!\n");
+
+  return RETURN_SUCCESS;
+}
+Base_t device_read(Device_t *device_, HWord_t *bytes_, void *data_) {
+
+  printf("DEVICE READ!!!\n");
+
+  return RETURN_SUCCESS;
+}
+Base_t device_write(Device_t *device_, HWord_t *bytes_, void *data_) {
+
+  printf("[%s]\n", (char *)data_);
+
+  return RETURN_SUCCESS;
+}

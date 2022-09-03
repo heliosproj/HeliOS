@@ -96,6 +96,7 @@ typedef struct Device_s {
   Byte_t (*config)(struct Device_s *device_, void *config_);
   Byte_t (*read)(struct Device_s *device_, HWord_t *bytes_, void *data_);
   Byte_t (*write)(struct Device_s *device_, HWord_t *bytes_, void *data_);
+  struct Device_s *next;
 } Device_t;
 
 

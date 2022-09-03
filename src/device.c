@@ -52,13 +52,15 @@ Base_t __RegisterDevice__(HWord_t uid_,
                           const char *name_,
                           DeviceState_t state_,
                           DeviceMode_t mode_,
-                          Byte_t (*init_)(struct Device_s *device_),
-                          Byte_t (*config_)(struct Device_s *device_, void *config_),
-                          Byte_t (*read_)(struct Device_s *device_, HWord_t *bytes_, void *data_),
-                          Byte_t (*write_)(struct Device_s *device_, HWord_t *bytes_, void *data_)) {
+                          Base_t (*init_)(Device_t *device_),
+                          Base_t (*config_)(Device_t *device_, void *config_),
+                          Base_t (*read_)(Device_t *device_, HWord_t *bytes_, void *data_),
+                          Base_t (*write_)(Device_t *device_, HWord_t *bytes_, void *data_)) {
   Base_t ret = RETURN_FAILURE;
 
   Device_t *device = NULL;
+
+  Device_t *cursor = NULL;
 
 
   SYSASSERT((zero < uid_) && (ISNOTNULLPTR(name_)) && (ISNOTNULLPTR(init_)) && (ISNOTNULLPTR(config_)) &&
@@ -100,13 +102,124 @@ Base_t __RegisterDevice__(HWord_t uid_,
         device->read = read_;
         device->write = write_;
 
+
+
+        cursor = deviceList->head;
+
+
+        if (ISNOTNULLPTR(deviceList->head)) {
+
+
+          while (ISNOTNULLPTR(cursor->next)) {
+
+
+            cursor = cursor->next;
+          }
+
+          cursor->next = device;
+
+        } else {
+
+          deviceList->head = device;
+        }
+
+        deviceList->length++;
+
         ret = RETURN_SUCCESS;
       }
     }
   }
 
+  return ret;
+}
 
 
+
+Base_t xDeviceWrite(HWord_t uid_, HWord_t *bytes_, Byte_t *data_) {
+
+  Base_t ret = RETURN_FAILURE;
+
+  Device_t *device = NULL;
+
+  Byte_t *data = NULL;
+
+  SYSASSERT(zero < uid_);
+
+  SYSASSERT(zero < *bytes_);
+
+  SYSASSERT(ISNOTNULLPTR(data_));
+
+  SYSASSERT(RETURN_SUCCESS == __MemoryRegionCheckHeap__(data_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
+
+  if ((zero < uid_) && (zero < *bytes_) && (ISNOTNULLPTR(data_)) && (RETURN_SUCCESS == __MemoryRegionCheckHeap__(data_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
+
+    device = __DeviceListFind__(uid_);
+
+
+    SYSASSERT(ISNOTNULLPTR(device));
+
+    if (ISNOTNULLPTR(device)) {
+
+      data = (Byte_t *)__KernelAllocateMemory__(*bytes_);
+
+      SYSASSERT(ISNOTNULLPTR(data));
+
+      if (ISNOTNULLPTR(data)) {
+
+        __memcpy__(data, data_, *bytes_);
+
+        ret = (*device->write)(device, bytes_, data);
+
+        SYSASSERT(RETURN_SUCCESS == ret);
+      }
+
+
+      __KernelFreeMemory__(data);
+    }
+  }
+
+
+
+  return ret;
+}
+
+
+Device_t *__DeviceListFind__(HWord_t uid_) {
+
+
+  Device_t *ret = NULL;
+
+  Device_t *cursor = NULL;
+
+
+  SYSASSERT(ISNOTNULLPTR(deviceList));
+
+
+  SYSASSERT(zero < uid_);
+
+
+  if ((ISNOTNULLPTR(deviceList)) && (zero < uid_)) {
+
+
+
+    cursor = deviceList->head;
+
+
+    while ((ISNOTNULLPTR(cursor)) && (cursor->uid != uid_)) {
+
+      cursor = cursor->next;
+    }
+
+
+    SYSASSERT(ISNOTNULLPTR(cursor));
+
+
+    if (ISNOTNULLPTR(cursor)) {
+
+
+      ret = cursor;
+    }
+  }
 
   return ret;
 }

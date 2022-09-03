@@ -44,21 +44,19 @@ extern "C" {
 #endif
 
 
-
 Base_t xDeviceRegisterDevice(Base_t (*device_self_register_)());
+Base_t xDeviceWrite(HWord_t uid_, HWord_t *bytes_, Byte_t *data_);
 Base_t __RegisterDevice__(HWord_t uid_,
-                        const char *name_,
-                        DeviceState_t state_,
-                        DeviceMode_t mode_,
-                        Byte_t (*init_)(struct Device_s *device_),
-                        Byte_t (*config_)(struct Device_s *device_, void *config_),
-                        Byte_t (*read_)(struct Device_s *device_, HWord_t *bytes_, void *data_),
-                        Byte_t (*write_)(struct Device_s *device_, HWord_t *bytes_, void *data_));
+                          const char *name_,
+                          DeviceState_t state_,
+                          DeviceMode_t mode_,
+                          Base_t (*init_)(Device_t *device_),
+                          Base_t (*config_)(Device_t *device_, void *config_),
+                          Base_t (*read_)(Device_t *device_, HWord_t *bytes_, void *data_),
+                          Base_t (*write_)(Device_t *device_, HWord_t *bytes_, void *data_));
+Device_t *__DeviceListFind__(HWord_t uid_);
 
 
-Base_t xDeviceConfigDevice(HWord_t uid_, void *config_);
-Base_t xDeviceRead(HWord_t uid_, HWord_t *bytes_, void *data_);
-Base_t xDeviceWrite(HWord_t uid_, HWord_t *bytes_, void *data_);
 
 
 #ifdef __cplusplus
