@@ -44,9 +44,9 @@ extern "C" {
 
 Base_t loopback_self_register(void);
 Base_t loopback_init(Device_t *device_);
-Base_t loopback_config(Device_t *device_, void *config_);
-Base_t loopback_read(Device_t *device_, HWord_t *bytes_, void *data_);
-Base_t loopback_write(Device_t *device_, HWord_t *bytes_, void *data_);
+Base_t loopback_config(Device_t *device_, Size_t *size_, void *config_);
+Base_t loopback_read(Device_t *device_, Size_t *size_, void *data_);
+Base_t loopback_write(Device_t *device_, Size_t *size_, void *data_);
 
 #ifdef __cplusplus
 }  // extern "C" {

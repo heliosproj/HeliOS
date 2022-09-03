@@ -92,10 +92,10 @@ typedef struct Device_s {
   DeviceMode_t mode;
   Word_t bytesWritten;
   Word_t bytesRead;
-  Byte_t (*init)(struct Device_s *device_);
-  Byte_t (*config)(struct Device_s *device_, void *config_);
-  Byte_t (*read)(struct Device_s *device_, HWord_t *bytes_, void *data_);
-  Byte_t (*write)(struct Device_s *device_, HWord_t *bytes_, void *data_);
+  Base_t (*init)(struct Device_s *device_);
+  Base_t (*config)(struct Device_s *device_, Size_t *size_, void *config_);
+  Base_t (*read)(struct Device_s *device_, Size_t *size_, void *data_);
+  Base_t (*write)(struct Device_s *device_, Size_t *size_, void *data_);
   struct Device_s *next;
 } Device_t;
 

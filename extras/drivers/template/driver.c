@@ -38,7 +38,7 @@ Base_t device_self_register(void) {
 
 
 Base_t device_init(Device_t *device_) {
-  Base_t ret = RETURN_SUCCESS;
+  Base_t ret = RETURN_FAILURE;
 
 
   return ret;
@@ -46,8 +46,8 @@ Base_t device_init(Device_t *device_) {
 
 
 
-Base_t device_config(Device_t *device_, void *config_) {
-  Base_t ret = RETURN_SUCCESS;
+Base_t device_config(Device_t *device_, Size_t *size_, void *config_) {
+  Base_t ret = RETURN_FAILURE;
 
 
   return ret;
@@ -55,8 +55,8 @@ Base_t device_config(Device_t *device_, void *config_) {
 
 
 
-Base_t device_read(Device_t *device_, HWord_t *bytes_, void *data_) {
-  Base_t ret = RETURN_SUCCESS;
+Base_t device_read(Device_t *device_, Size_t *size_, void *data_) {
+  Base_t ret = RETURN_FAILURE;
 
 
   return ret;
@@ -64,9 +64,8 @@ Base_t device_read(Device_t *device_, HWord_t *bytes_, void *data_) {
 
 
 
-Base_t device_write(Device_t *device_, HWord_t *bytes_, void *data_) {
-  Base_t ret = RETURN_SUCCESS;
-
+Base_t device_write(Device_t *device_, Size_t *size_, void *data_) {
+  Base_t ret = RETURN_FAILURE;
 
 
   return ret;

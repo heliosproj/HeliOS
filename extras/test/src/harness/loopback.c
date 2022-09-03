@@ -28,7 +28,7 @@
 
 #define BUFFER_LENGTH 0xFFu
 static char loopback_buffer[BUFFER_LENGTH];
-static HWord_t loopback_buffer_bytes = zero;
+static HWord_t loopback_buffer_size = zero;
 
 
 Base_t loopback_self_register(void) {
@@ -51,8 +51,8 @@ Base_t loopback_init(Device_t *device_) {
 
 
 
-Base_t loopback_config(Device_t *device_, void *config_) {
-  Base_t ret = RETURN_SUCCESS;
+Base_t loopback_config(Device_t *device_, Size_t *size_, void *config_) {
+  Base_t ret = RETURN_FAILURE;
 
 
   return ret;
@@ -60,24 +60,24 @@ Base_t loopback_config(Device_t *device_, void *config_) {
 
 
 
-Base_t loopback_read(Device_t *device_, HWord_t *bytes_, void *data_) {
+Base_t loopback_read(Device_t *device_, Size_t *size_, void *data_) {
   Base_t ret = RETURN_SUCCESS;
 
-  *bytes_ = loopback_buffer_bytes;
+  *size_ = loopback_buffer_size;
 
-  __memcpy__(data_, loopback_buffer, *bytes_);
+  __memcpy__(data_, loopback_buffer, *size_);
 
   return ret;
 }
 
 
 
-Base_t loopback_write(Device_t *device_, HWord_t *bytes_, void *data_) {
+Base_t loopback_write(Device_t *device_, Size_t *size_, void *data_) {
   Base_t ret = RETURN_SUCCESS;
 
-  loopback_buffer_bytes = *bytes_;
+  loopback_buffer_size = *size_;
 
-  __memcpy__(loopback_buffer, data_, *bytes_);
+  __memcpy__(loopback_buffer, data_, *size_);
 
   return ret;
 }
