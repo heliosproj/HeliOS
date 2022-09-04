@@ -42,9 +42,9 @@
 extern "C" {
 #endif
 
-Task_t *xTaskCreate(const char *name_, void (*callback_)(Task_t *, TaskParm_t *), TaskParm_t *taskParameter_);
+Task_t *xTaskCreate(const Char_t *name_, void (*callback_)(Task_t *, TaskParm_t *), TaskParm_t *taskParameter_);
 void xTaskDelete(Task_t *task_);
-Task_t *xTaskGetHandleByName(const char *name_);
+Task_t *xTaskGetHandleByName(const Char_t *name_);
 Task_t *xTaskGetHandleById(Base_t id_);
 TaskRunTimeStats_t *xTaskGetAllRunTimeStats(Base_t *tasks_);
 TaskRunTimeStats_t *xTaskGetTaskRunTimeStats(Task_t *task_);
@@ -52,11 +52,11 @@ Base_t xTaskGetNumberOfTasks(void);
 TaskInfo_t *xTaskGetTaskInfo(Task_t *task_);
 TaskInfo_t *xTaskGetAllTaskInfo(Base_t *tasks_);
 TaskState_t xTaskGetTaskState(Task_t *task_);
-char *xTaskGetName(Task_t *task_);
+Char_t *xTaskGetName(Task_t *task_);
 Base_t xTaskGetId(Task_t *task_);
 void xTaskNotifyStateClear(Task_t *task_);
 Base_t xTaskNotificationIsWaiting(Task_t *task_);
-Base_t xTaskNotifyGive(Task_t *task_, Base_t notificationBytes_, const char *notificationValue_);
+Base_t xTaskNotifyGive(Task_t *task_, Base_t notificationBytes_, const Char_t *notificationValue_);
 TaskNotification_t *xTaskNotifyTake(Task_t *task_);
 void xTaskResume(Task_t *task_);
 void xTaskSuspend(Task_t *task_);

@@ -30,9 +30,9 @@ void stream_harness(void) {
 
   StreamBuffer_t *stream01 = NULL;
 
-  HWord_t i = zero;
+  HalfWord_t i = zero;
 
-  HWord_t stream02 = zero;
+  HalfWord_t stream02 = zero;
 
   Byte_t *stream03 = NULL;
 

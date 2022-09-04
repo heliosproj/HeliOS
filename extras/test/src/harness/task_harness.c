@@ -35,7 +35,7 @@ void task_harness(void) {
 
   Task_t *task01 = NULL;
 
-  task01 = xTaskCreate("TASK01", task_harness_task, NULL);
+  task01 = xTaskCreate((Char_t *)"TASK01", task_harness_task, NULL);
 
   unit_try(NULL != task01);
 
@@ -47,7 +47,7 @@ void task_harness(void) {
 
   Task_t *task02 = NULL;
 
-  task02 = xTaskGetHandleByName("TASK01");
+  task02 = xTaskGetHandleByName((Char_t *)"TASK01");
 
   unit_try(task02 == task01);
 
@@ -128,7 +128,7 @@ void task_harness(void) {
 
   unit_try(0x1 == task07->id);
 
-  unit_try(0x0 == strncmp("TASK01", task07->name, 0x6));
+  unit_try(0x0 == strncmp("TASK01", (char *)task07->name, 0x6));
 
   unit_try(TaskStateSuspended == task07->state);
 
@@ -150,7 +150,7 @@ void task_harness(void) {
 
   unit_try(0x1 == task07->id);
 
-  unit_try(0x0 == strncmp("TASK01", task07->name, 0x6));
+  unit_try(0x0 == strncmp("TASK01", (char *)task07->name, 0x6));
 
   unit_try(TaskStateSuspended == task07->state);
 
@@ -170,13 +170,13 @@ void task_harness(void) {
 
   unit_begin("xTaskGetName()");
 
-  char *task08;
+  Char_t *task08;
 
   task08 = xTaskGetName(task01);
 
   unit_try(NULL != task08);
 
-  unit_try(0x0 == strncmp("TASK01", task08, 0x6));
+  unit_try(0x0 == strncmp("TASK01", (char *)task08, 0x6));
 
   unit_end();
 
@@ -192,7 +192,7 @@ void task_harness(void) {
 
   unit_begin("xTaskNotifyGive()");
 
-  unit_try(RETURN_SUCCESS == xTaskNotifyGive(task01, 0x7, "MESSAGE"));
+  unit_try(RETURN_SUCCESS == xTaskNotifyGive(task01, 0x7, (Char_t *)"MESSAGE"));
 
   unit_end();
 
@@ -220,7 +220,7 @@ void task_harness(void) {
 
   TaskNotification_t *task09 = NULL;
 
-  unit_try(RETURN_SUCCESS == xTaskNotifyGive(task01, 0x7, "MESSAGE"));
+  unit_try(RETURN_SUCCESS == xTaskNotifyGive(task01, 0x7, (Char_t *)"MESSAGE"));
 
   task09 = xTaskNotifyTake(task01);
 
@@ -228,7 +228,7 @@ void task_harness(void) {
 
   unit_try(0x7 == task09->notificationBytes);
 
-  unit_try(0x0 == strncmp("MESSAGE", task09->notificationValue, 0x7));
+  unit_try(0x0 == strncmp("MESSAGE", (char *)task09->notificationValue, 0x7));
 
   xMemFree(task09);
 
@@ -316,7 +316,7 @@ void task_harness(void) {
 
   Task_t *task10 = NULL;
 
-  task10 = xTaskCreate("TASK10", task_harness_task, NULL);
+  task10 = xTaskCreate((Char_t *)"TASK10", task_harness_task, NULL);
 
   unit_try(NULL != task10);
 
@@ -340,13 +340,13 @@ void task_harness(void) {
 
   Task_t *task11 = NULL;
 
-  task11 = xTaskCreate("TASK11", task_harness_task, NULL);
+  task11 = xTaskCreate((Char_t *)"TASK11", task_harness_task, NULL);
 
   unit_try(NULL != task11);
 
   xTaskWait(task11);
 
-  xTaskNotifyGive(task11, 0x7, "MESSAGE");
+  xTaskNotifyGive(task11, 0x7, (Char_t *)"MESSAGE");
 
   unit_try(true == xTaskNotificationIsWaiting(task11));
 
@@ -369,7 +369,7 @@ void task_harness(void) {
 
   Task_t *task12 = NULL;
 
-  task12 = xTaskCreate("TASK12", task_harness_task2, NULL);
+  task12 = xTaskCreate((Char_t *)"TASK12", task_harness_task2, NULL);
 
   unit_try(NULL != task12);
 

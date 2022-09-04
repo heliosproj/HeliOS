@@ -128,7 +128,7 @@ Base_t xStreamSend(StreamBuffer_t *stream_, Byte_t byte_) {
 
 /* The xStreamReceive() system call will receive all waiting bytes
 in the stream. */
-Byte_t *xStreamReceive(StreamBuffer_t *stream_, HWord_t *bytes_) {
+Byte_t *xStreamReceive(StreamBuffer_t *stream_, HalfWord_t *bytes_) {
 
 
   Byte_t *ret = NULL;
@@ -189,10 +189,10 @@ Byte_t *xStreamReceive(StreamBuffer_t *stream_, HWord_t *bytes_) {
 
 /* The xStreamBytesAvailable() system call will return the number
 of waiting bytes in the stream. */
-HWord_t xStreamBytesAvailable(StreamBuffer_t *stream_) {
+HalfWord_t xStreamBytesAvailable(StreamBuffer_t *stream_) {
 
 
-  HWord_t ret = zero;
+  HalfWord_t ret = zero;
 
   /* Assert if the heap fails its health check or if the stream pointer the end-user
   passed is invalid. */

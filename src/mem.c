@@ -83,7 +83,7 @@ Size_t xMemGetUsed(void) {
   MemoryEntry_t *cursor = NULL;
 
 
-  HWord_t used = zero;
+  HalfWord_t used = zero;
 
 
 
@@ -219,7 +219,7 @@ Base_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, const Addr_
 
   Base_t found = false;
 
-  HWord_t blocks = zero;
+  HalfWord_t blocks = zero;
 
 
   Base_t ret = RETURN_FAILURE;
@@ -385,14 +385,14 @@ Addr_t *__calloc__(volatile MemoryRegion_t *region_, const Size_t size_) {
 
   Addr_t *ret = NULL;
 
-  HWord_t requested = zero;
+  HalfWord_t requested = zero;
 
-  HWord_t free = zero;
+  HalfWord_t free = zero;
 
 
   /* Intentionally underflow an unsigned data type
   to get its maximum value. */
-  HWord_t fewest = -1;
+  HalfWord_t fewest = -1;
 
 
   MemoryEntry_t *cursor = NULL;
@@ -429,12 +429,12 @@ Addr_t *__calloc__(volatile MemoryRegion_t *region_, const Size_t size_) {
 
 
         /* Calculate the quotient part of the blocks. */
-        region_->entrySize = ((HWord_t)(sizeof(MemoryEntry_t) / CONFIG_MEMORY_REGION_BLOCK_SIZE));
+        region_->entrySize = ((HalfWord_t)(sizeof(MemoryEntry_t) / CONFIG_MEMORY_REGION_BLOCK_SIZE));
 
 
 
         /* Check if there is a remainder, if so we need to add one block. */
-        if (zero < ((HWord_t)(sizeof(MemoryEntry_t) % CONFIG_MEMORY_REGION_BLOCK_SIZE))) {
+        if (zero < ((HalfWord_t)(sizeof(MemoryEntry_t) % CONFIG_MEMORY_REGION_BLOCK_SIZE))) {
 
 
 
@@ -482,11 +482,11 @@ Addr_t *__calloc__(volatile MemoryRegion_t *region_, const Size_t size_) {
 
 
         /* Calculate the number of blocks requested. */
-        requested = ((HWord_t)(size_ / CONFIG_MEMORY_REGION_BLOCK_SIZE));
+        requested = ((HalfWord_t)(size_ / CONFIG_MEMORY_REGION_BLOCK_SIZE));
 
 
         /* Check if there is a remainder, if so add one more block. */
-        if (zero < ((HWord_t)(size_ % CONFIG_MEMORY_REGION_BLOCK_SIZE))) {
+        if (zero < ((HalfWord_t)(size_ % CONFIG_MEMORY_REGION_BLOCK_SIZE))) {
 
 
 
@@ -771,9 +771,9 @@ void __memcpy__(Addr_t *dest_, const Addr_t *src_, Size_t n_) {
 
   Size_t i = zero;
 
-  char *src = (char *)src_;
+  Char_t *src = (Char_t *)src_;
 
-  char *dest = (char *)dest_;
+  Char_t *dest = (Char_t *)dest_;
 
   for (i = zero; i < n_; i++) {
 
@@ -787,15 +787,15 @@ void __memcpy__(Addr_t *dest_, const Addr_t *src_, Size_t n_) {
 
 /* Like the standard libc function, __memset__() sets the memory
 at the location specified as the address to the defined value. */
-void __memset__(volatile Addr_t *dest_, uint16_t val_, Size_t n_) {
+void __memset__(volatile Addr_t *dest_, HalfWord_t val_, Size_t n_) {
 
   Size_t i = zero;
 
-  char *dest = (char *)dest_;
+  Char_t *dest = (Char_t *)dest_;
 
   for (i = zero; i < n_; i++) {
 
-    dest[i] = (char)val_;
+    dest[i] = (Char_t)val_;
   }
 
   return;
@@ -805,15 +805,15 @@ void __memset__(volatile Addr_t *dest_, uint16_t val_, Size_t n_) {
 
 /* Similar to the standard libc function, __memcmp__() compares the contents
 of two memory locations pointed. */
-uint16_t __memcmp__(const Addr_t *s1_, const Addr_t *s2_, Size_t n_) {
+HalfWord_t __memcmp__(const Addr_t *s1_, const Addr_t *s2_, Size_t n_) {
 
   Size_t i = zero;
 
-  uint16_t ret = zero;
+  HalfWord_t ret = zero;
 
-  char *s1 = (char *)s1_;
+  Char_t *s1 = (Char_t *)s1_;
 
-  char *s2 = (char *)s2_;
+  Char_t *s2 = (Char_t *)s2_;
 
   for (i = zero; i < n_; i++) {
 

@@ -46,8 +46,8 @@ extern "C" {
 StreamBuffer_t *xStreamCreate(void);
 void xStreamDelete(StreamBuffer_t *stream_);
 Base_t xStreamSend(StreamBuffer_t *stream_, Byte_t byte_);
-Byte_t *xStreamReceive(StreamBuffer_t *stream_, HWord_t *bytes_);
-HWord_t xStreamBytesAvailable(StreamBuffer_t *stream_);
+Byte_t *xStreamReceive(StreamBuffer_t *stream_, HalfWord_t *bytes_);
+HalfWord_t xStreamBytesAvailable(StreamBuffer_t *stream_);
 void xStreamReset(StreamBuffer_t *stream_);
 Base_t xStreamIsEmpty(StreamBuffer_t *stream_);
 Base_t xStreamIsFull(StreamBuffer_t *steam_);

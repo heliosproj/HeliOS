@@ -48,8 +48,8 @@ Base_t xDeviceRegisterDevice(Base_t (*device_self_register_)()) {
 }
 
 
-Base_t __RegisterDevice__(HWord_t uid_,
-                          const char *name_,
+Base_t __RegisterDevice__(HalfWord_t uid_,
+                          const Char_t *name_,
                           DeviceState_t state_,
                           DeviceMode_t mode_,
                           Base_t (*init_)(Device_t *device_),
@@ -141,7 +141,7 @@ Base_t __RegisterDevice__(HWord_t uid_,
 
 
 
-Base_t xDeviceWrite(HWord_t uid_, Size_t *size_, void *data_) {
+Base_t xDeviceWrite(HalfWord_t uid_, Size_t *size_, void *data_) {
 
   Base_t ret = RETURN_FAILURE;
 
@@ -198,7 +198,7 @@ Base_t xDeviceWrite(HWord_t uid_, Size_t *size_, void *data_) {
   return ret;
 }
 
-Base_t xDeviceRead(HWord_t uid_, Size_t *size_, void *data_) {
+Base_t xDeviceRead(HalfWord_t uid_, Size_t *size_, void *data_) {
 
 
   Base_t ret = RETURN_FAILURE;
@@ -257,7 +257,7 @@ Base_t xDeviceRead(HWord_t uid_, Size_t *size_, void *data_) {
 }
 
 
-Device_t *__DeviceListFind__(HWord_t uid_) {
+Device_t *__DeviceListFind__(HalfWord_t uid_) {
 
 
   Device_t *ret = NULL;
@@ -297,7 +297,7 @@ Device_t *__DeviceListFind__(HWord_t uid_) {
   return ret;
 }
 
-Base_t xDeviceInitDevice(HWord_t uid_) {
+Base_t xDeviceInitDevice(HalfWord_t uid_) {
 
   Base_t ret = RETURN_FAILURE;
 
@@ -323,7 +323,7 @@ Base_t xDeviceInitDevice(HWord_t uid_) {
 
   return ret;
 }
-Base_t xDeviceConfigDevice(HWord_t uid_, Size_t *size_, void *config_) {
+Base_t xDeviceConfigDevice(HalfWord_t uid_, Size_t *size_, void *config_) {
 
 
   Base_t ret = RETURN_FAILURE;

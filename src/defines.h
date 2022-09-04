@@ -146,7 +146,7 @@ xSystemGetSystemInfo(). */
 /* Define the raw size of the heap in bytes based on the number of blocks
 the heap contains and the size of each block in bytes. */
 #if !defined(MEMORY_REGION_SIZE_IN_BYTES)
-#define MEMORY_REGION_SIZE_IN_BYTES CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS * CONFIG_MEMORY_REGION_BLOCK_SIZE
+#define MEMORY_REGION_SIZE_IN_BYTES CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS *CONFIG_MEMORY_REGION_BLOCK_SIZE
 #endif
 
 
@@ -183,7 +183,7 @@ of the heap has been detected. */
 /* Define a marco which makes null pointer checks more readable and
 concise */
 #if !defined(ISNOTNULLPTR)
-#define ISNOTNULLPTR(addr_) ((NULL) != ( addr_ ))
+#define ISNOTNULLPTR(addr_) ((NULL) != (addr_))
 #endif
 
 
@@ -192,7 +192,7 @@ concise */
 /* Define a marco which makes null pointer checks more readable and
 concise */
 #if !defined(ISNULLPTR)
-#define ISNULLPTR(addr_) ((NULL) == ( addr_ ))
+#define ISNULLPTR(addr_) ((NULL) == (addr_))
 #endif
 
 
@@ -204,7 +204,9 @@ the CONFIG_ENABLE_SYSTEM_ASSERT setting. */
 #if !defined(CONFIG_ENABLE_SYSTEM_ASSERT)
 #define SYSASSERT(expr_)
 #else
-#define SYSASSERT(expr_) if (false == ( expr_ )) __SystemAssert__( __FILE__ , __LINE__ )
+#define SYSASSERT(expr_) \
+  if (false == (expr_))  \
+  __SystemAssert__(__FILE__, __LINE__)
 #endif
 #endif
 
@@ -224,7 +226,7 @@ the CONFIG_ENABLE_SYSTEM_ASSERT setting. */
 /* Define a macro to convert a heap memory address to it's corresponding
 heap entry. */
 #if !defined(ADDR2ENTRY)
-#define ADDR2ENTRY(addr_, region_) (MemoryEntry_t *)((Byte_t *)( addr_ ) - (( region_ )->entrySize * CONFIG_MEMORY_REGION_BLOCK_SIZE))
+#define ADDR2ENTRY(addr_, region_) (MemoryEntry_t *)((Byte_t *)(addr_) - ((region_)->entrySize * CONFIG_MEMORY_REGION_BLOCK_SIZE))
 #endif
 
 
@@ -232,7 +234,42 @@ heap entry. */
 /* Define a macro to convert a heap entry to it's corresponding heap memory
 address. */
 #if !defined(ENTRY2ADDR)
-#define ENTRY2ADDR(addr_, region_) (Addr_t *)((Byte_t *)( addr_ ) + (( region_ )->entrySize * CONFIG_MEMORY_REGION_BLOCK_SIZE))
+#define ENTRY2ADDR(addr_, region_) (Addr_t *)((Byte_t *)(addr_) + ((region_)->entrySize * CONFIG_MEMORY_REGION_BLOCK_SIZE))
+#endif
+
+
+#if defined(UCHAR_TYPE)
+#undef UCHAR_TYPE
+#define UCHAR_TYPE unsigned char
+#else
+#define UCHAR_TYPE unsigned char
+#endif
+
+
+#if defined(UINT8_TYPE)
+#undef UINT8_TYPE
+#define UINT8_TYPE uint8_t
+#else
+#define UINT8_TYPE uint8_t
+#endif
+
+
+
+#if defined(UINT16_TYPE)
+#undef UINT16_TYPE
+#define UINT16_TYPE uint16_t
+#else
+#define UINT16_TYPE uint16_t
+#endif
+
+
+
+
+#if defined(UINT32_TYPE)
+#undef UINT32_TYPE
+#define UINT32_TYPE uint32_t
+#else
+#define UINT32_TYPE uint32_t
 #endif
 
 #endif

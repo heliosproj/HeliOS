@@ -132,7 +132,7 @@ void memory_harness(void) {
 
   Task_t *mem04 = NULL;
 
-  mem04 = xTaskCreate("NONE", memory_harness_task, NULL);
+  mem04 = xTaskCreate((Char_t *)"NONE", memory_harness_task, NULL);
 
   unit_try(NULL != mem04);
 

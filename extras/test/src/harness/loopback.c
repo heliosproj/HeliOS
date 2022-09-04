@@ -27,14 +27,14 @@
 #include "loopback.h"
 
 #define BUFFER_LENGTH 0xFFu
-static char loopback_buffer[BUFFER_LENGTH];
-static HWord_t loopback_buffer_size = zero;
+static Char_t loopback_buffer[BUFFER_LENGTH];
+static HalfWord_t loopback_buffer_size = zero;
 
 
 Base_t loopback_self_register(void) {
   Base_t ret = RETURN_FAILURE;
 
-  ret = __RegisterDevice__(0xFFu, "LOOPBACK", DeviceStateRunning, DeviceModeReadWrite, loopback_init, loopback_config, loopback_read, loopback_write);
+  ret = __RegisterDevice__(0xFFu, (Char_t *)"LOOPBACK", DeviceStateRunning, DeviceModeReadWrite, loopback_init, loopback_config, loopback_read, loopback_write);
 
   return ret;
 }

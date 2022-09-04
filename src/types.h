@@ -76,18 +76,19 @@ typedef enum {
 
 
 typedef void TaskParm_t;
-typedef uint8_t Base_t;
-typedef uint8_t Byte_t;
+typedef UINT8_TYPE Base_t;
+typedef UINT8_TYPE Byte_t;
 typedef void Addr_t;
 typedef size_t Size_t;
-typedef uint16_t HWord_t;
-typedef uint32_t Word_t;
-typedef uint32_t Ticks_t;
+typedef UINT16_TYPE HalfWord_t;
+typedef UINT32_TYPE Word_t;
+typedef UINT32_TYPE Ticks_t;
+typedef UCHAR_TYPE Char_t;
 
 
 typedef struct Device_s {
-  HWord_t uid;
-  char name[CONFIG_DEVICE_NAME_BYTES];
+  HalfWord_t uid;
+  Char_t name[CONFIG_DEVICE_NAME_BYTES];
   DeviceState_t state;
   DeviceMode_t mode;
   Word_t bytesWritten;
@@ -103,7 +104,7 @@ typedef struct Device_s {
 typedef struct MemoryEntry_s {
   Byte_t free : 1;
   Byte_t reserved : 7;
-  HWord_t blocks;
+  HalfWord_t blocks;
   struct MemoryEntry_s *next;
 } MemoryEntry_t;
 
@@ -112,9 +113,9 @@ typedef struct MemoryEntry_s {
 typedef struct MemoryRegion_s {
   volatile Byte_t mem[MEMORY_REGION_SIZE_IN_BYTES];
   MemoryEntry_t *start;
-  HWord_t entrySize;
-  HWord_t allocations;
-  HWord_t frees;
+  HalfWord_t entrySize;
+  HalfWord_t allocations;
+  HalfWord_t frees;
   Word_t minAvailableEver;
 } MemoryRegion_t;
 
@@ -123,7 +124,7 @@ typedef struct MemoryRegion_s {
 
 typedef struct TaskNotification_s {
   Base_t notificationBytes;
-  char notificationValue[CONFIG_NOTIFICATION_VALUE_BYTES];
+  Char_t notificationValue[CONFIG_NOTIFICATION_VALUE_BYTES];
 } TaskNotification_t;
 
 
@@ -131,12 +132,12 @@ typedef struct TaskNotification_s {
 
 typedef struct Task_s {
   Base_t id;
-  char name[CONFIG_TASK_NAME_BYTES];
+  Char_t name[CONFIG_TASK_NAME_BYTES];
   TaskState_t state;
   TaskParm_t *taskParameter;
   void (*callback)(struct Task_s *, TaskParm_t *);
   Base_t notificationBytes;
-  char notificationValue[CONFIG_NOTIFICATION_VALUE_BYTES];
+  Char_t notificationValue[CONFIG_NOTIFICATION_VALUE_BYTES];
   Ticks_t lastRunTime;
   Ticks_t totalRunTime;
   Ticks_t timerPeriod;
@@ -170,7 +171,7 @@ typedef struct MemoryRegionStats_s {
 
 typedef struct TaskInfo_s {
   Base_t id;
-  char name[CONFIG_TASK_NAME_BYTES];
+  Char_t name[CONFIG_TASK_NAME_BYTES];
   TaskState_t state;
   Ticks_t lastRunTime;
   Ticks_t totalRunTime;
@@ -224,7 +225,7 @@ typedef struct SysFlags_s {
 
 typedef struct QueueMessage_s {
   Base_t messageBytes;
-  char messageValue[CONFIG_MESSAGE_VALUE_BYTES];
+  Char_t messageValue[CONFIG_MESSAGE_VALUE_BYTES];
 } QueueMessage_t;
 
 
@@ -232,7 +233,7 @@ typedef struct QueueMessage_s {
 
 typedef struct Message_s {
   Base_t messageBytes;
-  char messageValue[CONFIG_MESSAGE_VALUE_BYTES];
+  Char_t messageValue[CONFIG_MESSAGE_VALUE_BYTES];
   struct Message_s *next;
 } Message_t;
 
@@ -251,7 +252,7 @@ typedef struct Queue_s {
 
 
 typedef struct SystemInfo_s {
-  char productName[OS_PRODUCT_NAME_SIZE];
+  Char_t productName[OS_PRODUCT_NAME_SIZE];
   Base_t majorVersion;
   Base_t minorVersion;
   Base_t patchVersion;
@@ -262,7 +263,7 @@ typedef struct SystemInfo_s {
 
 typedef struct StreamBuffer_s {
   Byte_t buffer[CONFIG_STREAM_BUFFER_BYTES];
-  HWord_t length;
+  HalfWord_t length;
 } StreamBuffer_t;
 
 

@@ -43,7 +43,7 @@ static SchedulerState_t schedulerState = SchedulerStateRunning;
 /* The xTaskCreate() system call will create a new task. The task will be created with its
 state set to suspended. The xTaskCreate() and xTaskDelete() system calls cannot be called within
 a task. They MUST be called outside of the scope of the HeliOS scheduler. */
-Task_t *xTaskCreate(const char *name_, void (*callback_)(Task_t *, TaskParm_t *), TaskParm_t *taskParameter_) {
+Task_t *xTaskCreate(const Char_t *name_, void (*callback_)(Task_t *, TaskParm_t *), TaskParm_t *taskParameter_) {
 
 
   Task_t *ret = NULL;
@@ -231,7 +231,7 @@ void xTaskDelete(Task_t *task_) {
 task specified by its ASCII name. The length of the task name is dependent on the
 CONFIG_TASK_NAME_BYTES setting. The name is compared byte-for-byte so the name is
 case sensitive. */
-Task_t *xTaskGetHandleByName(const char *name_) {
+Task_t *xTaskGetHandleByName(const Char_t *name_) {
 
 
   Task_t *ret = NULL;
@@ -660,10 +660,10 @@ TaskState_t xTaskGetTaskState(Task_t *task_) {
 /* The xTaskGetName() system call returns the ASCII name of the task. The size of the
 task is dependent on the setting CONFIG_TASK_NAME_BYTES. The task name is NOT a null
 terminated char array. */
-char *xTaskGetName(Task_t *task_) {
+Char_t *xTaskGetName(Task_t *task_) {
 
 
-  char *ret = NULL;
+  Char_t *ret = NULL;
 
 
 
@@ -675,7 +675,7 @@ char *xTaskGetName(Task_t *task_) {
   if (RETURN_SUCCESS == __TaskListFindTask__(task_)) {
 
 
-    ret = (char *)xMemAlloc(CONFIG_TASK_NAME_BYTES);
+    ret = (Char_t *)xMemAlloc(CONFIG_TASK_NAME_BYTES);
 
 
     /* Assert if xMemAlloc() didn't do its job. */
@@ -786,7 +786,7 @@ task notification bytes is the number of bytes contained in the notification val
 notification bytes must be between one and the CONFIG_NOTIFICATION_VALUE_BYTES setting. The notification
 value must contain a pointer to a char array containing the notification value. If the task already
 has a waiting task notification, xTaskNotifyGive() will NOT overwrite the waiting task notification. */
-Base_t xTaskNotifyGive(Task_t *task_, Base_t notificationBytes_, const char *notificationValue_) {
+Base_t xTaskNotifyGive(Task_t *task_, Base_t notificationBytes_, const Char_t *notificationValue_) {
 
 
 

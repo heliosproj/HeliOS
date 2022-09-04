@@ -27,8 +27,8 @@
 #include "loopback.h"
 
 #define BUFFER_LENGTH 0xFFu
-static char loopback_buffer[BUFFER_LENGTH];
-static HWord_t loopback_buffer_size = zero;
+static Char_t loopback_buffer[BUFFER_LENGTH];
+static HalfWord_t loopback_buffer_size = zero;
 
 
 Base_t loopback_self_register(void) {

@@ -336,7 +336,7 @@ Base_t xQueueMessagesWaiting(Queue_t *queue_) {
 
 /* The xQueueSend() system call will send a message to the queue. The size of the message
 value is passed in the message bytes parameter. */
-Base_t xQueueSend(Queue_t *queue_, Base_t messageBytes_, const char *messageValue_) {
+Base_t xQueueSend(Queue_t *queue_, Base_t messageBytes_, const Char_t *messageValue_) {
 
 
 

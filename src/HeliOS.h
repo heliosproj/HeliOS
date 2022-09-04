@@ -72,6 +72,20 @@ typedef enum {
   SchedulerStateRunning    /**< State the scheduler is in after xTaskResumeAll() is called. */
 } SchedulerState_t;
 
+
+/**
+ * @brief
+ *
+ */
+typedef UCHAR_TYPE Char_t;
+
+
+/**
+ * @brief
+ *
+ */
+typedef Char_t xChar;
+
 /**
  * @brief Type definition for the base data type.
  *
@@ -83,7 +97,7 @@ typedef enum {
  * @sa xBase
  *
  */
-typedef uint8_t Base_t;
+typedef UINT8_TYPE Base_t;
 
 /**
  * @brief Type defintion for the word data type
@@ -92,7 +106,7 @@ typedef uint8_t Base_t;
  *
  * @sa xWord
  */
-typedef uint32_t Word_t;
+typedef UINT32_TYPE Word_t;
 
 
 /**
@@ -102,7 +116,7 @@ typedef uint32_t Word_t;
  *
  * @sa xByte
  */
-typedef uint8_t Byte_t;
+typedef UINT8_TYPE Byte_t;
 
 
 /**
@@ -110,9 +124,9 @@ typedef uint8_t Byte_t;
  *
  * A half-word is a 16-bit data type in HeliOS.
  *
- * @sa xHWord
+ * @sa xHalfWord
  */
-typedef uint16_t HWord_t;
+typedef UINT16_TYPE HalfWord_t;
 
 
 /**
@@ -124,7 +138,7 @@ typedef uint16_t HWord_t;
  * @sa xTicks
  *
  */
-typedef uint32_t Ticks_t;
+typedef UINT32_TYPE Ticks_t;
 
 /**
  * @brief The type defintion for storing the size of some object in memory.
@@ -187,11 +201,11 @@ typedef struct TaskRunTimeStats_s {
  *
  */
 typedef struct TaskInfo_s {
-  Base_t id;                         /**< The task identifier which is used by xTaskGetHandleById() to return the task handle. */
-  char name[CONFIG_TASK_NAME_BYTES]; /**< The name of the task which is used by xTaskGetHandleByName() to return the task handle. This is NOT a null terminated string. */
-  TaskState_t state;                 /**< The state the task is in which is one of four states specified in the TaskState_t enumerated data type. */
-  Ticks_t lastRunTime;               /**< The runtime duration in ticks the last time the task was executed by the scheduler. */
-  Ticks_t totalRunTime;              /**< The total runtime duration in ticks the task has been executed by the scheduler. */
+  Base_t id;                           /**< The task identifier which is used by xTaskGetHandleById() to return the task handle. */
+  Char_t name[CONFIG_TASK_NAME_BYTES]; /**< The name of the task which is used by xTaskGetHandleByName() to return the task handle. This is NOT a null terminated string. */
+  TaskState_t state;                   /**< The state the task is in which is one of four states specified in the TaskState_t enumerated data type. */
+  Ticks_t lastRunTime;                 /**< The runtime duration in ticks the last time the task was executed by the scheduler. */
+  Ticks_t totalRunTime;                /**< The total runtime duration in ticks the task has been executed by the scheduler. */
 } TaskInfo_t;
 
 /**
@@ -210,8 +224,8 @@ typedef struct TaskInfo_s {
  *
  */
 typedef struct TaskNotification_s {
-  Base_t notificationBytes;                                /**< The number of bytes in the notificationValue member that makes up the notification value. This cannot exceed CONFIG_NOTIFICATION_VALUE_BYTES. */
-  char notificationValue[CONFIG_NOTIFICATION_VALUE_BYTES]; /**< The char array that contains the actual notification value. This is NOT a null terminated string. */
+  Base_t notificationBytes;                                  /**< The number of bytes in the notificationValue member that makes up the notification value. This cannot exceed CONFIG_NOTIFICATION_VALUE_BYTES. */
+  Char_t notificationValue[CONFIG_NOTIFICATION_VALUE_BYTES]; /**< The char array that contains the actual notification value. This is NOT a null terminated string. */
 } TaskNotification_t;
 
 /**
@@ -230,8 +244,8 @@ typedef struct TaskNotification_s {
  *
  */
 typedef struct QueueMessage_s {
-  Base_t messageBytes;                           /**< The number of bytes in the messageValue member that makes up the message value. This cannot exceed CONFIG_MESSAGE_VALUE_BYTES. */
-  char messageValue[CONFIG_MESSAGE_VALUE_BYTES]; /**< the char array that contains the actual message value. This is NOT a null terminated string. */
+  Base_t messageBytes;                             /**< The number of bytes in the messageValue member that makes up the message value. This cannot exceed CONFIG_MESSAGE_VALUE_BYTES. */
+  Char_t messageValue[CONFIG_MESSAGE_VALUE_BYTES]; /**< the char array that contains the actual message value. This is NOT a null terminated string. */
 } QueueMessage_t;
 
 /**
@@ -248,11 +262,11 @@ typedef struct QueueMessage_s {
  *
  */
 typedef struct SystemInfo_s {
-  char productName[OS_PRODUCT_NAME_SIZE]; /**< The name of the operating system or product. Its length is defined by OS_PRODUCT_NAME_SIZE. This is NOT a null terminated string. */
-  Base_t majorVersion;                    /**< The major version number of HeliOS and is Symantec Versioning Specification (SemVer) compliant. */
-  Base_t minorVersion;                    /**< The minor version number of HeliOS and is Symantec Versioning Specification (SemVer) compliant. */
-  Base_t patchVersion;                    /**< The patch version number of HeliOS and is Symantec Versioning Specification (SemVer) compliant. */
-  Base_t numberOfTasks;                   /**< The number of tasks presently in a suspended, running or waiting state. */
+  Char_t productName[OS_PRODUCT_NAME_SIZE]; /**< The name of the operating system or product. Its length is defined by OS_PRODUCT_NAME_SIZE. This is NOT a null terminated string. */
+  Base_t majorVersion;                      /**< The major version number of HeliOS and is Symantec Versioning Specification (SemVer) compliant. */
+  Base_t minorVersion;                      /**< The minor version number of HeliOS and is Symantec Versioning Specification (SemVer) compliant. */
+  Base_t patchVersion;                      /**< The patch version number of HeliOS and is Symantec Versioning Specification (SemVer) compliant. */
+  Base_t numberOfTasks;                     /**< The number of tasks presently in a suspended, running or waiting state. */
 } SystemInfo_t;
 
 /**
@@ -406,9 +420,9 @@ typedef Word_t xWord;
  *
  * A half-word is a 16-bit data type in HeliOS.
  *
- * @sa HWord_t
+ * @sa HalfWord_t
  */
-typedef HWord_t xHWord;
+typedef HalfWord_t xHalfWord;
 
 /**
  * @brief Stub type definition for the timer type.
@@ -911,7 +925,7 @@ xBase xQueueMessagesWaiting(xQueue queue_);
  * @return xBase xQueueSend() returns RETURN_SUCCESS if the message was sent to the queue successfully. Otherwise
  * RETURN_FAILURE if unsuccessful.
  */
-xBase xQueueSend(xQueue queue_, xBase messageBytes_, const char *messageValue_);
+xBase xQueueSend(xQueue queue_, xBase messageBytes_, const xChar *messageValue_);
 
 /**
  * @brief System call to peek at the next message in a message queue.
@@ -1048,7 +1062,7 @@ xSystemInfo xSystemGetSystemInfo(void);
  * @warning xTaskCreate() MUST be called outside the scope of the HeliOS scheduler (i.e., not from a task's main).
  * The task memory can only be freed by xTaskDelete().
  */
-xTask xTaskCreate(const char *name_, void (*callback_)(xTask, xTaskParm), xTaskParm taskParameter_);
+xTask xTaskCreate(const xChar *name_, void (*callback_)(xTask, xTaskParm), xTaskParm taskParameter_);
 
 /**
  * @brief System call to delete a task.
@@ -1075,7 +1089,7 @@ void xTaskDelete(xTask task_);
  * @param name_ The ASCII name of the task to return the handle of. The task name is NOT a null terminated string.
  * @return xTask The task handle. xTaskGetHandleByName() returns null if the name cannot be found.
  */
-xTask xTaskGetHandleByName(const char *name_);
+xTask xTaskGetHandleByName(const xChar *name_);
 
 /**
  * @brief System call to get a task's handle by its task identifier.
@@ -1204,7 +1218,7 @@ xTaskState xTaskGetTaskState(xTask task_);
  *
  * @warning The memory allocated by xTaskGetName() must be free by xMemFree().
  */
-char *xTaskGetName(xTask task_);
+xChar *xTaskGetName(xTask task_);
 
 /**
  * @brief System call to return the task identifier for a task.
@@ -1258,7 +1272,7 @@ xBase xTaskNotificationIsWaiting(xTask task_);
  * @param notificationValue_ A char array containing the notification value. The notification value is NOT a null terminated string.
  * @return xBase RETURN_SUCCESS if the direct to task notification was successfully given, RETURN_FAILURE if not.
  */
-Base_t xTaskNotifyGive(xTask task_, xBase notificationBytes_, const char *notificationValue_);
+Base_t xTaskNotifyGive(xTask task_, xBase notificationBytes_, const xChar *notificationValue_);
 
 /**
  * @brief System call to take a direct to task notification from another task.
@@ -1545,13 +1559,13 @@ xTicks xTaskGetWDPeriod(xTask *task_);
 
 /**
  * @brief The xStreamCreate() system call will create a new stream buffer
- * 
+ *
  * The xStreamCreate() system call will create a new stream buffer. The
  * memory for a stream buffer is allocated from kernel memory and therefor
  * cannot be freed by calling xMemFree().
  *
  * @return xStreamBuffer The newly created stream buffer.
- * 
+ *
  * @warning The stream buffer created by xStreamCreate() must
  * be freed by calling xStreamDelete().
  */
@@ -1559,7 +1573,7 @@ xStreamBuffer xStreamCreate(void);
 
 /**
  * @brief The xStreamDelete() system call will delete a stream buffer
- * 
+ *
  * The xStreamDelete() system call will delete a stream buffer and
  * free its memory. Once a stream buffer is deleted, it can not
  * be written to or read from.
@@ -1570,7 +1584,7 @@ void xStreamDelete(xStreamBuffer stream_);
 
 /**
  * @brief The xStreamSend() system call will write one byte to the stream buffer
- * 
+ *
  * The xStreamSend() system call will write one byte to the stream buffer. If the
  * stream buffer's length is equal to CONFIG_STREAM_BUFFER_BYTES (i.e., full) then
  * the byte will not be written to the stream buffer and xStreamSend() will return
@@ -1584,33 +1598,33 @@ xBase xStreamSend(xStreamBuffer stream_, xByte byte_);
 
 /**
  * @brief The xStreamReceive() system call will return the contents of the stream buffer
- * 
+ *
  * The xStreamReceive() system call will return the contents of the stream buffer. The
  * contents are returned as a byte array whose length is known by the bytes_ paramater.
  * Because the byte array is stored in the heap, it must be freed by calling xMemFree().
- * 
+ *
  * @param stream_ The stream to operate on.
  * @param bytes_ The number of bytes returned (i.e., length of the byte array) by xStreamReceive().
  * @return xByte* The byte array containing the contents of the stream buffer.
- * 
+ *
  * @warning The byte array returned by xStreamReceive() must be freed by calling xMemFree().
  */
-xByte *xStreamReceive(xStreamBuffer stream_, HWord_t *bytes_);
+xByte *xStreamReceive(xStreamBuffer stream_, xHalfWord *bytes_);
 
 /**
  * @brief The xStreamBytesAvailable() system call returns the length of the stream buffer
- * 
+ *
  * The xStreamBytesAvailable() system call will return the length of the stream buffer
- * in bytes (i.e., bytes available to be received by xStreamReceive()). 
+ * in bytes (i.e., bytes available to be received by xStreamReceive()).
  *
  * @param stream_ The stream to operate on.
- * @return xHWord The length of the stream buffer in bytes.
+ * @return xHalfWord The length of the stream buffer in bytes.
  */
-xHWord xStreamBytesAvailable(xStreamBuffer stream_);
+xHalfWord xStreamBytesAvailable(xStreamBuffer stream_);
 
 /**
  * @brief The xStreamReset() system call will reset a stream buffer
- * 
+ *
  * The xStreamRest() system call will clear the contents of the stream buffer
  * and reset its length to zero.
  *
@@ -1646,32 +1660,32 @@ xBase xStreamIsEmpty(xStreamBuffer stream_);
 xBase xStreamIsFull(xStreamBuffer steam_);
 
 /**
- * @brief 
- * 
- * @param device_self_register_ 
- * @return xBase 
+ * @brief
+ *
+ * @param device_self_register_
+ * @return xBase
  */
 xBase xDeviceRegisterDevice(xBase (*device_self_register_)());
 
 /**
- * @brief 
- * 
- * @param uid_ 
- * @param bytes_ 
- * @param data_ 
- * @return xBase 
+ * @brief
+ *
+ * @param uid_
+ * @param bytes_
+ * @param data_
+ * @return xBase
  */
-xBase xDeviceWrite(xHWord uid_, xHWord *bytes_, xByte *data_);
+xBase xDeviceWrite(xHalfWord uid_, xHalfWord *bytes_, xByte *data_);
 
 /**
- * @brief 
- * 
- * @param uid_ 
- * @param bytes_ 
- * @param data_ 
- * @return xBase 
+ * @brief
+ *
+ * @param uid_
+ * @param bytes_
+ * @param data_
+ * @return xBase
  */
-xBase xDeviceRead(xHWord uid_, xHWord *bytes_, xByte *data_);
+xBase xDeviceRead(xHalfWord uid_, xHalfWord *bytes_, xByte *data_);
 
 #if defined(POSIX_ARCH_OTHER)
 void __MemoryClear__(void);
