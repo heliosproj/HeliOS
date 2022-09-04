@@ -1686,7 +1686,7 @@ xBase xDeviceInitDevice(xHalfWord uid_);
  * @param config_ 
  * @return xBase 
  */
-xBase xDeviceConfigDevice(xHalfWord uid_, xSize *size_, void *config_);
+xBase xDeviceConfigDevice(xHalfWord uid_, xSize *size_, xAddr config_);
 
 
 /**
@@ -1697,7 +1697,7 @@ xBase xDeviceConfigDevice(xHalfWord uid_, xSize *size_, void *config_);
  * @param data_ 
  * @return xBase 
  */
-xBase xDeviceWrite(xHalfWord uid_, xSize *size_, void *data_);
+xBase xDeviceWrite(xHalfWord uid_, xSize *size_, xAddr data_);
 
 
 /**
@@ -1708,7 +1708,7 @@ xBase xDeviceWrite(xHalfWord uid_, xSize *size_, void *data_);
  * @param data_ 
  * @return xBase 
  */
-xBase xDeviceRead(xHalfWord uid_, xSize *size_, void *data_);
+xBase xDeviceRead(xHalfWord uid_, xSize *size_, xAddr data_);
 
 
 /**

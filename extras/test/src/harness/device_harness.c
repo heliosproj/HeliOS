@@ -42,7 +42,7 @@ void device_harness(void) {
 
   Size_t bytes1 = 0x26u;
 
-  void *data1 = NULL;
+  Addr_t *data1 = NULL;
 
   data1 = (Byte_t *)xMemAlloc(bytes1);
 
@@ -60,7 +60,7 @@ void device_harness(void) {
 
   Size_t bytes2 = 0x26u;
 
-  void *data2 = NULL;
+  Addr_t *data2 = NULL;
 
   data2 = (Byte_t *)xMemAlloc(bytes2);
 

@@ -95,9 +95,9 @@ typedef struct Device_s {
   Word_t bytesRead;
   Base_t available;
   Base_t (*init)(struct Device_s *device_);
-  Base_t (*config)(struct Device_s *device_, Size_t *size_, void *config_);
-  Base_t (*read)(struct Device_s *device_, Size_t *size_, void *data_);
-  Base_t (*write)(struct Device_s *device_, Size_t *size_, void *data_);
+  Base_t (*config)(struct Device_s *device_, Size_t *size_, Addr_t *config_);
+  Base_t (*read)(struct Device_s *device_, Size_t *size_, Addr_t *data_);
+  Base_t (*write)(struct Device_s *device_, Size_t *size_, Addr_t *data_);
   Base_t (*simple_read)(struct Device_s *device_, Word_t *data_);
   Base_t (*simple_write)(struct Device_s *device_, Word_t *data_);
   struct Device_s *next;

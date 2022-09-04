@@ -49,7 +49,7 @@ Base_t TO_FUNCTION(DEVICE_NAME, _init)(Device_t *device_) {
 
 
 
-Base_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, void *config_) {
+Base_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Addr_t *config_) {
   Base_t ret = RETURN_FAILURE;
 
   /* INSERT CODE TO CONFIGURE DEVICE HERE */
@@ -59,7 +59,7 @@ Base_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, void 
 
 
 
-Base_t TO_FUNCTION(DEVICE_NAME, _read)(Device_t *device_, Size_t *size_, void *data_) {
+Base_t TO_FUNCTION(DEVICE_NAME, _read)(Device_t *device_, Size_t *size_, Addr_t *data_) {
   Base_t ret = RETURN_FAILURE;
 
   /* INSERT CODE TO READ FROM DEVICE HERE */
@@ -69,7 +69,7 @@ Base_t TO_FUNCTION(DEVICE_NAME, _read)(Device_t *device_, Size_t *size_, void *d
 
 
 
-Base_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t *device_, Size_t *size_, void *data_) {
+Base_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t *device_, Size_t *size_, Addr_t *data_) {
   Base_t ret = RETURN_FAILURE;
 
   /* INSERT CODE TO WRITE TO DEVICE HERE */

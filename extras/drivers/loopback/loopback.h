@@ -62,9 +62,9 @@ extern "C" {
 
 Base_t TO_FUNCTION(DEVICE_NAME, _self_register)(void);
 Base_t TO_FUNCTION(DEVICE_NAME, _init)(Device_t *device_);
-Base_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, void *config_);
-Base_t TO_FUNCTION(DEVICE_NAME, _read)(Device_t *device_, Size_t *size_, void *data_);
-Base_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t *device_, Size_t *size_, void *data_);
+Base_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Addr_t *config_);
+Base_t TO_FUNCTION(DEVICE_NAME, _read)(Device_t *device_, Size_t *size_, Addr_t *data_);
+Base_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t *device_, Size_t *size_, Addr_t *data_);
 Base_t TO_FUNCTION(DEVICE_NAME, _simple_read)(Device_t *device_, Word_t *data_);
 Base_t TO_FUNCTION(DEVICE_NAME, _simple_write)(Device_t *device_, Word_t *data_);
 
