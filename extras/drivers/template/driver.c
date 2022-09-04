@@ -1,7 +1,7 @@
 /**
  * @file driver.c
  * @author Manny Peterson (mannymsp@gmail.com)
- * @brief Template for HeliOS device drivers
+ * @brief A template for HeliOS device drivers
  * @version 0.3.5
  * @date 2022-09-02
  *
@@ -27,46 +27,50 @@
 #include "driver.h"
 
 
-Base_t device_self_register(void) {
+Base_t TO_FUNCTION(DEVICE_NAME, _self_register)(void) {
+
+  /* DO NOT MODIFY THIS FUNCTION */
+
+  return __RegisterDevice__(DEVICE_UID, (Char_t *)TO_LITERAL(DEVICE_NAME), DEVICE_STATE, DEVICE_MODE, TO_FUNCTION(DEVICE_NAME, _init),
+                            TO_FUNCTION(DEVICE_NAME, _config), TO_FUNCTION(DEVICE_NAME, _read), TO_FUNCTION(DEVICE_NAME, _write));
+}
+
+
+
+Base_t TO_FUNCTION(DEVICE_NAME, _init)(Device_t *device_) {
   Base_t ret = RETURN_FAILURE;
 
-  ret = __RegisterDevice__(0x1u, "DEV_TEMP", DeviceStateRunning, DeviceModeReadWrite, device_init, device_config, device_read, device_write);
+  /* INSERT CODE TO INITIALIZE DEVICE HERE */
 
   return ret;
 }
 
 
 
-Base_t device_init(Device_t *device_) {
+Base_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, void *config_) {
   Base_t ret = RETURN_FAILURE;
 
+  /* INSERT CODE TO CONFIGURE DEVICE HERE */
 
   return ret;
 }
 
 
 
-Base_t device_config(Device_t *device_, Size_t *size_, void *config_) {
+Base_t TO_FUNCTION(DEVICE_NAME, _read)(Device_t *device_, Size_t *size_, void *data_) {
   Base_t ret = RETURN_FAILURE;
 
+  /* INSERT CODE TO READ FROM DEVICE HERE */
 
   return ret;
 }
 
 
 
-Base_t device_read(Device_t *device_, Size_t *size_, void *data_) {
+Base_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t *device_, Size_t *size_, void *data_) {
   Base_t ret = RETURN_FAILURE;
 
-
-  return ret;
-}
-
-
-
-Base_t device_write(Device_t *device_, Size_t *size_, void *data_) {
-  Base_t ret = RETURN_FAILURE;
-
+  /* INSERT CODE TO WRITE TO DEVICE HERE */
 
   return ret;
 }

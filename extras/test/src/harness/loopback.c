@@ -1,7 +1,7 @@
 /**
  * @file loopback.c
  * @author Manny Peterson (mannymsp@gmail.com)
- * @brief Driver for HeliOS loopback device
+ * @brief A template for HeliOS device drivers
  * @version 0.3.5
  * @date 2022-09-02
  *
@@ -31,17 +31,17 @@ static Char_t loopback_buffer[BUFFER_LENGTH];
 static HalfWord_t loopback_buffer_size = zero;
 
 
-Base_t loopback_self_register(void) {
-  Base_t ret = RETURN_FAILURE;
+Base_t TO_FUNCTION(DEVICE_NAME, _self_register)(void) {
 
-  ret = __RegisterDevice__(0xFFu, (Char_t *)"LOOPBACK", DeviceStateRunning, DeviceModeReadWrite, loopback_init, loopback_config, loopback_read, loopback_write);
+  /* DO NOT MODIFY THIS FUNCTION */
 
-  return ret;
+  return __RegisterDevice__(DEVICE_UID, (Char_t *)TO_LITERAL(DEVICE_NAME), DEVICE_STATE, DEVICE_MODE, TO_FUNCTION(DEVICE_NAME, _init),
+                            TO_FUNCTION(DEVICE_NAME, _config), TO_FUNCTION(DEVICE_NAME, _read), TO_FUNCTION(DEVICE_NAME, _write));
 }
 
 
 
-Base_t loopback_init(Device_t *device_) {
+Base_t TO_FUNCTION(DEVICE_NAME, _init)(Device_t *device_) {
   Base_t ret = RETURN_SUCCESS;
 
   __memset__(loopback_buffer, zero, BUFFER_LENGTH);
@@ -51,16 +51,17 @@ Base_t loopback_init(Device_t *device_) {
 
 
 
-Base_t loopback_config(Device_t *device_, Size_t *size_, void *config_) {
+Base_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, void *config_) {
   Base_t ret = RETURN_FAILURE;
 
+  /* INSERT CODE TO CONFIGURE DEVICE HERE */
 
   return ret;
 }
 
 
 
-Base_t loopback_read(Device_t *device_, Size_t *size_, void *data_) {
+Base_t TO_FUNCTION(DEVICE_NAME, _read)(Device_t *device_, Size_t *size_, void *data_) {
   Base_t ret = RETURN_SUCCESS;
 
   *size_ = loopback_buffer_size;
@@ -72,7 +73,7 @@ Base_t loopback_read(Device_t *device_, Size_t *size_, void *data_) {
 
 
 
-Base_t loopback_write(Device_t *device_, Size_t *size_, void *data_) {
+Base_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t *device_, Size_t *size_, void *data_) {
   Base_t ret = RETURN_SUCCESS;
 
   loopback_buffer_size = *size_;

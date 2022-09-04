@@ -32,7 +32,7 @@ void device_harness(void) {
   unit_begin("xDeviceRegisterDevice()");
 
 
-  unit_try(RETURN_SUCCESS == xDeviceRegisterDevice(loopback_self_register));
+  unit_try(RETURN_SUCCESS == xDeviceRegisterDevice(LOOPBACK_self_register));
 
   unit_end();
 

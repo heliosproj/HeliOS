@@ -1,7 +1,7 @@
 /**
  * @file loopback.h
  * @author Manny Peterson (mannymsp@gmail.com)
- * @brief Driver for HeliOS loopback device
+ * @brief A template for HeliOS device drivers
  * @version 0.3.5
  * @date 2022-09-02
  *
@@ -38,15 +38,33 @@
 #include "task.h"
 #include "timer.h"
 
+/* START: DEVICE DRIVER PARAMATER BLOCK
+
+IMPORTANT: THE DEVICE NAME MUST BE SUPPLIED HERE AND MUST BE *EXACTLY*
+CONFIG_DEVICE_NAME_BYTES (DEFAULT IS 8) IN LENGTH, IT MAY BE NECESSARY
+TO PAD SHORTER DEVICE NAMES. */
+#define DEVICE_NAME LOOPBACK
+#define DEVICE_UID 0xFFu
+#define DEVICE_MODE DeviceModeReadWrite
+#define DEVICE_STATE DeviceStateRunning
+/* END: DEVICE DRIVER PARAMATER BLOCK */
+
+
+
+#define CONCAT(a, b) a##b
+#define QUOTE(a) #a
+#define TO_FUNCTION(a, b) CONCAT(a, b)
+#define TO_LITERAL(a) QUOTE(a) 
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-Base_t loopback_self_register(void);
-Base_t loopback_init(Device_t *device_);
-Base_t loopback_config(Device_t *device_, Size_t *size_, void *config_);
-Base_t loopback_read(Device_t *device_, Size_t *size_, void *data_);
-Base_t loopback_write(Device_t *device_, Size_t *size_, void *data_);
+Base_t TO_FUNCTION(DEVICE_NAME, _self_register)(void);
+Base_t TO_FUNCTION(DEVICE_NAME, _init)(Device_t *device_);
+Base_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, void *config_);
+Base_t TO_FUNCTION(DEVICE_NAME, _read)(Device_t *device_, Size_t *size_, void *data_);
+Base_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t *device_, Size_t *size_, void *data_);
 
 #ifdef __cplusplus
 }  // extern "C" {
