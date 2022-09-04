@@ -56,6 +56,14 @@ void device_harness(void) {
 
 
 
+  unit_begin("xDeviceIsAvailable()");
+
+  unit_try(true == xDeviceIsAvailable(0xFFu));
+
+  unit_end();
+
+
+
   unit_begin("xDeviceRead()");
 
   Size_t bytes2 = 0x26u;
@@ -73,6 +81,39 @@ void device_harness(void) {
   xMemFree(data2);
 
   unit_end();
+
+
+
+  unit_begin("xDeviceSimpleWrite()");
+
+  Word_t *data3;
+
+  data3 = (Word_t *)xMemAlloc(sizeof(Word_t));
+
+  *data3 = 0xFAFAu;
+
+  unit_try(RETURN_SUCCESS == xDeviceSimpleWrite(0xFFu, data3));
+
+  xMemFree(data3);
+
+  unit_end();
+
+
+
+  unit_begin("xDeviceSimpleRead()");
+
+  Word_t *data4;
+
+  data4 = (Word_t *)xMemAlloc(sizeof(Word_t));
+
+  *data4 = zero;
+
+  unit_try(RETURN_SUCCESS == xDeviceSimpleRead(0xFFu, data4));
+
+  unit_try(0xFAFAu == *data4);
+
+  unit_end();
+
 
 
   return;

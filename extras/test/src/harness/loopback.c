@@ -1,7 +1,7 @@
 /**
  * @file loopback.c
  * @author Manny Peterson (mannymsp@gmail.com)
- * @brief The HeliOS looback device driver
+ * @brief The HeliOS loopback device driver
  * @version 0.3.5
  * @date 2022-09-02
  *
@@ -46,6 +46,8 @@ Base_t TO_FUNCTION(DEVICE_NAME, _init)(Device_t *device_) {
 
   __memset__(loopback_buffer, zero, BUFFER_LENGTH);
 
+  device_->available = false;
+
   return ret;
 }
 
@@ -68,6 +70,8 @@ Base_t TO_FUNCTION(DEVICE_NAME, _read)(Device_t *device_, Size_t *size_, Addr_t 
 
   __memcpy__(data_, loopback_buffer, *size_);
 
+  device_->available = false;
+
   return ret;
 }
 
@@ -80,15 +84,19 @@ Base_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t *device_, Size_t *size_, Addr_t
 
   __memcpy__(loopback_buffer, data_, *size_);
 
+  device_->available = true;
+
   return ret;
 }
 
 
 
 Base_t TO_FUNCTION(DEVICE_NAME, _simple_read)(Device_t *device_, Word_t *data_) {
-  Base_t ret = RETURN_FAILURE;
+  Base_t ret = RETURN_SUCCESS;
 
-  /* INSERT CODE TO READ FROM DEVICE HERE */
+  __memcpy__(data_, loopback_buffer, sizeof(Word_t));
+
+  device_->available = false;
 
   return ret;
 }
@@ -96,9 +104,12 @@ Base_t TO_FUNCTION(DEVICE_NAME, _simple_read)(Device_t *device_, Word_t *data_) 
 
 
 Base_t TO_FUNCTION(DEVICE_NAME, _simple_write)(Device_t *device_, Word_t *data_) {
-  Base_t ret = RETURN_FAILURE;
+  Base_t ret = RETURN_SUCCESS;
 
-  /* INSERT CODE TO WRITE TO DEVICE HERE */
+  __memcpy__(loopback_buffer, data_, sizeof(Word_t));
+
+
+  device_->available = true;
 
   return ret;
 }
