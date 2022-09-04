@@ -172,6 +172,59 @@ Base_t xDeviceIsAvailable(HalfWord_t uid_) {
   return ret;
 }
 
+Base_t xDeviceSimpleWrite(HalfWord_t uid_, Word_t *data_) {
+
+  Base_t ret = RETURN_FAILURE;
+
+  Device_t *device = NULL;
+
+  Word_t *data = NULL;
+
+  SYSASSERT(zero < uid_);
+
+  SYSASSERT(ISNOTNULLPTR(data_));
+
+  SYSASSERT(RETURN_SUCCESS == __MemoryRegionCheckHeap__(data_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
+
+  if ((zero < uid_) && (ISNOTNULLPTR(data_)) && (RETURN_SUCCESS == __MemoryRegionCheckHeap__(data_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
+
+
+    device = __DeviceListFind__(uid_);
+
+
+    SYSASSERT(ISNOTNULLPTR(device));
+
+    if (ISNOTNULLPTR(device)) {
+
+      SYSASSERT(((DeviceModeReadWrite == device->mode) || (DeviceModeWriteOnly == device->mode)) && (DeviceStateRunning == device->state));
+
+      if (((DeviceModeReadWrite == device->mode) || (DeviceModeWriteOnly == device->mode)) && (DeviceStateRunning == device->state)) {
+
+        data = (Word_t *)__KernelAllocateMemory__(sizeof(Word_t));
+
+        SYSASSERT(ISNOTNULLPTR(data));
+
+        if (ISNOTNULLPTR(data)) {
+
+          __memcpy__(data, data_, sizeof(Word_t));
+
+          ret = (*device->simple_write)(device, data);
+
+          device->bytesWritten += sizeof(Word_t);
+
+          SYSASSERT(RETURN_SUCCESS == ret);
+
+          __KernelFreeMemory__(data);
+        }
+      }
+    }
+  }
+
+
+
+  return ret;
+}
+
 
 Base_t xDeviceWrite(HalfWord_t uid_, Size_t *size_, void *data_) {
 
@@ -229,6 +282,61 @@ Base_t xDeviceWrite(HalfWord_t uid_, Size_t *size_, void *data_) {
 
   return ret;
 }
+
+Base_t xDeviceSimpleRead(HalfWord_t uid_, Word_t *data_) {
+
+  Base_t ret = RETURN_FAILURE;
+
+  Device_t *device = NULL;
+
+  Word_t *data = NULL;
+
+  SYSASSERT(zero < uid_);
+
+
+  SYSASSERT(ISNOTNULLPTR(data_));
+
+  SYSASSERT(RETURN_SUCCESS == __MemoryRegionCheckHeap__(data_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
+
+  if ((zero < uid_) && (ISNOTNULLPTR(data_)) && (RETURN_SUCCESS == __MemoryRegionCheckHeap__(data_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
+
+
+    device = __DeviceListFind__(uid_);
+
+
+    SYSASSERT(ISNOTNULLPTR(device));
+
+    if (ISNOTNULLPTR(device)) {
+
+      SYSASSERT(((DeviceModeReadWrite == device->mode) || (DeviceModeReadOnly == device->mode)) && (DeviceStateRunning == device->state));
+
+      if (((DeviceModeReadWrite == device->mode) || (DeviceModeReadOnly == device->mode)) && (DeviceStateRunning == device->state)) {
+
+        data = (Word_t *)__KernelAllocateMemory__(sizeof(Word_t));
+
+        SYSASSERT(ISNOTNULLPTR(data));
+
+        if (ISNOTNULLPTR(data)) {
+
+          ret = (*device->simple_read)(device, data);
+
+          __memcpy__(data_, data, sizeof(Word_t));
+
+          device->bytesRead += sizeof(Word_t);
+
+          SYSASSERT(RETURN_SUCCESS == ret);
+
+          __KernelFreeMemory__(data);
+        }
+      }
+    }
+  }
+
+
+
+  return ret;
+}
+
 
 Base_t xDeviceRead(HalfWord_t uid_, Size_t *size_, void *data_) {
 

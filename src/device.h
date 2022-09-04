@@ -49,6 +49,8 @@ Base_t xDeviceInitDevice(HalfWord_t uid_);
 Base_t xDeviceConfigDevice(HalfWord_t uid_, Size_t *size_, void *config_);
 Base_t xDeviceWrite(HalfWord_t uid_, Size_t *size_, void *data_);
 Base_t xDeviceRead(HalfWord_t uid_, Size_t *size_, void *data_);
+Base_t xDeviceSimpleWrite(HalfWord_t uid_, Word_t *data_);
+Base_t xDeviceSimpleRead(HalfWord_t uid_, Word_t *data_);
 Base_t xDeviceIsAvailable(HalfWord_t uid_);
 Base_t __RegisterDevice__(HalfWord_t uid_,
                           const Char_t *name_,
