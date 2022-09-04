@@ -55,7 +55,9 @@ Base_t __RegisterDevice__(HalfWord_t uid_,
                           Base_t (*init_)(Device_t *device_),
                           Base_t (*config_)(Device_t *device_, Size_t *size_, void *config_),
                           Base_t (*read_)(Device_t *device_, Size_t *size_, void *data_),
-                          Base_t (*write_)(Device_t *device_, Size_t *size_, void *data_)) {
+                          Base_t (*write_)(Device_t *device_, Size_t *size_, void *data_),
+                          Base_t (*simple_read_)(Device_t *device_, Word_t *data_),
+                          Base_t (*simple_write_)(Device_t *device_, Word_t *data_)) {
   Base_t ret = RETURN_FAILURE;
 
   Device_t *device = NULL;
@@ -102,10 +104,13 @@ Base_t __RegisterDevice__(HalfWord_t uid_,
           device->mode = mode_;
           device->bytesWritten = zero;
           device->bytesRead = zero;
+          device->available = false;
           device->init = init_;
           device->config = config_;
           device->read = read_;
           device->write = write_;
+          device->simple_read = simple_read_;
+          device->simple_write = simple_write_;
 
 
 
@@ -139,6 +144,33 @@ Base_t __RegisterDevice__(HalfWord_t uid_,
   return ret;
 }
 
+
+Base_t xDeviceIsAvailable(HalfWord_t uid_) {
+
+
+  Base_t ret = false;
+
+  Device_t *device = NULL;
+
+  SYSASSERT(zero < uid_);
+
+
+
+  if (zero < uid_) {
+
+    device = __DeviceListFind__(uid_);
+
+
+    SYSASSERT(ISNOTNULLPTR(device));
+
+    if (ISNOTNULLPTR(device)) {
+
+      ret = device->available;
+    }
+  }
+
+  return ret;
+}
 
 
 Base_t xDeviceWrite(HalfWord_t uid_, Size_t *size_, void *data_) {

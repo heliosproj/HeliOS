@@ -49,6 +49,7 @@ Base_t xDeviceInitDevice(HalfWord_t uid_);
 Base_t xDeviceConfigDevice(HalfWord_t uid_, Size_t *size_, void *config_);
 Base_t xDeviceWrite(HalfWord_t uid_, Size_t *size_, void *data_);
 Base_t xDeviceRead(HalfWord_t uid_, Size_t *size_, void *data_);
+Base_t xDeviceIsAvailable(HalfWord_t uid_);
 Base_t __RegisterDevice__(HalfWord_t uid_,
                           const Char_t *name_,
                           DeviceState_t state_,
@@ -56,7 +57,9 @@ Base_t __RegisterDevice__(HalfWord_t uid_,
                           Base_t (*init_)(Device_t *device_),
                           Base_t (*config_)(Device_t *device_, Size_t *size_, void *config_),
                           Base_t (*read_)(Device_t *device_, Size_t *size_, void *data_),
-                          Base_t (*write_)(Device_t *device_, Size_t *size_, void *data_));
+                          Base_t (*write_)(Device_t *device_, Size_t *size_, void *data_),
+                          Base_t (*simple_read_)(Device_t *device_, Word_t *data_),
+                          Base_t (*simple_write_)(Device_t *device_, Word_t *data_));
 Device_t *__DeviceListFind__(HalfWord_t uid_);
 
 #if defined(POSIX_ARCH_OTHER)
