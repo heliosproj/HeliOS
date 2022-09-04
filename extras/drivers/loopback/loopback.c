@@ -1,7 +1,7 @@
 /**
  * @file loopback.c
  * @author Manny Peterson (mannymsp@gmail.com)
- * @brief A template for HeliOS device drivers
+ * @brief The HeliOS looback device driver
  * @version 0.3.5
  * @date 2022-09-02
  *
@@ -30,13 +30,13 @@
 static Char_t loopback_buffer[BUFFER_LENGTH];
 static HalfWord_t loopback_buffer_size = zero;
 
-
 Base_t TO_FUNCTION(DEVICE_NAME, _self_register)(void) {
 
   /* DO NOT MODIFY THIS FUNCTION */
 
   return __RegisterDevice__(DEVICE_UID, (Char_t *)TO_LITERAL(DEVICE_NAME), DEVICE_STATE, DEVICE_MODE, TO_FUNCTION(DEVICE_NAME, _init),
-                            TO_FUNCTION(DEVICE_NAME, _config), TO_FUNCTION(DEVICE_NAME, _read), TO_FUNCTION(DEVICE_NAME, _write));
+                            TO_FUNCTION(DEVICE_NAME, _config), TO_FUNCTION(DEVICE_NAME, _read), TO_FUNCTION(DEVICE_NAME, _write),
+                            TO_FUNCTION(DEVICE_NAME, _simple_read), TO_FUNCTION(DEVICE_NAME, _simple_write));
 }
 
 
@@ -79,6 +79,26 @@ Base_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t *device_, Size_t *size_, void *
   loopback_buffer_size = *size_;
 
   __memcpy__(loopback_buffer, data_, *size_);
+
+  return ret;
+}
+
+
+
+Base_t TO_FUNCTION(DEVICE_NAME, _simple_read)(Device_t *device_, Word_t *data_) {
+  Base_t ret = RETURN_FAILURE;
+
+  /* INSERT CODE TO READ FROM DEVICE HERE */
+
+  return ret;
+}
+
+
+
+Base_t TO_FUNCTION(DEVICE_NAME, _simple_write)(Device_t *device_, Word_t *data_) {
+  Base_t ret = RETURN_FAILURE;
+
+  /* INSERT CODE TO WRITE TO DEVICE HERE */
 
   return ret;
 }

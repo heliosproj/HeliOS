@@ -1659,33 +1659,86 @@ xBase xStreamIsEmpty(xStreamBuffer stream_);
  */
 xBase xStreamIsFull(xStreamBuffer steam_);
 
+
 /**
- * @brief
- *
- * @param device_self_register_
- * @return xBase
+ * @brief 
+ * 
+ * @param device_self_register_ 
+ * @return xBase 
  */
 xBase xDeviceRegisterDevice(xBase (*device_self_register_)());
 
-/**
- * @brief
- *
- * @param uid_
- * @param bytes_
- * @param data_
- * @return xBase
- */
-xBase xDeviceWrite(xHalfWord uid_, xHalfWord *bytes_, xByte *data_);
 
 /**
- * @brief
- *
- * @param uid_
- * @param bytes_
- * @param data_
- * @return xBase
+ * @brief 
+ * 
+ * @param uid_ 
+ * @return xBase 
  */
-xBase xDeviceRead(xHalfWord uid_, xHalfWord *bytes_, xByte *data_);
+xBase xDeviceInitDevice(xHalfWord uid_);
+
+
+/**
+ * @brief 
+ * 
+ * @param uid_ 
+ * @param size_ 
+ * @param config_ 
+ * @return xBase 
+ */
+xBase xDeviceConfigDevice(xHalfWord uid_, xSize *size_, void *config_);
+
+
+/**
+ * @brief 
+ * 
+ * @param uid_ 
+ * @param size_ 
+ * @param data_ 
+ * @return xBase 
+ */
+xBase xDeviceWrite(xHalfWord uid_, xSize *size_, void *data_);
+
+
+/**
+ * @brief 
+ * 
+ * @param uid_ 
+ * @param size_ 
+ * @param data_ 
+ * @return xBase 
+ */
+xBase xDeviceRead(xHalfWord uid_, xSize *size_, void *data_);
+
+
+/**
+ * @brief 
+ * 
+ * @param uid_ 
+ * @param data_ 
+ * @return xBase 
+ */
+xBase xDeviceSimpleWrite(xHalfWord uid_, xWord *data_);
+
+
+/**
+ * @brief 
+ * 
+ * @param uid_ 
+ * @param data_ 
+ * @return xBase 
+ */
+xBase xDeviceSimpleRead(xHalfWord uid_, xWord *data_);
+
+
+/**
+ * @brief 
+ * 
+ * @param uid_ 
+ * @return xBase 
+ */
+xBase xDeviceIsAvailable(xHalfWord uid_);
+
 
 #if defined(POSIX_ARCH_OTHER)
 void __MemoryClear__(void);
