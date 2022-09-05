@@ -27,30 +27,31 @@
 #include "sys.h"
 
 /* "You are not expected to understand this."
-Thank you for the best OS on Earth, Dennis. */
+   Thank you for the best OS on Earth, Dennis. */
 
 
 
 /* Declare and set the system flags to their default values. */
 SysFlags_t sysFlags = {
-    .running = false,
-    .overflow = false,
-    .corrupt = false};
+  .running = false,
+  .overflow = false,
+  .corrupt = false
+};
 
 
 
 /* The __SystemAssert__() system call will be called when
-the SYSASSERT() macro evaluates false. In order for there
-to be any effect, CONFIG_ENABLE_SYSTEM_ASSERT and
-CONFIG_SYSTEM_ASSERT_BEHAVIOR must be defined.
+   the SYSASSERT() macro evaluates false. In order for there
+   to be any effect, CONFIG_ENABLE_SYSTEM_ASSERT and
+   CONFIG_SYSTEM_ASSERT_BEHAVIOR must be defined.
 
-__SystemAssert__() should NOT be called directly because it is an INTERNAL
-function name and may change in future releases. Instead use the SYSASSERT() C macro. */
+   __SystemAssert__() should NOT be called directly because it is an INTERNAL
+   function name and may change in future releases. Instead use the SYSASSERT() C macro. */
 void __SystemAssert__(const char *file_, int line_) {
 
   /* Do not modify this system call directly. Define
-  the behavior (code) through the CONFIG_SYSTEM_ASSERT_BEHAVIOR
-  setting in the config.h header file. */
+     the behavior (code) through the CONFIG_SYSTEM_ASSERT_BEHAVIOR
+     setting in the config.h header file. */
 
 #if defined(CONFIG_SYSTEM_ASSERT_BEHAVIOR)
   CONFIG_SYSTEM_ASSERT_BEHAVIOR(file_, line_);
@@ -91,8 +92,8 @@ void xSystemHalt(void) {
 
 
 /* The xSystemGetSystemInfo() system call will return the type xSystemInfo containing
-information about the system including the OS (product) name, its version and how many tasks
-are currently in the running, suspended or waiting states. */
+   information about the system including the OS (product) name, its version and how many tasks
+   are currently in the running, suspended or waiting states. */
 SystemInfo_t *xSystemGetSystemInfo(void) {
 
   SystemInfo_t *ret = NULL;
@@ -109,7 +110,7 @@ SystemInfo_t *xSystemGetSystemInfo(void) {
 
 
   /* Check if system info is not null to make sure xMemAlloc() successfully allocated
-  the memory. */
+     the memory. */
   if (ISNOTNULLPTR(ret)) {
 
 

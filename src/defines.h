@@ -34,7 +34,7 @@
 
 
 /* Check that the system HeliOS is being targeted for has an
-8-bit wide byte. */
+   8-bit wide byte. */
 #if !defined(CHAR_BIT)
 #pragma message("WARNING: Unable to determine if system has an 8-bit wide byte. CHAR_BIT not defined?")
 #else
@@ -83,7 +83,7 @@
 
 
 /* Define a general return failure for
-return values. */
+   return values. */
 #if !defined(RETURN_FAILURE)
 #define RETURN_FAILURE 0x0u /* 0 */
 #endif
@@ -92,7 +92,7 @@ return values. */
 
 
 /* Define a general return success
-for return values. */
+   for return values. */
 #if !defined(RETURN_SUCCESS)
 #define RETURN_SUCCESS 0x1u /* 1 */
 #endif
@@ -101,7 +101,7 @@ for return values. */
 
 
 /* Define the size in bytes of the OS product name which is accessible through
-xSystemGetSystemInfo(). */
+   xSystemGetSystemInfo(). */
 #if !defined(OS_PRODUCT_NAME_SIZE)
 #define OS_PRODUCT_NAME_SIZE 0x6u /* 6 */
 #endif
@@ -118,7 +118,7 @@ xSystemGetSystemInfo(). */
 
 
 /* Define the OS product major version number which is accessible through
-xSystemGetSystemInfo(). */
+   xSystemGetSystemInfo(). */
 #if !defined(OS_MAJOR_VERSION_NO)
 #define OS_MAJOR_VERSION_NO 0x0u /* 0 */
 #endif
@@ -127,7 +127,7 @@ xSystemGetSystemInfo(). */
 
 
 /* Define the OS product minor version number which is accessible through
-xSystemGetSystemInfo(). */
+   xSystemGetSystemInfo(). */
 #if !defined(OS_MINOR_VERSION_NO)
 #define OS_MINOR_VERSION_NO 0x3u /* 3 */
 #endif
@@ -136,7 +136,7 @@ xSystemGetSystemInfo(). */
 
 
 /* Define the OS product patch version number which is accessible through
-xSystemGetSystemInfo(). */
+   xSystemGetSystemInfo(). */
 #if !defined(OS_PATCH_VERSION_NO)
 #define OS_PATCH_VERSION_NO 0x5u /* 5 */
 #endif
@@ -144,7 +144,7 @@ xSystemGetSystemInfo(). */
 
 
 /* Define the raw size of the heap in bytes based on the number of blocks
-the heap contains and the size of each block in bytes. */
+   the heap contains and the size of each block in bytes. */
 #if !defined(MEMORY_REGION_SIZE_IN_BYTES)
 #define MEMORY_REGION_SIZE_IN_BYTES CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS *CONFIG_MEMORY_REGION_BLOCK_SIZE
 #endif
@@ -152,8 +152,8 @@ the heap contains and the size of each block in bytes. */
 
 
 /* Define a macro to access the running system flag which is used
-by xTaskStartScheduler() to indicate whether the scheduler is
-running. */
+   by xTaskStartScheduler() to indicate whether the scheduler is
+   running. */
 #if !defined(SYSFLAG_RUNNING)
 #define SYSFLAG_RUNNING() sysFlags.running
 #endif
@@ -162,8 +162,8 @@ running. */
 
 
 /* Define a macro to access the overflow system flag which is used
-by the scheduler to determine when a task's runtime has overflowed
-and all runtimes need to be reset. */
+   by the scheduler to determine when a task's runtime has overflowed
+   and all runtimes need to be reset. */
 #if !defined(SYSFLAG_OVERFLOW)
 #define SYSFLAG_OVERFLOW() sysFlags.overflow
 #endif
@@ -172,8 +172,8 @@ and all runtimes need to be reset. */
 
 
 /* Define a macro to access the corrupt system flag which is used
-by the memory management system calls to flag if corruption
-of the heap has been detected. */
+   by the memory management system calls to flag if corruption
+   of the heap has been detected. */
 #if !defined(SYSFLAG_CORRUPT)
 #define SYSFLAG_CORRUPT() sysFlags.corrupt
 #endif
@@ -181,7 +181,7 @@ of the heap has been detected. */
 
 
 /* Define a marco which makes null pointer checks more readable and
-concise */
+   concise */
 #if !defined(ISNOTNULLPTR)
 #define ISNOTNULLPTR(addr_) ((NULL) != (addr_))
 #endif
@@ -190,7 +190,7 @@ concise */
 
 
 /* Define a marco which makes null pointer checks more readable and
-concise */
+   concise */
 #if !defined(ISNULLPTR)
 #define ISNULLPTR(addr_) ((NULL) == (addr_))
 #endif
@@ -199,7 +199,7 @@ concise */
 
 
 /* Define a macro to assert if assertions are enabled through
-the CONFIG_ENABLE_SYSTEM_ASSERT setting. */
+   the CONFIG_ENABLE_SYSTEM_ASSERT setting. */
 #if !defined(SYSASSERT)
 #if !defined(CONFIG_ENABLE_SYSTEM_ASSERT)
 #define SYSASSERT(expr_)
@@ -224,7 +224,7 @@ the CONFIG_ENABLE_SYSTEM_ASSERT setting. */
 
 
 /* Define a macro to convert a heap memory address to it's corresponding
-heap entry. */
+   heap entry. */
 #if !defined(ADDR2ENTRY)
 #define ADDR2ENTRY(addr_, region_) (MemoryEntry_t *)((Byte_t *)(addr_) - ((region_)->entrySize * CONFIG_MEMORY_REGION_BLOCK_SIZE))
 #endif
@@ -232,7 +232,7 @@ heap entry. */
 
 
 /* Define a macro to convert a heap entry to it's corresponding heap memory
-address. */
+   address. */
 #if !defined(ENTRY2ADDR)
 #define ENTRY2ADDR(addr_, region_) (Addr_t *)((Byte_t *)(addr_) + ((region_)->entrySize * CONFIG_MEMORY_REGION_BLOCK_SIZE))
 #endif

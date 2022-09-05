@@ -683,7 +683,7 @@ typedef SystemInfo_t *xSystemInfo;
 #endif
 
 /* In the event HeliOS is compiled with a C++ compiler, make the system calls (written in C)
-visible to C++. */
+   visible to C++. */
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -1661,81 +1661,81 @@ xBase xStreamIsFull(xStreamBuffer steam_);
 
 
 /**
- * @brief 
- * 
- * @param device_self_register_ 
- * @return xBase 
+ * @brief
+ *
+ * @param device_self_register_
+ * @return xBase
  */
 xBase xDeviceRegisterDevice(xBase (*device_self_register_)());
 
 
 /**
- * @brief 
- * 
- * @param uid_ 
- * @return xBase 
+ * @brief
+ *
+ * @param uid_
+ * @return xBase
  */
 xBase xDeviceInitDevice(xHalfWord uid_);
 
 
 /**
- * @brief 
- * 
- * @param uid_ 
- * @param size_ 
- * @param config_ 
- * @return xBase 
+ * @brief
+ *
+ * @param uid_
+ * @param size_
+ * @param config_
+ * @return xBase
  */
 xBase xDeviceConfigDevice(xHalfWord uid_, xSize *size_, xAddr config_);
 
 
 /**
- * @brief 
- * 
- * @param uid_ 
- * @param size_ 
- * @param data_ 
- * @return xBase 
+ * @brief
+ *
+ * @param uid_
+ * @param size_
+ * @param data_
+ * @return xBase
  */
 xBase xDeviceWrite(xHalfWord uid_, xSize *size_, xAddr data_);
 
 
 /**
- * @brief 
- * 
- * @param uid_ 
- * @param size_ 
- * @param data_ 
- * @return xBase 
+ * @brief
+ *
+ * @param uid_
+ * @param size_
+ * @param data_
+ * @return xBase
  */
 xBase xDeviceRead(xHalfWord uid_, xSize *size_, xAddr data_);
 
 
 /**
- * @brief 
- * 
- * @param uid_ 
- * @param data_ 
- * @return xBase 
+ * @brief
+ *
+ * @param uid_
+ * @param data_
+ * @return xBase
  */
 xBase xDeviceSimpleWrite(xHalfWord uid_, xWord *data_);
 
 
 /**
- * @brief 
- * 
- * @param uid_ 
- * @param data_ 
- * @return xBase 
+ * @brief
+ *
+ * @param uid_
+ * @param data_
+ * @return xBase
  */
 xBase xDeviceSimpleRead(xHalfWord uid_, xWord *data_);
 
 
 /**
- * @brief 
- * 
- * @param uid_ 
- * @return xBase 
+ * @brief
+ *
+ * @param uid_
+ * @return xBase
  */
 xBase xDeviceIsAvailable(xHalfWord uid_);
 

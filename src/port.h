@@ -43,20 +43,20 @@
 
 /*
 
-  https://github.com/arduino/ArduinoCore-avr/blob/master/cores/arduino/wiring.c
+   https://github.com/arduino/ArduinoCore-avr/blob/master/cores/arduino/wiring.c
 
-  Copyright (c) 2005-2006 David A. Mellis
+   Copyright (c) 2005-2006 David A. Mellis
 
-  volatile unsigned long timer0_overflow_count = 0;
-  volatile unsigned long timer0_millis = 0;
-  static unsigned char timer0_fract = 0;
+   volatile unsigned long timer0_overflow_count = 0;
+   volatile unsigned long timer0_millis = 0;
+   static unsigned char timer0_fract = 0;
 
-  #if defined(TIM0_OVF_vect)
-  ISR(TIM0_OVF_vect)
-  #else
-  ISR(TIMER0_OVF_vect)
-  #endif
-  {
+ #if defined(TIM0_OVF_vect)
+   ISR(TIM0_OVF_vect)
+ #else
+   ISR(TIMER0_OVF_vect)
+ #endif
+   {
     // copy these to local variables so they can be stored in registers
     // (volatile variables must be read from memory on every access)
     unsigned long m = timer0_millis;
@@ -72,26 +72,26 @@
     timer0_fract = f;
     timer0_millis = m;
     timer0_overflow_count++;
-  }
+   }
 
-*/
+ */
 
 extern unsigned long timer0_overflow_count;
 
-#define DISABLE_INTERRUPTS() __asm__ __volatile__("cli")
+#define DISABLE_INTERRUPTS() __asm__ __volatile__ ("cli")
 
-#define ENABLE_INTERRUPTS() __asm__ __volatile__("sei")
+#define ENABLE_INTERRUPTS() __asm__ __volatile__ ("sei")
 
 #elif defined(ARDUINO_ARCH_SAM)
 
 /*
 
-  https://github.com/arduino/ArduinoCore-sam/blob/master/cores/arduino/cortex_handlers.c
+   https://github.com/arduino/ArduinoCore-sam/blob/master/cores/arduino/cortex_handlers.c
 
-  Copyright (c) 2012 Arduino.  All right reserved.
+   Copyright (c) 2012 Arduino.  All right reserved.
 
-  void SysTick_Handler(void)
-  {
+   void SysTick_Handler(void)
+   {
     if (sysTickHook())
       return;
 
@@ -99,76 +99,76 @@ extern unsigned long timer0_overflow_count;
 
     // Increment tick count each ms
     TimeTick_Increment();
-  }
+   }
 
-  https://github.com/arduino/ArduinoCore-sam/blob/master/system/libsam/source/timetick.c
+   https://github.com/arduino/ArduinoCore-sam/blob/master/system/libsam/source/timetick.c
 
-  Copyright (c) 2011-2012, Atmel Corporation
+   Copyright (c) 2011-2012, Atmel Corporation
 
-  static volatile uint32_t _dwTickCount=0 ;
+   static volatile uint32_t _dwTickCount=0 ;
 
-  extern void TimeTick_Increment( void )
-  {
+   extern void TimeTick_Increment( void )
+   {
       _dwTickCount++ ;
-  }
+   }
 
-  extern uint32_t GetTickCount( void )
-  {
+   extern uint32_t GetTickCount( void )
+   {
       return _dwTickCount ;
-  }
+   }
 
-*/
+ */
 
 extern uint32_t GetTickCount(void);
 
-#define DISABLE_INTERRUPTS() __asm volatile("cpsid i")
+#define DISABLE_INTERRUPTS() __asm volatile ("cpsid i")
 
-#define ENABLE_INTERRUPTS() __asm volatile("cpsie i")
+#define ENABLE_INTERRUPTS() __asm volatile ("cpsie i")
 
 #elif defined(ARDUINO_ARCH_SAMD) /* TESTED 2022-03-24 */
 
 /*
 
-  https://github.com/arduino/ArduinoCore-samd/blob/master/cores/arduino/delay.c
+   https://github.com/arduino/ArduinoCore-samd/blob/master/cores/arduino/delay.c
 
-  Copyright (c) 2015 Arduino LLC.  All right reserved.
+   Copyright (c) 2015 Arduino LLC.  All right reserved.
 
-  static volatile uint32_t _ulTickCount=0 ;
+   static volatile uint32_t _ulTickCount=0 ;
 
-  unsigned long millis( void )
-  {
-  // todo: ensure no interrupts
+   unsigned long millis( void )
+   {
+   // todo: ensure no interrupts
     return _ulTickCount ;
-  }
+   }
 
-  void SysTick_DefaultHandler(void)
-  {
+   void SysTick_DefaultHandler(void)
+   {
     // Increment tick count each ms
     _ulTickCount++;
     tickReset();
-  }
+   }
 
-*/
+ */
 
 extern unsigned long millis(void);
 
-#define DISABLE_INTERRUPTS() __asm volatile("cpsid i")
+#define DISABLE_INTERRUPTS() __asm volatile ("cpsid i")
 
-#define ENABLE_INTERRUPTS() __asm volatile("cpsie i")
+#define ENABLE_INTERRUPTS() __asm volatile ("cpsie i")
 
 #elif defined(ARDUINO_ARCH_ESP8266) /* TESTED 2022-08-22 */
 
 /*
 
-https://github.com/esp8266/Arduino/blob/master/cores/esp8266/core_esp8266_wiring.cpp
+   https://github.com/esp8266/Arduino/blob/master/cores/esp8266/core_esp8266_wiring.cpp
 
-Copyright (c) 2014 Ivan Grokhotkov. All rights reserved.
+   Copyright (c) 2014 Ivan Grokhotkov. All rights reserved.
 
-unsigned long IRAM_ATTR micros() {
+   unsigned long IRAM_ATTR micros() {
     return system_get_time();
-}
+   }
 
-*/
+ */
 #include "core_esp8266_features.h"
 
 typedef uint32_t uint32;
@@ -183,37 +183,37 @@ extern void yield(void);
 
 /*
 
-  https://github.com/PaulStoffregen/cores/blob/master/teensy4/EventResponder.cpp
+   https://github.com/PaulStoffregen/cores/blob/master/teensy4/EventResponder.cpp
 
-  Copyright 2017 Paul Stoffregen
+   Copyright 2017 Paul Stoffregen
 
-  extern "C" volatile uint32_t systick_millis_count;
-  extern "C" volatile uint32_t systick_cycle_count;
-  extern "C" uint32_t systick_safe_read; // micros() synchronization
-  extern "C" void systick_isr(void)
-  {
+   extern "C" volatile uint32_t systick_millis_count;
+   extern "C" volatile uint32_t systick_cycle_count;
+   extern "C" uint32_t systick_safe_read; // micros() synchronization
+   extern "C" void systick_isr(void)
+   {
     systick_cycle_count = ARM_DWT_CYCCNT;
     systick_millis_count++;
-  }
+   }
 
-  https://github.com/PaulStoffregen/cores/blob/master/teensy3/EventResponder.cpp
+   https://github.com/PaulStoffregen/cores/blob/master/teensy3/EventResponder.cpp
 
-  Copyright 2017 Paul Stoffregen
+   Copyright 2017 Paul Stoffregen
 
-  extern "C" volatile uint32_t systick_millis_count;
+   extern "C" volatile uint32_t systick_millis_count;
 
-  void systick_isr(void)
-  {
+   void systick_isr(void)
+   {
     systick_millis_count++;
-  }
+   }
 
-*/
+ */
 
 extern uint32_t systick_millis_count;
 
-#define DISABLE_INTERRUPTS() __asm volatile("cpsid i")
+#define DISABLE_INTERRUPTS() __asm volatile ("cpsid i")
 
-#define ENABLE_INTERRUPTS() __asm volatile("cpsie i")
+#define ENABLE_INTERRUPTS() __asm volatile ("cpsie i")
 
 #elif defined(ESP32)
 
@@ -227,26 +227,26 @@ extern uint32_t systick_millis_count;
 
 /* ld linker script section
 
-  .kernel_mem_region (NOLOAD):
-  {
+   .kernel_mem_region (NOLOAD):
+   {
     . = ALIGN(0x8000);
     _start_kernel_mem_region = .;
-    *(.kernel_mem_region*);
+ *(.kernel_mem_region*);
     . = ALIGN(0x8000);
     _end_kernel_mem_region = .;
     _size_kernel_mem_region = _end_kernel_mem_region - _start_kernel_mem_region;
-  } > RAM
+   } > RAM
 
-*/
+ */
 
 /*
-  *** START SECTION: ADD VENDOR HEADER HERE ***
+ *** START SECTION: ADD VENDOR HEADER HERE ***
 
-  Example: For the STM32 F4292ZI MCU, the following
-  include line would have to be added.
+   Example: For the STM32 F4292ZI MCU, the following
+   include line would have to be added.
 
-  #include "stm32f429xx.h"
-*/
+ #include "stm32f429xx.h"
+ */
 #include "stm32f429xx.h"
 /*
  *** END SECTION: ADD VENDOR HEADER HERE ***
@@ -273,7 +273,7 @@ extern uint32_t systick_millis_count;
 
 #define ENABLE_INTERRUPTS()
 
-#define CONFIG_SYSTEM_ASSERT_BEHAVIOR(f, l) printf("kernel: assert at %s:%d\n", f , l )
+#define CONFIG_SYSTEM_ASSERT_BEHAVIOR(f, l) printf("kernel: assert at %s:%d\n", f, l )
 
 #endif
 

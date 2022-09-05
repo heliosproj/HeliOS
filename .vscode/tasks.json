@@ -43,6 +43,15 @@
                 "kind": "build",
                 "isDefault": true
             }
+        },
+        {
+            "type": "shell",
+            "label": "HeliOS Uncrustify",
+            "command": "find . \\( -name \"*.c\" -o -name \"*.h\" \\) -exec uncrustify -c extras/uncrustify/helios.cfg -lC --no-backup {} +",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": []
         }
     ],
     "version": "2.0.0"

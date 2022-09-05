@@ -29,7 +29,7 @@
 
 
 /* The following configurable settings may be changed by the end-user
-to customize the HeliOS kernel for their specific application. */
+   to customize the HeliOS kernel for their specific application. */
 
 /**
  * @brief Define to enable the Arduino API C++ interface.
@@ -50,10 +50,10 @@ to customize the HeliOS kernel for their specific application. */
  *
  */
 /*
-#if !defined(CONFIG_ENABLE_ARDUINO_CPP_INTERFACE)
-#define CONFIG_ENABLE_ARDUINO_CPP_INTERFACE
-#endif
-*/
+ #if !defined(CONFIG_ENABLE_ARDUINO_CPP_INTERFACE)
+ #define CONFIG_ENABLE_ARDUINO_CPP_INTERFACE
+ #endif
+ */
 
 
 
@@ -70,10 +70,10 @@ to customize the HeliOS kernel for their specific application. */
  *
  */
 /*
-#if !defined(CONFIG_ENABLE_SYSTEM_ASSERT)
-#define CONFIG_ENABLE_SYSTEM_ASSERT
-#endif
-*/
+ #if !defined(CONFIG_ENABLE_SYSTEM_ASSERT)
+ #define CONFIG_ENABLE_SYSTEM_ASSERT
+ #endif
+ */
 
 
 
@@ -98,10 +98,10 @@ to customize the HeliOS kernel for their specific application. */
  *
  */
 /*
-#if !defined(CONFIG_SYSTEM_ASSERT_BEHAVIOR)
-#define CONFIG_SYSTEM_ASSERT_BEHAVIOR(f, l) __ArduinoAssert__( f , l )
-#endif
-*/
+ #if !defined(CONFIG_SYSTEM_ASSERT_BEHAVIOR)
+ #define CONFIG_SYSTEM_ASSERT_BEHAVIOR(f, l) __ArduinoAssert__( f , l )
+ #endif
+ */
 
 
 /**
@@ -226,14 +226,14 @@ to customize the HeliOS kernel for their specific application. */
 
 /**
  * @brief Define the length of the stream buffer.
- * 
+ *
  * Setting CONFIG_STREAM_BUFFER_BYTES will define the length
  * of stream buffers created by xStreamCreate(). When the length
  * of the stream buffer reaches this value, it is considered
  * full and can no longer be written to by calling xStreamSend().
  * The default value is 32. The literal must be appended with "u" to maintain
  * MISRA C:2012 compliance.
- * 
+ *
  */
 #if !defined(CONFIG_STREAM_BUFFER_BYTES)
 #define CONFIG_STREAM_BUFFER_BYTES 0x20u /* 32 */
@@ -242,18 +242,18 @@ to customize the HeliOS kernel for their specific application. */
 
 /**
  * @brief Enable task watchdog timers.
- * 
+ *
  * Defining CONFIG_TASK_WD_TIMER_ENABLE will enable the
  * task wathdog timer feature. The default is enabled.
- * 
+ *
  */
 #if !defined(CONFIG_TASK_WD_TIMER_ENABLE)
 #define CONFIG_TASK_WD_TIMER_ENABLE
 #endif
 
 /**
- * @brief 
- * 
+ * @brief
+ *
  */
 #if !defined(CONFIG_DEVICE_NAME_BYTES)
 #define CONFIG_DEVICE_NAME_BYTES 0x8u /* 8 */
