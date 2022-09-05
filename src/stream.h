@@ -37,8 +37,6 @@
 #include "task.h"
 #include "timer.h"
 
-
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -53,6 +51,6 @@ Base_t xStreamIsEmpty(StreamBuffer_t *stream_);
 Base_t xStreamIsFull(StreamBuffer_t *steam_);
 
 #ifdef __cplusplus
-}  // extern "C" {
+}
 #endif
 #endif

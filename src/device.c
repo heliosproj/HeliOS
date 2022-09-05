@@ -28,6 +28,7 @@
 
 
 static DeviceList_t *deviceList = NULL;
+static Device_t *__DeviceListFind__(HalfWord_t uid_);
 
 
 Base_t xDeviceRegisterDevice(Base_t (*device_self_register_)()) {
@@ -397,7 +398,7 @@ Base_t xDeviceRead(HalfWord_t uid_, Size_t *size_, Addr_t *data_) {
 }
 
 
-Device_t *__DeviceListFind__(HalfWord_t uid_) {
+static Device_t *__DeviceListFind__(HalfWord_t uid_) {
 
 
   Device_t *ret = NULL;

@@ -26,19 +26,17 @@
 
 #include "task.h"
 
-
-
-
 /* Declare and initialize the task list to null. */
 static TaskList_t *taskList = NULL;
 
+static void __RunTimeReset__(void);
+static void __TaskRun__(Task_t *task_);
+static Base_t __TaskListFindTask__(const Task_t *task_);
 
 /* Declare and initialize the scheduler state to
 running. This is controlled with xTaskResumeAll()
 and xTaskSuspendAll(). */
 static SchedulerState_t schedulerState = SchedulerStateRunning;
-
-
 
 /* The xTaskCreate() system call will create a new task. The task will be created with its
 state set to suspended. The xTaskCreate() and xTaskDelete() system calls cannot be called within
@@ -1028,7 +1026,7 @@ Ticks_t xTaskGetPeriod(Task_t *task_) {
 /* __TaskListFindTask__() is used to search the task list for a
 task and returns RETURN_SUCCESS if the task is found. It also
 always checks the health of the heap by calling __MemoryRegionCheckKernel__(). */
-Base_t __TaskListFindTask__(const Task_t *task_) {
+static Base_t __TaskListFindTask__(const Task_t *task_) {
 
 
   Base_t ret = RETURN_FAILURE;
@@ -1214,7 +1212,7 @@ void xTaskStartScheduler(void) {
 
 /* If the runtime overflow flag is set, then __RunTimeReset__() is called to reset all of the
 total runtimes on tasks to their last runtime. */
-void __RunTimeReset__(void) {
+static void __RunTimeReset__(void) {
 
 
   Task_t *cursor = NULL;
@@ -1242,7 +1240,7 @@ void __RunTimeReset__(void) {
 
 /* Called by the xTaskStartScheduler() system call, __TaskRun__() executes a task and updates all of its
 runtime statistics. */
-void __TaskRun__(Task_t *task_) {
+static void __TaskRun__(Task_t *task_) {
 
 
   Ticks_t taskStartTime = zero;

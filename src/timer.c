@@ -31,7 +31,7 @@
 
 /* Declare and initialize the task list to null. */
 static TimerList_t *timerList = NULL;
-
+static Base_t __TimerListFindTimer__(const Timer_t *timer_);
 
 
 
@@ -389,7 +389,7 @@ void xTimerStop(Timer_t *timer_) {
 /* __TimerListFindTimer__() is used to search the timer list for a
 timer and returns RETURN_SUCCESS if the timer is found. It also
 always checks the health of the heap by calling __MemoryRegionCheckKernel__(). */
-Base_t __TimerListFindTimer__(const Timer_t *timer_) {
+static Base_t __TimerListFindTimer__(const Timer_t *timer_) {
 
 
   Base_t ret = RETURN_FAILURE;

@@ -23,10 +23,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
-
 #include "mem.h"
-
-
 
 static volatile MemoryRegion_t heap = {
     .entrySize = zero,
@@ -35,9 +32,6 @@ static volatile MemoryRegion_t heap = {
     .frees = zero,
     .minAvailableEver = CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS * CONFIG_MEMORY_REGION_BLOCK_SIZE};
 
-
-
-
 static volatile MemoryRegion_t kernel = {
     .entrySize = zero,
     .start = NULL,
@@ -45,6 +39,12 @@ static volatile MemoryRegion_t kernel = {
     .frees = zero,
     .minAvailableEver = CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS * CONFIG_MEMORY_REGION_BLOCK_SIZE};
 
+static Base_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, const Addr_t *addr_, const Base_t option_);
+static Base_t __MemoryRegionCheckAddr__(const volatile MemoryRegion_t *region_, const Addr_t *addr_);
+static Addr_t *__calloc__(volatile MemoryRegion_t *region_, const Size_t size_);
+static void __free__(volatile MemoryRegion_t *region_, const Addr_t *addr_);
+static MemoryRegionStats_t *__MemGetRegionStats__(const volatile MemoryRegion_t *region_);
+static void __DefragMemoryRegion__(volatile MemoryRegion_t *region_);
 
 
 /* System call used by end-user tasks to allocate memory
@@ -210,7 +210,7 @@ Size_t xMemGetSize(const Addr_t *addr_) {
 /* The __MemoryRegionCheck__() function checks the consistency of a memory region. If specified, it will also check
 that an address points to valid memory that was previously allocated by __calloc__() for the respective memory
 region. */
-Base_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, const Addr_t *addr_, const Base_t option_) {
+static Base_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, const Addr_t *addr_, const Base_t option_) {
 
 
   MemoryEntry_t *cursor = NULL;
@@ -348,7 +348,7 @@ Base_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, const Addr_
 
 /* Function to check if an address falls within the scope of a memory region. This
 function is used exclusively by __MemoryRegionCheck__(). */
-Base_t __MemoryRegionCheckAddr__(const volatile MemoryRegion_t *region_, const Addr_t *addr_) {
+static Base_t __MemoryRegionCheckAddr__(const volatile MemoryRegion_t *region_, const Addr_t *addr_) {
 
 
 
@@ -375,7 +375,7 @@ Base_t __MemoryRegionCheckAddr__(const volatile MemoryRegion_t *region_, const A
 
 
 /* A function to allocate memory and is similar to the standard libc calloc() but supports multiple memory regions. */
-Addr_t *__calloc__(volatile MemoryRegion_t *region_, const Size_t size_) {
+static Addr_t *__calloc__(volatile MemoryRegion_t *region_, const Size_t size_) {
 
 
 
@@ -648,7 +648,7 @@ Addr_t *__calloc__(volatile MemoryRegion_t *region_, const Size_t size_) {
 
 
 /* Function to free memory allocated by __calloc__(). */
-void __free__(volatile MemoryRegion_t *region_, const Addr_t *addr_) {
+static void __free__(volatile MemoryRegion_t *region_, const Addr_t *addr_) {
 
 
   /* Need to disable interrupts while modifying entries in
@@ -852,7 +852,7 @@ MemoryRegionStats_t *xMemGetKernelStats(void) {
 
 
 /* Return the memory region statistics for the specified memory region. */
-MemoryRegionStats_t *__MemGetRegionStats__(const volatile MemoryRegion_t *region_) {
+static MemoryRegionStats_t *__MemGetRegionStats__(const volatile MemoryRegion_t *region_) {
 
   MemoryEntry_t *cursor = NULL;
 
@@ -969,7 +969,7 @@ MemoryRegionStats_t *__MemGetRegionStats__(const volatile MemoryRegion_t *region
 
 
 /* Defrag an entire memory region to reduce memory fragmentation. */
-void __DefragMemoryRegion__(volatile MemoryRegion_t *region_) {
+static void __DefragMemoryRegion__(volatile MemoryRegion_t *region_) {
 
 
   MemoryEntry_t *cursor = NULL;

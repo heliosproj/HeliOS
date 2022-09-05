@@ -50,13 +50,13 @@ Base_t xTimerHasTimerExpired(Timer_t *timer_);
 void xTimerReset(Timer_t *timer_);
 void xTimerStart(Timer_t *timer_);
 void xTimerStop(Timer_t *timer_);
-Base_t __TimerListFindTimer__(const Timer_t *timer_);
+
 
 #if defined(POSIX_ARCH_OTHER)
 void __TimerStateClear__(void);
 #endif
 
 #ifdef __cplusplus
-}  // extern "C" {
+}
 #endif
 #endif

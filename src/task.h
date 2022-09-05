@@ -37,7 +37,6 @@
 #include "sys.h"
 #include "timer.h"
 
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -65,21 +64,17 @@ void xTaskChangePeriod(Task_t *task_, Ticks_t timerPeriod_);
 Ticks_t xTaskGetPeriod(Task_t *task_);
 void xTaskResetTimer(Task_t *task_);
 void xTaskStartScheduler(void);
-void __RunTimeReset__(void);
-void __TaskRun__(Task_t *task_);
 void xTaskResumeAll(void);
 void xTaskSuspendAll(void);
 SchedulerState_t xTaskGetSchedulerState(void);
-Base_t __TaskListFindTask__(const Task_t *task_);
 void xTaskChangeWDPeriod(Task_t *task_, Ticks_t wdTimerPeriod_);
 Ticks_t xTaskGetWDPeriod(Task_t *task_);
-
 
 #if defined(POSIX_ARCH_OTHER)
 void __TaskStateClear__(void);
 #endif
 
 #ifdef __cplusplus
-}  // extern "C" {
+}
 #endif
 #endif

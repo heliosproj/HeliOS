@@ -37,12 +37,9 @@
 #include "task.h"
 #include "timer.h"
 
-
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 Base_t xDeviceRegisterDevice(Base_t (*device_self_register_)());
 Base_t xDeviceInitDevice(HalfWord_t uid_);
@@ -62,15 +59,12 @@ Base_t __RegisterDevice__(HalfWord_t uid_,
                           Base_t (*write_)(Device_t *device_, Size_t *size_, Addr_t *data_),
                           Base_t (*simple_read_)(Device_t *device_, Word_t *data_),
                           Base_t (*simple_write_)(Device_t *device_, Word_t *data_));
-Device_t *__DeviceListFind__(HalfWord_t uid_);
 
 #if defined(POSIX_ARCH_OTHER)
 void __DeviceStateClear__(void);
 #endif
 
-
-
 #ifdef __cplusplus
-}  // extern "C" {
+}
 #endif
 #endif

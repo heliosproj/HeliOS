@@ -57,6 +57,6 @@ void __SysStateClear__(void);
 #endif
 
 #ifdef __cplusplus
-}  // extern "C" {
+}
 #endif
 #endif

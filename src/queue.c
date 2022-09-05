@@ -23,11 +23,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
-
 #include "queue.h"
 
-
-
+static QueueMessage_t *__QueuePeek__(Queue_t *queue_);
 
 /* The xQueueCreate() system call creates a message queue for inter-task
 communication. */
@@ -464,7 +462,7 @@ QueueMessage_t *xQueuePeek(Queue_t *queue_) {
 }
 
 
-QueueMessage_t *__QueuePeek__(Queue_t *queue_) {
+static QueueMessage_t *__QueuePeek__(Queue_t *queue_) {
   QueueMessage_t *ret = NULL;
 
 
