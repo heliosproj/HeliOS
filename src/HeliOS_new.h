@@ -618,7 +618,7 @@ xSystemInfo xSystemGetSystemInfo(void);
  * @param taskParameter_ 
  * @return xTask 
  */
-xTask xTaskCreate(const xChar *name_, void (*callback_)(Task_t *, TaskParm_t *), TaskParm_t *taskParameter_);
+Task_t *xTaskCreate(const Char_t *name_, void (*callback_)(Task_t *task_, TaskParm_t *parm_), TaskParm_t *taskParameter_);
 
 /**
  * @brief 

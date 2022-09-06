@@ -41,7 +41,7 @@ static SchedulerState_t schedulerState = SchedulerStateRunning;
 /* The xTaskCreate() system call will create a new task. The task will be created with its
    state set to suspended. The xTaskCreate() and xTaskDelete() system calls cannot be called within
    a task. They MUST be called outside of the scope of the HeliOS scheduler. */
-Task_t *xTaskCreate(const Char_t *name_, void (*callback_)(Task_t *, TaskParm_t *), TaskParm_t *taskParameter_) {
+Task_t *xTaskCreate(const Char_t *name_, void (*callback_)(Task_t *task_, TaskParm_t *parm_), TaskParm_t *taskParameter_) {
 
 
   Task_t *ret = NULL;
