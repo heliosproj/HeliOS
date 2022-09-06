@@ -142,7 +142,7 @@ Task_t *xTaskCreate(const Char_t *name_, void (*callback_)(Task_t *, TaskParm_t 
 
 /* The xTaskDelete() system call will delete a task. The xTaskCreate() and xTaskDelete() system calls
    cannot be called within a task. They MUST be called outside of the scope of the HeliOS scheduler. */
-void xTaskDelete(Task_t *task_) {
+void xTaskDelete(const Task_t *task_) {
 
 
   Task_t *cursor = NULL;
@@ -274,7 +274,7 @@ Task_t *xTaskGetHandleByName(const Char_t *name_) {
 
 /* The xTaskGetHandleById() system call will return a pointer to the task handle
    specified by its identifier. */
-Task_t *xTaskGetHandleById(Base_t id_) {
+Task_t *xTaskGetHandleById(const Base_t id_) {
 
 
   Task_t *ret = NULL;
@@ -409,7 +409,7 @@ TaskRunTimeStats_t *xTaskGetAllRunTimeStats(Base_t *tasks_) {
 /* The xTaskGetTaskRunTimeStats() system call returns the task runtime statistics for
    one task. The xTaskGetTaskRunTimeStats() system call returns the xTaskRunTimeStats type.
    The memory must be freed by calling xMemFree() after it is no longer needed. */
-TaskRunTimeStats_t *xTaskGetTaskRunTimeStats(Task_t *task_) {
+TaskRunTimeStats_t *xTaskGetTaskRunTimeStats(const Task_t *task_) {
 
   TaskRunTimeStats_t *ret = NULL;
 
@@ -494,7 +494,7 @@ Base_t xTaskGetNumberOfTasks(void) {
 
 /* The xTaskGetTaskInfo() system call returns the xTaskInfo structure containing
    the details of the task including its identifier, name, state and runtime statistics. */
-TaskInfo_t *xTaskGetTaskInfo(Task_t *task_) {
+TaskInfo_t *xTaskGetTaskInfo(const Task_t *task_) {
 
   TaskInfo_t *ret = NULL;
 
@@ -632,7 +632,7 @@ TaskInfo_t *xTaskGetAllTaskInfo(Base_t *tasks_) {
 
 
 /* The xTaskGetTaskState() system call will return the state of the task. */
-TaskState_t xTaskGetTaskState(Task_t *task_) {
+TaskState_t xTaskGetTaskState(const Task_t *task_) {
 
 
   TaskState_t ret = TaskStateError;
@@ -658,7 +658,7 @@ TaskState_t xTaskGetTaskState(Task_t *task_) {
 /* The xTaskGetName() system call returns the ASCII name of the task. The size of the
    task is dependent on the setting CONFIG_TASK_NAME_BYTES. The task name is NOT a null
    terminated char array. */
-Char_t *xTaskGetName(Task_t *task_) {
+Char_t *xTaskGetName(const Task_t *task_) {
 
 
   Char_t *ret = NULL;
@@ -696,7 +696,7 @@ Char_t *xTaskGetName(Task_t *task_) {
 
 
 /* The xTaskGetId() system call returns the task identifier for the task. */
-Base_t xTaskGetId(Task_t *task_) {
+Base_t xTaskGetId(const Task_t *task_) {
 
 
   Base_t ret = zero;
@@ -750,7 +750,7 @@ void xTaskNotifyStateClear(Task_t *task_) {
 
 /* The xTaskNotificationIsWaiting() system call will return true or false depending
    on whether there is a task notification waiting for the task. */
-Base_t xTaskNotificationIsWaiting(Task_t *task_) {
+Base_t xTaskNotificationIsWaiting(const Task_t *task_) {
   Base_t ret = zero;
 
 
@@ -784,7 +784,7 @@ Base_t xTaskNotificationIsWaiting(Task_t *task_) {
    notification bytes must be between one and the CONFIG_NOTIFICATION_VALUE_BYTES setting. The notification
    value must contain a pointer to a char array containing the notification value. If the task already
    has a waiting task notification, xTaskNotifyGive() will NOT overwrite the waiting task notification. */
-Base_t xTaskNotifyGive(Task_t *task_, Base_t notificationBytes_, const Char_t *notificationValue_) {
+Base_t xTaskNotifyGive(Task_t *task_, const Base_t notificationBytes_, const Char_t *notificationValue_) {
 
 
 
@@ -957,7 +957,7 @@ void xTaskWait(Task_t *task_) {
    must be in the waiting state set by calling xTaskWait() on the task. Once the timer period is set
    and the task is in the waiting state, the task will be executed every N ticks based on the period.
    Changing the period to zero will prevent the task from being executed even if it is in the waiting state. */
-void xTaskChangePeriod(Task_t *task_, Ticks_t timerPeriod_) {
+void xTaskChangePeriod(Task_t *task_, const Ticks_t timerPeriod_) {
 
 
   /* Assert if the task cannot be found. */
@@ -981,7 +981,7 @@ void xTaskChangePeriod(Task_t *task_, Ticks_t timerPeriod_) {
    measured in ticks, must be greater than zero to have any effect. If the tasks last runtime
    exceeds the task watchdog timer period, the task will automatically be placed in a suspended
    state. */
-void xTaskChangeWDPeriod(Task_t *task_, Ticks_t wdTimerPeriod_) {
+void xTaskChangeWDPeriod(Task_t *task_, const Ticks_t wdTimerPeriod_) {
 
   /* Assert if the task cannot be found. */
   SYSASSERT(RETURN_SUCCESS == __TaskListFindTask__(task_));
@@ -1001,7 +1001,7 @@ void xTaskChangeWDPeriod(Task_t *task_, Ticks_t wdTimerPeriod_) {
 
 /* The xTaskGetPeriod() will return the period for the timer for the specified task. See
    xTaskChangePeriod() for more information on how the task timer works. */
-Ticks_t xTaskGetPeriod(Task_t *task_) {
+Ticks_t xTaskGetPeriod(const Task_t *task_) {
 
 
   Ticks_t ret = zero;
@@ -1326,7 +1326,7 @@ SchedulerState_t xTaskGetSchedulerState(void) {
 
 /* The xTaskGetWDPeriod() system call will return the current task watchdog
    timer period. */
-Ticks_t xTaskGetWDPeriod(Task_t *task_) {
+Ticks_t xTaskGetWDPeriod(const Task_t *task_) {
 
 
   Ticks_t ret = zero;
