@@ -25,7 +25,8 @@
  */
 #include "queue.h"
 
-static QueueMessage_t *__QueuePeek__(Queue_t *queue_);
+static void __QueueDropmessage__(Queue_t *queue_);
+static QueueMessage_t *__QueuePeek__(const Queue_t *queue_);
 
 /* The xQueueCreate() system call creates a message queue for inter-task
    communication. */
@@ -116,7 +117,7 @@ void xQueueDelete(Queue_t *queue_) {
 
 /* The xQueueGetLength() system call returns the length of the queue (the number of messages
    the queue currently contains). */
-Base_t xQueueGetLength(Queue_t *queue_) {
+Base_t xQueueGetLength(const Queue_t *queue_) {
 
 
   Base_t ret = zero;
@@ -168,7 +169,7 @@ Base_t xQueueGetLength(Queue_t *queue_) {
 
 /* The xQueueIsEmpty() system call will return a true or false dependent on whether the queue is
    empty or contains one or more messages. */
-Base_t xQueueIsQueueEmpty(Queue_t *queue_) {
+Base_t xQueueIsQueueEmpty(const Queue_t *queue_) {
 
 
 
@@ -224,7 +225,7 @@ Base_t xQueueIsQueueEmpty(Queue_t *queue_) {
 /* The xQueueIsFull() system call will return a true or false dependent on whether the queue is
    full or contains zero messages. A queue is considered full if the number of messages in the queue
    is equal to the queue's length limit. */
-Base_t xQueueIsQueueFull(Queue_t *queue_) {
+Base_t xQueueIsQueueFull(const Queue_t *queue_) {
 
 
   Base_t ret = false;
@@ -278,7 +279,7 @@ Base_t xQueueIsQueueFull(Queue_t *queue_) {
 
 /* The xQueueMessageWaiting() system call returns true or false dependent on whether
    there is at least one message waiting. The queue does not have to be full to return true. */
-Base_t xQueueMessagesWaiting(Queue_t *queue_) {
+Base_t xQueueMessagesWaiting(const Queue_t *queue_) {
 
 
 
@@ -334,7 +335,7 @@ Base_t xQueueMessagesWaiting(Queue_t *queue_) {
 
 /* The xQueueSend() system call will send a message to the queue. The size of the message
    value is passed in the message bytes parameter. */
-Base_t xQueueSend(Queue_t *queue_, Base_t messageBytes_, const Char_t *messageValue_) {
+Base_t xQueueSend(Queue_t *queue_, const Base_t messageBytes_, const Char_t *messageValue_) {
 
 
 
@@ -361,7 +362,7 @@ Base_t xQueueSend(Queue_t *queue_, Base_t messageBytes_, const Char_t *messageVa
      value. */
   SYSASSERT(ISNOTNULLPTR(messageValue_));
 
-  /* Assert if the user passed an invaid queue. */
+  /* Assert if the user passed an invalid queue. */
   SYSASSERT(RETURN_SUCCESS == __MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
 
 
@@ -456,13 +457,13 @@ Base_t xQueueSend(Queue_t *queue_, Base_t messageBytes_, const Char_t *messageVa
 
 /* The xQueuePeek() system call will return the next message in the queue without
    dropping the message. */
-QueueMessage_t *xQueuePeek(Queue_t *queue_) {
+QueueMessage_t *xQueuePeek(const Queue_t *queue_) {
 
   return __QueuePeek__(queue_);
 }
 
 
-static QueueMessage_t *__QueuePeek__(Queue_t *queue_) {
+static QueueMessage_t *__QueuePeek__(const Queue_t *queue_) {
   QueueMessage_t *ret = NULL;
 
 
@@ -506,12 +507,12 @@ static QueueMessage_t *__QueuePeek__(Queue_t *queue_) {
    returning the message. */
 void xQueueDropMessage(Queue_t *queue_) {
 
-  _QueueDropmessage_(queue_);
+  __QueueDropmessage__(queue_);
 
   return;
 }
 
-void _QueueDropmessage_(Queue_t *queue_) {
+static void __QueueDropmessage__(Queue_t *queue_) {
 
 
   Message_t *message = NULL;
@@ -593,7 +594,7 @@ QueueMessage_t *xQueueReceive(Queue_t *queue_) {
 
       /* Re-use some code and just call xQueueDropMessage() to drop
          the message we just received. */
-      _QueueDropmessage_(queue_);
+      __QueueDropmessage__(queue_);
     }
   }
 
@@ -627,7 +628,7 @@ void xQueueLockQueue(Queue_t *queue_) {
 
 
 /* The xQueueUnLockQueue() system call will UNLOCK the queue and allow xQueueSend() to
-   sendi a message to the queue. */
+   send a message to the queue. */
 void xQueueUnLockQueue(Queue_t *queue_) {
 
 
