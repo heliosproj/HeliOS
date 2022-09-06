@@ -400,7 +400,7 @@ static Addr_t *__calloc__(volatile MemoryRegion_t *region_, const Size_t size_) 
   MemoryEntry_t *candidateNext = NULL;
 
   /* Need to disable interrupts while modifying entries in
-   a memory region. */
+     a memory region. */
   DISABLE_INTERRUPTS();
 
 
