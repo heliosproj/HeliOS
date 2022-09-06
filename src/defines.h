@@ -33,6 +33,7 @@
 #include <stddef.h>
 
 
+
 /* Check that the system HeliOS is being targeted for has an
    8-bit wide byte. */
 #if !defined(CHAR_BIT)
@@ -45,7 +46,6 @@
 
 
 
-
 /* Define "true" if not defined. */
 #if !defined(true)
 #define true 0x1u /* 1 */
@@ -53,12 +53,10 @@
 
 
 
-
 /* Define "false" if not defined. */
 #if !defined(false)
 #define false 0x0u /* 0 */
 #endif
-
 
 
 
@@ -73,12 +71,10 @@
 
 
 
-
 /* Define "zero" if not defined. */
 #if !defined(zero)
 #define zero 0x0u /* 0 */
 #endif
-
 
 
 
@@ -90,13 +86,11 @@
 
 
 
-
 /* Define a general return success
    for return values. */
 #if !defined(RETURN_SUCCESS)
 #define RETURN_SUCCESS 0x1u /* 1 */
 #endif
-
 
 
 
@@ -108,12 +102,10 @@
 
 
 
-
 /* Define the OS product name which is accessible through xSystemGetSystemInfo(). */
 #if !defined(OS_PRODUCT_NAME)
 #define OS_PRODUCT_NAME "HeliOS"
 #endif
-
 
 
 
@@ -125,13 +117,11 @@
 
 
 
-
 /* Define the OS product minor version number which is accessible through
    xSystemGetSystemInfo(). */
 #if !defined(OS_MINOR_VERSION_NO)
 #define OS_MINOR_VERSION_NO 0x3u /* 3 */
 #endif
-
 
 
 
@@ -160,14 +150,12 @@
 
 
 
-
 /* Define a macro to access the overflow system flag which is used
    by the scheduler to determine when a task's runtime has overflowed
    and all runtimes need to be reset. */
 #if !defined(SYSFLAG_OVERFLOW)
 #define SYSFLAG_OVERFLOW() sysFlags.overflow
 #endif
-
 
 
 
@@ -188,13 +176,11 @@
 
 
 
-
 /* Define a marco which makes null pointer checks more readable and
    concise */
 #if !defined(ISNULLPTR)
 #define ISNULLPTR(addr_) ((NULL) == (addr_))
 #endif
-
 
 
 
@@ -211,15 +197,16 @@
 #endif
 
 
+
 #if !defined(MEMORY_REGION_CHECK_OPTION_WO_ADDR)
 #define MEMORY_REGION_CHECK_OPTION_WO_ADDR 0x1u /* 1 */
 #endif
 
 
+
 #if !defined(MEMORY_REGION_CHECK_OPTION_W_ADDR)
 #define MEMORY_REGION_CHECK_OPTION_W_ADDR 0x2u /* 2 */
 #endif
-
 
 
 
@@ -238,12 +225,14 @@
 #endif
 
 
+
 #if defined(UCHAR_TYPE)
 #undef UCHAR_TYPE
 #define UCHAR_TYPE unsigned char
 #else
 #define UCHAR_TYPE unsigned char
 #endif
+
 
 
 #if defined(UINT8_TYPE)
@@ -264,12 +253,10 @@
 
 
 
-
 #if defined(UINT32_TYPE)
 #undef UINT32_TYPE
 #define UINT32_TYPE uint32_t
 #else
 #define UINT32_TYPE uint32_t
 #endif
-
 #endif

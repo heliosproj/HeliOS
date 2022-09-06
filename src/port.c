@@ -27,74 +27,8 @@
 #include "port.h"
 
 
-#if defined(ARDUINO_ARCH_AVR)
 
-Ticks_t __SysGetSysTicks__(void) {
-
-  return timer0_overflow_count;
-}
-
-void __SysInit__(void) {
-
-  return;
-}
-
-#elif defined(ARDUINO_ARCH_SAM)
-
-Ticks_t __SysGetSysTicks__(void) {
-
-  return GetTickCount();
-}
-
-void __SysInit__(void) {
-
-  return;
-}
-
-#elif defined(ARDUINO_ARCH_SAMD)
-
-Ticks_t __SysGetSysTicks__(void) {
-
-  return millis();
-}
-
-void __SysInit__(void) {
-
-  return;
-}
-
-#elif defined(ARDUINO_ARCH_ESP8266)
-
-Ticks_t __SysGetSysTicks__(void) {
-
-  yield();
-
-  return (Ticks_t)(system_get_time() / 1000ULL);
-}
-
-void __SysInit__(void) {
-
-  return;
-}
-
-#elif defined(ARDUINO_TEENSY_MICROMOD) || defined(ARDUINO_TEENSY40) || defined(ARDUINO_TEENSY41) || defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY35) || defined(ARDUINO_TEENSY31) || defined(ARDUINO_TEENSY32) || defined(ARDUINO_TEENSY30) || defined(ARDUINO_TEENSYLC)
-
-Ticks_t __SysGetSysTicks__(void) {
-
-  return systick_millis_count;
-}
-
-void __SysInit__(void) {
-
-  return;
-}
-
-#elif defined(ESP32)
-
-/* Not supported. */
-
-#elif defined(CMSIS_ARCH_CORTEXM)
-
+#if defined(CMSIS_ARCH_CORTEXM)
 static volatile Ticks_t sysTicks = zero;
 
 void SysTick_Handler(void) {
@@ -107,22 +41,31 @@ void SysTick_Handler(void) {
 
   return;
 }
+#endif
+
 
 Ticks_t __SysGetSysTicks__(void) {
 
+#if defined(ARDUINO_ARCH_AVR)
+  return timer0_overflow_count;
+#elif defined(ARDUINO_ARCH_SAM)
+  return GetTickCount();
+#elif defined(ARDUINO_ARCH_SAMD)
+  return millis();
+#elif defined(ARDUINO_ARCH_ESP8266)
+  yield();
+
+  return (Ticks_t)(system_get_time() / 1000ULL);
+#elif defined(ARDUINO_TEENSY_MICROMOD) || defined(ARDUINO_TEENSY40) || defined(ARDUINO_TEENSY41) || defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY35) || defined(ARDUINO_TEENSY31) || defined(ARDUINO_TEENSY32) || defined(ARDUINO_TEENSY30) || defined(ARDUINO_TEENSYLC)
+  return systick_millis_count;
+#elif defined(ESP32)
+
+/* Not supported. */
+#elif defined(CMSIS_ARCH_CORTEXM)
   return sysTicks;
-}
-
-void __SysInit__(void) {
-
-  SysTick_Config(SYSTEM_CORE_CLOCK_FREQUENCY / SYSTEM_CORE_CLOCK_PRESCALER);
-
-  return;
-}
 
 #elif defined(POSIX_ARCH_OTHER)
 
-Ticks_t __SysGetSysTicks__(void) {
 
   struct timeval t;
 
@@ -130,11 +73,33 @@ Ticks_t __SysGetSysTicks__(void) {
 
 
   return (t.tv_sec) * 1000 + (t.tv_usec) / 1000;
+
+#endif
 }
 
 void __SysInit__(void) {
+#if defined(ARDUINO_ARCH_AVR)
+  return;
+#elif defined(ARDUINO_ARCH_SAM)
+  return;
+#elif defined(ARDUINO_ARCH_SAMD)
+  return;
+#elif defined(ARDUINO_ARCH_ESP8266)
+  return;
+#elif defined(ARDUINO_TEENSY_MICROMOD) || defined(ARDUINO_TEENSY40) || defined(ARDUINO_TEENSY41) || defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY35) || defined(ARDUINO_TEENSY31) || defined(ARDUINO_TEENSY32) || defined(ARDUINO_TEENSY30) || defined(ARDUINO_TEENSYLC)
+  return;
+#elif defined(ESP32)
+
+/* Not supported. */
+#elif defined(CMSIS_ARCH_CORTEXM)
+  SysTick_Config(SYSTEM_CORE_CLOCK_FREQUENCY / SYSTEM_CORE_CLOCK_PRESCALER);
 
   return;
+#elif defined(POSIX_ARCH_OTHER)
+  return;
+#endif
 }
 
-#endif
+
+
+

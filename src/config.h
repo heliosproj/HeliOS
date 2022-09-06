@@ -31,6 +31,8 @@
 /* The following configurable settings may be changed by the end-user
    to customize the HeliOS kernel for their specific application. */
 
+
+
 /**
  * @brief Define to enable the Arduino API C++ interface.
  *
@@ -104,6 +106,7 @@
  */
 
 
+
 /**
  * @brief Define the size in bytes of the message queue message value.
  *
@@ -119,7 +122,6 @@
 #if !defined(CONFIG_MESSAGE_VALUE_BYTES)
 #define CONFIG_MESSAGE_VALUE_BYTES 0x8u /* 8 */
 #endif
-
 
 
 
@@ -140,7 +142,6 @@
 
 
 
-
 /**
  * @brief Define the size in bytes of the ASCII task name.
  *
@@ -156,7 +157,6 @@
 #if !defined(CONFIG_TASK_NAME_BYTES)
 #define CONFIG_TASK_NAME_BYTES 0x8u /* 8 */
 #endif
-
 
 
 
@@ -224,6 +224,7 @@
 #endif
 
 
+
 /**
  * @brief Define the length of the stream buffer.
  *
@@ -240,6 +241,7 @@
 #endif
 
 
+
 /**
  * @brief Enable task watchdog timers.
  *
@@ -251,6 +253,8 @@
 #define CONFIG_TASK_WD_TIMER_ENABLE
 #endif
 
+
+
 /**
  * @brief
  *
@@ -258,5 +262,4 @@
 #if !defined(CONFIG_DEVICE_NAME_BYTES)
 #define CONFIG_DEVICE_NAME_BYTES 0x8u /* 8 */
 #endif
-
 #endif

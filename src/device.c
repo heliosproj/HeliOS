@@ -26,9 +26,12 @@
 
 #include "device.h"
 
-
 static DeviceList_t *deviceList = NULL;
-static Device_t *__DeviceListFind__(HalfWord_t uid_);
+
+
+static Device_t *__DeviceListFind__(const HalfWord_t uid_);
+
+
 
 
 Base_t xDeviceRegisterDevice(Base_t (*device_self_register_)()) {
@@ -49,10 +52,11 @@ Base_t xDeviceRegisterDevice(Base_t (*device_self_register_)()) {
 }
 
 
-Base_t __RegisterDevice__(HalfWord_t uid_,
+
+Base_t __RegisterDevice__(const HalfWord_t uid_,
                           const Char_t *name_,
-                          DeviceState_t state_,
-                          DeviceMode_t mode_,
+                          const DeviceState_t state_,
+                          const DeviceMode_t mode_,
                           Base_t (*init_)(Device_t *device_),
                           Base_t (*config_)(Device_t *device_, Size_t *size_, Addr_t *config_),
                           Base_t (*read_)(Device_t *device_, Size_t *size_, Addr_t *data_),
@@ -146,7 +150,8 @@ Base_t __RegisterDevice__(HalfWord_t uid_,
 }
 
 
-Base_t xDeviceIsAvailable(HalfWord_t uid_) {
+
+Base_t xDeviceIsAvailable(const HalfWord_t uid_) {
 
 
   Base_t ret = false;
@@ -173,7 +178,9 @@ Base_t xDeviceIsAvailable(HalfWord_t uid_) {
   return ret;
 }
 
-Base_t xDeviceSimpleWrite(HalfWord_t uid_, Word_t *data_) {
+
+
+Base_t xDeviceSimpleWrite(const HalfWord_t uid_, Word_t *data_) {
 
   Base_t ret = RETURN_FAILURE;
 
@@ -227,7 +234,8 @@ Base_t xDeviceSimpleWrite(HalfWord_t uid_, Word_t *data_) {
 }
 
 
-Base_t xDeviceWrite(HalfWord_t uid_, Size_t *size_, Addr_t *data_) {
+
+Base_t xDeviceWrite(const HalfWord_t uid_, Size_t *size_, Addr_t *data_) {
 
   Base_t ret = RETURN_FAILURE;
 
@@ -284,7 +292,9 @@ Base_t xDeviceWrite(HalfWord_t uid_, Size_t *size_, Addr_t *data_) {
   return ret;
 }
 
-Base_t xDeviceSimpleRead(HalfWord_t uid_, Word_t *data_) {
+
+
+Base_t xDeviceSimpleRead(const HalfWord_t uid_, Word_t *data_) {
 
   Base_t ret = RETURN_FAILURE;
 
@@ -339,7 +349,8 @@ Base_t xDeviceSimpleRead(HalfWord_t uid_, Word_t *data_) {
 }
 
 
-Base_t xDeviceRead(HalfWord_t uid_, Size_t *size_, Addr_t *data_) {
+
+Base_t xDeviceRead(const HalfWord_t uid_, Size_t *size_, Addr_t *data_) {
 
 
   Base_t ret = RETURN_FAILURE;
@@ -398,7 +409,8 @@ Base_t xDeviceRead(HalfWord_t uid_, Size_t *size_, Addr_t *data_) {
 }
 
 
-static Device_t *__DeviceListFind__(HalfWord_t uid_) {
+
+static Device_t *__DeviceListFind__(const HalfWord_t uid_) {
 
 
   Device_t *ret = NULL;
@@ -438,7 +450,9 @@ static Device_t *__DeviceListFind__(HalfWord_t uid_) {
   return ret;
 }
 
-Base_t xDeviceInitDevice(HalfWord_t uid_) {
+
+
+Base_t xDeviceInitDevice(const HalfWord_t uid_) {
 
   Base_t ret = RETURN_FAILURE;
 
@@ -464,7 +478,10 @@ Base_t xDeviceInitDevice(HalfWord_t uid_) {
 
   return ret;
 }
-Base_t xDeviceConfigDevice(HalfWord_t uid_, Size_t *size_, Addr_t *config_) {
+
+
+
+Base_t xDeviceConfigDevice(const HalfWord_t uid_, Size_t *size_, Addr_t *config_) {
 
 
   Base_t ret = RETURN_FAILURE;
@@ -515,6 +532,8 @@ Base_t xDeviceConfigDevice(HalfWord_t uid_, Size_t *size_, Addr_t *config_) {
 
   return ret;
 }
+
+
 
 #if defined(POSIX_ARCH_OTHER)
 void __DeviceStateClear__(void) {

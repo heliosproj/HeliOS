@@ -142,7 +142,6 @@ Size_t xMemGetUsed(void) {
 
 
 
-
 /* A system call used by end-user tasks to return the amount
    of memory in bytes assigned to an address in the heap memory
    region. */
@@ -373,6 +372,7 @@ static Base_t __MemoryRegionCheckAddr__(const volatile MemoryRegion_t *region_, 
 
   return ret;
 }
+
 
 
 /* A function to allocate memory and is similar to the standard libc calloc() but supports multiple memory regions. */
@@ -648,6 +648,7 @@ static Addr_t *__calloc__(volatile MemoryRegion_t *region_, const Size_t size_) 
 }
 
 
+
 /* Function to free memory allocated by __calloc__(). */
 static void __free__(volatile MemoryRegion_t *region_, const volatile Addr_t *addr_) {
 
@@ -729,12 +730,15 @@ void __KernelFreeMemory__(const volatile Addr_t *addr_) {
   return;
 }
 
+
+
 /* A wrapper function for __MemoryRegionCheck__() because the memory
    regions cannot be accessed outside the scope of mem.c. */
 Base_t __MemoryRegionCheckKernel__(const volatile Addr_t *addr_, const Base_t option_) {
 
   return __MemoryRegionCheck__(&kernel, addr_, option_);
 }
+
 
 
 /* A wrapper function for __calloc__() because the memory
@@ -758,12 +762,14 @@ void __HeapFreeMemory__(const volatile Addr_t *addr_) {
 }
 
 
+
 /* A wrapper function for __MemoryRegionCheck__() because the memory
    regions cannot be accessed outside the scope of mem.c. */
 Base_t __MemoryRegionCheckHeap__(const volatile Addr_t *addr_, const Base_t option_) {
 
   return __MemoryRegionCheck__(&heap, addr_, option_);
 }
+
 
 
 /* Like the standard libc function, __memcpy__() copies memory from one
@@ -836,12 +842,14 @@ Base_t __memcmp__(const volatile Addr_t *s1_, const volatile Addr_t *s2_, const 
 }
 
 
+
 /* Return the memory region statistics for the heap. */
 MemoryRegionStats_t *xMemGetHeapStats(void) {
 
 
   return __MemGetRegionStats__(&heap);
 }
+
 
 
 /* Return the memory region stastics for the kernel */
@@ -969,6 +977,7 @@ static MemoryRegionStats_t *__MemGetRegionStats__(const volatile MemoryRegion_t 
 }
 
 
+
 /* Defrag an entire memory region to reduce memory fragmentation. */
 static void __DefragMemoryRegion__(const volatile MemoryRegion_t *region_) {
 
@@ -1036,6 +1045,7 @@ static void __DefragMemoryRegion__(const volatile MemoryRegion_t *region_) {
 
   return;
 }
+
 
 
 #if defined(POSIX_ARCH_OTHER)
