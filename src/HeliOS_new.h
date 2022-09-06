@@ -36,8 +36,8 @@
 /* START OF ENUM TYPES */
 
 /**
- * @brief 
- * 
+ * @brief
+ *
  */
 typedef enum {
   TaskStateError,
@@ -47,8 +47,8 @@ typedef enum {
 } TaskState_t;
 
 /**
- * @brief 
- * 
+ * @brief
+ *
  */
 typedef enum {
   SchedulerStateError,
@@ -59,192 +59,192 @@ typedef enum {
 /* START OF BASIC TYPES */
 
 /**
- * @brief 
- * 
+ * @brief
+ *
  */
 typedef VOID_TYPE TaskParm_t;
 
 /**
- * @brief 
- * 
+ * @brief
+ *
  */
 typedef TaskParm_t *xTaskParm;
 
 /**
- * @brief 
- * 
+ * @brief
+ *
  */
 typedef UINT8_TYPE Base_t;
 
 /**
- * @brief 
- * 
+ * @brief
+ *
  */
 typedef Base_t xBase;
 
 /**
- * @brief 
- * 
+ * @brief
+ *
  */
 typedef UINT8_TYPE Byte_t;
 
 /**
- * @brief 
- * 
+ * @brief
+ *
  */
 typedef Byte_t xByte;
 
 /**
- * @brief 
- * 
+ * @brief
+ *
  */
 typedef VOID_TYPE Addr_t;
 
 /**
- * @brief 
- * 
+ * @brief
+ *
  */
 typedef Addr_t *xAddr;
 
 /**
- * @brief 
- * 
+ * @brief
+ *
  */
 typedef SIZE_TYPE Size_t;
 
 /**
- * @brief 
- * 
+ * @brief
+ *
  */
 typedef Size_t xSize;
 
 /**
- * @brief 
- * 
+ * @brief
+ *
  */
 typedef UINT16_TYPE HalfWord_t;
 
 /**
- * @brief 
- * 
+ * @brief
+ *
  */
 typedef HalfWord_t xHalfWord;
 
 /**
- * @brief 
- * 
+ * @brief
+ *
  */
 typedef UINT32_TYPE Word_t;
 
 /**
- * @brief 
- * 
+ * @brief
+ *
  */
 typedef Word_t xWord;
 
 /**
- * @brief 
- * 
+ * @brief
+ *
  */
 typedef UINT32_TYPE Ticks_t;
 
 /**
- * @brief 
- * 
+ * @brief
+ *
  */
 typedef Ticks_t xTicks;
 
 /**
- * @brief 
- * 
+ * @brief
+ *
  */
 typedef UCHAR_TYPE Char_t;
 
 /**
- * @brief 
- * 
+ * @brief
+ *
  */
 typedef Char_t xChar;
 
 /**
- * @brief 
- * 
+ * @brief
+ *
  */
 typedef VOID_TYPE TaskParm_t;
 
 /**
- * @brief 
- * 
+ * @brief
+ *
  */
 typedef TaskParm_t *xTaskParm;
 
 /* START OF STUB TYPES */
 
 /**
- * @brief 
- * 
+ * @brief
+ *
  */
 typedef VOID_TYPE Device_t;
 
 /**
- * @brief 
- * 
+ * @brief
+ *
  */
 typedef Device_t *xDevice;
 
 /**
- * @brief 
- * 
+ * @brief
+ *
  */
 typedef VOID_TYPE Task_t;
 
 /**
- * @brief 
- * 
+ * @brief
+ *
  */
 typedef Task_t *xTask;
 
 /**
- * @brief 
- * 
+ * @brief
+ *
  */
 typedef VOID_TYPE StreamBuffer_t;
 
 /**
- * @brief 
- * 
+ * @brief
+ *
  */
 typedef StreamBuffer_t *xStreamBuffer;
 
 /**
- * @brief 
- * 
+ * @brief
+ *
  */
 typedef VOID_TYPE Queue_t;
 
 /**
- * @brief 
- * 
+ * @brief
+ *
  */
 typedef Queue_t *xQueue;
 
 /**
- * @brief 
- * 
+ * @brief
+ *
  */
 typedef VOID_TYPE Timer_t;
 
 /**
- * @brief 
- * 
+ * @brief
+ *
  */
 typedef Timer_t *xTimer;
 
 /* START OF STRUCT TYPES */
 
 /**
- * @brief 
- * 
+ * @brief
+ *
  */
 typedef struct TaskNotification_s {
   Base_t notificationBytes;
@@ -253,8 +253,8 @@ typedef struct TaskNotification_s {
 typedef TaskNotification_t *xTaskNotification;
 
 /**
- * @brief 
- * 
+ * @brief
+ *
  */
 typedef struct TaskRunTimeStats_s {
   Base_t id;
@@ -264,8 +264,8 @@ typedef struct TaskRunTimeStats_s {
 typedef TaskRunTimeStats_t *xTaskRunTimeStats;
 
 /**
- * @brief 
- * 
+ * @brief
+ *
  */
 typedef struct MemoryRegionStats_s {
   Word_t largestFreeEntryInBytes;
@@ -279,8 +279,8 @@ typedef struct MemoryRegionStats_s {
 typedef MemoryRegionStats_t *xMemoryRegionStats;
 
 /**
- * @brief 
- * 
+ * @brief
+ *
  */
 typedef struct TaskInfo_s {
   Base_t id;
@@ -292,8 +292,8 @@ typedef struct TaskInfo_s {
 typedef TaskInfo_t *xTaskInfo;
 
 /**
- * @brief 
- * 
+ * @brief
+ *
  */
 typedef struct QueueMessage_s {
   Base_t messageBytes;
@@ -302,8 +302,8 @@ typedef struct QueueMessage_s {
 typedef QueueMessage_t *xQueueMessage;
 
 /**
- * @brief 
- * 
+ * @brief
+ *
  */
 typedef struct SystemInfo_s {
   Char_t productName[OS_PRODUCT_NAME_SIZE];
@@ -319,576 +319,576 @@ extern "C" {
 #endif
 
 /**
- * @brief 
- * 
- * @param device_self_register_ 
- * @return xBase 
+ * @brief
+ *
+ * @param device_self_register_
+ * @return xBase
  */
 xBase xDeviceRegisterDevice(xBase (*device_self_register_)());
 
 /**
- * @brief 
- * 
- * @param uid_ 
- * @return xBase 
+ * @brief
+ *
+ * @param uid_
+ * @return xBase
  */
 xBase xDeviceIsAvailable(const xHalfWord uid_);
 
 /**
- * @brief 
- * 
- * @param uid_ 
- * @param data_ 
- * @return xBase 
+ * @brief
+ *
+ * @param uid_
+ * @param data_
+ * @return xBase
  */
 xBase xDeviceSimpleWrite(const xHalfWord uid_, xWord *data_);
 
 /**
- * @brief 
- * 
- * @param uid_ 
- * @param size_ 
- * @param data_ 
- * @return xBase 
+ * @brief
+ *
+ * @param uid_
+ * @param size_
+ * @param data_
+ * @return xBase
  */
 xBase xDeviceWrite(const xHalfWord uid_, xSize *size_, xAddr data_);
 
 /**
- * @brief 
- * 
- * @param uid_ 
- * @param data_ 
- * @return xBase 
+ * @brief
+ *
+ * @param uid_
+ * @param data_
+ * @return xBase
  */
 xBase xDeviceSimpleRead(const xHalfWord uid_, xWord *data_);
 
 /**
- * @brief 
- * 
- * @param uid_ 
- * @param size_ 
- * @param data_ 
- * @return xBase 
+ * @brief
+ *
+ * @param uid_
+ * @param size_
+ * @param data_
+ * @return xBase
  */
 xBase xDeviceRead(const xHalfWord uid_, xSize *size_, xAddr data_);
 
 /**
- * @brief 
- * 
- * @param uid_ 
- * @return xBase 
+ * @brief
+ *
+ * @param uid_
+ * @return xBase
  */
 xBase xDeviceInitDevice(const xHalfWord uid_);
 
 /**
- * @brief 
- * 
- * @param uid_ 
- * @param size_ 
- * @param config_ 
- * @return xBase 
+ * @brief
+ *
+ * @param uid_
+ * @param size_
+ * @param config_
+ * @return xBase
  */
 xBase xDeviceConfigDevice(const xHalfWord uid_, xSize *size_, xAddr config_);
 
 /**
- * @brief 
- * 
- * @param size_ 
- * @return xAddr 
+ * @brief
+ *
+ * @param size_
+ * @return xAddr
  */
 xAddr xMemAlloc(const xSize size_);
 
 /**
- * @brief 
- * 
- * @param addr_ 
+ * @brief
+ *
+ * @param addr_
  */
 void xMemFree(const volatile xAddr addr_);
 
 /**
- * @brief 
- * 
- * @return xSize 
+ * @brief
+ *
+ * @return xSize
  */
 xSize xMemGetUsed(void);
 
 /**
- * @brief 
- * 
- * @param addr_ 
- * @return xSize 
+ * @brief
+ *
+ * @param addr_
+ * @return xSize
  */
 xSize xMemGetSize(const volatile xAddr addr_);
 
 /**
- * @brief 
- * 
- * @return xMemoryRegionStats 
+ * @brief
+ *
+ * @return xMemoryRegionStats
  */
 xMemoryRegionStats xMemGetHeapStats(void);
 
 /**
- * @brief 
- * 
- * @return xMemoryRegionStats 
+ * @brief
+ *
+ * @return xMemoryRegionStats
  */
 xMemoryRegionStats xMemGetKernelStats(void);
 
 /**
- * @brief 
- * 
- * @param limit_ 
- * @return xQueue 
+ * @brief
+ *
+ * @param limit_
+ * @return xQueue
  */
 xQueue xQueueCreate(const xBase limit_);
 
 /**
- * @brief 
- * 
- * @param queue_ 
+ * @brief
+ *
+ * @param queue_
  */
 void xQueueDelete(xQueue queue_);
 
 /**
- * @brief 
- * 
- * @param queue_ 
- * @return xBase 
+ * @brief
+ *
+ * @param queue_
+ * @return xBase
  */
 xBase xQueueGetLength(const xQueue queue_);
 
 /**
- * @brief 
- * 
- * @param queue_ 
- * @return xBase 
+ * @brief
+ *
+ * @param queue_
+ * @return xBase
  */
 xBase xQueueIsQueueEmpty(const xQueue queue_);
 
 /**
- * @brief 
- * 
- * @param queue_ 
- * @return xBase 
+ * @brief
+ *
+ * @param queue_
+ * @return xBase
  */
 xBase xQueueIsQueueFull(const xQueue queue_);
 
 /**
- * @brief 
- * 
- * @param queue_ 
- * @return xBase 
+ * @brief
+ *
+ * @param queue_
+ * @return xBase
  */
 xBase xQueueMessagesWaiting(const xQueue queue_);
 
 /**
- * @brief 
- * 
- * @param queue_ 
- * @param messageBytes_ 
- * @param messageValue_ 
- * @return xBase 
+ * @brief
+ *
+ * @param queue_
+ * @param messageBytes_
+ * @param messageValue_
+ * @return xBase
  */
 xBase xQueueSend(xQueue queue_, const xBase messageBytes_, const xChar *messageValue_);
 
 /**
- * @brief 
- * 
- * @param queue_ 
- * @return xQueueMessage 
+ * @brief
+ *
+ * @param queue_
+ * @return xQueueMessage
  */
 xQueueMessage xQueuePeek(const xQueue queue_);
 
 /**
- * @brief 
- * 
- * @param queue_ 
+ * @brief
+ *
+ * @param queue_
  */
 void xQueueDropMessage(xQueue queue_);
 
 /**
- * @brief 
- * 
- * @param queue_ 
- * @return xQueueMessage 
+ * @brief
+ *
+ * @param queue_
+ * @return xQueueMessage
  */
 xQueueMessage xQueueReceive(xQueue queue_);
 
 /**
- * @brief 
- * 
- * @param queue_ 
+ * @brief
+ *
+ * @param queue_
  */
 void xQueueLockQueue(xQueue queue_);
 
 /**
- * @brief 
- * 
- * @param queue_ 
+ * @brief
+ *
+ * @param queue_
  */
 void xQueueUnLockQueue(xQueue queue_);
 
 /**
- * @brief 
- * 
- * @return xStreamBuffer 
+ * @brief
+ *
+ * @return xStreamBuffer
  */
 xStreamBuffer xStreamCreate(void);
 
 /**
- * @brief 
- * 
- * @param stream_ 
+ * @brief
+ *
+ * @param stream_
  */
 void xStreamDelete(const xStreamBuffer stream_);
 
 /**
- * @brief 
- * 
- * @param stream_ 
- * @param byte_ 
- * @return xBase 
+ * @brief
+ *
+ * @param stream_
+ * @param byte_
+ * @return xBase
  */
 xBase xStreamSend(xStreamBuffer stream_, const xByte byte_);
 
 /**
- * @brief 
- * 
- * @param stream_ 
- * @param bytes_ 
- * @return xByte* 
+ * @brief
+ *
+ * @param stream_
+ * @param bytes_
+ * @return xByte*
  */
 xByte *xStreamReceive(const xStreamBuffer stream_, xHalfWord *bytes_);
 
 /**
- * @brief 
- * 
- * @param stream_ 
- * @return xHalfWord 
+ * @brief
+ *
+ * @param stream_
+ * @return xHalfWord
  */
 xHalfWord xStreamBytesAvailable(const xStreamBuffer stream_);
 
 /**
- * @brief 
- * 
- * @param stream_ 
+ * @brief
+ *
+ * @param stream_
  */
 void xStreamReset(const xStreamBuffer stream_);
 
 /**
- * @brief 
- * 
- * @param stream_ 
- * @return xBase 
+ * @brief
+ *
+ * @param stream_
+ * @return xBase
  */
 xBase xStreamIsEmpty(const xStreamBuffer stream_);
 
 /**
- * @brief 
- * 
- * @param steam_ 
- * @return xBase 
+ * @brief
+ *
+ * @param steam_
+ * @return xBase
  */
 xBase xStreamIsFull(const xStreamBuffer steam_);
 
 /**
- * @brief 
- * 
+ * @brief
+ *
  */
 void xSystemInit(void);
 
 /**
- * @brief 
- * 
+ * @brief
+ *
  */
 void xSystemHalt(void);
 
 /**
- * @brief 
- * 
- * @return xSystemInfo 
+ * @brief
+ *
+ * @return xSystemInfo
  */
 xSystemInfo xSystemGetSystemInfo(void);
 
 /**
- * @brief 
- * 
- * @param name_ 
- * @param callback_ 
- * @param taskParameter_ 
- * @return xTask 
+ * @brief
+ *
+ * @param name_
+ * @param callback_
+ * @param taskParameter_
+ * @return xTask
  */
-Task_t *xTaskCreate(const Char_t *name_, void (*callback_)(Task_t *task_, TaskParm_t *parm_), TaskParm_t *taskParameter_);
+Task_t *xTaskCreate(const xChar *name_, void (*callback_)(xTask task_, xTaskParm parm_), xTaskParm taskParameter_);
 
 /**
- * @brief 
- * 
- * @param task_ 
+ * @brief
+ *
+ * @param task_
  */
 void xTaskDelete(const xTask task_);
 
 /**
- * @brief 
- * 
- * @param name_ 
- * @return xTask 
+ * @brief
+ *
+ * @param name_
+ * @return xTask
  */
 xTask xTaskGetHandleByName(const xChar *name_);
 
 /**
- * @brief 
- * 
- * @param id_ 
- * @return xTask 
+ * @brief
+ *
+ * @param id_
+ * @return xTask
  */
 xTask xTaskGetHandleById(const xBase id_);
 
 /**
- * @brief 
- * 
- * @param tasks_ 
- * @return xTaskRunTimeStats 
+ * @brief
+ *
+ * @param tasks_
+ * @return xTaskRunTimeStats
  */
 xTaskRunTimeStats xTaskGetAllRunTimeStats(xBase *tasks_);
 
 /**
- * @brief 
- * 
- * @param task_ 
- * @return xTaskRunTimeStats 
+ * @brief
+ *
+ * @param task_
+ * @return xTaskRunTimeStats
  */
 xTaskRunTimeStats xTaskGetTaskRunTimeStats(const xTask task_);
 
 /**
- * @brief 
- * 
- * @return xBase 
+ * @brief
+ *
+ * @return xBase
  */
 xBase xTaskGetNumberOfTasks(void);
 
 /**
- * @brief 
- * 
- * @param task_ 
- * @return xTaskInfo 
+ * @brief
+ *
+ * @param task_
+ * @return xTaskInfo
  */
 xTaskInfo xTaskGetTaskInfo(const xTask task_);
 
 /**
- * @brief 
- * 
- * @param tasks_ 
- * @return xTaskInfo 
+ * @brief
+ *
+ * @param tasks_
+ * @return xTaskInfo
  */
 xTaskInfo xTaskGetAllTaskInfo(xBase *tasks_);
 
 /**
- * @brief 
- * 
- * @param task_ 
- * @return TaskState_t 
+ * @brief
+ *
+ * @param task_
+ * @return TaskState_t
  */
 TaskState_t xTaskGetTaskState(const xTask task_);
 
 /**
- * @brief 
- * 
- * @param task_ 
- * @return xChar* 
+ * @brief
+ *
+ * @param task_
+ * @return xChar*
  */
 xChar *xTaskGetName(const xTask task_);
 
 /**
- * @brief 
- * 
- * @param task_ 
- * @return xBase 
+ * @brief
+ *
+ * @param task_
+ * @return xBase
  */
 xBase xTaskGetId(const xTask task_);
 
 /**
- * @brief 
- * 
- * @param task_ 
+ * @brief
+ *
+ * @param task_
  */
 void xTaskNotifyStateClear(xTask task_);
 
 /**
- * @brief 
- * 
- * @param task_ 
- * @return xBase 
+ * @brief
+ *
+ * @param task_
+ * @return xBase
  */
 xBase xTaskNotificationIsWaiting(const xTask task_);
 
 /**
- * @brief 
- * 
- * @param task_ 
- * @param notificationBytes_ 
- * @param notificationValue_ 
- * @return xBase 
+ * @brief
+ *
+ * @param task_
+ * @param notificationBytes_
+ * @param notificationValue_
+ * @return xBase
  */
 xBase xTaskNotifyGive(xTask task_, const xBase notificationBytes_, const xChar *notificationValue_);
 
 /**
- * @brief 
- * 
- * @param task_ 
- * @return xTaskNotification 
+ * @brief
+ *
+ * @param task_
+ * @return xTaskNotification
  */
 xTaskNotification xTaskNotifyTake(xTask task_);
 
 /**
- * @brief 
- * 
- * @param task_ 
+ * @brief
+ *
+ * @param task_
  */
 void xTaskResume(xTask task_);
 
 /**
- * @brief 
- * 
- * @param task_ 
+ * @brief
+ *
+ * @param task_
  */
 void xTaskSuspend(xTask task_);
 
 /**
- * @brief 
- * 
- * @param task_ 
+ * @brief
+ *
+ * @param task_
  */
 void xTaskWait(xTask task_);
 
 /**
- * @brief 
- * 
- * @param task_ 
- * @param timerPeriod_ 
+ * @brief
+ *
+ * @param task_
+ * @param timerPeriod_
  */
 void xTaskChangePeriod(xTask task_, const xTicks timerPeriod_);
 
 /**
- * @brief 
- * 
- * @param task_ 
- * @return xTicks 
+ * @brief
+ *
+ * @param task_
+ * @return xTicks
  */
 xTicks xTaskGetPeriod(const xTask task_);
 
 /**
- * @brief 
- * 
- * @param task_ 
+ * @brief
+ *
+ * @param task_
  */
 void xTaskResetTimer(xTask task_);
 
 /**
- * @brief 
- * 
+ * @brief
+ *
  */
 void xTaskStartScheduler(void);
 
 /**
- * @brief 
- * 
+ * @brief
+ *
  */
 void xTaskResumeAll(void);
 
 /**
- * @brief 
- * 
+ * @brief
+ *
  */
 void xTaskSuspendAll(void);
 
 /**
- * @brief 
- * 
- * @return SchedulerState_t 
+ * @brief
+ *
+ * @return SchedulerState_t
  */
 SchedulerState_t xTaskGetSchedulerState(void);
 
 /**
- * @brief 
- * 
- * @param task_ 
- * @param wdTimerPeriod_ 
+ * @brief
+ *
+ * @param task_
+ * @param wdTimerPeriod_
  */
 void xTaskChangeWDPeriod(xTask task_, const xTicks wdTimerPeriod_);
 
 /**
- * @brief 
- * 
- * @param task_ 
- * @return xTicks 
+ * @brief
+ *
+ * @param task_
+ * @return xTicks
  */
 xTicks xTaskGetWDPeriod(const xTask task_);
 
 /**
- * @brief 
- * 
- * @param timerPeriod_ 
- * @return xTimer 
+ * @brief
+ *
+ * @param timerPeriod_
+ * @return xTimer
  */
 xTimer xTimerCreate(const xTicks timerPeriod_);
 
 /**
- * @brief 
- * 
- * @param timer_ 
+ * @brief
+ *
+ * @param timer_
  */
 void xTimerDelete(const xTimer timer_);
 
 /**
- * @brief 
- * 
- * @param timer_ 
- * @param timerPeriod_ 
+ * @brief
+ *
+ * @param timer_
+ * @param timerPeriod_
  */
 void xTimerChangePeriod(xTimer timer_, const xTicks timerPeriod_);
 
 /**
- * @brief 
- * 
- * @param timer_ 
- * @return xTicks 
+ * @brief
+ *
+ * @param timer_
+ * @return xTicks
  */
 xTicks xTimerGetPeriod(const xTimer timer_);
 
 /**
- * @brief 
- * 
- * @param timer_ 
- * @return xBase 
+ * @brief
+ *
+ * @param timer_
+ * @return xBase
  */
 xBase xTimerIsTimerActive(const xTimer timer_);
 
 /**
- * @brief 
- * 
- * @param timer_ 
- * @return xBase 
+ * @brief
+ *
+ * @param timer_
+ * @return xBase
  */
 xBase xTimerHasTimerExpired(const xTimer timer_);
 
 /**
- * @brief 
- * 
- * @param timer_ 
+ * @brief
+ *
+ * @param timer_
  */
 void xTimerReset(xTimer timer_);
 
 /**
- * @brief 
- * 
- * @param timer_ 
+ * @brief
+ *
+ * @param timer_
  */
 void xTimerStart(xTimer timer_);
 
 /**
- * @brief 
- * 
- * @param timer_ 
+ * @brief
+ *
+ * @param timer_
  */
 void xTimerStop(xTimer timer_);
 
