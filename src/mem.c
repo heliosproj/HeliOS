@@ -25,21 +25,9 @@
  */
 #include "mem.h"
 
-static volatile MemoryRegion_t heap = {
-  .entrySize = zero,
-  .start = NULL,
-  .allocations = zero,
-  .frees = zero,
-  .minAvailableEver = CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS * CONFIG_MEMORY_REGION_BLOCK_SIZE
-};
+static volatile MemoryRegion_t heap;
 
-static volatile MemoryRegion_t kernel = {
-  .entrySize = zero,
-  .start = NULL,
-  .allocations = zero,
-  .frees = zero,
-  .minAvailableEver = CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS * CONFIG_MEMORY_REGION_BLOCK_SIZE
-};
+static volatile MemoryRegion_t kernel;
 
 static Base_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, const volatile Addr_t *addr_, const Base_t option_);
 static Base_t __MemoryRegionCheckAddr__(const volatile MemoryRegion_t *region_, const volatile Addr_t *addr_);
@@ -47,6 +35,20 @@ static Addr_t *__calloc__(volatile MemoryRegion_t *region_, const Size_t size_);
 static void __free__(volatile MemoryRegion_t *region_, const volatile Addr_t *addr_);
 static MemoryRegionStats_t *__MemGetRegionStats__(const volatile MemoryRegion_t *region_);
 static void __DefragMemoryRegion__(const volatile MemoryRegion_t *region_);
+
+
+void __MemoryInit__(void) {
+
+  __memset__(&heap, 0x0, sizeof(MemoryRegion_t));
+
+  heap.minAvailableEver = CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS * CONFIG_MEMORY_REGION_BLOCK_SIZE;
+
+  __memset__(&kernel, 0x0, sizeof(MemoryRegion_t));
+
+  kernel.minAvailableEver = CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS * CONFIG_MEMORY_REGION_BLOCK_SIZE;
+
+  return;
+}
 
 /* System call used by end-user tasks to allocate memory
    from the heap memory region. */
@@ -378,18 +380,11 @@ static Base_t __MemoryRegionCheckAddr__(const volatile MemoryRegion_t *region_, 
 /* A function to allocate memory and is similar to the standard libc calloc() but supports multiple memory regions. */
 static Addr_t *__calloc__(volatile MemoryRegion_t *region_, const Size_t size_) {
 
-
-
-  /* Need to disable interrupts while modifying entries in
-     a memory region. */
-  DISABLE_INTERRUPTS();
-
   Addr_t *ret = NULL;
 
   HalfWord_t requested = zero;
 
   HalfWord_t free = zero;
-
 
   /* Intentionally underflow an unsigned data type
      to get its maximum value. */
@@ -403,6 +398,10 @@ static Addr_t *__calloc__(volatile MemoryRegion_t *region_, const Size_t size_) 
 
 
   MemoryEntry_t *candidateNext = NULL;
+
+  /* Need to disable interrupts while modifying entries in
+   a memory region. */
+  DISABLE_INTERRUPTS();
 
 
   /* Assert if zero bytes are requested because, well... we can't
@@ -653,13 +652,11 @@ static Addr_t *__calloc__(volatile MemoryRegion_t *region_, const Size_t size_) 
 static void __free__(volatile MemoryRegion_t *region_, const volatile Addr_t *addr_) {
 
 
+  MemoryEntry_t *free = NULL;
+
   /* Need to disable interrupts while modifying entries in
      a memory region. */
   DISABLE_INTERRUPTS();
-
-
-  MemoryEntry_t *free = NULL;
-
 
 
   /* Assert if a memory region is corrupt. */

@@ -32,11 +32,7 @@
 
 
 /* Declare and set the system flags to their default values. */
-SysFlags_t sysFlags = {
-  .running = false,
-  .overflow = false,
-  .corrupt = false
-};
+SysFlags_t sysFlags;
 
 
 
@@ -65,6 +61,12 @@ void __SystemAssert__(const char *file_, const int line_) {
 
 /* The xSystemInit() system call initializes the system. */
 void xSystemInit(void) {
+
+  __MemoryInit__();
+
+  sysFlags.corrupt = false;
+  sysFlags.overflow = false;
+  sysFlags.running = false;
 
   __SysInit__();
 

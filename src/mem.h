@@ -54,6 +54,7 @@ Base_t __MemoryRegionCheckHeap__(const volatile Addr_t *addr_, const Base_t opti
 void __memcpy__(const volatile Addr_t *dest_, const volatile Addr_t *src_, const Size_t size_);
 void __memset__(const volatile Addr_t *dest_, const Byte_t val_, const Size_t size_);
 Base_t __memcmp__(const volatile Addr_t *s1_, const volatile Addr_t *s2_, const Size_t size_);
+void __MemoryInit__(void);
 MemoryRegionStats_t *xMemGetHeapStats(void);
 MemoryRegionStats_t *xMemGetKernelStats(void);
 

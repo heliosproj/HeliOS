@@ -105,8 +105,8 @@ typedef struct Device_s {
 
 
 typedef struct MemoryEntry_s {
-  Byte_t free : 1;
-  Byte_t reserved : 7;
+  Byte_t free;
+  Byte_t reserved;
   HalfWord_t blocks;
   struct MemoryEntry_s *next;
 } MemoryEntry_t;
@@ -217,10 +217,10 @@ typedef struct TimerList_s {
 
 
 typedef struct SysFlags_s {
-  Byte_t running : 1;
-  Byte_t overflow : 1;
-  Byte_t corrupt : 1;
-  Byte_t reserved : 5;
+  Base_t running;
+  Base_t overflow;
+  Base_t corrupt;
+  Base_t reserved;
 } SysFlags_t;
 
 
