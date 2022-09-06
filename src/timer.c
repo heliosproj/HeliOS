@@ -41,7 +41,7 @@ static Base_t __TimerListFindTimer__(const Timer_t *timer_);
    time period represented in ticks. The memory allocated by xTimerCreate() must
    be freed by xTimerDelete(). Unlike tasks, timers may be created and deleted within
    tasks. */
-Timer_t *xTimerCreate(Ticks_t timerPeriod_) {
+Timer_t *xTimerCreate(const Ticks_t timerPeriod_) {
 
 
   Timer_t *ret = NULL;
@@ -118,7 +118,7 @@ Timer_t *xTimerCreate(Ticks_t timerPeriod_) {
 
 /* The xTimerDelete() system call will delete a timer. For more information on timers see the
    xTaskTimerCreate() system call. */
-void xTimerDelete(Timer_t *timer_) {
+void xTimerDelete(const Timer_t *timer_) {
   Timer_t *cursor = NULL;
 
 
@@ -223,7 +223,7 @@ void xTimerChangePeriod(Timer_t *timer_, const Ticks_t timerPeriod_) {
 
 /* The xTimerGetPeriod() system call will return the current timer period
    for the specified timer. */
-Ticks_t xTimerGetPeriod(Timer_t *timer_) {
+Ticks_t xTimerGetPeriod(const Timer_t *timer_) {
 
   Ticks_t ret = zero;
 
@@ -246,7 +246,7 @@ Ticks_t xTimerGetPeriod(Timer_t *timer_) {
 
 /* The xTimerIsTimerActive() system call will return true of the timer has been
    started with xTimerStart(). */
-Base_t xTimerIsTimerActive(Timer_t *timer_) {
+Base_t xTimerIsTimerActive(const Timer_t *timer_) {
 
 
   Base_t ret = false;
@@ -276,7 +276,7 @@ Base_t xTimerIsTimerActive(Timer_t *timer_) {
 /* The xTimerHasTimerExpired() system call will return true or false dependent on whether
    the timer period for the specified timer has elapsed. xTimerHasTimerExpired() will NOT
    reset the timer. Timers must be reset with xTimerReset(). */
-Base_t xTimerHasTimerExpired(Timer_t *timer_) {
+Base_t xTimerHasTimerExpired(const Timer_t *timer_) {
 
 
   Base_t ret = false;
