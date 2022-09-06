@@ -259,4 +259,21 @@
 #else
 #define UINT32_TYPE uint32_t
 #endif
+
+
+#if defined(SIZE_TYPE)
+#undef SIZE_TYPE
+#define SIZE_TYPE size_t
+#else
+#define SIZE_TYPE size_t
+#endif
+
+
+#if defined(VOID_TYPE)
+#undef VOID_TYPE
+#define VOID_TYPE void
+#else
+#define VOID_TYPE void
+#endif
+
 #endif

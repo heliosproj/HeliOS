@@ -149,7 +149,7 @@ typedef UINT32_TYPE Ticks_t;
  * @sa xSize
  *
  */
-typedef size_t Size_t;
+typedef SIZE_TYPE Size_t;
 
 /**
  * @brief The type defintion for storing the size of some object in memory.

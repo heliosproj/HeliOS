@@ -200,7 +200,7 @@ void xTimerDelete(Timer_t *timer_) {
 /* The xTimerChangePeriod() system call will change the period of the specified timer.
    The timer period is measured in ticks. If the timer period is zero, the xTimerHasTimerExpired()
    system call will always return false. */
-void xTimerChangePeriod(Timer_t *timer_, Ticks_t timerPeriod_) {
+void xTimerChangePeriod(Timer_t *timer_, const Ticks_t timerPeriod_) {
 
 
 

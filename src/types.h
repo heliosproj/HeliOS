@@ -75,11 +75,11 @@ typedef enum {
 } DeviceMode_t;
 
 
-typedef void TaskParm_t;
+typedef VOID_TYPE TaskParm_t;
 typedef UINT8_TYPE Base_t;
 typedef UINT8_TYPE Byte_t;
-typedef void Addr_t;
-typedef size_t Size_t;
+typedef VOID_TYPE Addr_t;
+typedef SIZE_TYPE Size_t;
 typedef UINT16_TYPE HalfWord_t;
 typedef UINT32_TYPE Word_t;
 typedef UINT32_TYPE Ticks_t;
