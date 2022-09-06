@@ -42,18 +42,18 @@ extern "C" {
 #endif
 
 Addr_t *xMemAlloc(const Size_t size_);
-void xMemFree(const Addr_t *addr_);
+void xMemFree(const volatile Addr_t *addr_);
 Size_t xMemGetUsed(void);
-Size_t xMemGetSize(const Addr_t *addr_);
+Size_t xMemGetSize(const volatile Addr_t *addr_);
 Addr_t *__KernelAllocateMemory__(const Size_t size_);
-void __KernelFreeMemory__(const Addr_t *addr_);
-Base_t __MemoryRegionCheckKernel__(const Addr_t *addr_, const Base_t option_);
+void __KernelFreeMemory__(const volatile Addr_t *addr_);
+Base_t __MemoryRegionCheckKernel__(const volatile Addr_t *addr_, const Base_t option_);
 Addr_t *__HeapAllocateMemory__(const Size_t size_);
-void __HeapFreeMemory__(const Addr_t *addr_);
-Base_t __MemoryRegionCheckHeap__(const Addr_t *addr_, const Base_t option_);
-void __memcpy__(Addr_t *dest_, const Addr_t *src_, Size_t n_);
-void __memset__(volatile Addr_t *dest_, HalfWord_t val_, Size_t n_);
-HalfWord_t __memcmp__(const Addr_t *s1_, const Addr_t *s2_, Size_t n_);
+void __HeapFreeMemory__(const volatile Addr_t *addr_);
+Base_t __MemoryRegionCheckHeap__(const volatile Addr_t *addr_, const Base_t option_);
+void __memcpy__(const volatile Addr_t *dest_, const volatile Addr_t *src_, const Size_t size_);
+void __memset__(const volatile Addr_t *dest_, const Byte_t val_, const Size_t size_);
+Base_t __memcmp__(const volatile Addr_t *s1_, const volatile Addr_t *s2_, const Size_t size_);
 MemoryRegionStats_t *xMemGetHeapStats(void);
 MemoryRegionStats_t *xMemGetKernelStats(void);
 

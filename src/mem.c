@@ -41,13 +41,12 @@ static volatile MemoryRegion_t kernel = {
   .minAvailableEver = CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS * CONFIG_MEMORY_REGION_BLOCK_SIZE
 };
 
-static Base_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, const Addr_t *addr_, const Base_t option_);
-static Base_t __MemoryRegionCheckAddr__(const volatile MemoryRegion_t *region_, const Addr_t *addr_);
+static Base_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, const volatile Addr_t *addr_, const Base_t option_);
+static Base_t __MemoryRegionCheckAddr__(const volatile MemoryRegion_t *region_, const volatile Addr_t *addr_);
 static Addr_t *__calloc__(volatile MemoryRegion_t *region_, const Size_t size_);
-static void __free__(volatile MemoryRegion_t *region_, const Addr_t *addr_);
+static void __free__(volatile MemoryRegion_t *region_, const volatile Addr_t *addr_);
 static MemoryRegionStats_t *__MemGetRegionStats__(const volatile MemoryRegion_t *region_);
-static void __DefragMemoryRegion__(volatile MemoryRegion_t *region_);
-
+static void __DefragMemoryRegion__(const volatile MemoryRegion_t *region_);
 
 /* System call used by end-user tasks to allocate memory
    from the heap memory region. */
@@ -62,7 +61,7 @@ Addr_t *xMemAlloc(const Size_t size_) {
 
 /* System call used by end-user tasks to free memory from
    the heap memory region. */
-void xMemFree(const Addr_t *addr_) {
+void xMemFree(const volatile Addr_t *addr_) {
 
 
   /* Just call __free__() with the heap memory region to free
@@ -147,7 +146,7 @@ Size_t xMemGetUsed(void) {
 /* A system call used by end-user tasks to return the amount
    of memory in bytes assigned to an address in the heap memory
    region. */
-Size_t xMemGetSize(const Addr_t *addr_) {
+Size_t xMemGetSize(const volatile Addr_t *addr_) {
 
 
   Size_t ret = zero;
@@ -212,7 +211,7 @@ Size_t xMemGetSize(const Addr_t *addr_) {
 /* The __MemoryRegionCheck__() function checks the consistency of a memory region. If specified, it will also check
    that an address points to valid memory that was previously allocated by __calloc__() for the respective memory
    region. */
-static Base_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, const Addr_t *addr_, const Base_t option_) {
+static Base_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, const volatile Addr_t *addr_, const Base_t option_) {
 
 
   MemoryEntry_t *cursor = NULL;
@@ -350,7 +349,7 @@ static Base_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, cons
 
 /* Function to check if an address falls within the scope of a memory region. This
    function is used exclusively by __MemoryRegionCheck__(). */
-static Base_t __MemoryRegionCheckAddr__(const volatile MemoryRegion_t *region_, const Addr_t *addr_) {
+static Base_t __MemoryRegionCheckAddr__(const volatile MemoryRegion_t *region_, const volatile Addr_t *addr_) {
 
 
 
@@ -650,7 +649,7 @@ static Addr_t *__calloc__(volatile MemoryRegion_t *region_, const Size_t size_) 
 
 
 /* Function to free memory allocated by __calloc__(). */
-static void __free__(volatile MemoryRegion_t *region_, const Addr_t *addr_) {
+static void __free__(volatile MemoryRegion_t *region_, const volatile Addr_t *addr_) {
 
 
   /* Need to disable interrupts while modifying entries in
@@ -722,7 +721,7 @@ Addr_t *__KernelAllocateMemory__(const Size_t size_) {
 
 /* A wrapper function for __free__() because the memory
    regions cannot be accessed outside the scope of mem.c. */
-void __KernelFreeMemory__(const Addr_t *addr_) {
+void __KernelFreeMemory__(const volatile Addr_t *addr_) {
 
   __free__(&kernel, addr_);
 
@@ -732,7 +731,7 @@ void __KernelFreeMemory__(const Addr_t *addr_) {
 
 /* A wrapper function for __MemoryRegionCheck__() because the memory
    regions cannot be accessed outside the scope of mem.c. */
-Base_t __MemoryRegionCheckKernel__(const Addr_t *addr_, const Base_t option_) {
+Base_t __MemoryRegionCheckKernel__(const volatile Addr_t *addr_, const Base_t option_) {
 
   return __MemoryRegionCheck__(&kernel, addr_, option_);
 }
@@ -750,7 +749,7 @@ Addr_t *__HeapAllocateMemory__(const Size_t size_) {
 
 /* A wrapper function for __free__() because the memory
    regions cannot be accessed outside the scope of mem.c. */
-void __HeapFreeMemory__(const Addr_t *addr_) {
+void __HeapFreeMemory__(const volatile Addr_t *addr_) {
 
   __free__(&heap, addr_);
 
@@ -761,7 +760,7 @@ void __HeapFreeMemory__(const Addr_t *addr_) {
 
 /* A wrapper function for __MemoryRegionCheck__() because the memory
    regions cannot be accessed outside the scope of mem.c. */
-Base_t __MemoryRegionCheckHeap__(const Addr_t *addr_, const Base_t option_) {
+Base_t __MemoryRegionCheckHeap__(const volatile Addr_t *addr_, const Base_t option_) {
 
   return __MemoryRegionCheck__(&heap, addr_, option_);
 }
@@ -769,15 +768,15 @@ Base_t __MemoryRegionCheckHeap__(const Addr_t *addr_, const Base_t option_) {
 
 /* Like the standard libc function, __memcpy__() copies memory from one
    address to another. */
-void __memcpy__(Addr_t *dest_, const Addr_t *src_, Size_t n_) {
+void __memcpy__(const volatile Addr_t *dest_, const volatile Addr_t *src_, const Size_t size_) {
 
   Size_t i = zero;
 
-  Char_t *src = (Char_t *)src_;
+  volatile Char_t *src = (Char_t *)src_;
 
-  Char_t *dest = (Char_t *)dest_;
+  volatile Char_t *dest = (Char_t *)dest_;
 
-  for (i = zero; i < n_; i++) {
+  for (i = zero; i < size_; i++) {
 
     dest[i] = src[i];
   }
@@ -789,13 +788,13 @@ void __memcpy__(Addr_t *dest_, const Addr_t *src_, Size_t n_) {
 
 /* Like the standard libc function, __memset__() sets the memory
    at the location specified as the address to the defined value. */
-void __memset__(volatile Addr_t *dest_, HalfWord_t val_, Size_t n_) {
+void __memset__(const volatile Addr_t *dest_, const Byte_t val_, const Size_t size_) {
 
   Size_t i = zero;
 
-  Char_t *dest = (Char_t *)dest_;
+  volatile Char_t *dest = (Char_t *)dest_;
 
-  for (i = zero; i < n_; i++) {
+  for (i = zero; i < size_; i++) {
 
     dest[i] = (Char_t)val_;
   }
@@ -807,17 +806,17 @@ void __memset__(volatile Addr_t *dest_, HalfWord_t val_, Size_t n_) {
 
 /* Similar to the standard libc function, __memcmp__() compares the contents
    of two memory locations pointed. */
-HalfWord_t __memcmp__(const Addr_t *s1_, const Addr_t *s2_, Size_t n_) {
+Base_t __memcmp__(const volatile Addr_t *s1_, const volatile Addr_t *s2_, const Size_t size_) {
 
   Size_t i = zero;
 
-  HalfWord_t ret = zero;
+  Base_t ret = zero;
 
-  Char_t *s1 = (Char_t *)s1_;
+  volatile Char_t *s1 = (Char_t *)s1_;
 
-  Char_t *s2 = (Char_t *)s2_;
+  volatile Char_t *s2 = (Char_t *)s2_;
 
-  for (i = zero; i < n_; i++) {
+  for (i = zero; i < size_; i++) {
 
     if (*s1 != *s2) {
 
@@ -971,7 +970,7 @@ static MemoryRegionStats_t *__MemGetRegionStats__(const volatile MemoryRegion_t 
 
 
 /* Defrag an entire memory region to reduce memory fragmentation. */
-static void __DefragMemoryRegion__(volatile MemoryRegion_t *region_) {
+static void __DefragMemoryRegion__(const volatile MemoryRegion_t *region_) {
 
 
   MemoryEntry_t *cursor = NULL;
