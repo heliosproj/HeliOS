@@ -47,6 +47,6 @@ extern "C" {
 void stream_harness(void);
 
 #ifdef __cplusplus
-}  // extern "C" {
+}
 #endif
 #endif

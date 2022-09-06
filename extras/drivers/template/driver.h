@@ -69,6 +69,6 @@ Base_t TO_FUNCTION(DEVICE_NAME, _simple_read)(Device_t *device_, Word_t *data_);
 Base_t TO_FUNCTION(DEVICE_NAME, _simple_write)(Device_t *device_, Word_t *data_);
 
 #ifdef __cplusplus
-}  // extern "C" {
+}
 #endif
 #endif

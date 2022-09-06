@@ -47,6 +47,6 @@ extern "C" {
 void timer_harness(void);
 
 #ifdef __cplusplus
-}  // extern "C" {
+}
 #endif
 #endif

@@ -138,7 +138,7 @@ typedef struct Task_s {
   Char_t name[CONFIG_TASK_NAME_BYTES];
   TaskState_t state;
   TaskParm_t *taskParameter;
-  void (*callback)(struct Task_s *, TaskParm_t *);
+  void (*callback)(struct Task_s *task_, TaskParm_t *parm_);
   Base_t notificationBytes;
   Char_t notificationValue[CONFIG_NOTIFICATION_VALUE_BYTES];
   Ticks_t lastRunTime;

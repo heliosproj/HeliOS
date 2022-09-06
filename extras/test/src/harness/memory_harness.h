@@ -54,6 +54,6 @@ void memory_harness(void);
 void memory_harness_task(Task_t *task_, TaskParm_t *parm_);
 
 #ifdef __cplusplus
-}  // extern "C" {
+}
 #endif
 #endif

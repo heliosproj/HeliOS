@@ -48,6 +48,6 @@ extern "C" {
 void device_harness(void);
 
 #ifdef __cplusplus
-}  // extern "C" {
+}
 #endif
 #endif

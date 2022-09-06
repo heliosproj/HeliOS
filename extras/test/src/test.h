@@ -42,6 +42,6 @@ int main(int argc, char **argv);
 void reset(void);
 
 #ifdef __cplusplus
-}  // extern "C" {
+}
 #endif
 #endif

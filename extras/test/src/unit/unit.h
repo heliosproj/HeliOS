@@ -74,7 +74,7 @@ void unit_end(void);
 void unit_exit(void);
 
 #ifdef __cplusplus
-}  // extern "C" {
+}
 #endif
 
 

@@ -1751,6 +1751,6 @@ void __DeviceStateClear__(void);
 #endif
 
 #ifdef __cplusplus
-}  // extern "C" {
+}
 #endif
 #endif

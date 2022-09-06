@@ -287,7 +287,7 @@ Ticks_t __SysGetSysTicks__(void);
 void __SysInit__(void);
 
 #ifdef __cplusplus
-}  // extern "C" {
+}
 #endif
 
 #endif

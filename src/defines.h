@@ -276,4 +276,9 @@
 #define VOID_TYPE void
 #endif
 
+
+#if !defined(DEREF_TASKPARM)
+#define DEREF_TASKPARM(t, p) *((t *)p)
+#endif
+
 #endif
