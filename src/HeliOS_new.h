@@ -33,6 +33,12 @@
 #include "config.h"
 #include "defines.h"
 
+/* START OF ENUM TYPES */
+
+/**
+ * @brief 
+ * 
+ */
 typedef enum {
   TaskStateError,
   TaskStateSuspended,
@@ -40,53 +46,216 @@ typedef enum {
   TaskStateWaiting
 } TaskState_t;
 
+/**
+ * @brief 
+ * 
+ */
 typedef enum {
   SchedulerStateError,
   SchedulerStateSuspended,
   SchedulerStateRunning
 } SchedulerState_t;
 
-/* Base types */
+/* START OF BASIC TYPES */
+
+/**
+ * @brief 
+ * 
+ */
 typedef VOID_TYPE TaskParm_t;
-typedef TaskParm_t *xTaskParm;
-typedef UINT8_TYPE Base_t;
-typedef Base_t xBase;
-typedef UINT8_TYPE Byte_t;
-typedef Byte_t xByte;
-typedef VOID_TYPE Addr_t;
-typedef Addr_t *xAddr;
-typedef SIZE_TYPE Size_t;
-typedef Size_t xSize;
-typedef UINT16_TYPE HalfWord_t;
-typedef HalfWord_t xHalfWord;
-typedef UINT32_TYPE Word_t;
-typedef Word_t xWord;
-typedef UINT32_TYPE Ticks_t;
-typedef Ticks_t xTicks;
-typedef UCHAR_TYPE Char_t;
-typedef Char_t xChar;
-typedef VOID_TYPE TaskParm_t;
+
+/**
+ * @brief 
+ * 
+ */
 typedef TaskParm_t *xTaskParm;
 
-/* Stub types */
+/**
+ * @brief 
+ * 
+ */
+typedef UINT8_TYPE Base_t;
+
+/**
+ * @brief 
+ * 
+ */
+typedef Base_t xBase;
+
+/**
+ * @brief 
+ * 
+ */
+typedef UINT8_TYPE Byte_t;
+
+/**
+ * @brief 
+ * 
+ */
+typedef Byte_t xByte;
+
+/**
+ * @brief 
+ * 
+ */
+typedef VOID_TYPE Addr_t;
+
+/**
+ * @brief 
+ * 
+ */
+typedef Addr_t *xAddr;
+
+/**
+ * @brief 
+ * 
+ */
+typedef SIZE_TYPE Size_t;
+
+/**
+ * @brief 
+ * 
+ */
+typedef Size_t xSize;
+
+/**
+ * @brief 
+ * 
+ */
+typedef UINT16_TYPE HalfWord_t;
+
+/**
+ * @brief 
+ * 
+ */
+typedef HalfWord_t xHalfWord;
+
+/**
+ * @brief 
+ * 
+ */
+typedef UINT32_TYPE Word_t;
+
+/**
+ * @brief 
+ * 
+ */
+typedef Word_t xWord;
+
+/**
+ * @brief 
+ * 
+ */
+typedef UINT32_TYPE Ticks_t;
+
+/**
+ * @brief 
+ * 
+ */
+typedef Ticks_t xTicks;
+
+/**
+ * @brief 
+ * 
+ */
+typedef UCHAR_TYPE Char_t;
+
+/**
+ * @brief 
+ * 
+ */
+typedef Char_t xChar;
+
+/**
+ * @brief 
+ * 
+ */
+typedef VOID_TYPE TaskParm_t;
+
+/**
+ * @brief 
+ * 
+ */
+typedef TaskParm_t *xTaskParm;
+
+/* START OF STUB TYPES */
+
+/**
+ * @brief 
+ * 
+ */
 typedef VOID_TYPE Device_t;
+
+/**
+ * @brief 
+ * 
+ */
 typedef Device_t *xDevice;
+
+/**
+ * @brief 
+ * 
+ */
 typedef VOID_TYPE Task_t;
+
+/**
+ * @brief 
+ * 
+ */
 typedef Task_t *xTask;
+
+/**
+ * @brief 
+ * 
+ */
 typedef VOID_TYPE StreamBuffer_t;
+
+/**
+ * @brief 
+ * 
+ */
 typedef StreamBuffer_t *xStreamBuffer;
+
+/**
+ * @brief 
+ * 
+ */
 typedef VOID_TYPE Queue_t;
+
+/**
+ * @brief 
+ * 
+ */
 typedef Queue_t *xQueue;
+
+/**
+ * @brief 
+ * 
+ */
 typedef VOID_TYPE Timer_t;
+
+/**
+ * @brief 
+ * 
+ */
 typedef Timer_t *xTimer;
 
-/* Struct types */
+/* START OF STRUCT TYPES */
+
+/**
+ * @brief 
+ * 
+ */
 typedef struct TaskNotification_s {
   Base_t notificationBytes;
   Char_t notificationValue[CONFIG_NOTIFICATION_VALUE_BYTES];
 } TaskNotification_t;
 typedef TaskNotification_t *xTaskNotification;
 
+/**
+ * @brief 
+ * 
+ */
 typedef struct TaskRunTimeStats_s {
   Base_t id;
   Ticks_t lastRunTime;
@@ -94,6 +263,10 @@ typedef struct TaskRunTimeStats_s {
 } TaskRunTimeStats_t;
 typedef TaskRunTimeStats_t *xTaskRunTimeStats;
 
+/**
+ * @brief 
+ * 
+ */
 typedef struct MemoryRegionStats_s {
   Word_t largestFreeEntryInBytes;
   Word_t smallestFreeEntryInBytes;
@@ -105,6 +278,10 @@ typedef struct MemoryRegionStats_s {
 } MemoryRegionStats_t;
 typedef MemoryRegionStats_t *xMemoryRegionStats;
 
+/**
+ * @brief 
+ * 
+ */
 typedef struct TaskInfo_s {
   Base_t id;
   Char_t name[CONFIG_TASK_NAME_BYTES];
@@ -114,12 +291,20 @@ typedef struct TaskInfo_s {
 } TaskInfo_t;
 typedef TaskInfo_t *xTaskInfo;
 
+/**
+ * @brief 
+ * 
+ */
 typedef struct QueueMessage_s {
   Base_t messageBytes;
   Char_t messageValue[CONFIG_MESSAGE_VALUE_BYTES];
 } QueueMessage_t;
 typedef QueueMessage_t *xQueueMessage;
 
+/**
+ * @brief 
+ * 
+ */
 typedef struct SystemInfo_s {
   Char_t productName[OS_PRODUCT_NAME_SIZE];
   Base_t majorVersion;
@@ -133,80 +318,579 @@ typedef SystemInfo_t *xSystemInfo;
 extern "C" {
 #endif
 
-Base_t xDeviceRegisterDevice(Base_t (*device_self_register_)());
-Base_t xDeviceIsAvailable(const HalfWord_t uid_);
-Base_t xDeviceSimpleWrite(const HalfWord_t uid_, Word_t *data_);
-Base_t xDeviceWrite(const HalfWord_t uid_, Size_t *size_, Addr_t *data_);
-Base_t xDeviceSimpleRead(const HalfWord_t uid_, Word_t *data_);
-Base_t xDeviceRead(const HalfWord_t uid_, Size_t *size_, Addr_t *data_);
-Base_t xDeviceInitDevice(const HalfWord_t uid_);
-Base_t xDeviceConfigDevice(const HalfWord_t uid_, Size_t *size_, Addr_t *config_);
-Addr_t *xMemAlloc(const Size_t size_);
-void xMemFree(const volatile Addr_t *addr_);
-Size_t xMemGetUsed(void);
-Size_t xMemGetSize(const volatile Addr_t *addr_);
-MemoryRegionStats_t *xMemGetHeapStats(void);
-MemoryRegionStats_t *xMemGetKernelStats(void);
-Queue_t *xQueueCreate(const Base_t limit_);
-void xQueueDelete(Queue_t *queue_);
-Base_t xQueueGetLength(const Queue_t *queue_);
-Base_t xQueueIsQueueEmpty(const Queue_t *queue_);
-Base_t xQueueIsQueueFull(const Queue_t *queue_);
-Base_t xQueueMessagesWaiting(const Queue_t *queue_);
-Base_t xQueueSend(Queue_t *queue_, const Base_t messageBytes_, const Char_t *messageValue_);
-QueueMessage_t *xQueuePeek(const Queue_t *queue_);
-void xQueueDropMessage(Queue_t *queue_);
-QueueMessage_t *xQueueReceive(Queue_t *queue_);
-void xQueueLockQueue(Queue_t *queue_);
-void xQueueUnLockQueue(Queue_t *queue_);
-StreamBuffer_t *xStreamCreate(void);
-void xStreamDelete(const StreamBuffer_t *stream_);
-Base_t xStreamSend(StreamBuffer_t *stream_, const Byte_t byte_);
-Byte_t *xStreamReceive(const StreamBuffer_t *stream_, HalfWord_t *bytes_);
-HalfWord_t xStreamBytesAvailable(const StreamBuffer_t *stream_);
-void xStreamReset(const StreamBuffer_t *stream_);
-Base_t xStreamIsEmpty(const StreamBuffer_t *stream_);
-Base_t xStreamIsFull(const StreamBuffer_t *steam_);
+/**
+ * @brief 
+ * 
+ * @param device_self_register_ 
+ * @return xBase 
+ */
+xBase xDeviceRegisterDevice(xBase (*device_self_register_)());
+
+/**
+ * @brief 
+ * 
+ * @param uid_ 
+ * @return xBase 
+ */
+xBase xDeviceIsAvailable(const xHalfWord uid_);
+
+/**
+ * @brief 
+ * 
+ * @param uid_ 
+ * @param data_ 
+ * @return xBase 
+ */
+xBase xDeviceSimpleWrite(const xHalfWord uid_, xWord *data_);
+
+/**
+ * @brief 
+ * 
+ * @param uid_ 
+ * @param size_ 
+ * @param data_ 
+ * @return xBase 
+ */
+xBase xDeviceWrite(const xHalfWord uid_, xSize *size_, xAddr data_);
+
+/**
+ * @brief 
+ * 
+ * @param uid_ 
+ * @param data_ 
+ * @return xBase 
+ */
+xBase xDeviceSimpleRead(const xHalfWord uid_, xWord *data_);
+
+/**
+ * @brief 
+ * 
+ * @param uid_ 
+ * @param size_ 
+ * @param data_ 
+ * @return xBase 
+ */
+xBase xDeviceRead(const xHalfWord uid_, xSize *size_, xAddr data_);
+
+/**
+ * @brief 
+ * 
+ * @param uid_ 
+ * @return xBase 
+ */
+xBase xDeviceInitDevice(const xHalfWord uid_);
+
+/**
+ * @brief 
+ * 
+ * @param uid_ 
+ * @param size_ 
+ * @param config_ 
+ * @return xBase 
+ */
+xBase xDeviceConfigDevice(const xHalfWord uid_, xSize *size_, xAddr config_);
+
+/**
+ * @brief 
+ * 
+ * @param size_ 
+ * @return xAddr 
+ */
+xAddr xMemAlloc(const xSize size_);
+
+/**
+ * @brief 
+ * 
+ * @param addr_ 
+ */
+void xMemFree(const volatile xAddr addr_);
+
+/**
+ * @brief 
+ * 
+ * @return xSize 
+ */
+xSize xMemGetUsed(void);
+
+/**
+ * @brief 
+ * 
+ * @param addr_ 
+ * @return xSize 
+ */
+xSize xMemGetSize(const volatile xAddr addr_);
+
+/**
+ * @brief 
+ * 
+ * @return xMemoryRegionStats 
+ */
+xMemoryRegionStats xMemGetHeapStats(void);
+
+/**
+ * @brief 
+ * 
+ * @return xMemoryRegionStats 
+ */
+xMemoryRegionStats xMemGetKernelStats(void);
+
+/**
+ * @brief 
+ * 
+ * @param limit_ 
+ * @return xQueue 
+ */
+xQueue xQueueCreate(const xBase limit_);
+
+/**
+ * @brief 
+ * 
+ * @param queue_ 
+ */
+void xQueueDelete(xQueue queue_);
+
+/**
+ * @brief 
+ * 
+ * @param queue_ 
+ * @return xBase 
+ */
+xBase xQueueGetLength(const xQueue queue_);
+
+/**
+ * @brief 
+ * 
+ * @param queue_ 
+ * @return xBase 
+ */
+xBase xQueueIsQueueEmpty(const xQueue queue_);
+
+/**
+ * @brief 
+ * 
+ * @param queue_ 
+ * @return xBase 
+ */
+xBase xQueueIsQueueFull(const xQueue queue_);
+
+/**
+ * @brief 
+ * 
+ * @param queue_ 
+ * @return xBase 
+ */
+xBase xQueueMessagesWaiting(const xQueue queue_);
+
+/**
+ * @brief 
+ * 
+ * @param queue_ 
+ * @param messageBytes_ 
+ * @param messageValue_ 
+ * @return xBase 
+ */
+xBase xQueueSend(xQueue queue_, const xBase messageBytes_, const xChar *messageValue_);
+
+/**
+ * @brief 
+ * 
+ * @param queue_ 
+ * @return xQueueMessage 
+ */
+xQueueMessage xQueuePeek(const xQueue queue_);
+
+/**
+ * @brief 
+ * 
+ * @param queue_ 
+ */
+void xQueueDropMessage(xQueue queue_);
+
+/**
+ * @brief 
+ * 
+ * @param queue_ 
+ * @return xQueueMessage 
+ */
+xQueueMessage xQueueReceive(xQueue queue_);
+
+/**
+ * @brief 
+ * 
+ * @param queue_ 
+ */
+void xQueueLockQueue(xQueue queue_);
+
+/**
+ * @brief 
+ * 
+ * @param queue_ 
+ */
+void xQueueUnLockQueue(xQueue queue_);
+
+/**
+ * @brief 
+ * 
+ * @return xStreamBuffer 
+ */
+xStreamBuffer xStreamCreate(void);
+
+/**
+ * @brief 
+ * 
+ * @param stream_ 
+ */
+void xStreamDelete(const xStreamBuffer stream_);
+
+/**
+ * @brief 
+ * 
+ * @param stream_ 
+ * @param byte_ 
+ * @return xBase 
+ */
+xBase xStreamSend(xStreamBuffer stream_, const xByte byte_);
+
+/**
+ * @brief 
+ * 
+ * @param stream_ 
+ * @param bytes_ 
+ * @return xByte* 
+ */
+xByte *xStreamReceive(const xStreamBuffer stream_, xHalfWord *bytes_);
+
+/**
+ * @brief 
+ * 
+ * @param stream_ 
+ * @return xHalfWord 
+ */
+xHalfWord xStreamBytesAvailable(const xStreamBuffer stream_);
+
+/**
+ * @brief 
+ * 
+ * @param stream_ 
+ */
+void xStreamReset(const xStreamBuffer stream_);
+
+/**
+ * @brief 
+ * 
+ * @param stream_ 
+ * @return xBase 
+ */
+xBase xStreamIsEmpty(const xStreamBuffer stream_);
+
+/**
+ * @brief 
+ * 
+ * @param steam_ 
+ * @return xBase 
+ */
+xBase xStreamIsFull(const xStreamBuffer steam_);
+
+/**
+ * @brief 
+ * 
+ */
 void xSystemInit(void);
+
+/**
+ * @brief 
+ * 
+ */
 void xSystemHalt(void);
-SystemInfo_t *xSystemGetSystemInfo(void);
-Task_t *xTaskCreate(const Char_t *name_, void (*callback_)(Task_t *, TaskParm_t *), TaskParm_t *taskParameter_);
-void xTaskDelete(const Task_t *task_);
-Task_t *xTaskGetHandleByName(const Char_t *name_);
-Task_t *xTaskGetHandleById(const Base_t id_);
-TaskRunTimeStats_t *xTaskGetAllRunTimeStats(Base_t *tasks_);
-TaskRunTimeStats_t *xTaskGetTaskRunTimeStats(const Task_t *task_);
-Base_t xTaskGetNumberOfTasks(void);
-TaskInfo_t *xTaskGetTaskInfo(const Task_t *task_);
-TaskInfo_t *xTaskGetAllTaskInfo(Base_t *tasks_);
-TaskState_t xTaskGetTaskState(const Task_t *task_);
-Char_t *xTaskGetName(const Task_t *task_);
-Base_t xTaskGetId(const Task_t *task_);
-void xTaskNotifyStateClear(Task_t *task_);
-Base_t xTaskNotificationIsWaiting(const Task_t *task_);
-Base_t xTaskNotifyGive(Task_t *task_, const Base_t notificationBytes_, const Char_t *notificationValue_);
-TaskNotification_t *xTaskNotifyTake(Task_t *task_);
-void xTaskResume(Task_t *task_);
-void xTaskSuspend(Task_t *task_);
-void xTaskWait(Task_t *task_);
-void xTaskChangePeriod(Task_t *task_, const Ticks_t timerPeriod_);
-Ticks_t xTaskGetPeriod(const Task_t *task_);
-void xTaskResetTimer(Task_t *task_);
+
+/**
+ * @brief 
+ * 
+ * @return xSystemInfo 
+ */
+xSystemInfo xSystemGetSystemInfo(void);
+
+/**
+ * @brief 
+ * 
+ * @param name_ 
+ * @param callback_ 
+ * @param taskParameter_ 
+ * @return xTask 
+ */
+xTask xTaskCreate(const xChar *name_, void (*callback_)(Task_t *, TaskParm_t *), TaskParm_t *taskParameter_);
+
+/**
+ * @brief 
+ * 
+ * @param task_ 
+ */
+void xTaskDelete(const xTask task_);
+
+/**
+ * @brief 
+ * 
+ * @param name_ 
+ * @return xTask 
+ */
+xTask xTaskGetHandleByName(const xChar *name_);
+
+/**
+ * @brief 
+ * 
+ * @param id_ 
+ * @return xTask 
+ */
+xTask xTaskGetHandleById(const xBase id_);
+
+/**
+ * @brief 
+ * 
+ * @param tasks_ 
+ * @return xTaskRunTimeStats 
+ */
+xTaskRunTimeStats xTaskGetAllRunTimeStats(xBase *tasks_);
+
+/**
+ * @brief 
+ * 
+ * @param task_ 
+ * @return xTaskRunTimeStats 
+ */
+xTaskRunTimeStats xTaskGetTaskRunTimeStats(const xTask task_);
+
+/**
+ * @brief 
+ * 
+ * @return xBase 
+ */
+xBase xTaskGetNumberOfTasks(void);
+
+/**
+ * @brief 
+ * 
+ * @param task_ 
+ * @return xTaskInfo 
+ */
+xTaskInfo xTaskGetTaskInfo(const xTask task_);
+
+/**
+ * @brief 
+ * 
+ * @param tasks_ 
+ * @return xTaskInfo 
+ */
+xTaskInfo xTaskGetAllTaskInfo(xBase *tasks_);
+
+/**
+ * @brief 
+ * 
+ * @param task_ 
+ * @return TaskState_t 
+ */
+TaskState_t xTaskGetTaskState(const xTask task_);
+
+/**
+ * @brief 
+ * 
+ * @param task_ 
+ * @return xChar* 
+ */
+xChar *xTaskGetName(const xTask task_);
+
+/**
+ * @brief 
+ * 
+ * @param task_ 
+ * @return xBase 
+ */
+xBase xTaskGetId(const xTask task_);
+
+/**
+ * @brief 
+ * 
+ * @param task_ 
+ */
+void xTaskNotifyStateClear(xTask task_);
+
+/**
+ * @brief 
+ * 
+ * @param task_ 
+ * @return xBase 
+ */
+xBase xTaskNotificationIsWaiting(const xTask task_);
+
+/**
+ * @brief 
+ * 
+ * @param task_ 
+ * @param notificationBytes_ 
+ * @param notificationValue_ 
+ * @return xBase 
+ */
+xBase xTaskNotifyGive(xTask task_, const xBase notificationBytes_, const xChar *notificationValue_);
+
+/**
+ * @brief 
+ * 
+ * @param task_ 
+ * @return xTaskNotification 
+ */
+xTaskNotification xTaskNotifyTake(xTask task_);
+
+/**
+ * @brief 
+ * 
+ * @param task_ 
+ */
+void xTaskResume(xTask task_);
+
+/**
+ * @brief 
+ * 
+ * @param task_ 
+ */
+void xTaskSuspend(xTask task_);
+
+/**
+ * @brief 
+ * 
+ * @param task_ 
+ */
+void xTaskWait(xTask task_);
+
+/**
+ * @brief 
+ * 
+ * @param task_ 
+ * @param timerPeriod_ 
+ */
+void xTaskChangePeriod(xTask task_, const xTicks timerPeriod_);
+
+/**
+ * @brief 
+ * 
+ * @param task_ 
+ * @return xTicks 
+ */
+xTicks xTaskGetPeriod(const xTask task_);
+
+/**
+ * @brief 
+ * 
+ * @param task_ 
+ */
+void xTaskResetTimer(xTask task_);
+
+/**
+ * @brief 
+ * 
+ */
 void xTaskStartScheduler(void);
+
+/**
+ * @brief 
+ * 
+ */
 void xTaskResumeAll(void);
+
+/**
+ * @brief 
+ * 
+ */
 void xTaskSuspendAll(void);
+
+/**
+ * @brief 
+ * 
+ * @return SchedulerState_t 
+ */
 SchedulerState_t xTaskGetSchedulerState(void);
-void xTaskChangeWDPeriod(Task_t *task_, const Ticks_t wdTimerPeriod_);
-Ticks_t xTaskGetWDPeriod(const Task_t *task_);
-Timer_t *xTimerCreate(const Ticks_t timerPeriod_);
-void xTimerDelete(const Timer_t *timer_);
-void xTimerChangePeriod(Timer_t *timer_, const Ticks_t timerPeriod_);
-Ticks_t xTimerGetPeriod(const Timer_t *timer_);
-Base_t xTimerIsTimerActive(const Timer_t *timer_);
-Base_t xTimerHasTimerExpired(const Timer_t *timer_);
-void xTimerReset(Timer_t *timer_);
-void xTimerStart(Timer_t *timer_);
-void xTimerStop(Timer_t *timer_);
+
+/**
+ * @brief 
+ * 
+ * @param task_ 
+ * @param wdTimerPeriod_ 
+ */
+void xTaskChangeWDPeriod(xTask task_, const xTicks wdTimerPeriod_);
+
+/**
+ * @brief 
+ * 
+ * @param task_ 
+ * @return xTicks 
+ */
+xTicks xTaskGetWDPeriod(const xTask task_);
+
+/**
+ * @brief 
+ * 
+ * @param timerPeriod_ 
+ * @return xTimer 
+ */
+xTimer xTimerCreate(const xTicks timerPeriod_);
+
+/**
+ * @brief 
+ * 
+ * @param timer_ 
+ */
+void xTimerDelete(const xTimer timer_);
+
+/**
+ * @brief 
+ * 
+ * @param timer_ 
+ * @param timerPeriod_ 
+ */
+void xTimerChangePeriod(xTimer timer_, const xTicks timerPeriod_);
+
+/**
+ * @brief 
+ * 
+ * @param timer_ 
+ * @return xTicks 
+ */
+xTicks xTimerGetPeriod(const xTimer timer_);
+
+/**
+ * @brief 
+ * 
+ * @param timer_ 
+ * @return xBase 
+ */
+xBase xTimerIsTimerActive(const xTimer timer_);
+
+/**
+ * @brief 
+ * 
+ * @param timer_ 
+ * @return xBase 
+ */
+xBase xTimerHasTimerExpired(const xTimer timer_);
+
+/**
+ * @brief 
+ * 
+ * @param timer_ 
+ */
+void xTimerReset(xTimer timer_);
+
+/**
+ * @brief 
+ * 
+ * @param timer_ 
+ */
+void xTimerStart(xTimer timer_);
+
+/**
+ * @brief 
+ * 
+ * @param timer_ 
+ */
+void xTimerStop(xTimer timer_);
 
 #if defined(POSIX_ARCH_OTHER)
 void __MemoryClear__(void);
