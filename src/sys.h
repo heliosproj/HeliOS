@@ -43,7 +43,7 @@ extern SysFlags_t sysFlags;
 extern "C" {
 #endif
 
-void __SystemAssert__(const char *file_, int line_);
+void __SystemAssert__(const char *file_, const int line_);
 void xSystemInit(void);
 void xSystemHalt(void);
 SystemInfo_t *xSystemGetSystemInfo(void);

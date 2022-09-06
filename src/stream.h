@@ -42,13 +42,13 @@ extern "C" {
 #endif
 
 StreamBuffer_t *xStreamCreate(void);
-void xStreamDelete(StreamBuffer_t *stream_);
-Base_t xStreamSend(StreamBuffer_t *stream_, Byte_t byte_);
-Byte_t *xStreamReceive(StreamBuffer_t *stream_, HalfWord_t *bytes_);
-HalfWord_t xStreamBytesAvailable(StreamBuffer_t *stream_);
-void xStreamReset(StreamBuffer_t *stream_);
-Base_t xStreamIsEmpty(StreamBuffer_t *stream_);
-Base_t xStreamIsFull(StreamBuffer_t *steam_);
+void xStreamDelete(const StreamBuffer_t *stream_);
+Base_t xStreamSend(StreamBuffer_t *stream_, const Byte_t byte_);
+Byte_t *xStreamReceive(const StreamBuffer_t *stream_, HalfWord_t *bytes_);
+HalfWord_t xStreamBytesAvailable(const StreamBuffer_t *stream_);
+void xStreamReset(const StreamBuffer_t *stream_);
+Base_t xStreamIsEmpty(const StreamBuffer_t *stream_);
+Base_t xStreamIsFull(const StreamBuffer_t *steam_);
 
 #ifdef __cplusplus
 }

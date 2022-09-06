@@ -62,7 +62,7 @@ StreamBuffer_t *xStreamCreate() {
 
 /* The xStreamDelete() system call will delete a stream. Streams
    are fast for sending streams of bytes between tasks. */
-void xStreamDelete(StreamBuffer_t *stream_) {
+void xStreamDelete(const StreamBuffer_t *stream_) {
 
 
   /* Assert if the heap fails its health check or if the stream pointer the end-user
@@ -90,7 +90,7 @@ void xStreamDelete(StreamBuffer_t *stream_) {
    the designated stream. Sending to a stream must be done
    one byte at a time. However, receiving from a stream
    will return all available bytes in a stream. */
-Base_t xStreamSend(StreamBuffer_t *stream_, Byte_t byte_) {
+Base_t xStreamSend(StreamBuffer_t *stream_, const Byte_t byte_) {
 
   Base_t ret = RETURN_FAILURE;
 
@@ -128,7 +128,7 @@ Base_t xStreamSend(StreamBuffer_t *stream_, Byte_t byte_) {
 
 /* The xStreamReceive() system call will receive all waiting bytes
    in the stream. */
-Byte_t *xStreamReceive(StreamBuffer_t *stream_, HalfWord_t *bytes_) {
+Byte_t *xStreamReceive(const StreamBuffer_t *stream_, HalfWord_t *bytes_) {
 
 
   Byte_t *ret = NULL;
@@ -189,7 +189,7 @@ Byte_t *xStreamReceive(StreamBuffer_t *stream_, HalfWord_t *bytes_) {
 
 /* The xStreamBytesAvailable() system call will return the number
    of waiting bytes in the stream. */
-HalfWord_t xStreamBytesAvailable(StreamBuffer_t *stream_) {
+HalfWord_t xStreamBytesAvailable(const StreamBuffer_t *stream_) {
 
 
   HalfWord_t ret = zero;
@@ -220,7 +220,7 @@ HalfWord_t xStreamBytesAvailable(StreamBuffer_t *stream_) {
 
 /* The xStreamReset() system call will reset the stream and clear
    its buffer of all waiting bytes. */
-void xStreamReset(StreamBuffer_t *stream_) {
+void xStreamReset(const StreamBuffer_t *stream_) {
 
 
 
@@ -252,7 +252,7 @@ void xStreamReset(StreamBuffer_t *stream_) {
 
 /* The xStreamIsEmpty() system call will return true if the stream
    buffer is empty (i.e., zero in size). */
-Base_t xStreamIsEmpty(StreamBuffer_t *stream_) {
+Base_t xStreamIsEmpty(const StreamBuffer_t *stream_) {
 
   Base_t ret = true;
 
@@ -283,7 +283,7 @@ Base_t xStreamIsEmpty(StreamBuffer_t *stream_) {
 
 /* The xStreamIsFull() system call will return true if the stream
    buffer is full (i.e., size is equal to CONFIG_STREAM_BUFFER_BYTES) */
-Base_t xStreamIsFull(StreamBuffer_t *stream_) {
+Base_t xStreamIsFull(const StreamBuffer_t *stream_) {
 
   Base_t ret = false;
 

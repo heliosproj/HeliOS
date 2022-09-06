@@ -47,7 +47,7 @@ SysFlags_t sysFlags = {
 
    __SystemAssert__() should NOT be called directly because it is an INTERNAL
    function name and may change in future releases. Instead use the SYSASSERT() C macro. */
-void __SystemAssert__(const char *file_, int line_) {
+void __SystemAssert__(const char *file_, const int line_) {
 
   /* Do not modify this system call directly. Define
      the behavior (code) through the CONFIG_SYSTEM_ASSERT_BEHAVIOR
