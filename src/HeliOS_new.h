@@ -63,8 +63,8 @@ typedef enum {
 } SchedulerState_t;
 
 /**
- * @brief 
- * 
+ * @brief
+ *
  */
 typedef SchedulerState_t xSchedulerState;
 
@@ -695,10 +695,10 @@ xTaskInfo xTaskGetTaskInfo(const xTask task_);
 xTaskInfo xTaskGetAllTaskInfo(xBase *tasks_);
 
 /**
- * @brief 
- * 
- * @param task_ 
- * @return xTaskState 
+ * @brief
+ *
+ * @param task_
+ * @return xTaskState
  */
 xTaskState xTaskGetTaskState(const xTask task_);
 
@@ -814,9 +814,9 @@ void xTaskResumeAll(void);
 void xTaskSuspendAll(void);
 
 /**
- * @brief 
- * 
- * @return xSchedulerState 
+ * @brief
+ *
+ * @return xSchedulerState
  */
 xSchedulerState xTaskGetSchedulerState(void);
 
