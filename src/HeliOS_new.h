@@ -36,34 +36,61 @@
 /* START OF ENUM TYPES */
 
 /**
- * @brief
+ * @brief Enumerated data type for task states
+ *
+ * A task can be in one of four possible states as defined by the TaskState_t
+ * enumerated data type. The state a task is in is changed by calling xTaskResume(),
+ * xTaskSuspend() or xTaskWait(). The HeliOS scheduler will only schedule, for execution,
+ * tasks in either the TaskStateRunning or TaskStateWaiting state. TaskState_t should
+ * be declared (i.e., used) as xTaskState.
+ *
+ * @sa xTaskState
+ * @sa xTaskResume()
+ * @sa xTaskSuspend()
+ * @sa xTaskWait()
+ * @sa xTaskGetTaskState()
  *
  */
 typedef enum {
-  TaskStateError,
-  TaskStateSuspended,
-  TaskStateRunning,
-  TaskStateWaiting
+  TaskStateError,     /**< Returned by xTaskGetTaskState() when the task cannot be found */
+  TaskStateSuspended, /**< State a task is in when it is first created OR after calling xTaskSuspend() - tasks in the TaskStateSuspended state will not be scheduled for execution*/
+  TaskStateRunning,   /**< State a task is in after calling xTaskResume() - tasks in the TaskStateRunning state will be scheduled co-operatively */
+  TaskStateWaiting    /**< State a task is in after calling xTaskWait() - tasks in the TaskStateWaiting state will be scheduled as event driven */
 } TaskState_t;
 
 /**
- * @brief
+ * @brief Enumerated data type for task states
+ *
+ * @sa TaskState_t
  *
  */
 typedef TaskState_t xTaskState;
 
 /**
- * @brief
+ * @brief Enumerated data type for scheduler state
+ *
+ * The scheduler can be in one of three possible states as defined by the SchedulerState_t
+ * enumerated data type. The state the scheduler is in is changed by calling xTaskSuspendAll()
+ * and xTaskResumeAll(). The state the scheduler is in can be obtained by calling xTaskGetSchedulerState().
+ * SchedulerState_t should be declared (i.e., used) as xSchedulerState.
+ *
+ * @sa xSchedulerState
+ * @sa xTaskSuspendAll()
+ * @sa xTaskResumeAll()
+ * @sa xTaskGetSchedulerState()
+ * @sa xTaskStartScheduler()
  *
  */
 typedef enum {
-  SchedulerStateError,
-  SchedulerStateSuspended,
-  SchedulerStateRunning
+  SchedulerStateError,     /**< Not used - reserved for future use */
+  SchedulerStateSuspended, /**< State the scheduler is in after calling xTaskSuspendAll() - xTaskStartScheduler() will stop scheduling tasks for execution and relinquish control when xTaskSuspendAll() is called */
+  SchedulerStateRunning    /**< State the scheduler is in after calling xTaskResumeAll() - xTaskStartScheduler() will continue to schedule tasks for execution until xTaskSuspendAll() is called */
 } SchedulerState_t;
 
 /**
- * @brief
+ * @brief Enumerated data type for the scheduler state
+ *
+ * @sa SchedulerState_t
  *
  */
 typedef SchedulerState_t xSchedulerState;
