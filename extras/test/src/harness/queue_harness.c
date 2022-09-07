@@ -29,9 +29,13 @@
 
 void queue_harness(void) {
 
+  Queue_t *queue01;
+
+  QueueMessage_t *queue02;
+
   unit_begin("xQueueCreate()");
 
-  Queue_t *queue01 = NULL;
+  queue01 = NULL;
 
   queue01 = xQueueCreate(0x4);
 
@@ -101,7 +105,7 @@ void queue_harness(void) {
 
   unit_begin("xQueuePeek()");
 
-  QueueMessage_t *queue02 = NULL;
+  queue02 = NULL;
 
   queue02 = xQueuePeek(queue01);
 

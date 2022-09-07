@@ -30,10 +30,24 @@
 
 void task_harness(void) {
 
+  Task_t *task01;
+  Task_t *task02;
+  Base_t task03;
+  TaskRunTimeStats_t *task04;
+  Base_t task05;
+  Base_t task06;
+  TaskInfo_t *task07;
+  Char_t *task08;
+  TaskNotification_t *task09;
+
+  Task_t *task10 = NULL;
+  Task_t *task11 = NULL;
+  Task_t *task12 = NULL;
+
 
   unit_begin("xTaskCreate()");
 
-  Task_t *task01 = NULL;
+  task01 = NULL;
 
   task01 = xTaskCreate((Char_t *)"TASK01", task_harness_task, NULL);
 
@@ -45,7 +59,7 @@ void task_harness(void) {
 
   unit_begin("xTaskGetHandleByName()");
 
-  Task_t *task02 = NULL;
+  task02 = NULL;
 
   task02 = xTaskGetHandleByName((Char_t *)"TASK01");
 
@@ -59,7 +73,7 @@ void task_harness(void) {
 
   task02 = NULL;
 
-  Base_t task03 = 0x0;
+  task03 = 0x0;
 
   task03 = xTaskGetId(task01);
 
@@ -73,8 +87,8 @@ void task_harness(void) {
 
   unit_begin("xTaskGetAllRunTimeStats()");
 
-  TaskRunTimeStats_t *task04 = NULL;
-  Base_t task05 = 0;
+  task04 = NULL;
+  task05 = 0;
 
   task04 = xTaskGetAllRunTimeStats(&task05);
 
@@ -108,7 +122,7 @@ void task_harness(void) {
 
   unit_begin("xTaskGetNumberOfTasks()");
 
-  Base_t task06 = 0;
+  task06 = 0;
 
   task06 = xTaskGetNumberOfTasks();
 
@@ -120,7 +134,7 @@ void task_harness(void) {
 
   unit_begin("xTaskGetTaskInfo()");
 
-  TaskInfo_t *task07 = NULL;
+  task07 = NULL;
 
   task07 = xTaskGetTaskInfo(task01);
 
@@ -170,8 +184,6 @@ void task_harness(void) {
 
   unit_begin("xTaskGetName()");
 
-  Char_t *task08;
-
   task08 = xTaskGetName(task01);
 
   unit_try(NULL != task08);
@@ -218,7 +230,7 @@ void task_harness(void) {
 
   unit_begin("xTaskNotifyTake()");
 
-  TaskNotification_t *task09 = NULL;
+  task09 = NULL;
 
   unit_try(RETURN_SUCCESS == xTaskNotifyGive(task01, 0x7, (Char_t *)"MESSAGE"));
 
@@ -314,7 +326,7 @@ void task_harness(void) {
 
   xTaskDelete(task01);
 
-  Task_t *task10 = NULL;
+  task10 = NULL;
 
   task10 = xTaskCreate((Char_t *)"TASK10", task_harness_task, NULL);
 
@@ -338,7 +350,7 @@ void task_harness(void) {
 
   xTaskResumeAll();
 
-  Task_t *task11 = NULL;
+  task11 = NULL;
 
   task11 = xTaskCreate((Char_t *)"TASK11", task_harness_task, NULL);
 
@@ -367,7 +379,7 @@ void task_harness(void) {
 
   xTaskResumeAll();
 
-  Task_t *task12 = NULL;
+  task12 = NULL;
 
   task12 = xTaskCreate((Char_t *)"TASK12", task_harness_task2, NULL);
 

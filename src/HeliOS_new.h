@@ -50,11 +50,23 @@ typedef enum {
  * @brief
  *
  */
+typedef TaskState_t xTaskState;
+
+/**
+ * @brief
+ *
+ */
 typedef enum {
   SchedulerStateError,
   SchedulerStateSuspended,
   SchedulerStateRunning
 } SchedulerState_t;
+
+/**
+ * @brief 
+ * 
+ */
+typedef SchedulerState_t xSchedulerState;
 
 /* START OF BASIC TYPES */
 
@@ -683,12 +695,12 @@ xTaskInfo xTaskGetTaskInfo(const xTask task_);
 xTaskInfo xTaskGetAllTaskInfo(xBase *tasks_);
 
 /**
- * @brief
- *
- * @param task_
- * @return TaskState_t
+ * @brief 
+ * 
+ * @param task_ 
+ * @return xTaskState 
  */
-TaskState_t xTaskGetTaskState(const xTask task_);
+xTaskState xTaskGetTaskState(const xTask task_);
 
 /**
  * @brief
@@ -802,11 +814,11 @@ void xTaskResumeAll(void);
 void xTaskSuspendAll(void);
 
 /**
- * @brief
- *
- * @return SchedulerState_t
+ * @brief 
+ * 
+ * @return xSchedulerState 
  */
-SchedulerState_t xTaskGetSchedulerState(void);
+xSchedulerState xTaskGetSchedulerState(void);
 
 /**
  * @brief

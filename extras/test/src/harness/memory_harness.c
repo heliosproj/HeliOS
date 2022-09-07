@@ -33,10 +33,18 @@ static MemoryTest_t tests[0x20u];
 
 void memory_harness(void) {
 
+  Size_t i;
+  Size_t used;
+  Base_t *mem01;
+  MemoryRegionStats_t *mem02;
+  MemoryRegionStats_t *mem03;
+
+  Task_t *mem04 = NULL;
+
   unit_begin("Unit test for memory region defragmentation routine");
 
-  Size_t i = zero;
-  Size_t used = zero;
+  i = zero;
+  used = zero;
 
   for (i = 0; i < 0x20u; i++) {
     tests[i].size = sizes[i];
@@ -74,7 +82,7 @@ void memory_harness(void) {
 
   unit_begin("xMemAlloc()");
 
-  Base_t *mem01 = NULL;
+  mem01 = NULL;
 
   mem01 = (Base_t *)xMemAlloc(0x32000u);
 
@@ -102,7 +110,7 @@ void memory_harness(void) {
 
   unit_begin("xMemGetHeapStats()");
 
-  MemoryRegionStats_t *mem02 = NULL;
+  mem02 = NULL;
 
   mem02 = xMemGetHeapStats();
 
@@ -128,9 +136,9 @@ void memory_harness(void) {
 
   unit_begin("xMemGetKernelStats()");
 
-  MemoryRegionStats_t *mem03 = NULL;
+  mem03 = NULL;
 
-  Task_t *mem04 = NULL;
+  mem04 = NULL;
 
   mem04 = xTaskCreate((Char_t *)"NONE", memory_harness_task, NULL);
 

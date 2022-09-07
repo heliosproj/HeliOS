@@ -30,9 +30,11 @@
 
 void timer_harness(void) {
 
+  Timer_t* timer01 = NULL;
+
   unit_begin("xTimerCreate()");
 
-  Timer_t * timer01 = NULL;
+  timer01 = NULL;
 
   timer01 = xTimerCreate(0x3E8);
 

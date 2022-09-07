@@ -29,6 +29,19 @@
 
 void device_harness(void) {
 
+
+  Size_t bytes1;
+
+  Addr_t *data1;
+
+  Size_t bytes2;
+
+  Addr_t *data2;
+
+  Word_t *data3;
+
+  Word_t *data4;
+
   unit_begin("xDeviceRegisterDevice()");
 
 
@@ -40,9 +53,9 @@ void device_harness(void) {
 
   unit_begin("xDeviceWrite()");
 
-  Size_t bytes1 = 0x26u;
+  bytes1 = 0x26u;
 
-  Addr_t *data1 = NULL;
+  data1 = NULL;
 
   data1 = (Byte_t *)xMemAlloc(bytes1);
 
@@ -66,9 +79,9 @@ void device_harness(void) {
 
   unit_begin("xDeviceRead()");
 
-  Size_t bytes2 = 0x26u;
+  bytes2 = 0x26u;
 
-  Addr_t *data2 = NULL;
+  data2 = NULL;
 
   data2 = (Byte_t *)xMemAlloc(bytes2);
 
@@ -86,8 +99,6 @@ void device_harness(void) {
 
   unit_begin("xDeviceSimpleWrite()");
 
-  Word_t *data3;
-
   data3 = (Word_t *)xMemAlloc(sizeof(Word_t));
 
   *data3 = 0xFAFAu;
@@ -101,8 +112,6 @@ void device_harness(void) {
 
 
   unit_begin("xDeviceSimpleRead()");
-
-  Word_t *data4;
 
   data4 = (Word_t *)xMemAlloc(sizeof(Word_t));
 
