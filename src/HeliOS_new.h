@@ -99,14 +99,14 @@ typedef SchedulerState_t xSchedulerState;
 
 /**
  * @brief Data type for the task paramater
- * 
+ *
  * The TaskParm_t type is used to pass a paramater to a task at the time of task
  * creation using xTaskCreate(). A task paramater is a pointer of type void and
  * can point to any number of types, arrays and/or data structures that will be
  * passed to the task. It is up to the end-user to manage, allocate and free the
  * memory related to these objects using xMemAlloc() and xMemFree(). TaskParm_t
  * should be declared as xTaskParm.
- * 
+ *
  * @sa xTaskParm
  * @sa xTaskCreate()
  * @sa xMemAlloc()
@@ -117,7 +117,7 @@ typedef VOID_TYPE TaskParm_t;
 
 /**
  * @brief Data type for the task paramater
- * 
+ *
  * @sa TaskParm_t
  *
  */
@@ -125,14 +125,14 @@ typedef TaskParm_t *xTaskParm;
 
 /**
  * @brief Data type for the base type
- * 
+ *
  * The Base_t type is a simple data type often used as an argument or return type
  * for system calls when the value is known not to exceed its 8-bit width and no
  * data structure requirements exist. There are no guarantees the Base_t will
  * always be 8-bits wide. If an 8-bit data type is needed that is guaranteed
  * to remain 8-bits wide, the Byte_t data type should be used. Base_t should be
  * declared as xBase.
- * 
+ *
  * @sa xBase
  * @sa Byte_t
  *
@@ -141,7 +141,7 @@ typedef UINT8_TYPE Base_t;
 
 /**
  * @brief Data type for the base type
- * 
+ *
  * @sa Base_t
  *
  */
@@ -149,10 +149,10 @@ typedef Base_t xBase;
 
 /**
  * @brief Data type for an 8-bit wide byte
- * 
+ *
  * The Byte_t type is an 8-bit wide data type and is guaranteed to always be
  * 8-bits wide. Byte_t should be declared as xByte.
- * 
+ *
  * @sa xByte
  *
  */
@@ -160,7 +160,7 @@ typedef UINT8_TYPE Byte_t;
 
 /**
  * @brief Data type for an 8-bit wide byte
- * 
+ *
  * @sa Byte_t
  *
  */
@@ -168,13 +168,13 @@ typedef Byte_t xByte;
 
 /**
  * @brief Data type for a pointer to an address
- * 
+ *
  * The Addr_t type is a pointer of type void and is used to pass
  * addresses between the end-user application and system calls. It is not
  * necessary to use the Addr_t ype within the end-user application as long as
  * the type is not used to interact with the kernel through system calls. Addr_t
  * should be declared as xAddr.
- * 
+ *
  * @sa xAddr
  *
  */
@@ -182,7 +182,7 @@ typedef VOID_TYPE Addr_t;
 
 /**
  * @brief Data type for a pointer to an address
- * 
+ *
  * @sa Addr_t
  *
  */
@@ -190,11 +190,11 @@ typedef Addr_t *xAddr;
 
 /**
  * @brief Data type for the storage requirements of an object in memory
- * 
+ *
  * The Size_t type is used for the storage requirements of an object in
  * memory and is always represented in bytes. Size_t should be declared as
  * xSize.
- * 
+ *
  * @sa xSize
  *
  */
@@ -202,7 +202,7 @@ typedef SIZE_TYPE Size_t;
 
 /**
  * @brief Data type for the storage requirements of an object in memory
- * 
+ *
  * @sa Size_t
  *
  */
@@ -210,10 +210,10 @@ typedef Size_t xSize;
 
 /**
  * @brief Data type for a 16-bit half word
- * 
+ *
  * The HalfWord_t type is a 16-bit wide data type and is guaranteed to always be
  * 16-bits wide. HalfWord_t should be declared as xHalfWord.
- * 
+ *
  * @sa xHalfWord
  *
  */
@@ -221,7 +221,7 @@ typedef UINT16_TYPE HalfWord_t;
 
 /**
  * @brief Data type for a 16-bit half word
- * 
+ *
  * @sa HalfWord_t
  *
  */
@@ -229,10 +229,10 @@ typedef HalfWord_t xHalfWord;
 
 /**
  * @brief Data type for a 32-bit word
- * 
+ *
  * The Word_t type is a 32-bit wide data type and is guaranteed to always be
  * 32-bits wide. Word_t should be declared as xWord.
- * 
+ *
  * @sa xWord
  *
  */
@@ -240,7 +240,7 @@ typedef UINT32_TYPE Word_t;
 
 /**
  * @brief Data type for a 32-bit word
- * 
+ *
  * @sa Word_t
  *
  */
@@ -248,13 +248,13 @@ typedef Word_t xWord;
 
 /**
  * @brief Data type for system ticks
- * 
+ *
  * The Ticks_t type is used to store ticks from the system clock. Ticks
  * is not bound to any one unit of measure for time though most systems
  * are configured for millisecond resolution, milliseconds is not guaranteed
  * and is dependent on the system clock frequency and prescaler. Ticks_t should
  * be declared as xTicks.
- * 
+ *
  * @sa xTicks
  *
  */
@@ -262,7 +262,7 @@ typedef UINT32_TYPE Ticks_t;
 
 /**
  * @brief Data type for system ticks
- * 
+ *
  * @sa Ticks_t
  *
  */
@@ -270,11 +270,11 @@ typedef Ticks_t xTicks;
 
 /**
  * @brief Data type for a character
- * 
+ *
  * The Char_t data type is used to store an 8-bit char and is
  * typically used for char arrays for ASCII names (e.g., task name).
  * Char_t should be declared as xChar.
- * 
+ *
  * @sa xChar
  *
  */
@@ -282,70 +282,132 @@ typedef UCHAR_TYPE Char_t;
 
 /**
  * @brief Data type for a character
- * 
+ *
  * @sa Data_t
  *
  */
 typedef Char_t xChar;
 
-/* START OF STUB TYPES */
+/* START OF HANDLE TYPES */
 
 /**
- * @brief
+ * @brief Data type for a device handle
+ *
+ * The Device_t data type is used as a device handle. The device handle
+ * is created when xDeviceRegisterDevice() is called. For more information
+ * about devices and device drivers, see xDeviceRegisterDevice() for more
+ * information. Device_t should be declared as xDevice.
+ *
+ * @sa xDevice
+ * @sa xDeviceRegisterDevice()
  *
  */
 typedef VOID_TYPE Device_t;
 
 /**
- * @brief
+ * @brief Data type for a device handle
+ *
+ * @sa Device_t
  *
  */
 typedef Device_t *xDevice;
 
 /**
- * @brief
+ * @brief Data type for a task handle
+ *
+ * The Task_t data type is used as a task handle. The task handle is created
+ * when xTaskCreate() is called. For more information about tasks, see xTaskCreate().
+ * Task_t should be declared as xTask.
+ *
+ * @sa xTask
+ * @sa xTaskCreate()
+ * @attention The memory referenced by the task handle must be freed by calling xTaskDelete()
+ * @sa xTaskDelete()
  *
  */
 typedef VOID_TYPE Task_t;
 
 /**
- * @brief
+ * @brief Data type for a task handle
+ *
+ * @sa Task_t
+ * @attention The memory referenced by the task handle must be freed by calling xTaskDelete()
+ * @sa xTaskDelete()
  *
  */
 typedef Task_t *xTask;
 
 /**
- * @brief
+ * @brief Data type for a stream buffer handle
+ *
+ * The StreamBuffer_t data type is used as a stream buffer handle. The stream buffer
+ * handle is created when xStreamCreate() is called. For more information about
+ * stream buffers, see xStreamCreate(). Stream_t should be declared as xStream.
+ *
+ * @sa xStream
+ * @sa xStreamCreate()
+ * @attention The memory referenced by the stream buffer handle must be freed by calling xStreamDelete()
+ * @sa xStreamDelete()
  *
  */
 typedef VOID_TYPE StreamBuffer_t;
 
 /**
- * @brief
+ * @brief Data type for a stream buffer handle
+ *
+ * @sa StreamBuffer_t
+ * @attention The memory referenced by the stream buffer handle must be freed by calling xStreamDelete()
+ * @sa xStreamDelete()
  *
  */
 typedef StreamBuffer_t *xStreamBuffer;
 
 /**
- * @brief
+ * @brief Data type for a queue handle
+ *
+ * The Queue_t data type is used as a queue handle. The queue handle is created
+ * when xQueueCreate() is called. For more information about queues, see xQueueCreate().
+ * Queue_t should be declared as xQueue.
+ *
+ * @sa xQueue
+ * @sa xQueueCreate()
+ * @attention The memory referenced by the queue handle must be freed by calling xQueueDelete()
+ * @sa xQueueDelete()
  *
  */
 typedef VOID_TYPE Queue_t;
 
 /**
- * @brief
+ * @brief Data type for a queue handle
+ * 
+ * @sa Queue_t
+ * @attention The memory referenced by the queue handle must be freed by calling xQueueDelete()
+ * @sa xQueueDelete()
  *
  */
 typedef Queue_t *xQueue;
 
 /**
- * @brief
+ * @brief Data type for a timer handle
+ * 
+ * The Timer_t data type is used as a timer handle. The timer handle is created when xTimerCreate()
+ * is called. For more information about timers, see xTimerCreate(). Timer_t should be declared
+ * as xTimer.
+ * 
+ * @sa xTimer
+ * @sa xTimerCreate()
+ * @attention The memory referenced by the timer handle must be freed by calling xTimerDelete()
+ * @sa xTimerDelete()
  *
  */
 typedef VOID_TYPE Timer_t;
 
 /**
- * @brief
+ * @brief Data type for a timer handle
+ * 
+ * @sa Timer_t
+ * @attention The memory referenced by the timer handle must be freed by calling xTimerDelete()
+ * @sa xTimerDelete()
  *
  */
 typedef Timer_t *xTimer;
