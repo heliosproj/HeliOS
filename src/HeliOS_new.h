@@ -415,7 +415,22 @@ typedef Timer_t *xTimer;
 /* START OF STRUCT TYPES */
 
 /**
- * @brief
+ * @brief Data structure for a direct to task notification
+ * 
+ * The TaskNotification_t data structure is used by xTaskNotifyGive() and xTaskNotifyTake()
+ * to send and receive direct to task notifications. Direct to task notifications are part of
+ * the event-driven multitasking model. A direct to task notifcation may be received by even-driven
+ * and co-operative tasks alike. However, the benefit of direct to task notifications may only be
+ * realized by tasks scheduled as event-driven. In order to wait for a direct to task notification,
+ * the task must be in a "waiting" state which is set by xTaskWait(). The TaskNotification_t type
+ * should be declared as xTaskNotification.
+ * 
+ * @sa xTaskNotification
+ * @attention The memory allocated for the data struture must be freed by calling xMemFree()
+ * @sa xMemFree()
+ * @sa xTaskNotifyGive()
+ * @sa xTaskNotifyTake()
+ * @sa xTaskWait()
  *
  */
 typedef struct TaskNotification_s {
