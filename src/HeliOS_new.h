@@ -379,7 +379,7 @@ typedef VOID_TYPE Queue_t;
 
 /**
  * @brief Data type for a queue handle
- * 
+ *
  * @sa Queue_t
  * @attention The memory referenced by the queue handle must be freed by calling xQueueDelete()
  * @sa xQueueDelete()
@@ -389,11 +389,11 @@ typedef Queue_t *xQueue;
 
 /**
  * @brief Data type for a timer handle
- * 
+ *
  * The Timer_t data type is used as a timer handle. The timer handle is created when xTimerCreate()
  * is called. For more information about timers, see xTimerCreate(). Timer_t should be declared
  * as xTimer.
- * 
+ *
  * @sa xTimer
  * @sa xTimerCreate()
  * @attention The memory referenced by the timer handle must be freed by calling xTimerDelete()
@@ -404,7 +404,7 @@ typedef VOID_TYPE Timer_t;
 
 /**
  * @brief Data type for a timer handle
- * 
+ *
  * @sa Timer_t
  * @attention The memory referenced by the timer handle must be freed by calling xTimerDelete()
  * @sa xTimerDelete()
@@ -416,15 +416,15 @@ typedef Timer_t *xTimer;
 
 /**
  * @brief Data structure for a direct to task notification
- * 
+ *
  * The TaskNotification_t data structure is used by xTaskNotifyGive() and xTaskNotifyTake()
  * to send and receive direct to task notifications. Direct to task notifications are part of
- * the event-driven multitasking model. A direct to task notifcation may be received by even-driven
+ * the event-driven multitasking model. A direct to task notifcation may be received by event-driven
  * and co-operative tasks alike. However, the benefit of direct to task notifications may only be
  * realized by tasks scheduled as event-driven. In order to wait for a direct to task notification,
  * the task must be in a "waiting" state which is set by xTaskWait(). The TaskNotification_t type
  * should be declared as xTaskNotification.
- * 
+ *
  * @sa xTaskNotification
  * @attention The memory allocated for the data struture must be freed by calling xMemFree()
  * @sa xMemFree()
@@ -432,15 +432,21 @@ typedef Timer_t *xTimer;
  * @sa xTaskNotifyTake()
  * @sa xTaskWait()
  *
+ * @attention The notification value is *NOT* null terminated and thus Standard C Library string functions
+ * such as strcmp(), strcpy() and strlen(), which expect a null terminated char array, must not be used to
+ * manipulate the notification value.
+ *
  */
 typedef struct TaskNotification_s {
-  Base_t notificationBytes;
-  Char_t notificationValue[CONFIG_NOTIFICATION_VALUE_BYTES];
+  Base_t notificationBytes;                                  /**< The length in bytes of the notification value which cannot exceed CONFIG_NOTIFICATION_VALUE_BYTES */
+  Char_t notificationValue[CONFIG_NOTIFICATION_VALUE_BYTES]; /**< The notification value whose length is specified by the notification bytes member */
 } TaskNotification_t;
 typedef TaskNotification_t *xTaskNotification;
 
 /**
- * @brief
+ * @brief Data structure for task runtime statistics
+ *
+ * The TaskRunTimeStats_t ...
  *
  */
 typedef struct TaskRunTimeStats_s {
