@@ -434,54 +434,124 @@ typedef Timer_t *xTimer;
  *
  * @attention The notification value is *NOT* null terminated and thus Standard C Library string functions
  * such as strcmp(), strcpy() and strlen(), which expect a null terminated char array, must not be used to
- * manipulate the notification value.
+ * manipulate the notification value
  *
  */
 typedef struct TaskNotification_s {
   Base_t notificationBytes;                                  /**< The length in bytes of the notification value which cannot exceed CONFIG_NOTIFICATION_VALUE_BYTES */
   Char_t notificationValue[CONFIG_NOTIFICATION_VALUE_BYTES]; /**< The notification value whose length is specified by the notification bytes member */
 } TaskNotification_t;
+
+/**
+ * @brief Data structure for a direct to task notification
+ *
+ * @sa TaskNotification_t
+ * @attention The memory allocated for the data struture must be freed by calling xMemFree()
+ * @sa xMemFree()
+ *
+ */
 typedef TaskNotification_t *xTaskNotification;
 
 /**
  * @brief Data structure for task runtime statistics
  *
- * The TaskRunTimeStats_t ...
+ * The TaskRunTimeStats_t data structure is used by xTaskGetTaskRunTimeStats() and xTaskGetAllRuntimeStats() to obtain
+ * runtime statistics about a task. The TaskRunTimeStats_t type should be declared as xTaskRunTimeStats.
+ *
+ * @sa xTaskRunTimeStats
+ * @sa xTaskGetTaskRunTimeStats()
+ * @sa xTaskGetAllRunTimeStats()
+ * @attention The memory allocated for the data struture must be freed by calling xMemFree()
+ * @sa xMemFree()
  *
  */
 typedef struct TaskRunTimeStats_s {
-  Base_t id;
-  Ticks_t lastRunTime;
-  Ticks_t totalRunTime;
+  Base_t id;            /**< The ID of the task referenced by the task handle */
+  Ticks_t lastRunTime;  /**< The duration in ticks of the task's last runtime */
+  Ticks_t totalRunTime; /**< The duration in ticks of the task's total runtime */
 } TaskRunTimeStats_t;
+
+/**
+ * @brief Data structure for task runtime statistics
+ *
+ * @sa TaskRunTimeStats_t
+ * @attention The memory allocated for the data struture must be freed by calling xMemFree()
+ * @sa xMemFree()
+ *
+ */
 typedef TaskRunTimeStats_t *xTaskRunTimeStats;
 
 /**
- * @brief
+ * @brief Data structure for memory region statistics
+ *
+ * The MemoryRegionStats_t data structure is used by xMemGetHeapStats() and xMemGetKernelStats()
+ * to obtain statistics about either memory region. The MemoryRegionStats_t type should be declared
+ * as xMemoryRegionStats.
+ *
+ * @sa xMemoryRegionStats
+ * @sa xMemGetHeapStats()
+ * @sa xMemGetKernelStats()
+ * @attention The memory allocated for the data structure must be freed by calling xMemFree()
+ * @sa xMemFree()
  *
  */
 typedef struct MemoryRegionStats_s {
-  Word_t largestFreeEntryInBytes;
-  Word_t smallestFreeEntryInBytes;
-  Word_t numberOfFreeBlocks;
-  Word_t availableSpaceInBytes;
-  Word_t successfulAllocations;
-  Word_t successfulFrees;
-  Word_t minimumEverFreeBytesRemaining;
+  Word_t largestFreeEntryInBytes;       /**< The largest free entry in bytes */
+  Word_t smallestFreeEntryInBytes;      /**< The smallest free entry in bytes */
+  Word_t numberOfFreeBlocks;            /**< The number of free blocks - see CONFIG_MEMORY_REGION_BLOCK_SIZE for block size in bytes */
+  Word_t availableSpaceInBytes;         /**< The amount of free memory in bytes (i.e., numberOfFreeBlocks * CONFIG_MEMORY_REGION_BLOCK_SIZE) */
+  Word_t successfulAllocations;         /**< Number of successful memory allocations */
+  Word_t successfulFrees;               /**< Number of successful memory "frees" */
+  Word_t minimumEverFreeBytesRemaining; /**< Lowest water lever since system initialization of free bytes of memory */
 } MemoryRegionStats_t;
+
+/**
+ * @brief Data structure for memory region statistics
+ *
+ * @sa MemoryRegionStats_t
+ * @attention The memory allocated for the data struture must be freed by calling xMemFree()
+ * @sa xMemFree()
+ *
+ */
 typedef MemoryRegionStats_t *xMemoryRegionStats;
 
 /**
- * @brief
+ * @brief Data structure for information about a task
+ *
+ * The TaskInfo_t structure is similar to xTaskRuntimeStats_t in that it contains runtime statistics for
+ * a task. However, TaskInfo_t also contains additional details about a task such as its ASCII name
+ * and state. The TaskInfo_t structure is returned by xTaskGetTaskInfo() and xTaskGetAllTaskInfo().
+ * If only runtime statistics are needed, then TaskRunTimeStats_t should be used because of its smaller
+ * memory footprint. The TaskInfo_t should be declared as xTaskInfo
+ *
+ * @sa xTaskInfo
+ * @sa xTaskGetTaskInfo()
+ * @sa xTaskGetAllTaskInfo()
+ * @sa CONFIG_TASK_NAME_BYTES
+ *
+ * @attention The memory allocated for the data structure must be freed by calling xMemFree()
+ *
+ * @attention The task name is *NOT* null terminated and thus Standard C Library string functions
+ * such as strcmp(), strcpy() and strlen(), which expect a null terminated char array, must not be used to
+ * manipulate the task name
  *
  */
 typedef struct TaskInfo_s {
-  Base_t id;
-  Char_t name[CONFIG_TASK_NAME_BYTES];
-  TaskState_t state;
-  Ticks_t lastRunTime;
-  Ticks_t totalRunTime;
+  Base_t id;                           /**< The task identifier which is used by xTaskGetHandleById() to return the task handle */
+  Char_t name[CONFIG_TASK_NAME_BYTES]; /**< The ASCII name of the task which is used by xTaskGetHandleByName() to return the task handle - this is *NOT* a null terminated char array */
+  TaskState_t state;                   /**< The state the task is in which is one of four states specified in the TaskState_t enumerated data type */
+  Ticks_t lastRunTime;                 /**< The duration in ticks of the task's last runtime */
+  Ticks_t totalRunTime;                /**< The duration in ticks of the task's total runtime */
 } TaskInfo_t;
+
+/**
+ * @brief Data structure for information about a task
+ *
+ * @sa TasInfo_t
+ * @attention The memory allocated for the data struture must be freed by calling xMemFree()
+ * @sa xMemFree()
+ *
+ */
 typedef TaskInfo_t *xTaskInfo;
 
 /**
