@@ -654,10 +654,16 @@ extern "C" {
 xBase xDeviceRegisterDevice(xBase (*device_self_register_)());
 
 /**
- * @brief
+ * @brief System call to check if a device is available
+ * 
+ * The xDeviceIsAvailable() system call checks to see if a device driver is "available", generally
+ * for a read, write or read/write operation. What "available" means is up to the device driver author and
+ * may change based on what mode the device driver is in. For example, if the device driver is in read-only
+ * mode, then xDeviceIsAvailable() may return "true" if data is ready to be read from the device. A device
+ * driver template and pre-packaged device drivers can be found in /drivers.
  *
- * @param uid_
- * @return xBase
+ * @param uid_ The universal identifier of the driver
+ * @return xBase If the device driver is "available", then "true" is returned. Otherwise "false" is returned.
  */
 xBase xDeviceIsAvailable(const xHalfWord uid_);
 
