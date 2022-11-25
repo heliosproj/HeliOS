@@ -641,7 +641,7 @@ extern "C" {
  * it cannot be un-registered - it can only be placed in a suspended state which is done by calling
  * xDeviceConfigDevice(). However, as with most aspects of the device driver model in HeliOS, it is
  * important to note that the implementation of the device state and mode is up to the device driver
- * author. A quick word about device driver universal identifiers (uid). A device driver uid *MUST* be
+ * author. A quick word about device driver unique identifiers (uid). A device driver uid *MUST* be
  * a globally unique identifier. No two device drivers in the same application can share the same uid.
  * This is best achieved by ensuring the device driver author selects a uid for his device driver
  * that is not in use by another device driver. A device driver template and pre-packaged device drivers
@@ -662,36 +662,51 @@ xBase xDeviceRegisterDevice(xBase (*device_self_register_)());
  * mode, then xDeviceIsAvailable() may return "true" if data is ready to be read from the device. A device
  * driver template and pre-packaged device drivers can be found in /drivers.
  *
- * @param uid_ The universal identifier of the driver
+ * @param uid_ The unique identifier of the device driver
  * @return xBase If the device driver is "available", then "true" is returned. Otherwise "false" is returned.
  */
 xBase xDeviceIsAvailable(const xHalfWord uid_);
 
 /**
- * @brief
+ * @brief System call to write fixed length data to a device
+ * 
+ * The xDeviceSimpleWrite() system call will write fixed length (one word) data to a device driver. Whether the
+ * data is written is dependent on the device driver mode, state and implementation of these features by the
+ * device driver author. A device driver template and pre-packaged device drives can be found in /drivers.
  *
- * @param uid_
- * @param data_
- * @return xBase
+ * @param uid_ The unique identifier of the device driver
+ * @param data_ A pointer to the data to be written to the device - because xDeviceSimpleWrite() uses fixed length data,
+ * the pointer must reference a word of memory and the memory *MUST* be located in the heap memory region
+ * @return xBase If the write operation was successful, RETURN_SUCCESS is returned. Otherwise RETURN_FAILURE is returned.
  */
 xBase xDeviceSimpleWrite(const xHalfWord uid_, xWord *data_);
 
 /**
- * @brief
+ * @brief System call to write variable length data to a device
+ * 
+ * The xDeviceWrite() system call will write variable length data to a device driver. Whether the data is written
+ * is dependent on the device driver mode, state and implementation of these features by the device driver author. A
+ * device driver template and pre-packaged drivers an be found in /drivers.
  *
- * @param uid_
- * @param size_
- * @param data_
- * @return xBase
+ * @param uid_ The unique identifier of the device driver
+ * @param size_ The length (i.e., size) of the data to be written to the device
+ * @param data_ A pointer to the data to be written to the device - because xDeviceWrite uses variable length data,
+ * the pointer must reference size_ bytes of memory and the memory *MUST* be located in the heap memory region
+ * @return xBase If the write operation was successful, RETURN_SUCCESS is returned. Otherwise RETURN_FAILURE is returned.
  */
 xBase xDeviceWrite(const xHalfWord uid_, xSize *size_, xAddr data_);
 
 /**
- * @brief
+ * @brief System call to read fixed length data from a device
+ * 
+ * The xDeviceSimpleRead() system call will read fixed length (one word) data from a device driver. Whether the data
+ * is read is dependent on the device driver mode, state and implementation of these features by the device driver
+ * author. A device driver template and pre-packaged device drivers can be found in /drivers.
  *
- * @param uid_
- * @param data_
- * @return xBase
+ * @param uid_ The unique identifier of the device driver
+ * @param data_ A pointer to the data buffer to read the data into from the device - because xDeviceSimpleRead() uses fixed
+ * length data, the pointer must reference a word of memory and the memory *MUST* be located in the heap memory region
+ * @return xBase If the read operation was successful, RETURN_SUCCESS is returned. Otherwise RETURN_FAILURE is returned.
  */
 xBase xDeviceSimpleRead(const xHalfWord uid_, xWord *data_);
 
