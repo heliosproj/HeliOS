@@ -582,25 +582,49 @@ typedef struct QueueMessage_s {
 
 /**
  * @brief Data structure for a queue message
- * 
+ *
  * @sa QueueMessage_t
  * @attention The memory allocated for the data structure must be freed by calling xMemFree()
  * @sa xMemFree()
- * 
+ *
  */
 typedef QueueMessage_t *xQueueMessage;
 
 /**
- * @brief
+ * @brief Data structure for information about the HeliOS system
+ *
+ * The SystemInfo_t data structure is used to store information about the HeliOS system and
+ * is returned by xSystemGetSystemInfo(). The SystemInfo_t structure should be declared as
+ * xSystemInfo.
+ *
+ * @sa xSystemInfo
+ * @sa xSystemGetSystemInfo()
+ * @sa OS_PRODUCT_NAME_SIZE
+ * @sa xMemFree()
+ *
+ * @attention The memory allocated for the data structure must be freed by calling xMemFree()
+ *
+ * @attention The product name is *NOT* null terminated and thus Standard C Library string functions
+ * such as strcmp(), strcpy() and strlen(), which expect a null terminated char array, must not be used to
+ * manipulate the product name
  *
  */
 typedef struct SystemInfo_s {
-  Char_t productName[OS_PRODUCT_NAME_SIZE];
-  Base_t majorVersion;
-  Base_t minorVersion;
-  Base_t patchVersion;
-  Base_t numberOfTasks;
+  Char_t productName[OS_PRODUCT_NAME_SIZE]; /**< The ASCII product name of the operating system (always "HeliOS)") */
+  Base_t majorVersion;                      /**< The SemVer major version number of HeliOS */
+  Base_t minorVersion;                      /**< The SemVer minor version number of HeliOS */
+  Base_t patchVersion;                      /**< The SemVer patch version number of HeliOS */
+  Base_t numberOfTasks;                     /**< The number of tasks regardless of their state */
 } SystemInfo_t;
+
+/**
+ * @brief Data structure for information about the HeliOS system
+ *
+ * @sa SystemInfo_t
+ * @attention The memory allocated for the data structure must be freed by calling xMemFree()
+ * @sa xMemFree()
+ *
+ */
 typedef SystemInfo_t *xSystemInfo;
 
 #ifdef __cplusplus
@@ -608,10 +632,24 @@ extern "C" {
 #endif
 
 /**
- * @brief
+ * @brief System call to register a device driver
  *
- * @param device_self_register_
- * @return xBase
+ * The xDeviceRegisterDevice() system call, as part of the HeliOS device driver model, registers a
+ * device driver with the HeliOS kernel. This system call must be made before a device driver can
+ * be called by xDeviceRead(), xDeviceWrite(), etc. If the device driver is successfully registered
+ * with the kernel, xDeviceRegisterDevice() will return RETURN_SUCCESS. Once a device is registered
+ * it cannot be un-registered - it can only be placed in a suspended state which is done by calling
+ * xDeviceConfigDevice(). However, as with most aspects of the device driver model in HeliOS, it is
+ * important to note that the implementation of the device state and mode is up to the device driver
+ * author. A quick word about device driver universal identifiers (uid). A device driver uid *MUST* be
+ * a globally unique identifier. No two device drivers in the same application can share the same uid.
+ * This is best achieved by ensuring the device driver author selects a uid for his device driver
+ * that is not in use by another device driver. A device driver template and pre-packaged device drivers
+ * can be found in /drivers.
+ *
+ * @param device_self_register_ A pointer to the self registration function for the device driver
+ * @return xBase If the device driver is successfully registered with the kernel, xDeviceRegisterDevice()
+ * returns RETURN_SUCCESS. Otherwise RETURN_FAILURE is returned.
  */
 xBase xDeviceRegisterDevice(xBase (*device_self_register_)());
 
