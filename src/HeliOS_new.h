@@ -528,6 +528,7 @@ typedef MemoryRegionStats_t *xMemoryRegionStats;
  * @sa xTaskGetTaskInfo()
  * @sa xTaskGetAllTaskInfo()
  * @sa CONFIG_TASK_NAME_BYTES
+ * @sa xMemFree()
  *
  * @attention The memory allocated for the data structure must be freed by calling xMemFree()
  *
@@ -547,7 +548,7 @@ typedef struct TaskInfo_s {
 /**
  * @brief Data structure for information about a task
  *
- * @sa TasInfo_t
+ * @sa TaskInfo_t
  * @attention The memory allocated for the data struture must be freed by calling xMemFree()
  * @sa xMemFree()
  *
@@ -555,13 +556,38 @@ typedef struct TaskInfo_s {
 typedef TaskInfo_t *xTaskInfo;
 
 /**
- * @brief
+ * @brief Data structure for a queue message
+ *
+ * The QueueMessage_t stucture is used to store a queue message and is returned by xQueueReceive() and xQueuePeek().
+ * The QueueMessage_t stucture should be declared as xQueueMessage.
+ *
+ * @sa xQueueMessage
+ * @sa xQueueReceive()
+ * @sa xQueuePeek()
+ * @sa CONFIG_MESSAGE_VALUE_BYTES
+ * @sa xMemFree()
+ *
+ * @attention The memory allocated for the data structure must be freed by calling xMemFree()
+ *
+ * @attention The message value is *NOT* null terminated and thus Standard C Library string functions
+ * such as strcmp(), strcpy() and strlen(), which expect a null terminated char array, must not be used to
+ * manipulate the message value
+ *
  *
  */
 typedef struct QueueMessage_s {
-  Base_t messageBytes;
-  Char_t messageValue[CONFIG_MESSAGE_VALUE_BYTES];
+  Base_t messageBytes;                             /**< The number of bytes contained in the message value which cannot exceed CONFIG_MESSAGE_VALUE_BYTES */
+  Char_t messageValue[CONFIG_MESSAGE_VALUE_BYTES]; /**< The ASCII queue message value - this is *NOT* a null terminated character array */
 } QueueMessage_t;
+
+/**
+ * @brief Data structure for a queue message
+ * 
+ * @sa QueueMessage_t
+ * @attention The memory allocated for the data structure must be freed by calling xMemFree()
+ * @sa xMemFree()
+ * 
+ */
 typedef QueueMessage_t *xQueueMessage;
 
 /**
