@@ -103,7 +103,7 @@ jobs:
         shell: bash
         run: |
           cp ${{github.workspace}}/temp/latex/refman.pdf ${{github.workspace}}/doc/HeliOS_Developers_Guide.pdf
-          cp ${{github.workspace}}/temp/latex/*.tex ${{github.workspace}}/doc/latex
+          cp ${{github.workspace}}/temp/latex/* ${{github.workspace}}/doc/latex
           git config --global user.name 'Manny Peterson'
           git config --global user.email '12462046+MannyPeterson@users.noreply.github.com'
           git add ${{github.workspace}}/doc/HeliOS_Developers_Guide.pdf
