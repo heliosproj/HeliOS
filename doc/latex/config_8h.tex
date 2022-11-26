@@ -1,0 +1,166 @@
+\hypertarget{config_8h}{}\doxysubsection{config.\+h File Reference}
+\label{config_8h}\index{config.h@{config.h}}
+
+
+Kernel header file for user definable settings.  
+
+
+\doxysubsubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \mbox{\hyperlink{config_8h_a88f1f5ebde9127ba41a40bab3fce6f05}{CONFIG\+\_\+\+MESSAGE\+\_\+\+VALUE\+\_\+\+BYTES}}~0x8u /$\ast$ 8 $\ast$/
+\begin{DoxyCompactList}\small\item\em Define to enable the Arduino API C++ interface. \end{DoxyCompactList}\item 
+\#define \mbox{\hyperlink{config_8h_aecad5ee8f24de28dc3df88cbc6c4b24f}{CONFIG\+\_\+\+NOTIFICATION\+\_\+\+VALUE\+\_\+\+BYTES}}~0x8u /$\ast$ 8 $\ast$/
+\begin{DoxyCompactList}\small\item\em Define the size in bytes of the direct to task notification value. \end{DoxyCompactList}\item 
+\#define \mbox{\hyperlink{config_8h_ae6b768f9a6b27c1b58fc882ff9b3cf36}{CONFIG\+\_\+\+TASK\+\_\+\+NAME\+\_\+\+BYTES}}~0x8u /$\ast$ 8 $\ast$/
+\begin{DoxyCompactList}\small\item\em Define the size in bytes of the ASCII task name. \end{DoxyCompactList}\item 
+\#define \mbox{\hyperlink{config_8h_ae6c92d91affab0a77e5dc106a80b5ed3}{CONFIG\+\_\+\+MEMORY\+\_\+\+REGION\+\_\+\+SIZE\+\_\+\+IN\+\_\+\+BLOCKS}}~0x18u /$\ast$ 24 $\ast$/
+\begin{DoxyCompactList}\small\item\em Define the number of memory blocks available in all memory regions. \end{DoxyCompactList}\item 
+\#define \mbox{\hyperlink{config_8h_abf26a1011ac484944eda4b5ced290ff7}{CONFIG\+\_\+\+MEMORY\+\_\+\+REGION\+\_\+\+BLOCK\+\_\+\+SIZE}}~0x20u /$\ast$ 32 $\ast$/
+\begin{DoxyCompactList}\small\item\em Define the memory block size in bytes for all memory regions. \end{DoxyCompactList}\item 
+\#define \mbox{\hyperlink{config_8h_ae7f67dd78c39f9a4940a350390c9e832}{CONFIG\+\_\+\+QUEUE\+\_\+\+MINIMUM\+\_\+\+LIMIT}}~0x5u /$\ast$ 5 $\ast$/
+\begin{DoxyCompactList}\small\item\em Define the minimum value for a message queue limit. \end{DoxyCompactList}\item 
+\#define \mbox{\hyperlink{config_8h_a7c10c29ecffe1b7748236c36d55ebb7d}{CONFIG\+\_\+\+STREAM\+\_\+\+BUFFER\+\_\+\+BYTES}}~0x20u /$\ast$ 32 $\ast$/
+\begin{DoxyCompactList}\small\item\em Define the length of the stream buffer. \end{DoxyCompactList}\item 
+\#define \mbox{\hyperlink{config_8h_aeb7eed189df4dbef79e28070b096678f}{CONFIG\+\_\+\+TASK\+\_\+\+WD\+\_\+\+TIMER\+\_\+\+ENABLE}}
+\begin{DoxyCompactList}\small\item\em Enable task watchdog timers. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{config_8h_a871e8f5d2761216ea8fc43e3204c9ea3}\label{config_8h_a871e8f5d2761216ea8fc43e3204c9ea3}} 
+\#define {\bfseries CONFIG\+\_\+\+DEVICE\+\_\+\+NAME\+\_\+\+BYTES}~0x8u /$\ast$ 8 $\ast$/
+\end{DoxyCompactItemize}
+
+
+\doxysubsubsection{Detailed Description}
+\begin{DoxyAuthor}{Author}
+Manny Peterson (\href{mailto:mannymsp@gmail.com}{\texttt{ mannymsp@gmail.\+com}}) 
+\end{DoxyAuthor}
+\begin{DoxyVersion}{Version}
+0.\+3.\+5 
+\end{DoxyVersion}
+\begin{DoxyDate}{Date}
+2022-\/01-\/31
+\end{DoxyDate}
+\begin{DoxyCopyright}{Copyright}
+Heli\+OS Embedded Operating System Copyright (C) 2020-\/2022 Manny Peterson \href{mailto:mannymsp@gmail.com}{\texttt{ mannymsp@gmail.\+com}}
+\end{DoxyCopyright}
+This program is free software\+: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with this program. If not, see \href{https://www.gnu.org/licenses/}{\texttt{ https\+://www.\+gnu.\+org/licenses/}}. 
+
+\doxysubsubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{config_8h_abf26a1011ac484944eda4b5ced290ff7}\label{config_8h_abf26a1011ac484944eda4b5ced290ff7}} 
+\index{config.h@{config.h}!CONFIG\_MEMORY\_REGION\_BLOCK\_SIZE@{CONFIG\_MEMORY\_REGION\_BLOCK\_SIZE}}
+\index{CONFIG\_MEMORY\_REGION\_BLOCK\_SIZE@{CONFIG\_MEMORY\_REGION\_BLOCK\_SIZE}!config.h@{config.h}}
+\doxyparagraph{\texorpdfstring{CONFIG\_MEMORY\_REGION\_BLOCK\_SIZE}{CONFIG\_MEMORY\_REGION\_BLOCK\_SIZE}}
+{\footnotesize\ttfamily \#define CONFIG\+\_\+\+MEMORY\+\_\+\+REGION\+\_\+\+BLOCK\+\_\+\+SIZE~0x20u /$\ast$ 32 $\ast$/}
+
+Setting CONFIG\+\_\+\+MEMORY\+\_\+\+REGION\+\_\+\+BLOCK\+\_\+\+SIZE allows the end-\/user to define the size of a memory region block in bytes. The memory region block size should be set to achieve the best possible utilization of the available memory. The CONFIG\+\_\+\+MEMORY\+\_\+\+REGION\+\_\+\+BLOCK\+\_\+\+SIZE setting effects both the heap and kernel memory regions. The default value is 32 bytes. The literal must be appended with a \char`\"{}u\char`\"{} to maintain MISRA C\+:2012 compliance.
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{HeliOS_8h_af4da8221d05f39f784a1bb0a4104efc9}{x\+Mem\+Alloc()}} 
+
+\mbox{\hyperlink{HeliOS_8h_a0d4765ea27e4a15d0b944ce62db5f059}{x\+Mem\+Free()}} 
+
+\mbox{\hyperlink{config_8h_ae6c92d91affab0a77e5dc106a80b5ed3}{CONFIG\+\_\+\+MEMORY\+\_\+\+REGION\+\_\+\+SIZE\+\_\+\+IN\+\_\+\+BLOCKS}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{config_8h_ae6c92d91affab0a77e5dc106a80b5ed3}\label{config_8h_ae6c92d91affab0a77e5dc106a80b5ed3}} 
+\index{config.h@{config.h}!CONFIG\_MEMORY\_REGION\_SIZE\_IN\_BLOCKS@{CONFIG\_MEMORY\_REGION\_SIZE\_IN\_BLOCKS}}
+\index{CONFIG\_MEMORY\_REGION\_SIZE\_IN\_BLOCKS@{CONFIG\_MEMORY\_REGION\_SIZE\_IN\_BLOCKS}!config.h@{config.h}}
+\doxyparagraph{\texorpdfstring{CONFIG\_MEMORY\_REGION\_SIZE\_IN\_BLOCKS}{CONFIG\_MEMORY\_REGION\_SIZE\_IN\_BLOCKS}}
+{\footnotesize\ttfamily \#define CONFIG\+\_\+\+MEMORY\+\_\+\+REGION\+\_\+\+SIZE\+\_\+\+IN\+\_\+\+BLOCKS~0x18u /$\ast$ 24 $\ast$/}
+
+The heap memory region is used by tasks. Whereas the kernel memory region is used solely by the kernel for kernel objects. The CONFIG\+\_\+\+MEMORY\+\_\+\+REGION\+\_\+\+SIZE\+\_\+\+IN\+\_\+\+BLOCKS setting allows the end-\/user to define the size, in blocks, of all memory regions thus effecting both the heap and kernel memory regions. The size of a memory block is defined by the CONFIG\+\_\+\+MEMORY\+\_\+\+REGION\+\_\+\+BLOCK\+\_\+\+SIZE setting. The size of all memory regions needs to be adjusted to fit the memory requirements of the end-\/user\textquotesingle{}s application. By default the CONFIG\+\_\+\+MEMORY\+\_\+\+REGION\+\_\+\+SIZE\+\_\+\+IN\+\_\+\+BLOCKS is defined on a per platform and/or tool-\/chain basis therefor it is not defined here by default. The literal must be appended with a \char`\"{}u\char`\"{} to maintain MISRA C\+:2012 compliance. \mbox{\Hypertarget{config_8h_a88f1f5ebde9127ba41a40bab3fce6f05}\label{config_8h_a88f1f5ebde9127ba41a40bab3fce6f05}} 
+\index{config.h@{config.h}!CONFIG\_MESSAGE\_VALUE\_BYTES@{CONFIG\_MESSAGE\_VALUE\_BYTES}}
+\index{CONFIG\_MESSAGE\_VALUE\_BYTES@{CONFIG\_MESSAGE\_VALUE\_BYTES}!config.h@{config.h}}
+\doxyparagraph{\texorpdfstring{CONFIG\_MESSAGE\_VALUE\_BYTES}{CONFIG\_MESSAGE\_VALUE\_BYTES}}
+{\footnotesize\ttfamily \#define CONFIG\+\_\+\+MESSAGE\+\_\+\+VALUE\+\_\+\+BYTES~0x8u /$\ast$ 8 $\ast$/}
+
+Because Heli\+OS kernel is written in C, the Arduino API cannot be called directly from the kernel. For example, assertions are unable to be written to the serial bus in applications using the Arduino platform/tool-\/chain. The CONFIG\+\_\+\+ENABLE\+\_\+\+ARDUINO\+\_\+\+CPP\+\_\+\+INTERFACE builds the included arduino.\+cpp file to allow the kernel to call the Arduino API through wrapper functions such as {\bfseries{Arduino\+Assert}}(). The arduino.\+cpp file can be found in the /extras directory. It must be copied into the /src directory to be built.
+
+\begin{DoxyNote}{Note}
+On some MCU\textquotesingle{}s like the 8-\/bit AVRs, it is necessary to undefine the DISABLE\+\_\+\+INTERRUPTS() macro because interrupts must be enabled to write to the serial bus.
+\end{DoxyNote}
+Define to enable system assertions.
+
+The CONFIG\+\_\+\+ENABLE\+\_\+\+SYSTEM\+\_\+\+ASSERT setting allows the end-\/user to enable system assertions in Heli\+OS. Once enabled, the end-\/user must define CONFIG\+\_\+\+SYSTEM\+\_\+\+ASSERT\+\_\+\+BEHAVIOR for there to be an effect. By default the CONFIG\+\_\+\+ENABLE\+\_\+\+SYSTEM\+\_\+\+ASSERT setting is not defined.
+
+\begin{DoxySeeAlso}{See also}
+CONFIG\+\_\+\+SYSTEM\+\_\+\+ASSERT\+\_\+\+BEHAVIOR
+\end{DoxySeeAlso}
+Define the system assertion behavior.
+
+The CONFIG\+\_\+\+SYSTEM\+\_\+\+ASSERT\+\_\+\+BEHAVIOR setting allows the end-\/user to specify the behavior (code) of the assertion which is called when CONFIG\+\_\+\+ENABLE\+\_\+\+SYSTEM\+\_\+\+ASSERT is defined. Typically some sort of output is generated over a serial or other interface. By default the CONFIG\+\_\+\+SYSTEM\+\_\+\+ASSERT\+\_\+\+BEHAVIOR is not defined.
+
+\begin{DoxyNote}{Note}
+In order to use the {\bfseries{Arduino\+Assert}}() functionality, the CONFIG\+\_\+\+ENABLE\+\_\+\+ARDUINO\+\_\+\+CPP\+\_\+\+INTERFACE setting must be enabled.
+\end{DoxyNote}
+\begin{DoxySeeAlso}{See also}
+CONFIG\+\_\+\+ENABLE\+\_\+\+SYSTEM\+\_\+\+ASSERT 
+
+CONFIG\+\_\+\+ENABLE\+\_\+\+ARDUINO\+\_\+\+CPP\+\_\+\+INTERFACE
+\end{DoxySeeAlso}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\textcolor{preprocessor}{\#define CONFIG\_SYSTEM\_ASSERT\_BEHAVIOR(f, l) \_\_ArduinoAssert\_\_( f , l )}}
+
+\end{DoxyCode}
+
+
+Define the size in bytes of the message queue message value.
+
+Setting the CONFIG\+\_\+\+MESSAGE\+\_\+\+VALUE\+\_\+\+BYTES allows the end-\/user to define the size of the message queue message value. The larger the size of the message value, the greater impact there will be on system performance. The default size is 8 bytes. The literal must be appended with \char`\"{}u\char`\"{} to maintain MISRA C\+:2012 compliance.
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{HeliOS_8h_a80734ed41b6102c7c639a008fa6cb8af}{x\+Queue\+Message}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{config_8h_aecad5ee8f24de28dc3df88cbc6c4b24f}\label{config_8h_aecad5ee8f24de28dc3df88cbc6c4b24f}} 
+\index{config.h@{config.h}!CONFIG\_NOTIFICATION\_VALUE\_BYTES@{CONFIG\_NOTIFICATION\_VALUE\_BYTES}}
+\index{CONFIG\_NOTIFICATION\_VALUE\_BYTES@{CONFIG\_NOTIFICATION\_VALUE\_BYTES}!config.h@{config.h}}
+\doxyparagraph{\texorpdfstring{CONFIG\_NOTIFICATION\_VALUE\_BYTES}{CONFIG\_NOTIFICATION\_VALUE\_BYTES}}
+{\footnotesize\ttfamily \#define CONFIG\+\_\+\+NOTIFICATION\+\_\+\+VALUE\+\_\+\+BYTES~0x8u /$\ast$ 8 $\ast$/}
+
+Setting the CONFIG\+\_\+\+NOTIFICATION\+\_\+\+VALUE\+\_\+\+BYTES allows the end-\/user to define the size of the direct to task notification value. The larger the size of the notification value, the greater impact there will be on system performance. The default size is 8 bytes. The literal must be appended with \char`\"{}u\char`\"{} to maintain MISRA C\+:2012 compliance.
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{HeliOS_8h_a3871294c92fece52f9487c63b96ece4b}{x\+Task\+Notification}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{config_8h_ae7f67dd78c39f9a4940a350390c9e832}\label{config_8h_ae7f67dd78c39f9a4940a350390c9e832}} 
+\index{config.h@{config.h}!CONFIG\_QUEUE\_MINIMUM\_LIMIT@{CONFIG\_QUEUE\_MINIMUM\_LIMIT}}
+\index{CONFIG\_QUEUE\_MINIMUM\_LIMIT@{CONFIG\_QUEUE\_MINIMUM\_LIMIT}!config.h@{config.h}}
+\doxyparagraph{\texorpdfstring{CONFIG\_QUEUE\_MINIMUM\_LIMIT}{CONFIG\_QUEUE\_MINIMUM\_LIMIT}}
+{\footnotesize\ttfamily \#define CONFIG\+\_\+\+QUEUE\+\_\+\+MINIMUM\+\_\+\+LIMIT~0x5u /$\ast$ 5 $\ast$/}
+
+Setting the CONFIG\+\_\+\+QUEUE\+\_\+\+MINIMUM\+\_\+\+LIMIT allows the end-\/user to define the MINIMUM length limit a message queue can be created with \mbox{\hyperlink{HeliOS_8h_a1353ea9bf4ce33637585d2b4f3b63ce5}{x\+Queue\+Create()}}. When a message queue length equals its limit, the message queue will be considered full and return true when \mbox{\hyperlink{HeliOS_8h_a41ef84ceda2fa6c640fbb655fb6e1015}{x\+Queue\+Is\+Queue\+Full()}} is called. A full queue will also not accept messages from \mbox{\hyperlink{HeliOS_8h_af8d7fc33a825d3fbaab1ce49faf37401}{x\+Queue\+Send()}}. The default value is 5. The literal must be appended with \char`\"{}u\char`\"{} to maintain MISRA C\+:2012 compliance.
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{HeliOS_8h_a41ef84ceda2fa6c640fbb655fb6e1015}{x\+Queue\+Is\+Queue\+Full()}} 
+
+\mbox{\hyperlink{HeliOS_8h_af8d7fc33a825d3fbaab1ce49faf37401}{x\+Queue\+Send()}} 
+
+\mbox{\hyperlink{HeliOS_8h_a1353ea9bf4ce33637585d2b4f3b63ce5}{x\+Queue\+Create()}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{config_8h_a7c10c29ecffe1b7748236c36d55ebb7d}\label{config_8h_a7c10c29ecffe1b7748236c36d55ebb7d}} 
+\index{config.h@{config.h}!CONFIG\_STREAM\_BUFFER\_BYTES@{CONFIG\_STREAM\_BUFFER\_BYTES}}
+\index{CONFIG\_STREAM\_BUFFER\_BYTES@{CONFIG\_STREAM\_BUFFER\_BYTES}!config.h@{config.h}}
+\doxyparagraph{\texorpdfstring{CONFIG\_STREAM\_BUFFER\_BYTES}{CONFIG\_STREAM\_BUFFER\_BYTES}}
+{\footnotesize\ttfamily \#define CONFIG\+\_\+\+STREAM\+\_\+\+BUFFER\+\_\+\+BYTES~0x20u /$\ast$ 32 $\ast$/}
+
+Setting CONFIG\+\_\+\+STREAM\+\_\+\+BUFFER\+\_\+\+BYTES will define the length of stream buffers created by \mbox{\hyperlink{HeliOS_8h_acdca586cfae8f2e31018b50da97e5dbd}{x\+Stream\+Create()}}. When the length of the stream buffer reaches this value, it is considered full and can no longer be written to by calling \mbox{\hyperlink{HeliOS_8h_abd23d3829397cbff0d807b9abca27e01}{x\+Stream\+Send()}}. The default value is 32. The literal must be appended with \char`\"{}u\char`\"{} to maintain MISRA C\+:2012 compliance. \mbox{\Hypertarget{config_8h_ae6b768f9a6b27c1b58fc882ff9b3cf36}\label{config_8h_ae6b768f9a6b27c1b58fc882ff9b3cf36}} 
+\index{config.h@{config.h}!CONFIG\_TASK\_NAME\_BYTES@{CONFIG\_TASK\_NAME\_BYTES}}
+\index{CONFIG\_TASK\_NAME\_BYTES@{CONFIG\_TASK\_NAME\_BYTES}!config.h@{config.h}}
+\doxyparagraph{\texorpdfstring{CONFIG\_TASK\_NAME\_BYTES}{CONFIG\_TASK\_NAME\_BYTES}}
+{\footnotesize\ttfamily \#define CONFIG\+\_\+\+TASK\+\_\+\+NAME\+\_\+\+BYTES~0x8u /$\ast$ 8 $\ast$/}
+
+Setting the CONFIG\+\_\+\+TASK\+\_\+\+NAME\+\_\+\+BYTES allows the end-\/user to define the size of the ASCII task name. The larger the size of the task name, the greater impact there will be on system performance. The default size is 8 bytes. The literal must be appended with \char`\"{}u\char`\"{} to maintain MISRA C\+:2012 compliance.
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{HeliOS_8h_a555bf603e90ac46ca4b74eb84d285e4b}{x\+Task\+Info}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{config_8h_aeb7eed189df4dbef79e28070b096678f}\label{config_8h_aeb7eed189df4dbef79e28070b096678f}} 
+\index{config.h@{config.h}!CONFIG\_TASK\_WD\_TIMER\_ENABLE@{CONFIG\_TASK\_WD\_TIMER\_ENABLE}}
+\index{CONFIG\_TASK\_WD\_TIMER\_ENABLE@{CONFIG\_TASK\_WD\_TIMER\_ENABLE}!config.h@{config.h}}
+\doxyparagraph{\texorpdfstring{CONFIG\_TASK\_WD\_TIMER\_ENABLE}{CONFIG\_TASK\_WD\_TIMER\_ENABLE}}
+{\footnotesize\ttfamily \#define CONFIG\+\_\+\+TASK\+\_\+\+WD\+\_\+\+TIMER\+\_\+\+ENABLE}
+
+Defining CONFIG\+\_\+\+TASK\+\_\+\+WD\+\_\+\+TIMER\+\_\+\+ENABLE will enable the task wathdog timer feature. The default is enabled. 

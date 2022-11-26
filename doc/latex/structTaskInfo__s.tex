@@ -1,0 +1,79 @@
+\hypertarget{structTaskInfo__s}{}\doxysubsection{Task\+Info\+\_\+s Struct Reference}
+\label{structTaskInfo__s}\index{TaskInfo\_s@{TaskInfo\_s}}
+
+
+Data structure for information about a task.  
+
+
+\doxysubsubsection*{Data Fields}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{HeliOS_8h_ae14283a87cf3c2138f54394c84905281}{Base\+\_\+t}} \mbox{\hyperlink{structTaskInfo__s_a1d1bb220a92a84d7324b1a5bf6a9054e}{id}}
+\item 
+\mbox{\hyperlink{HeliOS_8h_a4a2002797a857c48e6f410256093c826}{Char\+\_\+t}} \mbox{\hyperlink{structTaskInfo__s_abfa1fdc7285d6a8774b9f0623a8e3286}{name}} \mbox{[}\mbox{\hyperlink{config_8h_ae6b768f9a6b27c1b58fc882ff9b3cf36}{CONFIG\+\_\+\+TASK\+\_\+\+NAME\+\_\+\+BYTES}}\mbox{]}
+\item 
+\mbox{\hyperlink{HeliOS_8h_af7d1d3bc2c408906b5a25c8cc7a8346a}{Task\+State\+\_\+t}} \mbox{\hyperlink{structTaskInfo__s_adbe04443866d3b13bb03aada36eb26ab}{state}}
+\item 
+\mbox{\hyperlink{HeliOS_8h_adc3179fe1ebd66c93c66c97f8b75379d}{Ticks\+\_\+t}} \mbox{\hyperlink{structTaskInfo__s_a04b3d0dc2e0e53b1a21a3745060a08e8}{last\+Run\+Time}}
+\item 
+\mbox{\hyperlink{HeliOS_8h_adc3179fe1ebd66c93c66c97f8b75379d}{Ticks\+\_\+t}} \mbox{\hyperlink{structTaskInfo__s_a6b0fad1e619a3cee2bbc4ed1ea108bc6}{total\+Run\+Time}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsubsection{Detailed Description}
+The Task\+Info\+\_\+t structure is similar to x\+Task\+Runtime\+Stats\+\_\+t in that it contains runtime statistics for a task. However, Task\+Info\+\_\+t also contains additional details about a task such as its ASCII name and state. The Task\+Info\+\_\+t structure is returned by \mbox{\hyperlink{HeliOS_8h_a229174dfc3b8f52dfbf3509f09e6df2c}{x\+Task\+Get\+Task\+Info()}} and \mbox{\hyperlink{HeliOS_8h_a2adf346d0ee083752cb08951b66dd49b}{x\+Task\+Get\+All\+Task\+Info()}}. If only runtime statistics are needed, then Task\+Run\+Time\+Stats\+\_\+t should be used because of its smaller memory footprint. The Task\+Info\+\_\+t should be declared as x\+Task\+Info
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{HeliOS_8h_a555bf603e90ac46ca4b74eb84d285e4b}{x\+Task\+Info}} 
+
+\mbox{\hyperlink{HeliOS_8h_a229174dfc3b8f52dfbf3509f09e6df2c}{x\+Task\+Get\+Task\+Info()}} 
+
+\mbox{\hyperlink{HeliOS_8h_a2adf346d0ee083752cb08951b66dd49b}{x\+Task\+Get\+All\+Task\+Info()}} 
+
+\mbox{\hyperlink{config_8h_ae6b768f9a6b27c1b58fc882ff9b3cf36}{CONFIG\+\_\+\+TASK\+\_\+\+NAME\+\_\+\+BYTES}} 
+
+\mbox{\hyperlink{HeliOS_8h_a0d4765ea27e4a15d0b944ce62db5f059}{x\+Mem\+Free()}}
+\end{DoxySeeAlso}
+\begin{DoxyAttention}{Attention}
+The memory allocated for the data structure must be freed by calling \mbox{\hyperlink{HeliOS_8h_a0d4765ea27e4a15d0b944ce62db5f059}{x\+Mem\+Free()}}.
+
+The task name is {\itshape NOT} null terminated and thus Standard C Library string functions such as strcmp(), strcpy() and strlen(), which expect a null terminated char array, must not be used to manipulate the task name. 
+\end{DoxyAttention}
+
+
+\doxysubsubsection{Field Documentation}
+\mbox{\Hypertarget{structTaskInfo__s_a1d1bb220a92a84d7324b1a5bf6a9054e}\label{structTaskInfo__s_a1d1bb220a92a84d7324b1a5bf6a9054e}} 
+\index{TaskInfo\_s@{TaskInfo\_s}!id@{id}}
+\index{id@{id}!TaskInfo\_s@{TaskInfo\_s}}
+\doxyparagraph{\texorpdfstring{id}{id}}
+{\footnotesize\ttfamily \mbox{\hyperlink{HeliOS_8h_ae14283a87cf3c2138f54394c84905281}{Base\+\_\+t}} Task\+Info\+\_\+s\+::id}
+
+The task identifier which is used by \mbox{\hyperlink{HeliOS_8h_ad35e6b6b7e56c4a13097b6d6a44b00c7}{x\+Task\+Get\+Handle\+By\+Id()}} to return the task handle. \mbox{\Hypertarget{structTaskInfo__s_a04b3d0dc2e0e53b1a21a3745060a08e8}\label{structTaskInfo__s_a04b3d0dc2e0e53b1a21a3745060a08e8}} 
+\index{TaskInfo\_s@{TaskInfo\_s}!lastRunTime@{lastRunTime}}
+\index{lastRunTime@{lastRunTime}!TaskInfo\_s@{TaskInfo\_s}}
+\doxyparagraph{\texorpdfstring{lastRunTime}{lastRunTime}}
+{\footnotesize\ttfamily \mbox{\hyperlink{HeliOS_8h_adc3179fe1ebd66c93c66c97f8b75379d}{Ticks\+\_\+t}} Task\+Info\+\_\+s\+::last\+Run\+Time}
+
+The duration in ticks of the task\textquotesingle{}s last runtime. \mbox{\Hypertarget{structTaskInfo__s_abfa1fdc7285d6a8774b9f0623a8e3286}\label{structTaskInfo__s_abfa1fdc7285d6a8774b9f0623a8e3286}} 
+\index{TaskInfo\_s@{TaskInfo\_s}!name@{name}}
+\index{name@{name}!TaskInfo\_s@{TaskInfo\_s}}
+\doxyparagraph{\texorpdfstring{name}{name}}
+{\footnotesize\ttfamily \mbox{\hyperlink{HeliOS_8h_a4a2002797a857c48e6f410256093c826}{Char\+\_\+t}} Task\+Info\+\_\+s\+::name\mbox{[}\mbox{\hyperlink{config_8h_ae6b768f9a6b27c1b58fc882ff9b3cf36}{CONFIG\+\_\+\+TASK\+\_\+\+NAME\+\_\+\+BYTES}}\mbox{]}}
+
+The ASCII name of the task which is used by \mbox{\hyperlink{HeliOS_8h_a7806c1dd7885f13c1998d55a15676829}{x\+Task\+Get\+Handle\+By\+Name()}} to return the task handle -\/ this is {\itshape NOT} a null terminated char array. \mbox{\Hypertarget{structTaskInfo__s_adbe04443866d3b13bb03aada36eb26ab}\label{structTaskInfo__s_adbe04443866d3b13bb03aada36eb26ab}} 
+\index{TaskInfo\_s@{TaskInfo\_s}!state@{state}}
+\index{state@{state}!TaskInfo\_s@{TaskInfo\_s}}
+\doxyparagraph{\texorpdfstring{state}{state}}
+{\footnotesize\ttfamily \mbox{\hyperlink{HeliOS_8h_af7d1d3bc2c408906b5a25c8cc7a8346a}{Task\+State\+\_\+t}} Task\+Info\+\_\+s\+::state}
+
+The state the task is in which is one of four states specified in the Task\+State\+\_\+t enumerated data type. \mbox{\Hypertarget{structTaskInfo__s_a6b0fad1e619a3cee2bbc4ed1ea108bc6}\label{structTaskInfo__s_a6b0fad1e619a3cee2bbc4ed1ea108bc6}} 
+\index{TaskInfo\_s@{TaskInfo\_s}!totalRunTime@{totalRunTime}}
+\index{totalRunTime@{totalRunTime}!TaskInfo\_s@{TaskInfo\_s}}
+\doxyparagraph{\texorpdfstring{totalRunTime}{totalRunTime}}
+{\footnotesize\ttfamily \mbox{\hyperlink{HeliOS_8h_adc3179fe1ebd66c93c66c97f8b75379d}{Ticks\+\_\+t}} Task\+Info\+\_\+s\+::total\+Run\+Time}
+
+The duration in ticks of the task\textquotesingle{}s total runtime. 
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{HeliOS_8h}{Heli\+OS.\+h}}\end{DoxyCompactItemize}

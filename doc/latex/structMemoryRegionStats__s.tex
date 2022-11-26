@@ -1,0 +1,92 @@
+\hypertarget{structMemoryRegionStats__s}{}\doxysubsection{Memory\+Region\+Stats\+\_\+s Struct Reference}
+\label{structMemoryRegionStats__s}\index{MemoryRegionStats\_s@{MemoryRegionStats\_s}}
+
+
+Data structure for memory region statistics.  
+
+
+\doxysubsubsection*{Data Fields}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{HeliOS_8h_a55efca2523f385efc9ded01ce0c27a63}{Word\+\_\+t}} \mbox{\hyperlink{structMemoryRegionStats__s_a42f27359bddfae0088b141c826e382cd}{largest\+Free\+Entry\+In\+Bytes}}
+\item 
+\mbox{\hyperlink{HeliOS_8h_a55efca2523f385efc9ded01ce0c27a63}{Word\+\_\+t}} \mbox{\hyperlink{structMemoryRegionStats__s_ab24268b102d72a3a4b3edd24faff7a90}{smallest\+Free\+Entry\+In\+Bytes}}
+\item 
+\mbox{\hyperlink{HeliOS_8h_a55efca2523f385efc9ded01ce0c27a63}{Word\+\_\+t}} \mbox{\hyperlink{structMemoryRegionStats__s_ac7bfec2786a17e789e506ff95d2ffbdd}{number\+Of\+Free\+Blocks}}
+\item 
+\mbox{\hyperlink{HeliOS_8h_a55efca2523f385efc9ded01ce0c27a63}{Word\+\_\+t}} \mbox{\hyperlink{structMemoryRegionStats__s_a65865fee3b4ba79d45eb14e7fbe09d54}{available\+Space\+In\+Bytes}}
+\item 
+\mbox{\hyperlink{HeliOS_8h_a55efca2523f385efc9ded01ce0c27a63}{Word\+\_\+t}} \mbox{\hyperlink{structMemoryRegionStats__s_a791dbc8070fb3e9369bc4df6e64f1adc}{successful\+Allocations}}
+\item 
+\mbox{\hyperlink{HeliOS_8h_a55efca2523f385efc9ded01ce0c27a63}{Word\+\_\+t}} \mbox{\hyperlink{structMemoryRegionStats__s_a8fd01325f4d5c02dd558b6c416f1b753}{successful\+Frees}}
+\item 
+\mbox{\hyperlink{HeliOS_8h_a55efca2523f385efc9ded01ce0c27a63}{Word\+\_\+t}} \mbox{\hyperlink{structMemoryRegionStats__s_a47dcfebc8af9f33133a066a146a3be07}{minimum\+Ever\+Free\+Bytes\+Remaining}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsubsection{Detailed Description}
+The Memory\+Region\+Stats\+\_\+t data structure is used by \mbox{\hyperlink{HeliOS_8h_a96142397ee8d9044d76e8728c4d3ca9c}{x\+Mem\+Get\+Heap\+Stats()}} and \mbox{\hyperlink{HeliOS_8h_a0fa09bf6e80a31e914323e006021416a}{x\+Mem\+Get\+Kernel\+Stats()}} to obtain statistics about either memory region. The Memory\+Region\+Stats\+\_\+t type should be declared as x\+Memory\+Region\+Stats.
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{HeliOS_8h_a57e143986960e70f5108a99620da91ac}{x\+Memory\+Region\+Stats}} 
+
+\mbox{\hyperlink{HeliOS_8h_a96142397ee8d9044d76e8728c4d3ca9c}{x\+Mem\+Get\+Heap\+Stats()}} 
+
+\mbox{\hyperlink{HeliOS_8h_a0fa09bf6e80a31e914323e006021416a}{x\+Mem\+Get\+Kernel\+Stats()}} 
+\end{DoxySeeAlso}
+\begin{DoxyAttention}{Attention}
+The memory allocated for the data structure must be freed by calling \mbox{\hyperlink{HeliOS_8h_a0d4765ea27e4a15d0b944ce62db5f059}{x\+Mem\+Free()}}. 
+\end{DoxyAttention}
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{HeliOS_8h_a0d4765ea27e4a15d0b944ce62db5f059}{x\+Mem\+Free()}} 
+\end{DoxySeeAlso}
+
+
+\doxysubsubsection{Field Documentation}
+\mbox{\Hypertarget{structMemoryRegionStats__s_a65865fee3b4ba79d45eb14e7fbe09d54}\label{structMemoryRegionStats__s_a65865fee3b4ba79d45eb14e7fbe09d54}} 
+\index{MemoryRegionStats\_s@{MemoryRegionStats\_s}!availableSpaceInBytes@{availableSpaceInBytes}}
+\index{availableSpaceInBytes@{availableSpaceInBytes}!MemoryRegionStats\_s@{MemoryRegionStats\_s}}
+\doxyparagraph{\texorpdfstring{availableSpaceInBytes}{availableSpaceInBytes}}
+{\footnotesize\ttfamily \mbox{\hyperlink{HeliOS_8h_a55efca2523f385efc9ded01ce0c27a63}{Word\+\_\+t}} Memory\+Region\+Stats\+\_\+s\+::available\+Space\+In\+Bytes}
+
+The amount of free memory in bytes (i.\+e., number\+Of\+Free\+Blocks $\ast$ CONFIG\+\_\+\+MEMORY\+\_\+\+REGION\+\_\+\+BLOCK\+\_\+\+SIZE). \mbox{\Hypertarget{structMemoryRegionStats__s_a42f27359bddfae0088b141c826e382cd}\label{structMemoryRegionStats__s_a42f27359bddfae0088b141c826e382cd}} 
+\index{MemoryRegionStats\_s@{MemoryRegionStats\_s}!largestFreeEntryInBytes@{largestFreeEntryInBytes}}
+\index{largestFreeEntryInBytes@{largestFreeEntryInBytes}!MemoryRegionStats\_s@{MemoryRegionStats\_s}}
+\doxyparagraph{\texorpdfstring{largestFreeEntryInBytes}{largestFreeEntryInBytes}}
+{\footnotesize\ttfamily \mbox{\hyperlink{HeliOS_8h_a55efca2523f385efc9ded01ce0c27a63}{Word\+\_\+t}} Memory\+Region\+Stats\+\_\+s\+::largest\+Free\+Entry\+In\+Bytes}
+
+The largest free entry in bytes. \mbox{\Hypertarget{structMemoryRegionStats__s_a47dcfebc8af9f33133a066a146a3be07}\label{structMemoryRegionStats__s_a47dcfebc8af9f33133a066a146a3be07}} 
+\index{MemoryRegionStats\_s@{MemoryRegionStats\_s}!minimumEverFreeBytesRemaining@{minimumEverFreeBytesRemaining}}
+\index{minimumEverFreeBytesRemaining@{minimumEverFreeBytesRemaining}!MemoryRegionStats\_s@{MemoryRegionStats\_s}}
+\doxyparagraph{\texorpdfstring{minimumEverFreeBytesRemaining}{minimumEverFreeBytesRemaining}}
+{\footnotesize\ttfamily \mbox{\hyperlink{HeliOS_8h_a55efca2523f385efc9ded01ce0c27a63}{Word\+\_\+t}} Memory\+Region\+Stats\+\_\+s\+::minimum\+Ever\+Free\+Bytes\+Remaining}
+
+Lowest water lever since system initialization of free bytes of memory. \mbox{\Hypertarget{structMemoryRegionStats__s_ac7bfec2786a17e789e506ff95d2ffbdd}\label{structMemoryRegionStats__s_ac7bfec2786a17e789e506ff95d2ffbdd}} 
+\index{MemoryRegionStats\_s@{MemoryRegionStats\_s}!numberOfFreeBlocks@{numberOfFreeBlocks}}
+\index{numberOfFreeBlocks@{numberOfFreeBlocks}!MemoryRegionStats\_s@{MemoryRegionStats\_s}}
+\doxyparagraph{\texorpdfstring{numberOfFreeBlocks}{numberOfFreeBlocks}}
+{\footnotesize\ttfamily \mbox{\hyperlink{HeliOS_8h_a55efca2523f385efc9ded01ce0c27a63}{Word\+\_\+t}} Memory\+Region\+Stats\+\_\+s\+::number\+Of\+Free\+Blocks}
+
+The number of free blocks -\/ see CONFIG\+\_\+\+MEMORY\+\_\+\+REGION\+\_\+\+BLOCK\+\_\+\+SIZE for block size in bytes. \mbox{\Hypertarget{structMemoryRegionStats__s_ab24268b102d72a3a4b3edd24faff7a90}\label{structMemoryRegionStats__s_ab24268b102d72a3a4b3edd24faff7a90}} 
+\index{MemoryRegionStats\_s@{MemoryRegionStats\_s}!smallestFreeEntryInBytes@{smallestFreeEntryInBytes}}
+\index{smallestFreeEntryInBytes@{smallestFreeEntryInBytes}!MemoryRegionStats\_s@{MemoryRegionStats\_s}}
+\doxyparagraph{\texorpdfstring{smallestFreeEntryInBytes}{smallestFreeEntryInBytes}}
+{\footnotesize\ttfamily \mbox{\hyperlink{HeliOS_8h_a55efca2523f385efc9ded01ce0c27a63}{Word\+\_\+t}} Memory\+Region\+Stats\+\_\+s\+::smallest\+Free\+Entry\+In\+Bytes}
+
+The smallest free entry in bytes. \mbox{\Hypertarget{structMemoryRegionStats__s_a791dbc8070fb3e9369bc4df6e64f1adc}\label{structMemoryRegionStats__s_a791dbc8070fb3e9369bc4df6e64f1adc}} 
+\index{MemoryRegionStats\_s@{MemoryRegionStats\_s}!successfulAllocations@{successfulAllocations}}
+\index{successfulAllocations@{successfulAllocations}!MemoryRegionStats\_s@{MemoryRegionStats\_s}}
+\doxyparagraph{\texorpdfstring{successfulAllocations}{successfulAllocations}}
+{\footnotesize\ttfamily \mbox{\hyperlink{HeliOS_8h_a55efca2523f385efc9ded01ce0c27a63}{Word\+\_\+t}} Memory\+Region\+Stats\+\_\+s\+::successful\+Allocations}
+
+Number of successful memory allocations. \mbox{\Hypertarget{structMemoryRegionStats__s_a8fd01325f4d5c02dd558b6c416f1b753}\label{structMemoryRegionStats__s_a8fd01325f4d5c02dd558b6c416f1b753}} 
+\index{MemoryRegionStats\_s@{MemoryRegionStats\_s}!successfulFrees@{successfulFrees}}
+\index{successfulFrees@{successfulFrees}!MemoryRegionStats\_s@{MemoryRegionStats\_s}}
+\doxyparagraph{\texorpdfstring{successfulFrees}{successfulFrees}}
+{\footnotesize\ttfamily \mbox{\hyperlink{HeliOS_8h_a55efca2523f385efc9ded01ce0c27a63}{Word\+\_\+t}} Memory\+Region\+Stats\+\_\+s\+::successful\+Frees}
+
+Number of successful memory \char`\"{}frees\char`\"{}. 
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{HeliOS_8h}{Heli\+OS.\+h}}\end{DoxyCompactItemize}

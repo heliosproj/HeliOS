@@ -1,0 +1,77 @@
+\hypertarget{structSystemInfo__s}{}\doxysubsection{System\+Info\+\_\+s Struct Reference}
+\label{structSystemInfo__s}\index{SystemInfo\_s@{SystemInfo\_s}}
+
+
+Data structure for information about the Heli\+OS system.  
+
+
+\doxysubsubsection*{Data Fields}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{HeliOS_8h_a4a2002797a857c48e6f410256093c826}{Char\+\_\+t}} \mbox{\hyperlink{structSystemInfo__s_a1b81a1eb5e486e2ec386c1b5f0dcce92}{product\+Name}} \mbox{[}OS\+\_\+\+PRODUCT\+\_\+\+NAME\+\_\+\+SIZE\mbox{]}
+\item 
+\mbox{\hyperlink{HeliOS_8h_ae14283a87cf3c2138f54394c84905281}{Base\+\_\+t}} \mbox{\hyperlink{structSystemInfo__s_a67b2c8940aa2a8cc4f87a6b504994ed3}{major\+Version}}
+\item 
+\mbox{\hyperlink{HeliOS_8h_ae14283a87cf3c2138f54394c84905281}{Base\+\_\+t}} \mbox{\hyperlink{structSystemInfo__s_a3d79144f1b41520701318426c596232b}{minor\+Version}}
+\item 
+\mbox{\hyperlink{HeliOS_8h_ae14283a87cf3c2138f54394c84905281}{Base\+\_\+t}} \mbox{\hyperlink{structSystemInfo__s_ac4d48a2176f3f91dfbb7039a6e41b438}{patch\+Version}}
+\item 
+\mbox{\hyperlink{HeliOS_8h_ae14283a87cf3c2138f54394c84905281}{Base\+\_\+t}} \mbox{\hyperlink{structSystemInfo__s_aaa8bdb18b3ebe0162c044979d7213506}{number\+Of\+Tasks}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsubsection{Detailed Description}
+The System\+Info\+\_\+t data structure is used to store information about the Heli\+OS system and is returned by \mbox{\hyperlink{HeliOS_8h_a6adf6cb4c7cc3989055b9cb464e2afab}{x\+System\+Get\+System\+Info()}}. The System\+Info\+\_\+t structure should be declared as x\+System\+Info.
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{HeliOS_8h_a650adb1330d40375d65bc90f23c4f5e2}{x\+System\+Info}} 
+
+\mbox{\hyperlink{HeliOS_8h_a6adf6cb4c7cc3989055b9cb464e2afab}{x\+System\+Get\+System\+Info()}} 
+
+OS\+\_\+\+PRODUCT\+\_\+\+NAME\+\_\+\+SIZE 
+
+\mbox{\hyperlink{HeliOS_8h_a0d4765ea27e4a15d0b944ce62db5f059}{x\+Mem\+Free()}}
+\end{DoxySeeAlso}
+\begin{DoxyAttention}{Attention}
+The memory allocated for the data structure must be freed by calling \mbox{\hyperlink{HeliOS_8h_a0d4765ea27e4a15d0b944ce62db5f059}{x\+Mem\+Free()}}.
+
+The product name is {\itshape NOT} null terminated and thus Standard C Library string functions such as strcmp(), strcpy() and strlen(), which expect a null terminated char array, must not be used to manipulate the product name. 
+\end{DoxyAttention}
+
+
+\doxysubsubsection{Field Documentation}
+\mbox{\Hypertarget{structSystemInfo__s_a67b2c8940aa2a8cc4f87a6b504994ed3}\label{structSystemInfo__s_a67b2c8940aa2a8cc4f87a6b504994ed3}} 
+\index{SystemInfo\_s@{SystemInfo\_s}!majorVersion@{majorVersion}}
+\index{majorVersion@{majorVersion}!SystemInfo\_s@{SystemInfo\_s}}
+\doxyparagraph{\texorpdfstring{majorVersion}{majorVersion}}
+{\footnotesize\ttfamily \mbox{\hyperlink{HeliOS_8h_ae14283a87cf3c2138f54394c84905281}{Base\+\_\+t}} System\+Info\+\_\+s\+::major\+Version}
+
+The Sem\+Ver major version number of Heli\+OS. \mbox{\Hypertarget{structSystemInfo__s_a3d79144f1b41520701318426c596232b}\label{structSystemInfo__s_a3d79144f1b41520701318426c596232b}} 
+\index{SystemInfo\_s@{SystemInfo\_s}!minorVersion@{minorVersion}}
+\index{minorVersion@{minorVersion}!SystemInfo\_s@{SystemInfo\_s}}
+\doxyparagraph{\texorpdfstring{minorVersion}{minorVersion}}
+{\footnotesize\ttfamily \mbox{\hyperlink{HeliOS_8h_ae14283a87cf3c2138f54394c84905281}{Base\+\_\+t}} System\+Info\+\_\+s\+::minor\+Version}
+
+The Sem\+Ver minor version number of Heli\+OS. \mbox{\Hypertarget{structSystemInfo__s_aaa8bdb18b3ebe0162c044979d7213506}\label{structSystemInfo__s_aaa8bdb18b3ebe0162c044979d7213506}} 
+\index{SystemInfo\_s@{SystemInfo\_s}!numberOfTasks@{numberOfTasks}}
+\index{numberOfTasks@{numberOfTasks}!SystemInfo\_s@{SystemInfo\_s}}
+\doxyparagraph{\texorpdfstring{numberOfTasks}{numberOfTasks}}
+{\footnotesize\ttfamily \mbox{\hyperlink{HeliOS_8h_ae14283a87cf3c2138f54394c84905281}{Base\+\_\+t}} System\+Info\+\_\+s\+::number\+Of\+Tasks}
+
+The number of tasks regardless of their state. \mbox{\Hypertarget{structSystemInfo__s_ac4d48a2176f3f91dfbb7039a6e41b438}\label{structSystemInfo__s_ac4d48a2176f3f91dfbb7039a6e41b438}} 
+\index{SystemInfo\_s@{SystemInfo\_s}!patchVersion@{patchVersion}}
+\index{patchVersion@{patchVersion}!SystemInfo\_s@{SystemInfo\_s}}
+\doxyparagraph{\texorpdfstring{patchVersion}{patchVersion}}
+{\footnotesize\ttfamily \mbox{\hyperlink{HeliOS_8h_ae14283a87cf3c2138f54394c84905281}{Base\+\_\+t}} System\+Info\+\_\+s\+::patch\+Version}
+
+The Sem\+Ver patch version number of Heli\+OS. \mbox{\Hypertarget{structSystemInfo__s_a1b81a1eb5e486e2ec386c1b5f0dcce92}\label{structSystemInfo__s_a1b81a1eb5e486e2ec386c1b5f0dcce92}} 
+\index{SystemInfo\_s@{SystemInfo\_s}!productName@{productName}}
+\index{productName@{productName}!SystemInfo\_s@{SystemInfo\_s}}
+\doxyparagraph{\texorpdfstring{productName}{productName}}
+{\footnotesize\ttfamily \mbox{\hyperlink{HeliOS_8h_a4a2002797a857c48e6f410256093c826}{Char\+\_\+t}} System\+Info\+\_\+s\+::product\+Name\mbox{[}OS\+\_\+\+PRODUCT\+\_\+\+NAME\+\_\+\+SIZE\mbox{]}}
+
+The ASCII product name of the operating system (always \char`\"{}\+Heli\+OS\char`\"{}). 
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{HeliOS_8h}{Heli\+OS.\+h}}\end{DoxyCompactItemize}

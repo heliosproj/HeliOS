@@ -1,0 +1,55 @@
+\hypertarget{structQueueMessage__s}{}\doxysubsection{Queue\+Message\+\_\+s Struct Reference}
+\label{structQueueMessage__s}\index{QueueMessage\_s@{QueueMessage\_s}}
+
+
+Data structure for a queue message.  
+
+
+\doxysubsubsection*{Data Fields}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{HeliOS_8h_ae14283a87cf3c2138f54394c84905281}{Base\+\_\+t}} \mbox{\hyperlink{structQueueMessage__s_a524d4b6cca3c157e722a99e4d2333756}{message\+Bytes}}
+\item 
+\mbox{\hyperlink{HeliOS_8h_a4a2002797a857c48e6f410256093c826}{Char\+\_\+t}} \mbox{\hyperlink{structQueueMessage__s_a78d721ea121095e6fb7abad6f8f6612d}{message\+Value}} \mbox{[}\mbox{\hyperlink{config_8h_a88f1f5ebde9127ba41a40bab3fce6f05}{CONFIG\+\_\+\+MESSAGE\+\_\+\+VALUE\+\_\+\+BYTES}}\mbox{]}
+\end{DoxyCompactItemize}
+
+
+\doxysubsubsection{Detailed Description}
+The Queue\+Message\+\_\+t stucture is used to store a queue message and is returned by \mbox{\hyperlink{HeliOS_8h_a64f2a699dbbe6e9ca1131633522fc799}{x\+Queue\+Receive()}} and \mbox{\hyperlink{HeliOS_8h_a0183c622db0b9ac27c8d2069783115e2}{x\+Queue\+Peek()}}. The Queue\+Message\+\_\+t stucture should be declared as x\+Queue\+Message.
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{HeliOS_8h_a80734ed41b6102c7c639a008fa6cb8af}{x\+Queue\+Message}} 
+
+\mbox{\hyperlink{HeliOS_8h_a64f2a699dbbe6e9ca1131633522fc799}{x\+Queue\+Receive()}} 
+
+\mbox{\hyperlink{HeliOS_8h_a0183c622db0b9ac27c8d2069783115e2}{x\+Queue\+Peek()}} 
+
+\mbox{\hyperlink{config_8h_a88f1f5ebde9127ba41a40bab3fce6f05}{CONFIG\+\_\+\+MESSAGE\+\_\+\+VALUE\+\_\+\+BYTES}} 
+
+\mbox{\hyperlink{HeliOS_8h_a0d4765ea27e4a15d0b944ce62db5f059}{x\+Mem\+Free()}}
+\end{DoxySeeAlso}
+\begin{DoxyAttention}{Attention}
+The memory allocated for the data structure must be freed by calling \mbox{\hyperlink{HeliOS_8h_a0d4765ea27e4a15d0b944ce62db5f059}{x\+Mem\+Free()}}.
+
+The message value is {\itshape NOT} null terminated and thus Standard C Library string functions such as strcmp(), strcpy() and strlen(), which expect a null terminated char array, must not be used to manipulate the message value. 
+\end{DoxyAttention}
+
+
+\doxysubsubsection{Field Documentation}
+\mbox{\Hypertarget{structQueueMessage__s_a524d4b6cca3c157e722a99e4d2333756}\label{structQueueMessage__s_a524d4b6cca3c157e722a99e4d2333756}} 
+\index{QueueMessage\_s@{QueueMessage\_s}!messageBytes@{messageBytes}}
+\index{messageBytes@{messageBytes}!QueueMessage\_s@{QueueMessage\_s}}
+\doxyparagraph{\texorpdfstring{messageBytes}{messageBytes}}
+{\footnotesize\ttfamily \mbox{\hyperlink{HeliOS_8h_ae14283a87cf3c2138f54394c84905281}{Base\+\_\+t}} Queue\+Message\+\_\+s\+::message\+Bytes}
+
+The number of bytes contained in the message value which cannot exceed CONFIG\+\_\+\+MESSAGE\+\_\+\+VALUE\+\_\+\+BYTES. \mbox{\Hypertarget{structQueueMessage__s_a78d721ea121095e6fb7abad6f8f6612d}\label{structQueueMessage__s_a78d721ea121095e6fb7abad6f8f6612d}} 
+\index{QueueMessage\_s@{QueueMessage\_s}!messageValue@{messageValue}}
+\index{messageValue@{messageValue}!QueueMessage\_s@{QueueMessage\_s}}
+\doxyparagraph{\texorpdfstring{messageValue}{messageValue}}
+{\footnotesize\ttfamily \mbox{\hyperlink{HeliOS_8h_a4a2002797a857c48e6f410256093c826}{Char\+\_\+t}} Queue\+Message\+\_\+s\+::message\+Value\mbox{[}\mbox{\hyperlink{config_8h_a88f1f5ebde9127ba41a40bab3fce6f05}{CONFIG\+\_\+\+MESSAGE\+\_\+\+VALUE\+\_\+\+BYTES}}\mbox{]}}
+
+The ASCII queue message value -\/ this is {\itshape NOT} a null terminated character array. 
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{HeliOS_8h}{Heli\+OS.\+h}}\end{DoxyCompactItemize}

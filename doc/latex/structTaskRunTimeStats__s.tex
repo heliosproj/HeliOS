@@ -1,0 +1,60 @@
+\hypertarget{structTaskRunTimeStats__s}{}\doxysubsection{Task\+Run\+Time\+Stats\+\_\+s Struct Reference}
+\label{structTaskRunTimeStats__s}\index{TaskRunTimeStats\_s@{TaskRunTimeStats\_s}}
+
+
+Data structure for task runtime statistics.  
+
+
+\doxysubsubsection*{Data Fields}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{HeliOS_8h_ae14283a87cf3c2138f54394c84905281}{Base\+\_\+t}} \mbox{\hyperlink{structTaskRunTimeStats__s_a884bd24cc1743b509726ab4235bda9ac}{id}}
+\item 
+\mbox{\hyperlink{HeliOS_8h_adc3179fe1ebd66c93c66c97f8b75379d}{Ticks\+\_\+t}} \mbox{\hyperlink{structTaskRunTimeStats__s_ae394a44004833d98b2e4f6b48d6bb098}{last\+Run\+Time}}
+\item 
+\mbox{\hyperlink{HeliOS_8h_adc3179fe1ebd66c93c66c97f8b75379d}{Ticks\+\_\+t}} \mbox{\hyperlink{structTaskRunTimeStats__s_ad31d07449d143afbf018effe753e64bb}{total\+Run\+Time}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsubsection{Detailed Description}
+The Task\+Run\+Time\+Stats\+\_\+t data structure is used by \mbox{\hyperlink{HeliOS_8h_ae5f109c8018ac7b5a67aba96721c7074}{x\+Task\+Get\+Task\+Run\+Time\+Stats()}} and x\+Task\+Get\+All\+Runtime\+Stats() to obtain runtime statistics about a task. The Task\+Run\+Time\+Stats\+\_\+t type should be declared as x\+Task\+Run\+Time\+Stats.
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{HeliOS_8h_a683bc802b930afa1b94641b28d310a81}{x\+Task\+Run\+Time\+Stats}} 
+
+\mbox{\hyperlink{HeliOS_8h_ae5f109c8018ac7b5a67aba96721c7074}{x\+Task\+Get\+Task\+Run\+Time\+Stats()}} 
+
+\mbox{\hyperlink{HeliOS_8h_a1706519c129337c2facbbb3d6ec3b78f}{x\+Task\+Get\+All\+Run\+Time\+Stats()}} 
+\end{DoxySeeAlso}
+\begin{DoxyAttention}{Attention}
+The memory allocated for the data struture must be freed by calling \mbox{\hyperlink{HeliOS_8h_a0d4765ea27e4a15d0b944ce62db5f059}{x\+Mem\+Free()}}. 
+\end{DoxyAttention}
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{HeliOS_8h_a0d4765ea27e4a15d0b944ce62db5f059}{x\+Mem\+Free()}} 
+\end{DoxySeeAlso}
+
+
+\doxysubsubsection{Field Documentation}
+\mbox{\Hypertarget{structTaskRunTimeStats__s_a884bd24cc1743b509726ab4235bda9ac}\label{structTaskRunTimeStats__s_a884bd24cc1743b509726ab4235bda9ac}} 
+\index{TaskRunTimeStats\_s@{TaskRunTimeStats\_s}!id@{id}}
+\index{id@{id}!TaskRunTimeStats\_s@{TaskRunTimeStats\_s}}
+\doxyparagraph{\texorpdfstring{id}{id}}
+{\footnotesize\ttfamily \mbox{\hyperlink{HeliOS_8h_ae14283a87cf3c2138f54394c84905281}{Base\+\_\+t}} Task\+Run\+Time\+Stats\+\_\+s\+::id}
+
+The ID of the task referenced by the task handle. \mbox{\Hypertarget{structTaskRunTimeStats__s_ae394a44004833d98b2e4f6b48d6bb098}\label{structTaskRunTimeStats__s_ae394a44004833d98b2e4f6b48d6bb098}} 
+\index{TaskRunTimeStats\_s@{TaskRunTimeStats\_s}!lastRunTime@{lastRunTime}}
+\index{lastRunTime@{lastRunTime}!TaskRunTimeStats\_s@{TaskRunTimeStats\_s}}
+\doxyparagraph{\texorpdfstring{lastRunTime}{lastRunTime}}
+{\footnotesize\ttfamily \mbox{\hyperlink{HeliOS_8h_adc3179fe1ebd66c93c66c97f8b75379d}{Ticks\+\_\+t}} Task\+Run\+Time\+Stats\+\_\+s\+::last\+Run\+Time}
+
+The duration in ticks of the task\textquotesingle{}s last runtime. \mbox{\Hypertarget{structTaskRunTimeStats__s_ad31d07449d143afbf018effe753e64bb}\label{structTaskRunTimeStats__s_ad31d07449d143afbf018effe753e64bb}} 
+\index{TaskRunTimeStats\_s@{TaskRunTimeStats\_s}!totalRunTime@{totalRunTime}}
+\index{totalRunTime@{totalRunTime}!TaskRunTimeStats\_s@{TaskRunTimeStats\_s}}
+\doxyparagraph{\texorpdfstring{totalRunTime}{totalRunTime}}
+{\footnotesize\ttfamily \mbox{\hyperlink{HeliOS_8h_adc3179fe1ebd66c93c66c97f8b75379d}{Ticks\+\_\+t}} Task\+Run\+Time\+Stats\+\_\+s\+::total\+Run\+Time}
+
+The duration in ticks of the task\textquotesingle{}s total runtime. 
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{HeliOS_8h}{Heli\+OS.\+h}}\end{DoxyCompactItemize}

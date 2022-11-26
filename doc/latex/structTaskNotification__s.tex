@@ -1,0 +1,57 @@
+\hypertarget{structTaskNotification__s}{}\doxysubsection{Task\+Notification\+\_\+s Struct Reference}
+\label{structTaskNotification__s}\index{TaskNotification\_s@{TaskNotification\_s}}
+
+
+Data structure for a direct to task notification.  
+
+
+\doxysubsubsection*{Data Fields}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{HeliOS_8h_ae14283a87cf3c2138f54394c84905281}{Base\+\_\+t}} \mbox{\hyperlink{structTaskNotification__s_ab1c630df1d337ed2b1fd8ce0fd9d6a2e}{notification\+Bytes}}
+\item 
+\mbox{\hyperlink{HeliOS_8h_a4a2002797a857c48e6f410256093c826}{Char\+\_\+t}} \mbox{\hyperlink{structTaskNotification__s_a32581659d346157556bf43245254ff6b}{notification\+Value}} \mbox{[}\mbox{\hyperlink{config_8h_aecad5ee8f24de28dc3df88cbc6c4b24f}{CONFIG\+\_\+\+NOTIFICATION\+\_\+\+VALUE\+\_\+\+BYTES}}\mbox{]}
+\end{DoxyCompactItemize}
+
+
+\doxysubsubsection{Detailed Description}
+The Task\+Notification\+\_\+t data structure is used by \mbox{\hyperlink{HeliOS_8h_a6d6720b61c53a25f1435e2244f695952}{x\+Task\+Notify\+Give()}} and \mbox{\hyperlink{HeliOS_8h_abe3e24aeda10f58c64d3c4f07b656248}{x\+Task\+Notify\+Take()}} to send and receive direct to task notifications. Direct to task notifications are part of the event-\/driven multitasking model. A direct to task notifcation may be received by event-\/driven and co-\/operative tasks alike. However, the benefit of direct to task notifications may only be realized by tasks scheduled as event-\/driven. In order to wait for a direct to task notification, the task must be in a \char`\"{}waiting\char`\"{} state which is set by \mbox{\hyperlink{HeliOS_8h_aea800988094ef870f58a4303afe82625}{x\+Task\+Wait()}}. The Task\+Notification\+\_\+t type should be declared as x\+Task\+Notification.
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{HeliOS_8h_a3871294c92fece52f9487c63b96ece4b}{x\+Task\+Notification}} 
+\end{DoxySeeAlso}
+\begin{DoxyAttention}{Attention}
+The memory allocated for the data struture must be freed by calling \mbox{\hyperlink{HeliOS_8h_a0d4765ea27e4a15d0b944ce62db5f059}{x\+Mem\+Free()}}. 
+\end{DoxyAttention}
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{HeliOS_8h_a0d4765ea27e4a15d0b944ce62db5f059}{x\+Mem\+Free()}} 
+
+\mbox{\hyperlink{HeliOS_8h_a6d6720b61c53a25f1435e2244f695952}{x\+Task\+Notify\+Give()}} 
+
+\mbox{\hyperlink{HeliOS_8h_abe3e24aeda10f58c64d3c4f07b656248}{x\+Task\+Notify\+Take()}} 
+
+\mbox{\hyperlink{HeliOS_8h_aea800988094ef870f58a4303afe82625}{x\+Task\+Wait()}}
+\end{DoxySeeAlso}
+\begin{DoxyAttention}{Attention}
+The notification value is {\itshape NOT} null terminated and thus Standard C Library string functions such as strcmp(), strcpy() and strlen(), which expect a null terminated char array, must not be used to manipulate the notification value. 
+\end{DoxyAttention}
+
+
+\doxysubsubsection{Field Documentation}
+\mbox{\Hypertarget{structTaskNotification__s_ab1c630df1d337ed2b1fd8ce0fd9d6a2e}\label{structTaskNotification__s_ab1c630df1d337ed2b1fd8ce0fd9d6a2e}} 
+\index{TaskNotification\_s@{TaskNotification\_s}!notificationBytes@{notificationBytes}}
+\index{notificationBytes@{notificationBytes}!TaskNotification\_s@{TaskNotification\_s}}
+\doxyparagraph{\texorpdfstring{notificationBytes}{notificationBytes}}
+{\footnotesize\ttfamily \mbox{\hyperlink{HeliOS_8h_ae14283a87cf3c2138f54394c84905281}{Base\+\_\+t}} Task\+Notification\+\_\+s\+::notification\+Bytes}
+
+The length in bytes of the notification value which cannot exceed CONFIG\+\_\+\+NOTIFICATION\+\_\+\+VALUE\+\_\+\+BYTES. \mbox{\Hypertarget{structTaskNotification__s_a32581659d346157556bf43245254ff6b}\label{structTaskNotification__s_a32581659d346157556bf43245254ff6b}} 
+\index{TaskNotification\_s@{TaskNotification\_s}!notificationValue@{notificationValue}}
+\index{notificationValue@{notificationValue}!TaskNotification\_s@{TaskNotification\_s}}
+\doxyparagraph{\texorpdfstring{notificationValue}{notificationValue}}
+{\footnotesize\ttfamily \mbox{\hyperlink{HeliOS_8h_a4a2002797a857c48e6f410256093c826}{Char\+\_\+t}} Task\+Notification\+\_\+s\+::notification\+Value\mbox{[}\mbox{\hyperlink{config_8h_aecad5ee8f24de28dc3df88cbc6c4b24f}{CONFIG\+\_\+\+NOTIFICATION\+\_\+\+VALUE\+\_\+\+BYTES}}\mbox{]}}
+
+The notification value whose length is specified by the notification bytes member. 
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{HeliOS_8h}{Heli\+OS.\+h}}\end{DoxyCompactItemize}
