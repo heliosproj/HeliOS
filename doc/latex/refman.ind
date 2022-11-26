@@ -1,0 +1,522 @@
+\begin{theindex}
+
+  \item {Addr\_t}
+    \subitem {HeliOS.h}, \hyperpage{19}
+  \item {availableSpaceInBytes}
+    \subitem {MemoryRegionStats\_s}, \hyperpage{3}
+
+  \indexspace
+
+  \item {Base\_t}
+    \subitem {HeliOS.h}, \hyperpage{19}
+  \item {Byte\_t}
+    \subitem {HeliOS.h}, \hyperpage{20}
+
+  \indexspace
+
+  \item {Char\_t}
+    \subitem {HeliOS.h}, \hyperpage{20}
+  \item {config.h}, \hyperpage{10}
+    \subitem {CONFIG\_MEMORY\_REGION\_BLOCK\_SIZE}, \hyperpage{11}
+    \subitem {CONFIG\_MEMORY\_REGION\_SIZE\_IN\_BLOCKS}, \hyperpage{11}
+    \subitem {CONFIG\_MESSAGE\_VALUE\_BYTES}, \hyperpage{11}
+    \subitem {CONFIG\_NOTIFICATION\_VALUE\_BYTES}, \hyperpage{12}
+    \subitem {CONFIG\_QUEUE\_MINIMUM\_LIMIT}, \hyperpage{12}
+    \subitem {CONFIG\_STREAM\_BUFFER\_BYTES}, \hyperpage{13}
+    \subitem {CONFIG\_TASK\_NAME\_BYTES}, \hyperpage{13}
+    \subitem {CONFIG\_TASK\_WD\_TIMER\_ENABLE}, \hyperpage{13}
+  \item {CONFIG\_MEMORY\_REGION\_BLOCK\_SIZE}
+    \subitem {config.h}, \hyperpage{11}
+  \item {CONFIG\_MEMORY\_REGION\_SIZE\_IN\_BLOCKS}
+    \subitem {config.h}, \hyperpage{11}
+  \item {CONFIG\_MESSAGE\_VALUE\_BYTES}
+    \subitem {config.h}, \hyperpage{11}
+  \item {CONFIG\_NOTIFICATION\_VALUE\_BYTES}
+    \subitem {config.h}, \hyperpage{12}
+  \item {CONFIG\_QUEUE\_MINIMUM\_LIMIT}
+    \subitem {config.h}, \hyperpage{12}
+  \item {CONFIG\_STREAM\_BUFFER\_BYTES}
+    \subitem {config.h}, \hyperpage{13}
+  \item {CONFIG\_TASK\_NAME\_BYTES}
+    \subitem {config.h}, \hyperpage{13}
+  \item {CONFIG\_TASK\_WD\_TIMER\_ENABLE}
+    \subitem {config.h}, \hyperpage{13}
+
+  \indexspace
+
+  \item {Device\_t}
+    \subitem {HeliOS.h}, \hyperpage{20}
+
+  \indexspace
+
+  \item {HalfWord\_t}
+    \subitem {HeliOS.h}, \hyperpage{20}
+  \item {HeliOS.h}, \hyperpage{13}
+    \subitem {Addr\_t}, \hyperpage{19}
+    \subitem {Base\_t}, \hyperpage{19}
+    \subitem {Byte\_t}, \hyperpage{20}
+    \subitem {Char\_t}, \hyperpage{20}
+    \subitem {Device\_t}, \hyperpage{20}
+    \subitem {HalfWord\_t}, \hyperpage{20}
+    \subitem {MemoryRegionStats\_t}, \hyperpage{21}
+    \subitem {Queue\_t}, \hyperpage{21}
+    \subitem {QueueMessage\_t}, \hyperpage{21}
+    \subitem {SchedulerState\_t}, \hyperpage{31}
+    \subitem {SchedulerStateError}, \hyperpage{32}
+    \subitem {SchedulerStateRunning}, \hyperpage{32}
+    \subitem {SchedulerStateSuspended}, \hyperpage{32}
+    \subitem {Size\_t}, \hyperpage{22}
+    \subitem {StreamBuffer\_t}, \hyperpage{22}
+    \subitem {SystemInfo\_t}, \hyperpage{22}
+    \subitem {Task\_t}, \hyperpage{23}
+    \subitem {TaskInfo\_t}, \hyperpage{23}
+    \subitem {TaskNotification\_t}, \hyperpage{24}
+    \subitem {TaskParm\_t}, \hyperpage{24}
+    \subitem {TaskRunTimeStats\_t}, \hyperpage{25}
+    \subitem {TaskState\_t}, \hyperpage{32}
+    \subitem {TaskStateError}, \hyperpage{32}
+    \subitem {TaskStateRunning}, \hyperpage{32}
+    \subitem {TaskStateSuspended}, \hyperpage{32}
+    \subitem {TaskStateWaiting}, \hyperpage{32}
+    \subitem {Ticks\_t}, \hyperpage{25}
+    \subitem {Timer\_t}, \hyperpage{25}
+    \subitem {Word\_t}, \hyperpage{26}
+    \subitem {xAddr}, \hyperpage{26}
+    \subitem {xBase}, \hyperpage{26}
+    \subitem {xByte}, \hyperpage{26}
+    \subitem {xChar}, \hyperpage{27}
+    \subitem {xDevice}, \hyperpage{27}
+    \subitem {xDeviceConfigDevice}, \hyperpage{32}
+    \subitem {xDeviceInitDevice}, \hyperpage{33}
+    \subitem {xDeviceIsAvailable}, \hyperpage{33}
+    \subitem {xDeviceRead}, \hyperpage{34}
+    \subitem {xDeviceRegisterDevice}, \hyperpage{34}
+    \subitem {xDeviceSimpleRead}, \hyperpage{35}
+    \subitem {xDeviceSimpleWrite}, \hyperpage{35}
+    \subitem {xDeviceWrite}, \hyperpage{35}
+    \subitem {xHalfWord}, \hyperpage{27}
+    \subitem {xMemAlloc}, \hyperpage{36}
+    \subitem {xMemFree}, \hyperpage{37}
+    \subitem {xMemGetHeapStats}, \hyperpage{37}
+    \subitem {xMemGetKernelStats}, \hyperpage{37}
+    \subitem {xMemGetSize}, \hyperpage{38}
+    \subitem {xMemGetUsed}, \hyperpage{38}
+    \subitem {xMemoryRegionStats}, \hyperpage{27}
+    \subitem {xQueue}, \hyperpage{27}
+    \subitem {xQueueCreate}, \hyperpage{39}
+    \subitem {xQueueDelete}, \hyperpage{39}
+    \subitem {xQueueDropMessage}, \hyperpage{40}
+    \subitem {xQueueGetLength}, \hyperpage{40}
+    \subitem {xQueueIsQueueEmpty}, \hyperpage{40}
+    \subitem {xQueueIsQueueFull}, \hyperpage{41}
+    \subitem {xQueueLockQueue}, \hyperpage{41}
+    \subitem {xQueueMessage}, \hyperpage{28}
+    \subitem {xQueueMessagesWaiting}, \hyperpage{41}
+    \subitem {xQueuePeek}, \hyperpage{42}
+    \subitem {xQueueReceive}, \hyperpage{42}
+    \subitem {xQueueSend}, \hyperpage{43}
+    \subitem {xQueueUnLockQueue}, \hyperpage{43}
+    \subitem {xSchedulerState}, \hyperpage{28}
+    \subitem {xSize}, \hyperpage{28}
+    \subitem {xStreamBuffer}, \hyperpage{28}
+    \subitem {xStreamBytesAvailable}, \hyperpage{44}
+    \subitem {xStreamCreate}, \hyperpage{44}
+    \subitem {xStreamDelete}, \hyperpage{44}
+    \subitem {xStreamIsEmpty}, \hyperpage{45}
+    \subitem {xStreamIsFull}, \hyperpage{45}
+    \subitem {xStreamReceive}, \hyperpage{45}
+    \subitem {xStreamReset}, \hyperpage{46}
+    \subitem {xStreamSend}, \hyperpage{46}
+    \subitem {xSystemGetSystemInfo}, \hyperpage{46}
+    \subitem {xSystemHalt}, \hyperpage{47}
+    \subitem {xSystemInfo}, \hyperpage{29}
+    \subitem {xSystemInit}, \hyperpage{47}
+    \subitem {xTask}, \hyperpage{29}
+    \subitem {xTaskChangePeriod}, \hyperpage{47}
+    \subitem {xTaskChangeWDPeriod}, \hyperpage{48}
+    \subitem {xTaskCreate}, \hyperpage{48}
+    \subitem {xTaskDelete}, \hyperpage{49}
+    \subitem {xTaskGetAllRunTimeStats}, \hyperpage{49}
+    \subitem {xTaskGetAllTaskInfo}, \hyperpage{50}
+    \subitem {xTaskGetHandleById}, \hyperpage{50}
+    \subitem {xTaskGetHandleByName}, \hyperpage{51}
+    \subitem {xTaskGetId}, \hyperpage{51}
+    \subitem {xTaskGetName}, \hyperpage{51}
+    \subitem {xTaskGetNumberOfTasks}, \hyperpage{52}
+    \subitem {xTaskGetPeriod}, \hyperpage{52}
+    \subitem {xTaskGetSchedulerState}, \hyperpage{53}
+    \subitem {xTaskGetTaskInfo}, \hyperpage{53}
+    \subitem {xTaskGetTaskRunTimeStats}, \hyperpage{54}
+    \subitem {xTaskGetTaskState}, \hyperpage{54}
+    \subitem {xTaskGetWDPeriod}, \hyperpage{55}
+    \subitem {xTaskInfo}, \hyperpage{29}
+    \subitem {xTaskNotification}, \hyperpage{30}
+    \subitem {xTaskNotificationIsWaiting}, \hyperpage{55}
+    \subitem {xTaskNotifyGive}, \hyperpage{55}
+    \subitem {xTaskNotifyStateClear}, \hyperpage{56}
+    \subitem {xTaskNotifyTake}, \hyperpage{56}
+    \subitem {xTaskParm}, \hyperpage{30}
+    \subitem {xTaskResetTimer}, \hyperpage{57}
+    \subitem {xTaskResume}, \hyperpage{57}
+    \subitem {xTaskResumeAll}, \hyperpage{58}
+    \subitem {xTaskRunTimeStats}, \hyperpage{30}
+    \subitem {xTaskStartScheduler}, \hyperpage{58}
+    \subitem {xTaskState}, \hyperpage{30}
+    \subitem {xTaskSuspend}, \hyperpage{58}
+    \subitem {xTaskSuspendAll}, \hyperpage{58}
+    \subitem {xTaskWait}, \hyperpage{59}
+    \subitem {xTicks}, \hyperpage{31}
+    \subitem {xTimer}, \hyperpage{31}
+    \subitem {xTimerChangePeriod}, \hyperpage{59}
+    \subitem {xTimerCreate}, \hyperpage{59}
+    \subitem {xTimerDelete}, \hyperpage{60}
+    \subitem {xTimerGetPeriod}, \hyperpage{60}
+    \subitem {xTimerHasTimerExpired}, \hyperpage{61}
+    \subitem {xTimerIsTimerActive}, \hyperpage{61}
+    \subitem {xTimerReset}, \hyperpage{62}
+    \subitem {xTimerStart}, \hyperpage{62}
+    \subitem {xTimerStop}, \hyperpage{62}
+    \subitem {xWord}, \hyperpage{31}
+
+  \indexspace
+
+  \item {id}
+    \subitem {TaskInfo\_s}, \hyperpage{7}
+    \subitem {TaskRunTimeStats\_s}, \hyperpage{9}
+
+  \indexspace
+
+  \item {largestFreeEntryInBytes}
+    \subitem {MemoryRegionStats\_s}, \hyperpage{3}
+  \item {lastRunTime}
+    \subitem {TaskInfo\_s}, \hyperpage{7}
+    \subitem {TaskRunTimeStats\_s}, \hyperpage{9}
+
+  \indexspace
+
+  \item {majorVersion}
+    \subitem {SystemInfo\_s}, \hyperpage{5}
+  \item {MemoryRegionStats\_s}, \hyperpage{2}
+    \subitem {availableSpaceInBytes}, \hyperpage{3}
+    \subitem {largestFreeEntryInBytes}, \hyperpage{3}
+    \subitem {minimumEverFreeBytesRemaining}, \hyperpage{3}
+    \subitem {numberOfFreeBlocks}, \hyperpage{3}
+    \subitem {smallestFreeEntryInBytes}, \hyperpage{3}
+    \subitem {successfulAllocations}, \hyperpage{3}
+    \subitem {successfulFrees}, \hyperpage{4}
+  \item {MemoryRegionStats\_t}
+    \subitem {HeliOS.h}, \hyperpage{21}
+  \item {messageBytes}
+    \subitem {QueueMessage\_s}, \hyperpage{4}
+  \item {messageValue}
+    \subitem {QueueMessage\_s}, \hyperpage{5}
+  \item {minimumEverFreeBytesRemaining}
+    \subitem {MemoryRegionStats\_s}, \hyperpage{3}
+  \item {minorVersion}
+    \subitem {SystemInfo\_s}, \hyperpage{6}
+
+  \indexspace
+
+  \item {name}
+    \subitem {TaskInfo\_s}, \hyperpage{7}
+  \item {notificationBytes}
+    \subitem {TaskNotification\_s}, \hyperpage{8}
+  \item {notificationValue}
+    \subitem {TaskNotification\_s}, \hyperpage{8}
+  \item {numberOfFreeBlocks}
+    \subitem {MemoryRegionStats\_s}, \hyperpage{3}
+  \item {numberOfTasks}
+    \subitem {SystemInfo\_s}, \hyperpage{6}
+
+  \indexspace
+
+  \item {patchVersion}
+    \subitem {SystemInfo\_s}, \hyperpage{6}
+  \item {productName}
+    \subitem {SystemInfo\_s}, \hyperpage{6}
+
+  \indexspace
+
+  \item {Queue\_t}
+    \subitem {HeliOS.h}, \hyperpage{21}
+  \item {QueueMessage\_s}, \hyperpage{4}
+    \subitem {messageBytes}, \hyperpage{4}
+    \subitem {messageValue}, \hyperpage{5}
+  \item {QueueMessage\_t}
+    \subitem {HeliOS.h}, \hyperpage{21}
+
+  \indexspace
+
+  \item {SchedulerState\_t}
+    \subitem {HeliOS.h}, \hyperpage{31}
+  \item {SchedulerStateError}
+    \subitem {HeliOS.h}, \hyperpage{32}
+  \item {SchedulerStateRunning}
+    \subitem {HeliOS.h}, \hyperpage{32}
+  \item {SchedulerStateSuspended}
+    \subitem {HeliOS.h}, \hyperpage{32}
+  \item {Size\_t}
+    \subitem {HeliOS.h}, \hyperpage{22}
+  \item {smallestFreeEntryInBytes}
+    \subitem {MemoryRegionStats\_s}, \hyperpage{3}
+  \item {state}
+    \subitem {TaskInfo\_s}, \hyperpage{7}
+  \item {StreamBuffer\_t}
+    \subitem {HeliOS.h}, \hyperpage{22}
+  \item {successfulAllocations}
+    \subitem {MemoryRegionStats\_s}, \hyperpage{3}
+  \item {successfulFrees}
+    \subitem {MemoryRegionStats\_s}, \hyperpage{4}
+  \item {SystemInfo\_s}, \hyperpage{5}
+    \subitem {majorVersion}, \hyperpage{5}
+    \subitem {minorVersion}, \hyperpage{6}
+    \subitem {numberOfTasks}, \hyperpage{6}
+    \subitem {patchVersion}, \hyperpage{6}
+    \subitem {productName}, \hyperpage{6}
+  \item {SystemInfo\_t}
+    \subitem {HeliOS.h}, \hyperpage{22}
+
+  \indexspace
+
+  \item {Task\_t}
+    \subitem {HeliOS.h}, \hyperpage{23}
+  \item {TaskInfo\_s}, \hyperpage{6}
+    \subitem {id}, \hyperpage{7}
+    \subitem {lastRunTime}, \hyperpage{7}
+    \subitem {name}, \hyperpage{7}
+    \subitem {state}, \hyperpage{7}
+    \subitem {totalRunTime}, \hyperpage{7}
+  \item {TaskInfo\_t}
+    \subitem {HeliOS.h}, \hyperpage{23}
+  \item {TaskNotification\_s}, \hyperpage{7}
+    \subitem {notificationBytes}, \hyperpage{8}
+    \subitem {notificationValue}, \hyperpage{8}
+  \item {TaskNotification\_t}
+    \subitem {HeliOS.h}, \hyperpage{24}
+  \item {TaskParm\_t}
+    \subitem {HeliOS.h}, \hyperpage{24}
+  \item {TaskRunTimeStats\_s}, \hyperpage{8}
+    \subitem {id}, \hyperpage{9}
+    \subitem {lastRunTime}, \hyperpage{9}
+    \subitem {totalRunTime}, \hyperpage{9}
+  \item {TaskRunTimeStats\_t}
+    \subitem {HeliOS.h}, \hyperpage{25}
+  \item {TaskState\_t}
+    \subitem {HeliOS.h}, \hyperpage{32}
+  \item {TaskStateError}
+    \subitem {HeliOS.h}, \hyperpage{32}
+  \item {TaskStateRunning}
+    \subitem {HeliOS.h}, \hyperpage{32}
+  \item {TaskStateSuspended}
+    \subitem {HeliOS.h}, \hyperpage{32}
+  \item {TaskStateWaiting}
+    \subitem {HeliOS.h}, \hyperpage{32}
+  \item {Ticks\_t}
+    \subitem {HeliOS.h}, \hyperpage{25}
+  \item {Timer\_t}
+    \subitem {HeliOS.h}, \hyperpage{25}
+  \item {totalRunTime}
+    \subitem {TaskInfo\_s}, \hyperpage{7}
+    \subitem {TaskRunTimeStats\_s}, \hyperpage{9}
+
+  \indexspace
+
+  \item {Word\_t}
+    \subitem {HeliOS.h}, \hyperpage{26}
+
+  \indexspace
+
+  \item {xAddr}
+    \subitem {HeliOS.h}, \hyperpage{26}
+  \item {xBase}
+    \subitem {HeliOS.h}, \hyperpage{26}
+  \item {xByte}
+    \subitem {HeliOS.h}, \hyperpage{26}
+  \item {xChar}
+    \subitem {HeliOS.h}, \hyperpage{27}
+  \item {xDevice}
+    \subitem {HeliOS.h}, \hyperpage{27}
+  \item {xDeviceConfigDevice}
+    \subitem {HeliOS.h}, \hyperpage{32}
+  \item {xDeviceInitDevice}
+    \subitem {HeliOS.h}, \hyperpage{33}
+  \item {xDeviceIsAvailable}
+    \subitem {HeliOS.h}, \hyperpage{33}
+  \item {xDeviceRead}
+    \subitem {HeliOS.h}, \hyperpage{34}
+  \item {xDeviceRegisterDevice}
+    \subitem {HeliOS.h}, \hyperpage{34}
+  \item {xDeviceSimpleRead}
+    \subitem {HeliOS.h}, \hyperpage{35}
+  \item {xDeviceSimpleWrite}
+    \subitem {HeliOS.h}, \hyperpage{35}
+  \item {xDeviceWrite}
+    \subitem {HeliOS.h}, \hyperpage{35}
+  \item {xHalfWord}
+    \subitem {HeliOS.h}, \hyperpage{27}
+  \item {xMemAlloc}
+    \subitem {HeliOS.h}, \hyperpage{36}
+  \item {xMemFree}
+    \subitem {HeliOS.h}, \hyperpage{37}
+  \item {xMemGetHeapStats}
+    \subitem {HeliOS.h}, \hyperpage{37}
+  \item {xMemGetKernelStats}
+    \subitem {HeliOS.h}, \hyperpage{37}
+  \item {xMemGetSize}
+    \subitem {HeliOS.h}, \hyperpage{38}
+  \item {xMemGetUsed}
+    \subitem {HeliOS.h}, \hyperpage{38}
+  \item {xMemoryRegionStats}
+    \subitem {HeliOS.h}, \hyperpage{27}
+  \item {xQueue}
+    \subitem {HeliOS.h}, \hyperpage{27}
+  \item {xQueueCreate}
+    \subitem {HeliOS.h}, \hyperpage{39}
+  \item {xQueueDelete}
+    \subitem {HeliOS.h}, \hyperpage{39}
+  \item {xQueueDropMessage}
+    \subitem {HeliOS.h}, \hyperpage{40}
+  \item {xQueueGetLength}
+    \subitem {HeliOS.h}, \hyperpage{40}
+  \item {xQueueIsQueueEmpty}
+    \subitem {HeliOS.h}, \hyperpage{40}
+  \item {xQueueIsQueueFull}
+    \subitem {HeliOS.h}, \hyperpage{41}
+  \item {xQueueLockQueue}
+    \subitem {HeliOS.h}, \hyperpage{41}
+  \item {xQueueMessage}
+    \subitem {HeliOS.h}, \hyperpage{28}
+  \item {xQueueMessagesWaiting}
+    \subitem {HeliOS.h}, \hyperpage{41}
+  \item {xQueuePeek}
+    \subitem {HeliOS.h}, \hyperpage{42}
+  \item {xQueueReceive}
+    \subitem {HeliOS.h}, \hyperpage{42}
+  \item {xQueueSend}
+    \subitem {HeliOS.h}, \hyperpage{43}
+  \item {xQueueUnLockQueue}
+    \subitem {HeliOS.h}, \hyperpage{43}
+  \item {xSchedulerState}
+    \subitem {HeliOS.h}, \hyperpage{28}
+  \item {xSize}
+    \subitem {HeliOS.h}, \hyperpage{28}
+  \item {xStreamBuffer}
+    \subitem {HeliOS.h}, \hyperpage{28}
+  \item {xStreamBytesAvailable}
+    \subitem {HeliOS.h}, \hyperpage{44}
+  \item {xStreamCreate}
+    \subitem {HeliOS.h}, \hyperpage{44}
+  \item {xStreamDelete}
+    \subitem {HeliOS.h}, \hyperpage{44}
+  \item {xStreamIsEmpty}
+    \subitem {HeliOS.h}, \hyperpage{45}
+  \item {xStreamIsFull}
+    \subitem {HeliOS.h}, \hyperpage{45}
+  \item {xStreamReceive}
+    \subitem {HeliOS.h}, \hyperpage{45}
+  \item {xStreamReset}
+    \subitem {HeliOS.h}, \hyperpage{46}
+  \item {xStreamSend}
+    \subitem {HeliOS.h}, \hyperpage{46}
+  \item {xSystemGetSystemInfo}
+    \subitem {HeliOS.h}, \hyperpage{46}
+  \item {xSystemHalt}
+    \subitem {HeliOS.h}, \hyperpage{47}
+  \item {xSystemInfo}
+    \subitem {HeliOS.h}, \hyperpage{29}
+  \item {xSystemInit}
+    \subitem {HeliOS.h}, \hyperpage{47}
+  \item {xTask}
+    \subitem {HeliOS.h}, \hyperpage{29}
+  \item {xTaskChangePeriod}
+    \subitem {HeliOS.h}, \hyperpage{47}
+  \item {xTaskChangeWDPeriod}
+    \subitem {HeliOS.h}, \hyperpage{48}
+  \item {xTaskCreate}
+    \subitem {HeliOS.h}, \hyperpage{48}
+  \item {xTaskDelete}
+    \subitem {HeliOS.h}, \hyperpage{49}
+  \item {xTaskGetAllRunTimeStats}
+    \subitem {HeliOS.h}, \hyperpage{49}
+  \item {xTaskGetAllTaskInfo}
+    \subitem {HeliOS.h}, \hyperpage{50}
+  \item {xTaskGetHandleById}
+    \subitem {HeliOS.h}, \hyperpage{50}
+  \item {xTaskGetHandleByName}
+    \subitem {HeliOS.h}, \hyperpage{51}
+  \item {xTaskGetId}
+    \subitem {HeliOS.h}, \hyperpage{51}
+  \item {xTaskGetName}
+    \subitem {HeliOS.h}, \hyperpage{51}
+  \item {xTaskGetNumberOfTasks}
+    \subitem {HeliOS.h}, \hyperpage{52}
+  \item {xTaskGetPeriod}
+    \subitem {HeliOS.h}, \hyperpage{52}
+  \item {xTaskGetSchedulerState}
+    \subitem {HeliOS.h}, \hyperpage{53}
+  \item {xTaskGetTaskInfo}
+    \subitem {HeliOS.h}, \hyperpage{53}
+  \item {xTaskGetTaskRunTimeStats}
+    \subitem {HeliOS.h}, \hyperpage{54}
+  \item {xTaskGetTaskState}
+    \subitem {HeliOS.h}, \hyperpage{54}
+  \item {xTaskGetWDPeriod}
+    \subitem {HeliOS.h}, \hyperpage{55}
+  \item {xTaskInfo}
+    \subitem {HeliOS.h}, \hyperpage{29}
+  \item {xTaskNotification}
+    \subitem {HeliOS.h}, \hyperpage{30}
+  \item {xTaskNotificationIsWaiting}
+    \subitem {HeliOS.h}, \hyperpage{55}
+  \item {xTaskNotifyGive}
+    \subitem {HeliOS.h}, \hyperpage{55}
+  \item {xTaskNotifyStateClear}
+    \subitem {HeliOS.h}, \hyperpage{56}
+  \item {xTaskNotifyTake}
+    \subitem {HeliOS.h}, \hyperpage{56}
+  \item {xTaskParm}
+    \subitem {HeliOS.h}, \hyperpage{30}
+  \item {xTaskResetTimer}
+    \subitem {HeliOS.h}, \hyperpage{57}
+  \item {xTaskResume}
+    \subitem {HeliOS.h}, \hyperpage{57}
+  \item {xTaskResumeAll}
+    \subitem {HeliOS.h}, \hyperpage{58}
+  \item {xTaskRunTimeStats}
+    \subitem {HeliOS.h}, \hyperpage{30}
+  \item {xTaskStartScheduler}
+    \subitem {HeliOS.h}, \hyperpage{58}
+  \item {xTaskState}
+    \subitem {HeliOS.h}, \hyperpage{30}
+  \item {xTaskSuspend}
+    \subitem {HeliOS.h}, \hyperpage{58}
+  \item {xTaskSuspendAll}
+    \subitem {HeliOS.h}, \hyperpage{58}
+  \item {xTaskWait}
+    \subitem {HeliOS.h}, \hyperpage{59}
+  \item {xTicks}
+    \subitem {HeliOS.h}, \hyperpage{31}
+  \item {xTimer}
+    \subitem {HeliOS.h}, \hyperpage{31}
+  \item {xTimerChangePeriod}
+    \subitem {HeliOS.h}, \hyperpage{59}
+  \item {xTimerCreate}
+    \subitem {HeliOS.h}, \hyperpage{59}
+  \item {xTimerDelete}
+    \subitem {HeliOS.h}, \hyperpage{60}
+  \item {xTimerGetPeriod}
+    \subitem {HeliOS.h}, \hyperpage{60}
+  \item {xTimerHasTimerExpired}
+    \subitem {HeliOS.h}, \hyperpage{61}
+  \item {xTimerIsTimerActive}
+    \subitem {HeliOS.h}, \hyperpage{61}
+  \item {xTimerReset}
+    \subitem {HeliOS.h}, \hyperpage{62}
+  \item {xTimerStart}
+    \subitem {HeliOS.h}, \hyperpage{62}
+  \item {xTimerStop}
+    \subitem {HeliOS.h}, \hyperpage{62}
+  \item {xWord}
+    \subitem {HeliOS.h}, \hyperpage{31}
+
+\end{theindex}

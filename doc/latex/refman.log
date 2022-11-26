@@ -1,0 +1,2404 @@
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2022.11.26)  26 NOV 2022 22:09
+entering extended mode
+ restricted \write18 enabled.
+ %&-line parsing enabled.
+**refman
+(./refman.tex
+LaTeX2e <2021-11-15> patch level 1
+L3 programming layer <2022-01-21>
+(/usr/share/texlive/texmf-dist/tex/latex/base/article.cls
+Document Class: article 2021/10/04 v1.4n Standard LaTeX document class
+(/usr/share/texlive/texmf-dist/tex/latex/base/size10.clo
+File: size10.clo 2021/10/04 v1.4n Standard LaTeX file (size option)
+)
+\c@part=\count185
+\c@section=\count186
+\c@subsection=\count187
+\c@subsubsection=\count188
+\c@paragraph=\count189
+\c@subparagraph=\count190
+\c@figure=\count191
+\c@table=\count192
+\abovecaptionskip=\skip47
+\belowcaptionskip=\skip48
+\bibindent=\dimen138
+)
+(/usr/share/texlive/texmf-dist/tex/latex/base/ifthen.sty
+Package: ifthen 2020/11/24 v1.1c Standard LaTeX ifthen package (DPC)
+)
+(/usr/share/texlive/texmf-dist/tex/latex/tools/array.sty
+Rollback for package 'array' requested -> date 2016-10-06.
+         Best approximation is the release introduced on 2016-10-06.
+
+(/usr/share/texlive/texmf-dist/tex/latex/tools/array-2016-10-06.sty
+Package: array 2016/10/06 v2.4d Tabular extension package (FMi)
+\col@sep=\dimen139
+\extrarowheight=\dimen140
+\NC@list=\toks16
+\extratabsurround=\skip49
+\backup@length=\skip50
+))
+(/usr/share/texlive/texmf-dist/tex/latex/base/fixltx2e.sty
+Package: fixltx2e 2016/12/29 v2.1a fixes to LaTeX (obsolete)
+Applying: [2015/01/01] Old fixltx2e package on input line 46.
+
+
+Package fixltx2e Warning: fixltx2e is not required with releases after 2015
+(fixltx2e)                All fixes are now in the LaTeX kernel.
+(fixltx2e)                See the latexrelease package for details.
+
+Already applied: [0000/00/00] Old fixltx2e package on input line 53.
+) (./doxygen.sty
+Package: doxygen 
+ (/usr/share/texlive/texmf-dist/tex/latex/base/alltt.sty
+Package: alltt 2021/01/29 v2.0g defines alltt environment
+)
+(/usr/share/texlive/texmf-dist/tex/latex/tools/calc.sty
+Package: calc 2017/05/25 v4.3 Infix arithmetic (KKT,FJ)
+\calc@Acount=\count193
+\calc@Bcount=\count194
+\calc@Adimen=\dimen141
+\calc@Bdimen=\dimen142
+\calc@Askip=\skip51
+\calc@Bskip=\skip52
+LaTeX Info: Redefining \setlength on input line 80.
+LaTeX Info: Redefining \addtolength on input line 81.
+\calc@Ccount=\count195
+\calc@Cskip=\skip53
+)
+(/usr/share/texlive/texmf-dist/tex/latex/float/float.sty
+Package: float 2001/11/08 v1.3d Float enhancements (AL)
+\c@float@type=\count196
+\float@exts=\toks17
+\float@box=\box50
+\@float@everytoks=\toks18
+\@floatcapt=\box51
+)
+(/usr/share/texlive/texmf-dist/tex/latex/tools/verbatim.sty
+Package: verbatim 2020-07-07 v1.5u LaTeX2e package for verbatim enhancements
+\every@verbatim=\toks19
+\verbatim@line=\toks20
+\verbatim@in@stream=\read2
+)
+(/usr/share/texlive/texmf-dist/tex/latex/xcolor/xcolor.sty
+Package: xcolor 2021/10/31 v2.13 LaTeX color extensions (UK)
+
+(/usr/share/texlive/texmf-dist/tex/latex/graphics-cfg/color.cfg
+File: color.cfg 2016/01/02 v1.6 sample color configuration
+)
+Package xcolor Info: Driver file: pdftex.def on input line 227.
+
+(/usr/share/texlive/texmf-dist/tex/latex/graphics-def/pdftex.def
+File: pdftex.def 2020/10/05 v1.2a Graphics/color driver for pdftex
+)
+(/usr/share/texlive/texmf-dist/tex/latex/colortbl/colortbl.sty
+Package: colortbl 2020/01/04 v1.0e Color table columns (DPC)
+\everycr=\toks21
+\minrowclearance=\skip54
+)
+\rownum=\count197
+Package xcolor Info: Model `cmy' substituted by `cmy0' on input line 1352.
+Package xcolor Info: Model `hsb' substituted by `rgb' on input line 1356.
+Package xcolor Info: Model `RGB' extended on input line 1368.
+Package xcolor Info: Model `HTML' substituted by `rgb' on input line 1370.
+Package xcolor Info: Model `Hsb' substituted by `hsb' on input line 1371.
+Package xcolor Info: Model `tHsb' substituted by `hsb' on input line 1372.
+Package xcolor Info: Model `HSB' substituted by `hsb' on input line 1373.
+Package xcolor Info: Model `Gray' substituted by `gray' on input line 1374.
+Package xcolor Info: Model `wave' substituted by `hsb' on input line 1375.
+)
+(./longtable_doxygen.sty
+Package: longtable_doxygen 2014/10/28 v4.11 Multi-page Table package (DPC) - fr
+ozen version for doxygen
+\LTleft=\skip55
+\LTright=\skip56
+\LTpre=\skip57
+\LTpost=\skip58
+\LTchunksize=\count198
+\LTcapwidth=\dimen143
+\LT@head=\box52
+\LT@firsthead=\box53
+\LT@foot=\box54
+\LT@lastfoot=\box55
+\LT@cols=\count199
+\LT@rows=\count266
+\c@LT@tables=\count267
+\c@LT@chunks=\count268
+\LT@p@ftn=\toks22
+) (./tabu_doxygen.sty
+Package: tabu_doxygen 2011/02/26 v2.8 - flexible LaTeX tabulars (FC), frozen ve
+rsion for doxygen
+
+(/usr/share/texlive/texmf-dist/tex/latex/varwidth/varwidth.sty
+Package: varwidth 2009/03/30 ver 0.92;  Variable-width minipages
+\@vwid@box=\box56
+\sift@deathcycles=\count269
+\@vwid@loff=\dimen144
+\@vwid@roff=\dimen145
+)
+\c@taburow=\count270
+\tabu@nbcols=\count271
+\tabu@cnt=\count272
+\tabu@Xcol=\count273
+\tabu@alloc=\count274
+\tabu@nested=\count275
+\tabu@target=\dimen146
+\tabu@spreadtarget=\dimen147
+\tabu@naturalX=\dimen148
+\tabucolX=\dimen149
+\tabu@Xsum=\dimen150
+\extrarowdepth=\dimen151
+\abovetabulinesep=\dimen152
+\belowtabulinesep=\dimen153
+\tabustrutrule=\dimen154
+\tabu@thebody=\toks23
+\tabu@footnotes=\toks24
+\tabu@box=\box57
+\tabu@arstrutbox=\box58
+\tabu@hleads=\box59
+\tabu@vleads=\box60
+\tabu@cellskip=\skip59
+)
+(/usr/share/texlive/texmf-dist/tex/latex/fancyvrb/fancyvrb.sty
+Package: fancyvrb 2021/12/21 4.1b verbatim text (tvz,hv)
+
+(/usr/share/texlive/texmf-dist/tex/latex/graphics/keyval.sty
+Package: keyval 2014/10/28 v1.15 key=value parser (DPC)
+\KV@toks@=\toks25
+)
+\FV@CodeLineNo=\count276
+\FV@InFile=\read3
+\FV@TabBox=\box61
+\c@FancyVerbLine=\count277
+\FV@StepNumber=\count278
+\FV@OutFile=\write3
+)
+(/usr/share/texlive/texmf-dist/tex/latex/tools/tabularx.sty
+Package: tabularx 2020/01/15 v2.11c `tabularx' package (DPC)
+\TX@col@width=\dimen155
+\TX@old@table=\dimen156
+\TX@old@col=\dimen157
+\TX@target=\dimen158
+\TX@delta=\dimen159
+\TX@cols=\count279
+\TX@ftn=\toks26
+)
+(/usr/share/texlive/texmf-dist/tex/latex/tools/multicol.sty
+Package: multicol 2021/10/28 v1.9b multicolumn formatting (FMi)
+\c@tracingmulticols=\count280
+\mult@box=\box62
+\multicol@leftmargin=\dimen160
+\c@unbalance=\count281
+\c@collectmore=\count282
+\doublecol@number=\count283
+\multicoltolerance=\count284
+\multicolpretolerance=\count285
+\full@width=\dimen161
+\page@free=\dimen162
+\premulticols=\dimen163
+\postmulticols=\dimen164
+\multicolsep=\skip60
+\multicolbaselineskip=\skip61
+\partial@page=\box63
+\last@line=\box64
+\maxbalancingoverflow=\dimen165
+\mult@rightbox=\box65
+\mult@grightbox=\box66
+\mult@firstbox=\box67
+\mult@gfirstbox=\box68
+\@tempa=\box69
+\@tempa=\box70
+\@tempa=\box71
+\@tempa=\box72
+\@tempa=\box73
+\@tempa=\box74
+\@tempa=\box75
+\@tempa=\box76
+\@tempa=\box77
+\@tempa=\box78
+\@tempa=\box79
+\@tempa=\box80
+\@tempa=\box81
+\@tempa=\box82
+\@tempa=\box83
+\@tempa=\box84
+\@tempa=\box85
+\@tempa=\box86
+\@tempa=\box87
+\@tempa=\box88
+\@tempa=\box89
+\@tempa=\box90
+\@tempa=\box91
+\@tempa=\box92
+\@tempa=\box93
+\@tempa=\box94
+\@tempa=\box95
+\@tempa=\box96
+\@tempa=\box97
+\@tempa=\box98
+\@tempa=\box99
+\@tempa=\box100
+\@tempa=\box101
+\@tempa=\box102
+\@tempa=\box103
+\@tempa=\box104
+\c@minrows=\count286
+\c@columnbadness=\count287
+\c@finalcolumnbadness=\count288
+\last@try=\dimen166
+\multicolovershoot=\dimen167
+\multicolundershoot=\dimen168
+\mult@nat@firstbox=\box105
+\colbreak@box=\box106
+\mc@col@check@num=\count289
+)
+(/usr/share/texlive/texmf-dist/tex/latex/multirow/multirow.sty
+Package: multirow 2021/03/15 v2.8 Span multiple rows of a table
+\multirow@colwidth=\skip62
+\multirow@cntb=\count290
+\multirow@dima=\skip63
+\bigstrutjot=\dimen169
+)
+(/usr/share/texlive/texmf-dist/tex/latex/hanging/hanging.sty
+Package: hanging 2009/09/02 v1.2b hanging paragraphs and punctuation
+\h@ngcommawd=\skip64
+\h@ngfstopwd=\skip65
+\h@ngquotewd=\skip66
+\h@ngdquotewd=\skip67
+\h@ngquerywd=\skip68
+\h@ngexclwd=\skip69
+\h@ngcolonwd=\skip70
+\h@ngscolonwd=\skip71
+)
+(/usr/share/texlive/texmf-dist/tex/generic/iftex/ifpdf.sty
+Package: ifpdf 2019/10/25 v3.4 ifpdf legacy package. Use iftex instead.
+
+(/usr/share/texlive/texmf-dist/tex/generic/iftex/iftex.sty
+Package: iftex 2020/03/06 v1.0d TeX engine tests
+))
+(/usr/share/texlive/texmf-dist/tex/latex/adjustbox/adjustbox.sty
+Package: adjustbox 2020/08/19 v1.3 Adjusting TeX boxes (trim, clip, ...)
+
+(/usr/share/texlive/texmf-dist/tex/latex/xkeyval/xkeyval.sty
+Package: xkeyval 2020/11/20 v2.8 package option processing (HA)
+
+(/usr/share/texlive/texmf-dist/tex/generic/xkeyval/xkeyval.tex
+(/usr/share/texlive/texmf-dist/tex/generic/xkeyval/xkvutils.tex
+\XKV@toks=\toks27
+\XKV@tempa@toks=\toks28
+)
+\XKV@depth=\count291
+File: xkeyval.tex 2014/12/03 v2.7a key=value parser (HA)
+))
+(/usr/share/texlive/texmf-dist/tex/latex/adjustbox/adjcalc.sty
+Package: adjcalc 2012/05/16 v1.1 Provides advanced setlength with multiple back
+-ends (calc, etex, pgfmath)
+)
+(/usr/share/texlive/texmf-dist/tex/latex/adjustbox/trimclip.sty
+Package: trimclip 2020/08/19 v1.2 Trim and clip general TeX material
+
+(/usr/share/texlive/texmf-dist/tex/latex/graphics/graphicx.sty
+Package: graphicx 2021/09/16 v1.2d Enhanced LaTeX Graphics (DPC,SPQR)
+
+(/usr/share/texlive/texmf-dist/tex/latex/graphics/graphics.sty
+Package: graphics 2021/03/04 v1.4d Standard LaTeX Graphics (DPC,SPQR)
+
+(/usr/share/texlive/texmf-dist/tex/latex/graphics/trig.sty
+Package: trig 2021/08/11 v1.11 sin cos tan (DPC)
+)
+(/usr/share/texlive/texmf-dist/tex/latex/graphics-cfg/graphics.cfg
+File: graphics.cfg 2016/06/04 v1.11 sample graphics configuration
+)
+Package graphics Info: Driver file: pdftex.def on input line 107.
+)
+\Gin@req@height=\dimen170
+\Gin@req@width=\dimen171
+)
+(/usr/share/texlive/texmf-dist/tex/latex/collectbox/collectbox.sty
+Package: collectbox 2012/05/17 v0.4b Collect macro arguments as boxes
+\collectedbox=\box107
+)
+\tc@llx=\dimen172
+\tc@lly=\dimen173
+\tc@urx=\dimen174
+\tc@ury=\dimen175
+Package trimclip Info: Using driver 'tc-pdftex.def'.
+
+(/usr/share/texlive/texmf-dist/tex/latex/adjustbox/tc-pdftex.def
+File: tc-pdftex.def 2019/01/04 v2.2 Clipping driver for pdftex
+))
+\adjbox@Width=\dimen176
+\adjbox@Height=\dimen177
+\adjbox@Depth=\dimen178
+\adjbox@Totalheight=\dimen179
+\adjbox@pwidth=\dimen180
+\adjbox@pheight=\dimen181
+\adjbox@pdepth=\dimen182
+\adjbox@ptotalheight=\dimen183
+
+(/usr/share/texlive/texmf-dist/tex/latex/ifoddpage/ifoddpage.sty
+Package: ifoddpage 2016/04/23 v1.1 Conditionals for odd/even page detection
+\c@checkoddpage=\count292
+))
+(/usr/share/texlive/texmf-dist/tex/latex/amsfonts/amssymb.sty
+Package: amssymb 2013/01/14 v3.01 AMS font symbols
+
+(/usr/share/texlive/texmf-dist/tex/latex/amsfonts/amsfonts.sty
+Package: amsfonts 2013/01/14 v3.01 Basic AMSFonts support
+\@emptytoks=\toks29
+\symAMSa=\mathgroup4
+\symAMSb=\mathgroup5
+LaTeX Font Info:    Redeclaring math symbol \hbar on input line 98.
+LaTeX Font Info:    Overwriting math alphabet `\mathfrak' in version `bold'
+(Font)                  U/euf/m/n --> U/euf/b/n on input line 106.
+))
+(/usr/share/texlive/texmf-dist/tex/latex/stackengine/stackengine.sty
+Package: stackengine 2021/07/22 v4.11\ Stacking text and objects in convenient 
+ways
+
+(/usr/share/texlive/texmf-dist/tex/latex/etoolbox/etoolbox.sty
+Package: etoolbox 2020/10/05 v2.5k e-TeX tools for LaTeX (JAW)
+\etb@tempcnta=\count293
+)
+(/usr/share/texlive/texmf-dist/tex/generic/listofitems/listofitems.sty
+(/usr/share/texlive/texmf-dist/tex/generic/listofitems/listofitems.tex
+\loi_cnt_foreach_nest=\count294
+\loi_nestcnt=\count295
+)
+Package: listofitems 2019/08/21 v1.63 Grab items in lists using user-specified 
+sep char (CT)
+)
+\c@@stackindex=\count296
+\@boxshift=\skip72
+\stack@tmplength=\skip73
+\temp@stkl=\skip74
+\@stackedboxwidth=\skip75
+\@addedbox=\box108
+\@anchorbox=\box109
+\@insetbox=\box110
+\se@backgroundbox=\box111
+\stackedbox=\box112
+\@centerbox=\box113
+\c@ROWcellindex@=\count297
+)
+(/usr/share/texlive/texmf-dist/tex/generic/ulem/ulem.sty
+\UL@box=\box114
+\UL@hyphenbox=\box115
+\UL@skip=\skip76
+\UL@hook=\toks30
+\UL@height=\dimen184
+\UL@pe=\count298
+\UL@pixel=\dimen185
+\ULC@box=\box116
+Package: ulem 2019/11/18
+\ULdepth=\dimen186
+)
+\xrefbox=\box117
+\xreflength=\skip77
+\CodeWidthChar=\skip78
+\CodeHeightChar=\skip79
+\DoxyCodeWidth=\skip80
+)
+(/usr/share/texlive/texmf-dist/tex/latex/base/inputenc.sty
+Package: inputenc 2021/02/14 v1.3d Input encoding file
+\inpenc@prehook=\toks31
+\inpenc@posthook=\toks32
+)
+(/usr/share/texlive/texmf-dist/tex/latex/base/makeidx.sty
+Package: makeidx 2021/10/04 v1.0m Standard LaTeX package
+)
+(/usr/share/texlive/texmf-dist/tex/latex/base/textcomp.sty
+Package: textcomp 2020/02/02 v2.0n Standard LaTeX package
+)
+(/usr/share/texlive/texmf-dist/tex/latex/wasysym/wasysym.sty
+Package: wasysym 2020/01/19 v2.4 Wasy-2 symbol support package
+\symwasy=\mathgroup6
+LaTeX Font Info:    Overwriting symbol font `wasy' in version `bold'
+(Font)                  U/wasy/m/n --> U/wasy/b/n on input line 93.
+)
+(/usr/share/texlive/texmf-dist/tex/generic/iftex/ifxetex.sty
+Package: ifxetex 2019/10/25 v0.7 ifxetex legacy package. Use iftex instead.
+)
+(/usr/share/texlive/texmf-dist/tex/latex/base/fontenc.sty
+Package: fontenc 2021/04/29 v2.0v Standard LaTeX package
+)
+(/usr/share/texlive/texmf-dist/tex/latex/psnfss/helvet.sty
+Package: helvet 2020/03/25 PSNFSS-v9.3 (WaS) 
+)
+(/usr/share/texlive/texmf-dist/tex/latex/psnfss/courier.sty
+Package: courier 2020/03/25 PSNFSS-v9.3 (WaS) 
+)
+(/usr/share/texlive/texmf-dist/tex/latex/sectsty/sectsty.sty
+Package: sectsty 2002/02/25 v2.0.2 Commands to change all sectional heading sty
+les
+
+
+LaTeX Warning: Command \underbar  has changed.
+               Check if current package is valid.
+
+
+LaTeX Warning: Command \underline  has changed.
+               Check if current package is valid.
+
+) (/usr/share/texlive/texmf-dist/tex/latex/geometry/geometry.sty
+Package: geometry 2020/01/02 v5.9 Page Geometry
+
+(/usr/share/texlive/texmf-dist/tex/generic/iftex/ifvtex.sty
+Package: ifvtex 2019/10/25 v1.7 ifvtex legacy package. Use iftex instead.
+)
+\Gm@cnth=\count299
+\Gm@cntv=\count300
+\c@Gm@tempcnt=\count301
+\Gm@bindingoffset=\dimen187
+\Gm@wd@mp=\dimen188
+\Gm@odd@mp=\dimen189
+\Gm@even@mp=\dimen190
+\Gm@layoutwidth=\dimen191
+\Gm@layoutheight=\dimen192
+\Gm@layouthoffset=\dimen193
+\Gm@layoutvoffset=\dimen194
+\Gm@dimlist=\toks33
+)
+(/usr/share/texlive/texmf-dist/tex/latex/fancyhdr/fancyhdr.sty
+Package: fancyhdr 2021/01/28 v4.0.1 Extensive control of page headers and foote
+rs
+\f@nch@headwidth=\skip81
+\f@nch@O@elh=\skip82
+\f@nch@O@erh=\skip83
+\f@nch@O@olh=\skip84
+\f@nch@O@orh=\skip85
+\f@nch@O@elf=\skip86
+\f@nch@O@erf=\skip87
+\f@nch@O@olf=\skip88
+\f@nch@O@orf=\skip89
+)
+(/usr/share/texlive/texmf-dist/tex/latex/natbib/natbib.sty
+Package: natbib 2010/09/13 8.31b (PWD, AO)
+\bibhang=\skip90
+\bibsep=\skip91
+LaTeX Info: Redefining \cite on input line 694.
+\c@NAT@ctr=\count302
+)
+(/usr/share/texlive/texmf-dist/tex/latex/tocloft/tocloft.sty
+Package: tocloft 2017/08/31 v2.3i parameterised ToC, etc., typesetting
+Package tocloft Info: The document has section divisions on input line 51.
+\cftparskip=\skip92
+\cftbeforetoctitleskip=\skip93
+\cftaftertoctitleskip=\skip94
+\cftbeforepartskip=\skip95
+\cftpartnumwidth=\skip96
+\cftpartindent=\skip97
+\cftbeforesecskip=\skip98
+\cftsecindent=\skip99
+\cftsecnumwidth=\skip100
+\cftbeforesubsecskip=\skip101
+\cftsubsecindent=\skip102
+\cftsubsecnumwidth=\skip103
+\cftbeforesubsubsecskip=\skip104
+\cftsubsubsecindent=\skip105
+\cftsubsubsecnumwidth=\skip106
+\cftbeforeparaskip=\skip107
+\cftparaindent=\skip108
+\cftparanumwidth=\skip109
+\cftbeforesubparaskip=\skip110
+\cftsubparaindent=\skip111
+\cftsubparanumwidth=\skip112
+\cftbeforeloftitleskip=\skip113
+\cftafterloftitleskip=\skip114
+\cftbeforefigskip=\skip115
+\cftfigindent=\skip116
+\cftfignumwidth=\skip117
+\c@lofdepth=\count303
+\c@lotdepth=\count304
+\cftbeforelottitleskip=\skip118
+\cftafterlottitleskip=\skip119
+\cftbeforetabskip=\skip120
+\cfttabindent=\skip121
+\cfttabnumwidth=\skip122
+)
+\@indexfile=\write4
+\openout4 = `refman.idx'.
+
+
+Writing index file refman.idx
+(/usr/share/texlive/texmf-dist/tex/latex/newunicodechar/newunicodechar.sty
+Package: newunicodechar 2018/04/08 v1.2 Defining Unicode characters
+)
+
+Package newunicodechar Warning: Redefining Unicode character on input line 112.
+
+
+
+Package newunicodechar Warning: Redefining Unicode character on input line 113.
+
+
+(/usr/share/texlive/texmf-dist/tex/latex/hyperref/hyperref.sty
+Package: hyperref 2021-06-07 v7.00m Hypertext links for LaTeX
+
+(/usr/share/texlive/texmf-dist/tex/generic/ltxcmds/ltxcmds.sty
+Package: ltxcmds 2020-05-10 v1.25 LaTeX kernel commands for general use (HO)
+)
+(/usr/share/texlive/texmf-dist/tex/generic/pdftexcmds/pdftexcmds.sty
+Package: pdftexcmds 2020-06-27 v0.33 Utility functions of pdfTeX for LuaTeX (HO
+)
+
+(/usr/share/texlive/texmf-dist/tex/generic/infwarerr/infwarerr.sty
+Package: infwarerr 2019/12/03 v1.5 Providing info/warning/error messages (HO)
+)
+Package pdftexcmds Info: \pdf@primitive is available.
+Package pdftexcmds Info: \pdf@ifprimitive is available.
+Package pdftexcmds Info: \pdfdraftmode found.
+)
+(/usr/share/texlive/texmf-dist/tex/generic/kvsetkeys/kvsetkeys.sty
+Package: kvsetkeys 2019/12/15 v1.18 Key value parser (HO)
+)
+(/usr/share/texlive/texmf-dist/tex/generic/kvdefinekeys/kvdefinekeys.sty
+Package: kvdefinekeys 2019-12-19 v1.6 Define keys (HO)
+)
+(/usr/share/texlive/texmf-dist/tex/generic/pdfescape/pdfescape.sty
+Package: pdfescape 2019/12/09 v1.15 Implements pdfTeX's escape features (HO)
+)
+(/usr/share/texlive/texmf-dist/tex/latex/hycolor/hycolor.sty
+Package: hycolor 2020-01-27 v1.10 Color options for hyperref/bookmark (HO)
+)
+(/usr/share/texlive/texmf-dist/tex/latex/letltxmacro/letltxmacro.sty
+Package: letltxmacro 2019/12/03 v1.6 Let assignment for LaTeX macros (HO)
+)
+(/usr/share/texlive/texmf-dist/tex/latex/auxhook/auxhook.sty
+Package: auxhook 2019-12-17 v1.6 Hooks for auxiliary files (HO)
+)
+(/usr/share/texlive/texmf-dist/tex/latex/kvoptions/kvoptions.sty
+Package: kvoptions 2020-10-07 v3.14 Key value format for package options (HO)
+)
+\@linkdim=\dimen195
+\Hy@linkcounter=\count305
+\Hy@pagecounter=\count306
+
+(/usr/share/texlive/texmf-dist/tex/latex/hyperref/pd1enc.def
+File: pd1enc.def 2021-06-07 v7.00m Hyperref: PDFDocEncoding definition (HO)
+Now handling font encoding PD1 ...
+... no UTF-8 mapping file for font encoding PD1
+)
+(/usr/share/texlive/texmf-dist/tex/latex/hyperref/hyperref-langpatches.def
+File: hyperref-langpatches.def 2021-06-07 v7.00m Hyperref: patches for babel la
+nguages
+)
+(/usr/share/texlive/texmf-dist/tex/generic/intcalc/intcalc.sty
+Package: intcalc 2019/12/15 v1.3 Expandable calculations with integers (HO)
+)
+(/usr/share/texlive/texmf-dist/tex/generic/etexcmds/etexcmds.sty
+Package: etexcmds 2019/12/15 v1.7 Avoid name clashes with e-TeX commands (HO)
+)
+\Hy@SavedSpaceFactor=\count307
+
+(/usr/share/texlive/texmf-dist/tex/latex/hyperref/puenc.def
+File: puenc.def 2021-06-07 v7.00m Hyperref: PDF Unicode definition (HO)
+Now handling font encoding PU ...
+... no UTF-8 mapping file for font encoding PU
+)
+Package hyperref Info: Hyper figures OFF on input line 4192.
+Package hyperref Info: Link nesting OFF on input line 4197.
+Package hyperref Info: Hyper index ON on input line 4200.
+Package hyperref Info: Plain pages OFF on input line 4207.
+Package hyperref Info: Backreferencing ON on input line 4210.
+Package hyperref Info: Implicit mode ON; LaTeX internals redefined.
+Package hyperref Info: Bookmarks ON on input line 4445.
+
+(/usr/share/texlive/texmf-dist/tex/latex/hyperref/backref.sty
+Package: backref 2021/02/04 v1.41 Bibliographical back referencing
+
+(/usr/share/texlive/texmf-dist/tex/latex/rerunfilecheck/rerunfilecheck.sty
+Package: rerunfilecheck 2019/12/05 v1.9 Rerun checks for auxiliary files (HO)
+
+(/usr/share/texlive/texmf-dist/tex/latex/base/atveryend-ltx.sty
+Package: atveryend-ltx 2020/08/19 v1.0a Emulation of the original atveryend pac
+kage
+with kernel methods
+)
+(/usr/share/texlive/texmf-dist/tex/generic/uniquecounter/uniquecounter.sty
+Package: uniquecounter 2019/12/15 v1.4 Provide unlimited unique counter (HO)
+
+(/usr/share/texlive/texmf-dist/tex/generic/bigintcalc/bigintcalc.sty
+Package: bigintcalc 2019/12/15 v1.5 Expandable calculations on big integers (HO
+)
+))
+Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 2
+86.
+))
+\c@Hy@tempcnt=\count308
+
+(/usr/share/texlive/texmf-dist/tex/latex/url/url.sty
+\Urlmuskip=\muskip16
+Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
+)
+LaTeX Info: Redefining \url on input line 4804.
+\XeTeXLinkMargin=\dimen196
+
+(/usr/share/texlive/texmf-dist/tex/generic/bitset/bitset.sty
+Package: bitset 2019/12/09 v1.3 Handle bit-vector datatype (HO)
+)
+\Fld@menulength=\count309
+\Field@Width=\dimen197
+\Fld@charsize=\dimen198
+Package hyperref Info: Hyper figures OFF on input line 6076.
+Package hyperref Info: Link nesting OFF on input line 6081.
+Package hyperref Info: Hyper index ON on input line 6084.
+Package hyperref Info: backreferencing ON on input line 6089.
+Package hyperref Info: Link coloring OFF on input line 6096.
+Package hyperref Info: Link coloring with OCG OFF on input line 6101.
+Package hyperref Info: PDF/A mode OFF on input line 6106.
+LaTeX Info: Redefining \ref on input line 6146.
+LaTeX Info: Redefining \pageref on input line 6150.
+
+(/usr/share/texlive/texmf-dist/tex/latex/base/atbegshi-ltx.sty
+Package: atbegshi-ltx 2021/01/10 v1.0c Emulation of the original atbegshi
+package with kernel methods
+)
+\Hy@abspage=\count310
+\c@Item=\count311
+\c@Hfootnote=\count312
+
+
+LaTeX Warning: Command \LT@p@ftntext  has changed.
+               Check if current package is valid.
+
+)
+Package hyperref Info: Driver: hpdftex.
+ (/usr/share/texlive/texmf-dist/tex/latex/hyperref/hpdftex.def
+File: hpdftex.def 2021-06-07 v7.00m Hyperref driver for pdfTeX
+\Fld@listcount=\count313
+\c@bookmark@seq@number=\count314
+\Hy@SectionHShift=\skip123
+)
+Package hyperref Info: Option `colorlinks' set `true' on input line 131.
+Package hyperref Info: Option `unicode' set `true' on input line 131.
+
+(/usr/share/texlive/texmf-dist/tex/latex/caption/caption.sty
+Package: caption 2020/10/26 v3.5g Customizing captions (AR)
+
+(/usr/share/texlive/texmf-dist/tex/latex/caption/caption3.sty
+Package: caption3 2020/10/21 v2.2e caption3 kernel (AR)
+\captionmargin=\dimen199
+\captionmargin@=\dimen256
+\captionwidth=\dimen257
+\caption@tempdima=\dimen258
+\caption@indent=\dimen259
+\caption@parindent=\dimen260
+\caption@hangindent=\dimen261
+Package caption Info: Standard document class detected.
+)
+\c@caption@flags=\count315
+\c@continuedfloat=\count316
+Package caption Info: float package is loaded.
+Package caption Info: hyperref package is loaded.
+Package caption Info: longtable package is loaded.
+
+(/usr/share/texlive/texmf-dist/tex/latex/caption/ltcaption.sty
+Package: ltcaption 2020/05/30 v1.4b longtable captions (AR)
+))
+(/usr/share/texlive/texmf-dist/tex/latex/etoc/etoc.sty
+Package: etoc 2021/09/23 v1.09e Completely customisable TOCs (JFB)
+\Etoc@toctoks=\toks34
+\c@etoc@tocid=\count317
+\c@etoc@tocdepth=\count318
+\etoc@framed@titlebox=\box118
+\etoc@framed@contentsbox=\box119
+)
+LaTeX Font Info:    Trying to load font information for T1+phv on input line 14
+6.
+
+(/usr/share/texlive/texmf-dist/tex/latex/psnfss/t1phv.fd
+File: t1phv.fd 2020/03/25 scalable font definitions for T1/phv.
+)
+LaTeX Font Info:    Font shape `T1/phv/m/n' will be
+(Font)              scaled to size 8.99994pt on input line 146.
+
+(/usr/share/texlive/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def
+File: l3backend-pdftex.def 2022-01-12 L3 backend support: PDF output (pdfTeX)
+\l__color_backend_stack_int=\count319
+\l__pdf_internal_box=\box120
+)
+(./refman.aux)
+\openout1 = `refman.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 146.
+LaTeX Font Info:    ... okay on input line 146.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 146.
+LaTeX Font Info:    ... okay on input line 146.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 146.
+LaTeX Font Info:    ... okay on input line 146.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 146.
+LaTeX Font Info:    ... okay on input line 146.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 146.
+LaTeX Font Info:    ... okay on input line 146.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 146.
+LaTeX Font Info:    ... okay on input line 146.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 146.
+LaTeX Font Info:    ... okay on input line 146.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 146.
+LaTeX Font Info:    ... okay on input line 146.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 146.
+LaTeX Font Info:    ... okay on input line 146.
+
+(/usr/share/texlive/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
+[Loading MPS to PDF converter (version 2006.09.02).]
+\scratchcounter=\count320
+\scratchdimen=\dimen262
+\scratchbox=\box121
+\nofMPsegments=\count321
+\nofMParguments=\count322
+\everyMPshowfont=\toks35
+\MPscratchCnt=\count323
+\MPscratchDim=\dimen263
+\MPnumerator=\count324
+\makeMPintoPDFobject=\count325
+\everyMPtoPDFconversion=\toks36
+) (/usr/share/texlive/texmf-dist/tex/latex/epstopdf-pkg/epstopdf-base.sty
+Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
+Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
+85.
+
+(/usr/share/texlive/texmf-dist/tex/latex/latexconfig/epstopdf-sys.cfg
+File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
+e
+))
+*geometry* driver: auto-detecting
+*geometry* detected driver: pdftex
+*geometry* verbose mode - [ preamble ] result:
+* driver: pdftex
+* paper: a4paper
+* layout: <same size as paper>
+* layoutoffset:(h,v)=(0.0pt,0.0pt)
+* modes: twoside 
+* h-part:(L,W,R)=(71.13188pt, 455.24411pt, 71.13188pt)
+* v-part:(T,H,B)=(71.13188pt, 702.78308pt, 71.13188pt)
+* \paperwidth=597.50787pt
+* \paperheight=845.04684pt
+* \textwidth=455.24411pt
+* \textheight=702.78308pt
+* \oddsidemargin=-1.1381pt
+* \evensidemargin=-1.1381pt
+* \topmargin=-38.1381pt
+* \headheight=12.0pt
+* \headsep=25.0pt
+* \topskip=10.0pt
+* \footskip=30.0pt
+* \marginparwidth=121.0pt
+* \marginparsep=11.0pt
+* \columnsep=10.0pt
+* \skip\footins=9.0pt plus 4.0pt minus 2.0pt
+* \hoffset=0.0pt
+* \voffset=0.0pt
+* \mag=1000
+* \@twocolumnfalse
+* \@twosidetrue
+* \@mparswitchtrue
+* \@reversemarginfalse
+* (1in=72.27pt=25.4mm, 1cm=28.453pt)
+
+Package hyperref Info: Link coloring ON on input line 146.
+(/usr/share/texlive/texmf-dist/tex/latex/hyperref/nameref.sty
+Package: nameref 2021-04-02 v2.47 Cross-referencing by name of section
+
+(/usr/share/texlive/texmf-dist/tex/latex/refcount/refcount.sty
+Package: refcount 2019/12/15 v3.6 Data extraction from label references (HO)
+)
+(/usr/share/texlive/texmf-dist/tex/generic/gettitlestring/gettitlestring.sty
+Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
+)
+\c@section@level=\count326
+)
+LaTeX Info: Redefining \ref on input line 146.
+LaTeX Info: Redefining \pageref on input line 146.
+LaTeX Info: Redefining \nameref on input line 146.
+
+(./refman.out) (./refman.out)
+\@outlinefile=\write5
+\openout5 = `refman.out'.
+
+Package backref Info: ** backref set up for natbib ** on input line 146.
+Package caption Info: Begin \AtBeginDocument code.
+Package caption Info: End \AtBeginDocument code.
+\Etoc@tf=\read4
+Package hyperref Info: Option `pageanchor' set `false' on input line 153.
+Package hyperref Info: Option `bookmarksnumbered' set `true' on input line 153.
+
+Package hyperref Info: Option `unicode' set `true' on input line 153.
+ <./HeliOS_OG_Logo.png>
+<HeliOS_OG_Logo.png, id=136, 301.125pt x 150.5625pt>
+File: HeliOS_OG_Logo.png Graphic file (type png)
+<use HeliOS_OG_Logo.png>
+Package pdftex.def Info: HeliOS_OG_Logo.png  used on input line 158.
+(pdftex.def)             Requested size: 301.12425pt x 150.56212pt.
+LaTeX Font Info:    Font shape `T1/phv/m/n' will be
+(Font)              scaled to size 12.9599pt on input line 160.
+LaTeX Font Info:    Font shape `T1/phv/m/n' will be
+(Font)              scaled to size 6.29996pt on input line 160.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 160
+.
+
+(/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsa.fd
+File: umsa.fd 2013/01/14 v3.01 AMS symbols A
+)
+LaTeX Font Info:    Trying to load font information for U+msb on input line 160
+.
+
+(/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
+File: umsb.fd 2013/01/14 v3.01 AMS symbols B
+)
+LaTeX Font Info:    Trying to load font information for U+wasy on input line 16
+0.
+
+(/usr/share/texlive/texmf-dist/tex/latex/wasysym/uwasy.fd
+File: uwasy.fd 2020/01/19 v2.4 Wasy-2 symbol font definitions
+)
+LaTeX Font Info:    Font shape `T1/phv/m/n' will be
+(Font)              scaled to size 10.79993pt on input line 160.
+ [1
+
+{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}]
+\tf@toc=\write6
+\openout6 = `refman.toc'.
+
+LaTeX Font Info:    Font shape `T1/phv/b/n' will be
+(Font)              scaled to size 8.99994pt on input line 167.
+Package hyperref Info: Option `pageanchor' set `true' on input line 168.
+LaTeX Font Info:    Font shape `T1/phv/b/n' will be
+(Font)              scaled to size 12.9599pt on input line 171.
+ (./annotated.tex
+LaTeX Font Info:    Font shape `T1/phv/b/n' will be
+(Font)              scaled to size 10.79993pt on input line 1.
+LaTeX Font Info:    Font shape `T1/phv/b/n' will be
+(Font)              scaled to size 6.29996pt on input line 3.
+ [1]) (./files.tex)
+(./structMemoryRegionStats__s.tex
+LaTeX Font Info:    Trying to load font information for TS1+phv on input line 1
+1.
+
+(/usr/share/texlive/texmf-dist/tex/latex/psnfss/ts1phv.fd
+File: ts1phv.fd 2020/03/25 scalable font definitions for TS1/phv.
+)
+LaTeX Font Info:    Font shape `TS1/phv/m/n' will be
+(Font)              scaled to size 8.99994pt on input line 11.
+LaTeX Font Info:    Font shape `T1/phv/bc/n' will be
+(Font)              scaled to size 8.99994pt on input line 30.
+
+Underfull \hbox (badness 10000) detected at line 30
+[][][]
+ []
+
+[2]
+Underfull \hbox (badness 10000) detected at line 37
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 40
+[][][]
+ []
+
+LaTeX Font Info:    Font shape `T1/phv/m/n' will be
+(Font)              scaled to size 7.19995pt on input line 50.
+LaTeX Font Info:    Trying to load font information for T1+pcr on input line 50
+.
+(/usr/share/texlive/texmf-dist/tex/latex/psnfss/t1pcr.fd
+File: t1pcr.fd 2001/06/04 font definitions for T1/pcr.
+)
+Underfull \hbox (badness 10000) in paragraph at lines 62--63
+ \T1/phv/b/n/10 3.1.2.3 min-i-mumEv-er-Free-Bytes-Re-main-ing[] [] \T1/pcr/m/n/
+8 Memory[]Region[]Stats[]_[]s[]::minimum[]Ever[]Free[]Bytes[]
+ []
+
+) (./structQueueMessage__s.tex [3]
+Underfull \hbox (badness 10000) detected at line 20
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 31
+[][][]
+ []
+
+LaTeX Font Info:    Font shape `T1/phv/m/it' in size <10> not available
+(Font)              Font shape `T1/phv/m/sl' tried instead on input line 34.
+LaTeX Font Info:    Font shape `T1/phv/m/sl' will be
+(Font)              scaled to size 8.99994pt on input line 34.
+) (./structSystemInfo__s.tex [4]
+Underfull \hbox (badness 10000) detected at line 26
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 35
+[][][]
+ []
+
+[5]) (./structTaskInfo__s.tex
+Underfull \hbox (badness 10000) detected at line 26
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 37
+[][][]
+ []
+
+[6]) (./structTaskNotification__s.tex
+Underfull \hbox (badness 10000) detected at line 20
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 23
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 26
+[][][]
+ []
+
+[7]
+Underfull \hbox (badness 10000) detected at line 35
+[][][]
+ []
+
+
+Overfull \hbox (30.8491pt too wide) in paragraph at lines 51--52
+ \T1/phv/b/n/10 3.5.2.2 no-ti-fi-ca-tion-Va-lue[] [] \T1/pcr/m/n/8 Task[]Notifi
+cation[]_[]s[]::notification[]Value[][][] 
+ []
+
+) (./structTaskRunTimeStats__s.tex [8]
+Underfull \hbox (badness 10000) detected at line 22
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 29
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 32
+[][][]
+ []
+
+) (./config_8h.tex
+LaTeX Font Info:    Font shape `T1/phv/m/n' will be
+(Font)              scaled to size 8.09995pt on input line 12.
+LaTeX Font Info:    Font shape `T1/phv/m/it' in size <9> not available
+(Font)              Font shape `T1/phv/m/sl' tried instead on input line 12.
+LaTeX Font Info:    Font shape `T1/phv/m/sl' will be
+(Font)              scaled to size 8.09995pt on input line 12.
+ [9]
+Underfull \hbox (badness 10000) detected at line 33
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 36
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 39
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 42
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 56--57
+ \T1/phv/b/n/10 4.1.2.1 CON-FIG_MEMORY_REGION_BLOCK_SIZE[] \T1/pcr/m/n/8 #defin
+e CONFIG[]_[][]MEMORY[]_[][]REGION[]_[][]BLOCK[]_[][]SIZE 0x20u
+ []
+
+[10]
+Underfull \hbox (badness 10000) detected at line 60
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 71--72
+ \T1/phv/b/n/10 4.1.2.2 CON-FIG_MEMORY_REGION_SIZE_IN_BLOCKS[] \T1/pcr/m/n/8 #d
+efine CONFIG[]_[][]MEMORY[]_[][]REGION[]_[][]SIZE[]_[][]IN[]_[][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 81
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 88
+[][][]
+ []
+
+[11]
+Underfull \hbox (badness 10000) detected at line 95
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 98
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 114
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 121--122
+ \T1/phv/b/n/10 4.1.2.4 CON-FIG_NOTIFICATION_VALUE_BYTES[] \T1/pcr/m/n/8 #defin
+e CONFIG[]_[][]NOTIFICATION[]_[][]VALUE[]_[][]BYTES 0x8u /$\OMS/cmsy/m/n/8 ^^C$
+ \T1/pcr/m/n/8 8
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 125
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 136
+[][][]
+ []
+
+[12]
+Underfull \hbox (badness 10000) detected at line 157
+[][][]
+ []
+
+) (./HeliOS_8h.tex
+LaTeX Font Info:    Font shape `T1/phv/m/it' in size <7> not available
+(Font)              Font shape `T1/phv/m/sl' tried instead on input line 22.
+LaTeX Font Info:    Font shape `T1/phv/m/sl' will be
+(Font)              scaled to size 6.29996pt on input line 22.
+ [13] [14] [15] [16]
+LaTeX Font Info:    Font shape `TS1/phv/m/it' in size <9> not available
+(Font)              Font shape `TS1/phv/m/sl' tried instead on input line 206.
+LaTeX Font Info:    Font shape `TS1/phv/m/sl' will be
+(Font)              scaled to size 8.09995pt on input line 206.
+ [17] [18]
+Underfull \hbox (badness 10000) detected at line 281
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 284
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 287
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 290
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 308
+[][][]
+ []
+
+[19]
+Underfull \hbox (badness 10000) detected at line 319
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 332
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 343
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 354
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 367
+[][][]
+ []
+
+[20]
+Underfull \hbox (badness 10000) detected at line 378
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 385
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 388
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 399
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 404
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 407
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 418
+[][][]
+ []
+
+[21]
+Underfull \hbox (badness 10000) detected at line 429
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 442
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 453
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 458
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 461
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 472
+[][][]
+ []
+
+[22]
+Underfull \hbox (badness 10000) detected at line 481
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 494
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 499
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 502
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 513
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 524
+[][][]
+ []
+
+[23]
+Underfull \hbox (badness 10000) detected at line 537
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 540
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 543
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 552
+[][][]
+ []
+
+[24]
+Underfull \hbox (badness 10000) detected at line 563
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 580
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 587
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 590
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 601
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 612
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 617
+[][][]
+ []
+
+[25]
+Underfull \hbox (badness 10000) detected at line 620
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 631
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 640
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 649
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 658
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 667
+[][][]
+ []
+
+[26]
+Underfull \hbox (badness 10000) detected at line 676
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 685
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 694
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 697
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 700
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 709
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 712
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 715
+[][][]
+ []
+
+[27]
+Underfull \hbox (badness 10000) detected at line 724
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 727
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 730
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 739
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 748
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 757
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 760
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 763
+[][][]
+ []
+
+[28]
+Underfull \hbox (badness 10000) detected at line 772
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 775
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 778
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 787
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 790
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 793
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 802
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 805
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 808
+[][][]
+ []
+
+[29]
+Underfull \hbox (badness 10000) detected at line 817
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 820
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 823
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 832
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 841
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 844
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 847
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 856
+[][][]
+ []
+
+[30]
+Underfull \hbox (badness 10000) detected at line 865
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 874
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 877
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 880
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 889
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 903
+[][][]
+ []
+
+[31]
+Underfull \hbox (badness 10000) detected at line 936
+[][][]
+ []
+
+LaTeX Font Info:    Font shape `T1/pcr/m/it' in size <8> not available
+(Font)              Font shape `T1/pcr/m/sl' tried instead on input line 972.
+LaTeX Font Info:    Font shape `T1/pcr/m/it' in size <7> not available
+(Font)              Font shape `T1/pcr/m/sl' tried instead on input line 972.
+
+Overfull \hbox (3.9776pt too wide) in paragraph at lines 5--5
+[]\T1/phv/m/sl/10 config[] 
+ []
+
+[32]
+Underfull \hbox (badness 10000) detected at line 985
+[][][]
+ []
+
+
+Overfull \hbox (3.9776pt too wide) in paragraph at lines 1--1
+[]\T1/phv/m/sl/10 uid[] 
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 1001
+[][][]
+ []
+
+
+Overfull \hbox (3.9776pt too wide) in paragraph at lines 1--1
+[]\T1/phv/m/sl/10 uid[] 
+ []
+
+[33]
+Underfull \hbox (badness 10000) detected at line 1017
+[][][]
+ []
+
+
+Overfull \hbox (2.33087pt too wide) in paragraph at lines 3--3
+[]\T1/phv/m/sl/10 size[] 
+ []
+
+
+Overfull \hbox (3.9776pt too wide) in paragraph at lines 5--5
+[]\T1/phv/m/sl/10 data[] 
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 1037
+[][][]
+ []
+
+[34]
+Underfull \hbox (badness 10000) detected at line 1053
+[][][]
+ []
+
+
+Overfull \hbox (3.9776pt too wide) in paragraph at lines 3--3
+[]\T1/phv/m/sl/10 data[] 
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 1071
+[][][]
+ []
+
+
+Overfull \hbox (3.9776pt too wide) in paragraph at lines 3--3
+[]\T1/phv/m/sl/10 data[] 
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 1089
+[][][]
+ []
+
+[35]
+Overfull \hbox (2.33087pt too wide) in paragraph at lines 3--3
+[]\T1/phv/m/sl/10 size[] 
+ []
+
+
+Overfull \hbox (3.9776pt too wide) in paragraph at lines 5--5
+[]\T1/phv/m/sl/10 data[] 
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 1109
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 1120
+[][][]
+ []
+
+
+Overfull \hbox (3.9776pt too wide) in paragraph at lines 1--1
+[]\T1/phv/m/sl/10 size[] 
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 1132
+[][][]
+ []
+
+[36]
+Underfull \hbox (badness 10000) detected at line 1135
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 1146
+[][][]
+ []
+
+
+Overfull \hbox (3.9776pt too wide) in paragraph at lines 1--1
+[]\T1/phv/m/sl/10 addr[] 
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 1154
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 1165
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 1168
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 1171
+[][][]
+ []
+
+[37]
+Underfull \hbox (badness 10000) detected at line 1182
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 1185
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 1188
+[][][]
+ []
+
+
+Overfull \hbox (3.9776pt too wide) in paragraph at lines 1--1
+[]\T1/phv/m/sl/10 addr[] 
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 1204
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 1207
+[][][]
+ []
+
+[38]
+Underfull \hbox (badness 10000) detected at line 1218
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 1221
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 1232
+[][][]
+ []
+
+
+Overfull \hbox (3.9776pt too wide) in paragraph at lines 1--1
+[]\T1/phv/m/sl/10 limit[] 
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 1244
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 1247
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 1258
+[][][]
+ []
+
+
+Overfull \hbox (3.9776pt too wide) in paragraph at lines 1--1
+[]\T1/phv/m/sl/10 queue[] 
+ []
+
+[39]
+Overfull \hbox (3.9776pt too wide) in paragraph at lines 1--1
+[]\T1/phv/m/sl/10 queue[] 
+ []
+
+
+Overfull \hbox (3.9776pt too wide) in paragraph at lines 1--1
+[]\T1/phv/m/sl/10 queue[] 
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 1292
+[][][]
+ []
+
+
+Overfull \hbox (3.9776pt too wide) in paragraph at lines 1--1
+[]\T1/phv/m/sl/10 queue[] 
+ []
+
+[40]
+Underfull \hbox (badness 10000) detected at line 1308
+[][][]
+ []
+
+
+Overfull \hbox (3.9776pt too wide) in paragraph at lines 1--1
+[]\T1/phv/m/sl/10 queue[] 
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 1324
+[][][]
+ []
+
+
+Overfull \hbox (3.9776pt too wide) in paragraph at lines 1--1
+[]\T1/phv/m/sl/10 queue[] 
+ []
+
+
+Overfull \hbox (3.9776pt too wide) in paragraph at lines 1--1
+[]\T1/phv/m/sl/10 queue[] 
+ []
+
+[41]
+Underfull \hbox (badness 10000) detected at line 1353
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 1364
+[][][]
+ []
+
+
+Overfull \hbox (3.9776pt too wide) in paragraph at lines 1--1
+[]\T1/phv/m/sl/10 queue[] 
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 1374
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 1377
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 1388
+[][][]
+ []
+
+
+Overfull \hbox (3.9776pt too wide) in paragraph at lines 1--1
+[]\T1/phv/m/sl/10 queue[] 
+ []
+
+[42]
+Underfull \hbox (badness 10000) detected at line 1398
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 1401
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 1412
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 1428
+[][][]
+ []
+
+
+Overfull \hbox (3.9776pt too wide) in paragraph at lines 1--1
+[]\T1/phv/m/sl/10 queue[] 
+ []
+
+[43]
+Overfull \hbox (3.9776pt too wide) in paragraph at lines 1--1
+[]\T1/phv/m/sl/10 stream[] 
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 1457
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 1468
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 1471
+[][][]
+ []
+
+
+Overfull \hbox (3.9776pt too wide) in paragraph at lines 1--1
+[]\T1/phv/m/sl/10 stream[] 
+ []
+
+[44]
+Overfull \hbox (3.9776pt too wide) in paragraph at lines 1--1
+[]\T1/phv/m/sl/10 steam[] 
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 1500
+[][][]
+ []
+
+
+Overfull \hbox (3.9776pt too wide) in paragraph at lines 1--1
+[]\T1/phv/m/sl/10 steam[] 
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 1516
+[][][]
+ []
+
+
+Overfull \hbox (3.9776pt too wide) in paragraph at lines 1--1
+[]\T1/phv/m/sl/10 stream[] 
+ []
+
+[45]
+Underfull \hbox (badness 10000) detected at line 1534
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 1537
+[][][]
+ []
+
+
+Overfull \hbox (3.9776pt too wide) in paragraph at lines 1--1
+[]\T1/phv/m/sl/10 stream[] 
+ []
+
+
+Overfull \hbox (3.9776pt too wide) in paragraph at lines 1--1
+[]\T1/phv/m/sl/10 stream[] 
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 1568
+[][][]
+ []
+
+[46]
+Underfull \hbox (badness 10000) detected at line 1579
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 1582
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 1587
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 1610
+[][][]
+ []
+
+[47]
+Underfull \hbox (badness 10000) detected at line 1632
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 1659
+[][][]
+ []
+
+[48]
+Underfull \hbox (badness 10000) detected at line 1662
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 1673
+[][][]
+ []
+
+
+Overfull \hbox (3.9776pt too wide) in paragraph at lines 1--1
+[]\T1/phv/m/sl/10 task[] 
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 1689
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 1700
+[][][]
+ []
+
+
+Overfull \hbox (3.9776pt too wide) in paragraph at lines 1--1
+[]\T1/phv/m/sl/10 tasks[] 
+ []
+
+
+Overfull \vbox (4.63881pt too high) has occurred while \output is active []
+
+
+[49]
+Underfull \hbox (badness 10000) detected at line 1710
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 1713
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 1724
+[][][]
+ []
+
+
+Overfull \hbox (3.9776pt too wide) in paragraph at lines 1--1
+[]\T1/phv/m/sl/10 tasks[] 
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 1732
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 1735
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 1746
+[][][]
+ []
+
+
+Overfull \hbox (3.9776pt too wide) in paragraph at lines 1--1
+[]\T1/phv/m/sl/10 id[] 
+ []
+
+
+Overfull \hbox (1.97964pt too wide) in paragraph at lines 1--1
+\T1/phv/m/sl/10 _[] 
+ []
+
+[50]
+Underfull \hbox (badness 10000) detected at line 1754
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 1765
+[][][]
+ []
+
+
+Overfull \hbox (3.9776pt too wide) in paragraph at lines 1--1
+[]\T1/phv/m/sl/10 name[] 
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 1773
+[][][]
+ []
+
+
+Overfull \hbox (3.9776pt too wide) in paragraph at lines 1--1
+[]\T1/phv/m/sl/10 task[] 
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 1789
+[][][]
+ []
+
+[51]
+Underfull \hbox (badness 10000) detected at line 1800
+[][][]
+ []
+
+
+Overfull \hbox (3.9776pt too wide) in paragraph at lines 1--1
+[]\T1/phv/m/sl/10 task[] 
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 1810
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 1813
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 1824
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 1835
+[][][]
+ []
+
+
+Overfull \hbox (3.9776pt too wide) in paragraph at lines 1--1
+[]\T1/phv/m/sl/10 task[] 
+ []
+
+[52]
+Underfull \hbox (badness 10000) detected at line 1847
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 1858
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 1865
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 1876
+[][][]
+ []
+
+
+Overfull \hbox (3.9776pt too wide) in paragraph at lines 1--1
+[]\T1/phv/m/sl/10 task[] 
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 1884
+[][][]
+ []
+
+[53]
+Underfull \hbox (badness 10000) detected at line 1887
+[][][]
+ []
+
+
+Underfull \hbox (badness 3219) in paragraph at lines 1896--1897
+[]\T1/phv/m/n/10 The [] sys-tem call re-turns the task run-time statis-tics for
+ one task. The
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 1898
+[][][]
+ []
+
+
+Overfull \hbox (3.9776pt too wide) in paragraph at lines 1--1
+[]\T1/phv/m/sl/10 task[] 
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 1908
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 1911
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 1922
+[][][]
+ []
+
+
+Overfull \hbox (3.9776pt too wide) in paragraph at lines 1--1
+[]\T1/phv/m/sl/10 task[] 
+ []
+
+[54]
+Underfull \hbox (badness 10000) detected at line 1930
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 1941
+[][][]
+ []
+
+
+Overfull \hbox (3.9776pt too wide) in paragraph at lines 1--1
+[]\T1/phv/m/sl/10 task[] 
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 1949
+[][][]
+ []
+
+
+Overfull \hbox (3.9776pt too wide) in paragraph at lines 1--1
+[]\T1/phv/m/sl/10 task[] 
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 1965
+[][][]
+ []
+
+[55]
+Underfull \hbox (badness 10000) detected at line 1976
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 1990
+[][][]
+ []
+
+
+Overfull \hbox (3.9776pt too wide) in paragraph at lines 1--1
+[]\T1/phv/m/sl/10 task[] 
+ []
+
+
+Underfull \hbox (badness 922) in paragraph at lines 2012--2013
+[]\T1/phv/m/n/10 The [] sys-tem call will re-turn the wait-ing di-rect to task 
+no-ti-fi-ca-tion if there is one. The
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 2014
+[][][]
+ []
+
+
+Overfull \hbox (3.9776pt too wide) in paragraph at lines 1--1
+[]\T1/phv/m/sl/10 task[] 
+ []
+
+[56]
+Underfull \hbox (badness 10000) detected at line 2028
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 2031
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 2042
+[][][]
+ []
+
+
+Overfull \hbox (3.9776pt too wide) in paragraph at lines 1--1
+[]\T1/phv/m/sl/10 task[] 
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 2062
+[][][]
+ []
+
+
+Overfull \hbox (3.9776pt too wide) in paragraph at lines 1--1
+[]\T1/phv/m/sl/10 task[] 
+ []
+
+[57]
+Underfull \hbox (badness 10000) detected at line 2082
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 2099
+[][][]
+ []
+
+
+Overfull \hbox (3.9776pt too wide) in paragraph at lines 1--1
+[]\T1/phv/m/sl/10 task[] 
+ []
+
+[58]
+Underfull \hbox (badness 10000) detected at line 2119
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 2130
+[][][]
+ []
+
+
+Overfull \hbox (3.9776pt too wide) in paragraph at lines 1--1
+[]\T1/phv/m/sl/10 task[] 
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 2150
+[][][]
+ []
+
+[59]
+Underfull \hbox (badness 10000) detected at line 2168
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 2178
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 2181
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 2192
+[][][]
+ []
+
+
+Overfull \hbox (3.9776pt too wide) in paragraph at lines 1--1
+[]\T1/phv/m/sl/10 timer[] 
+ []
+
+
+Overfull \hbox (3.9776pt too wide) in paragraph at lines 1--1
+[]\T1/phv/m/sl/10 timer[] 
+ []
+
+[60]
+Underfull \hbox (badness 10000) detected at line 2213
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 2224
+[][][]
+ []
+
+
+Overfull \hbox (3.9776pt too wide) in paragraph at lines 1--1
+[]\T1/phv/m/sl/10 timer[] 
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 2232
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 2243
+[][][]
+ []
+
+
+Overfull \hbox (3.9776pt too wide) in paragraph at lines 1--1
+[]\T1/phv/m/sl/10 timer[] 
+ []
+
+[61]
+Underfull \hbox (badness 10000) detected at line 2251
+[][][]
+ []
+
+
+Overfull \hbox (3.9776pt too wide) in paragraph at lines 1--1
+[]\T1/phv/m/sl/10 timer[] 
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 2275
+[][][]
+ []
+
+
+Overfull \hbox (3.9776pt too wide) in paragraph at lines 1--1
+[]\T1/phv/m/sl/10 timer[] 
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 2291
+[][][]
+ []
+
+
+Overfull \hbox (3.9776pt too wide) in paragraph at lines 1--1
+[]\T1/phv/m/sl/10 timer[] 
+ []
+
+) [62] (./refman.ind
+LaTeX Font Info:    Font shape `T1/phv/bc/n' will be
+(Font)              scaled to size 12.9599pt on input line 1.
+ [63
+
+
+] [64] [65] [66] [67
+
+]) (./refman.aux)
+Package rerunfilecheck Info: File `refman.out' has not changed.
+(rerunfilecheck)             Checksum: F3E178156DF0C70503B16EC3C21E199C;6648.
+ ) 
+Here is how much of TeX's memory you used:
+ 17997 strings out of 480247
+ 296269 string characters out of 5896150
+ 641587 words of memory out of 5000000
+ 35104 multiletter control sequences out of 15000+600000
+ 517753 words of font info for 92 fonts, out of 8000000 for 9000
+ 14 hyphenation exceptions out of 8191
+ 99i,16n,117p,1516b,635s stack positions out of 5000i,500n,10000p,200000b,80000s
+{/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/share/texliv
+e/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/share/texlive/texmf
+-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/
+fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/share/texlive/texmf-dist/fonts/t
+ype1/public/amsfonts/cm/cmsy8.pfb></usr/share/texlive/texmf-dist/fonts/type1/ur
+w/courier/ucrr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/courier/ucr
+ro8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/helvetic/uhvb8a.pfb></u
+sr/share/texlive/texmf-dist/fonts/type1/urw/helvetic/uhvb8ac.pfb></usr/share/te
+xlive/texmf-dist/fonts/type1/urw/helvetic/uhvr8a.pfb></usr/share/texlive/texmf-
+dist/fonts/type1/urw/helvetic/uhvro8a.pfb>
+Output written on refman.pdf (68 pages, 312225 bytes).
+PDF statistics:
+ 2512 PDF objects out of 2984 (max. 8388607)
+ 2364 compressed objects within 24 object streams
+ 495 named destinations out of 1000 (max. 500000)
+ 270 words of extra memory for PDF output out of 10000 (max. 10000000)
+
