@@ -7,7 +7,7 @@
  *
  * @copyright
  * HeliOS Embedded Operating System
- * Copyright (C) 2020-2022 Manny Peterson <mannymsp@gmail.com>
+ * Copyright (C) 2020-2023 Manny Peterson <mannymsp@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1126,11 +1126,11 @@ xBase xStreamIsEmpty(const xStreamBuffer stream_);
  * If the buffer is less than CONFIG_STREAM_BUFFER_BYTES in length, xStreamIsFull()
  * will return false.
  *
- * @param steam_ The stream buffer to operate on.
+ * @param stream_ The stream buffer to operate on.
  * @return xBase Returns true if the stream buffer is equal to CONFIG_STREAM_BUFFER_BYTES
  * in length, otherwise xStreamIsFull() will return false.
  */
-xBase xStreamIsFull(const xStreamBuffer steam_);
+xBase xStreamIsFull(const xStreamBuffer stream_);
 
 /**
  * @brief System call to initialize the system.

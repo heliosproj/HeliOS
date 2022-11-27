@@ -7,7 +7,7 @@
  *
  * @copyright
  * HeliOS Embedded Operating System
- * Copyright (C) 2020-2022 Manny Peterson <mannymsp@gmail.com>
+ * Copyright (C) 2020-2023 Manny Peterson <mannymsp@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,7 +64,7 @@ void xSystemInit(void) {
 
   __MemoryInit__();
 
-  sysFlags.corrupt = false;
+  sysFlags.fault = false;
   sysFlags.overflow = false;
   sysFlags.running = false;
 

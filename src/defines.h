@@ -7,7 +7,7 @@
  *
  * @copyright
  * HeliOS Embedded Operating System
- * Copyright (C) 2020-2022 Manny Peterson <mannymsp@gmail.com>
+ * Copyright (C) 2020-2023 Manny Peterson <mannymsp@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -162,8 +162,8 @@
 /* Define a macro to access the corrupt system flag which is used
    by the memory management system calls to flag if corruption
    of the heap has been detected. */
-#if !defined(SYSFLAG_CORRUPT)
-#define SYSFLAG_CORRUPT() sysFlags.corrupt
+#if !defined(SYSFLAG_FAULT)
+#define SYSFLAG_FAULT() sysFlags.fault
 #endif
 
 

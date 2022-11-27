@@ -7,7 +7,7 @@
  *
  * @copyright
  * HeliOS Embedded Operating System
- * Copyright (C) 2020-2022 Manny Peterson <mannymsp@gmail.com>
+ * Copyright (C) 2020-2023 Manny Peterson <mannymsp@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -91,13 +91,13 @@ Size_t xMemGetUsed(void) {
 
 
   /* Assert if any memory region is corrupt. */
-  SYSASSERT(false == SYSFLAG_CORRUPT());
+  SYSASSERT(false == SYSFLAG_FAULT());
 
 
 
   /* Check to make sure no memory regions are
      corrupt before we do anything. */
-  if (false == SYSFLAG_CORRUPT()) {
+  if (false == SYSFLAG_FAULT()) {
 
 
     /* Assert if the check of the heap memory region fails. */
@@ -158,13 +158,13 @@ Size_t xMemGetSize(const volatile Addr_t *addr_) {
 
 
   /* Assert if any memory region is corrupt. */
-  SYSASSERT(false == SYSFLAG_CORRUPT());
+  SYSASSERT(false == SYSFLAG_FAULT());
 
 
 
   /* Check to make sure no memory regions are
      corrupt before we do anything. */
-  if (false == SYSFLAG_CORRUPT()) {
+  if (false == SYSFLAG_FAULT()) {
 
 
 
@@ -293,7 +293,7 @@ static Base_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, cons
 
           /* The address of the memory entry was outside of the scope of the memory region
              so the memory region is corrupt, so mark the corrupt system flag. */
-          SYSFLAG_CORRUPT() = true;
+          SYSFLAG_FAULT() = true;
 
 
           /* No point in continuing to traverse the memory entries in the memory region
@@ -315,12 +315,12 @@ static Base_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, cons
 
         /* Assert if the memory region is flagged corrupt or if the address we were looking
            for was not found. */
-        SYSASSERT(((MEMORY_REGION_CHECK_OPTION_WO_ADDR == option_) && (false == SYSFLAG_CORRUPT())) || ((MEMORY_REGION_CHECK_OPTION_W_ADDR == option_) && (false == SYSFLAG_CORRUPT()) && (true == found)));
+        SYSASSERT(((MEMORY_REGION_CHECK_OPTION_WO_ADDR == option_) && (false == SYSFLAG_FAULT())) || ((MEMORY_REGION_CHECK_OPTION_W_ADDR == option_) && (false == SYSFLAG_FAULT()) && (true == found)));
 
 
         /* Check that the memory region is not flagged corrupt and we found the memory address
            we were looking before. */
-        if (((MEMORY_REGION_CHECK_OPTION_WO_ADDR == option_) && (false == SYSFLAG_CORRUPT())) || ((MEMORY_REGION_CHECK_OPTION_W_ADDR == option_) && (false == SYSFLAG_CORRUPT()) && (true == found))) {
+        if (((MEMORY_REGION_CHECK_OPTION_WO_ADDR == option_) && (false == SYSFLAG_FAULT())) || ((MEMORY_REGION_CHECK_OPTION_W_ADDR == option_) && (false == SYSFLAG_FAULT()) && (true == found))) {
 
 
           /* Things look good so set the return value to success. */
@@ -328,7 +328,7 @@ static Base_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, cons
 
 
 
-        } /* Never use an else statement here to mark SYSFLAG_CORRUPT() = true. Just because an address wasn't
+        } /* Never use an else statement here to mark SYSFLAG_FAULT() = true. Just because an address wasn't
              found does not mean the memory region is corrupt. */
 
 
@@ -338,7 +338,7 @@ static Base_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, cons
 
         /* The number of blocks counted in the memory region does not match the setting
            so something is seriously wrong, so set the corrupt system flag. */
-        SYSFLAG_CORRUPT() = true;
+        SYSFLAG_FAULT() = true;
       }
     }
   }
@@ -414,12 +414,12 @@ static Addr_t *__calloc__(volatile MemoryRegion_t *region_, const Size_t size_) 
 
 
     /* Assert if the memory corruption flag is true. */
-    SYSASSERT(false == SYSFLAG_CORRUPT());
+    SYSASSERT(false == SYSFLAG_FAULT());
 
 
     /* Check to make sure the memory corruption flag is not true because
        we can't allocate memory if a memory region is corrupt. */
-    if (false == SYSFLAG_CORRUPT()) {
+    if (false == SYSFLAG_FAULT()) {
 
 
       /* Check if we have calculated how many blocks are needed to story
@@ -660,12 +660,12 @@ static void __free__(volatile MemoryRegion_t *region_, const volatile Addr_t *ad
 
 
   /* Assert if a memory region is corrupt. */
-  SYSASSERT(false == SYSFLAG_CORRUPT());
+  SYSASSERT(false == SYSFLAG_FAULT());
 
 
   /* Check if a memory region is corrupt. If it is, we might as well head toward
      the exit because we can't reliably modify the memory region. */
-  if (false == SYSFLAG_CORRUPT()) {
+  if (false == SYSFLAG_FAULT()) {
 
 
 
@@ -874,13 +874,13 @@ static MemoryRegionStats_t *__MemGetRegionStats__(const volatile MemoryRegion_t 
 
 
     /* Assert if any memory region is corrupt. */
-    SYSASSERT(false == SYSFLAG_CORRUPT());
+    SYSASSERT(false == SYSFLAG_FAULT());
 
 
 
     /* Check to make sure no memory regions are
        corrupt before we do anything. */
-    if (false == SYSFLAG_CORRUPT()) {
+    if (false == SYSFLAG_FAULT()) {
 
 
       /* Assert if the check if the memory region fails. */
@@ -992,13 +992,13 @@ static void __DefragMemoryRegion__(const volatile MemoryRegion_t *region_) {
 
 
     /* Assert if any memory region is corrupt. */
-    SYSASSERT(false == SYSFLAG_CORRUPT());
+    SYSASSERT(false == SYSFLAG_FAULT());
 
 
 
     /* Check to make sure no memory regions are
        corrupt before we do anything. */
-    if (false == SYSFLAG_CORRUPT()) {
+    if (false == SYSFLAG_FAULT()) {
 
 
       /* Assert if the check if the memory region fails. */

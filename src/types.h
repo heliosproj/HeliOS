@@ -7,7 +7,7 @@
  *
  * @copyright
  * HeliOS Embedded Operating System
- * Copyright (C) 2020-2022 Manny Peterson <mannymsp@gmail.com>
+ * Copyright (C) 2020-2023 Manny Peterson <mannymsp@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -219,7 +219,7 @@ typedef struct TimerList_s {
 typedef struct SysFlags_s {
   Base_t running;
   Base_t overflow;
-  Base_t corrupt;
+  Base_t fault;
   Base_t reserved;
 } SysFlags_t;
 

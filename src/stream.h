@@ -7,7 +7,7 @@
  *
  * @copyright
  * HeliOS Embedded Operating System
- * Copyright (C) 2020-2022 Manny Peterson <mannymsp@gmail.com>
+ * Copyright (C) 2020-2023 Manny Peterson <mannymsp@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,7 +48,7 @@ Byte_t *xStreamReceive(const StreamBuffer_t *stream_, HalfWord_t *bytes_);
 HalfWord_t xStreamBytesAvailable(const StreamBuffer_t *stream_);
 void xStreamReset(const StreamBuffer_t *stream_);
 Base_t xStreamIsEmpty(const StreamBuffer_t *stream_);
-Base_t xStreamIsFull(const StreamBuffer_t *steam_);
+Base_t xStreamIsFull(const StreamBuffer_t *stream_);
 
 #ifdef __cplusplus
 }
