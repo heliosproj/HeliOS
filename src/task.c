@@ -324,7 +324,7 @@ Task_t *xTaskGetHandleById(const Base_t id_) {
 TaskRunTimeStats_t *xTaskGetAllRunTimeStats(Base_t *tasks_) {
 
 
-  Base_t i = zero;
+  Base_t task = zero;
 
   Base_t tasks = zero;
 
@@ -380,15 +380,15 @@ TaskRunTimeStats_t *xTaskGetAllRunTimeStats(Base_t *tasks_) {
            runtime statistics of each task to the runtime stats array to be returned. */
         while (ISNOTNULLPTR(cursor)) {
 
-          ret[i].id = cursor->id;
+          ret[task].id = cursor->id;
 
-          ret[i].lastRunTime = cursor->lastRunTime;
+          ret[task].lastRunTime = cursor->lastRunTime;
 
-          ret[i].totalRunTime = cursor->totalRunTime;
+          ret[task].totalRunTime = cursor->totalRunTime;
 
           cursor = cursor->next;
 
-          i++;
+          task++;
         }
 
         *tasks_ = tasks;
@@ -541,7 +541,7 @@ TaskInfo_t *xTaskGetTaskInfo(const Task_t *task_) {
 TaskInfo_t *xTaskGetAllTaskInfo(Base_t *tasks_) {
 
 
-  Base_t i = zero;
+  Base_t task = zero;
 
   Base_t tasks = zero;
 
@@ -602,19 +602,19 @@ TaskInfo_t *xTaskGetAllTaskInfo(Base_t *tasks_) {
         while (ISNOTNULLPTR(cursor)) {
 
 
-          ret[i].id = cursor->id;
+          ret[task].id = cursor->id;
 
-          ret[i].state = cursor->state;
+          ret[task].state = cursor->state;
 
-          __memcpy__(ret[i].name, cursor->name, CONFIG_TASK_NAME_BYTES);
+          __memcpy__(ret[task].name, cursor->name, CONFIG_TASK_NAME_BYTES);
 
-          ret[i].lastRunTime = cursor->lastRunTime;
+          ret[task].lastRunTime = cursor->lastRunTime;
 
-          ret[i].totalRunTime = cursor->totalRunTime;
+          ret[task].totalRunTime = cursor->totalRunTime;
 
           cursor = cursor->next;
 
-          i++;
+          task++;
         }
 
         *tasks_ = tasks;

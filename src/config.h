@@ -246,7 +246,7 @@
  * @brief Enable task watchdog timers.
  *
  * Defining CONFIG_TASK_WD_TIMER_ENABLE will enable the
- * task wathdog timer feature. The default is enabled.
+ * task watchdog timer feature. The default is enabled.
  *
  */
 #if !defined(CONFIG_TASK_WD_TIMER_ENABLE)
@@ -257,7 +257,7 @@
 
 /**
  * @brief Define the length of a device driver name.
- * 
+ *
  * Setting CONFIG_DEVICE_NAME_BYTES will define the length
  * of a device driver name. The name of device drivers
  * should be exactly this length. There really isn't

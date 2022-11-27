@@ -524,7 +524,7 @@ static Addr_t *__calloc__(volatile MemoryRegion_t *region_, const Size_t size_) 
           }
 
 
-          /* Count how many blocks are free so we can update the mininum bytes free ever
+          /* Count how many blocks are free so we can update the minimum bytes free ever
              for the memory region. */
           if (true == cursor->free) {
 
@@ -775,7 +775,7 @@ void __memcpy__(const volatile Addr_t *dest_, const volatile Addr_t *src_, const
 
   Size_t i = zero;
 
-  volatile Char_t *src = (Char_t *)src_;
+  const volatile Char_t *src = (Char_t *)src_;
 
   volatile Char_t *dest = (Char_t *)dest_;
 
@@ -849,7 +849,7 @@ MemoryRegionStats_t *xMemGetHeapStats(void) {
 
 
 
-/* Return the memory region stastics for the kernel */
+/* Return the memory region statistics for the kernel */
 MemoryRegionStats_t *xMemGetKernelStats(void) {
 
   return __MemGetRegionStats__(&kernel);
@@ -1074,7 +1074,7 @@ void __MemoryRegionDumpKernel__(void) {
 
 
 
-/* Just a debugging function to dump the onents of heap memory. */
+/* Just a debugging function to dump the contents of heap memory. */
 void __MemoryRegionDumpHeap__(void) {
 
   __memdump__(&heap);

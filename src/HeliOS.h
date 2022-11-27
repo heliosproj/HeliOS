@@ -1702,7 +1702,7 @@ void xTimerStart(xTimer timer_);
 
 /**
  * @brief System call to stop a timer.
- * 
+ *
  * The xTimerStop() system call will place the timer in the stopped state. Neither xTimerStart() nor
  * xTimerStop() will reset the timer. Timers can only be reset with xTimerReset().
  *
