@@ -1112,7 +1112,7 @@ void xStreamReset(const xStreamBuffer stream_);
  * A stream buffer is considered empty when it's length is equal to zero. If the buffer
  * is greater than zero in length, xStreamIsEmpty() will return false.
  *
- * @param steam_ The stream buffer to operate on.
+ * @param stream_ The stream buffer to operate on.
  * @return xBase Returns true if the stream buffer length is equal to zero
  * in length, otherwise xStreamIsEmpty() will return false.
  */
@@ -1701,7 +1701,9 @@ void xTimerReset(xTimer timer_);
 void xTimerStart(xTimer timer_);
 
 /**
- * @brief The xTimerStop() system call will place the timer in the stopped state. Neither xTimerStart() nor
+ * @brief System call to stop a timer.
+ * 
+ * The xTimerStop() system call will place the timer in the stopped state. Neither xTimerStart() nor
  * xTimerStop() will reset the timer. Timers can only be reset with xTimerReset().
  *
  * @sa xTimerStart()
@@ -1711,10 +1713,10 @@ void xTimerStart(xTimer timer_);
  */
 void xTimerStop(xTimer timer_);
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 
 /* DO NOT USE - USE THE SYSASSERT() C MACRO INSTEAD! */
 void __SystemAssert__(const char *file_, int line_);
-
 
 /* DO NOT USE - THESE ARE FOR UNIT TESTING! */
 #if defined(POSIX_ARCH_OTHER)
@@ -1725,6 +1727,8 @@ void __TaskStateClear__(void);
 void __MemoryRegionDumpKernel__(void);
 void __MemoryRegionDumpHeap__(void);
 void __DeviceStateClear__(void);
+#endif
+
 #endif
 
 #ifdef __cplusplus

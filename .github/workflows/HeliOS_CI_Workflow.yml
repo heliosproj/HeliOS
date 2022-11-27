@@ -19,7 +19,7 @@ jobs:
 
       - name: Build HeliOS unit tests...
         shell: bash
-        run: gcc -fdiagnostics-color=always -O0 -ggdb -std=c89 -Wall -Wextra -Wno-unused-parameter -I${{github.workspace}}/src -I${{github.workspace}}/extras/test/src/harness -I${{github.workspace}}/extras/test/src/unit -DPOSIX_ARCH_OTHER -DCONFIG_MEMORY_REGION_SIZE_IN_BLOCKS=0x1C20u -DCONFIG_ENABLE_SYSTEM_ASSERT -o${{github.workspace}}/extras/test/bin/test ${{github.workspace}}/src/*.c ${{github.workspace}}/extras/test/src/*.c ${{github.workspace}}/extras/test/src/harness/*.c ${{github.workspace}}/extras/test/src/unit/*.c
+        run: gcc -fdiagnostics-color=always -O0 -ggdb -std=ansi -pedantic -Wall -Wextra -Wno-unused-parameter -I${{github.workspace}}/src -I${{github.workspace}}/extras/test/src/harness -I${{github.workspace}}/extras/test/src/unit -DPOSIX_ARCH_OTHER -DCONFIG_MEMORY_REGION_SIZE_IN_BLOCKS=0x1C20u -DCONFIG_ENABLE_SYSTEM_ASSERT -o${{github.workspace}}/extras/test/bin/test ${{github.workspace}}/src/*.c ${{github.workspace}}/extras/test/src/*.c ${{github.workspace}}/extras/test/src/harness/*.c ${{github.workspace}}/extras/test/src/unit/*.c
 
       - name: Run HeliOS unit tests...
         shell: bash
@@ -49,34 +49,67 @@ jobs:
           doxygen -g ${{github.workspace}}/temp/HeliOS.conf
           sed -i '/^$/d' ${{github.workspace}}/temp/HeliOS.conf
           sed -i '/^#.*/d' ${{github.workspace}}/temp/HeliOS.conf
-          sed -i 's~^PROJECT_NAME .*~PROJECT_NAME = HeliOS~' ${{github.workspace}}/temp/HeliOS.conf
-          sed -i 's~^PROJECT_NUMBER .*~PROJECT_NUMBER = Kernel 0.3.5~' ${{github.workspace}}/temp/HeliOS.conf
-          sed -i 's~^PROJECT_LOGO .*~PROJECT_LOGO = ${{github.workspace}}/temp/HeliOS_OG_Logo.png~' ${{github.workspace}}/temp/HeliOS.conf
-          sed -i 's~^OUTPUT_DIRECTORY .*~OUTPUT_DIRECTORY = ${{github.workspace}}/temp~' ${{github.workspace}}/temp/HeliOS.conf
-          sed -i 's~^OPTIMIZE_OUTPUT_FOR_C .*~OPTIMIZE_OUTPUT_FOR_C = YES~' ${{github.workspace}}/temp/HeliOS.conf
-          sed -i 's~^GENERATE_HTML .*~GENERATE_HTML = NO~' ${{github.workspace}}/temp/HeliOS.conf
-          sed -i 's~^GENERATE_LATEX .*~GENERATE_LATEX = YES~' ${{github.workspace}}/temp/HeliOS.conf
-          sed -i 's~^COMPACT_LATEX .*~COMPACT_LATEX = YES~' ${{github.workspace}}/temp/HeliOS.conf
-          sed -i 's~^GENERATE_RTF .*~GENERATE_RTF = NO~' ${{github.workspace}}/temp/HeliOS.conf
-          sed -i 's~^GENERATE_MAN .*~GENERATE_MAN = NO~' ${{github.workspace}}/temp/HeliOS.conf
-          sed -i 's~^GENERATE_XML .*~GENERATE_XML = NO~' ${{github.workspace}}/temp/HeliOS.conf
-          sed -i 's~^REPEAT_BRIEF .*~REPEAT_BRIEF = NO~' ${{github.workspace}}/temp/HeliOS.conf
-          sed -i 's~^FULL_PATH_NAMES .*~FULL_PATH_NAMES = NO~' ${{github.workspace}}/temp/HeliOS.conf
-          sed -i 's~^INPUT .*~INPUT = ${{github.workspace}}/src/config.h ${{github.workspace}}/src/HeliOS.h~' ${{github.workspace}}/temp/HeliOS.conf
-          sed -i 's~^FILE_PATTERNS .*~FILE_PATTERNS = XXX~' ${{github.workspace}}/temp/HeliOS.conf
-          sed -i '/*./d' ${{github.workspace}}/temp/HeliOS.conf
-          sed -i 's~^FILE_PATTERNS .*~FILE_PATTERNS = *.h~' ${{github.workspace}}/temp/HeliOS.conf
-          sed -i 's~^RECURSIVE .*~RECURSIVE = NO~' ${{github.workspace}}/temp/HeliOS.conf
-          sed -i 's~^CLASS_DIAGRAMS .*~CLASS_DIAGRAMS = NO~' ${{github.workspace}}/temp/HeliOS.conf
-          sed -i 's~^HAVE_DOT .*~HAVE_DOT = NO~' ${{github.workspace}}/temp/HeliOS.conf
-          sed -i 's~^PROJECT_BRIEF .*~PROJECT_BRIEF = ~' ${{github.workspace}}/temp/HeliOS.conf
-          sed -i 's~^SHOW_HEADERFILE .*~SHOW_HEADERFILE = NO~' ${{github.workspace}}/temp/HeliOS.conf
-          sed -i 's~^SHOW_INCLUDE_FILES .*~SHOW_INCLUDE_FILES = NO~' ${{github.workspace}}/temp/HeliOS.conf
-          sed -i 's~^QUIET .*~QUIET = NO~' ${{github.workspace}}/temp/HeliOS.conf
-          sed -i 's~^WARNINGS .*~WARNINGS = YES~' ${{github.workspace}}/temp/HeliOS.conf
-          sed -i 's~^WARN_LOGFILE .*~WARN_LOGFILE = ~' ${{github.workspace}}/temp/HeliOS.conf
-          sed -i 's~^INLINE_SOURCES .*~INLINE_SOURCES = NO~' ${{github.workspace}}/temp/HeliOS.conf
-          sed -i 's~^VERBATIM_HEADERS .*~VERBATIM_HEADERS = NO~' ${{github.workspace}}/temp/HeliOS.conf
+          sed -i '/^  .*/d' ${{github.workspace}}/temp/HeliOS.conf
+          sed -i 's/ \+/ /g' ${{github.workspace}}/temp/HeliOS.conf 
+          sed -i '/^PROJECT_NAME .*/d' ${{github.workspace}}/temp/HeliOS.conf
+          echo 'PROJECT_NAME = HeliOS' >> ${{github.workspace}}/temp/HeliOS.conf
+          sed -i '/^PROJECT_NUMBER .*/d' ${{github.workspace}}/temp/HeliOS.conf
+          echo 'PROJECT_NUMBER = Kernel 0.3.5' >> ${{github.workspace}}/temp/HeliOS.conf
+          sed -i '/^PROJECT_LOGO .*/d' ${{github.workspace}}/temp/HeliOS.conf
+          echo 'PROJECT_LOGO = HeliOS_OG_Logo.png' >> ${{github.workspace}}/temp/HeliOS.conf
+          sed -i '/^OUTPUT_DIRECTORY .*/d' ${{github.workspace}}/temp/HeliOS.conf
+          echo 'OUTPUT_DIRECTORY = ${{github.workspace}}/temp' >> ${{github.workspace}}/temp/HeliOS.conf
+          sed -i '/^OPTIMIZE_OUTPUT_FOR_C .*/d' ${{github.workspace}}/temp/HeliOS.conf
+          echo 'OPTIMIZE_OUTPUT_FOR_C = YES' >> ${{github.workspace}}/temp/HeliOS.conf
+          sed -i '/^GENERATE_HTML .*/d' ${{github.workspace}}/temp/HeliOS.conf
+          echo 'GENERATE_HTML = NO' >> ${{github.workspace}}/temp/HeliOS.conf
+          sed -i '/^GENERATE_LATEX .*/d' ${{github.workspace}}/temp/HeliOS.conf
+          echo 'GENERATE_LATEX = YES' >> ${{github.workspace}}/temp/HeliOS.conf
+          sed -i '/^COMPACT_LATEX .*/d' ${{github.workspace}}/temp/HeliOS.conf
+          echo 'COMPACT_LATEX = YES' >> ${{github.workspace}}/temp/HeliOS.conf
+          sed -i '/^GENERATE_RTF .*/d' ${{github.workspace}}/temp/HeliOS.conf
+          echo 'GENERATE_RTF = NO' >> ${{github.workspace}}/temp/HeliOS.conf
+          sed -i '/^GENERATE_MAN .*/d' ${{github.workspace}}/temp/HeliOS.conf
+          echo 'GENERATE_MAN = NO' >> ${{github.workspace}}/temp/HeliOS.conf
+          sed -i '/^GENERATE_XML .*/d' ${{github.workspace}}/temp/HeliOS.conf
+          echo 'GENERATE_XML = NO' >> ${{github.workspace}}/temp/HeliOS.conf
+          sed -i '/^REPEAT_BRIEF .*/d' ${{github.workspace}}/temp/HeliOS.conf
+          echo 'REPEAT_BRIEF = NO' >> ${{github.workspace}}/temp/HeliOS.conf
+          sed -i '/^FULL_PATH_NAMES .*/d' ${{github.workspace}}/temp/HeliOS.conf
+          echo 'FULL_PATH_NAMES = NO' >> ${{github.workspace}}/temp/HeliOS.conf
+          sed -i '/^INPUT .*/d' ${{github.workspace}}/temp/HeliOS.conf
+          echo 'INPUT = ${{github.workspace}}/src/config.h ${{github.workspace}}/src/HeliOS.h' >> ${{github.workspace}}/temp/HeliOS.conf
+          sed -i '/^FILE_PATTERNS .*/d' ${{github.workspace}}/temp/HeliOS.conf
+          echo 'FILE_PATTERNS = *.h' >> ${{github.workspace}}/temp/HeliOS.conf
+          sed -i '/^RECURSIVE .*/d' ${{github.workspace}}/temp/HeliOS.conf
+          echo 'RECURSIVE = NO' >> ${{github.workspace}}/temp/HeliOS.conf
+          sed -i '/^CLASS_DIAGRAMS .*/d' ${{github.workspace}}/temp/HeliOS.conf
+          echo 'CLASS_DIAGRAMS = NO' >> ${{github.workspace}}/temp/HeliOS.conf
+          sed -i '/^HAVE_DOT .*/d' ${{github.workspace}}/temp/HeliOS.conf
+          echo 'HAVE_DOT = NO' >> ${{github.workspace}}/temp/HeliOS.conf
+          sed -i '/^PROJECT_BRIEF .*/d' ${{github.workspace}}/temp/HeliOS.conf
+          echo 'PROJECT_BRIEF = ' >> ${{github.workspace}}/temp/HeliOS.conf
+          sed -i '/^SHOW_HEADERFILE .*/d' ${{github.workspace}}/temp/HeliOS.conf
+          echo 'SHOW_HEADERFILE = NO' >> ${{github.workspace}}/temp/HeliOS.conf
+          sed -i '/^SHOW_INCLUDE_FILES .*/d' ${{github.workspace}}/temp/HeliOS.conf
+          echo 'SHOW_INCLUDE_FILES = NO' >> ${{github.workspace}}/temp/HeliOS.conf
+          sed -i '/^QUIET .*/d' ${{github.workspace}}/temp/HeliOS.conf
+          echo 'QUIET = NO' >> ${{github.workspace}}/temp/HeliOS.conf
+          sed -i '/^WARNINGS .*/d' ${{github.workspace}}/temp/HeliOS.conf
+          echo 'WARNINGS = YES' >> ${{github.workspace}}/temp/HeliOS.conf
+          sed -i '/^WARN_LOGFILE .*/d' ${{github.workspace}}/temp/HeliOS.conf
+          echo 'WARN_LOGFILE = ' >> ${{github.workspace}}/temp/HeliOS.conf
+          sed -i '/^INLINE_SOURCES .*/d' ${{github.workspace}}/temp/HeliOS.conf
+          echo 'INLINE_SOURCES = NO' >> ${{github.workspace}}/temp/HeliOS.conf
+          sed -i '/^VERBATIM_HEADERS .*/d' ${{github.workspace}}/temp/HeliOS.conf
+          echo 'VERBATIM_HEADERS = NO' >> ${{github.workspace}}/temp/HeliOS.conf
+          sed -i '/^ENABLE_PREPROCESSING .*/d' ${{github.workspace}}/temp/HeliOS.conf
+          echo 'ENABLE_PREPROCESSING = YES' >> ${{github.workspace}}/temp/HeliOS.conf
+          sed -i '/^DEFINED .*/d' ${{github.workspace}}/temp/HeliOS.conf
+          echo 'DEFINED = DOXYGEN_SHOULD_SKIP_THIS' >> ${{github.workspace}}/temp/HeliOS.conf
+          sed -i '/^ABBREVIATE_BRIEF .*/d' ${{github.workspace}}/temp/HeliOS.conf
+          echo 'ABBREVIATE_BRIEF = ' >> ${{github.workspace}}/temp/HeliOS.conf
+          sort -o ${{github.workspace}}/temp/HeliOS.conf ${{github.workspace}}/temp/HeliOS.conf
           cat ${{github.workspace}}/temp/HeliOS.conf
 
       - name: Resize HeliOS logo...
@@ -103,10 +136,8 @@ jobs:
         shell: bash
         run: |
           cp ${{github.workspace}}/temp/latex/refman.pdf ${{github.workspace}}/doc/HeliOS_Developers_Guide.pdf
-          cp ${{github.workspace}}/temp/latex/* ${{github.workspace}}/doc/latex
           git config --global user.name 'Manny Peterson'
           git config --global user.email '12462046+MannyPeterson@users.noreply.github.com'
           git add ${{github.workspace}}/doc/HeliOS_Developers_Guide.pdf
-          git add ${{github.workspace}}/doc/latex/*
           git commit -m "HeliOS CI Workflow"
           git push

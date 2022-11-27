@@ -256,7 +256,14 @@
 
 
 /**
- * @brief
+ * @brief Define the length of a device driver name.
+ * 
+ * Setting CONFIG_DEVICE_NAME_BYTES will define the length
+ * of a device driver name. The name of device drivers
+ * should be exactly this length. There really isn't
+ * a reason to change this and doing so may break
+ * existing device drivers. The default length
+ * is 8 bytes.
  *
  */
 #if !defined(CONFIG_DEVICE_NAME_BYTES)
