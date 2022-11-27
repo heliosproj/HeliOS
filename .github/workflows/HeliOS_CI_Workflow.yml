@@ -34,7 +34,7 @@ jobs:
       - name: Run Cppcheck...
         shell: bash
         run: |
-          cppcheck --verbose --language=c --platform=unix64 --max-ctu-depth=8 --cppcheck-build-dir=${{github.workspace}}/build --template="::{severity} file={file},line={line},col={column}::{message}" --enable=all --std=c89 -DPOSIX_ARCH_OTHER ${{github.workspace}}/src/
+          cppcheck --check-config --verbose --language=c --platform=unix64 --max-ctu-depth=8 --cppcheck-build-dir=${{github.workspace}}/build --template="::{severity} file={file},line={line},col={column}::{message}" --enable=all --std=c89 -DPOSIX_ARCH_OTHER ${{github.workspace}}/src/
 
       - name: Install Doxygen and LaTeX...
         shell: bash
