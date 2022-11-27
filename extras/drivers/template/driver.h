@@ -2,7 +2,7 @@
  * @file driver.h
  * @author Manny Peterson (mannymsp@gmail.com)
  * @brief A template for HeliOS device drivers
- * @version 0.3.5
+ * @version 0.3.6
  * @date 2022-09-02
  *
  * @copyright

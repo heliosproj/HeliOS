@@ -2,7 +2,7 @@
  * @file posix.h
  * @author Manny Peterson (mannymsp@gmail.com)
  * @brief POSIX header file to use POSIX definitions in header files
- * @version 0.3.5
+ * @version 0.3.6
  * @date 2022-08-20
  *
  * @copyright

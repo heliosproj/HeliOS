@@ -2,7 +2,7 @@
  * @file HeliOS.h
  * @author Manny Peterson (mannymsp@gmail.com)
  * @brief Header file for end-user application code
- * @version 0.3.5
+ * @version 0.3.6
  * @date 2022-09-06
  *
  * @copyright

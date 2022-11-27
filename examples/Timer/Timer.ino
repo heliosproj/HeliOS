@@ -2,7 +2,7 @@
  * @file Timer.ino
  * @author Manny Peterson (mannymsp@gmail.com)
  * @brief Example code to demonstrate event driven multitasking using a task timer
- * @version 0.3.5
+ * @version 0.3.6
  * @date 2022-02-14
  *
  * @copyright

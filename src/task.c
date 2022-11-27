@@ -2,7 +2,7 @@
  * @file task.c
  * @author Manny Peterson (mannymsp@gmail.com)
  * @brief Kernel sources for task management
- * @version 0.3.5
+ * @version 0.3.6
  * @date 2022-01-31
  *
  * @copyright

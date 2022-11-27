@@ -2,7 +2,7 @@
  * @file loopback.h
  * @author Manny Peterson (mannymsp@gmail.com)
  * @brief The HeliOS loopback device driver
- * @version 0.3.5
+ * @version 0.3.6
  * @date 2022-09-02
  *
  * @copyright

@@ -2,7 +2,7 @@
  * @file queue_harness.h
  * @author Manny Peterson (mannymsp@gmail.com)
  * @brief
- * @version 0.3.5
+ * @version 0.3.6
  * @date 2022-08-27
  *
  * @copyright
