@@ -2,12 +2,12 @@
  * @file posix.h
  * @author Manny Peterson (mannymsp@gmail.com)
  * @brief POSIX header file to use POSIX definitions in header files
- * @version 0.3.4
+ * @version 0.3.5
  * @date 2022-08-20
  *
  * @copyright
  * HeliOS Embedded Operating System
- * Copyright (C) 2020-2022 Manny Peterson <mannymsp@gmail.com>
+ * Copyright (C) 2020-2023 Manny Peterson <mannymsp@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,6 +33,4 @@
 #endif
 #define _POSIX_C_SOURCE 200809L
 #endif
-
-
 #endif

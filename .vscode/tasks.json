@@ -8,18 +8,23 @@
                 "-fdiagnostics-color=always",
                 "-O0",
                 "-ggdb",
-                "-std=c89",
+                "-ansi",
+                "-pedantic",
                 "-Wall",
                 "-Wextra",
-                "-I",
-                "${workspaceFolder}/src",
+                "-Wno-unused-parameter",
+                "-I${workspaceFolder}/src",
+                "-I${workspaceFolder}/test/src",
+                "-I${workspaceFolder}/test/src/harness",
+                "-I${workspaceFolder}/test/src/unit",
                 "-DPOSIX_ARCH_OTHER",
                 "-DCONFIG_MEMORY_REGION_SIZE_IN_BLOCKS=0x1C20u",
                 "-DCONFIG_ENABLE_SYSTEM_ASSERT",
-                "-o",
-                "${workspaceFolder}/extras/test/bin/test",
+                "-o${workspaceFolder}/test/bin/test",
                 "${workspaceFolder}/src/*.c",
-                "${workspaceFolder}/extras/test/src/test.c"
+                "${workspaceFolder}/test/src/*.c",
+                "${workspaceFolder}/test/src/harness/*.c",
+                "${workspaceFolder}/test/src/unit/*.c"
             ],
             "options": {
                 "cwd": "${workspaceFolder}/src"
@@ -31,6 +36,15 @@
                 "kind": "build",
                 "isDefault": true
             }
+        },
+        {
+            "type": "shell",
+            "label": "HeliOS Uncrustify",
+            "command": "find . \\( -name \"*.c\" -o -name \"*.h\" \\) -exec uncrustify -c extras/uncrustify/helios.cfg -lC --no-backup {} +",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": []
         }
     ],
     "version": "2.0.0"

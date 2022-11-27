@@ -2,12 +2,12 @@
  * @file mem.c
  * @author Manny Peterson (mannymsp@gmail.com)
  * @brief Kernel sources for memory management
- * @version 0.3.4
+ * @version 0.3.5
  * @date 2022-01-31
  *
  * @copyright
  * HeliOS Embedded Operating System
- * Copyright (C) 2020-2022 Manny Peterson <mannymsp@gmail.com>
+ * Copyright (C) 2020-2023 Manny Peterson <mannymsp@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,49 +23,52 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
-
 #include "mem.h"
 
+static volatile MemoryRegion_t heap;
+
+static volatile MemoryRegion_t kernel;
+
+static Base_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, const volatile Addr_t *addr_, const Base_t option_);
+static Base_t __MemoryRegionCheckAddr__(const volatile MemoryRegion_t *region_, const volatile Addr_t *addr_);
+static Addr_t *__calloc__(volatile MemoryRegion_t *region_, const Size_t size_);
+static void __free__(volatile MemoryRegion_t *region_, const volatile Addr_t *addr_);
+static MemoryRegionStats_t *__MemGetRegionStats__(const volatile MemoryRegion_t *region_);
+static void __DefragMemoryRegion__(const volatile MemoryRegion_t *region_);
 
 
-static volatile MemoryRegion_t heap = {
-    .entrySize = zero,
-    .start = NULL,
-    .allocations = zero,
-    .frees = zero,
-    .minAvailableEver = CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS * CONFIG_MEMORY_REGION_BLOCK_SIZE};
+void __MemoryInit__(void) {
 
+  __memset__(&heap, 0x0, sizeof(MemoryRegion_t));
 
+  heap.minAvailableEver = CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS * CONFIG_MEMORY_REGION_BLOCK_SIZE;
 
+  __memset__(&kernel, 0x0, sizeof(MemoryRegion_t));
 
-static volatile MemoryRegion_t kernel = {
-    .entrySize = zero,
-    .start = NULL,
-    .allocations = zero,
-    .frees = zero,
-    .minAvailableEver = CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS * CONFIG_MEMORY_REGION_BLOCK_SIZE};
+  kernel.minAvailableEver = CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS * CONFIG_MEMORY_REGION_BLOCK_SIZE;
 
-
+  return;
+}
 
 /* System call used by end-user tasks to allocate memory
-from the heap memory region. */
+   from the heap memory region. */
 Addr_t *xMemAlloc(const Size_t size_) {
 
-  /* Just call _calloc_() with the heap memory region
-  to allocate memory from the heap. */
-  return _calloc_(&heap, size_);
+  /* Just call __calloc__() with the heap memory region
+     to allocate memory from the heap. */
+  return __calloc__(&heap, size_);
 }
 
 
 
 /* System call used by end-user tasks to free memory from
-the heap memory region. */
-void xMemFree(const Addr_t *addr_) {
+   the heap memory region. */
+void xMemFree(const volatile Addr_t *addr_) {
 
 
-  /* Just call _free_() with the heap memory region to free
-  from the heap. */
-  _free_(&heap, addr_);
+  /* Just call __free__() with the heap memory region to free
+     from the heap. */
+  __free__(&heap, addr_);
 
   return;
 }
@@ -73,7 +76,7 @@ void xMemFree(const Addr_t *addr_) {
 
 
 /* System call to find out how much memory is allocated
-in the heap memory region. */
+   in the heap memory region. */
 Size_t xMemGetUsed(void) {
 
 
@@ -83,39 +86,39 @@ Size_t xMemGetUsed(void) {
   MemoryEntry_t *cursor = NULL;
 
 
-  HWord_t used = zero;
+  HalfWord_t used = zero;
 
 
 
   /* Assert if any memory region is corrupt. */
-  SYSASSERT(false == SYSFLAG_CORRUPT());
+  SYSASSERT(false == SYSFLAG_FAULT());
 
 
 
   /* Check to make sure no memory regions are
-  corrupt before we do anything. */
-  if (false == SYSFLAG_CORRUPT()) {
+     corrupt before we do anything. */
+  if (false == SYSFLAG_FAULT()) {
 
 
     /* Assert if the check of the heap memory region fails. */
-    SYSASSERT(RETURN_SUCCESS == _MemoryRegionCheck_(&heap, NULL, MEMORY_REGION_CHECK_OPTION_WO_ADDR));
+    SYSASSERT(RETURN_SUCCESS == __MemoryRegionCheck__(&heap, NULL, MEMORY_REGION_CHECK_OPTION_WO_ADDR));
 
 
 
     /* Check if the heap memory region is consistent. */
-    if (RETURN_SUCCESS == _MemoryRegionCheck_(&heap, NULL, MEMORY_REGION_CHECK_OPTION_WO_ADDR)) {
+    if (RETURN_SUCCESS == __MemoryRegionCheck__(&heap, NULL, MEMORY_REGION_CHECK_OPTION_WO_ADDR)) {
 
       cursor = heap.start;
 
 
       /* Traverse the memory region as long as there is
-      something to traverse. */
+         something to traverse. */
       while (ISNOTNULLPTR(cursor)) {
 
 
 
         /* If the entry pointed to by the cursor is not
-        free, then add its blocks to the used block count. */
+           free, then add its blocks to the used block count. */
         if (false == cursor->free) {
 
 
@@ -131,7 +134,7 @@ Size_t xMemGetUsed(void) {
 
 
       /* The end-user is expecting bytes, not blocks so multiply
-      the block size by the number of used blocks. */
+         the block size by the number of used blocks. */
       ret = used * CONFIG_MEMORY_REGION_BLOCK_SIZE;
     }
   }
@@ -141,11 +144,10 @@ Size_t xMemGetUsed(void) {
 
 
 
-
 /* A system call used by end-user tasks to return the amount
-of memory in bytes assigned to an address in the heap memory
-region. */
-Size_t xMemGetSize(const Addr_t *addr_) {
+   of memory in bytes assigned to an address in the heap memory
+   region. */
+Size_t xMemGetSize(const volatile Addr_t *addr_) {
 
 
   Size_t ret = zero;
@@ -156,25 +158,25 @@ Size_t xMemGetSize(const Addr_t *addr_) {
 
 
   /* Assert if any memory region is corrupt. */
-  SYSASSERT(false == SYSFLAG_CORRUPT());
+  SYSASSERT(false == SYSFLAG_FAULT());
 
 
 
   /* Check to make sure no memory regions are
-  corrupt before we do anything. */
-  if (false == SYSFLAG_CORRUPT()) {
+     corrupt before we do anything. */
+  if (false == SYSFLAG_FAULT()) {
 
 
 
     /* Assert if the heap memory region fails its consistency check OR if the memory address is not
-    valid for the heap memory region. */
-    SYSASSERT(RETURN_SUCCESS == _MemoryRegionCheck_(&heap, addr_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
+       valid for the heap memory region. */
+    SYSASSERT(RETURN_SUCCESS == __MemoryRegionCheck__(&heap, addr_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
 
 
 
     /* Check if the heap memory region is consistent AND if the memory address is valid for the heap
-    memory region. */
-    if (RETURN_SUCCESS == _MemoryRegionCheck_(&heap, addr_, MEMORY_REGION_CHECK_OPTION_W_ADDR)) {
+       memory region. */
+    if (RETURN_SUCCESS == __MemoryRegionCheck__(&heap, addr_, MEMORY_REGION_CHECK_OPTION_W_ADDR)) {
 
 
 
@@ -194,7 +196,7 @@ Size_t xMemGetSize(const Addr_t *addr_) {
 
 
         /* The end-user is expecting the size in bytes so multiple the block
-        size by the number of blocks the entry contains. */
+           size by the number of blocks the entry contains. */
         ret = tosize->blocks * CONFIG_MEMORY_REGION_BLOCK_SIZE;
       }
     }
@@ -207,10 +209,10 @@ Size_t xMemGetSize(const Addr_t *addr_) {
 
 
 
-/* The _MemoryRegionCheck_() function checks the consistency of a memory region. If specified, it will also check
-that an address points to valid memory that was previously allocated by _calloc_() for the respective memory
-region. */
-Base_t _MemoryRegionCheck_(const volatile MemoryRegion_t *region_, const Addr_t *addr_, const Base_t option_) {
+/* The __MemoryRegionCheck__() function checks the consistency of a memory region. If specified, it will also check
+   that an address points to valid memory that was previously allocated by __calloc__() for the respective memory
+   region. */
+static Base_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, const volatile Addr_t *addr_, const Base_t option_) {
 
 
   MemoryEntry_t *cursor = NULL;
@@ -219,7 +221,7 @@ Base_t _MemoryRegionCheck_(const volatile MemoryRegion_t *region_, const Addr_t 
 
   Base_t found = false;
 
-  HWord_t blocks = zero;
+  HalfWord_t blocks = zero;
 
 
   Base_t ret = RETURN_FAILURE;
@@ -238,14 +240,14 @@ Base_t _MemoryRegionCheck_(const volatile MemoryRegion_t *region_, const Addr_t 
 
 
     /* Check if the starting entry of the memory region has been set. if it hasn't then
-    the memory region hasn't been initialized. */
+       the memory region hasn't been initialized. */
     if (ISNOTNULLPTR(region_->start)) {
 
       cursor = region_->start;
 
 
       /* Check if we will also be checking if an address is a valid
-      address that points to allocated memory in the memory region. */
+         address that points to allocated memory in the memory region. */
       if (MEMORY_REGION_CHECK_OPTION_W_ADDR == option_) {
 
         find = ADDR2ENTRY(addr_, region_);
@@ -253,29 +255,29 @@ Base_t _MemoryRegionCheck_(const volatile MemoryRegion_t *region_, const Addr_t 
 
 
       /* Traverse the memory region's entries if there is
-      an entry. */
+         an entry. */
       while (ISNOTNULLPTR(cursor)) {
 
 
 
         /* Assert if the memory address of the cursor is outside of the scope
-        of the memory region. */
-        SYSASSERT(RETURN_SUCCESS == _MemoryRegionCheckAddr_(region_, cursor));
+           of the memory region. */
+        SYSASSERT(RETURN_SUCCESS == __MemoryRegionCheckAddr__(region_, cursor));
 
 
 
         /* Check if the memory address of the cursor is inside the scope of the
-        memory region, this is important in case an entry is corrupt we don't
-        want to inadvertently access some other area of memory. */
-        if (RETURN_SUCCESS == _MemoryRegionCheckAddr_(region_, cursor)) {
+           memory region, this is important in case an entry is corrupt we don't
+           want to inadvertently access some other area of memory. */
+        if (RETURN_SUCCESS == __MemoryRegionCheckAddr__(region_, cursor)) {
 
           blocks += cursor->blocks;
 
 
 
           /* If we are also checking if an address is valid, let's see if the entry for the address matches
-          the entry we are currently on and that entry is NOT free. If that is the case, let's flag that
-          we found what we are looking for. */
+             the entry we are currently on and that entry is NOT free. If that is the case, let's flag that
+             we found what we are looking for. */
           if ((MEMORY_REGION_CHECK_OPTION_W_ADDR == option_) && (cursor == find) && (false == cursor->free)) {
 
             found = true;
@@ -290,35 +292,35 @@ Base_t _MemoryRegionCheck_(const volatile MemoryRegion_t *region_, const Addr_t 
 
 
           /* The address of the memory entry was outside of the scope of the memory region
-          so the memory region is corrupt, so mark the corrupt system flag. */
-          SYSFLAG_CORRUPT() = true;
+             so the memory region is corrupt, so mark the corrupt system flag. */
+          SYSFLAG_FAULT() = true;
 
 
           /* No point in continuing to traverse the memory entries in the memory region
-          so break out of the loop. */
+             so break out of the loop. */
           break;
         }
       }
 
 
       /* Assert if the memory region blocks does not match the setting because this would
-      indicate a serious issued. */
+         indicate a serious issued. */
       SYSASSERT(CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS == blocks);
 
 
       /* Check if the number of blocks in the memory region matches the setting before
-      we give the memory region a clean bill of health. */
+         we give the memory region a clean bill of health. */
       if (CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS == blocks) {
 
 
         /* Assert if the memory region is flagged corrupt or if the address we were looking
-        for was not found. */
-        SYSASSERT(((MEMORY_REGION_CHECK_OPTION_WO_ADDR == option_) && (false == SYSFLAG_CORRUPT())) || ((MEMORY_REGION_CHECK_OPTION_W_ADDR == option_) && (false == SYSFLAG_CORRUPT()) && (true == found)));
+           for was not found. */
+        SYSASSERT(((MEMORY_REGION_CHECK_OPTION_WO_ADDR == option_) && (false == SYSFLAG_FAULT())) || ((MEMORY_REGION_CHECK_OPTION_W_ADDR == option_) && (false == SYSFLAG_FAULT()) && (true == found)));
 
 
         /* Check that the memory region is not flagged corrupt and we found the memory address
-        we were looking before. */
-        if (((MEMORY_REGION_CHECK_OPTION_WO_ADDR == option_) && (false == SYSFLAG_CORRUPT())) || ((MEMORY_REGION_CHECK_OPTION_W_ADDR == option_) && (false == SYSFLAG_CORRUPT()) && (true == found))) {
+           we were looking before. */
+        if (((MEMORY_REGION_CHECK_OPTION_WO_ADDR == option_) && (false == SYSFLAG_FAULT())) || ((MEMORY_REGION_CHECK_OPTION_W_ADDR == option_) && (false == SYSFLAG_FAULT()) && (true == found))) {
 
 
           /* Things look good so set the return value to success. */
@@ -326,8 +328,8 @@ Base_t _MemoryRegionCheck_(const volatile MemoryRegion_t *region_, const Addr_t 
 
 
 
-        } /* Never use an else statement here to mark SYSFLAG_CORRUPT() = true. Just because an address wasn't
-          found does not mean the memory region is corrupt. */
+        } /* Never use an else statement here to mark SYSFLAG_FAULT() = true. Just because an address wasn't
+             found does not mean the memory region is corrupt. */
 
 
 
@@ -335,8 +337,8 @@ Base_t _MemoryRegionCheck_(const volatile MemoryRegion_t *region_, const Addr_t 
 
 
         /* The number of blocks counted in the memory region does not match the setting
-        so something is seriously wrong, so set the corrupt system flag. */
-        SYSFLAG_CORRUPT() = true;
+           so something is seriously wrong, so set the corrupt system flag. */
+        SYSFLAG_FAULT() = true;
       }
     }
   }
@@ -347,8 +349,8 @@ Base_t _MemoryRegionCheck_(const volatile MemoryRegion_t *region_, const Addr_t 
 
 
 /* Function to check if an address falls within the scope of a memory region. This
-function is used exclusively by _MemoryRegionCheck_(). */
-Base_t _MemoryRegionCheckAddr_(const volatile MemoryRegion_t *region_, const Addr_t *addr_) {
+   function is used exclusively by __MemoryRegionCheck__(). */
+static Base_t __MemoryRegionCheckAddr__(const volatile MemoryRegion_t *region_, const volatile Addr_t *addr_) {
 
 
 
@@ -362,7 +364,7 @@ Base_t _MemoryRegionCheckAddr_(const volatile MemoryRegion_t *region_, const Add
 
 
   /* Check if the address is inside the scope of the memory region, if it is
-  then return success. */
+     then return success. */
   if ((addr_ >= (Addr_t *)(region_->mem)) && (addr_ < (Addr_t *)(region_->mem + MEMORY_REGION_SIZE_IN_BYTES))) {
 
 
@@ -374,25 +376,19 @@ Base_t _MemoryRegionCheckAddr_(const volatile MemoryRegion_t *region_, const Add
 }
 
 
+
 /* A function to allocate memory and is similar to the standard libc calloc() but supports multiple memory regions. */
-Addr_t *_calloc_(volatile MemoryRegion_t *region_, const Size_t size_) {
-
-
-
-  /* Need to disable interrupts while modifying entries in
-  a memory region. */
-  DISABLE_INTERRUPTS();
+static Addr_t *__calloc__(volatile MemoryRegion_t *region_, const Size_t size_) {
 
   Addr_t *ret = NULL;
 
-  HWord_t requested = zero;
+  HalfWord_t requested = zero;
 
-  HWord_t free = zero;
-
+  HalfWord_t free = zero;
 
   /* Intentionally underflow an unsigned data type
-  to get its maximum value. */
-  HWord_t fewest = -1;
+     to get its maximum value. */
+  HalfWord_t fewest = -1;
 
 
   MemoryEntry_t *cursor = NULL;
@@ -403,9 +399,13 @@ Addr_t *_calloc_(volatile MemoryRegion_t *region_, const Size_t size_) {
 
   MemoryEntry_t *candidateNext = NULL;
 
+  /* Need to disable interrupts while modifying entries in
+     a memory region. */
+  DISABLE_INTERRUPTS();
+
 
   /* Assert if zero bytes are requested because, well... we can't
-  allocate zero bytes of memory. */
+     allocate zero bytes of memory. */
   SYSASSERT(zero < size_);
 
 
@@ -414,27 +414,27 @@ Addr_t *_calloc_(volatile MemoryRegion_t *region_, const Size_t size_) {
 
 
     /* Assert if the memory corruption flag is true. */
-    SYSASSERT(false == SYSFLAG_CORRUPT());
+    SYSASSERT(false == SYSFLAG_FAULT());
 
 
     /* Check to make sure the memory corruption flag is not true because
-    we can't allocate memory if a memory region is corrupt. */
-    if (false == SYSFLAG_CORRUPT()) {
+       we can't allocate memory if a memory region is corrupt. */
+    if (false == SYSFLAG_FAULT()) {
 
 
       /* Check if we have calculated how many blocks are needed to story
-      a memory entry, if we haven't then we must calculate it now and save
-      it for later. */
+         a memory entry, if we haven't then we must calculate it now and save
+         it for later. */
       if (zero == region_->entrySize) {
 
 
         /* Calculate the quotient part of the blocks. */
-        region_->entrySize = ((HWord_t)(sizeof(MemoryEntry_t) / CONFIG_MEMORY_REGION_BLOCK_SIZE));
+        region_->entrySize = ((HalfWord_t)(sizeof(MemoryEntry_t) / CONFIG_MEMORY_REGION_BLOCK_SIZE));
 
 
 
         /* Check if there is a remainder, if so we need to add one block. */
-        if (zero < ((HWord_t)(sizeof(MemoryEntry_t) % CONFIG_MEMORY_REGION_BLOCK_SIZE))) {
+        if (zero < ((HalfWord_t)(sizeof(MemoryEntry_t) % CONFIG_MEMORY_REGION_BLOCK_SIZE))) {
 
 
 
@@ -444,18 +444,18 @@ Addr_t *_calloc_(volatile MemoryRegion_t *region_, const Size_t size_) {
 
 
       /* Check to see if the region has been initialized, if it hasn't then
-      we must initialize it. */
+         we must initialize it. */
       if (ISNULLPTR(region_->start)) {
 
 
         /* Start by setting the start entry to the start address of the memory
-        region. We do this so we don't have to cast the type every time we wan't
-        to address the first entry in the memory region. */
+           region. We do this so we don't have to cast the type every time we wan't
+           to address the first entry in the memory region. */
         region_->start = (MemoryEntry_t *)region_->mem;
 
 
         /* Zero out all of the memory in the memory region. */
-        _memset_(region_->mem, zero, MEMORY_REGION_SIZE_IN_BYTES);
+        __memset__(region_->mem, zero, MEMORY_REGION_SIZE_IN_BYTES);
 
         /* Mark the first entry in the memory region free. */
         region_->start->free = true;
@@ -474,19 +474,19 @@ Addr_t *_calloc_(volatile MemoryRegion_t *region_, const Size_t size_) {
 
 
       /* Assert if the memory region fails its consistency check. */
-      SYSASSERT(RETURN_SUCCESS == _MemoryRegionCheck_(region_, NULL, MEMORY_REGION_CHECK_OPTION_WO_ADDR));
+      SYSASSERT(RETURN_SUCCESS == __MemoryRegionCheck__(region_, NULL, MEMORY_REGION_CHECK_OPTION_WO_ADDR));
 
 
       /* Check if the memory region passes its consistency check. */
-      if (RETURN_SUCCESS == _MemoryRegionCheck_(region_, NULL, MEMORY_REGION_CHECK_OPTION_WO_ADDR)) {
+      if (RETURN_SUCCESS == __MemoryRegionCheck__(region_, NULL, MEMORY_REGION_CHECK_OPTION_WO_ADDR)) {
 
 
         /* Calculate the number of blocks requested. */
-        requested = ((HWord_t)(size_ / CONFIG_MEMORY_REGION_BLOCK_SIZE));
+        requested = ((HalfWord_t)(size_ / CONFIG_MEMORY_REGION_BLOCK_SIZE));
 
 
         /* Check if there is a remainder, if so add one more block. */
-        if (zero < ((HWord_t)(size_ % CONFIG_MEMORY_REGION_BLOCK_SIZE))) {
+        if (zero < ((HalfWord_t)(size_ % CONFIG_MEMORY_REGION_BLOCK_SIZE))) {
 
 
 
@@ -500,7 +500,7 @@ Addr_t *_calloc_(volatile MemoryRegion_t *region_, const Size_t size_) {
 
 
         /* To traverse the entries in the memory region we need to start off with
-        the cursor set to the starting entry. */
+           the cursor set to the starting entry. */
         cursor = region_->start;
 
 
@@ -524,8 +524,8 @@ Addr_t *_calloc_(volatile MemoryRegion_t *region_, const Size_t size_) {
           }
 
 
-          /* Count how many blocks are free so we can update the mininum bytes free ever
-          for the memory region. */
+          /* Count how many blocks are free so we can update the minimum bytes free ever
+             for the memory region. */
           if (true == cursor->free) {
 
             free += cursor->blocks;
@@ -547,7 +547,7 @@ Addr_t *_calloc_(volatile MemoryRegion_t *region_, const Size_t size_) {
 
 
           /* Check if we can split the blocks in the entry. If we can then proceed with
-          splitting the blocks by putting the remainder in a new entry. */
+             splitting the blocks by putting the remainder in a new entry. */
           if ((region_->entrySize + 1) <= (candidate->blocks - requested)) {
 
 
@@ -563,7 +563,7 @@ Addr_t *_calloc_(volatile MemoryRegion_t *region_, const Size_t size_) {
 
 
             /* Now used the "candidate->next" saved earlier. We are basically inserting
-            a new node in a linked list. */
+               a new node in a linked list. */
             candidate->next->next = candidateNext;
 
 
@@ -589,12 +589,12 @@ Addr_t *_calloc_(volatile MemoryRegion_t *region_, const Size_t size_) {
 
 
             /* Clear the memory allocated. */
-            _memset_(ENTRY2ADDR(candidate, region_), zero, (requested - region_->entrySize) * CONFIG_MEMORY_REGION_BLOCK_SIZE);
+            __memset__(ENTRY2ADDR(candidate, region_), zero, (requested - region_->entrySize) * CONFIG_MEMORY_REGION_BLOCK_SIZE);
 
 
 
             /* Convert the candidate memory entry address to the starting address of the
-            newly allocated memory. */
+               newly allocated memory. */
             ret = ENTRY2ADDR(candidate, region_);
 
 
@@ -608,12 +608,12 @@ Addr_t *_calloc_(volatile MemoryRegion_t *region_, const Size_t size_) {
 
 
             /* Clear the memory allocated. */
-            _memset_(ENTRY2ADDR(candidate, region_), zero, (requested - region_->entrySize) * CONFIG_MEMORY_REGION_BLOCK_SIZE);
+            __memset__(ENTRY2ADDR(candidate, region_), zero, (requested - region_->entrySize) * CONFIG_MEMORY_REGION_BLOCK_SIZE);
 
 
 
             /* Convert the candidate memory entry address to the starting address of the
-            newly allocated memory. */
+               newly allocated memory. */
             ret = ENTRY2ADDR(candidate, region_);
           }
 
@@ -624,7 +624,7 @@ Addr_t *_calloc_(volatile MemoryRegion_t *region_, const Size_t size_) {
 
 
           /* We just allocated memory, so subtract back out the requested blocks
-          before we set the mininum bytes available ever. */
+             before we set the minimum bytes available ever. */
           free -= requested;
 
 
@@ -647,44 +647,42 @@ Addr_t *_calloc_(volatile MemoryRegion_t *region_, const Size_t size_) {
 }
 
 
-/* Function to free memory allocated by _calloc_(). */
-void _free_(volatile MemoryRegion_t *region_, const Addr_t *addr_) {
 
-
-  /* Need to disable interrupts while modifying entries in
-  a memory region. */
-  DISABLE_INTERRUPTS();
+/* Function to free memory allocated by __calloc__(). */
+static void __free__(volatile MemoryRegion_t *region_, const volatile Addr_t *addr_) {
 
 
   MemoryEntry_t *free = NULL;
 
+  /* Need to disable interrupts while modifying entries in
+     a memory region. */
+  DISABLE_INTERRUPTS();
 
 
   /* Assert if a memory region is corrupt. */
-  SYSASSERT(false == SYSFLAG_CORRUPT());
+  SYSASSERT(false == SYSFLAG_FAULT());
 
 
   /* Check if a memory region is corrupt. If it is, we might as well head toward
-  the exit because we can't reliably modify the memory region. */
-  if (false == SYSFLAG_CORRUPT()) {
+     the exit because we can't reliably modify the memory region. */
+  if (false == SYSFLAG_FAULT()) {
 
 
 
     /* Assert if the memory region fails a consistency check. */
-    SYSASSERT(RETURN_SUCCESS == _MemoryRegionCheck_(region_, addr_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
+    SYSASSERT(RETURN_SUCCESS == __MemoryRegionCheck__(region_, addr_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
 
 
 
     /* Check the consistency of the memory region before we modify it. We are also checking
-    that the memory address is valid. */
-    if (RETURN_SUCCESS == _MemoryRegionCheck_(region_, addr_, MEMORY_REGION_CHECK_OPTION_W_ADDR)) {
+       that the memory address is valid. */
+    if (RETURN_SUCCESS == __MemoryRegionCheck__(region_, addr_, MEMORY_REGION_CHECK_OPTION_W_ADDR)) {
 
 
 
       /* Convert the address of the allocated memory to its
-      respective memory entry address. */
+         respective memory entry address. */
       free = ADDR2ENTRY(addr_, region_);
-
 
 
       /* Mark the memory entry as free. */
@@ -693,20 +691,10 @@ void _free_(volatile MemoryRegion_t *region_, const Addr_t *addr_) {
 
       region_->frees++;
 
-      /* Is there a next entry and is it free? If so, let's merge the
-      two entries to reduce fragmentation. */
-      if ((ISNOTNULLPTR(free->next)) && (true == free->next->free)) {
 
-
-        /* Add the blocks from the subsequent entry to the
-        current entry. */
-        free->blocks += free->next->blocks;
-
-
-
-        /* Just drop the entry just as you would in a linked list. */
-        free->next = free->next->next;
-      }
+      /* After freeing blocks we should defrag the memory
+         region. */
+      __DefragMemoryRegion__(region_);
     }
   }
 
@@ -720,74 +708,78 @@ void _free_(volatile MemoryRegion_t *region_, const Addr_t *addr_) {
 
 
 
-/* A wrapper function for _calloc_() because the memory
-regions cannot be accessed outside the scope of mem.c. */
-Addr_t *_KernelAllocateMemory_(const Size_t size_) {
+/* A wrapper function for __calloc__() because the memory
+   regions cannot be accessed outside the scope of mem.c. */
+Addr_t *__KernelAllocateMemory__(const Size_t size_) {
 
-
-  return _calloc_(&kernel, size_);
+  return __calloc__(&kernel, size_);
 }
 
 
 
-/* A wrapper function for _free_() because the memory
-regions cannot be accessed outside the scope of mem.c. */
-void _KernelFreeMemory_(const Addr_t *addr_) {
+/* A wrapper function for __free__() because the memory
+   regions cannot be accessed outside the scope of mem.c. */
+void __KernelFreeMemory__(const volatile Addr_t *addr_) {
 
-  _free_(&kernel, addr_);
-
-
-  return;
-}
-
-/* A wrapper function for _MemoryRegionCheck_() because the memory
-regions cannot be accessed outside the scope of mem.c. */
-Base_t _MemoryRegionCheckKernel_(const Addr_t *addr_, const Base_t option_) {
-
-  return _MemoryRegionCheck_(&kernel, addr_, option_);
-}
-
-
-/* A wrapper function for _calloc_() because the memory
-regions cannot be accessed outside the scope of mem.c. */
-Addr_t *_HeapAllocateMemory_(const Size_t size_) {
-
-
-  return _calloc_(&heap, size_);
-}
-
-
-
-/* A wrapper function for _free_() because the memory
-regions cannot be accessed outside the scope of mem.c. */
-void _HeapFreeMemory_(const Addr_t *addr_) {
-
-  _free_(&heap, addr_);
+  __free__(&kernel, addr_);
 
 
   return;
 }
 
 
-/* A wrapper function for _MemoryRegionCheck_() because the memory
-regions cannot be accessed outside the scope of mem.c. */
-Base_t _MemoryRegionCheckHeap_(const Addr_t *addr_, const Base_t option_) {
 
-  return _MemoryRegionCheck_(&heap, addr_, option_);
+/* A wrapper function for __MemoryRegionCheck__() because the memory
+   regions cannot be accessed outside the scope of mem.c. */
+Base_t __MemoryRegionCheckKernel__(const volatile Addr_t *addr_, const Base_t option_) {
+
+  return __MemoryRegionCheck__(&kernel, addr_, option_);
 }
 
 
-/* Like the standard libc function, _memcpy_() copies memory from one
-address to another. */
-void _memcpy_(Addr_t *dest_, const Addr_t *src_, Size_t n_) {
+
+/* A wrapper function for __calloc__() because the memory
+   regions cannot be accessed outside the scope of mem.c. */
+Addr_t *__HeapAllocateMemory__(const Size_t size_) {
+
+
+  return __calloc__(&heap, size_);
+}
+
+
+
+/* A wrapper function for __free__() because the memory
+   regions cannot be accessed outside the scope of mem.c. */
+void __HeapFreeMemory__(const volatile Addr_t *addr_) {
+
+  __free__(&heap, addr_);
+
+
+  return;
+}
+
+
+
+/* A wrapper function for __MemoryRegionCheck__() because the memory
+   regions cannot be accessed outside the scope of mem.c. */
+Base_t __MemoryRegionCheckHeap__(const volatile Addr_t *addr_, const Base_t option_) {
+
+  return __MemoryRegionCheck__(&heap, addr_, option_);
+}
+
+
+
+/* Like the standard libc function, __memcpy__() copies memory from one
+   address to another. */
+void __memcpy__(const volatile Addr_t *dest_, const volatile Addr_t *src_, const Size_t size_) {
 
   Size_t i = zero;
 
-  char *src = (char *)src_;
+  const volatile Char_t *src = (Char_t *)src_;
 
-  char *dest = (char *)dest_;
+  volatile Char_t *dest = (Char_t *)dest_;
 
-  for (i = zero; i < n_; i++) {
+  for (i = zero; i < size_; i++) {
 
     dest[i] = src[i];
   }
@@ -797,17 +789,17 @@ void _memcpy_(Addr_t *dest_, const Addr_t *src_, Size_t n_) {
 
 
 
-/* Like the standard libc function, _memset_() sets the memory
-at the location specified as the address to the defined value. */
-void _memset_(volatile Addr_t *dest_, uint16_t val_, Size_t n_) {
+/* Like the standard libc function, __memset__() sets the memory
+   at the location specified as the address to the defined value. */
+void __memset__(const volatile Addr_t *dest_, const Byte_t val_, const Size_t size_) {
 
   Size_t i = zero;
 
-  char *dest = (char *)dest_;
+  volatile Char_t *dest = (Char_t *)dest_;
 
-  for (i = zero; i < n_; i++) {
+  for (i = zero; i < size_; i++) {
 
-    dest[i] = (char)val_;
+    dest[i] = (Char_t)val_;
   }
 
   return;
@@ -815,26 +807,26 @@ void _memset_(volatile Addr_t *dest_, uint16_t val_, Size_t n_) {
 
 
 
-/* Similar to the standard libc function, _memcmp_() compares the contents
-of two memory locations pointed. */
-uint16_t _memcmp_(const Addr_t *s1_, const Addr_t *s2_, Size_t n_) {
-  
+/* Similar to the standard libc function, __memcmp__() compares the contents
+   of two memory locations pointed. */
+Base_t __memcmp__(const volatile Addr_t *s1_, const volatile Addr_t *s2_, const Size_t size_) {
+
   Size_t i = zero;
 
-  uint16_t ret = zero;
+  Base_t ret = zero;
 
-  char *s1 = (char *)s1_;
+  volatile Char_t *s1 = (Char_t *)s1_;
 
-  char *s2 = (char *)s2_;
+  volatile Char_t *s2 = (Char_t *)s2_;
 
-  for (i = zero; i < n_; i++) {
+  for (i = zero; i < size_; i++) {
 
     if (*s1 != *s2) {
 
       ret = *s1 - *s2;
 
       break; /* Typically memcmp() just returns here but we can't do that for MISRA C:2012
-      compliance. */
+                compliance. */
     }
 
     s1++;
@@ -847,24 +839,26 @@ uint16_t _memcmp_(const Addr_t *s1_, const Addr_t *s2_, Size_t n_) {
 }
 
 
+
 /* Return the memory region statistics for the heap. */
 MemoryRegionStats_t *xMemGetHeapStats(void) {
 
 
-  return _MemGetRegionStats_(&heap);
+  return __MemGetRegionStats__(&heap);
 }
 
 
-/* Return the memory region stastics for the kernel */
+
+/* Return the memory region statistics for the kernel */
 MemoryRegionStats_t *xMemGetKernelStats(void) {
 
-  return _MemGetRegionStats_(&kernel);
+  return __MemGetRegionStats__(&kernel);
 }
 
 
 
 /* Return the memory region statistics for the specified memory region. */
-MemoryRegionStats_t *_MemGetRegionStats_(const volatile MemoryRegion_t *region_) {
+static MemoryRegionStats_t *__MemGetRegionStats__(const volatile MemoryRegion_t *region_) {
 
   MemoryEntry_t *cursor = NULL;
 
@@ -880,52 +874,52 @@ MemoryRegionStats_t *_MemGetRegionStats_(const volatile MemoryRegion_t *region_)
 
 
     /* Assert if any memory region is corrupt. */
-    SYSASSERT(false == SYSFLAG_CORRUPT());
+    SYSASSERT(false == SYSFLAG_FAULT());
 
 
 
     /* Check to make sure no memory regions are
-    corrupt before we do anything. */
-    if (false == SYSFLAG_CORRUPT()) {
+       corrupt before we do anything. */
+    if (false == SYSFLAG_FAULT()) {
 
 
       /* Assert if the check if the memory region fails. */
-      SYSASSERT(RETURN_SUCCESS == _MemoryRegionCheck_(region_, NULL, MEMORY_REGION_CHECK_OPTION_WO_ADDR));
+      SYSASSERT(RETURN_SUCCESS == __MemoryRegionCheck__(region_, NULL, MEMORY_REGION_CHECK_OPTION_WO_ADDR));
 
 
 
       /* Check if the memory region is consistent. */
-      if (RETURN_SUCCESS == _MemoryRegionCheck_(region_, NULL, MEMORY_REGION_CHECK_OPTION_WO_ADDR)) {
+      if (RETURN_SUCCESS == __MemoryRegionCheck__(region_, NULL, MEMORY_REGION_CHECK_OPTION_WO_ADDR)) {
 
         /* Allocate heap memory for the MemoryRegionStats_t structure. */
-        ret = (MemoryRegionStats_t *)_HeapAllocateMemory_(sizeof(MemoryRegionStats_t));
+        ret = (MemoryRegionStats_t *)__HeapAllocateMemory__(sizeof(MemoryRegionStats_t));
 
 
-        /* Assert if _HeapAllocateMemory_() failed to allocate the memory. */
+        /* Assert if __HeapAllocateMemory__() failed to allocate the memory. */
         SYSASSERT(ISNOTNULLPTR(ret));
 
 
-        /* Check to make sure _HeapAllocateMemory_() did its job. */
+        /* Check to make sure __HeapAllocateMemory__() did its job. */
         if (ISNOTNULLPTR(ret)) {
 
           cursor = region_->start;
 
           /*
 
-            MemoryRegionStats_t contains these elements which
-            we need to fill-in before returning.
+             MemoryRegionStats_t contains these elements which
+             we need to fill-in before returning.
 
-            largestFreeEntryInBytes;
-            smallestFreeEntryInBytes;
-            numberOfFreeBlocks;
-            availableSpaceInBytes;
-            successfulAllocations;
-            successfulFrees;
-            minimumEverFreeBytesRemaining;
-          */
+             largestFreeEntryInBytes;
+             smallestFreeEntryInBytes;
+             numberOfFreeBlocks;
+             availableSpaceInBytes;
+             successfulAllocations;
+             successfulFrees;
+             minimumEverFreeBytesRemaining;
+           */
 
           /* Clear the structure to make sure everything is zero. */
-          _memset_(ret, zero, sizeof(MemoryRegionStats_t));
+          __memset__(ret, zero, sizeof(MemoryRegionStats_t));
 
 
 
@@ -946,7 +940,7 @@ MemoryRegionStats_t *_MemGetRegionStats_(const volatile MemoryRegion_t *region_)
 
 
           /* Traverse the memory region as long as there is
-          something to traverse. */
+             something to traverse. */
           while (ISNOTNULLPTR(cursor)) {
 
             if (true == cursor->free) {
@@ -981,22 +975,109 @@ MemoryRegionStats_t *_MemGetRegionStats_(const volatile MemoryRegion_t *region_)
 
 
 
+/* Defrag an entire memory region to reduce memory fragmentation. */
+static void __DefragMemoryRegion__(const volatile MemoryRegion_t *region_) {
+
+
+  MemoryEntry_t *cursor = NULL;
+
+
+
+  /* We can't do anything if the region_ pointer is null so assert if it is. */
+  SYSASSERT(ISNOTNULLPTR(region_));
+
+
+  /* We can't do anything if the region pointer is null so check before we proceed. */
+  if (ISNOTNULLPTR(region_)) {
+
+
+    /* Assert if any memory region is corrupt. */
+    SYSASSERT(false == SYSFLAG_FAULT());
+
+
+
+    /* Check to make sure no memory regions are
+       corrupt before we do anything. */
+    if (false == SYSFLAG_FAULT()) {
+
+
+      /* Assert if the check if the memory region fails. */
+      SYSASSERT(RETURN_SUCCESS == __MemoryRegionCheck__(region_, NULL, MEMORY_REGION_CHECK_OPTION_WO_ADDR));
+
+
+
+      /* Check if the memory region is consistent. */
+      if (RETURN_SUCCESS == __MemoryRegionCheck__(region_, NULL, MEMORY_REGION_CHECK_OPTION_WO_ADDR)) {
+
+        cursor = region_->start;
+
+        /* Traverse the memory region as long as there is
+           something to traverse. */
+        while (ISNOTNULLPTR(cursor)) {
+
+
+          /* If the current entry is free AND the subsequent entry is free,
+             we can merge the two. */
+          if ((ISNOTNULLPTR(cursor)) && (ISNOTNULLPTR(cursor->next)) && (true == cursor->free) && (true == cursor->next->free)) {
+
+
+            /* Add the blocks from the subsequent entry to the
+               current entry. */
+            cursor->blocks += cursor->next->blocks;
+
+            /* Just drop the "next" entry just as you would in a linked list. */
+            cursor->next = cursor->next->next;
+
+
+          } else {
+
+
+            /* Move on to the next entry. */
+            cursor = cursor->next;
+          }
+        }
+      }
+    }
+  }
+
+  return;
+}
+
+
+
 #if defined(POSIX_ARCH_OTHER)
 
-/* Just a debugging function to dump the contents of kernel memory. */
-void _MemoryRegionDumpKernel_(void) {
+void __MemoryClear__(void) {
 
-  _memdump_(&kernel);
+
+  __memset__(&heap, 0x0, sizeof(MemoryRegion_t));
+
+  heap.minAvailableEver = CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS * CONFIG_MEMORY_REGION_BLOCK_SIZE;
+
+  __memset__(&kernel, 0x0, sizeof(MemoryRegion_t));
+
+  kernel.minAvailableEver = CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS * CONFIG_MEMORY_REGION_BLOCK_SIZE;
+
+  return;
+}
+
+
+
+/* Just a debugging function to dump the contents of kernel memory. */
+void __MemoryRegionDumpKernel__(void) {
+
+  __memdump__(&kernel);
 
 
   return;
 }
 
 
-/* Just a debugging function to dump the onents of heap memory. */
-void _MemoryRegionDumpHeap_(void) {
 
-  _memdump_(&heap);
+/* Just a debugging function to dump the contents of heap memory. */
+void __MemoryRegionDumpHeap__(void) {
+
+  __memdump__(&heap);
 
 
 
@@ -1006,13 +1087,13 @@ void _MemoryRegionDumpHeap_(void) {
 
 
 /* Function to dump the memory of the specified memory region. */
-void _memdump_(const volatile MemoryRegion_t *region_) {
+void __memdump__(const volatile MemoryRegion_t *region_) {
 
 
   Size_t i = zero;
 
   Size_t j = zero;
-  
+
   Size_t k = zero;
 
 

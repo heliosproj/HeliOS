@@ -2,12 +2,12 @@
  * @file defines.h
  * @author Manny Peterson (mannymsp@gmail.com)
  * @brief Kernel header for macros and definitions
- * @version 0.3.4
+ * @version 0.3.5
  * @date 2022-01-31
  *
  * @copyright
  * HeliOS Embedded Operating System
- * Copyright (C) 2020-2022 Manny Peterson <mannymsp@gmail.com>
+ * Copyright (C) 2020-2023 Manny Peterson <mannymsp@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,8 +33,9 @@
 #include <stddef.h>
 
 
+
 /* Check that the system HeliOS is being targeted for has an
-8-bit wide byte. */
+   8-bit wide byte. */
 #if !defined(CHAR_BIT)
 #pragma message("WARNING: Unable to determine if system has an 8-bit wide byte. CHAR_BIT not defined?")
 #else
@@ -45,7 +46,6 @@
 
 
 
-
 /* Define "true" if not defined. */
 #if !defined(true)
 #define true 0x1u /* 1 */
@@ -53,12 +53,10 @@
 
 
 
-
 /* Define "false" if not defined. */
 #if !defined(false)
 #define false 0x0u /* 0 */
 #endif
-
 
 
 
@@ -73,7 +71,6 @@
 
 
 
-
 /* Define "zero" if not defined. */
 #if !defined(zero)
 #define zero 0x0u /* 0 */
@@ -81,31 +78,27 @@
 
 
 
-
 /* Define a general return failure for
-return values. */
+   return values. */
 #if !defined(RETURN_FAILURE)
 #define RETURN_FAILURE 0x0u /* 0 */
 #endif
 
 
 
-
 /* Define a general return success
-for return values. */
+   for return values. */
 #if !defined(RETURN_SUCCESS)
 #define RETURN_SUCCESS 0x1u /* 1 */
 #endif
 
 
 
-
 /* Define the size in bytes of the OS product name which is accessible through
-xSystemGetSystemInfo(). */
+   xSystemGetSystemInfo(). */
 #if !defined(OS_PRODUCT_NAME_SIZE)
 #define OS_PRODUCT_NAME_SIZE 0x6u /* 6 */
 #endif
-
 
 
 
@@ -116,102 +109,99 @@ xSystemGetSystemInfo(). */
 
 
 
-
 /* Define the OS product major version number which is accessible through
-xSystemGetSystemInfo(). */
+   xSystemGetSystemInfo(). */
 #if !defined(OS_MAJOR_VERSION_NO)
 #define OS_MAJOR_VERSION_NO 0x0u /* 0 */
 #endif
 
 
 
-
 /* Define the OS product minor version number which is accessible through
-xSystemGetSystemInfo(). */
+   xSystemGetSystemInfo(). */
 #if !defined(OS_MINOR_VERSION_NO)
 #define OS_MINOR_VERSION_NO 0x3u /* 3 */
 #endif
 
 
 
-
 /* Define the OS product patch version number which is accessible through
-xSystemGetSystemInfo(). */
+   xSystemGetSystemInfo(). */
 #if !defined(OS_PATCH_VERSION_NO)
-#define OS_PATCH_VERSION_NO 0x4u /* 4 */
+#define OS_PATCH_VERSION_NO 0x5u /* 5 */
 #endif
 
 
 
 /* Define the raw size of the heap in bytes based on the number of blocks
-the heap contains and the size of each block in bytes. */
+   the heap contains and the size of each block in bytes. */
 #if !defined(MEMORY_REGION_SIZE_IN_BYTES)
-#define MEMORY_REGION_SIZE_IN_BYTES CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS * CONFIG_MEMORY_REGION_BLOCK_SIZE
+#define MEMORY_REGION_SIZE_IN_BYTES CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS *CONFIG_MEMORY_REGION_BLOCK_SIZE
 #endif
 
 
 
 /* Define a macro to access the running system flag which is used
-by xTaskStartScheduler() to indicate whether the scheduler is
-running. */
+   by xTaskStartScheduler() to indicate whether the scheduler is
+   running. */
 #if !defined(SYSFLAG_RUNNING)
 #define SYSFLAG_RUNNING() sysFlags.running
 #endif
 
 
 
-
 /* Define a macro to access the overflow system flag which is used
-by the scheduler to determine when a task's runtime has overflowed
-and all runtimes need to be reset. */
+   by the scheduler to determine when a task's runtime has overflowed
+   and all runtimes need to be reset. */
 #if !defined(SYSFLAG_OVERFLOW)
 #define SYSFLAG_OVERFLOW() sysFlags.overflow
 #endif
 
 
 
-
 /* Define a macro to access the corrupt system flag which is used
-by the memory management system calls to flag if corruption
-of the heap has been detected. */
-#if !defined(SYSFLAG_CORRUPT)
-#define SYSFLAG_CORRUPT() sysFlags.corrupt
+   by the memory management system calls to flag if corruption
+   of the heap has been detected. */
+#if !defined(SYSFLAG_FAULT)
+#define SYSFLAG_FAULT() sysFlags.fault
 #endif
 
 
 
 /* Define a marco which makes null pointer checks more readable and
-concise */
+   concise */
 #if !defined(ISNOTNULLPTR)
-#define ISNOTNULLPTR(addr_) ((NULL) != ( addr_ ))
+#define ISNOTNULLPTR(addr_) ((NULL) != (addr_))
 #endif
-
 
 
 
 /* Define a marco which makes null pointer checks more readable and
-concise */
+   concise */
 #if !defined(ISNULLPTR)
-#define ISNULLPTR(addr_) ((NULL) == ( addr_ ))
+#define ISNULLPTR(addr_) ((NULL) == (addr_))
 #endif
-
 
 
 
 /* Define a macro to assert if assertions are enabled through
-the CONFIG_ENABLE_SYSTEM_ASSERT setting. */
+   the CONFIG_ENABLE_SYSTEM_ASSERT setting. */
 #if !defined(SYSASSERT)
 #if !defined(CONFIG_ENABLE_SYSTEM_ASSERT)
 #define SYSASSERT(expr_)
 #else
-#define SYSASSERT(expr_) if (false == ( expr_ )) _SystemAssert_( __FILE__ , __LINE__ )
+#define SYSASSERT(expr_) \
+  if (false == (expr_))  \
+  __SystemAssert__(__FILE__, __LINE__)
 #endif
 #endif
+
 
 
 #if !defined(MEMORY_REGION_CHECK_OPTION_WO_ADDR)
 #define MEMORY_REGION_CHECK_OPTION_WO_ADDR 0x1u /* 1 */
 #endif
+
 
 
 #if !defined(MEMORY_REGION_CHECK_OPTION_W_ADDR)
@@ -220,19 +210,75 @@ the CONFIG_ENABLE_SYSTEM_ASSERT setting. */
 
 
 
-
 /* Define a macro to convert a heap memory address to it's corresponding
-heap entry. */
+   heap entry. */
 #if !defined(ADDR2ENTRY)
-#define ADDR2ENTRY(addr_, region_) (MemoryEntry_t *)((Byte_t *)( addr_ ) - (( region_ )->entrySize * CONFIG_MEMORY_REGION_BLOCK_SIZE))
+#define ADDR2ENTRY(addr_, region_) (MemoryEntry_t *)((Byte_t *)(addr_) - ((region_)->entrySize * CONFIG_MEMORY_REGION_BLOCK_SIZE))
 #endif
 
 
 
 /* Define a macro to convert a heap entry to it's corresponding heap memory
-address. */
+   address. */
 #if !defined(ENTRY2ADDR)
-#define ENTRY2ADDR(addr_, region_) (Addr_t *)((Byte_t *)( addr_ ) + (( region_ )->entrySize * CONFIG_MEMORY_REGION_BLOCK_SIZE))
+#define ENTRY2ADDR(addr_, region_) (Addr_t *)((Byte_t *)(addr_) + ((region_)->entrySize * CONFIG_MEMORY_REGION_BLOCK_SIZE))
+#endif
+
+
+
+#if defined(UCHAR_TYPE)
+#undef UCHAR_TYPE
+#define UCHAR_TYPE unsigned char
+#else
+#define UCHAR_TYPE unsigned char
+#endif
+
+
+
+#if defined(UINT8_TYPE)
+#undef UINT8_TYPE
+#define UINT8_TYPE uint8_t
+#else
+#define UINT8_TYPE uint8_t
+#endif
+
+
+
+#if defined(UINT16_TYPE)
+#undef UINT16_TYPE
+#define UINT16_TYPE uint16_t
+#else
+#define UINT16_TYPE uint16_t
+#endif
+
+
+
+#if defined(UINT32_TYPE)
+#undef UINT32_TYPE
+#define UINT32_TYPE uint32_t
+#else
+#define UINT32_TYPE uint32_t
+#endif
+
+
+#if defined(SIZE_TYPE)
+#undef SIZE_TYPE
+#define SIZE_TYPE size_t
+#else
+#define SIZE_TYPE size_t
+#endif
+
+
+#if defined(VOID_TYPE)
+#undef VOID_TYPE
+#define VOID_TYPE void
+#else
+#define VOID_TYPE void
+#endif
+
+
+#if !defined(DEREF_TASKPARM)
+#define DEREF_TASKPARM(t, p) *((t *)p)
 #endif
 
 #endif

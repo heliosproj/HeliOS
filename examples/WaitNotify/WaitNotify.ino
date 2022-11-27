@@ -2,12 +2,12 @@
  * @file WaitNotify.ino
  * @author Manny Peterson (mannymsp@gmail.com)
  * @brief Example code to demonstrate direct-to-task notifications used in event-driven multitasking
- * @version 0.3.4
+ * @version 0.3.5
  * @date 2022-02-14
  *
  * @copyright
  * HeliOS Embedded Operating System
- * Copyright (C) 2020-2022 Manny Peterson <mannymsp@gmail.com>
+ * Copyright (C) 2020-2023 Manny Peterson <mannymsp@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

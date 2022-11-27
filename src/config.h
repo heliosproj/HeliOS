@@ -2,12 +2,12 @@
  * @file config.h
  * @author Manny Peterson (mannymsp@gmail.com)
  * @brief Kernel header file for user definable settings
- * @version 0.3.4
+ * @version 0.3.5
  * @date 2022-01-31
  *
  * @copyright
  * HeliOS Embedded Operating System
- * Copyright (C) 2020-2022 Manny Peterson <mannymsp@gmail.com>
+ * Copyright (C) 2020-2023 Manny Peterson <mannymsp@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,9 @@
 
 
 /* The following configurable settings may be changed by the end-user
-to customize the HeliOS kernel for their specific application. */
+   to customize the HeliOS kernel for their specific application. */
+
+
 
 /**
  * @brief Define to enable the Arduino API C++ interface.
@@ -39,7 +41,7 @@ to customize the HeliOS kernel for their specific application. */
  * unable to be written to the serial bus in applications using the
  * Arduino platform/tool-chain. The CONFIG_ENABLE_ARDUINO_CPP_INTERFACE
  * builds the included arduino.cpp file to allow the kernel to call the
- * Arduino API through wrapper functions such as _ArduinoAssert_(). The
+ * Arduino API through wrapper functions such as __ArduinoAssert__(). The
  * arduino.cpp file can be found in the /extras directory. It must
  * be copied into the /src directory to be built.
  *
@@ -50,10 +52,10 @@ to customize the HeliOS kernel for their specific application. */
  *
  */
 /*
-#if !defined(CONFIG_ENABLE_ARDUINO_CPP_INTERFACE)
-#define CONFIG_ENABLE_ARDUINO_CPP_INTERFACE
-#endif
-*/
+ #if !defined(CONFIG_ENABLE_ARDUINO_CPP_INTERFACE)
+ #define CONFIG_ENABLE_ARDUINO_CPP_INTERFACE
+ #endif
+ */
 
 
 
@@ -70,10 +72,10 @@ to customize the HeliOS kernel for their specific application. */
  *
  */
 /*
-#if !defined(CONFIG_ENABLE_SYSTEM_ASSERT)
-#define CONFIG_ENABLE_SYSTEM_ASSERT
-#endif
-*/
+ #if !defined(CONFIG_ENABLE_SYSTEM_ASSERT)
+ #define CONFIG_ENABLE_SYSTEM_ASSERT
+ #endif
+ */
 
 
 
@@ -86,22 +88,23 @@ to customize the HeliOS kernel for their specific application. */
  * of output is generated over a serial or other interface. By default
  * the CONFIG_SYSTEM_ASSERT_BEHAVIOR is not defined.
  *
- * @note In order to use the _ArduinoAssert_() functionality, the
+ * @note In order to use the __ArduinoAssert__() functionality, the
  * CONFIG_ENABLE_ARDUINO_CPP_INTERFACE setting must be enabled.
  *
  * @sa CONFIG_ENABLE_SYSTEM_ASSERT
  * @sa CONFIG_ENABLE_ARDUINO_CPP_INTERFACE
  *
  * @code {.c}
- * #define CONFIG_SYSTEM_ASSERT_BEHAVIOR(f, l) _ArduinoAssert_( f , l )
+ * #define CONFIG_SYSTEM_ASSERT_BEHAVIOR(f, l) __ArduinoAssert__( f , l )
  * @endcode
  *
  */
 /*
-#if !defined(CONFIG_SYSTEM_ASSERT_BEHAVIOR)
-#define CONFIG_SYSTEM_ASSERT_BEHAVIOR(f, l) _ArduinoAssert_( f , l )
-#endif
-*/
+ #if !defined(CONFIG_SYSTEM_ASSERT_BEHAVIOR)
+ #define CONFIG_SYSTEM_ASSERT_BEHAVIOR(f, l) __ArduinoAssert__( f , l )
+ #endif
+ */
+
 
 
 /**
@@ -122,7 +125,6 @@ to customize the HeliOS kernel for their specific application. */
 
 
 
-
 /**
  * @brief Define the size in bytes of the direct to task notification value.
  *
@@ -137,7 +139,6 @@ to customize the HeliOS kernel for their specific application. */
 #if !defined(CONFIG_NOTIFICATION_VALUE_BYTES)
 #define CONFIG_NOTIFICATION_VALUE_BYTES 0x8u /* 8 */
 #endif
-
 
 
 
@@ -156,7 +157,6 @@ to customize the HeliOS kernel for their specific application. */
 #if !defined(CONFIG_TASK_NAME_BYTES)
 #define CONFIG_TASK_NAME_BYTES 0x8u /* 8 */
 #endif
-
 
 
 
@@ -223,4 +223,50 @@ to customize the HeliOS kernel for their specific application. */
 #define CONFIG_QUEUE_MINIMUM_LIMIT 0x5u /* 5 */
 #endif
 
+
+
+/**
+ * @brief Define the length of the stream buffer.
+ *
+ * Setting CONFIG_STREAM_BUFFER_BYTES will define the length
+ * of stream buffers created by xStreamCreate(). When the length
+ * of the stream buffer reaches this value, it is considered
+ * full and can no longer be written to by calling xStreamSend().
+ * The default value is 32. The literal must be appended with "u" to maintain
+ * MISRA C:2012 compliance.
+ *
+ */
+#if !defined(CONFIG_STREAM_BUFFER_BYTES)
+#define CONFIG_STREAM_BUFFER_BYTES 0x20u /* 32 */
+#endif
+
+
+
+/**
+ * @brief Enable task watchdog timers.
+ *
+ * Defining CONFIG_TASK_WD_TIMER_ENABLE will enable the
+ * task watchdog timer feature. The default is enabled.
+ *
+ */
+#if !defined(CONFIG_TASK_WD_TIMER_ENABLE)
+#define CONFIG_TASK_WD_TIMER_ENABLE
+#endif
+
+
+
+/**
+ * @brief Define the length of a device driver name.
+ *
+ * Setting CONFIG_DEVICE_NAME_BYTES will define the length
+ * of a device driver name. The name of device drivers
+ * should be exactly this length. There really isn't
+ * a reason to change this and doing so may break
+ * existing device drivers. The default length
+ * is 8 bytes.
+ *
+ */
+#if !defined(CONFIG_DEVICE_NAME_BYTES)
+#define CONFIG_DEVICE_NAME_BYTES 0x8u /* 8 */
+#endif
 #endif

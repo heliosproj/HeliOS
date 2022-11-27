@@ -2,12 +2,12 @@
  * @file timer.h
  * @author Manny Peterson (mannymsp@gmail.com)
  * @brief Kernel sources for timers
- * @version 0.3.4
+ * @version 0.3.5
  * @date 2022-01-31
  *
  * @copyright
  * HeliOS Embedded Operating System
- * Copyright (C) 2020-2022 Manny Peterson <mannymsp@gmail.com>
+ * Copyright (C) 2020-2023 Manny Peterson <mannymsp@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,8 +30,10 @@
 #include "defines.h"
 #include "types.h"
 #include "port.h"
+#include "device.h"
 #include "mem.h"
 #include "queue.h"
+#include "stream.h"
 #include "sys.h"
 #include "task.h"
 
@@ -39,18 +41,22 @@
 extern "C" {
 #endif
 
-Timer_t *xTimerCreate(Ticks_t timerPeriod_);
-void xTimerDelete(Timer_t *timer_);
-void xTimerChangePeriod(Timer_t *timer_, Ticks_t timerPeriod_);
-Ticks_t xTimerGetPeriod(Timer_t *timer_);
-Base_t xTimerIsTimerActive(Timer_t *timer_);
-Base_t xTimerHasTimerExpired(Timer_t *timer_);
+Timer_t *xTimerCreate(const Ticks_t timerPeriod_);
+void xTimerDelete(const Timer_t *timer_);
+void xTimerChangePeriod(Timer_t *timer_, const Ticks_t timerPeriod_);
+Ticks_t xTimerGetPeriod(const Timer_t *timer_);
+Base_t xTimerIsTimerActive(const Timer_t *timer_);
+Base_t xTimerHasTimerExpired(const Timer_t *timer_);
 void xTimerReset(Timer_t *timer_);
 void xTimerStart(Timer_t *timer_);
 void xTimerStop(Timer_t *timer_);
-Base_t _TimerListFindTimer_(const Timer_t *timer_);
+
+
+#if defined(POSIX_ARCH_OTHER)
+void __TimerStateClear__(void);
+#endif
 
 #ifdef __cplusplus
-}  // extern "C" {
+}
 #endif
 #endif

@@ -2,12 +2,12 @@
  * @file arduino.cpp
  * @author Manny Peterson (mannymsp@gmail.com)
  * @brief Source code to allow the HeliOS kernel to interface with the C++ Arduino API.
- * @version 0.3.4
+ * @version 0.3.5
  * @date 2022-02-25
  * 
  * @copyright
  * HeliOS Embedded Operating System
- * Copyright (C) 2020-2022 Manny Peterson <mannymsp@gmail.com>
+ * Copyright (C) 2020-2023 Manny Peterson <mannymsp@gmail.com>
  *  
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,13 +34,13 @@
 #include <Arduino.h>
 
 
-extern "C" void _ArduinoAssert_(const char *file_, int line_);
+extern "C" void __ArduinoAssert__(const char *file_, int line_);
 
 
-void _ArduinoAssert_(const char *file_, int line_)
+void __ArduinoAssert__(const char *file_, int line_)
 {
 
-    Serial.println("assert: " + String(file_) + ":" + String(line_, DEC));
+    Serial.println("kernel: assert at " + String(file_) + ":" + String(line_, DEC));
 
     return;
 }
