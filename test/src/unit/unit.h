@@ -2,7 +2,7 @@
  * @file unit.h
  * @author Manny Peterson (mannymsp@gmail.com)
  * @brief A simple unit testing framework for HeliOS
- * @version 0.3.6
+ * @version 0.4.0
  * @date 2022-08-23
  *
  * @copyright

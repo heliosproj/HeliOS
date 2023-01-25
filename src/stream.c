@@ -2,7 +2,7 @@
  * @file stream.c
  * @author Manny Peterson (mannymsp@gmail.com)
  * @brief Kernel sources for stream buffers
- * @version 0.3.6
+ * @version 0.4.0
  * @date 2022-08-30
  *
  * @copyright

@@ -2,7 +2,7 @@
  * @file test.c
  * @author Manny Peterson (mannymsp@gmail.com)
  * @brief Source code for HeliOS unit testing
- * @version 0.3.6
+ * @version 0.4.0
  * @date 2022-08-23
  *
  * @copyright

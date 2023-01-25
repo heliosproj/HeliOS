@@ -2,7 +2,7 @@
  * @file defines.h
  * @author Manny Peterson (mannymsp@gmail.com)
  * @brief Kernel header for macros and definitions
- * @version 0.3.5
+ * @version 0.4.0
  * @date 2022-01-31
  *
  * @copyright
@@ -121,7 +121,7 @@
 #if defined(OS_MINOR_VERSION_NO)
 #undef OS_MINOR_VERSION_NO
 #endif
-#define OS_MINOR_VERSION_NO 0x3u /* 3 */
+#define OS_MINOR_VERSION_NO 0x4u /* 4 */
 
 
 
@@ -131,7 +131,7 @@
 #if defined(OS_PATCH_VERSION_NO)
 #undef OS_PATCH_VERSION_NO
 #endif
-#define OS_PATCH_VERSION_NO 0x6u /* 6 */
+#define OS_PATCH_VERSION_NO 0x0u /* 0 */
 
 
 

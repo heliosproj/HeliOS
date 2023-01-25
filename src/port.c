@@ -2,7 +2,7 @@
  * @file port.c
  * @author Manny Peterson (mannymsp@gmail.com)
  * @brief Kernel sources for portability layer
- * @version 0.3.6
+ * @version 0.4.0
  * @date 2022-03-24
  *
  * @copyright

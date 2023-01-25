@@ -2,7 +2,7 @@
  * @file device.c
  * @author Manny Peterson (mannymsp@gmail.com)
  * @brief Kernel source code for device drivers
- * @version 0.3.6
+ * @version 0.4.0
  * @date 2022-09-01
  *
  * @copyright

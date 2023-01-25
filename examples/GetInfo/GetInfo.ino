@@ -2,7 +2,7 @@
  * @file GetInfo.ino
  * @author Manny Peterson (mannymsp@gmail.com)
  * @brief Example code for getting task and system information
- * @version 0.3.6
+ * @version 0.4.0
  * @date 2022-02-14
  *
  * @copyright
