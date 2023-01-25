@@ -2,7 +2,7 @@
  * @file types.h
  * @author Manny Peterson (mannymsp@gmail.com)
  * @brief Kernel header for kernel type definitions
- * @version 0.3.6
+ * @version 0.3.5
  * @date 2022-01-31
  *
  * @copyright
@@ -53,6 +53,10 @@ typedef enum {
 } SchedulerState_t;
 
 
+typedef enum {
+  ReturnSuccess,
+  ReturnFailure
+} Return_t;
 
 
 typedef enum {
