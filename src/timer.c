@@ -49,64 +49,45 @@ Timer_t *xTimerCreate(const Ticks_t timerPeriod_) {
   Timer_t *cursor = NULL;
 
 
-  /* Check if the timer list has been initialized. */
-  if (ISNULLPTR(timerList)) {
-
-
-    timerList = (TimerList_t *)__KernelAllocateMemory__(sizeof(TimerList_t));
-  }
-
-
-  /* Assert if xMemAlloc() didn't do its job. */
-  SYSASSERT(ISNOTNULLPTR(timerList));
-
-
   /* Check if xMemAlloc() did its job. */
-  if (ISNOTNULLPTR(timerList)) {
+  if (ISNOTNULLPTR(timerList) || (ISNULLPTR(timerList) && ISSUCCESSFUL(__KernelAllocateMemory__(&timerList, sizeof(TimerList_t))))) {
+
+    if (ISSUCCESSFUL(__KernelAllocateMemory__(&ret, sizeof(Task_t)))) {
+
+      /* Check if xMemAlloc() successfully allocated the memory for the timer. */
+      if (ISNOTNULLPTR(ret)) {
 
 
+        ret->state = TimerStateSuspended;
+
+        ret->timerPeriod = timerPeriod_;
+
+        ret->timerStartTime = __SysGetSysTicks__();
+
+        ret->next = NULL;
+
+        cursor = timerList->head;
 
 
-    ret = (Timer_t *)__KernelAllocateMemory__(sizeof(Task_t));
+        /* Check if the head of the timer list is null. If so, iterate through the
+           timer list to find the end otherwise just append the timer to the timer list. */
+        if (ISNOTNULLPTR(timerList->head)) {
 
+          /* While the next timer is not null. */
+          while (ISNOTNULLPTR(cursor->next)) {
 
-    /* Assert if xMemAlloc() didn't do its job. */
-    SYSASSERT(ISNOTNULLPTR(ret));
+            cursor = cursor->next;
+          }
 
+          cursor->next = ret;
 
-    /* Check if xMemAlloc() successfully allocated the memory for the timer. */
-    if (ISNOTNULLPTR(ret)) {
+        } else {
 
-
-      ret->state = TimerStateSuspended;
-
-      ret->timerPeriod = timerPeriod_;
-
-      ret->timerStartTime = __SysGetSysTicks__();
-
-      ret->next = NULL;
-
-      cursor = timerList->head;
-
-
-      /* Check if the head of the timer list is null. If so, iterate through the
-         timer list to find the end otherwise just append the timer to the timer list. */
-      if (ISNOTNULLPTR(timerList->head)) {
-
-        /* While the next timer is not null. */
-        while (ISNOTNULLPTR(cursor->next)) {
-
-          cursor = cursor->next;
+          timerList->head = ret;
         }
 
-        cursor->next = ret;
-
-      } else {
-
-        timerList->head = ret;
+        timerList->length++;
       }
-
-      timerList->length++;
     }
   }
 

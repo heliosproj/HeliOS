@@ -64,73 +64,57 @@ Task_t *xTaskCreate(const Char_t *name_, void (*callback_)(Task_t *task_, TaskPa
   if ((false == SYSFLAG_RUNNING()) && (ISNOTNULLPTR(name_)) && (ISNOTNULLPTR(callback_))) {
 
 
-    /* See if the task list needs to be created. */
-    if (ISNULLPTR(taskList)) {
-
-
-
-
-      taskList = (TaskList_t *)__KernelAllocateMemory__(sizeof(TaskList_t));
-    }
-
-
-    /* Assert if xMemAlloc() didn't do its job. */
-    SYSASSERT(ISNOTNULLPTR(taskList));
-
 
     /* Check if xMemAlloc() did its job. */
-    if (ISNOTNULLPTR(taskList)) {
+    if (ISNOTNULLPTR(taskList) || (ISNULLPTR(taskList) && ISSUCCESSFUL(__KernelAllocateMemory__(&taskList, sizeof(TaskList_t))))) {
+
+      if (ISSUCCESSFUL(__KernelAllocateMemory__(&ret, sizeof(Task_t)))) {
 
 
 
-      ret = (Task_t *)__KernelAllocateMemory__(sizeof(Task_t));
+
+        /* Check if xMemAlloc() did its job. If so, populate the task with all the
+           pertinent details. */
+        if (ISNOTNULLPTR(ret)) {
+
+          taskList->nextId++;
+
+          ret->id = taskList->nextId;
+
+          __memcpy__(ret->name, name_, CONFIG_TASK_NAME_BYTES);
+
+          ret->state = TaskStateSuspended;
+
+          ret->callback = callback_;
+
+          ret->taskParameter = taskParameter_;
+
+          ret->next = NULL;
+
+          cursor = taskList->head;
+
+          /* Check if this is the first task in the task list. If it is just set
+             the head to it. Otherwise we are going to have to traverse the list
+             to find the end. */
+          if (ISNOTNULLPTR(taskList->head)) {
 
 
-      /* Again, assert if xMemAlloc() didn't do its job. */
-      SYSASSERT(ISNOTNULLPTR(ret));
+            /* If the task cursor is not null, continue to traverse the list to find the end. */
+            while (ISNOTNULLPTR(cursor->next)) {
 
 
-      /* Check if xMemAlloc() did its job. If so, populate the task with all the
-         pertinent details. */
-      if (ISNOTNULLPTR(ret)) {
+              cursor = cursor->next;
+            }
 
-        taskList->nextId++;
+            cursor->next = ret;
 
-        ret->id = taskList->nextId;
+          } else {
 
-        __memcpy__(ret->name, name_, CONFIG_TASK_NAME_BYTES);
-
-        ret->state = TaskStateSuspended;
-
-        ret->callback = callback_;
-
-        ret->taskParameter = taskParameter_;
-
-        ret->next = NULL;
-
-        cursor = taskList->head;
-
-        /* Check if this is the first task in the task list. If it is just set
-           the head to it. Otherwise we are going to have to traverse the list
-           to find the end. */
-        if (ISNOTNULLPTR(taskList->head)) {
-
-
-          /* If the task cursor is not null, continue to traverse the list to find the end. */
-          while (ISNOTNULLPTR(cursor->next)) {
-
-
-            cursor = cursor->next;
+            taskList->head = ret;
           }
 
-          cursor->next = ret;
-
-        } else {
-
-          taskList->head = ret;
+          taskList->length++;
         }
-
-        taskList->length++;
       }
     }
   }
@@ -365,7 +349,7 @@ TaskRunTimeStats_t *xTaskGetAllRunTimeStats(Base_t *tasks_) {
     if ((zero < tasks) && (tasks == taskList->length)) {
 
 
-      ret = (TaskRunTimeStats_t *)xMemAlloc(tasks * sizeof(TaskRunTimeStats_t));
+      ret = (TaskRunTimeStats_t *)__HeapAllocateMemory__(tasks * sizeof(TaskRunTimeStats_t));
 
       /* Assert if xMemAlloc() didn't do its job. */
       SYSASSERT(ISNOTNULLPTR(ret));
@@ -584,7 +568,7 @@ TaskInfo_t *xTaskGetAllTaskInfo(Base_t *tasks_) {
 
 
 
-      ret = (TaskInfo_t *)xMemAlloc(tasks * sizeof(TaskInfo_t));
+      ret = (TaskInfo_t *)__HeapAllocateMemory__(tasks * sizeof(TaskInfo_t));
 
 
       /* Assert if xMemAlloc() didn't do its job. */
@@ -673,7 +657,7 @@ Char_t *xTaskGetName(const Task_t *task_) {
   if (RETURN_SUCCESS == __TaskListFindTask__(task_)) {
 
 
-    ret = (Char_t *)xMemAlloc(CONFIG_TASK_NAME_BYTES);
+    ret = (Char_t *)__HeapAllocateMemory__(CONFIG_TASK_NAME_BYTES);
 
 
     /* Assert if xMemAlloc() didn't do its job. */

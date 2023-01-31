@@ -98,7 +98,7 @@ void task_harness(void) {
 
   unit_try(0x1 == task04[0].id);
 
-  xMemFree(task04);
+  unit_try (ISSUCCESSFUL(xMemFree(task04)));
 
   unit_end();
 
@@ -114,7 +114,7 @@ void task_harness(void) {
 
   unit_try(0x1 == task04->id);
 
-  xMemFree(task04);
+  unit_try (ISSUCCESSFUL(xMemFree(task04)));
 
   unit_end();
 
@@ -146,7 +146,7 @@ void task_harness(void) {
 
   unit_try(TaskStateSuspended == task07->state);
 
-  xMemFree(task07);
+  unit_try (ISSUCCESSFUL(xMemFree(task07)));
 
   unit_end();
 
@@ -168,7 +168,7 @@ void task_harness(void) {
 
   unit_try(TaskStateSuspended == task07->state);
 
-  xMemFree(task07);
+  unit_try (ISSUCCESSFUL(xMemFree(task07)));
 
   unit_end();
 
@@ -242,7 +242,7 @@ void task_harness(void) {
 
   unit_try(0x0 == strncmp("MESSAGE", (char *)task09->notificationValue, 0x7));
 
-  xMemFree(task09);
+  unit_try (ISSUCCESSFUL(xMemFree(task09)));
 
   unit_end();
 

@@ -57,13 +57,13 @@ void device_harness(void) {
 
   data1 = NULL;
 
-  data1 = (Byte_t *)xMemAlloc(bytes1);
+  unit_try(ISSUCCESSFUL(xMemAlloc(&data1, bytes1)));
 
   memcpy(data1, "THIS IS A TEST OF THE LOOPBACK DEVICE\0", bytes1);
 
   unit_try(RETURN_SUCCESS == xDeviceWrite(0xFFu, &bytes1, data1));
 
-  xMemFree(data1);
+  unit_try(ISSUCCESSFUL(xMemFree(data1)));
 
   unit_end();
 
@@ -83,7 +83,7 @@ void device_harness(void) {
 
   data2 = NULL;
 
-  data2 = (Byte_t *)xMemAlloc(bytes2);
+  unit_try(ISSUCCESSFUL(xMemAlloc(&data2, bytes2)));
 
   unit_try(RETURN_SUCCESS == xDeviceRead(0xFFu, &bytes2, data2));
 
@@ -91,7 +91,7 @@ void device_harness(void) {
 
   unit_try(zero == strncmp((char *)data2, "THIS IS A TEST OF THE LOOPBACK DEVICE\0", bytes2));
 
-  xMemFree(data2);
+  unit_try(ISSUCCESSFUL(xMemFree(data2)));
 
   unit_end();
 
@@ -99,13 +99,13 @@ void device_harness(void) {
 
   unit_begin("xDeviceSimpleWrite()");
 
-  data3 = (Word_t *)xMemAlloc(sizeof(Word_t));
+  unit_try(ISSUCCESSFUL(xMemAlloc(&data3, sizeof(Word_t))));
 
   *data3 = 0xFAFAu;
 
   unit_try(RETURN_SUCCESS == xDeviceSimpleWrite(0xFFu, data3));
 
-  xMemFree(data3);
+  unit_try(ISSUCCESSFUL(xMemFree(data3)));
 
   unit_end();
 
@@ -113,7 +113,7 @@ void device_harness(void) {
 
   unit_begin("xDeviceSimpleRead()");
 
-  data4 = (Word_t *)xMemAlloc(sizeof(Word_t));
+  unit_try(ISSUCCESSFUL(xMemAlloc(&data4, sizeof(Word_t))));
 
   *data4 = zero;
 

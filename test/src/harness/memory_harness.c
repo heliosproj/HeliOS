@@ -35,16 +35,20 @@ void memory_harness(void) {
 
   Size_t i;
   Size_t used;
+  Size_t actual;
   Base_t *mem01;
   MemoryRegionStats_t *mem02;
   MemoryRegionStats_t *mem03;
 
   Task_t *mem04 = NULL;
 
+  Byte_t *mem05 = NULL;
+
   unit_begin("Unit test for memory region defragmentation routine");
 
   i = zero;
   used = zero;
+  actual = zero;
 
   for (i = 0; i < 0x20u; i++) {
     tests[i].size = sizes[i];
@@ -55,25 +59,32 @@ void memory_harness(void) {
       tests[i].blocks += 1;
     }
 
-    tests[i].ptr = (void *)xMemAlloc(sizes[i]);
+    unit_try(ISSUCCESSFUL(xMemAlloc(&tests[i].ptr, sizes[i])));
 
     unit_try(NULL != tests[i].ptr);
 
     used += tests[i].blocks * CONFIG_MEMORY_REGION_BLOCK_SIZE;
 
-    unit_try(used == xMemGetUsed());
+    unit_try(ISSUCCESSFUL(xMemGetUsed(&actual)));
 
-    unit_try((tests[i].blocks * CONFIG_MEMORY_REGION_BLOCK_SIZE) == xMemGetSize(tests[i].ptr));
+    unit_try(used == actual);
+
+    unit_try(ISSUCCESSFUL(xMemGetSize(tests[i].ptr, &actual)));
+
+    unit_try((tests[i].blocks * CONFIG_MEMORY_REGION_BLOCK_SIZE) == actual);
   }
 
-  unit_try(NULL == (void *)xMemAlloc(0x99999u));
+
+  unit_try(!ISSUCCESSFUL(xMemAlloc(&mem05, 0x99999u)));
 
 
   for (i = 0; i < 0x20u; i++) {
-    xMemFree(tests[order[i]].ptr);
+    unit_try(ISSUCCESSFUL(xMemFree(tests[order[i]].ptr)));
   }
 
-  unit_try(0x0u == xMemGetUsed());
+  unit_try(ISSUCCESSFUL(xMemGetUsed(&actual)));
+
+  unit_try(0x0u == actual);
 
   unit_end();
 
@@ -84,7 +95,7 @@ void memory_harness(void) {
 
   mem01 = NULL;
 
-  mem01 = (Base_t *)xMemAlloc(0x32000u);
+  unit_try(ISSUCCESSFUL(xMemAlloc(&mem01, 0x32000u)));
 
   unit_try(NULL != mem01);
 
@@ -94,7 +105,9 @@ void memory_harness(void) {
 
   unit_begin("xMemGetUsed()");
 
-  unit_try(0x32020u == xMemGetUsed());
+  unit_try(ISSUCCESSFUL(xMemGetUsed(&actual)));
+
+  unit_try(0x32020u == actual);
 
   unit_end();
 
@@ -102,7 +115,9 @@ void memory_harness(void) {
 
   unit_begin("xMemGetSize()");
 
-  unit_try(0x32020u == xMemGetSize(mem01));
+  unit_try(ISSUCCESSFUL(xMemGetSize(mem01, &actual)));
+
+  unit_try(0x32020u == actual);
 
   unit_end();
 
@@ -164,11 +179,11 @@ void memory_harness(void) {
 
   unit_try(0x1u == mem03->successfulFrees);
 
-  xMemFree(mem01);
+  unit_try(ISSUCCESSFUL(xMemFree(mem01)));
 
-  xMemFree(mem02);
+  unit_try(ISSUCCESSFUL(xMemFree(mem02)));
 
-  xMemFree(mem03);
+  unit_try(ISSUCCESSFUL(xMemFree(mem03)));
 
   unit_end();
 

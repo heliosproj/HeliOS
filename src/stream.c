@@ -36,24 +36,24 @@ StreamBuffer_t *xStreamCreate() {
   StreamBuffer_t *ret = NULL;
 
 
+  if (ISSUCCESSFUL(__KernelAllocateMemory__(&ret, sizeof(StreamBuffer_t)))) {
 
 
-  ret = (StreamBuffer_t *)__KernelAllocateMemory__(sizeof(StreamBuffer_t));
 
 
-  /* Assert if xMemAlloc() didn't return our requested
-     kernel memory. */
-  SYSASSERT(ISNOTNULLPTR(ret));
+    /* Assert if xMemAlloc() didn't return our requested
+       kernel memory. */
+    SYSASSERT(ISNOTNULLPTR(ret));
 
 
-  /* Check if xMemAlloc() returned our requested
-     kernel memory. */
-  if (ISNOTNULLPTR(ret)) {
+    /* Check if xMemAlloc() returned our requested
+       kernel memory. */
+    if (ISNOTNULLPTR(ret)) {
 
 
-    ret->length = zero;
+      ret->length = zero;
+    }
   }
-
 
   return ret;
 }

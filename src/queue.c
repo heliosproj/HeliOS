@@ -49,28 +49,30 @@ Queue_t *xQueueCreate(Base_t limit_) {
 
 
 
-    ret = (Queue_t *)__KernelAllocateMemory__(sizeof(Queue_t));
+    if (ISSUCCESSFUL(__KernelAllocateMemory__(&ret, sizeof(Queue_t)))) {
 
 
-    /* Assert if xMemAlloc() didn't return our requested
-       kernel memory. */
-    SYSASSERT(ISNOTNULLPTR(ret));
+
+      /* Assert if xMemAlloc() didn't return our requested
+         kernel memory. */
+      SYSASSERT(ISNOTNULLPTR(ret));
 
 
-    /* Check if xMemAlloc() returned our requested
-       kernel memory. */
-    if (ISNOTNULLPTR(ret)) {
+      /* Check if xMemAlloc() returned our requested
+         kernel memory. */
+      if (ISNOTNULLPTR(ret)) {
 
 
-      ret->length = zero;
+        ret->length = zero;
 
-      ret->limit = limit_;
+        ret->limit = limit_;
 
-      ret->locked = false;
+        ret->locked = false;
 
-      ret->head = NULL;
+        ret->head = NULL;
 
-      ret->tail = NULL;
+        ret->tail = NULL;
+      }
     }
   }
 
@@ -412,39 +414,42 @@ Base_t xQueueSend(Queue_t *queue_, const Base_t messageBytes_, const Char_t *mes
 
 
 
-          message = (Message_t *)__KernelAllocateMemory__(sizeof(Message_t));
+          if (ISSUCCESSFUL(__KernelAllocateMemory__(&message, sizeof(Message_t)))) {
 
 
-          /* Assert if xMemAlloc() did not allocate our requested memory. */
-          SYSASSERT(ISNOTNULLPTR(message));
 
-          /* Check if the message was successfully allocated by xMemAlloc(). */
-          if (ISNOTNULLPTR(message)) {
 
-            message->messageBytes = messageBytes_;
+            /* Assert if xMemAlloc() did not allocate our requested memory. */
+            SYSASSERT(ISNOTNULLPTR(message));
 
-            __memcpy__(message->messageValue, messageValue_, CONFIG_MESSAGE_VALUE_BYTES);
+            /* Check if the message was successfully allocated by xMemAlloc(). */
+            if (ISNOTNULLPTR(message)) {
 
-            message->next = NULL;
+              message->messageBytes = messageBytes_;
 
-            /* If the queue tail is not null then it already contains messages and append the new message, otherwise
-               set the head and tail to the new message. */
-            if (ISNOTNULLPTR(queue_->tail)) {
+              __memcpy__(message->messageValue, messageValue_, CONFIG_MESSAGE_VALUE_BYTES);
 
-              queue_->tail->next = message;
+              message->next = NULL;
 
-              queue_->tail = message;
+              /* If the queue tail is not null then it already contains messages and append the new message, otherwise
+                 set the head and tail to the new message. */
+              if (ISNOTNULLPTR(queue_->tail)) {
 
-            } else {
+                queue_->tail->next = message;
 
-              queue_->head = message;
+                queue_->tail = message;
 
-              queue_->tail = message;
+              } else {
+
+                queue_->head = message;
+
+                queue_->tail = message;
+              }
+
+              queue_->length++;
+
+              ret = RETURN_SUCCESS;
             }
-
-            queue_->length++;
-
-            ret = RETURN_SUCCESS;
           }
         }
       }

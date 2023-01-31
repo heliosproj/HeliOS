@@ -115,7 +115,7 @@ void queue_harness(void) {
 
   unit_try(0x0u == strncmp("MESSAGE1", (char *)queue02->messageValue, 0x8));
 
-  xMemFree(queue02);
+  unit_try(ISSUCCESSFUL(xMemFree(queue02)));
 
   unit_end();
 
@@ -131,7 +131,7 @@ void queue_harness(void) {
 
   unit_try(0x0u == strncmp("MESSAGE1", (char *)queue02->messageValue, 0x8));
 
-  xMemFree(queue02);
+  unit_try(ISSUCCESSFUL(xMemFree(queue02)));
 
   unit_end();
 

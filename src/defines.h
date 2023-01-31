@@ -34,6 +34,16 @@
 
 
 
+/** TEMPORARY!!!!!! */
+
+#define RETURN_SUCCESS 1
+#define RETURN_FAILURE 0
+
+
+/** TEMPORARY!!!!!! */
+
+
+
 /* Check that the system HeliOS is being targeted for has an
    8-bit wide byte. */
 #if !defined(CHAR_BIT)
