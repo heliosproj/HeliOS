@@ -414,7 +414,7 @@ Base_t xQueueSend(Queue_t *queue_, const Base_t messageBytes_, const Char_t *mes
 
 
 
-          if (ISSUCCESSFUL(__KernelAllocateMemory__(&message, sizeof(Message_t)))) {
+          if (ISSUCCESSFUL(__KernelAllocateMemory__((volatile Addr_t **)&message, sizeof(Message_t)))) {
 
 
 

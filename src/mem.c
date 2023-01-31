@@ -118,7 +118,7 @@ Return_t xMemGetUsed(Size_t *size_) {
 
   if (ISNOTNULLPTR(size_) && (false == SYSFLAG_FAULT())) {
 
-    if (ISSUCCESSFUL(__MemoryRegionCheck__(&heap, NULL, MEMORY_REGION_CHECK_OPTION_WO_ADDR)))) {
+    if (ISSUCCESSFUL(__MemoryRegionCheck__(&heap, NULL, MEMORY_REGION_CHECK_OPTION_WO_ADDR))) {
 
 
       cursor = heap.start;
@@ -162,7 +162,7 @@ Return_t xMemGetSize(const volatile Addr_t *addr_, Size_t *size_) {
   if (ISNOTNULLPTR(addr_) && ISNOTNULLPTR(size_) && (false == SYSFLAG_FAULT())) {
 
 
-    if (ISSUCCESSFUL(__MemoryRegionCheck__(&heap, addr_, MEMORY_REGION_CHECK_OPTION_W_ADDR)))) {
+    if (ISSUCCESSFUL(__MemoryRegionCheck__(&heap, addr_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
 
 
 
@@ -350,7 +350,7 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
     }
 
 
-    if (ISSUCCESSFUL(__MemoryRegionCheck__(region_, NULL, MEMORY_REGION_CHECK_OPTION_WO_ADDR)))) {
+    if (ISSUCCESSFUL(__MemoryRegionCheck__(region_, NULL, MEMORY_REGION_CHECK_OPTION_WO_ADDR))) {
 
 
 
@@ -466,7 +466,7 @@ static Return_t __free__(volatile MemoryRegion_t *region_, const volatile Addr_t
   if (ISNOTNULLPTR(region_) && ISNOTNULLPTR(addr_) && (false == SYSFLAG_FAULT())) {
 
 
-    if (ISSUCCESSFUL(__MemoryRegionCheck__(region_, addr_, MEMORY_REGION_CHECK_OPTION_W_ADDR)))) {
+    if (ISSUCCESSFUL(__MemoryRegionCheck__(region_, addr_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
 
 
       free = ADDR2ENTRY(addr_, region_);
@@ -716,6 +716,8 @@ Return_t __memcmp__(const volatile Addr_t *s1_, const volatile Addr_t *s2_, cons
 
       s2++;
     }
+
+    RET_SUCCESS;
   } else {
     SYSASSERT(false);
   }
@@ -779,9 +781,9 @@ static Return_t __MemGetRegionStats__(const volatile MemoryRegion_t *region_, Me
 
 
 
-    if (ISSUCCESSFUL(__MemoryRegionCheck__(region_, NULL, MEMORY_REGION_CHECK_OPTION_WO_ADDR)))) {
+    if (ISSUCCESSFUL(__MemoryRegionCheck__(region_, NULL, MEMORY_REGION_CHECK_OPTION_WO_ADDR))) {
 
-      if (ISSUCCESSFUL(__HeapAllocateMemory__(stats_, sizeof(MemoryRegionStats_t)))) {
+      if (ISSUCCESSFUL(__HeapAllocateMemory__((volatile Addr_t **)stats_, sizeof(MemoryRegionStats_t)))) {
 
         cursor = region_->start;
 
@@ -859,7 +861,7 @@ static Return_t __DefragMemoryRegion__(const volatile MemoryRegion_t *region_) {
   if (ISNOTNULLPTR(region_) && (false == SYSFLAG_FAULT())) {
 
 
-    if (ISSUCCESSFUL(__MemoryRegionCheck__(region_, NULL, MEMORY_REGION_CHECK_OPTION_WO_ADDR)))) {
+    if (ISSUCCESSFUL(__MemoryRegionCheck__(region_, NULL, MEMORY_REGION_CHECK_OPTION_WO_ADDR))) {
       cursor = region_->start;
       while (ISNOTNULLPTR(cursor)) {
 
@@ -882,7 +884,7 @@ static Return_t __DefragMemoryRegion__(const volatile MemoryRegion_t *region_) {
     }
   }
 
-  return;
+  RET_RETURN;
 }
 
 
