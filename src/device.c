@@ -192,9 +192,9 @@ Base_t xDeviceSimpleWrite(const HalfWord_t uid_, Word_t *data_) {
 
   SYSASSERT(ISNOTNULLPTR(data_));
 
-  SYSASSERT(RETURN_SUCCESS == __MemoryRegionCheckHeap__(data_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
+  SYSASSERT(ISSUCCESSFUL(__MemoryRegionCheckHeap__(data_, MEMORY_REGION_CHECK_OPTION_W_ADDR)));
 
-  if ((zero < uid_) && (ISNOTNULLPTR(data_)) && (RETURN_SUCCESS == __MemoryRegionCheckHeap__(data_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
+  if ((zero < uid_) && (ISNOTNULLPTR(data_)) && (ISSUCCESSFUL(__MemoryRegionCheckHeap__(data_, MEMORY_REGION_CHECK_OPTION_W_ADDR)))) {
 
 
     device = __DeviceListFind__(uid_);
@@ -251,9 +251,9 @@ Base_t xDeviceWrite(const HalfWord_t uid_, Size_t *size_, Addr_t *data_) {
 
   SYSASSERT(ISNOTNULLPTR(data_));
 
-  SYSASSERT(RETURN_SUCCESS == __MemoryRegionCheckHeap__(data_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
+  SYSASSERT(ISSUCCESSFUL(__MemoryRegionCheckHeap__(data_, MEMORY_REGION_CHECK_OPTION_W_ADDR)));
 
-  if ((zero < uid_) && (ISNOTNULLPTR(size_)) && (zero < *size_) && (ISNOTNULLPTR(data_)) && (RETURN_SUCCESS == __MemoryRegionCheckHeap__(data_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
+  if ((zero < uid_) && (ISNOTNULLPTR(size_)) && (zero < *size_) && (ISNOTNULLPTR(data_)) && (ISSUCCESSFUL(__MemoryRegionCheckHeap__(data_, MEMORY_REGION_CHECK_OPTION_W_ADDR)))) {
 
 
     device = __DeviceListFind__(uid_);
@@ -307,9 +307,9 @@ Base_t xDeviceSimpleRead(const HalfWord_t uid_, Word_t *data_) {
 
   SYSASSERT(ISNOTNULLPTR(data_));
 
-  SYSASSERT(RETURN_SUCCESS == __MemoryRegionCheckHeap__(data_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
+  SYSASSERT(ISSUCCESSFUL(__MemoryRegionCheckHeap__(data_, MEMORY_REGION_CHECK_OPTION_W_ADDR)));
 
-  if ((zero < uid_) && (ISNOTNULLPTR(data_)) && (RETURN_SUCCESS == __MemoryRegionCheckHeap__(data_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
+  if ((zero < uid_) && (ISNOTNULLPTR(data_)) && (ISSUCCESSFUL(__MemoryRegionCheckHeap__(data_, MEMORY_REGION_CHECK_OPTION_W_ADDR)))) {
 
 
     device = __DeviceListFind__(uid_);
@@ -367,9 +367,9 @@ Base_t xDeviceRead(const HalfWord_t uid_, Size_t *size_, Addr_t *data_) {
 
   SYSASSERT(ISNOTNULLPTR(data_));
 
-  SYSASSERT(RETURN_SUCCESS == __MemoryRegionCheckHeap__(data_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
+  SYSASSERT(ISSUCCESSFUL(__MemoryRegionCheckHeap__(data_, MEMORY_REGION_CHECK_OPTION_W_ADDR)));
 
-  if ((zero < uid_) && (ISNOTNULLPTR(size_)) && (zero < *size_) && (ISNOTNULLPTR(data_)) && (RETURN_SUCCESS == __MemoryRegionCheckHeap__(data_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
+  if ((zero < uid_) && (ISNOTNULLPTR(size_)) && (zero < *size_) && (ISNOTNULLPTR(data_)) && (ISSUCCESSFUL(__MemoryRegionCheckHeap__(data_, MEMORY_REGION_CHECK_OPTION_W_ADDR)))) {
 
 
     device = __DeviceListFind__(uid_);
@@ -496,9 +496,9 @@ Base_t xDeviceConfigDevice(const HalfWord_t uid_, Size_t *size_, Addr_t *config_
 
   SYSASSERT(ISNOTNULLPTR(config_));
 
-  SYSASSERT(RETURN_SUCCESS == __MemoryRegionCheckHeap__(config_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
+  SYSASSERT(ISSUCCESSFUL(__MemoryRegionCheckHeap__(config_, MEMORY_REGION_CHECK_OPTION_W_ADDR)));
 
-  if ((zero < uid_) && (zero < *size_) && (ISNOTNULLPTR(config_)) && (RETURN_SUCCESS == __MemoryRegionCheckHeap__(config_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
+  if ((zero < uid_) && (zero < *size_) && (ISNOTNULLPTR(config_)) && (ISSUCCESSFUL(__MemoryRegionCheckHeap__(config_, MEMORY_REGION_CHECK_OPTION_W_ADDR)))) {
 
     device = __DeviceListFind__(uid_);
 

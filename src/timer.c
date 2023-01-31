@@ -394,11 +394,11 @@ static Base_t __TimerListFindTimer__(const Timer_t *timer_) {
 
     /* Assert if the __MemoryRegionCheckKernel__() fails on the health check or is unable
        to find the entry for the heap pointer. */
-    SYSASSERT(RETURN_SUCCESS == __MemoryRegionCheckKernel__(timer_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
+    SYSASSERT(ISSUCCESSFUL(__MemoryRegionCheckKernel__(timer_, MEMORY_REGION_CHECK_OPTION_W_ADDR)));
 
 
     /* Check if __MemoryRegionCheckKernel__() was successful. */
-    if (RETURN_SUCCESS == __MemoryRegionCheckKernel__(timer_, MEMORY_REGION_CHECK_OPTION_W_ADDR)) {
+    if (ISSUCCESSFUL(__MemoryRegionCheckKernel__(timer_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
 
       cursor = timerList->head;
 

@@ -67,13 +67,13 @@ void xStreamDelete(const StreamBuffer_t *stream_) {
 
   /* Assert if the heap fails its health check or if the stream pointer the end-user
      passed is invalid. */
-  SYSASSERT(RETURN_SUCCESS == __MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
+  SYSASSERT(ISSUCCESSFUL(__MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR)));
 
 
 
   /* Check if the heap is health and the stream pointer the end-user passed is valid.
      If so, continue. Otherwise, head toward the exit. */
-  if (RETURN_SUCCESS == __MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR)) {
+  if (ISSUCCESSFUL(__MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
 
 
 
@@ -96,13 +96,13 @@ Base_t xStreamSend(StreamBuffer_t *stream_, const Byte_t byte_) {
 
   /* Assert if the heap fails its health check or if the stream pointer the end-user
      passed is invalid. */
-  SYSASSERT(RETURN_SUCCESS == __MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
+  SYSASSERT(ISSUCCESSFUL(__MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR)));
 
 
 
   /* Check if the heap is health and the stream pointer the end-user passed is valid.
      If so, continue. Otherwise, head toward the exit. */
-  if (RETURN_SUCCESS == __MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR)) {
+  if (ISSUCCESSFUL(__MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
 
 
     /* Check to make sure our stream buffer is less than
@@ -148,13 +148,13 @@ Byte_t *xStreamReceive(const StreamBuffer_t *stream_, HalfWord_t *bytes_) {
 
     /* Assert if the heap fails its health check or if the stream pointer the end-user
        passed is invalid. */
-    SYSASSERT(RETURN_SUCCESS == __MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
+    SYSASSERT(ISSUCCESSFUL(__MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR)));
 
 
 
     /* Check if the heap is health and the stream pointer the end-user passed is valid.
        If so, continue. Otherwise, head toward the exit. */
-    if (RETURN_SUCCESS == __MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR)) {
+    if (ISSUCCESSFUL(__MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
 
 
       /* If there is nothing to receive then just head toward the exit. */
@@ -196,13 +196,13 @@ HalfWord_t xStreamBytesAvailable(const StreamBuffer_t *stream_) {
 
   /* Assert if the heap fails its health check or if the stream pointer the end-user
      passed is invalid. */
-  SYSASSERT(RETURN_SUCCESS == __MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
+  SYSASSERT(ISSUCCESSFUL(__MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR)));
 
 
 
   /* Check if the heap is health and the stream pointer the end-user passed is valid.
      If so, continue. Otherwise, head toward the exit. */
-  if (RETURN_SUCCESS == __MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR)) {
+  if (ISSUCCESSFUL(__MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
 
 
 
@@ -227,13 +227,13 @@ void xStreamReset(const StreamBuffer_t *stream_) {
 
   /* Assert if the heap fails its health check or if the stream pointer the end-user
      passed is invalid. */
-  SYSASSERT(RETURN_SUCCESS == __MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
+  SYSASSERT(ISSUCCESSFUL(__MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR)));
 
 
 
   /* Check if the heap is health and the stream pointer the end-user passed is valid.
      If so, continue. Otherwise, head toward the exit. */
-  if (RETURN_SUCCESS == __MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR)) {
+  if (ISSUCCESSFUL(__MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
 
 
     /* If there is nothing to receive then just head toward the exit. */
@@ -258,13 +258,13 @@ Base_t xStreamIsEmpty(const StreamBuffer_t *stream_) {
 
   /* Assert if the heap fails its health check or if the stream pointer the end-user
      passed is invalid. */
-  SYSASSERT(RETURN_SUCCESS == __MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
+  SYSASSERT(ISSUCCESSFUL(__MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR)));
 
 
 
   /* Check if the heap is health and the stream pointer the end-user passed is valid.
      If so, continue. Otherwise, head toward the exit. */
-  if (RETURN_SUCCESS == __MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR)) {
+  if (ISSUCCESSFUL(__MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
 
 
     /* If there is nothing to receive then just head toward the exit. */
@@ -289,13 +289,13 @@ Base_t xStreamIsFull(const StreamBuffer_t *stream_) {
 
   /* Assert if the heap fails its health check or if the stream pointer the end-user
      passed is invalid. */
-  SYSASSERT(RETURN_SUCCESS == __MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
+  SYSASSERT(ISSUCCESSFUL(__MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR)));
 
 
 
   /* Check if the heap is health and the stream pointer the end-user passed is valid.
      If so, continue. Otherwise, head toward the exit. */
-  if (RETURN_SUCCESS == __MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR)) {
+  if (ISSUCCESSFUL(__MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
 
 
     /* If there is nothing to receive then just head toward the exit. */
