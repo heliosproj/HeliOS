@@ -86,6 +86,16 @@ void memory_harness(void) {
 
   unit_try(0x0u == actual);
 
+  unit_try(ISSUCCESSFUL(xMemAlloc((volatile Addr_t **)&mem05, (CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS - 1) * CONFIG_MEMORY_REGION_BLOCK_SIZE)));
+
+  actual = zero;
+
+  unit_try(ISSUCCESSFUL(xMemGetUsed(&actual)));
+
+  unit_try((CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS * CONFIG_MEMORY_REGION_BLOCK_SIZE) == actual);
+
+  unit_try(ISSUCCESSFUL(xMemFree(mem05)));
+
   unit_end();
 
 
@@ -135,15 +145,15 @@ void memory_harness(void) {
 
   unit_try(0x63A0u == mem02->largestFreeEntryInBytes);
 
-  unit_try(0x63A0u == mem02->minimumEverFreeBytesRemaining);
+  unit_try(0x0u == mem02->minimumEverFreeBytesRemaining);
 
   unit_try(0x31Du == mem02->numberOfFreeBlocks);
 
   unit_try(0x63A0u == mem02->smallestFreeEntryInBytes);
 
-  unit_try(0x22u == mem02->successfulAllocations);
+  unit_try(0x23u == mem02->successfulAllocations);
 
-  unit_try(0x20u == mem02->successfulFrees);
+  unit_try(0x21u == mem02->successfulFrees);
 
   unit_end();
 
