@@ -36,14 +36,7 @@ static Return_t __free__(volatile MemoryRegion_t *region_, const volatile Addr_t
 static Return_t __MemGetRegionStats__(const volatile MemoryRegion_t *region_, MemoryRegionStats_t **stats_);
 static Return_t __DefragMemoryRegion__(const volatile MemoryRegion_t *region_);
 
-/*
-  1) Open with RET_DEFINE
-  2) Existing SYSASSERT()'s removed
-  3) All pointer parameters are checked for null
-  4) All IF statements are accompanied by an ELSE with SYSASSERT(false)
-  5) RET_SUCCESS is set on the success condition
-  6) Closes with RET_RETURN
-*/
+
 
 
 Return_t __MemoryInit__(void) {
