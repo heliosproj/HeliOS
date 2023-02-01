@@ -57,7 +57,7 @@ void device_harness(void) {
 
   data1 = NULL;
 
-  unit_try(ISSUCCESSFUL(xMemAlloc(&data1, bytes1)));
+  unit_try(ISSUCCESSFUL(xMemAlloc((volatile Addr_t **)&data1, bytes1)));
 
   memcpy(data1, "THIS IS A TEST OF THE LOOPBACK DEVICE\0", bytes1);
 
@@ -83,7 +83,7 @@ void device_harness(void) {
 
   data2 = NULL;
 
-  unit_try(ISSUCCESSFUL(xMemAlloc(&data2, bytes2)));
+  unit_try(ISSUCCESSFUL(xMemAlloc((volatile Addr_t **)&data2, bytes2)));
 
   unit_try(RETURN_SUCCESS == xDeviceRead(0xFFu, &bytes2, data2));
 
@@ -99,7 +99,7 @@ void device_harness(void) {
 
   unit_begin("xDeviceSimpleWrite()");
 
-  unit_try(ISSUCCESSFUL(xMemAlloc(&data3, sizeof(Word_t))));
+  unit_try(ISSUCCESSFUL(xMemAlloc((volatile Addr_t **)&data3, sizeof(Word_t))));
 
   *data3 = 0xFAFAu;
 
@@ -113,7 +113,7 @@ void device_harness(void) {
 
   unit_begin("xDeviceSimpleRead()");
 
-  unit_try(ISSUCCESSFUL(xMemAlloc(&data4, sizeof(Word_t))));
+  unit_try(ISSUCCESSFUL(xMemAlloc((volatile Addr_t **)&data4, sizeof(Word_t))));
 
   *data4 = zero;
 

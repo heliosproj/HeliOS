@@ -59,7 +59,7 @@ void memory_harness(void) {
       tests[i].blocks += 1;
     }
 
-    unit_try(ISSUCCESSFUL(xMemAlloc(&tests[i].ptr, sizes[i])));
+    unit_try(ISSUCCESSFUL(xMemAlloc((volatile Addr_t **)&tests[i].ptr, sizes[i])));
 
     unit_try(NULL != tests[i].ptr);
 
@@ -75,7 +75,7 @@ void memory_harness(void) {
   }
 
 
-  unit_try(!ISSUCCESSFUL(xMemAlloc(&mem05, 0x99999u)));
+  unit_try(!ISSUCCESSFUL(xMemAlloc((volatile Addr_t **)&mem05, 0x99999u)));
 
 
   for (i = 0; i < 0x20u; i++) {
@@ -95,7 +95,7 @@ void memory_harness(void) {
 
   mem01 = NULL;
 
-  unit_try(ISSUCCESSFUL(xMemAlloc(&mem01, 0x32000u)));
+  unit_try(ISSUCCESSFUL(xMemAlloc((volatile Addr_t **)&mem01, 0x32000u)));
 
   unit_try(NULL != mem01);
 
@@ -127,7 +127,7 @@ void memory_harness(void) {
 
   mem02 = NULL;
 
-  mem02 = xMemGetHeapStats();
+  unit_try(ISSUCCESSFUL(xMemGetHeapStats(&mem02)));
 
   unit_try(NULL != mem02);
 
@@ -161,7 +161,8 @@ void memory_harness(void) {
 
   xTaskDelete(mem04);
 
-  mem03 = xMemGetKernelStats();
+
+  unit_try(ISSUCCESSFUL(xMemGetKernelStats(&mem03)));
 
   unit_try(NULL != mem03);
 

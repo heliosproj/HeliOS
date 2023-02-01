@@ -881,6 +881,8 @@ static Return_t __DefragMemoryRegion__(const volatile MemoryRegion_t *region_) {
           cursor = cursor->next;
         }
       }
+
+      RET_SUCCESS;
     }
   }
 

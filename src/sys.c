@@ -102,29 +102,30 @@ SystemInfo_t *xSystemGetSystemInfo(void) {
 
 
 
-  ret = (SystemInfo_t *)__HeapAllocateMemory__(sizeof(SystemInfo_t));
+  if (ISSUCCESSFUL(__HeapAllocateMemory__((volatile Addr_t **)&ret, sizeof(SystemInfo_t)))) {
 
 
 
-  /* Assert if xMemAlloc() failed to allocate the heap memory. */
-  SYSASSERT(ISNOTNULLPTR(ret));
+    /* Assert if xMemAlloc() failed to allocate the heap memory. */
+    SYSASSERT(ISNOTNULLPTR(ret));
 
 
 
-  /* Check if system info is not null to make sure xMemAlloc() successfully allocated
-     the memory. */
-  if (ISNOTNULLPTR(ret)) {
+    /* Check if system info is not null to make sure xMemAlloc() successfully allocated
+       the memory. */
+    if (ISNOTNULLPTR(ret)) {
 
 
-    __memcpy__(ret->productName, OS_PRODUCT_NAME, OS_PRODUCT_NAME_SIZE);
+      __memcpy__(ret->productName, OS_PRODUCT_NAME, OS_PRODUCT_NAME_SIZE);
 
-    ret->majorVersion = OS_MAJOR_VERSION_NO;
+      ret->majorVersion = OS_MAJOR_VERSION_NO;
 
-    ret->minorVersion = OS_MINOR_VERSION_NO;
+      ret->minorVersion = OS_MINOR_VERSION_NO;
 
-    ret->patchVersion = OS_PATCH_VERSION_NO;
+      ret->patchVersion = OS_PATCH_VERSION_NO;
 
-    ret->numberOfTasks = xTaskGetNumberOfTasks();
+      ret->numberOfTasks = xTaskGetNumberOfTasks();
+    }
   }
 
   return ret;

@@ -49,7 +49,7 @@ Queue_t *xQueueCreate(Base_t limit_) {
 
 
 
-    if (ISSUCCESSFUL(__KernelAllocateMemory__(&ret, sizeof(Queue_t)))) {
+    if (ISSUCCESSFUL(__KernelAllocateMemory__((volatile Addr_t **)&ret, sizeof(Queue_t)))) {
 
 
 
@@ -486,20 +486,23 @@ static QueueMessage_t *__QueuePeek__(const Queue_t *queue_) {
     if (ISNOTNULLPTR(queue_->head)) {
 
 
-      ret = (QueueMessage_t *)__HeapAllocateMemory__(sizeof(QueueMessage_t));
+      if (ISSUCCESSFUL(__HeapAllocateMemory__((volatile Addr_t **)&ret, sizeof(QueueMessage_t)))) {
 
 
-      /* Assert if xMemAlloc() didn't do its job. */
-      SYSASSERT(ISNOTNULLPTR(ret));
-
-      /* If xMemAlloc() allocated the heap memory then copy the message into the
-         queue message we will return. Otherwise, head toward the exit. */
-      if (ISNOTNULLPTR(ret)) {
 
 
-        ret->messageBytes = queue_->head->messageBytes;
+        /* Assert if xMemAlloc() didn't do its job. */
+        SYSASSERT(ISNOTNULLPTR(ret));
 
-        __memcpy__(ret->messageValue, queue_->head->messageValue, CONFIG_MESSAGE_VALUE_BYTES);
+        /* If xMemAlloc() allocated the heap memory then copy the message into the
+           queue message we will return. Otherwise, head toward the exit. */
+        if (ISNOTNULLPTR(ret)) {
+
+
+          ret->messageBytes = queue_->head->messageBytes;
+
+          __memcpy__(ret->messageValue, queue_->head->messageValue, CONFIG_MESSAGE_VALUE_BYTES);
+        }
       }
     }
   }

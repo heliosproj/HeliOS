@@ -50,9 +50,9 @@ Timer_t *xTimerCreate(const Ticks_t timerPeriod_) {
 
 
   /* Check if xMemAlloc() did its job. */
-  if (ISNOTNULLPTR(timerList) || (ISNULLPTR(timerList) && ISSUCCESSFUL(__KernelAllocateMemory__(&timerList, sizeof(TimerList_t))))) {
+  if (ISNOTNULLPTR(timerList) || (ISNULLPTR(timerList) && ISSUCCESSFUL(__KernelAllocateMemory__((volatile Addr_t **)&timerList, sizeof(TimerList_t))))) {
 
-    if (ISSUCCESSFUL(__KernelAllocateMemory__(&ret, sizeof(Task_t)))) {
+    if (ISSUCCESSFUL(__KernelAllocateMemory__((volatile Addr_t **)&ret, sizeof(Task_t)))) {
 
       /* Check if xMemAlloc() successfully allocated the memory for the timer. */
       if (ISNOTNULLPTR(ret)) {

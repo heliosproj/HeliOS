@@ -66,9 +66,9 @@ Task_t *xTaskCreate(const Char_t *name_, void (*callback_)(Task_t *task_, TaskPa
 
 
     /* Check if xMemAlloc() did its job. */
-    if (ISNOTNULLPTR(taskList) || (ISNULLPTR(taskList) && ISSUCCESSFUL(__KernelAllocateMemory__(&taskList, sizeof(TaskList_t))))) {
+    if (ISNOTNULLPTR(taskList) || (ISNULLPTR(taskList) && ISSUCCESSFUL(__KernelAllocateMemory__((volatile Addr_t **)&taskList, sizeof(TaskList_t))))) {
 
-      if (ISSUCCESSFUL(__KernelAllocateMemory__(&ret, sizeof(Task_t)))) {
+      if (ISSUCCESSFUL(__KernelAllocateMemory__((volatile Addr_t **)&ret, sizeof(Task_t)))) {
 
 
 
@@ -220,6 +220,8 @@ Task_t *xTaskGetHandleByName(const Char_t *name_) {
 
   Task_t *cursor = NULL;
 
+  Base_t res = false;
+
 
   /* Assert if the task list has not been initialized. We wouldn't have to do this
      if we called __TaskListFindTask__() but that isn't needed here. */
@@ -238,12 +240,13 @@ Task_t *xTaskGetHandleByName(const Char_t *name_) {
 
       /* Compare the task name of the task pointed to by the task cursor against the
          name parameter. */
-      if (zero == __memcmp__(cursor->name, name_, CONFIG_TASK_NAME_BYTES)) {
+      if (ISSUCCESSFUL(__memcmp__(cursor->name, name_, CONFIG_TASK_NAME_BYTES, &res))) {
 
+        if (true == res) {
+          ret = cursor;
 
-        ret = cursor;
-
-        break;
+          break;
+        }
       }
 
       cursor = cursor->next;
@@ -349,37 +352,40 @@ TaskRunTimeStats_t *xTaskGetAllRunTimeStats(Base_t *tasks_) {
     if ((zero < tasks) && (tasks == taskList->length)) {
 
 
-      ret = (TaskRunTimeStats_t *)__HeapAllocateMemory__(tasks * sizeof(TaskRunTimeStats_t));
-
-      /* Assert if xMemAlloc() didn't do its job. */
-      SYSASSERT(ISNOTNULLPTR(ret));
+      if (ISSUCCESSFUL(__HeapAllocateMemory__((volatile Addr_t **)&ret, tasks * sizeof(TaskRunTimeStats_t)))) {
 
 
-      /* Check if xMemAlloc() successfully allocated the memory. */
-      if (ISNOTNULLPTR(ret)) {
 
-        cursor = taskList->head;
+        /* Assert if xMemAlloc() didn't do its job. */
+        SYSASSERT(ISNOTNULLPTR(ret));
 
-        /* While the task cursor is not null, continue to traverse the task list adding the
-           runtime statistics of each task to the runtime stats array to be returned. */
-        while (ISNOTNULLPTR(cursor)) {
 
-          ret[task].id = cursor->id;
+        /* Check if xMemAlloc() successfully allocated the memory. */
+        if (ISNOTNULLPTR(ret)) {
 
-          ret[task].lastRunTime = cursor->lastRunTime;
+          cursor = taskList->head;
 
-          ret[task].totalRunTime = cursor->totalRunTime;
+          /* While the task cursor is not null, continue to traverse the task list adding the
+             runtime statistics of each task to the runtime stats array to be returned. */
+          while (ISNOTNULLPTR(cursor)) {
 
-          cursor = cursor->next;
+            ret[task].id = cursor->id;
 
-          task++;
+            ret[task].lastRunTime = cursor->lastRunTime;
+
+            ret[task].totalRunTime = cursor->totalRunTime;
+
+            cursor = cursor->next;
+
+            task++;
+          }
+
+          *tasks_ = tasks;
+
+        } else {
+
+          *tasks_ = zero;
         }
-
-        *tasks_ = tasks;
-
-      } else {
-
-        *tasks_ = zero;
       }
     }
   }
@@ -406,20 +412,21 @@ TaskRunTimeStats_t *xTaskGetTaskRunTimeStats(const Task_t *task_) {
   if (RETURN_SUCCESS == __TaskListFindTask__(task_)) {
 
 
-    ret = (TaskRunTimeStats_t *)__HeapAllocateMemory__(sizeof(TaskRunTimeStats_t));
 
+    if (ISSUCCESSFUL(__HeapAllocateMemory__((volatile Addr_t **)&ret, sizeof(TaskRunTimeStats_t)))) {
 
-    /* Assert if xMemAlloc() didn't do its job. */
-    SYSASSERT(ISNOTNULLPTR(ret));
+      /* Assert if xMemAlloc() didn't do its job. */
+      SYSASSERT(ISNOTNULLPTR(ret));
 
-    /* Check if xMemAlloc() successfully allocated the memory. */
-    if (ISNOTNULLPTR(ret)) {
+      /* Check if xMemAlloc() successfully allocated the memory. */
+      if (ISNOTNULLPTR(ret)) {
 
-      ret->id = task_->id;
+        ret->id = task_->id;
 
-      ret->lastRunTime = task_->lastRunTime;
+        ret->lastRunTime = task_->lastRunTime;
 
-      ret->totalRunTime = task_->totalRunTime;
+        ret->totalRunTime = task_->totalRunTime;
+      }
     }
   }
 
@@ -491,26 +498,31 @@ TaskInfo_t *xTaskGetTaskInfo(const Task_t *task_) {
   /* Check if the task cannot be found. */
   if (RETURN_SUCCESS == __TaskListFindTask__(task_)) {
 
-    ret = (TaskInfo_t *)__HeapAllocateMemory__(sizeof(TaskInfo_t));
 
 
-    /* Assert if xMemAlloc() failed to do its one job in life. */
-    SYSASSERT(ISNOTNULLPTR(ret));
-
-    /* Check if the task info memory has been allocated by xMemAlloc(). if it
-       has then populate the task info and return. */
-    if (ISNOTNULLPTR(ret)) {
+    if (ISSUCCESSFUL(__HeapAllocateMemory__((volatile Addr_t **)&ret, sizeof(TaskInfo_t)))) {
 
 
-      ret->id = task_->id;
 
-      ret->state = task_->state;
 
-      __memcpy__(ret->name, task_->name, CONFIG_TASK_NAME_BYTES);
+      /* Assert if xMemAlloc() failed to do its one job in life. */
+      SYSASSERT(ISNOTNULLPTR(ret));
 
-      ret->lastRunTime = task_->lastRunTime;
+      /* Check if the task info memory has been allocated by xMemAlloc(). if it
+         has then populate the task info and return. */
+      if (ISNOTNULLPTR(ret)) {
 
-      ret->totalRunTime = task_->totalRunTime;
+
+        ret->id = task_->id;
+
+        ret->state = task_->state;
+
+        __memcpy__(ret->name, task_->name, CONFIG_TASK_NAME_BYTES);
+
+        ret->lastRunTime = task_->lastRunTime;
+
+        ret->totalRunTime = task_->totalRunTime;
+      }
     }
   }
 
@@ -568,44 +580,48 @@ TaskInfo_t *xTaskGetAllTaskInfo(Base_t *tasks_) {
 
 
 
-      ret = (TaskInfo_t *)__HeapAllocateMemory__(tasks * sizeof(TaskInfo_t));
+
+      if (ISSUCCESSFUL(__HeapAllocateMemory__((volatile Addr_t **)&ret, tasks * sizeof(TaskInfo_t)))) {
 
 
-      /* Assert if xMemAlloc() didn't do its job. */
-      SYSASSERT(ISNOTNULLPTR(ret));
-
-      /* Check if xMemAlloc() successfully allocated the memory. */
-      if (ISNOTNULLPTR(ret)) {
 
 
-        cursor = taskList->head;
+        /* Assert if xMemAlloc() didn't do its job. */
+        SYSASSERT(ISNOTNULLPTR(ret));
+
+        /* Check if xMemAlloc() successfully allocated the memory. */
+        if (ISNOTNULLPTR(ret)) {
 
 
-        /* While the task cursor is not null, continue to traverse the task list adding the
-           runtime statistics of each task to the runtime stats array to be returned. */
-        while (ISNOTNULLPTR(cursor)) {
+          cursor = taskList->head;
 
 
-          ret[task].id = cursor->id;
+          /* While the task cursor is not null, continue to traverse the task list adding the
+             runtime statistics of each task to the runtime stats array to be returned. */
+          while (ISNOTNULLPTR(cursor)) {
 
-          ret[task].state = cursor->state;
 
-          __memcpy__(ret[task].name, cursor->name, CONFIG_TASK_NAME_BYTES);
+            ret[task].id = cursor->id;
 
-          ret[task].lastRunTime = cursor->lastRunTime;
+            ret[task].state = cursor->state;
 
-          ret[task].totalRunTime = cursor->totalRunTime;
+            __memcpy__(ret[task].name, cursor->name, CONFIG_TASK_NAME_BYTES);
 
-          cursor = cursor->next;
+            ret[task].lastRunTime = cursor->lastRunTime;
 
-          task++;
+            ret[task].totalRunTime = cursor->totalRunTime;
+
+            cursor = cursor->next;
+
+            task++;
+          }
+
+          *tasks_ = tasks;
+
+        } else {
+
+          *tasks_ = zero;
         }
-
-        *tasks_ = tasks;
-
-      } else {
-
-        *tasks_ = zero;
       }
     }
   }
@@ -656,20 +672,22 @@ Char_t *xTaskGetName(const Task_t *task_) {
   /* Check if the task can be found. */
   if (RETURN_SUCCESS == __TaskListFindTask__(task_)) {
 
-
-    ret = (Char_t *)__HeapAllocateMemory__(CONFIG_TASK_NAME_BYTES);
-
-
-    /* Assert if xMemAlloc() didn't do its job. */
-    SYSASSERT(ISNOTNULLPTR(ret));
-
-
-    /* Check if the task info memory has been allocated by xMemAlloc(). */
-    if (ISNOTNULLPTR(ret)) {
+    if (ISSUCCESSFUL(__HeapAllocateMemory__((volatile Addr_t **)&ret, CONFIG_TASK_NAME_BYTES))) {
 
 
 
-      __memcpy__(ret, task_->name, CONFIG_TASK_NAME_BYTES);
+
+      /* Assert if xMemAlloc() didn't do its job. */
+      SYSASSERT(ISNOTNULLPTR(ret));
+
+
+      /* Check if the task info memory has been allocated by xMemAlloc(). */
+      if (ISNOTNULLPTR(ret)) {
+
+
+
+        __memcpy__(ret, task_->name, CONFIG_TASK_NAME_BYTES);
+      }
     }
   }
 
@@ -839,23 +857,27 @@ TaskNotification_t *xTaskNotifyTake(Task_t *task_) {
 
 
 
-      ret = (TaskNotification_t *)__HeapAllocateMemory__(sizeof(TaskNotification_t));
+
+      if (ISSUCCESSFUL(__HeapAllocateMemory__((volatile Addr_t **)&ret, sizeof(TaskNotification_t)))) {
 
 
-      /* Assert if xMemAlloc() didn't do its job. */
-      SYSASSERT(ISNOTNULLPTR(ret));
 
-      /* Check if xMemAlloc() successfully allocated the memory for the task notification
-         structure. */
-      if (ISNOTNULLPTR(ret)) {
 
-        ret->notificationBytes = task_->notificationBytes;
+        /* Assert if xMemAlloc() didn't do its job. */
+        SYSASSERT(ISNOTNULLPTR(ret));
 
-        __memcpy__(ret->notificationValue, task_->notificationValue, CONFIG_NOTIFICATION_VALUE_BYTES);
+        /* Check if xMemAlloc() successfully allocated the memory for the task notification
+           structure. */
+        if (ISNOTNULLPTR(ret)) {
 
-        task_->notificationBytes = zero;
+          ret->notificationBytes = task_->notificationBytes;
 
-        __memset__(task_->notificationValue, zero, CONFIG_NOTIFICATION_VALUE_BYTES);
+          __memcpy__(ret->notificationValue, task_->notificationValue, CONFIG_NOTIFICATION_VALUE_BYTES);
+
+          task_->notificationBytes = zero;
+
+          __memset__(task_->notificationValue, zero, CONFIG_NOTIFICATION_VALUE_BYTES);
+        }
       }
     }
   }

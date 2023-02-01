@@ -36,7 +36,7 @@ StreamBuffer_t *xStreamCreate() {
   StreamBuffer_t *ret = NULL;
 
 
-  if (ISSUCCESSFUL(__KernelAllocateMemory__(&ret, sizeof(StreamBuffer_t)))) {
+  if (ISSUCCESSFUL(__KernelAllocateMemory__((volatile Addr_t **)&ret, sizeof(StreamBuffer_t)))) {
 
 
 
@@ -162,21 +162,22 @@ Byte_t *xStreamReceive(const StreamBuffer_t *stream_, HalfWord_t *bytes_) {
 
 
 
+        if (ISSUCCESSFUL(__HeapAllocateMemory__((volatile Addr_t **)&ret, stream_->length * sizeof(Byte_t)))) {
 
-        ret = (Byte_t *)__HeapAllocateMemory__(stream_->length * sizeof(Byte_t));
 
 
-        /* Assert if we didn't get the memory we requested. */
-        SYSASSERT(ISNOTNULLPTR(ret));
+          /* Assert if we didn't get the memory we requested. */
+          SYSASSERT(ISNOTNULLPTR(ret));
 
-        /* Check to make sure we got the memory we requested. */
-        if (ISNOTNULLPTR(ret)) {
+          /* Check to make sure we got the memory we requested. */
+          if (ISNOTNULLPTR(ret)) {
 
-          *bytes_ = stream_->length;
+            *bytes_ = stream_->length;
 
-          __memcpy__(ret, stream_->buffer, stream_->length * sizeof(Byte_t));
+            __memcpy__(ret, stream_->buffer, stream_->length * sizeof(Byte_t));
 
-          __memset__(stream_, zero, sizeof(StreamBuffer_t));
+            __memset__(stream_, zero, sizeof(StreamBuffer_t));
+          }
         }
       }
     }
