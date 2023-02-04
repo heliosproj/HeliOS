@@ -2,7 +2,7 @@
 
 #  @file config.sh
 #  @author Manny Peterson (mannymsp@gmail.com)
-#  @brief
+#  @brief Shell script to build custom uncrustify config from defaults
 #  @version 0.4.0
 #  @date 2023-02-03
 # 
@@ -24,7 +24,7 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 CONFIG=$(cat <<- END
-newlines:auto
+newlines:lf									# modified
 input_tab_size:8
 output_tab_size:8
 string_escape_char:92
@@ -36,12 +36,12 @@ disable_processing_cmt:\"*INDENT-OFF*\"
 enable_processing_cmt:\"*INDENT-ON*\"
 enable_digraphs:false
 processing_cmt_as_regex:false
-utf8_bom:ignore
+utf8_bom:remove								# modified
 utf8_byte:false
-utf8_force:false
-sp_arith:ignore
+utf8_force:true								# modified
+sp_arith:force								# modified
 sp_arith_additive:ignore
-sp_assign:ignore
+sp_assign:force								# modified
 sp_cpp_lambda_assign:ignore
 sp_cpp_lambda_square_paren:ignore
 sp_cpp_lambda_square_brace:ignore
@@ -51,42 +51,42 @@ sp_cpp_lambda_fparen:ignore
 sp_assign_default:ignore
 sp_before_assign:ignore
 sp_after_assign:ignore
-sp_enum_brace:add
+sp_enum_brace:force							# modified
 sp_enum_paren:ignore
-sp_enum_assign:ignore
+sp_enum_assign:force						# modified
 sp_enum_before_assign:ignore
 sp_enum_after_assign:ignore
 sp_enum_colon:ignore
 sp_pp_concat:add
 sp_pp_stringify:ignore
 sp_before_pp_stringify:ignore
-sp_bool:ignore
-sp_compare:ignore
-sp_inside_paren:ignore
-sp_paren_paren:ignore
-sp_cparen_oparen:ignore
+sp_bool:force								# modified
+sp_compare:force							# modified
+sp_inside_paren:remove						# modified
+sp_paren_paren:remove						# modified
+sp_cparen_oparen:force						# modified
 sp_balance_nested_parens:false
-sp_paren_brace:ignore
-sp_brace_brace:ignore
-sp_before_ptr_star:ignore
+sp_paren_brace:force						# modified
+sp_brace_brace:remove						# modified
+sp_before_ptr_star:force					# modified
 sp_before_unnamed_ptr_star:ignore
-sp_between_ptr_star:ignore
-sp_after_ptr_star:ignore
+sp_between_ptr_star:remove					# modified
+sp_after_ptr_star:remove					# modified
 sp_after_ptr_block_caret:ignore
 sp_after_ptr_star_qualifier:ignore
 sp_after_ptr_star_func:ignore
 sp_after_ptr_star_trailing:ignore
 sp_ptr_star_func_var:ignore
 sp_ptr_star_func_type:ignore
-sp_ptr_star_paren:ignore
-sp_before_ptr_star_func:ignore
+sp_ptr_star_paren:remove					# modified
+sp_before_ptr_star_func:force				# modified
 sp_before_ptr_star_trailing:ignore
-sp_before_byref:ignore
+sp_before_byref:force						# modified
 sp_before_unnamed_byref:ignore
-sp_after_byref:ignore
+sp_after_byref:remove						# modified
 sp_after_byref_func:ignore
-sp_before_byref_func:ignore
-sp_byref_paren:ignore
+sp_before_byref_func:force					# modified
+sp_byref_paren:force						# modified
 sp_after_type:force
 sp_after_decltype:ignore
 sp_before_template_paren:ignore
@@ -101,38 +101,38 @@ sp_angle_paren_empty:ignore
 sp_angle_word:ignore
 sp_angle_shift:add
 sp_permit_cpp11_shift:false
-sp_before_sparen:ignore
-sp_inside_sparen:ignore
+sp_before_sparen:force						# modified
+sp_inside_sparen:remove						# modified
 sp_inside_sparen_open:ignore
 sp_inside_sparen_close:ignore
-sp_inside_for:ignore
+sp_inside_for:remove						# modified
 sp_inside_for_open:ignore
 sp_inside_for_close:ignore
-sp_sparen_paren:ignore
-sp_after_sparen:ignore
-sp_sparen_brace:ignore
-sp_do_brace_open:ignore
-sp_brace_close_while:ignore
-sp_while_paren_open:ignore
+sp_sparen_paren:remove						# modified
+sp_after_sparen:force						# modified
+sp_sparen_brace:force						# modified
+sp_do_brace_open:force						# modified
+sp_brace_close_while:force					# modified
+sp_while_paren_open:force					# modified
 sp_invariant_paren:ignore
 sp_after_invariant_paren:ignore
 sp_special_semi:ignore
 sp_before_semi:remove
-sp_before_semi_for:ignore
-sp_before_semi_for_empty:ignore
-sp_between_semi_for_empty:ignore
-sp_after_semi:add
+sp_before_semi_for:remove					# modified
+sp_before_semi_for_empty:remove				# modified
+sp_between_semi_for_empty:remove			# modified
+sp_after_semi:force							# modified
 sp_after_semi_for:force
-sp_after_semi_for_empty:ignore
-sp_before_square:ignore
+sp_after_semi_for_empty:remove				# modified
+sp_before_square:remove						# modified
 sp_before_vardef_square:remove
 sp_before_square_asm_block:ignore
-sp_before_squares:ignore
+sp_before_squares:remove					# modified
 sp_cpp_before_struct_binding:ignore
-sp_inside_square:ignore
-sp_inside_square_empty:ignore
+sp_inside_square:remove						# modified
+sp_inside_square_empty:remove				# modified
 sp_inside_square_oc_array:ignore
-sp_after_comma:ignore
+sp_after_comma:force						# modified
 sp_before_comma:remove
 sp_after_mdatype_commas:ignore
 sp_before_mdatype_commas:ignore
@@ -145,7 +145,7 @@ sp_type_ellipsis:ignore
 sp_ptr_type_ellipsis:ignore
 sp_paren_ellipsis:ignore
 sp_byref_ellipsis:ignore
-sp_paren_qualifier:ignore
+sp_paren_qualifier:force					# modified
 sp_paren_noexcept:ignore
 sp_after_class_colon:ignore
 sp_before_class_colon:ignore
@@ -155,42 +155,42 @@ sp_before_case_colon:remove
 sp_after_operator:ignore
 sp_after_operator_sym:ignore
 sp_after_operator_sym_empty:ignore
-sp_after_cast:ignore
-sp_inside_paren_cast:ignore
+sp_after_cast:force							# modified
+sp_inside_paren_cast:remove					# modified
 sp_cpp_cast_paren:ignore
-sp_sizeof_paren:ignore
+sp_sizeof_paren:remove						# modified
 sp_sizeof_ellipsis:ignore
 sp_sizeof_ellipsis_paren:ignore
 sp_ellipsis_parameter_pack:ignore
 sp_parameter_pack_ellipsis:ignore
 sp_decltype_paren:ignore
 sp_after_tag:ignore
-sp_inside_braces_enum:ignore
-sp_inside_braces_struct:ignore
+sp_inside_braces_enum:remove				# modified
+sp_inside_braces_struct:remove				# modified
 sp_inside_braces_oc_dict:ignore
 sp_after_type_brace_init_lst_open:ignore
 sp_before_type_brace_init_lst_close:ignore
 sp_inside_type_brace_init_lst:ignore
-sp_inside_braces:ignore
-sp_inside_braces_empty:ignore
+sp_inside_braces:remove						# modified
+sp_inside_braces_empty:remove				# modified
 sp_trailing_return:ignore
-sp_type_func:ignore
+sp_type_func:force							# modified
 sp_type_brace_init_lst:ignore
-sp_func_proto_paren:ignore
-sp_func_proto_paren_empty:ignore
+sp_func_proto_paren:force					# modified
+sp_func_proto_paren_empty:remove			# modified
 sp_func_type_paren:ignore
 sp_func_def_paren:ignore
-sp_func_def_paren_empty:ignore
-sp_inside_fparens:ignore
-sp_inside_fparen:ignore
-sp_inside_tparen:ignore
-sp_after_tparen_close:ignore
-sp_square_fparen:ignore
-sp_fparen_brace:ignore
+sp_func_def_paren_empty:remove				# modified
+sp_inside_fparens:remove					# modified
+sp_inside_fparen:remove						# modified
+sp_inside_tparen:remove						# modified
+sp_after_tparen_close:remove				# modified
+sp_square_fparen:force						# modified
+sp_fparen_brace:force						# modified
 sp_fparen_brace_initializer:ignore
 sp_fparen_dbrace:ignore
-sp_func_call_paren:ignore
-sp_func_call_paren_empty:ignore
+sp_func_call_paren:force					# modified
+sp_func_call_paren_empty:remove				# modified
 sp_func_call_user_paren:ignore
 sp_func_call_user_inside_fparen:ignore
 sp_func_call_user_paren_paren:ignore
@@ -199,8 +199,8 @@ sp_func_class_paren_empty:ignore
 sp_return:force
 sp_return_paren:ignore
 sp_return_brace:ignore
-sp_attribute_paren:ignore
-sp_defined_paren:ignore
+sp_attribute_paren:force					# modified
+sp_defined_paren:remove						# modified
 sp_throw_paren:ignore
 sp_after_throw:ignore
 sp_catch_paren:ignore
@@ -211,11 +211,11 @@ sp_version_paren:ignore
 sp_scope_paren:ignore
 sp_super_paren:remove
 sp_this_paren:remove
-sp_macro:ignore
-sp_macro_func:ignore
-sp_else_brace:ignore
-sp_brace_else:ignore
-sp_brace_typedef:ignore
+sp_macro:force								# modified
+sp_macro_func:force							# modified
+sp_else_brace:force							# modified
+sp_brace_else:force							# modified
+sp_brace_typedef:force						# modified
 sp_catch_brace:ignore
 sp_oc_catch_brace:ignore
 sp_brace_catch:ignore
@@ -255,10 +255,10 @@ sp_after_oc_block_caret:ignore
 sp_after_oc_msg_receiver:ignore
 sp_after_oc_property:ignore
 sp_after_oc_synchronized:ignore
-sp_cond_colon:ignore
+sp_cond_colon:force							# modified
 sp_cond_colon_before:ignore
 sp_cond_colon_after:ignore
-sp_cond_question:ignore
+sp_cond_question:force						# modified
 sp_cond_question_before:ignore
 sp_cond_question_after:ignore
 sp_cond_ternary_short:ignore
@@ -266,7 +266,7 @@ sp_case_label:ignore
 sp_range:ignore
 sp_after_for_colon:ignore
 sp_before_for_colon:ignore
-sp_extern_paren:ignore
+sp_extern_paren:force						# modified
 sp_cmt_cpp_start:ignore
 sp_cmt_cpp_region:ignore
 sp_cmt_cpp_doxygen:false
@@ -278,8 +278,8 @@ sp_after_newop_paren:ignore
 sp_inside_newop_paren:ignore
 sp_inside_newop_paren_open:ignore
 sp_inside_newop_paren_close:ignore
-sp_before_tr_cmt:ignore
-sp_num_before_tr_cmt:0
+sp_before_tr_cmt:force						# modified
+sp_num_before_tr_cmt:1						# modified
 sp_before_emb_cmt:force
 sp_num_before_emb_cmt:1
 sp_after_emb_cmt:force
@@ -289,13 +289,13 @@ sp_skip_vbrace_tokens:false
 sp_after_noexcept:ignore
 sp_vala_after_translation:ignore
 force_tab_after_define:false
-indent_columns:8
+indent_columns:2							# modified
 indent_ignore_first_continue:false
 indent_continue:0
 indent_continue_class_head:0
 indent_single_newlines:false
 indent_param:0
-indent_with_tabs:1
+indent_with_tabs:0							# modified
 indent_cmt_with_tabs:false
 indent_align_string:false
 indent_xml_string:0
@@ -313,7 +313,7 @@ indent_namespace_single_indent:false
 indent_namespace_level:0
 indent_namespace_limit:0
 indent_namespace_inner_only:false
-indent_extern:false
+indent_extern:true							# modified
 indent_class:false
 indent_ignore_before_class_colon:false
 indent_before_class_colon:0
@@ -426,49 +426,49 @@ nl_oc_before_implementation:ignore
 nl_oc_before_end:ignore
 nl_oc_interface_brace:ignore
 nl_oc_implementation_brace:ignore
-nl_start_of_file:ignore
+nl_start_of_file:remove						# modified
 nl_start_of_file_min:0
-nl_end_of_file:ignore
+nl_end_of_file:remove						# modified
 nl_end_of_file_min:0
 nl_assign_brace:ignore
 nl_assign_square:ignore
 nl_tsquare_brace:ignore
 nl_after_square_assign:ignore
 nl_fcall_brace:ignore
-nl_enum_brace:ignore
+nl_enum_brace:remove						# modified
 nl_enum_class:ignore
 nl_enum_class_identifier:ignore
 nl_enum_identifier_colon:ignore
 nl_enum_colon_type:ignore
-nl_struct_brace:ignore
-nl_union_brace:ignore
-nl_if_brace:ignore
-nl_brace_else:ignore
-nl_elseif_brace:ignore
-nl_else_brace:ignore
-nl_else_if:ignore
+nl_struct_brace:remove						# modified
+nl_union_brace:remove						# modified
+nl_if_brace:remove							# modified
+nl_brace_else:remove						# modified
+nl_elseif_brace:remove						# modified
+nl_else_brace:remove						# modified
+nl_else_if:remove							# modified
 nl_before_opening_brace_func_class_def:ignore
-nl_before_if_closing_paren:ignore
+nl_before_if_closing_paren:force			# modified
 nl_brace_finally:ignore
 nl_finally_brace:ignore
 nl_try_brace:ignore
 nl_getset_brace:ignore
-nl_for_brace:ignore
+nl_for_brace:remove							# modified
 nl_catch_brace:ignore
 nl_oc_catch_brace:ignore
 nl_brace_catch:ignore
 nl_oc_brace_catch:ignore
 nl_brace_square:ignore
 nl_brace_fparen:ignore
-nl_while_brace:ignore
+nl_while_brace:remove						# modified
 nl_scope_brace:ignore
 nl_unittest_brace:ignore
 nl_version_brace:ignore
 nl_using_brace:ignore
 nl_brace_brace:ignore
-nl_do_brace:ignore
-nl_brace_while:ignore
-nl_switch_brace:ignore
+nl_do_brace:remove							# modified
+nl_brace_while:remove						# modified
+nl_switch_brace:remove						# modified
 nl_synchronized_brace:ignore
 nl_multi_line_cond:false
 nl_multi_line_sparen_open:ignore
@@ -560,23 +560,23 @@ nl_define_macro:false
 nl_squeeze_paren_close:false
 nl_squeeze_ifdef:false
 nl_squeeze_ifdef_top_level:false
-nl_before_if:ignore
-nl_after_if:ignore
-nl_before_for:ignore
-nl_after_for:ignore
-nl_before_while:ignore
-nl_after_while:ignore
-nl_before_switch:ignore
-nl_after_switch:ignore
+nl_before_if:force							# modified
+nl_after_if:force							# modified
+nl_before_for:force							# modified
+nl_after_for:force							# modified
+nl_before_while:force						# modified
+nl_after_while:force						# modified
+nl_before_switch:force						# modified
+nl_after_switch:force						# modified
 nl_before_synchronized:ignore
 nl_after_synchronized:ignore
-nl_before_do:ignore
-nl_after_do:ignore
+nl_before_do:force							# modified
+nl_after_do:force							# modified
 nl_before_ignore_after_case:false
-nl_before_return:false
-nl_after_return:false
-nl_before_member:ignore
-nl_after_member:ignore
+nl_before_return:force						# modified
+nl_after_return:force						# modified
+nl_before_member:force						# modified
+nl_after_member:force						# modified
 nl_ds_struct_enum_cmt:false
 nl_ds_struct_enum_close_brace:false
 nl_class_colon:ignore
@@ -591,11 +591,11 @@ nl_split_if_one_liner:false
 nl_split_for_one_liner:false
 nl_split_while_one_liner:false
 donot_add_nl_before_cpp_comment:false
-nl_max:0
-nl_max_blank_in_func:0
-nl_inside_empty_func:0
+nl_max:3									# modified
+nl_max_blank_in_func:3						# modified
+nl_inside_empty_func:3						# modified
 nl_before_func_body_proto:0
-nl_before_func_body_def:0
+nl_before_func_body_def:3					# modified
 nl_before_func_class_proto:0
 nl_before_func_class_def:0
 nl_after_func_proto:0
@@ -758,17 +758,17 @@ cmt_insert_oc_msg_header:\"\"
 cmt_insert_before_preproc:false
 cmt_insert_before_inlines:true
 cmt_insert_before_ctor_dtor:false
-mod_full_brace_do:ignore
-mod_full_brace_for:ignore
-mod_full_brace_function:ignore
-mod_full_brace_if:ignore
+mod_full_brace_do:force						# modified
+mod_full_brace_for:force					# modified
+mod_full_brace_function:force				# modified
+mod_full_brace_if:force						# modified
 mod_full_brace_if_chain:0
 mod_full_brace_if_chain_only:false
-mod_full_brace_while:ignore
-mod_full_brace_using:ignore
+mod_full_brace_while:force					# modified
+mod_full_brace_using:force					# modified
 mod_full_brace_nl:0
 mod_full_brace_nl_block_rem_mlcond:false
-mod_paren_on_return:ignore
+mod_paren_on_return:force					# modified
 mod_paren_on_throw:ignore
 mod_pawn_semicolon:false
 mod_full_paren_if_bool:false
@@ -814,8 +814,8 @@ mod_sort_oc_property_reference_weight:0
 mod_sort_oc_property_getter_weight:0
 mod_sort_oc_property_setter_weight:0
 mod_sort_oc_property_nullability_weight:0
-pp_indent_with_tabs:-1
-pp_indent:ignore
+pp_indent_with_tabs:0						# modified
+pp_indent:force								# modified
 pp_indent_at_level:false
 pp_indent_at_level0:false
 pp_indent_count:1
