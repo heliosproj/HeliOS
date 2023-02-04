@@ -448,7 +448,7 @@ nl_elseif_brace:remove						# modified
 nl_else_brace:remove						# modified
 nl_else_if:remove							# modified
 nl_before_opening_brace_func_class_def:ignore
-nl_before_if_closing_paren:force			# modified
+nl_before_if_closing_paren:remove			# modified
 nl_brace_finally:ignore
 nl_finally_brace:ignore
 nl_try_brace:ignore
