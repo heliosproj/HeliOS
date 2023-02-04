@@ -38,9 +38,8 @@
 #include "timer.h"
 
 #ifdef __cplusplus
-extern "C" {
+  extern "C" {
 #endif
-
 Base_t xDeviceRegisterDevice(Base_t (*device_self_register_)());
 Base_t __RegisterDevice__(const HalfWord_t uid_,
                           const Char_t *name_,
@@ -61,10 +60,10 @@ Base_t xDeviceInitDevice(const HalfWord_t uid_);
 Base_t xDeviceConfigDevice(const HalfWord_t uid_, Size_t *size_, Addr_t *config_);
 
 #if defined(POSIX_ARCH_OTHER)
-void __DeviceStateClear__(void);
+  void __DeviceStateClear__(void);
 #endif
 
 #ifdef __cplusplus
-}
+  }
 #endif
 #endif

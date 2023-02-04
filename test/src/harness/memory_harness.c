@@ -50,16 +50,16 @@ void memory_harness(void) {
   used = zero;
   actual = zero;
 
-  for (i = 0; i < 0x20u; i++) {
+  for(i = 0; i < 0x20u; i++) {
     tests[i].size = sizes[i];
 
     tests[i].blocks = (sizes[i] / CONFIG_MEMORY_REGION_BLOCK_SIZE) + 1; /* ... + 1; Assuming a memory region entry only takes one (1) block - that may not always be true. */
 
-    if (zero < ((Size_t)(sizes[i] % CONFIG_MEMORY_REGION_BLOCK_SIZE))) {
+    if(zero < ((Size_t) (sizes[i] % CONFIG_MEMORY_REGION_BLOCK_SIZE))) {
       tests[i].blocks += 1;
     }
 
-    unit_try(ISSUCCESSFUL(xMemAlloc((volatile Addr_t **)&tests[i].ptr, sizes[i])));
+    unit_try(ISSUCCESSFUL(xMemAlloc((volatile Addr_t **) &tests[i].ptr, sizes[i])));
 
     unit_try(NULL != tests[i].ptr);
 
@@ -74,11 +74,9 @@ void memory_harness(void) {
     unit_try((tests[i].blocks * CONFIG_MEMORY_REGION_BLOCK_SIZE) == actual);
   }
 
+  unit_try(!ISSUCCESSFUL(xMemAlloc((volatile Addr_t **) &mem05, 0x99999u)));
 
-  unit_try(!ISSUCCESSFUL(xMemAlloc((volatile Addr_t **)&mem05, 0x99999u)));
-
-
-  for (i = 0; i < 0x20u; i++) {
+  for(i = 0; i < 0x20u; i++) {
     unit_try(ISSUCCESSFUL(xMemFree(tests[order[i]].ptr)));
   }
 
@@ -86,7 +84,7 @@ void memory_harness(void) {
 
   unit_try(0x0u == actual);
 
-  unit_try(ISSUCCESSFUL(xMemAlloc((volatile Addr_t **)&mem05, (CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS - 1) * CONFIG_MEMORY_REGION_BLOCK_SIZE)));
+  unit_try(ISSUCCESSFUL(xMemAlloc((volatile Addr_t **) &mem05, (CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS - 1) * CONFIG_MEMORY_REGION_BLOCK_SIZE)));
 
   actual = zero;
 
@@ -99,18 +97,15 @@ void memory_harness(void) {
   unit_end();
 
 
-
-
   unit_begin("xMemAlloc()");
 
   mem01 = NULL;
 
-  unit_try(ISSUCCESSFUL(xMemAlloc((volatile Addr_t **)&mem01, 0x32000u)));
+  unit_try(ISSUCCESSFUL(xMemAlloc((volatile Addr_t **) &mem01, 0x32000u)));
 
   unit_try(NULL != mem01);
 
   unit_end();
-
 
 
   unit_begin("xMemGetUsed()");
@@ -122,7 +117,6 @@ void memory_harness(void) {
   unit_end();
 
 
-
   unit_begin("xMemGetSize()");
 
   unit_try(ISSUCCESSFUL(xMemGetSize(mem01, &actual)));
@@ -130,7 +124,6 @@ void memory_harness(void) {
   unit_try(0x32020u == actual);
 
   unit_end();
-
 
 
   unit_begin("xMemGetHeapStats()");
@@ -158,14 +151,13 @@ void memory_harness(void) {
   unit_end();
 
 
-
   unit_begin("xMemGetKernelStats()");
 
   mem03 = NULL;
 
   mem04 = NULL;
 
-  mem04 = xTaskCreate((Char_t *)"NONE", memory_harness_task, NULL);
+  mem04 = xTaskCreate((Char_t *) "NONE", memory_harness_task, NULL);
 
   unit_try(NULL != mem04);
 
@@ -200,7 +192,6 @@ void memory_harness(void) {
 
   return;
 }
-
 void memory_harness_task(Task_t *task_, TaskParm_t *parm_) {
 
   xTaskSuspendAll();

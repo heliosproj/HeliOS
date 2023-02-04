@@ -49,24 +49,22 @@ void task_harness(void) {
 
   task01 = NULL;
 
-  task01 = xTaskCreate((Char_t *)"TASK01", task_harness_task, NULL);
+  task01 = xTaskCreate((Char_t *) "TASK01", task_harness_task, NULL);
 
   unit_try(NULL != task01);
 
   unit_end();
 
 
-
   unit_begin("xTaskGetHandleByName()");
 
   task02 = NULL;
 
-  task02 = xTaskGetHandleByName((Char_t *)"TASK01");
+  task02 = xTaskGetHandleByName((Char_t *) "TASK01");
 
   unit_try(task02 == task01);
 
   unit_end();
-
 
 
   unit_begin("xTaskGetHandleById()");
@@ -84,7 +82,6 @@ void task_harness(void) {
   unit_end();
 
 
-
   unit_begin("xTaskGetAllRunTimeStats()");
 
   task04 = NULL;
@@ -98,10 +95,9 @@ void task_harness(void) {
 
   unit_try(0x1 == task04[0].id);
 
-  unit_try (ISSUCCESSFUL(xMemFree(task04)));
+  unit_try(ISSUCCESSFUL(xMemFree(task04)));
 
   unit_end();
-
 
 
   unit_begin("xTaskGetTaskRunTimeStats()");
@@ -114,10 +110,9 @@ void task_harness(void) {
 
   unit_try(0x1 == task04->id);
 
-  unit_try (ISSUCCESSFUL(xMemFree(task04)));
+  unit_try(ISSUCCESSFUL(xMemFree(task04)));
 
   unit_end();
-
 
 
   unit_begin("xTaskGetNumberOfTasks()");
@@ -131,7 +126,6 @@ void task_harness(void) {
   unit_end();
 
 
-
   unit_begin("xTaskGetTaskInfo()");
 
   task07 = NULL;
@@ -142,14 +136,13 @@ void task_harness(void) {
 
   unit_try(0x1 == task07->id);
 
-  unit_try(0x0 == strncmp("TASK01", (char *)task07->name, 0x6));
+  unit_try(0x0 == strncmp("TASK01", (char *) task07->name, 0x6));
 
   unit_try(TaskStateSuspended == task07->state);
 
-  unit_try (ISSUCCESSFUL(xMemFree(task07)));
+  unit_try(ISSUCCESSFUL(xMemFree(task07)));
 
   unit_end();
-
 
 
   unit_begin("xTaskGetAllTaskInfo()");
@@ -164,14 +157,13 @@ void task_harness(void) {
 
   unit_try(0x1 == task07->id);
 
-  unit_try(0x0 == strncmp("TASK01", (char *)task07->name, 0x6));
+  unit_try(0x0 == strncmp("TASK01", (char *) task07->name, 0x6));
 
   unit_try(TaskStateSuspended == task07->state);
 
-  unit_try (ISSUCCESSFUL(xMemFree(task07)));
+  unit_try(ISSUCCESSFUL(xMemFree(task07)));
 
   unit_end();
-
 
 
   unit_begin("xTaskGetTaskState()");
@@ -181,17 +173,15 @@ void task_harness(void) {
   unit_end();
 
 
-
   unit_begin("xTaskGetName()");
 
   task08 = xTaskGetName(task01);
 
   unit_try(NULL != task08);
 
-  unit_try(0x0 == strncmp("TASK01", (char *)task08, 0x6));
+  unit_try(0x0 == strncmp("TASK01", (char *) task08, 0x6));
 
   unit_end();
-
 
 
   unit_begin("xTaskGetId()");
@@ -201,13 +191,11 @@ void task_harness(void) {
   unit_end();
 
 
-
   unit_begin("xTaskNotifyGive()");
 
-  unit_try(RETURN_SUCCESS == xTaskNotifyGive(task01, 0x7, (Char_t *)"MESSAGE"));
+  unit_try(RETURN_SUCCESS == xTaskNotifyGive(task01, 0x7, (Char_t *) "MESSAGE"));
 
   unit_end();
-
 
 
   unit_begin("xTaskNotificationIsWaiting()");
@@ -215,7 +203,6 @@ void task_harness(void) {
   unit_try(true == xTaskNotificationIsWaiting(task01));
 
   unit_end();
-
 
 
   unit_begin("xTaskNotifyStateClear()");
@@ -227,12 +214,11 @@ void task_harness(void) {
   unit_end();
 
 
-
   unit_begin("xTaskNotifyTake()");
 
   task09 = NULL;
 
-  unit_try(RETURN_SUCCESS == xTaskNotifyGive(task01, 0x7, (Char_t *)"MESSAGE"));
+  unit_try(RETURN_SUCCESS == xTaskNotifyGive(task01, 0x7, (Char_t *) "MESSAGE"));
 
   task09 = xTaskNotifyTake(task01);
 
@@ -240,12 +226,11 @@ void task_harness(void) {
 
   unit_try(0x7 == task09->notificationBytes);
 
-  unit_try(0x0 == strncmp("MESSAGE", (char *)task09->notificationValue, 0x7));
+  unit_try(0x0 == strncmp("MESSAGE", (char *) task09->notificationValue, 0x7));
 
-  unit_try (ISSUCCESSFUL(xMemFree(task09)));
+  unit_try(ISSUCCESSFUL(xMemFree(task09)));
 
   unit_end();
-
 
 
   unit_begin("xTaskResume()");
@@ -257,7 +242,6 @@ void task_harness(void) {
   unit_end();
 
 
-
   unit_begin("xTaskSuspend()");
 
   xTaskSuspend(task01);
@@ -265,7 +249,6 @@ void task_harness(void) {
   unit_try(TaskStateSuspended == xTaskGetTaskState(task01));
 
   unit_end();
-
 
 
   unit_begin("xTaskWait()");
@@ -277,7 +260,6 @@ void task_harness(void) {
   unit_end();
 
 
-
   unit_begin("xTaskChangePeriod()");
 
   xTaskChangePeriod(task01, 0xD05);
@@ -285,7 +267,6 @@ void task_harness(void) {
   unit_try(0xD05 == xTaskGetPeriod(task01));
 
   unit_end();
-
 
 
   unit_begin("xTaskGetPeriod()");
@@ -297,13 +278,11 @@ void task_harness(void) {
   unit_end();
 
 
-
   unit_begin("xTaskResetTimer()");
 
   xTaskResetTimer(task01);
 
   unit_end();
-
 
 
   unit_begin("xTaskGetSchedulerState()");
@@ -319,7 +298,6 @@ void task_harness(void) {
   unit_end();
 
 
-
   unit_begin("Unit test for task timer event");
 
   xTaskResumeAll();
@@ -328,7 +306,7 @@ void task_harness(void) {
 
   task10 = NULL;
 
-  task10 = xTaskCreate((Char_t *)"TASK10", task_harness_task, NULL);
+  task10 = xTaskCreate((Char_t *) "TASK10", task_harness_task, NULL);
 
   unit_try(NULL != task10);
 
@@ -345,20 +323,19 @@ void task_harness(void) {
   unit_end();
 
 
-
   unit_begin("Unit test for direct to task notification event");
 
   xTaskResumeAll();
 
   task11 = NULL;
 
-  task11 = xTaskCreate((Char_t *)"TASK11", task_harness_task, NULL);
+  task11 = xTaskCreate((Char_t *) "TASK11", task_harness_task, NULL);
 
   unit_try(NULL != task11);
 
   xTaskWait(task11);
 
-  xTaskNotifyGive(task11, 0x7, (Char_t *)"MESSAGE");
+  xTaskNotifyGive(task11, 0x7, (Char_t *) "MESSAGE");
 
   unit_try(true == xTaskNotificationIsWaiting(task11));
 
@@ -373,15 +350,13 @@ void task_harness(void) {
   unit_end();
 
 
-
-
   unit_begin("Unit test for task watchdog timer");
 
   xTaskResumeAll();
 
   task12 = NULL;
 
-  task12 = xTaskCreate((Char_t *)"TASK12", task_harness_task2, NULL);
+  task12 = xTaskCreate((Char_t *) "TASK12", task_harness_task2, NULL);
 
   unit_try(NULL != task12);
 
@@ -398,8 +373,6 @@ void task_harness(void) {
   unit_end();
 
 
-
-
   unit_begin("xTaskGetWDPeriod()");
 
   unit_try(0x7D0u == xTaskGetWDPeriod(task12));
@@ -407,11 +380,8 @@ void task_harness(void) {
   unit_end();
 
 
-
-
   return;
 }
-
 void task_harness_task(Task_t *task_, TaskParm_t *parm_) {
 
   xTaskNotifyStateClear(task_);
@@ -420,7 +390,6 @@ void task_harness_task(Task_t *task_, TaskParm_t *parm_) {
 
   return;
 }
-
 void task_harness_task2(Task_t *task_, TaskParm_t *parm_) {
 
   sleep(3);

@@ -38,9 +38,8 @@
 #include "timer.h"
 
 #ifdef __cplusplus
-extern "C" {
+  extern "C" {
 #endif
-
 Task_t *xTaskCreate(const Char_t *name_, void (*callback_)(Task_t *task_, TaskParm_t *parm_), TaskParm_t *taskParameter_);
 void xTaskDelete(const Task_t *task_);
 Task_t *xTaskGetHandleByName(const Char_t *name_);
@@ -71,10 +70,10 @@ void xTaskChangeWDPeriod(Task_t *task_, const Ticks_t wdTimerPeriod_);
 Ticks_t xTaskGetWDPeriod(const Task_t *task_);
 
 #if defined(POSIX_ARCH_OTHER)
-void __TaskStateClear__(void);
+  void __TaskStateClear__(void);
 #endif
 
 #ifdef __cplusplus
-}
+  }
 #endif
 #endif

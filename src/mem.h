@@ -38,9 +38,8 @@
 #include "timer.h"
 
 #ifdef __cplusplus
-extern "C" {
+  extern "C" {
 #endif
-
 Return_t xMemAlloc(volatile Addr_t **addr_, const Size_t size_);
 Return_t xMemFree(const volatile Addr_t *addr_);
 Return_t xMemGetUsed(Size_t *size_);
@@ -59,13 +58,13 @@ Return_t xMemGetHeapStats(MemoryRegionStats_t **stats_);
 Return_t xMemGetKernelStats(MemoryRegionStats_t **stats_);
 
 #if defined(POSIX_ARCH_OTHER)
-void __MemoryClear__(void);
-void __MemoryRegionDumpKernel__(void);
-void __MemoryRegionDumpHeap__(void);
-void __memdump__(const volatile MemoryRegion_t *region_);
+  void __MemoryClear__(void);
+  void __MemoryRegionDumpKernel__(void);
+  void __MemoryRegionDumpHeap__(void);
+  void __memdump__(const volatile MemoryRegion_t *region_);
 #endif
 
 #ifdef __cplusplus
-}
+  }
 #endif
 #endif

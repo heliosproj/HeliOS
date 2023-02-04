@@ -52,10 +52,10 @@
  *
  */
 typedef enum {
-  TaskStateError,     /**< Returned by xTaskGetTaskState() when the task cannot be found. */
+  TaskStateError, /**< Returned by xTaskGetTaskState() when the task cannot be found. */
   TaskStateSuspended, /**< State a task is in when it is first created OR after calling xTaskSuspend() - tasks in the TaskStateSuspended state will not be scheduled for execution. */
-  TaskStateRunning,   /**< State a task is in after calling xTaskResume() - tasks in the TaskStateRunning state will be scheduled co-operatively. */
-  TaskStateWaiting    /**< State a task is in after calling xTaskWait() - tasks in the TaskStateWaiting state will be scheduled as event driven. */
+  TaskStateRunning, /**< State a task is in after calling xTaskResume() - tasks in the TaskStateRunning state will be scheduled co-operatively. */
+  TaskStateWaiting /**< State a task is in after calling xTaskWait() - tasks in the TaskStateWaiting state will be scheduled as event driven. */
 } TaskState_t;
 
 /**
@@ -82,9 +82,9 @@ typedef TaskState_t xTaskState;
  *
  */
 typedef enum {
-  SchedulerStateError,     /**< Not used - reserved for future use. */
+  SchedulerStateError, /**< Not used - reserved for future use. */
   SchedulerStateSuspended, /**< State the scheduler is in after calling xTaskSuspendAll() - xTaskStartScheduler() will stop scheduling tasks for execution and relinquish control when xTaskSuspendAll() is called. */
-  SchedulerStateRunning    /**< State the scheduler is in after calling xTaskResumeAll() - xTaskStartScheduler() will continue to schedule tasks for execution until xTaskSuspendAll() is called. */
+  SchedulerStateRunning /**< State the scheduler is in after calling xTaskResumeAll() - xTaskStartScheduler() will continue to schedule tasks for execution until xTaskSuspendAll() is called. */
 } SchedulerState_t;
 
 /**
@@ -438,7 +438,7 @@ typedef Timer_t *xTimer;
  *
  */
 typedef struct TaskNotification_s {
-  Base_t notificationBytes;                                  /**< The length in bytes of the notification value which cannot exceed CONFIG_NOTIFICATION_VALUE_BYTES. */
+  Base_t notificationBytes; /**< The length in bytes of the notification value which cannot exceed CONFIG_NOTIFICATION_VALUE_BYTES. */
   Char_t notificationValue[CONFIG_NOTIFICATION_VALUE_BYTES]; /**< The notification value whose length is specified by the notification bytes member. */
 } TaskNotification_t;
 
@@ -466,8 +466,8 @@ typedef TaskNotification_t *xTaskNotification;
  *
  */
 typedef struct TaskRunTimeStats_s {
-  Base_t id;            /**< The ID of the task referenced by the task handle. */
-  Ticks_t lastRunTime;  /**< The duration in ticks of the task's last runtime. */
+  Base_t id; /**< The ID of the task referenced by the task handle. */
+  Ticks_t lastRunTime; /**< The duration in ticks of the task's last runtime. */
   Ticks_t totalRunTime; /**< The duration in ticks of the task's total runtime. */
 } TaskRunTimeStats_t;
 
@@ -496,12 +496,12 @@ typedef TaskRunTimeStats_t *xTaskRunTimeStats;
  *
  */
 typedef struct MemoryRegionStats_s {
-  Word_t largestFreeEntryInBytes;       /**< The largest free entry in bytes. */
-  Word_t smallestFreeEntryInBytes;      /**< The smallest free entry in bytes. */
-  Word_t numberOfFreeBlocks;            /**< The number of free blocks - see CONFIG_MEMORY_REGION_BLOCK_SIZE for block size in bytes. */
-  Word_t availableSpaceInBytes;         /**< The amount of free memory in bytes (i.e., numberOfFreeBlocks * CONFIG_MEMORY_REGION_BLOCK_SIZE). */
-  Word_t successfulAllocations;         /**< Number of successful memory allocations. */
-  Word_t successfulFrees;               /**< Number of successful memory "frees". */
+  Word_t largestFreeEntryInBytes; /**< The largest free entry in bytes. */
+  Word_t smallestFreeEntryInBytes; /**< The smallest free entry in bytes. */
+  Word_t numberOfFreeBlocks; /**< The number of free blocks - see CONFIG_MEMORY_REGION_BLOCK_SIZE for block size in bytes. */
+  Word_t availableSpaceInBytes; /**< The amount of free memory in bytes (i.e., numberOfFreeBlocks * CONFIG_MEMORY_REGION_BLOCK_SIZE). */
+  Word_t successfulAllocations; /**< Number of successful memory allocations. */
+  Word_t successfulFrees; /**< Number of successful memory "frees". */
   Word_t minimumEverFreeBytesRemaining; /**< Lowest water lever since system initialization of free bytes of memory. */
 } MemoryRegionStats_t;
 
@@ -538,11 +538,11 @@ typedef MemoryRegionStats_t *xMemoryRegionStats;
  *
  */
 typedef struct TaskInfo_s {
-  Base_t id;                           /**< The task identifier which is used by xTaskGetHandleById() to return the task handle. */
+  Base_t id; /**< The task identifier which is used by xTaskGetHandleById() to return the task handle. */
   Char_t name[CONFIG_TASK_NAME_BYTES]; /**< The ASCII name of the task which is used by xTaskGetHandleByName() to return the task handle - this is *NOT* a null terminated char array. */
-  TaskState_t state;                   /**< The state the task is in which is one of four states specified in the TaskState_t enumerated data type. */
-  Ticks_t lastRunTime;                 /**< The duration in ticks of the task's last runtime. */
-  Ticks_t totalRunTime;                /**< The duration in ticks of the task's total runtime. */
+  TaskState_t state; /**< The state the task is in which is one of four states specified in the TaskState_t enumerated data type. */
+  Ticks_t lastRunTime; /**< The duration in ticks of the task's last runtime. */
+  Ticks_t totalRunTime; /**< The duration in ticks of the task's total runtime. */
 } TaskInfo_t;
 
 /**
@@ -576,7 +576,7 @@ typedef TaskInfo_t *xTaskInfo;
  *
  */
 typedef struct QueueMessage_s {
-  Base_t messageBytes;                             /**< The number of bytes contained in the message value which cannot exceed CONFIG_MESSAGE_VALUE_BYTES. */
+  Base_t messageBytes; /**< The number of bytes contained in the message value which cannot exceed CONFIG_MESSAGE_VALUE_BYTES. */
   Char_t messageValue[CONFIG_MESSAGE_VALUE_BYTES]; /**< The ASCII queue message value - this is *NOT* a null terminated character array. */
 } QueueMessage_t;
 
@@ -611,10 +611,10 @@ typedef QueueMessage_t *xQueueMessage;
  */
 typedef struct SystemInfo_s {
   Char_t productName[OS_PRODUCT_NAME_SIZE]; /**< The ASCII product name of the operating system (always "HeliOS"). */
-  Base_t majorVersion;                      /**< The SemVer major version number of HeliOS. */
-  Base_t minorVersion;                      /**< The SemVer minor version number of HeliOS. */
-  Base_t patchVersion;                      /**< The SemVer patch version number of HeliOS. */
-  Base_t numberOfTasks;                     /**< The number of tasks regardless of their state. */
+  Base_t majorVersion; /**< The SemVer major version number of HeliOS. */
+  Base_t minorVersion; /**< The SemVer minor version number of HeliOS. */
+  Base_t patchVersion; /**< The SemVer patch version number of HeliOS. */
+  Base_t numberOfTasks; /**< The number of tasks regardless of their state. */
 } SystemInfo_t;
 
 /**
@@ -628,9 +628,8 @@ typedef struct SystemInfo_s {
 typedef SystemInfo_t *xSystemInfo;
 
 #ifdef __cplusplus
-extern "C" {
+  extern "C" {
 #endif
-
 /**
  * @brief System call to register a device driver.
  *
@@ -652,7 +651,6 @@ extern "C" {
  * returns RETURN_SUCCESS. Otherwise RETURN_FAILURE is returned..
  */
 xBase xDeviceRegisterDevice(xBase (*device_self_register_)());
-
 /**
  * @brief System call to check if a device is available
  *
@@ -666,7 +664,6 @@ xBase xDeviceRegisterDevice(xBase (*device_self_register_)());
  * @return xBase If the device driver is "available", then "true" is returned. Otherwise "false" is returned.
  */
 xBase xDeviceIsAvailable(const xHalfWord uid_);
-
 /**
  * @brief System call to write fixed length data to a device.
  *
@@ -680,7 +677,6 @@ xBase xDeviceIsAvailable(const xHalfWord uid_);
  * @return xBase If the write operation was successful, RETURN_SUCCESS is returned. Otherwise RETURN_FAILURE is returned.
  */
 xBase xDeviceSimpleWrite(const xHalfWord uid_, xWord *data_);
-
 /**
  * @brief System call to write variable length data to a device.
  *
@@ -695,7 +691,6 @@ xBase xDeviceSimpleWrite(const xHalfWord uid_, xWord *data_);
  * @return xBase If the write operation was successful, RETURN_SUCCESS is returned. Otherwise RETURN_FAILURE is returned.
  */
 xBase xDeviceWrite(const xHalfWord uid_, xSize *size_, xAddr data_);
-
 /**
  * @brief System call to read fixed length data from a device.
  *
@@ -709,7 +704,6 @@ xBase xDeviceWrite(const xHalfWord uid_, xSize *size_, xAddr data_);
  * @return xBase If the read operation was successful, RETURN_SUCCESS is returned. Otherwise RETURN_FAILURE is returned.
  */
 xBase xDeviceSimpleRead(const xHalfWord uid_, xWord *data_);
-
 /**
  * @brief System call to read variable length data from a device.
  *
@@ -724,7 +718,6 @@ xBase xDeviceSimpleRead(const xHalfWord uid_, xWord *data_);
  * @return xBase If the read operation was successful, RETURN_SUCCESS is returned. Otherwise RETURN_FAILURE is returned.
  */
 xBase xDeviceRead(const xHalfWord uid_, xSize *size_, xAddr data_);
-
 /**
  * @brief System call to initialize a device driver and its device.
  *
@@ -736,7 +729,6 @@ xBase xDeviceRead(const xHalfWord uid_, xSize *size_, xAddr data_);
  * @return xBase If the initialization of the device driver was successful, RETURN_SUCCESS is returned. Otherwise RETURN_FAILURE is returned.
  */
 xBase xDeviceInitDevice(const xHalfWord uid_);
-
 /**
  * @brief System call to configure a device driver and its device.
  *
@@ -751,7 +743,6 @@ xBase xDeviceInitDevice(const xHalfWord uid_);
  * @return xBase If configuration of the device driver was successful, RETURN_SUCCESS is returned. Otherwise RETURN_FAILURE is returned.
  */
 xBase xDeviceConfigDevice(const xHalfWord uid_, xSize *size_, xAddr config_);
-
 /**
  * @brief System call to allocate memory from the heap.
  *
@@ -775,7 +766,6 @@ xBase xDeviceConfigDevice(const xHalfWord uid_, xSize *size_, xAddr config_);
  *
  */
 xAddr xMemAlloc(const xSize size_);
-
 /**
  * @brief System call to free memory allocated from the heap.
  *
@@ -791,7 +781,6 @@ xAddr xMemAlloc(const xSize size_);
  * be freed by their respective delete system calls (e.g., xTaskDelete()).
  */
 void xMemFree(const volatile xAddr addr_);
-
 /**
  * @brief System call to return the amount of allocated heap memory.
  *
@@ -808,7 +797,6 @@ void xMemFree(const volatile xAddr addr_);
  * their respective delete system call (e.g., xTaskDelete()).
  */
 xSize xMemGetUsed(void);
-
 /**
  * @brief System call to return the amount of heap memory allcoated for a given address.
  *
@@ -829,7 +817,6 @@ xSize xMemGetUsed(void);
  * can be used to validate addresses before the objects they reference are accessed.
  */
 xSize xMemGetSize(const volatile xAddr addr_);
-
 /**
  * @brief System call to obtain statistics on the heap.
  *
@@ -844,7 +831,6 @@ xSize xMemGetSize(const volatile xAddr addr_);
  * @warning The memory allocated by xMemGetHeapStats() must be freed by xMemFree().
  */
 xMemoryRegionStats xMemGetHeapStats(void);
-
 /**
  * @brief System call to obtain statistics on the kernel memory region.
  *
@@ -860,7 +846,6 @@ xMemoryRegionStats xMemGetHeapStats(void);
  * @warning The memory allocated by xMemGetKernelStats() must be freed by xMemFree().
  */
 xMemoryRegionStats xMemGetKernelStats(void);
-
 /**
  * @brief System call to create a new message queue.
  *
@@ -879,7 +864,6 @@ xMemoryRegionStats xMemGetKernelStats(void);
  * @warning The message queue memory can only be freed by xQueueDelete().
  */
 xQueue xQueueCreate(const xBase limit_);
-
 /**
  * @brief System call to delete a message queue.
  *
@@ -893,7 +877,6 @@ xQueue xQueueCreate(const xBase limit_);
  * @param queue_ The queue to be deleted.
  */
 void xQueueDelete(xQueue queue_);
-
 /**
  * @brief System call to get the length of the message queue.
  *
@@ -905,7 +888,6 @@ void xQueueDelete(xQueue queue_);
  * xQueueGetLength() returns zero.
  */
 xBase xQueueGetLength(const xQueue queue_);
-
 /**
  * @brief System call to check if the message queue is empty.
  *
@@ -917,7 +899,6 @@ xBase xQueueGetLength(const xQueue queue_);
  * will also return false if the queue parameter is invalid.
  */
 xBase xQueueIsQueueEmpty(const xQueue queue_);
-
 /**
  * @brief System call to check if the message queue is full.
  *
@@ -930,7 +911,6 @@ xBase xQueueIsQueueEmpty(const xQueue queue_);
  * will also return false if the queue parameter is invalid.
  */
 xBase xQueueIsQueueFull(const xQueue queue_);
-
 /**
  * @brief System call to check if there are message queue messages waiting.
  *
@@ -942,7 +922,6 @@ xBase xQueueIsQueueFull(const xQueue queue_);
  * messages waiting of the queue parameter is invalid.
  */
 xBase xQueueMessagesWaiting(const xQueue queue_);
-
 /**
  * @brief System call to send a message using a message queue.
  *
@@ -964,7 +943,6 @@ xBase xQueueMessagesWaiting(const xQueue queue_);
  * RETURN_FAILURE if unsuccessful.
  */
 xBase xQueueSend(xQueue queue_, const xBase messageBytes_, const xChar *messageValue_);
-
 /**
  * @brief System call to peek at the next message in a message queue.
  *
@@ -981,7 +959,6 @@ xBase xQueueSend(xQueue queue_, const xBase messageBytes_, const xChar *messageV
  * @warning The memory allocated by xQueuePeek() must be freed by xMemFree().
  */
 xQueueMessage xQueuePeek(const xQueue queue_);
-
 /**
  * @brief System call to drop the next message in a message queue.
  *
@@ -991,7 +968,6 @@ xQueueMessage xQueuePeek(const xQueue queue_);
  * @param queue_ The queue to drop the next message from.
  */
 void xQueueDropMessage(xQueue queue_);
-
 /**
  * @brief System call to receive the next message in the message queue.
  *
@@ -1008,7 +984,6 @@ void xQueueDropMessage(xQueue queue_);
  * @warning The memory allocated by xQueueReceive() must be freed by xMemFree().
  */
 xQueueMessage xQueueReceive(xQueue queue_);
-
 /**
  * @brief System call to LOCK the message queue.
  *
@@ -1018,7 +993,6 @@ xQueueMessage xQueueReceive(xQueue queue_);
  * @param queue_ The queue to lock.
  */
 void xQueueLockQueue(xQueue queue_);
-
 /**
  * @brief System call to UNLOCk the message queue.
  *
@@ -1028,7 +1002,6 @@ void xQueueLockQueue(xQueue queue_);
  * @param queue_ The queue to unlock.
  */
 void xQueueUnLockQueue(xQueue queue_);
-
 /**
  * @brief The xStreamCreate() system call will create a new stream buffer.
  *
@@ -1042,7 +1015,6 @@ void xQueueUnLockQueue(xQueue queue_);
  * be freed by calling xStreamDelete().
  */
 xStreamBuffer xStreamCreate(void);
-
 /**
  * @brief The xStreamDelete() system call will delete a stream buffer
  *
@@ -1053,7 +1025,6 @@ xStreamBuffer xStreamCreate(void);
  * @param stream_ The stream buffer to operate on.
  */
 void xStreamDelete(const xStreamBuffer stream_);
-
 /**
  * @brief The xStreamSend() system call will write one byte to the stream buffer
  *
@@ -1068,7 +1039,6 @@ void xStreamDelete(const xStreamBuffer stream_);
  * stream buffer. Otherwise, returns RETURN_FAILURE.
  */
 xBase xStreamSend(xStreamBuffer stream_, const xByte byte_);
-
 /**
  * @brief The xStreamReceive() system call will return the contents of the stream buffer.
  *
@@ -1083,7 +1053,6 @@ xBase xStreamSend(xStreamBuffer stream_, const xByte byte_);
  * @warning The byte array returned by xStreamReceive() must be freed by calling xMemFree().
  */
 xByte *xStreamReceive(const xStreamBuffer stream_, xHalfWord *bytes_);
-
 /**
  * @brief The xStreamBytesAvailable() system call returns the length of the stream buffer.
  *
@@ -1094,7 +1063,6 @@ xByte *xStreamReceive(const xStreamBuffer stream_, xHalfWord *bytes_);
  * @return xHalfWord The length of the stream buffer in bytes.
  */
 xHalfWord xStreamBytesAvailable(const xStreamBuffer stream_);
-
 /**
  * @brief The xStreamReset() system call will reset a stream buffer.
  *
@@ -1104,7 +1072,6 @@ xHalfWord xStreamBytesAvailable(const xStreamBuffer stream_);
  * @param stream_ The stream buffer to operate on.
  */
 void xStreamReset(const xStreamBuffer stream_);
-
 /**
  * @brief The xStreamIsEmpty() system call returns true if the stream buffer is empty.
  *
@@ -1117,7 +1084,6 @@ void xStreamReset(const xStreamBuffer stream_);
  * in length, otherwise xStreamIsEmpty() will return false.
  */
 xBase xStreamIsEmpty(const xStreamBuffer stream_);
-
 /**
  * @brief The xStreamIsFull() system call returns true if the stream buffer is full
  *
@@ -1131,7 +1097,6 @@ xBase xStreamIsEmpty(const xStreamBuffer stream_);
  * in length, otherwise xStreamIsFull() will return false.
  */
 xBase xStreamIsFull(const xStreamBuffer stream_);
-
 /**
  * @brief System call to initialize the system.
  *
@@ -1140,7 +1105,6 @@ xBase xStreamIsFull(const xStreamBuffer stream_);
  *
  */
 void xSystemInit(void);
-
 /**
  * @brief The xSystemHalt() system call will halt HeliOS.
  *
@@ -1149,7 +1113,6 @@ void xSystemInit(void);
  *
  */
 void xSystemHalt(void);
-
 /**
  * @brief The xSystemGetSystemInfo() system call will return information about the running system.
  *
@@ -1166,7 +1129,6 @@ void xSystemHalt(void);
  * @warning The memory allocated by the xSystemGetSystemInfo() must be freed with xMemFree().
  */
 xSystemInfo xSystemGetSystemInfo(void);
-
 /**
  * @brief System call to create a new task.
  *
@@ -1192,7 +1154,6 @@ xSystemInfo xSystemGetSystemInfo(void);
  * The task memory can only be freed by xTaskDelete().
  */
 xTask xTaskCreate(const xChar *name_, void (*callback_)(xTask task_, xTaskParm parm_), xTaskParm taskParameter_);
-
 /**
  * @brief System call to delete a task.
  *
@@ -1204,7 +1165,6 @@ xTask xTaskCreate(const xChar *name_, void (*callback_)(xTask task_, xTaskParm p
  * @warning xTaskDelete() MUST be called outside the scope of the HeliOS scheduler (i.e., not from a task's main).
  */
 void xTaskDelete(const xTask task_);
-
 /**
  * @brief System call to get a task's handle by its ASCII name.
  *
@@ -1219,7 +1179,6 @@ void xTaskDelete(const xTask task_);
  * @return xTask The task handle. xTaskGetHandleByName() returns null if the name cannot be found.
  */
 xTask xTaskGetHandleByName(const xChar *name_);
-
 /**
  * @brief System call to get a task's handle by its task identifier.
  *
@@ -1233,7 +1192,6 @@ xTask xTaskGetHandleByName(const xChar *name_);
  * cannot be found.
  */
 xTask xTaskGetHandleById(const xBase id_);
-
 /**
  * @brief System call to return task runtime statistics for all tasks.
  *
@@ -1255,7 +1213,6 @@ xTask xTaskGetHandleById(const xBase id_);
  * @warning The memory allocated by xTaskGetAllRunTimeStats() must be freed by xMemFree().
  */
 xTaskRunTimeStats xTaskGetAllRunTimeStats(xBase *tasks_);
-
 /**
  * @brief System call to return task runtime statistics for the specified task.
  *
@@ -1273,7 +1230,6 @@ xTaskRunTimeStats xTaskGetAllRunTimeStats(xBase *tasks_);
  * @warning The memory allocated by xTaskGetTaskRunTimeStats() must be freed by xMemFree().
  */
 xTaskRunTimeStats xTaskGetTaskRunTimeStats(const xTask task_);
-
 /**
  * @brief System call to return the number of tasks regardless of their state.
  *
@@ -1283,7 +1239,6 @@ xTaskRunTimeStats xTaskGetTaskRunTimeStats(const xTask task_);
  * @return xBase The number of tasks.
  */
 xBase xTaskGetNumberOfTasks(void);
-
 /**
  * @brief System call to return the details of a task.
  *
@@ -1299,7 +1254,6 @@ xBase xTaskGetNumberOfTasks(void);
  * @warning The memory allocated by xTaskGetTaskInfo() must be freed by xMemFree().
  */
 xTaskInfo xTaskGetTaskInfo(const xTask task_);
-
 /**
  * @brief System call to return the details of all tasks.
  *
@@ -1316,7 +1270,6 @@ xTaskInfo xTaskGetTaskInfo(const xTask task_);
  * @warning The memory allocated by xTaskGetAllTaskInfo() must be freed by xMemFree().
  */
 xTaskInfo xTaskGetAllTaskInfo(xBase *tasks_);
-
 /**
  * @brief System call to return the state of a task.
  *
@@ -1329,7 +1282,6 @@ xTaskInfo xTaskGetAllTaskInfo(xBase *tasks_);
  * will return null.
  */
 xTaskState xTaskGetTaskState(const xTask task_);
-
 /**
  * @brief System call to return the ASCII name of a task.
  *
@@ -1348,7 +1300,6 @@ xTaskState xTaskGetTaskState(const xTask task_);
  * @warning The memory allocated by xTaskGetName() must be free by xMemFree().
  */
 xChar *xTaskGetName(const xTask task_);
-
 /**
  * @brief System call to return the task identifier for a task.
  *
@@ -1359,7 +1310,6 @@ xChar *xTaskGetName(const xTask task_);
  * returns zero (all tasks identifiers are 1 or greater).
  */
 xBase xTaskGetId(const xTask task_);
-
 /**
  * @brief System call to clear a waiting direct to task notification.
  *
@@ -1369,7 +1319,6 @@ xBase xTaskGetId(const xTask task_);
  * @param task_ The task to clear the notification for.
  */
 void xTaskNotifyStateClear(xTask task_);
-
 /**
  * @brief System call to check if a direct to task notification is waiting.
  *
@@ -1381,7 +1330,6 @@ void xTaskNotifyStateClear(xTask task_);
  * or if the task could not be found.
  */
 xBase xTaskNotificationIsWaiting(const xTask task_);
-
 /**
  * @brief System call to give another task a direct to task notification.
  *
@@ -1402,7 +1350,6 @@ xBase xTaskNotificationIsWaiting(const xTask task_);
  * @return xBase RETURN_SUCCESS if the direct to task notification was successfully given, RETURN_FAILURE if not.
  */
 xBase xTaskNotifyGive(xTask task_, const xBase notificationBytes_, const xChar *notificationValue_);
-
 /**
  * @brief System call to take a direct to task notification from another task.
  *
@@ -1424,7 +1371,6 @@ xBase xTaskNotifyGive(xTask task_, const xBase notificationBytes_, const xChar *
  * @warning The memory allocated by xTaskNotifyTake() must be freed by xMemFree().
  */
 xTaskNotification xTaskNotifyTake(xTask task_);
-
 /**
  * @brief System call to resume a task.
  *
@@ -1439,7 +1385,6 @@ xTaskNotification xTaskNotifyTake(xTask task_);
  * @param task_ The task to set its state to running.
  */
 void xTaskResume(xTask task_);
-
 /**
  * @brief System call to suspend a task.
  *
@@ -1453,7 +1398,6 @@ void xTaskResume(xTask task_);
  * @param task_ The task to suspend.
  */
 void xTaskSuspend(xTask task_);
-
 /**
  * @brief System call to place a task in a waiting state.
  *
@@ -1469,7 +1413,6 @@ void xTaskSuspend(xTask task_);
  * @param task_ The task to place in the waiting state.
  */
 void xTaskWait(xTask task_);
-
 /**
  * @brief System call to set the task timer period.
  *
@@ -1488,7 +1431,6 @@ void xTaskWait(xTask task_);
  * @param timerPeriod_ The timer period in ticks.
  */
 void xTaskChangePeriod(xTask task_, const xTicks timerPeriod_);
-
 /**
  * @brief System call to get the task timer period.
  *
@@ -1504,7 +1446,6 @@ void xTaskChangePeriod(xTask task_, const xTicks timerPeriod_);
  * if the timer period is zero or if the task could not be found.
  */
 xTicks xTaskGetPeriod(const xTask task_);
-
 /**
  * @brief System call to reset the task timer.
  *
@@ -1518,7 +1459,6 @@ xTicks xTaskGetPeriod(const xTask task_);
  * @param task_ The task to reset the task timer for.
  */
 void xTaskResetTimer(xTask task_);
-
 /**
  * @brief System call to pass control to the HeliOS scheduler.
  *
@@ -1528,7 +1468,6 @@ void xTaskResetTimer(xTask task_);
  *
  */
 void xTaskStartScheduler(void);
-
 /**
  * @brief System call to set scheduler state to running.
  *
@@ -1540,7 +1479,6 @@ void xTaskStartScheduler(void);
  *
  */
 void xTaskResumeAll(void);
-
 /**
  * @brief System call to set the scheduler state to suspended.
  *
@@ -1552,7 +1490,6 @@ void xTaskResumeAll(void);
  *
  */
 void xTaskSuspendAll(void);
-
 /**
  * @brief System call to get the state of the scheduler.
  *
@@ -1566,7 +1503,6 @@ void xTaskSuspendAll(void);
  * @return xSchedulerState The state of the scheduler.
  */
 xSchedulerState xTaskGetSchedulerState(void);
-
 /**
  * @brief The xTaskChangeWDPeriod() will change the period on the task watchdog timer.
  *
@@ -1580,7 +1516,6 @@ xSchedulerState xTaskGetSchedulerState(void);
  * @param wdTimerPeriod_  The task watchdog timer period which is measured in ticks. If zero, the task watchdog timer will not have any effect.
  */
 void xTaskChangeWDPeriod(xTask task_, const xTicks wdTimerPeriod_);
-
 /**
  * @brief The xTaskGetWDPeriod() return the current task watchdog timer.
  *
@@ -1591,7 +1526,6 @@ void xTaskChangeWDPeriod(xTask task_, const xTicks wdTimerPeriod_);
  * @return xTicks  The task watchdog timer period which is measured in ticks.
  */
 xTicks xTaskGetWDPeriod(const xTask task_);
-
 /**
  * @brief System call to create a new timer.
  *
@@ -1612,7 +1546,6 @@ xTicks xTaskGetWDPeriod(const xTask task_);
  * @warning The timer memory can only be freed by xTimerDelete().
  */
 xTimer xTimerCreate(const xTicks timerPeriod_);
-
 /**
  * @brief System call will delete a timer.
  *
@@ -1624,7 +1557,6 @@ xTimer xTimerCreate(const xTicks timerPeriod_);
  * @param timer_ The timer to be deleted.
  */
 void xTimerDelete(const xTimer timer_);
-
 /**
  * @brief System call to change the period of a timer.
  *
@@ -1638,7 +1570,6 @@ void xTimerDelete(const xTimer timer_);
  * @param timerPeriod_ The timer period in is ticks. Timer period must be zero or greater.
  */
 void xTimerChangePeriod(xTimer timer_, const xTicks timerPeriod_);
-
 /**
  * @brief System call to get the period of a timer.
  *
@@ -1650,7 +1581,6 @@ void xTimerChangePeriod(xTimer timer_, const xTicks timerPeriod_);
  * will return zero.
  */
 xTicks xTimerGetPeriod(const xTimer timer_);
-
 /**
  * @brief System call to check if a timer is active.
  *
@@ -1663,7 +1593,6 @@ xTicks xTimerGetPeriod(const xTimer timer_);
  * @return xBase True if active, false if not active or if the timer could not be found.
  */
 xBase xTimerIsTimerActive(const xTimer timer_);
-
 /**
  * @brief System call to check if a timer has expired.
  *
@@ -1677,7 +1606,6 @@ xBase xTimerIsTimerActive(const xTimer timer_);
  * @return xBase True if the timer has expired, false if the timer has not expired or could not be found.
  */
 xBase xTimerHasTimerExpired(const xTimer timer_);
-
 /**
  * @brief System call to reset a timer.
  *
@@ -1686,7 +1614,6 @@ xBase xTimerHasTimerExpired(const xTimer timer_);
  * @param timer_ The timer to be reset.
  */
 void xTimerReset(xTimer timer_);
-
 /**
  * @brief System call to start a timer.
  *
@@ -1699,7 +1626,6 @@ void xTimerReset(xTimer timer_);
  * @param timer_ The timer to be started.
  */
 void xTimerStart(xTimer timer_);
-
 /**
  * @brief System call to stop a timer.
  *
@@ -1714,24 +1640,23 @@ void xTimerStart(xTimer timer_);
 void xTimerStop(xTimer timer_);
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
-
 /* DO NOT USE - USE THE SYSASSERT() C MACRO INSTEAD! */
-void __SystemAssert__(const char *file_, int line_);
+  void __SystemAssert__(const char *file_, int line_);
 
 /* DO NOT USE - THESE ARE FOR UNIT TESTING! */
-#if defined(POSIX_ARCH_OTHER)
-void __MemoryClear__(void);
-void __SysStateClear__(void);
-void __TimerStateClear__(void);
-void __TaskStateClear__(void);
-void __MemoryRegionDumpKernel__(void);
-void __MemoryRegionDumpHeap__(void);
-void __DeviceStateClear__(void);
-#endif
+  #if defined(POSIX_ARCH_OTHER)
+    void __MemoryClear__(void);
+    void __SysStateClear__(void);
+    void __TimerStateClear__(void);
+    void __TaskStateClear__(void);
+    void __MemoryRegionDumpKernel__(void);
+    void __MemoryRegionDumpHeap__(void);
+    void __DeviceStateClear__(void);
+  #endif
 
 #endif
 
 #ifdef __cplusplus
-}
+  }
 #endif
 #endif

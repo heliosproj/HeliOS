@@ -42,12 +42,11 @@
 #include "loopback.h"
 
 #ifdef __cplusplus
-extern "C" {
+  extern "C" {
 #endif
-
 void device_harness(void);
 
 #ifdef __cplusplus
-}
+  }
 #endif
 #endif

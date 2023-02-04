@@ -27,79 +27,97 @@
 #include "port.h"
 
 
-
 #if defined(CMSIS_ARCH_CORTEXM)
-static volatile Ticks_t sysTicks = zero;
+  static volatile Ticks_t sysTicks = zero;
 
-void SysTick_Handler(void) {
 
-  DISABLE_INTERRUPTS();
+  void SysTick_Handler(void) {
 
-  sysTicks++;
+    DISABLE_INTERRUPTS();
 
-  ENABLE_INTERRUPTS();
+    sysTicks++;
 
-  return;
-}
+    ENABLE_INTERRUPTS();
+
+    return;
+  }
 #endif
 
 
 Ticks_t __SysGetSysTicks__(void) {
 
 #if defined(ARDUINO_ARCH_AVR)
-  return timer0_overflow_count;
-#elif defined(ARDUINO_ARCH_SAM)
-  return GetTickCount();
-#elif defined(ARDUINO_ARCH_SAMD)
-  return millis();
-#elif defined(ARDUINO_ARCH_ESP8266)
-  yield();
 
-  return (Ticks_t)(system_get_time() / 1000ULL);
+    return(timer0_overflow_count);
+
+#elif defined(ARDUINO_ARCH_SAM)
+
+    return(GetTickCount());
+
+#elif defined(ARDUINO_ARCH_SAMD)
+
+    return(millis());
+
+#elif defined(ARDUINO_ARCH_ESP8266)
+    yield();
+
+    return((Ticks_t) (system_get_time() / 1000ULL));
+
 #elif defined(ARDUINO_TEENSY_MICROMOD) || defined(ARDUINO_TEENSY40) || defined(ARDUINO_TEENSY41) || defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY35) || defined(ARDUINO_TEENSY31) || defined(ARDUINO_TEENSY32) || defined(ARDUINO_TEENSY30) || defined(ARDUINO_TEENSYLC)
-  return systick_millis_count;
+
+    return(systick_millis_count);
+
 #elif defined(ESP32)
 
 /* Not supported. */
 #elif defined(CMSIS_ARCH_CORTEXM)
-  return sysTicks;
+
+    return(sysTicks);
 
 #elif defined(POSIX_ARCH_OTHER)
 
 
-  struct timeval t;
+    struct timeval t;
 
-  gettimeofday(&t, NULL);
+    gettimeofday(&t, NULL);
 
 
-  return (t.tv_sec) * 1000 + (t.tv_usec) / 1000;
+    return((t.tv_sec) * 1000 + (t.tv_usec) / 1000);
 
 #endif
 }
-
 void __SysInit__(void) {
 #if defined(ARDUINO_ARCH_AVR)
-  return;
+
+    return;
+
 #elif defined(ARDUINO_ARCH_SAM)
-  return;
+
+    return;
+
 #elif defined(ARDUINO_ARCH_SAMD)
-  return;
+
+    return;
+
 #elif defined(ARDUINO_ARCH_ESP8266)
-  return;
+
+    return;
+
 #elif defined(ARDUINO_TEENSY_MICROMOD) || defined(ARDUINO_TEENSY40) || defined(ARDUINO_TEENSY41) || defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY35) || defined(ARDUINO_TEENSY31) || defined(ARDUINO_TEENSY32) || defined(ARDUINO_TEENSY30) || defined(ARDUINO_TEENSYLC)
-  return;
+
+    return;
+
 #elif defined(ESP32)
 
 /* Not supported. */
 #elif defined(CMSIS_ARCH_CORTEXM)
-  SysTick_Config(SYSTEM_CORE_CLOCK_FREQUENCY / SYSTEM_CORE_CLOCK_PRESCALER);
+    SysTick_Config(SYSTEM_CORE_CLOCK_FREQUENCY / SYSTEM_CORE_CLOCK_PRESCALER);
 
-  return;
+    return;
+
 #elif defined(POSIX_ARCH_OTHER)
-  return;
+
+    return;
+
 #endif
 }
-
-
-
-

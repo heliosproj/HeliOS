@@ -30,10 +30,8 @@
    Thank you for the best OS on Earth, Dennis. */
 
 
-
 /* Declare and set the system flags to their default values. */
 SysFlags_t sysFlags;
-
 
 
 /* The __SystemAssert__() system call will be called when
@@ -50,15 +48,12 @@ void __SystemAssert__(const char *file_, const int line_) {
      setting in the config.h header file. */
 
 #if defined(CONFIG_SYSTEM_ASSERT_BEHAVIOR)
-  CONFIG_SYSTEM_ASSERT_BEHAVIOR(file_, line_);
+    CONFIG_SYSTEM_ASSERT_BEHAVIOR(file_, line_);
 #endif
-
 
 
   return;
 }
-
-
 /* The xSystemInit() system call initializes the system. */
 void xSystemInit(void) {
 
@@ -72,9 +67,6 @@ void xSystemInit(void) {
 
   return;
 }
-
-
-
 /* The xSystemHalt() system call halts the system. */
 void xSystemHalt(void) {
 
@@ -82,17 +74,11 @@ void xSystemHalt(void) {
   /* Don't want to service interrupts anymore so disable them. */
   DISABLE_INTERRUPTS();
 
-
-
   /* Put the processor into an infinite loop. */
-  for (;;) {
+  for(;;) {
     /* Do nothing - literally. */
   }
 }
-
-
-
-
 /* The xSystemGetSystemInfo() system call will return the type xSystemInfo containing
    information about the system including the OS (product) name, its version and how many tasks
    are currently in the running, suspended or waiting states. */
@@ -100,20 +86,15 @@ SystemInfo_t *xSystemGetSystemInfo(void) {
 
   SystemInfo_t *ret = NULL;
 
-
-
-  if (ISSUCCESSFUL(__HeapAllocateMemory__((volatile Addr_t **)&ret, sizeof(SystemInfo_t)))) {
-
+  if(ISSUCCESSFUL(__HeapAllocateMemory__((volatile Addr_t **) &ret, sizeof(SystemInfo_t)))) {
 
 
     /* Assert if xMemAlloc() failed to allocate the heap memory. */
     SYSASSERT(ISNOTNULLPTR(ret));
 
-
-
     /* Check if system info is not null to make sure xMemAlloc() successfully allocated
        the memory. */
-    if (ISNOTNULLPTR(ret)) {
+    if(ISNOTNULLPTR(ret)) {
 
 
       __memcpy__(ret->productName, OS_PRODUCT_NAME, OS_PRODUCT_NAME_SIZE);
@@ -128,16 +109,15 @@ SystemInfo_t *xSystemGetSystemInfo(void) {
     }
   }
 
-  return ret;
+  return(ret);
 }
-
-
-
 #if defined(POSIX_ARCH_OTHER)
-void __SysStateClear__(void) {
 
-  __memset__(&sysFlags, 0x0, sizeof(SysFlags_t));
 
-  return;
-}
+  void __SysStateClear__(void) {
+
+    __memset__(&sysFlags, 0x0, sizeof(SysFlags_t));
+
+    return;
+  }
 #endif

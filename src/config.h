@@ -27,10 +27,8 @@
 #define CONFIG_H_
 
 
-
 /* The following configurable settings may be changed by the end-user
    to customize the HeliOS kernel for their specific application. */
-
 
 
 /**
@@ -58,7 +56,6 @@
  */
 
 
-
 /**
  * @brief Define to enable system assertions.
  *
@@ -76,7 +73,6 @@
  #define CONFIG_ENABLE_SYSTEM_ASSERT
  #endif
  */
-
 
 
 /**
@@ -106,7 +102,6 @@
  */
 
 
-
 /**
  * @brief Define the size in bytes of the message queue message value.
  *
@@ -120,9 +115,8 @@
  *
  */
 #if !defined(CONFIG_MESSAGE_VALUE_BYTES)
-#define CONFIG_MESSAGE_VALUE_BYTES 0x8u /* 8 */
+  #define CONFIG_MESSAGE_VALUE_BYTES 0x8u /* 8 */
 #endif
-
 
 
 /**
@@ -137,9 +131,8 @@
  * @sa xTaskNotification
  */
 #if !defined(CONFIG_NOTIFICATION_VALUE_BYTES)
-#define CONFIG_NOTIFICATION_VALUE_BYTES 0x8u /* 8 */
+  #define CONFIG_NOTIFICATION_VALUE_BYTES 0x8u /* 8 */
 #endif
-
 
 
 /**
@@ -155,9 +148,8 @@
  *
  */
 #if !defined(CONFIG_TASK_NAME_BYTES)
-#define CONFIG_TASK_NAME_BYTES 0x8u /* 8 */
+  #define CONFIG_TASK_NAME_BYTES 0x8u /* 8 */
 #endif
-
 
 
 /**
@@ -176,9 +168,8 @@
  *
  */
 #if !defined(CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS)
-#define CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS 0x18u /* 24 */
+  #define CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS 0x18u /* 24 */
 #endif
-
 
 
 /**
@@ -198,9 +189,8 @@
  *
  */
 #if !defined(CONFIG_MEMORY_REGION_BLOCK_SIZE)
-#define CONFIG_MEMORY_REGION_BLOCK_SIZE 0x20u /* 32 */
+  #define CONFIG_MEMORY_REGION_BLOCK_SIZE 0x20u /* 32 */
 #endif
-
 
 
 /**
@@ -220,9 +210,8 @@
  *
  */
 #if !defined(CONFIG_QUEUE_MINIMUM_LIMIT)
-#define CONFIG_QUEUE_MINIMUM_LIMIT 0x5u /* 5 */
+  #define CONFIG_QUEUE_MINIMUM_LIMIT 0x5u /* 5 */
 #endif
-
 
 
 /**
@@ -237,9 +226,8 @@
  *
  */
 #if !defined(CONFIG_STREAM_BUFFER_BYTES)
-#define CONFIG_STREAM_BUFFER_BYTES 0x20u /* 32 */
+  #define CONFIG_STREAM_BUFFER_BYTES 0x20u /* 32 */
 #endif
-
 
 
 /**
@@ -250,9 +238,8 @@
  *
  */
 #if !defined(CONFIG_TASK_WD_TIMER_ENABLE)
-#define CONFIG_TASK_WD_TIMER_ENABLE
+  #define CONFIG_TASK_WD_TIMER_ENABLE
 #endif
-
 
 
 /**
@@ -267,6 +254,6 @@
  *
  */
 #if !defined(CONFIG_DEVICE_NAME_BYTES)
-#define CONFIG_DEVICE_NAME_BYTES 0x8u /* 8 */
+  #define CONFIG_DEVICE_NAME_BYTES 0x8u /* 8 */
 #endif
 #endif

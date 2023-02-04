@@ -48,27 +48,25 @@ void queue_harness(void) {
   unit_end();
 
 
-
   unit_begin("xQueueSend()");
 
-  unit_try(RETURN_SUCCESS == xQueueSend(queue01, 0x8, (Char_t *)"MESSAGE1"));
+  unit_try(RETURN_SUCCESS == xQueueSend(queue01, 0x8, (Char_t *) "MESSAGE1"));
 
-  unit_try(RETURN_SUCCESS == xQueueSend(queue01, 0x8, (Char_t *)"MESSAGE2"));
+  unit_try(RETURN_SUCCESS == xQueueSend(queue01, 0x8, (Char_t *) "MESSAGE2"));
 
-  unit_try(RETURN_SUCCESS == xQueueSend(queue01, 0x8, (Char_t *)"MESSAGE3"));
+  unit_try(RETURN_SUCCESS == xQueueSend(queue01, 0x8, (Char_t *) "MESSAGE3"));
 
-  unit_try(RETURN_SUCCESS == xQueueSend(queue01, 0x8, (Char_t *)"MESSAGE4"));
+  unit_try(RETURN_SUCCESS == xQueueSend(queue01, 0x8, (Char_t *) "MESSAGE4"));
 
-  unit_try(RETURN_SUCCESS == xQueueSend(queue01, 0x8, (Char_t *)"MESSAGE5"));
+  unit_try(RETURN_SUCCESS == xQueueSend(queue01, 0x8, (Char_t *) "MESSAGE5"));
 
-  unit_try(RETURN_SUCCESS == xQueueSend(queue01, 0x8, (Char_t *)"MESSAGE6"));
+  unit_try(RETURN_SUCCESS == xQueueSend(queue01, 0x8, (Char_t *) "MESSAGE6"));
 
-  unit_try(RETURN_SUCCESS == xQueueSend(queue01, 0x8, (Char_t *)"MESSAGE7"));
+  unit_try(RETURN_SUCCESS == xQueueSend(queue01, 0x8, (Char_t *) "MESSAGE7"));
 
-  unit_try(RETURN_FAILURE == xQueueSend(queue01, 0x8, (Char_t *)"MESSAGE8"));
+  unit_try(RETURN_FAILURE == xQueueSend(queue01, 0x8, (Char_t *) "MESSAGE8"));
 
   unit_end();
-
 
 
   unit_begin("xQueueGetLength()");
@@ -78,13 +76,11 @@ void queue_harness(void) {
   unit_end();
 
 
-
   unit_begin("xQueueIsQueueEmpty()");
 
   unit_try(false == xQueueIsQueueEmpty(queue01));
 
   unit_end();
-
 
 
   unit_begin("xQueueIsQueueFull()");
@@ -94,13 +90,11 @@ void queue_harness(void) {
   unit_end();
 
 
-
   unit_begin("xQueueMessagesWaiting()");
 
   unit_try(true == xQueueMessagesWaiting(queue01));
 
   unit_end();
-
 
 
   unit_begin("xQueuePeek()");
@@ -113,12 +107,11 @@ void queue_harness(void) {
 
   unit_try(0x8u == queue02->messageBytes);
 
-  unit_try(0x0u == strncmp("MESSAGE1", (char *)queue02->messageValue, 0x8));
+  unit_try(0x0u == strncmp("MESSAGE1", (char *) queue02->messageValue, 0x8));
 
   unit_try(ISSUCCESSFUL(xMemFree(queue02)));
 
   unit_end();
-
 
 
   unit_begin("xQueueReceive()");
@@ -129,12 +122,11 @@ void queue_harness(void) {
 
   unit_try(0x8u == queue02->messageBytes);
 
-  unit_try(0x0u == strncmp("MESSAGE1", (char *)queue02->messageValue, 0x8));
+  unit_try(0x0u == strncmp("MESSAGE1", (char *) queue02->messageValue, 0x8));
 
   unit_try(ISSUCCESSFUL(xMemFree(queue02)));
 
   unit_end();
-
 
 
   unit_begin("xQueueDropMessage()");
@@ -148,40 +140,37 @@ void queue_harness(void) {
   unit_end();
 
 
-
   unit_begin("xQueueLockQueue()");
 
   queue01 = xQueueCreate(5);
 
   unit_try(NULL != queue01);
 
-  unit_try(RETURN_SUCCESS == xQueueSend(queue01, 0x8, (Char_t *)"MESSAGE1"));
+  unit_try(RETURN_SUCCESS == xQueueSend(queue01, 0x8, (Char_t *) "MESSAGE1"));
 
   xQueueLockQueue(queue01);
 
-  unit_try(RETURN_FAILURE == xQueueSend(queue01, 0x8, (Char_t *)"MESSAGE2"));
+  unit_try(RETURN_FAILURE == xQueueSend(queue01, 0x8, (Char_t *) "MESSAGE2"));
 
   unit_end();
-
 
 
   unit_begin("xQueueUnlockQueue()");
 
   xQueueUnLockQueue(queue01);
 
-  unit_try(RETURN_SUCCESS == xQueueSend(queue01, 0x8, (Char_t *)"MESSAGE3"));
+  unit_try(RETURN_SUCCESS == xQueueSend(queue01, 0x8, (Char_t *) "MESSAGE3"));
 
   unit_try(0x2u == xQueueGetLength(queue01));
 
   unit_end();
 
 
-
   unit_begin("xQueueDelete()");
 
   xQueueDelete(queue01);
 
-  unit_try(RETURN_FAILURE == xQueueSend(queue01, 0x8, (Char_t *)"MESSAGE4"));
+  unit_try(RETURN_FAILURE == xQueueSend(queue01, 0x8, (Char_t *) "MESSAGE4"));
 
   unit_end();
 

@@ -64,7 +64,7 @@ sp_bool:force								# modified
 sp_compare:force							# modified
 sp_inside_paren:remove						# modified
 sp_paren_paren:remove						# modified
-sp_cparen_oparen:force						# modified
+sp_cparen_oparen:remove						# modified
 sp_balance_nested_parens:false
 sp_paren_brace:force						# modified
 sp_brace_brace:remove						# modified
@@ -101,7 +101,7 @@ sp_angle_paren_empty:ignore
 sp_angle_word:ignore
 sp_angle_shift:add
 sp_permit_cpp11_shift:false
-sp_before_sparen:force						# modified
+sp_before_sparen:remove						# modified
 sp_inside_sparen:remove						# modified
 sp_inside_sparen_open:ignore
 sp_inside_sparen_close:ignore
@@ -174,9 +174,9 @@ sp_inside_type_brace_init_lst:ignore
 sp_inside_braces:remove						# modified
 sp_inside_braces_empty:remove				# modified
 sp_trailing_return:ignore
-sp_type_func:force							# modified
+sp_type_func:remove							# modified
 sp_type_brace_init_lst:ignore
-sp_func_proto_paren:force					# modified
+sp_func_proto_paren:remove					# modified
 sp_func_proto_paren_empty:remove			# modified
 sp_func_type_paren:ignore
 sp_func_def_paren:ignore
@@ -189,7 +189,7 @@ sp_square_fparen:force						# modified
 sp_fparen_brace:force						# modified
 sp_fparen_brace_initializer:ignore
 sp_fparen_dbrace:ignore
-sp_func_call_paren:force					# modified
+sp_func_call_paren:remove					# modified
 sp_func_call_paren_empty:remove				# modified
 sp_func_call_user_paren:ignore
 sp_func_call_user_inside_fparen:ignore
@@ -573,10 +573,10 @@ nl_after_synchronized:ignore
 nl_before_do:force							# modified
 nl_after_do:force							# modified
 nl_before_ignore_after_case:false
-nl_before_return:force						# modified
-nl_after_return:force						# modified
-nl_before_member:force						# modified
-nl_after_member:force						# modified
+nl_before_return:true						# modified
+nl_after_return:true						# modified
+nl_before_member:true						# modified
+nl_after_member:true						# modified
 nl_ds_struct_enum_cmt:false
 nl_ds_struct_enum_close_brace:false
 nl_class_colon:ignore
@@ -594,16 +594,16 @@ donot_add_nl_before_cpp_comment:false
 nl_max:3									# modified
 nl_max_blank_in_func:3						# modified
 nl_inside_empty_func:3						# modified
-nl_before_func_body_proto:0
+nl_before_func_body_proto:1					# modified
 nl_before_func_body_def:3					# modified
 nl_before_func_class_proto:0
 nl_before_func_class_def:0
-nl_after_func_proto:0
+nl_after_func_proto:1						# modified
 nl_after_func_proto_group:0
 nl_after_func_class_proto:0
 nl_after_func_class_proto_group:0
 nl_class_leave_one_liner_groups:false
-nl_after_func_body:0
+nl_after_func_body:1						# modified
 nl_after_func_body_class:0
 nl_after_func_body_one_liner:0
 nl_typedef_blk_start:0
@@ -818,13 +818,13 @@ pp_indent_with_tabs:0						# modified
 pp_indent:force								# modified
 pp_indent_at_level:false
 pp_indent_at_level0:false
-pp_indent_count:1
+pp_indent_count:2							# modified
 pp_space_after:ignore
 pp_space_count:0
 pp_indent_region:0
 pp_region_indent_code:false
 pp_indent_if:0
-pp_if_indent_code:false
+pp_if_indent_code:true						# modified
 pp_indent_in_guard:false
 pp_define_at_level:false
 pp_include_at_level:false
@@ -860,10 +860,11 @@ rm $OUTFILE
 cp $DEFFILE $OUTFILE
 sed -i 's/#.*//' $OUTFILE
 sed -i '/^$/d' $OUTFILE
+sed -i 's/ //g' $OUTFILE
 IFS=$'\n' command eval "LINES=($CONFIG)"
 for LINE in "${LINES[@]}"
 do
 	KEY=$(echo $LINE | cut -f1 -d:)
 	VALUE=$(echo $LINE | cut -f2 -d:)
-	sed -i -e "/$KEY/s/=.*/= $VALUE/" $OUTFILE
+	sed -i "/^$KEY=/s/=.*/ = $VALUE/" $OUTFILE
 done

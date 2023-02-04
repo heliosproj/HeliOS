@@ -43,17 +43,16 @@
 typedef struct MemoryTest_s {
   Size_t size;
   Size_t blocks;
-  void* ptr;
+  void *ptr;
 } MemoryTest_t;
 
 #ifdef __cplusplus
-extern "C" {
+  extern "C" {
 #endif
-
 void memory_harness(void);
 void memory_harness_task(Task_t *task_, TaskParm_t *parm_);
 
 #ifdef __cplusplus
-}
+  }
 #endif
 #endif

@@ -38,9 +38,8 @@
 #include "timer.h"
 
 #ifdef __cplusplus
-extern "C" {
+  extern "C" {
 #endif
-
 Queue_t *xQueueCreate(const Base_t limit_);
 void xQueueDelete(Queue_t *queue_);
 Base_t xQueueGetLength(const Queue_t *queue_);
@@ -55,6 +54,6 @@ void xQueueLockQueue(Queue_t *queue_);
 void xQueueUnLockQueue(Queue_t *queue_);
 
 #ifdef __cplusplus
-}
+  }
 #endif
 #endif

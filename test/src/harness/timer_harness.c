@@ -30,7 +30,7 @@
 
 void timer_harness(void) {
 
-  Timer_t* timer01 = NULL;
+  Timer_t *timer01 = NULL;
 
   unit_begin("xTimerCreate()");
 
@@ -43,13 +43,11 @@ void timer_harness(void) {
   unit_end();
 
 
-
   unit_begin("xTimerGetPeriod()");
 
   unit_try(0x3E8 == xTimerGetPeriod(timer01));
 
   unit_end();
-
 
 
   unit_begin("xTimerChangePeriod()");
@@ -61,13 +59,11 @@ void timer_harness(void) {
   unit_end();
 
 
-
   unit_begin("xTimerIsTimerActive()");
 
   unit_try(false == xTimerIsTimerActive(timer01));
 
   unit_end();
-
 
 
   unit_begin("xTimerHasTimerExpired()");
@@ -83,7 +79,6 @@ void timer_harness(void) {
   unit_end();
 
 
-
   unit_begin("xTimerStop()");
 
   xTimerStop(timer01);
@@ -91,7 +86,6 @@ void timer_harness(void) {
   unit_try(false == xTimerIsTimerActive(timer01));
 
   unit_end();
-
 
 
   unit_begin("xTimerStart()");
@@ -103,7 +97,6 @@ void timer_harness(void) {
   unit_end();
 
 
-
   unit_begin("xTimerReset()");
 
   unit_try(true == xTimerHasTimerExpired(timer01));
@@ -113,7 +106,6 @@ void timer_harness(void) {
   unit_try(false == xTimerHasTimerExpired(timer01));
 
   unit_end();
-
 
 
   unit_begin("xTimerDelete()");

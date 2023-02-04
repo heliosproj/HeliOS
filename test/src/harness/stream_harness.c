@@ -26,6 +26,7 @@
 
 #include "stream_harness.h"
 
+
 void stream_harness(void) {
 
   StreamBuffer_t *stream01 = NULL;
@@ -37,7 +38,6 @@ void stream_harness(void) {
   Byte_t *stream03 = NULL;
 
 
-
   unit_begin("xStreamCreate()");
 
   stream01 = xStreamCreate();
@@ -47,10 +47,9 @@ void stream_harness(void) {
   unit_end();
 
 
-
   unit_begin("xStreamSend()");
 
-  for (i = 0; i < CONFIG_STREAM_BUFFER_BYTES; i++) {
+  for(i = 0; i < CONFIG_STREAM_BUFFER_BYTES; i++) {
 
     unit_try(RETURN_SUCCESS == xStreamSend(stream01, i));
   }
@@ -60,14 +59,11 @@ void stream_harness(void) {
   unit_end();
 
 
-
   unit_begin("xStreamIsFull()");
 
   unit_try(true == xStreamIsFull(stream01));
 
   unit_end();
-
-
 
 
   unit_begin("xStreamIsEmpty()");
@@ -77,13 +73,11 @@ void stream_harness(void) {
   unit_end();
 
 
-
   unit_begin("xStreamBytesAvailable()");
 
   unit_try(0x20u == xStreamBytesAvailable(stream01));
 
   unit_end();
-
 
 
   unit_begin("xStreamReceive()");
@@ -99,10 +93,9 @@ void stream_harness(void) {
   unit_end();
 
 
-
   unit_begin("xStreamReset()");
 
-  for (i = 0; i < CONFIG_STREAM_BUFFER_BYTES; i++) {
+  for(i = 0; i < CONFIG_STREAM_BUFFER_BYTES; i++) {
 
     unit_try(RETURN_SUCCESS == xStreamSend(stream01, i));
   }
@@ -118,7 +111,6 @@ void stream_harness(void) {
   unit_end();
 
 
-
   unit_begin("xStreamDelete()");
 
   xStreamReset(stream01);
@@ -128,7 +120,6 @@ void stream_harness(void) {
   unit_try(RETURN_FAILURE == xStreamSend(stream01, zero));
 
   unit_end();
-
 
 
   return;

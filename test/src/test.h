@@ -35,13 +35,12 @@
 #include "device_harness.h"
 
 #ifdef __cplusplus
-extern "C" {
+  extern "C" {
 #endif
-
 int main(int argc, char **argv);
 void reset(void);
 
 #ifdef __cplusplus
-}
+  }
 #endif
 #endif

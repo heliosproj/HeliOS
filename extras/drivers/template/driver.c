@@ -27,72 +27,65 @@
 #include "driver.h"
 
 
-
 Base_t TO_FUNCTION(DEVICE_NAME, _self_register)(void) {
 
   /* DO NOT MODIFY THIS FUNCTION */
 
-  return __RegisterDevice__(DEVICE_UID, (Char_t *)TO_LITERAL(DEVICE_NAME), DEVICE_STATE, DEVICE_MODE, TO_FUNCTION(DEVICE_NAME, _init),
+  return(__RegisterDevice__(DEVICE_UID, (Char_t *) TO_LITERAL(DEVICE_NAME), DEVICE_STATE, DEVICE_MODE, TO_FUNCTION(DEVICE_NAME, _init),
                             TO_FUNCTION(DEVICE_NAME, _config), TO_FUNCTION(DEVICE_NAME, _read), TO_FUNCTION(DEVICE_NAME, _write),
-                            TO_FUNCTION(DEVICE_NAME, _simple_read), TO_FUNCTION(DEVICE_NAME, _simple_write));
+                            TO_FUNCTION(DEVICE_NAME, _simple_read), TO_FUNCTION(DEVICE_NAME, _simple_write)));
 }
 
 
-
-Base_t TO_FUNCTION(DEVICE_NAME, _init)(Device_t *device_) {
+Base_t TO_FUNCTION(DEVICE_NAME, _init)(Device_t * device_) {
   Base_t ret = RETURN_FAILURE;
 
   /* INSERT CODE TO INITIALIZE DEVICE HERE */
 
-  return ret;
+  return(ret);
 }
 
 
-
-Base_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Addr_t *config_) {
+Base_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t * device_, Size_t *size_, Addr_t *config_) {
   Base_t ret = RETURN_FAILURE;
 
   /* INSERT CODE TO CONFIGURE DEVICE HERE */
 
-  return ret;
+  return(ret);
 }
 
 
-
-Base_t TO_FUNCTION(DEVICE_NAME, _read)(Device_t *device_, Size_t *size_, Addr_t *data_) {
+Base_t TO_FUNCTION(DEVICE_NAME, _read)(Device_t * device_, Size_t *size_, Addr_t *data_) {
   Base_t ret = RETURN_FAILURE;
 
   /* INSERT CODE TO READ FROM DEVICE HERE */
 
-  return ret;
+  return(ret);
 }
 
 
-
-Base_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t *device_, Size_t *size_, Addr_t *data_) {
+Base_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t * device_, Size_t *size_, Addr_t *data_) {
   Base_t ret = RETURN_FAILURE;
 
   /* INSERT CODE TO WRITE TO DEVICE HERE */
 
-  return ret;
+  return(ret);
 }
 
 
-
-Base_t TO_FUNCTION(DEVICE_NAME, _simple_read)(Device_t *device_, Word_t *data_) {
+Base_t TO_FUNCTION(DEVICE_NAME, _simple_read)(Device_t * device_, Word_t *data_) {
   Base_t ret = RETURN_FAILURE;
 
   /* INSERT CODE TO READ FROM DEVICE HERE */
 
-  return ret;
+  return(ret);
 }
 
 
-
-Base_t TO_FUNCTION(DEVICE_NAME, _simple_write)(Device_t *device_, Word_t *data_) {
+Base_t TO_FUNCTION(DEVICE_NAME, _simple_write)(Device_t * device_, Word_t *data_) {
   Base_t ret = RETURN_FAILURE;
 
   /* INSERT CODE TO WRITE TO DEVICE HERE */
 
-  return ret;
+  return(ret);
 }

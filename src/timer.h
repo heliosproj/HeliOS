@@ -38,9 +38,8 @@
 #include "task.h"
 
 #ifdef __cplusplus
-extern "C" {
+  extern "C" {
 #endif
-
 Timer_t *xTimerCreate(const Ticks_t timerPeriod_);
 void xTimerDelete(const Timer_t *timer_);
 void xTimerChangePeriod(Timer_t *timer_, const Ticks_t timerPeriod_);
@@ -53,10 +52,10 @@ void xTimerStop(Timer_t *timer_);
 
 
 #if defined(POSIX_ARCH_OTHER)
-void __TimerStateClear__(void);
+  void __TimerStateClear__(void);
 #endif
 
 #ifdef __cplusplus
-}
+  }
 #endif
 #endif

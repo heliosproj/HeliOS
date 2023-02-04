@@ -38,9 +38,8 @@
 #include "timer.h"
 
 #ifdef __cplusplus
-extern "C" {
+  extern "C" {
 #endif
-
 StreamBuffer_t *xStreamCreate(void);
 void xStreamDelete(const StreamBuffer_t *stream_);
 Base_t xStreamSend(StreamBuffer_t *stream_, const Byte_t byte_);
@@ -51,6 +50,6 @@ Base_t xStreamIsEmpty(const StreamBuffer_t *stream_);
 Base_t xStreamIsFull(const StreamBuffer_t *stream_);
 
 #ifdef __cplusplus
-}
+  }
 #endif
 #endif

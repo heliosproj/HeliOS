@@ -25,10 +25,10 @@
  */
 #include "test.h"
 
+
 int main(int argc, char **argv) {
 
   unit_init();
-
 
 
   reset();
@@ -36,17 +36,14 @@ int main(int argc, char **argv) {
   memory_harness();
 
 
-
   reset();
 
   queue_harness();
 
 
-
   reset();
 
   timer_harness();
-
 
 
   reset();
@@ -66,9 +63,8 @@ int main(int argc, char **argv) {
 
   unit_exit();
 
-  return 0;
+  return(0);
 }
-
 void reset(void) {
 
   __MemoryClear__();

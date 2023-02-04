@@ -36,23 +36,23 @@
 #include <unistd.h>
 
 #if !defined(UNIT_NAME_LENGTH)
-#define UNIT_NAME_LENGTH 0x40 /* 64 */
+  #define UNIT_NAME_LENGTH 0x40 /* 64 */
 #endif
 
 #if !defined(true)
-#define true 0x1 /* 1 */
+  #define true 0x1 /* 1 */
 #endif
 
 #if !defined(false)
-#define false 0x0 /* 0 */
+  #define false 0x0 /* 0 */
 #endif
 
 #if !defined(NULL)
-#if !defined(__cplusplus)
-#define NULL ((void *)0x0) /* 0 */
-#else
-#define NULL 0x0 /* 0 */
-#endif
+  #if !defined(__cplusplus)
+    #define NULL ((void *) 0x0) /* 0 */
+  #else
+    #define NULL 0x0 /* 0 */
+  #endif
 #endif
 
 typedef struct unit_s {
@@ -64,9 +64,8 @@ typedef struct unit_s {
 } unit_t;
 
 #ifdef __cplusplus
-extern "C" {
+  extern "C" {
 #endif
-
 void unit_init(void);
 void unit_begin(const char *name_);
 void unit_try(int expr_);
@@ -74,7 +73,7 @@ void unit_end(void);
 void unit_exit(void);
 
 #ifdef __cplusplus
-}
+  }
 #endif
 
 

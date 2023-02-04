@@ -40,23 +40,22 @@
 extern SysFlags_t sysFlags;
 
 #ifdef __cplusplus
-extern "C" {
+  extern "C" {
 #endif
-
 void __SystemAssert__(const char *file_, const int line_);
 void xSystemInit(void);
 void xSystemHalt(void);
 SystemInfo_t *xSystemGetSystemInfo(void);
 
 #if defined(CONFIG_ENABLE_ARDUINO_CPP_INTERFACE)
-void __ArduinoAssert__(const char *file_, int line_);
+  void __ArduinoAssert__(const char *file_, int line_);
 #endif
 
 #if defined(POSIX_ARCH_OTHER)
-void __SysStateClear__(void);
+  void __SysStateClear__(void);
 #endif
 
 #ifdef __cplusplus
-}
+  }
 #endif
 #endif

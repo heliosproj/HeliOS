@@ -27,28 +27,22 @@
 
 static unit_t *unit = NULL;
 
+
 void unit_init(void) {
 
+  if(NULL == unit) {
 
 
-
-  if (NULL == unit) {
-
-
-    unit = (unit_t *)calloc(1, sizeof(unit_t));
+    unit = (unit_t *) calloc(1, sizeof(unit_t));
 
     printf("unit: intializing...\n");
   }
 
-
-
   return;
 }
-
 void unit_begin(const char *name_) {
 
-
-  if ((NULL != unit) & (NULL != name_) & (false == unit->begun)) {
+  if((NULL != unit) & (NULL != name_) & (false == unit->begun)) {
 
 
     strncpy(unit->name, name_, UNIT_NAME_LENGTH);
@@ -64,30 +58,23 @@ void unit_begin(const char *name_) {
 
   return;
 }
-
 void unit_try(int expr_) {
 
-
-  if ((NULL != unit) & (true == unit->begun) & (false == expr_)) {
+  if((NULL != unit) & (true == unit->begun) & (false == expr_)) {
 
     unit->failed = true;
   }
 
-
   return;
 }
-
 void unit_end(void) {
 
+  if((NULL != unit) & (true == unit->begun)) {
 
-  if ((NULL != unit) & (true == unit->begun)) {
-
-
-    if (true == unit->failed) {
+    if(true == unit->failed) {
 
 
       printf("unit: end: %s failed\n", unit->name);
-
 
 
       unit->fail++;
@@ -100,7 +87,6 @@ void unit_end(void) {
       unit->pass++;
     }
 
-
     memset(unit->name, 0x0, UNIT_NAME_LENGTH);
 
 
@@ -110,16 +96,11 @@ void unit_end(void) {
     unit->failed = false;
   }
 
-
-
   return;
 }
-
-
 void unit_exit(void) {
 
-
-  if (NULL != unit) {
+  if(NULL != unit) {
 
     printf("unit: failed = %" PRId32 "\n", unit->fail);
 
@@ -134,7 +115,7 @@ void unit_exit(void) {
 
     free(unit);
 
-    if (0x0 < unit->fail) {
+    if(0x0 < unit->fail) {
 
 
       exit(0x1);

@@ -41,12 +41,11 @@
 #include "unit.h"
 
 #ifdef __cplusplus
-extern "C" {
+  extern "C" {
 #endif
-
 void timer_harness(void);
 
 #ifdef __cplusplus
-}
+  }
 #endif
 #endif

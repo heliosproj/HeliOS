@@ -44,8 +44,6 @@ typedef enum {
 } TaskState_t;
 
 
-
-
 typedef enum {
   SchedulerStateError,
   SchedulerStateSuspended,
@@ -116,7 +114,6 @@ typedef struct MemoryEntry_s {
 } MemoryEntry_t;
 
 
-
 typedef struct MemoryRegion_s {
   volatile Byte_t mem[MEMORY_REGION_SIZE_IN_BYTES];
   MemoryEntry_t *start;
@@ -127,14 +124,10 @@ typedef struct MemoryRegion_s {
 } MemoryRegion_t;
 
 
-
-
 typedef struct TaskNotification_s {
   Base_t notificationBytes;
   Char_t notificationValue[CONFIG_NOTIFICATION_VALUE_BYTES];
 } TaskNotification_t;
-
-
 
 
 typedef struct Task_s {
@@ -154,14 +147,11 @@ typedef struct Task_s {
 } Task_t;
 
 
-
-
 typedef struct TaskRunTimeStats_s {
   Base_t id;
   Ticks_t lastRunTime;
   Ticks_t totalRunTime;
 } TaskRunTimeStats_t;
-
 
 
 typedef struct MemoryRegionStats_s {
@@ -175,7 +165,6 @@ typedef struct MemoryRegionStats_s {
 } MemoryRegionStats_t;
 
 
-
 typedef struct TaskInfo_s {
   Base_t id;
   Char_t name[CONFIG_TASK_NAME_BYTES];
@@ -185,8 +174,6 @@ typedef struct TaskInfo_s {
 } TaskInfo_t;
 
 
-
-
 typedef struct TaskList_s {
   Base_t nextId;
   Base_t length;
@@ -194,12 +181,10 @@ typedef struct TaskList_s {
 } TaskList_t;
 
 
-
 typedef struct DeviceList_s {
   Base_t length;
   Device_t *head;
 } DeviceList_t;
-
 
 
 typedef struct Timer_s {
@@ -210,14 +195,10 @@ typedef struct Timer_s {
 } Timer_t;
 
 
-
-
 typedef struct TimerList_s {
   Base_t length;
   Timer_t *head;
 } TimerList_t;
-
-
 
 
 typedef struct SysFlags_s {
@@ -228,14 +209,10 @@ typedef struct SysFlags_s {
 } SysFlags_t;
 
 
-
-
 typedef struct QueueMessage_s {
   Base_t messageBytes;
   Char_t messageValue[CONFIG_MESSAGE_VALUE_BYTES];
 } QueueMessage_t;
-
-
 
 
 typedef struct Message_s {
@@ -243,8 +220,6 @@ typedef struct Message_s {
   Char_t messageValue[CONFIG_MESSAGE_VALUE_BYTES];
   struct Message_s *next;
 } Message_t;
-
-
 
 
 typedef struct Queue_s {
@@ -256,8 +231,6 @@ typedef struct Queue_s {
 } Queue_t;
 
 
-
-
 typedef struct SystemInfo_s {
   Char_t productName[OS_PRODUCT_NAME_SIZE];
   Base_t majorVersion;
@@ -265,7 +238,6 @@ typedef struct SystemInfo_s {
   Base_t patchVersion;
   Base_t numberOfTasks;
 } SystemInfo_t;
-
 
 
 typedef struct StreamBuffer_s {
