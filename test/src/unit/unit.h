@@ -26,57 +26,57 @@
  */
 /*UNCRUSTIFY-ON*/
 #ifndef UNIT_H_
-#define UNIT_H_
+  #define UNIT_H_
 
-#include "posix.h"
+  #include "posix.h"
 
-#include <stdint.h>
-#include <inttypes.h>
-#include <string.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <unistd.h>
+  #include <stdint.h>
+  #include <inttypes.h>
+  #include <string.h>
+  #include <stdlib.h>
+  #include <stdio.h>
+  #include <unistd.h>
 
-#if !defined(UNIT_NAME_LENGTH)
-  #define UNIT_NAME_LENGTH 0x40 /* 64 */
-#endif
-
-#if !defined(true)
-  #define true 0x1 /* 1 */
-#endif
-
-#if !defined(false)
-  #define false 0x0 /* 0 */
-#endif
-
-#if !defined(NULL)
-  #if !defined(__cplusplus)
-    #define NULL ((void *) 0x0) /* 0 */
-  #else
-    #define NULL 0x0 /* 0 */
+  #if !defined(UNIT_NAME_LENGTH)
+    #define UNIT_NAME_LENGTH 0x40 /* 64 */
   #endif
-#endif
 
-typedef struct unit_s {
-  char name[UNIT_NAME_LENGTH];
-  int32_t begun;
-  int32_t failed;
-  int32_t pass;
-  int32_t fail;
-} unit_t;
+  #if !defined(true)
+    #define true 0x1 /* 1 */
+  #endif
 
-#ifdef __cplusplus
-  extern "C" {
-#endif
-void unit_init(void);
-void unit_begin(const char *name_);
-void unit_try(int expr_);
-void unit_end(void);
-void unit_exit(void);
+  #if !defined(false)
+    #define false 0x0 /* 0 */
+  #endif
 
-#ifdef __cplusplus
-  }
-#endif
+  #if !defined(NULL)
+    #if !defined(__cplusplus)
+      #define NULL ((void *) 0x0) /* 0 */
+    #else
+      #define NULL 0x0 /* 0 */
+    #endif
+  #endif
+
+  typedef struct unit_s {
+    char name[UNIT_NAME_LENGTH];
+    int32_t begun;
+    int32_t failed;
+    int32_t pass;
+    int32_t fail;
+  } unit_t;
+
+  #ifdef __cplusplus
+    extern "C" {
+  #endif
+  void unit_init(void);
+  void unit_begin(const char *name_);
+  void unit_try(int expr_);
+  void unit_end(void);
+  void unit_exit(void);
+
+  #ifdef __cplusplus
+    }
+  #endif
 
 
 #endif

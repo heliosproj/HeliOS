@@ -182,8 +182,9 @@ static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, co
       if(CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS == blocks) {
         if(((MEMORY_REGION_CHECK_OPTION_WO_ADDR == option_) && (false == SYSFLAG_FAULT())) || ((MEMORY_REGION_CHECK_OPTION_W_ADDR == option_) && (false == SYSFLAG_FAULT()) && (true == found))) {
           RET_SUCCESS;
-        } /* Never use an else statement here to mark SYSFLAG_FAULT() = true. Just because an address wasn't
-             found does not mean the memory region is corrupt. */
+        } /* Never use an else statement here to mark SYSFLAG_FAULT() = true.
+           * Just because an address wasn't found does not mean the memory
+           * region is corrupt. */
 
       } else {
         SYSASSERT(false);

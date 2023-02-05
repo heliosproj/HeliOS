@@ -34,11 +34,11 @@ static Base_t __TimerListFindTimer__(const Timer_t *timer_);
 
 
 /* The xTimerCreate() system call will create a new timer. Timers differ from
-   task timers in that they do not create events that effect the scheduling of a task.
-   Timers can be used by tasks to initiate various task activities based on a specified
-   time period represented in ticks. The memory allocated by xTimerCreate() must
-   be freed by xTimerDelete(). Unlike tasks, timers may be created and deleted within
-   tasks. */
+ * task timers in that they do not create events that effect the scheduling of a
+ * task. Timers can be used by tasks to initiate various task activities based
+ * on a specified time period represented in ticks. The memory allocated by
+ * xTimerCreate() must be freed by xTimerDelete(). Unlike tasks, timers may be
+ * created and deleted within tasks. */
 Timer_t *xTimerCreate(const Ticks_t timerPeriod_) {
   Timer_t *ret = NULL;
   Timer_t *cursor = NULL;
@@ -47,7 +47,8 @@ Timer_t *xTimerCreate(const Ticks_t timerPeriod_) {
   /* Check if xMemAlloc() did its job. */
   if(ISNOTNULLPTR(timerList) || (ISNULLPTR(timerList) && ISSUCCESSFUL(__KernelAllocateMemory__((volatile Addr_t **) &timerList, sizeof(TimerList_t))))) {
     if(ISSUCCESSFUL(__KernelAllocateMemory__((volatile Addr_t **) &ret, sizeof(Task_t)))) {
-      /* Check if xMemAlloc() successfully allocated the memory for the timer. */
+      /* Check if xMemAlloc() successfully allocated the memory for the timer.
+       */
       if(ISNOTNULLPTR(ret)) {
         ret->state = TimerStateSuspended;
         ret->timerPeriod = timerPeriod_;
@@ -56,8 +57,9 @@ Timer_t *xTimerCreate(const Ticks_t timerPeriod_) {
         cursor = timerList->head;
 
 
-        /* Check if the head of the timer list is null. If so, iterate through the
-           timer list to find the end otherwise just append the timer to the timer list. */
+        /* Check if the head of the timer list is null. If so, iterate through
+         * the timer list to find the end otherwise just append the timer to the
+         * timer list. */
         if(ISNOTNULLPTR(timerList->head)) {
           /* While the next timer is not null. */
           while(ISNOTNULLPTR(cursor->next)) {
@@ -78,15 +80,14 @@ Timer_t *xTimerCreate(const Ticks_t timerPeriod_) {
 }
 
 
-/* The xTimerDelete() system call will delete a timer. For more information on timers see the
-   xTaskTimerCreate() system call. */
+/* The xTimerDelete() system call will delete a timer. For more information on
+ * timers see the xTaskTimerCreate() system call. */
 void xTimerDelete(const Timer_t *timer_) {
   Timer_t *cursor = NULL;
   Timer_t *timerPrevious = NULL;
 
 
-  /* Assert if the timer cannot be found in the timer
-     list. */
+  /* Assert if the timer cannot be found in the timer list. */
   SYSASSERT(RETURN_SUCCESS == __TimerListFindTimer__(timer_));
 
 
@@ -96,28 +97,27 @@ void xTimerDelete(const Timer_t *timer_) {
     timerPrevious = NULL;
 
 
-    /* Check if the timer cursor is not null a if the timer cursor equals
-       the timer parameter. */
+    /* Check if the timer cursor is not null a if the timer cursor equals the
+     * timer parameter. */
     if((ISNOTNULLPTR(cursor)) && (cursor == timer_)) {
       timerList->head = cursor->next;
       __KernelFreeMemory__(cursor);
       timerList->length--;
     } else {
-      /* While the timer cursor is not null and the timer cursor is not
-         equal to the timer parameter, continue to scan the timer list. */
+      /* While the timer cursor is not null and the timer cursor is not equal to
+       * the timer parameter, continue to scan the timer list. */
       while((ISNOTNULLPTR(cursor)) && (cursor != timer_)) {
         timerPrevious = cursor;
         cursor = cursor->next;
       }
 
 
-      /* Assert if the timer is not found though this
-         shouldn't ever happen. */
+      /* Assert if the timer is not found though this shouldn't ever happen. */
       SYSASSERT(ISNOTNULLPTR(cursor));
 
 
-      /* Check if the timer was found, if so drop it from
-         the timer list and free its memory. */
+      /* Check if the timer was found, if so drop it from the timer list and
+       * free its memory. */
       if(ISNOTNULLPTR(cursor)) {
         timerPrevious->next = cursor->next;
         __KernelFreeMemory__(cursor);
@@ -130,9 +130,9 @@ void xTimerDelete(const Timer_t *timer_) {
 }
 
 
-/* The xTimerChangePeriod() system call will change the period of the specified timer.
-   The timer period is measured in ticks. If the timer period is zero, the xTimerHasTimerExpired()
-   system call will always return false. */
+/* The xTimerChangePeriod() system call will change the period of the specified
+ * timer. The timer period is measured in ticks. If the timer period is zero,
+ * the xTimerHasTimerExpired() system call will always return false. */
 void xTimerChangePeriod(Timer_t *timer_, const Ticks_t timerPeriod_) {
   /* Assert if the timer cannot be found in the timer list. */
   SYSASSERT(RETURN_SUCCESS == __TimerListFindTimer__(timer_));
@@ -147,8 +147,8 @@ void xTimerChangePeriod(Timer_t *timer_, const Ticks_t timerPeriod_) {
 }
 
 
-/* The xTimerGetPeriod() system call will return the current timer period
-   for the specified timer. */
+/* The xTimerGetPeriod() system call will return the current timer period for
+ * the specified timer. */
 Ticks_t xTimerGetPeriod(const Timer_t *timer_) {
   Ticks_t ret = zero;
 
@@ -167,7 +167,7 @@ Ticks_t xTimerGetPeriod(const Timer_t *timer_) {
 
 
 /* The xTimerIsTimerActive() system call will return true of the timer has been
-   started with xTimerStart(). */
+ * started with xTimerStart(). */
 Base_t xTimerIsTimerActive(const Timer_t *timer_) {
   Base_t ret = false;
 
@@ -178,8 +178,7 @@ Base_t xTimerIsTimerActive(const Timer_t *timer_) {
 
   /* Check if the timer was found in the timer list. */
   if(RETURN_SUCCESS == __TimerListFindTimer__(timer_)) {
-    /* Check if the timer state is running, if so
-       return true. */
+    /* Check if the timer state is running, if so return true. */
     if(TimerStateRunning == timer_->state) {
       ret = true;
     }
@@ -189,9 +188,10 @@ Base_t xTimerIsTimerActive(const Timer_t *timer_) {
 }
 
 
-/* The xTimerHasTimerExpired() system call will return true or false dependent on whether
-   the timer period for the specified timer has elapsed. xTimerHasTimerExpired() will NOT
-   reset the timer. Timers must be reset with xTimerReset(). */
+/* The xTimerHasTimerExpired() system call will return true or false dependent
+ * on whether the timer period for the specified timer has elapsed.
+ * xTimerHasTimerExpired() will NOT reset the timer. Timers must be reset with
+ * xTimerReset(). */
 Base_t xTimerHasTimerExpired(const Timer_t *timer_) {
   Base_t ret = false;
 
@@ -202,19 +202,18 @@ Base_t xTimerHasTimerExpired(const Timer_t *timer_) {
 
   /* Check if the timer was found in the timer list. */
   if(RETURN_SUCCESS == __TimerListFindTimer__(timer_)) {
-    /* Assert if the timer isn't running, it must be for the
-       timer to expire. */
+    /* Assert if the timer isn't running, it must be for the timer to expire. */
     SYSASSERT(TimerStateRunning == timer_->state);
 
 
-    /* Assert if the timer period is zero, it must be greater
-       than zero for the timer to expire. */
+    /* Assert if the timer period is zero, it must be greater than zero for the
+     * timer to expire. */
     SYSASSERT(zero < timer_->timerPeriod);
 
 
-    /* The timer should be running, the timer period should be
-       greater than zero and the elapsed time is greater than
-       the timer period. If so, then return true. */
+    /* The timer should be running, the timer period should be greater than zero
+     * and the elapsed time is greater than the timer period. If so, then return
+     * true. */
     if((TimerStateRunning == timer_->state) && (zero < timer_->timerPeriod) && ((__SysGetSysTicks__() - timer_->timerStartTime) > timer_->timerPeriod)) {
       ret = true;
     }
@@ -224,7 +223,8 @@ Base_t xTimerHasTimerExpired(const Timer_t *timer_) {
 }
 
 
-/* The xTimerReset() system call will reset the start time of the timer to zero. */
+/* The xTimerReset() system call will reset the start time of the timer to zero.
+ */
 void xTimerReset(Timer_t *timer_) {
   /* Assert if the timer cannot be found in the timer list. */
   SYSASSERT(RETURN_SUCCESS == __TimerListFindTimer__(timer_));
@@ -239,8 +239,9 @@ void xTimerReset(Timer_t *timer_) {
 }
 
 
-/* The xTimerStart() system call will place the timer in the running state. Neither xTaskStart() nor
-   xTaskStop() will reset the timer. Timers can only be reset with xTimerReset(). */
+/* The xTimerStart() system call will place the timer in the running state.
+ * Neither xTaskStart() nor xTaskStop() will reset the timer. Timers can only be
+ * reset with xTimerReset(). */
 void xTimerStart(Timer_t *timer_) {
   /* Assert if the timer cannot be found in the timer list. */
   SYSASSERT(RETURN_SUCCESS == __TimerListFindTimer__(timer_));
@@ -255,8 +256,9 @@ void xTimerStart(Timer_t *timer_) {
 }
 
 
-/* The xTimerStop() system call will place the timer in the stopped state. Neither xTaskStart() nor
-   xTaskStop() will reset the timer. Timers can only be reset with xTimerReset(). */
+/* The xTimerStop() system call will place the timer in the stopped state.
+ * Neither xTaskStart() nor xTaskStop() will reset the timer. Timers can only be
+ * reset with xTimerReset(). */
 void xTimerStop(Timer_t *timer_) {
   /* Assert if the timer cannot be found in the timer list. */
   SYSASSERT(RETURN_SUCCESS == __TimerListFindTimer__(timer_));
@@ -271,9 +273,9 @@ void xTimerStop(Timer_t *timer_) {
 }
 
 
-/* __TimerListFindTimer__() is used to search the timer list for a
-   timer and returns RETURN_SUCCESS if the timer is found. It also
-   always checks the health of the heap by calling __MemoryRegionCheckKernel__(). */
+/* __TimerListFindTimer__() is used to search the timer list for a timer and
+ * returns RETURN_SUCCESS if the timer is found. It also always checks the
+ * health of the heap by calling __MemoryRegionCheckKernel__(). */
 static Base_t __TimerListFindTimer__(const Timer_t *timer_) {
   Base_t ret = RETURN_FAILURE;
   Timer_t *cursor = NULL;
@@ -287,11 +289,11 @@ static Base_t __TimerListFindTimer__(const Timer_t *timer_) {
   SYSASSERT(ISNOTNULLPTR(timer_));
 
 
-  /* Check if the timer list is initialized and the timer pointer
-     is not null. */
+  /* Check if the timer list is initialized and the timer pointer is not null.
+   */
   if((ISNOTNULLPTR(timerList)) && (ISNOTNULLPTR(timer_))) {
-    /* Assert if the __MemoryRegionCheckKernel__() fails on the health check or is unable
-       to find the entry for the heap pointer. */
+    /* Assert if the __MemoryRegionCheckKernel__() fails on the health check or
+     * is unable to find the entry for the heap pointer. */
     SYSASSERT(ISSUCCESSFUL(__MemoryRegionCheckKernel__(timer_, MEMORY_REGION_CHECK_OPTION_W_ADDR)));
 
 
@@ -300,8 +302,8 @@ static Base_t __TimerListFindTimer__(const Timer_t *timer_) {
       cursor = timerList->head;
 
 
-      /* Traverse the timer list while there is a timer
-         and the timer is not the timer we are looking for. */
+      /* Traverse the timer list while there is a timer and the timer is not the
+       * timer we are looking for. */
       while((ISNOTNULLPTR(cursor)) && (cursor != timer_)) {
         cursor = cursor->next;
       }

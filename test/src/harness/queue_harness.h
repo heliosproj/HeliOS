@@ -26,28 +26,28 @@
  */
 /*UNCRUSTIFY-ON*/
 #ifndef QUEUE_HARNESS_H_
-#define QUEUE_HARNESS_H_
+  #define QUEUE_HARNESS_H_
 
-#include "config.h"
-#include "defines.h"
-#include "types.h"
-#include "port.h"
-#include "device.h"
-#include "mem.h"
-#include "queue.h"
-#include "stream.h"
-#include "sys.h"
-#include "task.h"
-#include "timer.h"
+  #include "config.h"
+  #include "defines.h"
+  #include "types.h"
+  #include "port.h"
+  #include "device.h"
+  #include "mem.h"
+  #include "queue.h"
+  #include "stream.h"
+  #include "sys.h"
+  #include "task.h"
+  #include "timer.h"
 
-#include "unit.h"
+  #include "unit.h"
 
-#ifdef __cplusplus
-  extern "C" {
-#endif
-void queue_harness(void);
+  #ifdef __cplusplus
+    extern "C" {
+  #endif
+  void queue_harness(void);
 
-#ifdef __cplusplus
-  }
-#endif
+  #ifdef __cplusplus
+    }
+  #endif
 #endif

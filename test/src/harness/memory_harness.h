@@ -26,35 +26,35 @@
  */
 /*UNCRUSTIFY-ON*/
 #ifndef MEMORY_HARNESS_H_
-#define MEMORY_HARNESS_H_
+  #define MEMORY_HARNESS_H_
 
-#include "config.h"
-#include "defines.h"
-#include "types.h"
-#include "port.h"
-#include "device.h"
-#include "mem.h"
-#include "queue.h"
-#include "stream.h"
-#include "sys.h"
-#include "task.h"
-#include "timer.h"
+  #include "config.h"
+  #include "defines.h"
+  #include "types.h"
+  #include "port.h"
+  #include "device.h"
+  #include "mem.h"
+  #include "queue.h"
+  #include "stream.h"
+  #include "sys.h"
+  #include "task.h"
+  #include "timer.h"
 
-#include "unit.h"
+  #include "unit.h"
 
-typedef struct MemoryTest_s {
-  Size_t size;
-  Size_t blocks;
-  void *ptr;
-} MemoryTest_t;
+  typedef struct MemoryTest_s {
+    Size_t size;
+    Size_t blocks;
+    void *ptr;
+  } MemoryTest_t;
 
-#ifdef __cplusplus
-  extern "C" {
-#endif
-void memory_harness(void);
-void memory_harness_task(Task_t *task_, TaskParm_t *parm_);
+  #ifdef __cplusplus
+    extern "C" {
+  #endif
+  void memory_harness(void);
+  void memory_harness_task(Task_t *task_, TaskParm_t *parm_);
 
-#ifdef __cplusplus
-  }
-#endif
+  #ifdef __cplusplus
+    }
+  #endif
 #endif

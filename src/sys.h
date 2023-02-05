@@ -26,38 +26,38 @@
  */
 /*UNCRUSTIFY-ON*/
 #ifndef SYS_H_
-#define SYS_H_
+  #define SYS_H_
 
-#include "config.h"
-#include "defines.h"
-#include "types.h"
-#include "port.h"
-#include "device.h"
-#include "mem.h"
-#include "queue.h"
-#include "stream.h"
-#include "task.h"
-#include "timer.h"
+  #include "config.h"
+  #include "defines.h"
+  #include "types.h"
+  #include "port.h"
+  #include "device.h"
+  #include "mem.h"
+  #include "queue.h"
+  #include "stream.h"
+  #include "task.h"
+  #include "timer.h"
 
-extern SysFlags_t sysFlags;
+  extern SysFlags_t sysFlags;
 
-#ifdef __cplusplus
-  extern "C" {
-#endif
-void __SystemAssert__(const char *file_, const int line_);
-void xSystemInit(void);
-void xSystemHalt(void);
-SystemInfo_t *xSystemGetSystemInfo(void);
+  #ifdef __cplusplus
+    extern "C" {
+  #endif
+  void __SystemAssert__(const char *file_, const int line_);
+  void xSystemInit(void);
+  void xSystemHalt(void);
+  SystemInfo_t *xSystemGetSystemInfo(void);
 
-#if defined(CONFIG_ENABLE_ARDUINO_CPP_INTERFACE)
-  void __ArduinoAssert__(const char *file_, int line_);
-#endif
+  #if defined(CONFIG_ENABLE_ARDUINO_CPP_INTERFACE)
+    void __ArduinoAssert__(const char *file_, int line_);
+  #endif
 
-#if defined(POSIX_ARCH_OTHER)
-  void __SysStateClear__(void);
-#endif
+  #if defined(POSIX_ARCH_OTHER)
+    void __SysStateClear__(void);
+  #endif
 
-#ifdef __cplusplus
-  }
-#endif
+  #ifdef __cplusplus
+    }
+  #endif
 #endif

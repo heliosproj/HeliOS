@@ -26,38 +26,38 @@
  */
 /*UNCRUSTIFY-ON*/
 #ifndef TIMER_H_
-#define TIMER_H_
+  #define TIMER_H_
 
-#include "config.h"
-#include "defines.h"
-#include "types.h"
-#include "port.h"
-#include "device.h"
-#include "mem.h"
-#include "queue.h"
-#include "stream.h"
-#include "sys.h"
-#include "task.h"
+  #include "config.h"
+  #include "defines.h"
+  #include "types.h"
+  #include "port.h"
+  #include "device.h"
+  #include "mem.h"
+  #include "queue.h"
+  #include "stream.h"
+  #include "sys.h"
+  #include "task.h"
 
-#ifdef __cplusplus
-  extern "C" {
-#endif
-Timer_t *xTimerCreate(const Ticks_t timerPeriod_);
-void xTimerDelete(const Timer_t *timer_);
-void xTimerChangePeriod(Timer_t *timer_, const Ticks_t timerPeriod_);
-Ticks_t xTimerGetPeriod(const Timer_t *timer_);
-Base_t xTimerIsTimerActive(const Timer_t *timer_);
-Base_t xTimerHasTimerExpired(const Timer_t *timer_);
-void xTimerReset(Timer_t *timer_);
-void xTimerStart(Timer_t *timer_);
-void xTimerStop(Timer_t *timer_);
+  #ifdef __cplusplus
+    extern "C" {
+  #endif
+  Timer_t *xTimerCreate(const Ticks_t timerPeriod_);
+  void xTimerDelete(const Timer_t *timer_);
+  void xTimerChangePeriod(Timer_t *timer_, const Ticks_t timerPeriod_);
+  Ticks_t xTimerGetPeriod(const Timer_t *timer_);
+  Base_t xTimerIsTimerActive(const Timer_t *timer_);
+  Base_t xTimerHasTimerExpired(const Timer_t *timer_);
+  void xTimerReset(Timer_t *timer_);
+  void xTimerStart(Timer_t *timer_);
+  void xTimerStop(Timer_t *timer_);
 
 
-#if defined(POSIX_ARCH_OTHER)
-  void __TimerStateClear__(void);
-#endif
+  #if defined(POSIX_ARCH_OTHER)
+    void __TimerStateClear__(void);
+  #endif
 
-#ifdef __cplusplus
-  }
-#endif
+  #ifdef __cplusplus
+    }
+  #endif
 #endif

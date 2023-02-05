@@ -26,30 +26,30 @@
  */
 /*UNCRUSTIFY-ON*/
 #ifndef TASK_HARNESS_H_
-#define TASK_HARNESS_H_
+  #define TASK_HARNESS_H_
 
-#include "config.h"
-#include "defines.h"
-#include "types.h"
-#include "port.h"
-#include "device.h"
-#include "mem.h"
-#include "queue.h"
-#include "stream.h"
-#include "sys.h"
-#include "task.h"
-#include "timer.h"
+  #include "config.h"
+  #include "defines.h"
+  #include "types.h"
+  #include "port.h"
+  #include "device.h"
+  #include "mem.h"
+  #include "queue.h"
+  #include "stream.h"
+  #include "sys.h"
+  #include "task.h"
+  #include "timer.h"
 
-#include "unit.h"
+  #include "unit.h"
 
-#ifdef __cplusplus
-  extern "C" {
-#endif
-void task_harness(void);
-void task_harness_task(Task_t *task_, TaskParm_t *parm_);
-void task_harness_task2(Task_t *task_, TaskParm_t *parm_);
+  #ifdef __cplusplus
+    extern "C" {
+  #endif
+  void task_harness(void);
+  void task_harness_task(Task_t *task_, TaskParm_t *parm_);
+  void task_harness_task2(Task_t *task_, TaskParm_t *parm_);
 
-#ifdef __cplusplus
-  }
-#endif
+  #ifdef __cplusplus
+    }
+  #endif
 #endif
