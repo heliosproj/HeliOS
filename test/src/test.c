@@ -27,46 +27,26 @@
 
 
 int main(int argc, char **argv) {
-
   unit_init();
-
-
   reset();
-
   memory_harness();
-
-
   reset();
-
   queue_harness();
-
-
   reset();
-
   timer_harness();
-
-
   reset();
-
   task_harness();
-
-
   reset();
-
   stream_harness();
-
-
   reset();
-
   device_harness();
-
-
   unit_exit();
 
   return(0);
 }
-void reset(void) {
 
+
+void reset(void) {
   __MemoryClear__();
   __SysStateClear__();
   __TaskStateClear__();

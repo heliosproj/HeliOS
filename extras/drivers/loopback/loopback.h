@@ -38,6 +38,7 @@
 #include "task.h"
 #include "timer.h"
 
+
 /* START: DEVICE DRIVER PARAMATER BLOCK
 
    IMPORTANT: THE DEVICE NAME MUST BE SUPPLIED HERE AND MUST BE EXACTLY
@@ -47,6 +48,8 @@
 #define DEVICE_UID 0xFFu
 #define DEVICE_MODE DeviceModeReadWrite
 #define DEVICE_STATE DeviceStateRunning
+
+
 /* END: DEVICE DRIVER PARAMATER BLOCK */
 
 

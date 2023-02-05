@@ -40,6 +40,7 @@
 
 #if defined(ARDUINO_ARCH_AVR) /* TESTED 2022-03-24 */
 
+
 /*
 
    https://github.com/arduino/ArduinoCore-avr/blob/master/cores/arduino/wiring.c
@@ -74,7 +75,6 @@
    }
 
  */
-
   extern unsigned long timer0_overflow_count;
 
   #define DISABLE_INTERRUPTS() __asm__ __volatile__ ("cli")
@@ -82,6 +82,8 @@
   #define ENABLE_INTERRUPTS() __asm__ __volatile__ ("sei")
 
 #elif defined(ARDUINO_ARCH_SAM)
+
+
 /*
 
    https://github.com/arduino/ArduinoCore-sam/blob/master/cores/arduino/cortex_handlers.c
@@ -118,11 +120,15 @@
  */
   extern uint32_t GetTickCount(void);
 
+
+
   #define DISABLE_INTERRUPTS() __asm volatile ("cpsid i")
 
   #define ENABLE_INTERRUPTS() __asm volatile ("cpsie i")
 
 #elif defined(ARDUINO_ARCH_SAMD) /* TESTED 2022-03-24 */
+
+
 /*
 
    https://github.com/arduino/ArduinoCore-samd/blob/master/cores/arduino/delay.c
@@ -153,6 +159,7 @@
 
 #elif defined(ARDUINO_ARCH_ESP8266) /* TESTED 2022-08-22 */
 
+
 /*
 
    https://github.com/esp8266/Arduino/blob/master/cores/esp8266/core_esp8266_wiring.cpp
@@ -170,11 +177,14 @@
   extern uint32 system_get_time(void);
   extern void yield(void);
 
+
+
   #define DISABLE_INTERRUPTS() xt_rsil(15)
 
   #define ENABLE_INTERRUPTS() xt_rsil(0)
 
 #elif defined(ARDUINO_TEENSY_MICROMOD) || defined(ARDUINO_TEENSY40) || defined(ARDUINO_TEENSY41) || defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY35) || defined(ARDUINO_TEENSY31) || defined(ARDUINO_TEENSY32) || defined(ARDUINO_TEENSY30) || defined(ARDUINO_TEENSYLC) /* TESTED 2022-03-24 */
+
 
 /*
 
@@ -203,7 +213,6 @@
    }
 
  */
-
   extern uint32_t systick_millis_count;
 
   #define DISABLE_INTERRUPTS() __asm volatile ("cpsid i")
@@ -220,6 +229,7 @@
 
 #elif defined(CMSIS_ARCH_CORTEXM) /* TESTED 2022-03-24 */
 
+
 /* ld linker script section
 
    .kernel_mem_region (NOLOAD):
@@ -233,7 +243,6 @@
    } > RAM
 
  */
-
 /*
  *** START SECTION: ADD VENDOR HEADER HERE ***
 
@@ -243,6 +252,8 @@
  #include "stm32f429xx.h"
  */
   #include "stm32f429xx.h"
+
+
 /*
  *** END SECTION: ADD VENDOR HEADER HERE ***
  */

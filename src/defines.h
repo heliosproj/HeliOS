@@ -69,8 +69,6 @@
   #undef false
 #endif
 #define false 0x0u /* 0 */
-
-
 /* Define "null". */
 #if defined(null)
   #undef null
@@ -95,8 +93,6 @@
   #undef OS_PRODUCT_NAME_SIZE
 #endif
 #define OS_PRODUCT_NAME_SIZE 0x6u /* 6 */
-
-
 /* Define the OS product name which is accessible through xSystemGetSystemInfo(). */
 #if defined(OS_PRODUCT_NAME)
   #undef OS_PRODUCT_NAME

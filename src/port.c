@@ -32,15 +32,14 @@
 
 
   void SysTick_Handler(void) {
-
     DISABLE_INTERRUPTS();
-
     sysTicks++;
-
     ENABLE_INTERRUPTS();
 
     return;
   }
+
+
 #endif
 
 
@@ -69,23 +68,27 @@ Ticks_t __SysGetSysTicks__(void) {
 
 #elif defined(ESP32)
 
+
 /* Not supported. */
 #elif defined(CMSIS_ARCH_CORTEXM)
 
     return(sysTicks);
+
 
 #elif defined(POSIX_ARCH_OTHER)
 
 
     struct timeval t;
 
-    gettimeofday(&t, NULL);
 
+    gettimeofday(&t, NULL);
 
     return((t.tv_sec) * 1000 + (t.tv_usec) / 1000);
 
 #endif
 }
+
+
 void __SysInit__(void) {
 #if defined(ARDUINO_ARCH_AVR)
 
@@ -108,6 +111,7 @@ void __SysInit__(void) {
     return;
 
 #elif defined(ESP32)
+
 
 /* Not supported. */
 #elif defined(CMSIS_ARCH_CORTEXM)

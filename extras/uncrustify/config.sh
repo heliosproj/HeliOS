@@ -543,7 +543,7 @@ nl_fdef_brace_cond:ignore
 nl_cpp_ldef_brace:ignore
 nl_return_expr:ignore
 nl_throw_expr:ignore
-nl_after_semicolon:false
+nl_after_semicolon:true						# modified
 nl_paren_dbrace_open:ignore
 nl_type_brace_init_lst:ignore
 nl_type_brace_init_lst_open:ignore
@@ -591,7 +591,7 @@ nl_split_if_one_liner:false
 nl_split_for_one_liner:false
 nl_split_while_one_liner:false
 donot_add_nl_before_cpp_comment:false
-nl_max:3									# modified
+nl_max:4									# modified
 nl_max_blank_in_func:3						# modified
 nl_inside_empty_func:3						# modified
 nl_before_func_body_proto:1					# modified
@@ -603,15 +603,15 @@ nl_after_func_proto_group:0
 nl_after_func_class_proto:0
 nl_after_func_class_proto_group:0
 nl_class_leave_one_liner_groups:false
-nl_after_func_body:1						# modified
+nl_after_func_body:3						# modified
 nl_after_func_body_class:0
 nl_after_func_body_one_liner:0
 nl_typedef_blk_start:0
 nl_typedef_blk_end:0
 nl_typedef_blk_in:0
-nl_var_def_blk_end_func_top:0
-nl_var_def_blk_start:0
-nl_var_def_blk_end:0
+nl_var_def_blk_end_func_top:3				# modified
+nl_var_def_blk_start:3						# modified
+nl_var_def_blk_end:3						# modified
 nl_var_def_blk_in:0
 nl_before_block_comment:3					# modified
 nl_before_c_comment:3						# modified

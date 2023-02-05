@@ -29,8 +29,6 @@
 
 /* The following configurable settings may be changed by the end-user
    to customize the HeliOS kernel for their specific application. */
-
-
 /**
  * @brief Define to enable the Arduino API C++ interface.
  *
@@ -54,8 +52,6 @@
  #define CONFIG_ENABLE_ARDUINO_CPP_INTERFACE
  #endif
  */
-
-
 /**
  * @brief Define to enable system assertions.
  *
@@ -73,8 +69,6 @@
  #define CONFIG_ENABLE_SYSTEM_ASSERT
  #endif
  */
-
-
 /**
  * @brief Define the system assertion behavior.
  *
@@ -100,8 +94,6 @@
  #define CONFIG_SYSTEM_ASSERT_BEHAVIOR(f, l) __ArduinoAssert__( f , l )
  #endif
  */
-
-
 /**
  * @brief Define the size in bytes of the message queue message value.
  *
