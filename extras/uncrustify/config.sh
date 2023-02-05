@@ -32,8 +32,8 @@ string_escape_char2:0
 string_replace_tab_chars:false
 tok_split_gte:false
 disable_processing_nl_cont:false
-disable_processing_cmt:\"*INDENT-OFF*\"
-enable_processing_cmt:\"*INDENT-ON*\"
+disable_processing_cmt:\"*UNCRUSTIFY-OFF*\"	# modified
+enable_processing_cmt:\"*UNCRUSTIFY-ON*\"	# modified
 enable_digraphs:false
 processing_cmt_as_regex:false
 utf8_bom:remove								# modified
@@ -627,7 +627,7 @@ nl_inside_namespace:0
 nl_after_namespace:0
 nl_before_access_spec:0
 nl_after_access_spec:0
-nl_comment_func_def:0
+nl_comment_func_def:1						# modified
 nl_after_try_catch_finally:0
 nl_around_cs_property:0
 nl_between_get_set:0
@@ -729,13 +729,13 @@ align_oc_msg_colon_span:0
 align_oc_msg_colon_first:false
 align_oc_decl_colon:false
 align_oc_msg_colon_xcode_like:false
-cmt_width:0
-cmt_reflow_mode:0
+cmt_width:80								# modified
+cmt_reflow_mode:2							# modified
 cmt_reflow_fold_regex_file:\"\"
 cmt_reflow_indent_to_paragraph_start:false
-cmt_convert_tab_to_spaces:false
+cmt_convert_tab_to_spaces:true				# modified
 cmt_indent_multi:true
-cmt_align_doxygen_javadoc_tags:false
+cmt_align_doxygen_javadoc_tags:true			# modified
 cmt_sp_before_doxygen_javadoc_tags:1
 cmt_trailing_single_line_c_to_cpp:false
 cmt_c_group:false
@@ -745,9 +745,9 @@ cmt_cpp_to_c:false
 cmt_cpp_group:false
 cmt_cpp_nl_start:false
 cmt_cpp_nl_end:false
-cmt_star_cont:false
+cmt_star_cont:true							# modified
 cmt_sp_before_star_cont:0
-cmt_sp_after_star_cont:0
+cmt_sp_after_star_cont:1					# modified
 cmt_multi_check_last:true
 cmt_multi_first_len_minimum:4
 cmt_insert_file_header:\"\"
