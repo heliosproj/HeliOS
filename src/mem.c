@@ -230,13 +230,15 @@ static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, co
   }
 
   RET_RETURN;
-} /** LEFT OFF HERE!!!! **/
+}
 
 
 static Return_t __MemoryRegionCheckAddr__(const volatile MemoryRegion_t *region_, const volatile Addr_t *addr_) {
   RET_DEFINE;
 
   if(ISNOTNULLPTR(region_) && ISNOTNULLPTR(addr_)) {
+    /* Check to make sure the address falls within the bounds of the memory
+     * region. */
     if((addr_ >= (Addr_t *) (region_->mem)) && (addr_ < (Addr_t *) (region_->mem + MEMORY_REGION_SIZE_IN_BYTES))) {
       RET_SUCCESS;
     } else {
@@ -265,14 +267,24 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
   DISABLE_INTERRUPTS();
 
   if(ISNOTNULLPTR(region_) && ISNOTNULLPTR(addr_) && (false == SYSFLAG_FAULT()) && (zero < size_)) {
+    /* If we haven't already, calculate how many blocks in size a memory entry
+     * is. Typically this is one (1), but that may not always be the case. */
     if(zero == region_->entrySize) {
+      /* Divide the size of the memory entry type by the block size to determine
+       * how many blocks one entry requires. */
       region_->entrySize = ((HalfWord_t) (sizeof(MemoryEntry_t) / CONFIG_MEMORY_REGION_BLOCK_SIZE));
 
+
+      /* Calculate the remainder in case part of the memory entry spills over
+       * into another block. */
       if(zero < ((HalfWord_t) (sizeof(MemoryEntry_t) % CONFIG_MEMORY_REGION_BLOCK_SIZE))) {
         region_->entrySize++;
       }
     }
 
+
+    /* Check to see if the memory region has been initialized yet, if it hasn't
+     * we need to zero out the memory and set the first block. */
     if(ISNULLPTR(region_->start)) {
       region_->start = (MemoryEntry_t *) region_->mem;
 
@@ -283,11 +295,11 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
       } else {
         SYSASSERT(false);
       }
-    } else {
-      /** DO NOTHING, NORMAL THAT REGION MAY NOT HAVE BEEN INITIALIZED **/
     }
 
     if(ISSUCCESSFUL(__MemoryRegionCheck__(region_, NULL, MEMORY_REGION_CHECK_OPTION_WO_ADDR))) {
+      /* Because the user supplied requested memory in bytes, calculate how many
+       * blocks have been requested. */
       requested = ((HalfWord_t) (size_ / CONFIG_MEMORY_REGION_BLOCK_SIZE));
 
       if(zero < ((HalfWord_t) (size_ % CONFIG_MEMORY_REGION_BLOCK_SIZE))) {
@@ -298,11 +310,20 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
       cursor = region_->start;
 
       while(ISNOTNULLPTR(cursor)) {
+        /* See if we have a possible candidate entry to use for the requested
+         * blocks. To be a candidate the entry must:
+         *  1. Be free.
+         *  2. Must contain enough blocks to cover the request.
+         *  3. Must be an entry with the fewest blocks (this is to reduce
+         * fragmentation). */
         if((true == cursor->free) && (requested <= cursor->blocks) && (fewest > cursor->blocks)) {
           fewest = cursor->blocks;
           candidate = cursor;
         }
 
+
+        /* Keep track of how many free blocks remain as we need to update the
+         * statistics for the memory region later. */
         if(true == cursor->free) {
           free += cursor->blocks;
         }
@@ -311,12 +332,22 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
       }
 
       if(ISNOTNULLPTR(candidate)) {
+        /* If the candidate entry contains enough blocks for a memory entry and
+         * at least one additional block then we are going to split the memory
+         * entry into two. If not, we will just go ahead and use the memory
+         * entry as is. */
         if((region_->entrySize + 1) <= (candidate->blocks - requested)) {
+          /* This block of code splits the block in two and uses the first of
+           * the two blocks for the requested memory. */
           candidateNext = candidate->next;
           candidate->next = (MemoryEntry_t *) ((Byte_t *) candidate + (requested * CONFIG_MEMORY_REGION_BLOCK_SIZE));
           candidate->next->next = candidateNext;
           candidate->next->free = true;
           candidate->next->blocks = candidate->blocks - requested;
+
+
+          /* We split the unneeded blocks off into a new entry, now let's mark
+           * the entry containing the blocks in-use for the requested memory. */
           candidate->free = false;
           candidate->blocks = requested;
 
@@ -327,6 +358,8 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
             SYSASSERT(false);
           }
         } else {
+          /* Because we didn't need to split an entry into two, we just need to
+           * mark the entry as in-use and that's it. */
           candidate->free = false;
 
           if(ISSUCCESSFUL(__memset__(ENTRY2ADDR(candidate, region_), zero, (requested - region_->entrySize) * CONFIG_MEMORY_REGION_BLOCK_SIZE))) {
@@ -337,6 +370,8 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
           }
         }
 
+
+        /* Update the statistics for the memory region before we are done. */
         region_->allocations++;
         free -= requested;
 
@@ -431,7 +466,7 @@ Return_t __KernelFreeMemory__(const volatile Addr_t *addr_) {
 Return_t __MemoryRegionCheckKernel__(const volatile Addr_t *addr_, const Base_t option_) {
   RET_DEFINE;
 
-  if((ISNOTNULLPTR(addr_) && (MEMORY_REGION_CHECK_OPTION_WO_ADDR == option_)) || (ISNOTNULLPTR(addr_) && (MEMORY_REGION_CHECK_OPTION_W_ADDR == option_))) {
+  if((ISNULLPTR(addr_) && (MEMORY_REGION_CHECK_OPTION_WO_ADDR == option_)) || (ISNOTNULLPTR(addr_) && (MEMORY_REGION_CHECK_OPTION_W_ADDR == option_))) {
     if(ISSUCCESSFUL(__MemoryRegionCheck__(&kernel, addr_, option_))) {
       RET_SUCCESS;
     } else {
@@ -486,7 +521,7 @@ Return_t __HeapFreeMemory__(const volatile Addr_t *addr_) {
 Return_t __MemoryRegionCheckHeap__(const volatile Addr_t *addr_, const Base_t option_) {
   RET_DEFINE;
 
-  if((ISNOTNULLPTR(addr_) && (MEMORY_REGION_CHECK_OPTION_WO_ADDR == option_)) || (ISNOTNULLPTR(addr_) && (MEMORY_REGION_CHECK_OPTION_W_ADDR == option_))) {
+  if((ISNULLPTR(addr_) && (MEMORY_REGION_CHECK_OPTION_WO_ADDR == option_)) || (ISNOTNULLPTR(addr_) && (MEMORY_REGION_CHECK_OPTION_W_ADDR == option_))) {
     if(ISSUCCESSFUL(__MemoryRegionCheck__(&heap, addr_, option_))) {
       RET_SUCCESS;
     } else {
@@ -614,7 +649,7 @@ Return_t xMemGetKernelStats(MemoryRegionStats_t **stats_) {
   }
 
   RET_RETURN;
-}
+} /** LEFT OFF HERE!!!!!! **/
 
 
 static Return_t __MemGetRegionStats__(const volatile MemoryRegion_t *region_, MemoryRegionStats_t **stats_) {
