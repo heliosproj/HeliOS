@@ -65,6 +65,8 @@ Return_t xMemAlloc(volatile Addr_t **addr_, const Size_t size_) {
     } else {
       SYSASSERT(false);
     }
+  } else {
+    SYSASSERT(false);
   }
 
   RET_RETURN;
@@ -80,6 +82,8 @@ Return_t xMemFree(const volatile Addr_t *addr_) {
     } else {
       SYSASSERT(false);
     }
+  } else {
+    SYSASSERT(false);
   }
 
   RET_RETURN;
@@ -99,6 +103,8 @@ Return_t xMemGetUsed(Size_t *size_) {
       cursor = heap.start;
 
       while(ISNOTNULLPTR(cursor)) {
+        /* If the memory entry is *NOT* free, then add the number of blocks it
+         * contains to the in-use count. */
         if(false == cursor->free) {
           used += cursor->blocks;
         }
@@ -106,6 +112,9 @@ Return_t xMemGetUsed(Size_t *size_) {
         cursor = cursor->next;
       }
 
+
+      /* We need to give the user back bytes, not blocks so multiply the in-use
+       * blocks by the block size in bytes. */
       *size_ = used * CONFIG_MEMORY_REGION_BLOCK_SIZE;
       RET_SUCCESS;
     } else {
@@ -130,6 +139,10 @@ Return_t xMemGetSize(const volatile Addr_t *addr_, Size_t *size_) {
     if(ISSUCCESSFUL(__MemoryRegionCheck__(&heap, addr_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
       tosize = ADDR2ENTRY(addr_, &heap);
 
+
+      /* If the memory entry pointed to by tosize is *NOT* free, then give the
+       * user back the number of bytes in-use by multiply the blocks contained
+       * in the entry by the block size in bytes. */
       if(false == tosize->free) {
         *size_ = tosize->blocks * CONFIG_MEMORY_REGION_BLOCK_SIZE;
         RET_SUCCESS;
@@ -139,6 +152,8 @@ Return_t xMemGetSize(const volatile Addr_t *addr_, Size_t *size_) {
     } else {
       SYSASSERT(false);
     }
+  } else {
+    SYSASSERT(false);
   }
 
   RET_RETURN;
@@ -159,6 +174,9 @@ static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, co
     if(ISNOTNULLPTR(region_->start)) {
       cursor = region_->start;
 
+
+      /* Check option to see if we also need to check an address in the memory
+       * region, if so then set find to the memory entry address. */
       if(MEMORY_REGION_CHECK_OPTION_W_ADDR == option_) {
         find = ADDR2ENTRY(addr_, region_);
       }
@@ -167,6 +185,10 @@ static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, co
         if(ISSUCCESSFUL(__MemoryRegionCheckAddr__(region_, cursor))) {
           blocks += cursor->blocks;
 
+
+          /* If we are checking for an address in the memory region, then see if
+           * the cursor matches it and check to make sure the memory entry is
+           * NOT* free. Otherwise ignore this step. */
           if((MEMORY_REGION_CHECK_OPTION_W_ADDR == option_) && (cursor == find) && (false == cursor->free)) {
             found = true;
           }
@@ -174,6 +196,10 @@ static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, co
           cursor = cursor->next;
         } else {
           SYSASSERT(false);
+
+
+          /* Set the memfault sysflag to true because the address we just
+           * checked is *NOT* inside the memory region. */
           SYSFLAG_FAULT() = true;
           break;
         }
@@ -182,12 +208,18 @@ static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, co
       if(CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS == blocks) {
         if(((MEMORY_REGION_CHECK_OPTION_WO_ADDR == option_) && (false == SYSFLAG_FAULT())) || ((MEMORY_REGION_CHECK_OPTION_W_ADDR == option_) && (false == SYSFLAG_FAULT()) && (true == found))) {
           RET_SUCCESS;
-        } /* Never use an else statement here to mark SYSFLAG_FAULT() = true.
+        } else {
+          /* Never use an else statement here to mark SYSFLAG_FAULT() = true.
            * Just because an address wasn't found does not mean the memory
            * region is corrupt. */
-
+        }
       } else {
         SYSASSERT(false);
+
+
+        /* Set the memfault sysflag to true because the number of blocks visited
+         * does not match the number of blocks the memory region *SHOULD* have.
+         */
         SYSFLAG_FAULT() = true;
       }
     } else {
@@ -198,7 +230,7 @@ static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, co
   }
 
   RET_RETURN;
-}
+} /** LEFT OFF HERE!!!! **/
 
 
 static Return_t __MemoryRegionCheckAddr__(const volatile MemoryRegion_t *region_, const volatile Addr_t *addr_) {

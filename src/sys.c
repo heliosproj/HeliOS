@@ -52,7 +52,6 @@ void __SystemAssert__(const char *file_, const int line_) {
     CONFIG_SYSTEM_ASSERT_BEHAVIOR(file_, line_);
 #endif /* if defined(CONFIG_SYSTEM_ASSERT_BEHAVIOR) */
 
-
   return;
 }
 

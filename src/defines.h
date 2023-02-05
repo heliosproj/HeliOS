@@ -75,8 +75,6 @@
   #else  /* if defined(__cplusplus) */
     #define null ((void *) 0x0) /* 0 */
   #endif /* if defined(__cplusplus) */
-
-
 /* Define "zero". */
   #if defined(zero)
     #undef zero

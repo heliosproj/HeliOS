@@ -56,7 +56,6 @@
       #define NULL 0x0 /* 0 */
     #endif /* if !defined(__cplusplus) */
   #endif /* if !defined(NULL) */
-
   typedef struct unit_s {
     char name[UNIT_NAME_LENGTH];
     int32_t begun;
