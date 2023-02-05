@@ -1,3 +1,4 @@
+/*UNCRUSTIFY-OFF*/
 /**
  * @file HeliOS.h
  * @author Manny Peterson (mannymsp@gmail.com)
@@ -23,6 +24,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
+/*UNCRUSTIFY-ON*/
 #ifndef HELIOS_H_
 #define HELIOS_H_
 

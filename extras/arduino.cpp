@@ -1,3 +1,4 @@
+/*UNCRUSTIFY-OFF*/
 /**
  * @file arduino.cpp
  * @author Manny Peterson (mannymsp@gmail.com)
@@ -23,7 +24,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  * 
  */
-
+/*UNCRUSTIFY-ON*/
 
 #include "config.h"
 

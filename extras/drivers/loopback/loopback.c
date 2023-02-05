@@ -1,3 +1,4 @@
+/*UNCRUSTIFY-OFF*/
 /**
  * @file loopback.c
  * @author Manny Peterson (mannymsp@gmail.com)
@@ -23,7 +24,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
-
+/*UNCRUSTIFY-ON*/
 #include "loopback.h"
 
 #define BUFFER_LENGTH 0xFFu

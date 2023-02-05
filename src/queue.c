@@ -1,3 +1,4 @@
+/*UNCRUSTIFY-OFF*/
 /**
  * @file queue.c
  * @author Manny Peterson (mannymsp@gmail.com)
@@ -23,6 +24,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
+/*UNCRUSTIFY-ON*/
 #include "queue.h"
 static void __QueueDropmessage__(Queue_t *queue_);
 static QueueMessage_t *__QueuePeek__(const Queue_t *queue_);

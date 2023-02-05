@@ -1,3 +1,4 @@
+/*UNCRUSTIFY-OFF*/
 /**
  * @file device.c
  * @author Manny Peterson (mannymsp@gmail.com)
@@ -23,7 +24,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
-
+/*UNCRUSTIFY-ON*/
 #include "device.h"
 
 static DeviceList_t *deviceList = NULL;

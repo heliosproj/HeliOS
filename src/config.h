@@ -1,3 +1,4 @@
+/*UNCRUSTIFY-OFF*/
 /**
  * @file config.h
  * @author Manny Peterson (mannymsp@gmail.com)
@@ -23,6 +24,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
+/*UNCRUSTIFY-ON*/
 #ifndef CONFIG_H_
 #define CONFIG_H_
 

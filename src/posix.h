@@ -1,3 +1,4 @@
+/*UNCRUSTIFY-OFF*/
 /**
  * @file posix.h
  * @author Manny Peterson (mannymsp@gmail.com)
@@ -23,7 +24,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
-
+/*UNCRUSTIFY-ON*/
 #ifndef POSIX_H_
 #define POSIX_H_
 

@@ -1,3 +1,4 @@
+/*UNCRUSTIFY-OFF*/
 /**
  * @file Blink.ino
  * @author Manny Peterson (mannymsp@gmail.com)
@@ -23,7 +24,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
-
+/*UNCRUSTIFY-ON*/
 
 /* Include the HeliOS header, do not include
 any other HeliOS header. */

@@ -1,3 +1,4 @@
+/*UNCRUSTIFY-OFF*/
 /**
  * @file port.h
  * @author Manny Peterson (mannymsp@gmail.com)
@@ -23,6 +24,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
+/*UNCRUSTIFY-ON*/
 #ifndef PORT_H_
 #define PORT_H_
 
@@ -40,7 +42,7 @@
 
 #if defined(ARDUINO_ARCH_AVR) /* TESTED 2022-03-24 */
 
-
+/*UNCRUSTIFY-OFF*/
 /*
 
    https://github.com/arduino/ArduinoCore-avr/blob/master/cores/arduino/wiring.c
@@ -75,6 +77,7 @@
    }
 
  */
+/*UNCRUSTIFY-ON*/
   extern unsigned long timer0_overflow_count;
 
   #define DISABLE_INTERRUPTS() __asm__ __volatile__ ("cli")
@@ -83,7 +86,7 @@
 
 #elif defined(ARDUINO_ARCH_SAM)
 
-
+/*UNCRUSTIFY-OFF*/
 /*
 
    https://github.com/arduino/ArduinoCore-sam/blob/master/cores/arduino/cortex_handlers.c
@@ -118,6 +121,7 @@
    }
 
  */
+/*UNCRUSTIFY-ON*/
   extern uint32_t GetTickCount(void);
 
 
@@ -128,7 +132,7 @@
 
 #elif defined(ARDUINO_ARCH_SAMD) /* TESTED 2022-03-24 */
 
-
+/*UNCRUSTIFY-OFF*/
 /*
 
    https://github.com/arduino/ArduinoCore-samd/blob/master/cores/arduino/delay.c
@@ -151,6 +155,7 @@
    }
 
  */
+/*UNCRUSTIFY-ON*/
   extern unsigned long millis(void);
 
   #define DISABLE_INTERRUPTS() __asm volatile ("cpsid i")
@@ -159,7 +164,7 @@
 
 #elif defined(ARDUINO_ARCH_ESP8266) /* TESTED 2022-08-22 */
 
-
+/*UNCRUSTIFY-OFF*/
 /*
 
    https://github.com/esp8266/Arduino/blob/master/cores/esp8266/core_esp8266_wiring.cpp
@@ -171,6 +176,7 @@
    }
 
  */
+/*UNCRUSTIFY-ON*/
   #include "core_esp8266_features.h"
 
   typedef uint32_t uint32;
@@ -185,7 +191,7 @@
 
 #elif defined(ARDUINO_TEENSY_MICROMOD) || defined(ARDUINO_TEENSY40) || defined(ARDUINO_TEENSY41) || defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY35) || defined(ARDUINO_TEENSY31) || defined(ARDUINO_TEENSY32) || defined(ARDUINO_TEENSY30) || defined(ARDUINO_TEENSYLC) /* TESTED 2022-03-24 */
 
-
+/*UNCRUSTIFY-OFF*/
 /*
 
    https://github.com/PaulStoffregen/cores/blob/master/teensy4/EventResponder.cpp
@@ -213,6 +219,7 @@
    }
 
  */
+/*UNCRUSTIFY-ON*/
   extern uint32_t systick_millis_count;
 
   #define DISABLE_INTERRUPTS() __asm volatile ("cpsid i")
@@ -229,7 +236,7 @@
 
 #elif defined(CMSIS_ARCH_CORTEXM) /* TESTED 2022-03-24 */
 
-
+/*UNCRUSTIFY-OFF*/
 /* ld linker script section
 
    .kernel_mem_region (NOLOAD):
@@ -243,6 +250,9 @@
    } > RAM
 
  */
+/*UNCRUSTIFY-ON*/
+
+/*UNCRUSTIFY-OFF*/
 /*
  *** START SECTION: ADD VENDOR HEADER HERE ***
 
@@ -251,13 +261,14 @@
 
  #include "stm32f429xx.h"
  */
+/*UNCRUSTIFY-ON*/
   #include "stm32f429xx.h"
 
-
+/*UNCRUSTIFY-OFF*/
 /*
  *** END SECTION: ADD VENDOR HEADER HERE ***
  */
-
+/*UNCRUSTIFY-ON*/
 
   #define DISABLE_INTERRUPTS() __disable_irq()
 
