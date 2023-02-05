@@ -649,7 +649,7 @@ Return_t xMemGetKernelStats(MemoryRegionStats_t **stats_) {
   }
 
   RET_RETURN;
-} /** LEFT OFF HERE!!!!!! **/
+}
 
 
 static Return_t __MemGetRegionStats__(const volatile MemoryRegion_t *region_, MemoryRegionStats_t **stats_) {
@@ -665,11 +665,19 @@ static Return_t __MemGetRegionStats__(const volatile MemoryRegion_t *region_, Me
         cursor = region_->start;
 
         if(ISSUCCESSFUL(__memset__(*stats_, zero, sizeof(MemoryRegionStats_t)))) {
+          /* We intentionally underflow a word (an unsigned type) to get its
+           * maximum value. */
           (*stats_)->smallestFreeEntryInBytes = -1;
+
+
+          /* Copy in the statistics we already have from the memory region. */
           (*stats_)->successfulAllocations = region_->allocations;
           (*stats_)->successfulFrees = region_->frees;
           (*stats_)->minimumEverFreeBytesRemaining = region_->minAvailableEver;
 
+
+          /* Traverse the memory region to calculate the remaining statistics.
+           */
           while(ISNOTNULLPTR(cursor)) {
             if(true == cursor->free) {
               if((*stats_)->largestFreeEntryInBytes < (cursor->blocks * CONFIG_MEMORY_REGION_BLOCK_SIZE)) {
@@ -717,6 +725,11 @@ static Return_t __DefragMemoryRegion__(const volatile MemoryRegion_t *region_) {
       cursor = region_->start;
 
       while(ISNOTNULLPTR(cursor)) {
+        /* We will merge the blocks from two adjacent memory entries if:
+         *  1. The cursor is pointing to an entry.
+         *  2. "next" points to an entry.
+         *  3. The entry pointed to be the cursor is free.
+         *  4. The entry pointed to be "next" is free. */
         if(ISNOTNULLPTR(cursor) && ISNOTNULLPTR(cursor->next) && (true == cursor->free) && (true == cursor->next->free)) {
           cursor->blocks += cursor->next->blocks;
           cursor->next = cursor->next->next;
@@ -726,7 +739,11 @@ static Return_t __DefragMemoryRegion__(const volatile MemoryRegion_t *region_) {
       }
 
       RET_SUCCESS;
+    } else {
+      SYSASSERT(false);
     }
+  } else {
+    SYSASSERT(false);
   }
 
   RET_RETURN;
