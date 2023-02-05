@@ -55,11 +55,12 @@
   #endif
 #endif
 
-typedef struct unit_s {char name[UNIT_NAME_LENGTH];
-                       int32_t begun;
-                       int32_t failed;
-                       int32_t pass;
-                       int32_t fail;
+typedef struct unit_s {
+  char name[UNIT_NAME_LENGTH];
+  int32_t begun;
+  int32_t failed;
+  int32_t pass;
+  int32_t fail;
 } unit_t;
 
 #ifdef __cplusplus

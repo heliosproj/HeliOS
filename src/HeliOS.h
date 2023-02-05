@@ -53,10 +53,11 @@
  * @sa xTaskGetTaskState()
  *
  */
-typedef enum {TaskStateError, /**< Returned by xTaskGetTaskState() when the task cannot be found. */
-              TaskStateSuspended, /**< State a task is in when it is first created OR after calling xTaskSuspend() - tasks in the TaskStateSuspended state will not be scheduled for execution. */
-              TaskStateRunning, /**< State a task is in after calling xTaskResume() - tasks in the TaskStateRunning state will be scheduled co-operatively. */
-              TaskStateWaiting /**< State a task is in after calling xTaskWait() - tasks in the TaskStateWaiting state will be scheduled as event driven. */
+typedef enum {
+  TaskStateError,             /**< Returned by xTaskGetTaskState() when the task cannot be found. */
+  TaskStateSuspended, /**< State a task is in when it is first created OR after calling xTaskSuspend() - tasks in the TaskStateSuspended state will not be scheduled for execution. */
+  TaskStateRunning, /**< State a task is in after calling xTaskResume() - tasks in the TaskStateRunning state will be scheduled co-operatively. */
+  TaskStateWaiting /**< State a task is in after calling xTaskWait() - tasks in the TaskStateWaiting state will be scheduled as event driven. */
 } TaskState_t;
 
 
@@ -84,9 +85,10 @@ typedef TaskState_t xTaskState;
  * @sa xTaskStartScheduler()
  *
  */
-typedef enum {SchedulerStateError, /**< Not used - reserved for future use. */
-              SchedulerStateSuspended, /**< State the scheduler is in after calling xTaskSuspendAll() - xTaskStartScheduler() will stop scheduling tasks for execution and relinquish control when xTaskSuspendAll() is called. */
-              SchedulerStateRunning /**< State the scheduler is in after calling xTaskResumeAll() - xTaskStartScheduler() will continue to schedule tasks for execution until xTaskSuspendAll() is called. */
+typedef enum {
+  SchedulerStateError,             /**< Not used - reserved for future use. */
+  SchedulerStateSuspended, /**< State the scheduler is in after calling xTaskSuspendAll() - xTaskStartScheduler() will stop scheduling tasks for execution and relinquish control when xTaskSuspendAll() is called. */
+  SchedulerStateRunning /**< State the scheduler is in after calling xTaskResumeAll() - xTaskStartScheduler() will continue to schedule tasks for execution until xTaskSuspendAll() is called. */
 } SchedulerState_t;
 
 
@@ -472,8 +474,9 @@ typedef Timer_t *xTimer;
  * manipulate the notification value.
  *
  */
-typedef struct TaskNotification_s {Base_t notificationBytes; /**< The length in bytes of the notification value which cannot exceed CONFIG_NOTIFICATION_VALUE_BYTES. */
-                                   Char_t notificationValue[CONFIG_NOTIFICATION_VALUE_BYTES]; /**< The notification value whose length is specified by the notification bytes member. */
+typedef struct TaskNotification_s {
+  Base_t notificationBytes;                                  /**< The length in bytes of the notification value which cannot exceed CONFIG_NOTIFICATION_VALUE_BYTES. */
+  Char_t notificationValue[CONFIG_NOTIFICATION_VALUE_BYTES]; /**< The notification value whose length is specified by the notification bytes member. */
 } TaskNotification_t;
 
 
@@ -501,9 +504,10 @@ typedef TaskNotification_t *xTaskNotification;
  * @sa xMemFree()
  *
  */
-typedef struct TaskRunTimeStats_s {Base_t id; /**< The ID of the task referenced by the task handle. */
-                                   Ticks_t lastRunTime; /**< The duration in ticks of the task's last runtime. */
-                                   Ticks_t totalRunTime; /**< The duration in ticks of the task's total runtime. */
+typedef struct TaskRunTimeStats_s {
+  Base_t id;                                  /**< The ID of the task referenced by the task handle. */
+  Ticks_t lastRunTime; /**< The duration in ticks of the task's last runtime. */
+  Ticks_t totalRunTime; /**< The duration in ticks of the task's total runtime. */
 } TaskRunTimeStats_t;
 
 
@@ -532,13 +536,14 @@ typedef TaskRunTimeStats_t *xTaskRunTimeStats;
  * @sa xMemFree()
  *
  */
-typedef struct MemoryRegionStats_s {Word_t largestFreeEntryInBytes; /**< The largest free entry in bytes. */
-                                    Word_t smallestFreeEntryInBytes; /**< The smallest free entry in bytes. */
-                                    Word_t numberOfFreeBlocks; /**< The number of free blocks - see CONFIG_MEMORY_REGION_BLOCK_SIZE for block size in bytes. */
-                                    Word_t availableSpaceInBytes; /**< The amount of free memory in bytes (i.e., numberOfFreeBlocks * CONFIG_MEMORY_REGION_BLOCK_SIZE). */
-                                    Word_t successfulAllocations; /**< Number of successful memory allocations. */
-                                    Word_t successfulFrees; /**< Number of successful memory "frees". */
-                                    Word_t minimumEverFreeBytesRemaining; /**< Lowest water lever since system initialization of free bytes of memory. */
+typedef struct MemoryRegionStats_s {
+  Word_t largestFreeEntryInBytes;                                   /**< The largest free entry in bytes. */
+  Word_t smallestFreeEntryInBytes; /**< The smallest free entry in bytes. */
+  Word_t numberOfFreeBlocks; /**< The number of free blocks - see CONFIG_MEMORY_REGION_BLOCK_SIZE for block size in bytes. */
+  Word_t availableSpaceInBytes; /**< The amount of free memory in bytes (i.e., numberOfFreeBlocks * CONFIG_MEMORY_REGION_BLOCK_SIZE). */
+  Word_t successfulAllocations; /**< Number of successful memory allocations. */
+  Word_t successfulFrees; /**< Number of successful memory "frees". */
+  Word_t minimumEverFreeBytesRemaining; /**< Lowest water lever since system initialization of free bytes of memory. */
 } MemoryRegionStats_t;
 
 
@@ -575,11 +580,12 @@ typedef MemoryRegionStats_t *xMemoryRegionStats;
  * manipulate the task name.
  *
  */
-typedef struct TaskInfo_s {Base_t id; /**< The task identifier which is used by xTaskGetHandleById() to return the task handle. */
-                           Char_t name[CONFIG_TASK_NAME_BYTES]; /**< The ASCII name of the task which is used by xTaskGetHandleByName() to return the task handle - this is *NOT* a null terminated char array. */
-                           TaskState_t state; /**< The state the task is in which is one of four states specified in the TaskState_t enumerated data type. */
-                           Ticks_t lastRunTime; /**< The duration in ticks of the task's last runtime. */
-                           Ticks_t totalRunTime; /**< The duration in ticks of the task's total runtime. */
+typedef struct TaskInfo_s {
+  Base_t id;                          /**< The task identifier which is used by xTaskGetHandleById() to return the task handle. */
+  Char_t name[CONFIG_TASK_NAME_BYTES]; /**< The ASCII name of the task which is used by xTaskGetHandleByName() to return the task handle - this is *NOT* a null terminated char array. */
+  TaskState_t state; /**< The state the task is in which is one of four states specified in the TaskState_t enumerated data type. */
+  Ticks_t lastRunTime; /**< The duration in ticks of the task's last runtime. */
+  Ticks_t totalRunTime; /**< The duration in ticks of the task's total runtime. */
 } TaskInfo_t;
 
 
@@ -614,8 +620,9 @@ typedef TaskInfo_t *xTaskInfo;
  *
  *
  */
-typedef struct QueueMessage_s {Base_t messageBytes; /**< The number of bytes contained in the message value which cannot exceed CONFIG_MESSAGE_VALUE_BYTES. */
-                               Char_t messageValue[CONFIG_MESSAGE_VALUE_BYTES]; /**< The ASCII queue message value - this is *NOT* a null terminated character array. */
+typedef struct QueueMessage_s {
+  Base_t messageBytes;                              /**< The number of bytes contained in the message value which cannot exceed CONFIG_MESSAGE_VALUE_BYTES. */
+  Char_t messageValue[CONFIG_MESSAGE_VALUE_BYTES]; /**< The ASCII queue message value - this is *NOT* a null terminated character array. */
 } QueueMessage_t;
 
 
@@ -649,11 +656,12 @@ typedef QueueMessage_t *xQueueMessage;
  * manipulate the product name.
  *
  */
-typedef struct SystemInfo_s {Char_t productName[OS_PRODUCT_NAME_SIZE]; /**< The ASCII product name of the operating system (always "HeliOS"). */
-                             Base_t majorVersion; /**< The SemVer major version number of HeliOS. */
-                             Base_t minorVersion; /**< The SemVer minor version number of HeliOS. */
-                             Base_t patchVersion; /**< The SemVer patch version number of HeliOS. */
-                             Base_t numberOfTasks; /**< The number of tasks regardless of their state. */
+typedef struct SystemInfo_s {
+  Char_t productName[OS_PRODUCT_NAME_SIZE];                            /**< The ASCII product name of the operating system (always "HeliOS"). */
+  Base_t majorVersion; /**< The SemVer major version number of HeliOS. */
+  Base_t minorVersion; /**< The SemVer minor version number of HeliOS. */
+  Base_t patchVersion; /**< The SemVer patch version number of HeliOS. */
+  Base_t numberOfTasks; /**< The number of tasks regardless of their state. */
 } SystemInfo_t;
 
 

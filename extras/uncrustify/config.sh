@@ -494,7 +494,7 @@ nl_template_using:ignore
 nl_class_brace:ignore
 nl_class_init_args:ignore
 nl_constr_init_args:ignore
-nl_enum_own_lines:ignore
+nl_enum_own_lines:true						# modified
 nl_func_type_name:ignore
 nl_func_type_name_class:ignore
 nl_func_class_scope:ignore
@@ -549,7 +549,7 @@ nl_type_brace_init_lst:ignore
 nl_type_brace_init_lst_open:ignore
 nl_type_brace_init_lst_close:ignore
 nl_before_brace_open:false
-nl_after_brace_open:false
+nl_after_brace_open:true					# modified
 nl_after_brace_open_cmt:false
 nl_after_vbrace_open:false
 nl_after_vbrace_open_empty:false
