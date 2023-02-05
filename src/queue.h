@@ -41,7 +41,7 @@
 
   #ifdef __cplusplus
     extern "C" {
-  #endif
+  #endif /* ifdef __cplusplus */
   Queue_t *xQueueCreate(const Base_t limit_);
   void xQueueDelete(Queue_t *queue_);
   Base_t xQueueGetLength(const Queue_t *queue_);
@@ -57,5 +57,5 @@
 
   #ifdef __cplusplus
     }
-  #endif
-#endif
+  #endif /* ifdef __cplusplus */
+#endif /* ifndef QUEUE_H_ */

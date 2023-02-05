@@ -45,18 +45,18 @@
 /* Check that the system HeliOS is being targeted for has an 8-bit wide byte. */
   #if !defined(CHAR_BIT)
     #pragma message("WARNING: Unable to determine if system has an 8-bit wide byte. CHAR_BIT not defined?")
-  #else
+  #else  /* if !defined(CHAR_BIT) */
     #if CHAR_BIT != 8
       #pragma message("WARNING: System may not have an 8-bit wide byte!")
-    #endif
-  #endif
+    #endif /* if CHAR_BIT != 8 */
+  #endif /* if !defined(CHAR_BIT) */
 
 
 /* Define "true". We are not using "true" for boolean logic, we are using "true"
  * as an integer so we do not use the (1=1) and (!TRUE) constructs. */
   #if defined(true)
     #undef true
-  #endif
+  #endif /* if defined(true) */
   #define true 0x1u /* 1 */
 
 
@@ -64,23 +64,23 @@
  * "false" as an integer so we do not use the (1=1) and (!TRUE) constructs. */
   #if defined(false)
     #undef false
-  #endif
+  #endif /* if defined(false) */
   #define false 0x0u /* 0 */
 /* Define "null". */
   #if defined(null)
     #undef null
-  #endif
+  #endif /* if defined(null) */
   #if defined(__cplusplus)
     #define null 0x0 /* 0 */
-  #else
+  #else  /* if defined(__cplusplus) */
     #define null ((void *) 0x0) /* 0 */
-  #endif
+  #endif /* if defined(__cplusplus) */
 
 
 /* Define "zero". */
   #if defined(zero)
     #undef zero
-  #endif
+  #endif /* if defined(zero) */
   #define zero 0x0u /* 0 */
 
 
@@ -88,7 +88,7 @@
  * xSystemGetSystemInfo(). */
   #if defined(OS_PRODUCT_NAME_SIZE)
     #undef OS_PRODUCT_NAME_SIZE
-  #endif
+  #endif /* if defined(OS_PRODUCT_NAME_SIZE) */
   #define OS_PRODUCT_NAME_SIZE 0x6u /* 6 */
 
 
@@ -96,7 +96,7 @@
  * xSystemGetSystemInfo(). */
   #if defined(OS_PRODUCT_NAME)
     #undef OS_PRODUCT_NAME
-  #endif
+  #endif /* if defined(OS_PRODUCT_NAME) */
   #define OS_PRODUCT_NAME "HeliOS"
 
 
@@ -104,7 +104,7 @@
  * xSystemGetSystemInfo(). */
   #if defined(OS_MAJOR_VERSION_NO)
     #undef OS_MAJOR_VERSION_NO
-  #endif
+  #endif /* if defined(OS_MAJOR_VERSION_NO) */
   #define OS_MAJOR_VERSION_NO 0x0u /* 0 */
 
 
@@ -112,7 +112,7 @@
  * xSystemGetSystemInfo(). */
   #if defined(OS_MINOR_VERSION_NO)
     #undef OS_MINOR_VERSION_NO
-  #endif
+  #endif /* if defined(OS_MINOR_VERSION_NO) */
   #define OS_MINOR_VERSION_NO 0x4u /* 4 */
 
 
@@ -120,7 +120,7 @@
  * xSystemGetSystemInfo(). */
   #if defined(OS_PATCH_VERSION_NO)
     #undef OS_PATCH_VERSION_NO
-  #endif
+  #endif /* if defined(OS_PATCH_VERSION_NO) */
   #define OS_PATCH_VERSION_NO 0x0u /* 0 */
 
 
@@ -128,7 +128,7 @@
  * heap contains and the size of each block in bytes. */
   #if defined(MEMORY_REGION_SIZE_IN_BYTES)
     #undef MEMORY_REGION_SIZE_IN_BYTES
-  #endif
+  #endif /* if defined(MEMORY_REGION_SIZE_IN_BYTES) */
   #define MEMORY_REGION_SIZE_IN_BYTES CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS *CONFIG_MEMORY_REGION_BLOCK_SIZE
 
 
@@ -136,7 +136,7 @@
  * xTaskStartScheduler() to indicate whether the scheduler is running. */
   #if defined(SYSFLAG_RUNNING)
     #undef SYSFLAG_RUNNING
-  #endif
+  #endif /* if defined(SYSFLAG_RUNNING) */
   #define SYSFLAG_RUNNING() sysFlags.running
 
 
@@ -145,7 +145,7 @@
  * need to be reset. */
   #if defined(SYSFLAG_OVERFLOW)
     #undef SYSFLAG_OVERFLOW
-  #endif
+  #endif /* if defined(SYSFLAG_OVERFLOW) */
   #define SYSFLAG_OVERFLOW() sysFlags.overflow
 
 
@@ -154,69 +154,69 @@
  */
   #if defined(SYSFLAG_FAULT)
     #undef SYSFLAG_FAULT
-  #endif
+  #endif /* if defined(SYSFLAG_FAULT) */
   #define SYSFLAG_FAULT() sysFlags.fault
 
 
 /* Define a marco which makes null pointer checks more readable and concise */
   #if defined(ISNOTNULLPTR)
     #undef ISNOTNULLPTR
-  #endif
+  #endif /* if defined(ISNOTNULLPTR) */
   #define ISNOTNULLPTR(addr_) ((null) != (addr_))
 
 
 /* Define a marco which makes null pointer checks more readable and concise */
   #if defined(ISNULLPTR)
     #undef ISNULLPTR
-  #endif
+  #endif /* if defined(ISNULLPTR) */
   #define ISNULLPTR(addr_) ((null) == (addr_))
 
 
   #if defined(RET_DEFINE)
     #undef RET_DEFINE
-  #endif
+  #endif /* if defined(RET_DEFINE) */
   #define RET_DEFINE Return_t ret = ReturnFailure
 
 
   #if defined(RET_RETURN)
     #undef RET_RETURN
-  #endif
+  #endif /* if defined(RET_RETURN) */
   #define RET_RETURN return(ret)
 
 
   #if defined(RET_SUCCESS)
     #undef RET_SUCCESS
-  #endif
+  #endif /* if defined(RET_SUCCESS) */
   #define RET_SUCCESS ret = ReturnSuccess
 
 
   #if defined(ISSUCCESSFUL)
     #undef ISSUCCESSFUL
-  #endif
+  #endif /* if defined(ISSUCCESSFUL) */
   #define ISSUCCESSFUL(expr_) (ReturnSuccess == (expr_))
 
 
   #if defined(SYSASSERT)
     #undef SYSASSERT
-  #endif
+  #endif /* if defined(SYSASSERT) */
   #if defined(CONFIG_ENABLE_SYSTEM_ASSERT)
     #define SYSASSERT(expr_)  \
             if((false) == (expr_)) \
             __SystemAssert__(__FILE__, __LINE__)
-  #else
+  #else  /* if defined(CONFIG_ENABLE_SYSTEM_ASSERT) */
     #define SYSASSERT(expr_)
-  #endif
+  #endif /* if defined(CONFIG_ENABLE_SYSTEM_ASSERT) */
 
 
   #if defined(MEMORY_REGION_CHECK_OPTION_WO_ADDR)
     #undef MEMORY_REGION_CHECK_OPTION_WO_ADDR
-  #endif
+  #endif /* if defined(MEMORY_REGION_CHECK_OPTION_WO_ADDR) */
   #define MEMORY_REGION_CHECK_OPTION_WO_ADDR 0x1u /* 1 */
 
 
   #if defined(MEMORY_REGION_CHECK_OPTION_W_ADDR)
     #undef MEMORY_REGION_CHECK_OPTION_W_ADDR
-  #endif
+  #endif /* if defined(MEMORY_REGION_CHECK_OPTION_W_ADDR) */
   #define MEMORY_REGION_CHECK_OPTION_W_ADDR 0x2u /* 2 */
 
 
@@ -224,7 +224,7 @@
  * entry. */
   #if defined(ADDR2ENTRY)
     #undef ADDR2ENTRY
-  #endif
+  #endif /* if defined(ADDR2ENTRY) */
   #define ADDR2ENTRY(addr_, region_) ((MemoryEntry_t *) ((Byte_t *) (addr_) - ((region_)->entrySize * CONFIG_MEMORY_REGION_BLOCK_SIZE)))
 
 
@@ -232,50 +232,50 @@
  * address. */
   #if defined(ENTRY2ADDR)
     #undef ENTRY2ADDR
-  #endif
+  #endif /* if defined(ENTRY2ADDR) */
   #define ENTRY2ADDR(addr_, region_) ((Addr_t *) ((Byte_t *) (addr_) + ((region_)->entrySize * CONFIG_MEMORY_REGION_BLOCK_SIZE)))
 
 
   #if defined(UCHAR_TYPE)
     #undef UCHAR_TYPE
-  #endif
+  #endif /* if defined(UCHAR_TYPE) */
   #define UCHAR_TYPE unsigned char
 
 
   #if defined(UINT8_TYPE)
     #undef UINT8_TYPE
-  #endif
+  #endif /* if defined(UINT8_TYPE) */
   #define UINT8_TYPE uint8_t
 
 
   #if defined(UINT16_TYPE)
     #undef UINT16_TYPE
-  #endif
+  #endif /* if defined(UINT16_TYPE) */
   #define UINT16_TYPE uint16_t
 
 
   #if defined(UINT32_TYPE)
     #undef UINT32_TYPE
-  #endif
+  #endif /* if defined(UINT32_TYPE) */
   #define UINT32_TYPE uint32_t
 
 
   #if defined(SIZE_TYPE)
     #undef SIZE_TYPE
-  #endif
+  #endif /* if defined(SIZE_TYPE) */
   #define SIZE_TYPE size_t
 
 
   #if defined(VOID_TYPE)
     #undef VOID_TYPE
-  #endif
+  #endif /* if defined(VOID_TYPE) */
   #define VOID_TYPE void
 
 
   #if defined(DEREF_TASKPARM)
     #undef DEREF_TASKPARM
-  #endif
+  #endif /* if defined(DEREF_TASKPARM) */
   #define DEREF_TASKPARM(type_, ptr_) (*((type_ *) ptr_))
 
 
-#endif
+#endif /* ifndef DEFINES_H_ */

@@ -41,7 +41,7 @@
 
   #ifdef __cplusplus
     extern "C" {
-  #endif
+  #endif /* ifdef __cplusplus */
   StreamBuffer_t *xStreamCreate(void);
   void xStreamDelete(const StreamBuffer_t *stream_);
   Base_t xStreamSend(StreamBuffer_t *stream_, const Byte_t byte_);
@@ -53,5 +53,5 @@
 
   #ifdef __cplusplus
     }
-  #endif
-#endif
+  #endif /* ifdef __cplusplus */
+#endif /* ifndef STREAM_H_ */

@@ -31,7 +31,7 @@
   #if defined(POSIX_ARCH_OTHER)
     #if defined(_POSIX_C_SOURCE)
       #undef _POSIX_C_SOURCE
-    #endif
+    #endif /* if defined(_POSIX_C_SOURCE) */
     #define _POSIX_C_SOURCE 200809L
-  #endif
-#endif
+  #endif /* if defined(POSIX_ARCH_OTHER) */
+#endif /* ifndef POSIX_H_ */

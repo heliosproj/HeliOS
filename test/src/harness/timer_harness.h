@@ -44,10 +44,10 @@
 
   #ifdef __cplusplus
     extern "C" {
-  #endif
+  #endif /* ifdef __cplusplus */
   void timer_harness(void);
 
   #ifdef __cplusplus
     }
-  #endif
-#endif
+  #endif /* ifdef __cplusplus */
+#endif /* ifndef TIMER_HARNESS_H_ */

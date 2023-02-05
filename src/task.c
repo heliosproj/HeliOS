@@ -1021,7 +1021,7 @@ static void __TaskRun__(Task_t *task_) {
       task_->state = TaskStateSuspended;
     }
 
-#endif
+#endif /* if defined(CONFIG_TASK_WD_TIMER_ENABLE) */
 
 
   /* Check if the new total runtime is less than the previous total runtime, if
@@ -1088,4 +1088,4 @@ Ticks_t xTaskGetWDPeriod(const Task_t *task_) {
   }
 
 
-#endif
+#endif /* if defined(POSIX_ARCH_OTHER) */

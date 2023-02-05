@@ -44,12 +44,12 @@
 
   #ifdef __cplusplus
     extern "C" {
-  #endif
+  #endif /* ifdef __cplusplus */
   void task_harness(void);
   void task_harness_task(Task_t *task_, TaskParm_t *parm_);
   void task_harness_task2(Task_t *task_, TaskParm_t *parm_);
 
   #ifdef __cplusplus
     }
-  #endif
-#endif
+  #endif /* ifdef __cplusplus */
+#endif /* ifndef TASK_HARNESS_H_ */

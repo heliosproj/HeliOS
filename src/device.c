@@ -364,4 +364,4 @@ Base_t xDeviceConfigDevice(const HalfWord_t uid_, Size_t *size_, Addr_t *config_
   }
 
 
-#endif
+#endif /* if defined(POSIX_ARCH_OTHER) */

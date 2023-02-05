@@ -41,7 +41,7 @@
 
   #ifdef __cplusplus
     extern "C" {
-  #endif
+  #endif /* ifdef __cplusplus */
   Task_t *xTaskCreate(const Char_t *name_, void (*callback_)(Task_t *task_, TaskParm_t *parm_), TaskParm_t *taskParameter_);
   void xTaskDelete(const Task_t *task_);
   Task_t *xTaskGetHandleByName(const Char_t *name_);
@@ -73,9 +73,9 @@
 
   #if defined(POSIX_ARCH_OTHER)
     void __TaskStateClear__(void);
-  #endif
+  #endif /* if defined(POSIX_ARCH_OTHER) */
 
   #ifdef __cplusplus
     }
-  #endif
-#endif
+  #endif /* ifdef __cplusplus */
+#endif /* ifndef TASK_H_ */

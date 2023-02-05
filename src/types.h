@@ -213,4 +213,4 @@
   } StreamBuffer_t;
 
 
-#endif
+#endif /* ifndef TYPES_H_ */

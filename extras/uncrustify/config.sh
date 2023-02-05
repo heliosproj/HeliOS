@@ -771,17 +771,17 @@ mod_full_brace_nl_block_rem_mlcond:false
 mod_paren_on_return:force					# modified
 mod_paren_on_throw:ignore
 mod_pawn_semicolon:false
-mod_full_paren_if_bool:false
+mod_full_paren_if_bool:true					# modified
 mod_full_paren_assign_bool:false
 mod_full_paren_return_bool:false
-mod_remove_extra_semicolon:false
+mod_remove_extra_semicolon:true				# modified
 mod_remove_duplicate_include:false
 mod_add_long_function_closebrace_comment:0
 mod_add_long_namespace_closebrace_comment:0
 mod_add_long_class_closebrace_comment:0
 mod_add_long_switch_closebrace_comment:0
-mod_add_long_ifdef_endif_comment:0
-mod_add_long_ifdef_else_comment:0
+mod_add_long_ifdef_endif_comment:1			# modified
+mod_add_long_ifdef_else_comment:1			# modified
 mod_sort_case_sensitive:false
 mod_sort_import:false
 mod_sort_using:false

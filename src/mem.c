@@ -722,4 +722,4 @@ static Return_t __DefragMemoryRegion__(const volatile MemoryRegion_t *region_) {
   }
 
 
-#endif
+#endif /* if defined(POSIX_ARCH_OTHER) */

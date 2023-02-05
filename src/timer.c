@@ -334,4 +334,4 @@ static Base_t __TimerListFindTimer__(const Timer_t *timer_) {
   }
 
 
-#endif
+#endif /* if defined(POSIX_ARCH_OTHER) */

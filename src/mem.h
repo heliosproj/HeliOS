@@ -41,7 +41,7 @@
 
   #ifdef __cplusplus
     extern "C" {
-  #endif
+  #endif /* ifdef __cplusplus */
   Return_t xMemAlloc(volatile Addr_t **addr_, const Size_t size_);
   Return_t xMemFree(const volatile Addr_t *addr_);
   Return_t xMemGetUsed(Size_t *size_);
@@ -64,9 +64,9 @@
     void __MemoryRegionDumpKernel__(void);
     void __MemoryRegionDumpHeap__(void);
     void __memdump__(const volatile MemoryRegion_t *region_);
-  #endif
+  #endif /* if defined(POSIX_ARCH_OTHER) */
 
   #ifdef __cplusplus
     }
-  #endif
-#endif
+  #endif /* ifdef __cplusplus */
+#endif /* ifndef MEM_H_ */

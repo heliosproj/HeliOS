@@ -41,7 +41,7 @@
 
   #ifdef __cplusplus
     extern "C" {
-  #endif
+  #endif /* ifdef __cplusplus */
   Timer_t *xTimerCreate(const Ticks_t timerPeriod_);
   void xTimerDelete(const Timer_t *timer_);
   void xTimerChangePeriod(Timer_t *timer_, const Ticks_t timerPeriod_);
@@ -55,9 +55,9 @@
 
   #if defined(POSIX_ARCH_OTHER)
     void __TimerStateClear__(void);
-  #endif
+  #endif /* if defined(POSIX_ARCH_OTHER) */
 
   #ifdef __cplusplus
     }
-  #endif
-#endif
+  #endif /* ifdef __cplusplus */
+#endif /* ifndef TIMER_H_ */

@@ -191,6 +191,7 @@
                                                                                                                                                                                                                                                                                   *
                                                                                                                                                                                                                                                                                   *
                                                                                                                                                                                                                                                                                   *
+                                                                                                                                                                                                                                                                                  *
                                                                                                                                                                                                                                                                                   * TESTED
                                                                                                                                                                                                                                                                                   * 2022-03-24
                                                                                                                                                                                                                                                                                   */
@@ -295,17 +296,17 @@
 
     #define CONFIG_SYSTEM_ASSERT_BEHAVIOR(f, l) printf("kernel: assert at %s:%d\n", f, l)
 
-  #endif
+  #endif /* if defined(ARDUINO_ARCH_AVR) */
 
 
   #ifdef __cplusplus
     extern "C" {
-  #endif
+  #endif /* ifdef __cplusplus */
   Ticks_t __SysGetSysTicks__(void);
   void __SysInit__(void);
 
   #ifdef __cplusplus
     }
-  #endif
+  #endif /* ifdef __cplusplus */
 
-#endif
+#endif /* ifndef PORT_H_ */

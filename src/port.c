@@ -41,7 +41,7 @@
   }
 
 
-#endif
+#endif /* if defined(CMSIS_ARCH_CORTEXM) */
 
 
 Ticks_t __SysGetSysTicks__(void) {
@@ -86,7 +86,7 @@ Ticks_t __SysGetSysTicks__(void) {
 
     return((t.tv_sec) * 1000 + (t.tv_usec) / 1000);
 
-#endif
+#endif /* if defined(ARDUINO_ARCH_AVR) */
 }
 
 
@@ -124,5 +124,5 @@ void __SysInit__(void) {
 
     return;
 
-#endif
+#endif /* if defined(ARDUINO_ARCH_AVR) */
 }

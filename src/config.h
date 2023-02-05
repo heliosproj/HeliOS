@@ -108,7 +108,7 @@
  */
   #if !defined(CONFIG_MESSAGE_VALUE_BYTES)
     #define CONFIG_MESSAGE_VALUE_BYTES 0x8u /* 8 */
-  #endif
+  #endif /* if !defined(CONFIG_MESSAGE_VALUE_BYTES) */
 
 
 /**
@@ -124,7 +124,7 @@
  */
   #if !defined(CONFIG_NOTIFICATION_VALUE_BYTES)
     #define CONFIG_NOTIFICATION_VALUE_BYTES 0x8u /* 8 */
-  #endif
+  #endif /* if !defined(CONFIG_NOTIFICATION_VALUE_BYTES) */
 
 
 /**
@@ -141,7 +141,7 @@
  */
   #if !defined(CONFIG_TASK_NAME_BYTES)
     #define CONFIG_TASK_NAME_BYTES 0x8u /* 8 */
-  #endif
+  #endif /* if !defined(CONFIG_TASK_NAME_BYTES) */
 
 
 /**
@@ -161,7 +161,7 @@
  */
   #if !defined(CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS)
     #define CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS 0x18u /* 24 */
-  #endif
+  #endif /* if !defined(CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS) */
 
 
 /**
@@ -181,7 +181,7 @@
  */
   #if !defined(CONFIG_MEMORY_REGION_BLOCK_SIZE)
     #define CONFIG_MEMORY_REGION_BLOCK_SIZE 0x20u /* 32 */
-  #endif
+  #endif /* if !defined(CONFIG_MEMORY_REGION_BLOCK_SIZE) */
 
 
 /**
@@ -201,7 +201,7 @@
  */
   #if !defined(CONFIG_QUEUE_MINIMUM_LIMIT)
     #define CONFIG_QUEUE_MINIMUM_LIMIT 0x5u /* 5 */
-  #endif
+  #endif /* if !defined(CONFIG_QUEUE_MINIMUM_LIMIT) */
 
 
 /**
@@ -216,7 +216,7 @@
  */
   #if !defined(CONFIG_STREAM_BUFFER_BYTES)
     #define CONFIG_STREAM_BUFFER_BYTES 0x20u /* 32 */
-  #endif
+  #endif /* if !defined(CONFIG_STREAM_BUFFER_BYTES) */
 
 
 /**
@@ -228,7 +228,7 @@
  */
   #if !defined(CONFIG_TASK_WD_TIMER_ENABLE)
     #define CONFIG_TASK_WD_TIMER_ENABLE
-  #endif
+  #endif /* if !defined(CONFIG_TASK_WD_TIMER_ENABLE) */
 
 
 /**
@@ -242,5 +242,5 @@
  */
   #if !defined(CONFIG_DEVICE_NAME_BYTES)
     #define CONFIG_DEVICE_NAME_BYTES 0x8u /* 8 */
-  #endif
-#endif
+  #endif /* if !defined(CONFIG_DEVICE_NAME_BYTES) */
+#endif /* ifndef CONFIG_H_ */

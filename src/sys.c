@@ -50,7 +50,7 @@ void __SystemAssert__(const char *file_, const int line_) {
 
 #if defined(CONFIG_SYSTEM_ASSERT_BEHAVIOR)
     CONFIG_SYSTEM_ASSERT_BEHAVIOR(file_, line_);
-#endif
+#endif /* if defined(CONFIG_SYSTEM_ASSERT_BEHAVIOR) */
 
 
   return;
@@ -120,4 +120,4 @@ SystemInfo_t *xSystemGetSystemInfo(void) {
   }
 
 
-#endif
+#endif /* if defined(POSIX_ARCH_OTHER) */

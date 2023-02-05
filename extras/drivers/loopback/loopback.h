@@ -62,7 +62,7 @@
 
   #ifdef __cplusplus
     extern "C" {
-  #endif
+  #endif /* ifdef __cplusplus */
   Base_t TO_FUNCTION(DEVICE_NAME, _self_register)(void);
   Base_t TO_FUNCTION(DEVICE_NAME, _init)(Device_t * device_);
   Base_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t * device_, Size_t *size_, Addr_t *config_);
@@ -73,5 +73,5 @@
 
   #ifdef __cplusplus
     }
-  #endif
-#endif
+  #endif /* ifdef __cplusplus */
+#endif /* ifndef LOOPBACK_H_ */

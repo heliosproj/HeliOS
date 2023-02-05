@@ -785,7 +785,7 @@
 
   #ifdef __cplusplus
     extern "C" {
-  #endif
+  #endif /* ifdef __cplusplus */
 
 
 /**
@@ -2100,11 +2100,11 @@
       void __MemoryRegionDumpKernel__(void);
       void __MemoryRegionDumpHeap__(void);
       void __DeviceStateClear__(void);
-    #endif
+    #endif /* if defined(POSIX_ARCH_OTHER) */
 
-  #endif
+  #endif /* ifndef DOXYGEN_SHOULD_SKIP_THIS */
 
   #ifdef __cplusplus
     }
-  #endif
-#endif
+  #endif /* ifdef __cplusplus */
+#endif /* ifndef HELIOS_H_ */

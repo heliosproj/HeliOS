@@ -39,23 +39,23 @@
 
   #if !defined(UNIT_NAME_LENGTH)
     #define UNIT_NAME_LENGTH 0x40 /* 64 */
-  #endif
+  #endif /* if !defined(UNIT_NAME_LENGTH) */
 
   #if !defined(true)
     #define true 0x1 /* 1 */
-  #endif
+  #endif /* if !defined(true) */
 
   #if !defined(false)
     #define false 0x0 /* 0 */
-  #endif
+  #endif /* if !defined(false) */
 
   #if !defined(NULL)
     #if !defined(__cplusplus)
       #define NULL ((void *) 0x0) /* 0 */
-    #else
+    #else  /* if !defined(__cplusplus) */
       #define NULL 0x0 /* 0 */
-    #endif
-  #endif
+    #endif /* if !defined(__cplusplus) */
+  #endif /* if !defined(NULL) */
 
   typedef struct unit_s {
     char name[UNIT_NAME_LENGTH];
@@ -67,7 +67,7 @@
 
   #ifdef __cplusplus
     extern "C" {
-  #endif
+  #endif /* ifdef __cplusplus */
   void unit_init(void);
   void unit_begin(const char *name_);
   void unit_try(int expr_);
@@ -76,7 +76,7 @@
 
   #ifdef __cplusplus
     }
-  #endif
+  #endif /* ifdef __cplusplus */
 
 
-#endif
+#endif /* ifndef UNIT_H_ */

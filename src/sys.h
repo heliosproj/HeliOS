@@ -43,7 +43,7 @@
 
   #ifdef __cplusplus
     extern "C" {
-  #endif
+  #endif /* ifdef __cplusplus */
   void __SystemAssert__(const char *file_, const int line_);
   void xSystemInit(void);
   void xSystemHalt(void);
@@ -51,13 +51,13 @@
 
   #if defined(CONFIG_ENABLE_ARDUINO_CPP_INTERFACE)
     void __ArduinoAssert__(const char *file_, int line_);
-  #endif
+  #endif /* if defined(CONFIG_ENABLE_ARDUINO_CPP_INTERFACE) */
 
   #if defined(POSIX_ARCH_OTHER)
     void __SysStateClear__(void);
-  #endif
+  #endif /* if defined(POSIX_ARCH_OTHER) */
 
   #ifdef __cplusplus
     }
-  #endif
-#endif
+  #endif /* ifdef __cplusplus */
+#endif /* ifndef SYS_H_ */
