@@ -613,8 +613,8 @@ nl_var_def_blk_end_func_top:0
 nl_var_def_blk_start:0
 nl_var_def_blk_end:0
 nl_var_def_blk_in:0
-nl_before_block_comment:0
-nl_before_c_comment:0
+nl_before_block_comment:3					# modified
+nl_before_c_comment:3						# modified
 nl_before_cpp_comment:0
 nl_after_multiline_comment:false
 nl_after_label_colon:false
@@ -634,7 +634,7 @@ nl_between_get_set:0
 nl_property_brace:ignore
 eat_blanks_after_open_brace:false
 eat_blanks_before_close_brace:false
-nl_remove_extra_newlines:0
+nl_remove_extra_newlines:2					# modified
 nl_after_annotation:ignore
 nl_between_annotation:ignore
 nl_before_whole_file_ifdef:0
