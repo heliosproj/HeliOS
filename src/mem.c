@@ -112,7 +112,6 @@ Return_t xMemGetUsed(Size_t *size_) {
         cursor = cursor->next;
       }
 
-
       /* We need to give the user back bytes, not blocks so multiply the in-use
        * blocks by the block size in bytes. */
       *size_ = used * CONFIG_MEMORY_REGION_BLOCK_SIZE;
@@ -138,7 +137,6 @@ Return_t xMemGetSize(const volatile Addr_t *addr_, Size_t *size_) {
   if(ISNOTNULLPTR(addr_) && ISNOTNULLPTR(size_) && (false == SYSFLAG_FAULT())) {
     if(ISSUCCESSFUL(__MemoryRegionCheck__(&heap, addr_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
       tosize = ADDR2ENTRY(addr_, &heap);
-
 
       /* If the memory entry pointed to by tosize is *NOT* free, then give the
        * user back the number of bytes in-use by multiply the blocks contained
@@ -170,10 +168,10 @@ static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, co
   HalfWord_t blocks = zero;
 
 
-  if((ISNOTNULLPTR(region_) && ISNULLPTR(addr_) && (MEMORY_REGION_CHECK_OPTION_WO_ADDR == option_)) || (ISNOTNULLPTR(region_) && ISNOTNULLPTR(addr_) && (MEMORY_REGION_CHECK_OPTION_W_ADDR == option_))) {
+  if((ISNOTNULLPTR(region_) && ISNULLPTR(addr_) && (MEMORY_REGION_CHECK_OPTION_WO_ADDR == option_)) || (ISNOTNULLPTR(region_) && ISNOTNULLPTR(addr_) &&
+    (MEMORY_REGION_CHECK_OPTION_W_ADDR == option_))) {
     if(ISNOTNULLPTR(region_->start)) {
       cursor = region_->start;
-
 
       /* Check option to see if we also need to check an address in the memory
        * region, if so then set find to the memory entry address. */
@@ -184,7 +182,6 @@ static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, co
       while(ISNOTNULLPTR(cursor)) {
         if(ISSUCCESSFUL(__MemoryRegionCheckAddr__(region_, cursor))) {
           blocks += cursor->blocks;
-
 
           /* If we are checking for an address in the memory region, then see if
            * the cursor matches it and check to make sure the memory entry is
@@ -206,7 +203,8 @@ static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, co
       }
 
       if(CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS == blocks) {
-        if(((MEMORY_REGION_CHECK_OPTION_WO_ADDR == option_) && (false == SYSFLAG_FAULT())) || ((MEMORY_REGION_CHECK_OPTION_W_ADDR == option_) && (false == SYSFLAG_FAULT()) && (true == found))) {
+        if(((MEMORY_REGION_CHECK_OPTION_WO_ADDR == option_) && (false == SYSFLAG_FAULT())) || ((MEMORY_REGION_CHECK_OPTION_W_ADDR == option_) && (false ==
+          SYSFLAG_FAULT()) && (true == found))) {
           RET_SUCCESS;
         } else {
           /* Never use an else statement here to mark SYSFLAG_FAULT() = true.
@@ -274,14 +272,12 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
        * how many blocks one entry requires. */
       region_->entrySize = ((HalfWord_t) (sizeof(MemoryEntry_t) / CONFIG_MEMORY_REGION_BLOCK_SIZE));
 
-
       /* Calculate the remainder in case part of the memory entry spills over
        * into another block. */
       if(zero < ((HalfWord_t) (sizeof(MemoryEntry_t) % CONFIG_MEMORY_REGION_BLOCK_SIZE))) {
         region_->entrySize++;
       }
     }
-
 
     /* Check to see if the memory region has been initialized yet, if it hasn't
      * we need to zero out the memory and set the first block. */
@@ -320,7 +316,6 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
           fewest = cursor->blocks;
           candidate = cursor;
         }
-
 
         /* Keep track of how many free blocks remain as we need to update the
          * statistics for the memory region later. */
@@ -369,7 +364,6 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
             SYSASSERT(false);
           }
         }
-
 
         /* Update the statistics for the memory region before we are done. */
         region_->allocations++;
@@ -674,7 +668,6 @@ static Return_t __MemGetRegionStats__(const volatile MemoryRegion_t *region_, Me
           (*stats_)->successfulAllocations = region_->allocations;
           (*stats_)->successfulFrees = region_->frees;
           (*stats_)->minimumEverFreeBytesRemaining = region_->minAvailableEver;
-
 
           /* Traverse the memory region to calculate the remaining statistics.
            */

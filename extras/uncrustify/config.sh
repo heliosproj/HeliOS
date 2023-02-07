@@ -291,7 +291,7 @@ sp_vala_after_translation:ignore
 force_tab_after_define:false
 indent_columns:2							# modified
 indent_ignore_first_continue:false
-indent_continue:0
+indent_continue:-2							# modified
 indent_continue_class_head:0
 indent_single_newlines:false
 indent_param:0
@@ -653,10 +653,10 @@ pos_constr_comma:ignore
 pos_class_colon:ignore
 pos_constr_colon:ignore
 pos_shift:ignore
-code_width:0
+code_width:160								# modified
 ls_for_split_full:false
 ls_func_split_full:false
-ls_code_width:false
+ls_code_width:true							# modified
 align_keep_tabs:false
 align_with_tabs:false
 align_on_tabstop:false

@@ -187,31 +187,42 @@
 
     #define ENABLE_INTERRUPTS() xt_rsil(0)
 
-  #elif defined(ARDUINO_TEENSY_MICROMOD) || defined(ARDUINO_TEENSY40) || defined(ARDUINO_TEENSY41) || defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY35) || defined(ARDUINO_TEENSY31) || defined(ARDUINO_TEENSY32) || defined(ARDUINO_TEENSY30) || defined(ARDUINO_TEENSYLC) /*
-                                                                                                                                                                                                                                                                                  *
-                                                                                                                                                                                                                                                                                  *
-                                                                                                                                                                                                                                                                                  *
-                                                                                                                                                                                                                                                                                  *
-                                                                                                                                                                                                                                                                                  *
-                                                                                                                                                                                                                                                                                  *
-                                                                                                                                                                                                                                                                                  *
-                                                                                                                                                                                                                                                                                  *
-                                                                                                                                                                                                                                                                                  *
-                                                                                                                                                                                                                                                                                  *
-                                                                                                                                                                                                                                                                                  *
-                                                                                                                                                                                                                                                                                  *
-                                                                                                                                                                                                                                                                                  *
-                                                                                                                                                                                                                                                                                  *
-                                                                                                                                                                                                                                                                                  *
-                                                                                                                                                                                                                                                                                  *
-                                                                                                                                                                                                                                                                                  *
-                                                                                                                                                                                                                                                                                  *
-                                                                                                                                                                                                                                                                                  *
-                                                                                                                                                                                                                                                                                  *
-                                                                                                                                                                                                                                                                                  *
-                                                                                                                                                                                                                                                                                  * TESTED
-                                                                                                                                                                                                                                                                                  * 2022-03-24
-                                                                                                                                                                                                                                                                                  */
+  #elif defined(ARDUINO_TEENSY_MICROMOD) || defined(ARDUINO_TEENSY40) || defined(ARDUINO_TEENSY41) || \
+  defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY35) || defined(ARDUINO_TEENSY31) || defined(ARDUINO_TEENSY32) || \
+  defined(ARDUINO_TEENSY30) || defined(ARDUINO_TEENSYLC) /*
+                                                          *
+                                                          *
+                                                          *
+                                                          *
+                                                          *
+                                                          *
+                                                          *
+                                                          *
+                                                          *
+                                                          *
+                                                          *
+                                                          *
+                                                          *
+                                                          *
+                                                          *
+                                                          *
+                                                          *
+                                                          *
+                                                          *
+                                                          *
+                                                          *
+                                                          *
+                                                          *
+                                                          *
+                                                          *
+                                                          *
+                                                          *
+                                                          *
+                                                          *
+                                                          *
+                                                          *
+                                                          * TESTED 2022-03-24
+                                                          */
 
 
 /*UNCRUSTIFY-OFF*/
@@ -251,7 +262,8 @@
 
   #elif defined(ESP32)
 
-    #pragma message("WARNING: The ESP32 Arduino core uses FreeRTOS. HeliOS and FreeRTOS cannot coexist in the same application. If your application requires an embedded operating system, use the built-in FreeRTOS included with the ESP32 Arduino core.")
+    #pragma \
+  message("WARNING: The ESP32 Arduino core uses FreeRTOS. HeliOS and FreeRTOS cannot coexist in the same application. If your application requires an embedded operating system, use the built-in FreeRTOS included with the ESP32 Arduino core.")
 
     #define DISABLE_INTERRUPTS()
 

@@ -191,7 +191,7 @@
   #if defined(ISSUCCESSFUL)
     #undef ISSUCCESSFUL
   #endif /* if defined(ISSUCCESSFUL) */
-  #define ISSUCCESSFUL(expr_) (ReturnSuccess == (expr_))
+  #define ISSUCCESSFUL(expr_) ((ReturnSuccess) == (expr_))
 
 
   #if defined(SYSASSERT)
@@ -223,7 +223,8 @@
   #if defined(ADDR2ENTRY)
     #undef ADDR2ENTRY
   #endif /* if defined(ADDR2ENTRY) */
-  #define ADDR2ENTRY(addr_, region_) ((MemoryEntry_t *) ((Byte_t *) (addr_) - ((region_)->entrySize * CONFIG_MEMORY_REGION_BLOCK_SIZE)))
+  #define ADDR2ENTRY(addr_, region_) ((MemoryEntry_t *) ((Byte_t *) (addr_) - ((region_)->entrySize * \
+          CONFIG_MEMORY_REGION_BLOCK_SIZE)))
 
 
 /* Define a macro to convert a heap entry to it's corresponding heap memory
@@ -231,7 +232,8 @@
   #if defined(ENTRY2ADDR)
     #undef ENTRY2ADDR
   #endif /* if defined(ENTRY2ADDR) */
-  #define ENTRY2ADDR(addr_, region_) ((Addr_t *) ((Byte_t *) (addr_) + ((region_)->entrySize * CONFIG_MEMORY_REGION_BLOCK_SIZE)))
+  #define ENTRY2ADDR(addr_, region_) ((Addr_t *) ((Byte_t *) (addr_) + ((region_)->entrySize * \
+          CONFIG_MEMORY_REGION_BLOCK_SIZE)))
 
 
   #if defined(UCHAR_TYPE)

@@ -28,329 +28,428 @@
 #include "device.h"
 
 static DeviceList_t *deviceList = NULL;
-static Device_t *__DeviceListFind__(const HalfWord_t uid_);
+static Return_t __DeviceListFind__(const HalfWord_t uid_, Device_t **device_);
 
 
-Base_t xDeviceRegisterDevice(Base_t (*device_self_register_)()) {
-  Base_t ret = RETURN_FAILURE;
-
-
-  SYSASSERT(ISNOTNULLPTR(device_self_register_));
+Return_t xDeviceRegisterDevice(Return_t (*device_self_register_)()) {
+  RET_DEFINE;
 
   if(ISNOTNULLPTR(device_self_register_)) {
-    ret = (*device_self_register_)();
-    SYSASSERT(RETURN_SUCCESS == ret);
+    if(ISSUCCESSFUL((*device_self_register_)())) {
+      RET_SUCCESS;
+    } else {
+      SYSASSERT(false);
+    }
+  } else {
+    SYSASSERT(false);
   }
 
-  return(ret);
+  RET_RETURN;
 }
 
 
-Base_t __RegisterDevice__(const HalfWord_t uid_, const Char_t *name_, const DeviceState_t state_, const DeviceMode_t mode_, Base_t (*init_)(Device_t *device_), Base_t (*config_)(Device_t *device_, Size_t *size_, Addr_t *config_), Base_t (*read_)(Device_t *device_, Size_t *size_, Addr_t *data_), Base_t (*write_)(Device_t *device_, Size_t *size_, Addr_t *data_), Base_t (*simple_read_)(Device_t *device_, Word_t *data_), Base_t (*simple_write_)(Device_t *device_, Word_t *data_)) {
-  Base_t ret = RETURN_FAILURE;
+Return_t __RegisterDevice__(const HalfWord_t uid_, const Char_t *name_, const DeviceState_t state_, const DeviceMode_t mode_, Return_t (*init_)(
+    Device_t *device_), Return_t (*config_)(Device_t *device_, Size_t *size_, Addr_t *config_), Return_t (*read_)(Device_t *device_, Size_t *size_,
+  Addr_t *data_), Return_t (*write_)(Device_t *device_, Size_t *size_, Addr_t *data_), Return_t (*simple_read_)(Device_t *device_, Word_t *data_),
+  Return_t (*simple_write_)(Device_t *device_, Word_t *data_)) {
+  RET_DEFINE;
+
+
   Device_t *device = NULL;
   Device_t *cursor = NULL;
 
 
-  if(((zero < uid_) && (ISNOTNULLPTR(name_)) && (ISNOTNULLPTR(init_)) && (ISNOTNULLPTR(config_)) && (ISNOTNULLPTR(read_)) && (ISNOTNULLPTR(write_)) && (ISNOTNULLPTR(deviceList))) || ((zero < uid_) && (ISNOTNULLPTR(name_)) && (ISNOTNULLPTR(init_)) && (ISNOTNULLPTR(config_)) && (ISNOTNULLPTR(read_)) && (ISNOTNULLPTR(write_)) && (ISNULLPTR(deviceList)) && (ISSUCCESSFUL(__KernelAllocateMemory__((Addr_t *) &deviceList, sizeof(DeviceList_t)))))) {
-    SYSASSERT(ISNOTNULLPTR(deviceList));
-
+  if(((zero < uid_) && (ISNOTNULLPTR(name_)) && (ISNOTNULLPTR(init_)) && (ISNOTNULLPTR(config_)) && (ISNOTNULLPTR(read_)) && (ISNOTNULLPTR(write_)) &&
+    (ISNOTNULLPTR(simple_read_)) && (ISNOTNULLPTR(simple_write_)) && (ISNOTNULLPTR(deviceList))) || ((zero < uid_) && (ISNOTNULLPTR(name_)) && (ISNOTNULLPTR(
+      init_)) && (ISNOTNULLPTR(config_)) && (ISNOTNULLPTR(read_)) && (ISNOTNULLPTR(write_)) && (ISNOTNULLPTR(simple_read_)) && (ISNOTNULLPTR(simple_write_)) &&
+    (ISNULLPTR(deviceList)) && (ISSUCCESSFUL(__KernelAllocateMemory__((volatile Addr_t **) &deviceList, sizeof(DeviceList_t)))))) {
     if(ISNOTNULLPTR(deviceList)) {
-      device = __DeviceListFind__(uid_);
-      SYSASSERT(ISNULLPTR(device));
+      if(ISSUCCESSFUL(__DeviceListFind__(uid_, &device))) {
+        if(ISNULLPTR(device)) {
+          if(ISSUCCESSFUL(__KernelAllocateMemory__((volatile Addr_t **) &device, sizeof(Device_t)))) {
+            if(ISNOTNULLPTR(device)) {
+              if(ISSUCCESSFUL(__memcpy__(device->name, name_, CONFIG_DEVICE_NAME_BYTES))) {
+                device->uid = uid_;
+                device->state = state_;
+                device->mode = mode_;
+                device->bytesWritten = zero;
+                device->bytesRead = zero;
+                device->available = zero;
+                device->init = init_;
+                device->config = config_;
+                device->read = read_;
+                device->write = write_;
+                device->simple_read = simple_read_;
+                device->simple_write = simple_write_;
+                cursor = deviceList->head;
 
-      if(ISNULLPTR(device)) {
-        if(ISSUCCESSFUL(__KernelAllocateMemory__((volatile Addr_t **) &device, sizeof(Device_t)))) {
-          SYSASSERT(ISNOTNULLPTR(device));
+                if(ISNOTNULLPTR(deviceList->head)) {
+                  while(ISNOTNULLPTR(cursor->next)) {
+                    cursor = cursor->next;
+                  }
 
-          if(ISNOTNULLPTR(device)) {
-            device->uid = uid_;
-            __memcpy__(device->name, name_, CONFIG_DEVICE_NAME_BYTES);
-            device->state = state_;
-            device->mode = mode_;
-            device->bytesWritten = zero;
-            device->bytesRead = zero;
-            device->available = false;
-            device->init = init_;
-            device->config = config_;
-            device->read = read_;
-            device->write = write_;
-            device->simple_read = simple_read_;
-            device->simple_write = simple_write_;
-            cursor = deviceList->head;
+                  cursor->next = device;
+                } else {
+                  deviceList->head = device;
+                }
 
-            if(ISNOTNULLPTR(deviceList->head)) {
-              while(ISNOTNULLPTR(cursor->next)) {
-                cursor = cursor->next;
+                deviceList->length++;
+                RET_SUCCESS;
+              } else {
+                SYSASSERT(false);
               }
-
-              cursor->next = device;
             } else {
-              deviceList->head = device;
+              SYSASSERT(false);
             }
-
-            deviceList->length++;
-            ret = RETURN_SUCCESS;
+          } else {
+            SYSASSERT(false);
           }
+        } else {
+          SYSASSERT(false);
         }
+      } else {
+        SYSASSERT(false);
       }
+    } else {
+      SYSASSERT(false);
     }
+  } else {
+    SYSASSERT(false);
   }
 
-  return(ret);
+  RET_RETURN;
 }
 
 
-Base_t xDeviceIsAvailable(const HalfWord_t uid_) {
-  Base_t ret = false;
+Return_t xDeviceIsAvailable(const HalfWord_t uid_, Base_t *res_) {
+  RET_DEFINE;
+
+
   Device_t *device = NULL;
 
 
-  SYSASSERT(zero < uid_);
-
-  if(zero < uid_) {
-    device = __DeviceListFind__(uid_);
-    SYSASSERT(ISNOTNULLPTR(device));
-
-    if(ISNOTNULLPTR(device)) {
-      ret = device->available;
+  if((zero < uid_) && ISNOTNULLPTR(res_)) {
+    if(ISSUCCESSFUL(__DeviceListFind__(uid_, &device))) {
+      if(ISNOTNULLPTR(device)) {
+        *res_ = device->available;
+        RET_SUCCESS;
+      } else {
+        SYSASSERT(false);
+      }
+    } else {
+      SYSASSERT(false);
     }
+  } else {
+    SYSASSERT(false);
   }
 
-  return(ret);
+  RET_RETURN;
 }
 
 
 Base_t xDeviceSimpleWrite(const HalfWord_t uid_, Word_t *data_) {
-  Base_t ret = RETURN_FAILURE;
+  RET_DEFINE;
+
+
   Device_t *device = NULL;
   Word_t *data = NULL;
 
 
-  SYSASSERT(zero < uid_);
-  SYSASSERT(ISNOTNULLPTR(data_));
-  SYSASSERT(ISSUCCESSFUL(__MemoryRegionCheckHeap__(data_, MEMORY_REGION_CHECK_OPTION_W_ADDR)));
-
   if((zero < uid_) && (ISNOTNULLPTR(data_)) && (ISSUCCESSFUL(__MemoryRegionCheckHeap__(data_, MEMORY_REGION_CHECK_OPTION_W_ADDR)))) {
-    device = __DeviceListFind__(uid_);
-    SYSASSERT(ISNOTNULLPTR(device));
-
-    if(ISNOTNULLPTR(device)) {
-      SYSASSERT(((DeviceModeReadWrite == device->mode) || (DeviceModeWriteOnly == device->mode)) && (DeviceStateRunning == device->state));
-
-      if(((DeviceModeReadWrite == device->mode) || (DeviceModeWriteOnly == device->mode)) && (DeviceStateRunning == device->state)) {
-        if(ISSUCCESSFUL(__KernelAllocateMemory__((Addr_t *) &data, sizeof(Word_t)))) {
-          SYSASSERT(ISNOTNULLPTR(data));
-
-          if(ISNOTNULLPTR(data)) {
-            __memcpy__(data, data_, sizeof(Word_t));
-            ret = (*device->simple_write)(device, data);
-            device->bytesWritten += sizeof(Word_t);
-            SYSASSERT(RETURN_SUCCESS == ret);
-            __KernelFreeMemory__(data);
+    if(ISSUCCESSFUL(__DeviceListFind__(uid_, &device))) {
+      if(ISNOTNULLPTR(device)) {
+        if(((DeviceModeReadWrite == device->mode) || (DeviceModeWriteOnly == device->mode)) && (DeviceStateRunning == device->state)) {
+          if(ISSUCCESSFUL(__KernelAllocateMemory__((volatile Addr_t **) &data, sizeof(Word_t)))) {
+            if(ISNOTNULLPTR(data)) {
+              if(ISSUCCESSFUL(__memcpy__(data, data_, sizeof(Word_t)))) {
+                if(ISSUCCESSFUL((*device->simple_write)(device, data))) {
+                  if(ISSUCCESSFUL(__KernelFreeMemory__(data))) {
+                    device->bytesWritten += sizeof(Word_t);
+                    RET_SUCCESS;
+                  } else {
+                    SYSASSERT(false);
+                  }
+                } else {
+                  SYSASSERT(false);
+                }
+              } else {
+                SYSASSERT(false);
+              }
+            } else {
+              SYSASSERT(false);
+            }
+          } else {
+            SYSASSERT(false);
           }
+        } else {
+          SYSASSERT(false);
         }
+      } else {
+        SYSASSERT(false);
       }
+    } else {
+      SYSASSERT(false);
     }
+  } else {
+    SYSASSERT(false);
   }
 
-  return(ret);
+  RET_RETURN;
 }
 
 
 Base_t xDeviceWrite(const HalfWord_t uid_, Size_t *size_, Addr_t *data_) {
-  Base_t ret = RETURN_FAILURE;
+  RET_DEFINE;
+
+
   Device_t *device = NULL;
   Byte_t *data = NULL;
 
 
-  SYSASSERT(zero < uid_);
-  SYSASSERT(ISNOTNULLPTR(size_));
-  SYSASSERT(zero < *size_);
-  SYSASSERT(ISNOTNULLPTR(data_));
-  SYSASSERT(ISSUCCESSFUL(__MemoryRegionCheckHeap__(data_, MEMORY_REGION_CHECK_OPTION_W_ADDR)));
-
-  if((zero < uid_) && (ISNOTNULLPTR(size_)) && (zero < *size_) && (ISNOTNULLPTR(data_)) && (ISSUCCESSFUL(__MemoryRegionCheckHeap__(data_, MEMORY_REGION_CHECK_OPTION_W_ADDR)))) {
-    device = __DeviceListFind__(uid_);
-    SYSASSERT(ISNOTNULLPTR(device));
-
-    if(ISNOTNULLPTR(device)) {
-      SYSASSERT(((DeviceModeReadWrite == device->mode) || (DeviceModeWriteOnly == device->mode)) && (DeviceStateRunning == device->state));
-
-      if(((DeviceModeReadWrite == device->mode) || (DeviceModeWriteOnly == device->mode)) && (DeviceStateRunning == device->state)) {
-        if(ISSUCCESSFUL(__KernelAllocateMemory__((Addr_t *) &data, *size_))) {
-          SYSASSERT(ISNOTNULLPTR(data));
-
-          if(ISNOTNULLPTR(data)) {
-            __memcpy__(data, data_, *size_);
-            ret = (*device->write)(device, size_, data);
-            device->bytesWritten += *size_;
-            SYSASSERT(RETURN_SUCCESS == ret);
-            __KernelFreeMemory__(data);
+  if((zero < uid_) && (ISNOTNULLPTR(size_)) && (zero < *size_) && (ISNOTNULLPTR(data_)) && (ISSUCCESSFUL(__MemoryRegionCheckHeap__(data_,
+    MEMORY_REGION_CHECK_OPTION_W_ADDR)))) {
+    if(ISSUCCESSFUL(__DeviceListFind__(uid_, &device))) {
+      if(ISNOTNULLPTR(device)) {
+        if(((DeviceModeReadWrite == device->mode) || (DeviceModeWriteOnly == device->mode)) && (DeviceStateRunning == device->state)) {
+          if(ISSUCCESSFUL(__KernelAllocateMemory__((volatile Addr_t **) &data, *size_))) {
+            if(ISNOTNULLPTR(data)) {
+              if(ISSUCCESSFUL(__memcpy__(data, data_, *size_))) {
+                if(ISSUCCESSFUL((*device->write)(device, size_, data))) {
+                  if(ISSUCCESSFUL(__KernelFreeMemory__(data))) {
+                    device->bytesWritten += *size_;
+                    RET_SUCCESS;
+                  } else {
+                    SYSASSERT(false);
+                  }
+                } else {
+                  SYSASSERT(false);
+                }
+              } else {
+                SYSASSERT(false);
+              }
+            } else {
+              SYSASSERT(false);
+            }
+          } else {
+            SYSASSERT(false);
           }
+        } else {
+          SYSASSERT(false);
         }
+      } else {
+        SYSASSERT(false);
       }
+    } else {
+      SYSASSERT(false);
     }
+  } else {
+    SYSASSERT(false);
   }
 
-  return(ret);
+  RET_RETURN;
 }
 
 
 Base_t xDeviceSimpleRead(const HalfWord_t uid_, Word_t *data_) {
-  Base_t ret = RETURN_FAILURE;
+  RET_DEFINE;
+
+
   Device_t *device = NULL;
   Word_t *data = NULL;
 
 
-  SYSASSERT(zero < uid_);
-  SYSASSERT(ISNOTNULLPTR(data_));
-  SYSASSERT(ISSUCCESSFUL(__MemoryRegionCheckHeap__(data_, MEMORY_REGION_CHECK_OPTION_W_ADDR)));
-
   if((zero < uid_) && (ISNOTNULLPTR(data_)) && (ISSUCCESSFUL(__MemoryRegionCheckHeap__(data_, MEMORY_REGION_CHECK_OPTION_W_ADDR)))) {
-    device = __DeviceListFind__(uid_);
-    SYSASSERT(ISNOTNULLPTR(device));
-
-    if(ISNOTNULLPTR(device)) {
-      SYSASSERT(((DeviceModeReadWrite == device->mode) || (DeviceModeReadOnly == device->mode)) && (DeviceStateRunning == device->state));
-
-      if(((DeviceModeReadWrite == device->mode) || (DeviceModeReadOnly == device->mode)) && (DeviceStateRunning == device->state)) {
-        if(ISSUCCESSFUL(__KernelAllocateMemory__((Addr_t *) &data, sizeof(Word_t)))) {
-          SYSASSERT(ISNOTNULLPTR(data));
-
-          if(ISNOTNULLPTR(data)) {
-            ret = (*device->simple_read)(device, data);
-            __memcpy__(data_, data, sizeof(Word_t));
-            device->bytesRead += sizeof(Word_t);
-            SYSASSERT(RETURN_SUCCESS == ret);
-            __KernelFreeMemory__(data);
+    if(ISSUCCESSFUL(__DeviceListFind__(uid_, &device))) {
+      if(ISNOTNULLPTR(device)) {
+        if(((DeviceModeReadWrite == device->mode) || (DeviceModeReadOnly == device->mode)) && (DeviceStateRunning == device->state)) {
+          if(ISSUCCESSFUL(__KernelAllocateMemory__((volatile Addr_t **) &data, sizeof(Word_t)))) {
+            if(ISNOTNULLPTR(data)) {
+              if(ISSUCCESSFUL((*device->simple_read)(device, data))) {
+                if(ISSUCCESSFUL(__memcpy__(data_, data, sizeof(Word_t)))) {
+                  if(ISSUCCESSFUL(__KernelFreeMemory__(data))) {
+                    device->bytesRead += sizeof(Word_t);
+                    RET_SUCCESS;
+                  } else {
+                    SYSASSERT(false);
+                  }
+                } else {
+                  SYSASSERT(false);
+                }
+              } else {
+                SYSASSERT(false);
+              }
+            } else {
+              SYSASSERT(false);
+            }
+          } else {
+            SYSASSERT(false);
           }
+        } else {
+          SYSASSERT(false);
         }
+      } else {
+        SYSASSERT(false);
       }
+    } else {
+      SYSASSERT(false);
     }
+  } else {
+    SYSASSERT(false);
   }
 
-  return(ret);
+  RET_RETURN;
 }
 
 
 Base_t xDeviceRead(const HalfWord_t uid_, Size_t *size_, Addr_t *data_) {
-  Base_t ret = RETURN_FAILURE;
+  RET_DEFINE;
+
+
   Device_t *device = NULL;
-  Addr_t *data = NULL;
+  Byte_t *data = NULL;
 
 
-  SYSASSERT(zero < uid_);
-  SYSASSERT(ISNOTNULLPTR(size_));
-  SYSASSERT(zero < *size_);
-  SYSASSERT(ISNOTNULLPTR(data_));
-  SYSASSERT(ISSUCCESSFUL(__MemoryRegionCheckHeap__(data_, MEMORY_REGION_CHECK_OPTION_W_ADDR)));
-
-  if((zero < uid_) && (ISNOTNULLPTR(size_)) && (zero < *size_) && (ISNOTNULLPTR(data_)) && (ISSUCCESSFUL(__MemoryRegionCheckHeap__(data_, MEMORY_REGION_CHECK_OPTION_W_ADDR)))) {
-    device = __DeviceListFind__(uid_);
-    SYSASSERT(ISNOTNULLPTR(device));
-
-    if(ISNOTNULLPTR(device)) {
-      SYSASSERT(((DeviceModeReadWrite == device->mode) || (DeviceModeReadOnly == device->mode)) && (DeviceStateRunning == device->state));
-
-      if(((DeviceModeReadWrite == device->mode) || (DeviceModeReadOnly == device->mode)) && (DeviceStateRunning == device->state)) {
-        if(ISSUCCESSFUL(__KernelAllocateMemory__((Addr_t *) &data, *size_))) {
-          SYSASSERT(ISNOTNULLPTR(data));
-
-          if(ISNOTNULLPTR(data)) {
-            ret = (*device->read)(device, size_, data);
-            __memcpy__(data_, data, *size_);
-            device->bytesRead += *size_;
-            SYSASSERT(RETURN_SUCCESS == ret);
-            __KernelFreeMemory__(data);
+  if((zero < uid_) && (ISNOTNULLPTR(size_)) && (zero < *size_) && (ISNOTNULLPTR(data_)) && (ISSUCCESSFUL(__MemoryRegionCheckHeap__(data_,
+    MEMORY_REGION_CHECK_OPTION_W_ADDR)))) {
+    if(ISSUCCESSFUL(__DeviceListFind__(uid_, &device))) {
+      if(ISNOTNULLPTR(device)) {
+        if(((DeviceModeReadWrite == device->mode) || (DeviceModeReadOnly == device->mode)) && (DeviceStateRunning == device->state)) {
+          if(ISSUCCESSFUL(__KernelAllocateMemory__((volatile Addr_t **) &data, *size_))) {
+            if(ISNOTNULLPTR(data)) {
+              if(ISSUCCESSFUL((*device->read)(device, size_, data))) {
+                if(ISSUCCESSFUL(__memcpy__(data_, data, *size_))) {
+                  if(ISSUCCESSFUL(__KernelFreeMemory__(data))) {
+                    device->bytesRead += *size_;
+                    RET_SUCCESS;
+                  } else {
+                    SYSASSERT(false);
+                  }
+                } else {
+                  SYSASSERT(false);
+                }
+              } else {
+                SYSASSERT(false);
+              }
+            } else {
+              SYSASSERT(false);
+            }
+          } else {
+            SYSASSERT(false);
           }
+        } else {
+          SYSASSERT(false);
         }
+      } else {
+        SYSASSERT(false);
       }
+    } else {
+      SYSASSERT(false);
     }
+  } else {
+    SYSASSERT(false);
   }
 
-  return(ret);
+  RET_RETURN;
 }
 
 
-static Device_t *__DeviceListFind__(const HalfWord_t uid_) {
-  Device_t *ret = NULL;
+static Return_t __DeviceListFind__(const HalfWord_t uid_, Device_t **device_) {
+  RET_DEFINE;
+
+
   Device_t *cursor = NULL;
 
 
-  SYSASSERT(ISNOTNULLPTR(deviceList));
-  SYSASSERT(zero < uid_);
-
-  if((ISNOTNULLPTR(deviceList)) && (zero < uid_)) {
+  if(ISNOTNULLPTR(device_) && ISNOTNULLPTR(deviceList) && (zero < uid_)) {
     cursor = deviceList->head;
 
     while((ISNOTNULLPTR(cursor)) && (cursor->uid != uid_)) {
       cursor = cursor->next;
     }
 
-    SYSASSERT(ISNOTNULLPTR(cursor));
-
     if(ISNOTNULLPTR(cursor)) {
-      ret = cursor;
+      *device_ = cursor;
+      RET_SUCCESS;
+    } else {
+      *device_ = null;
+      RET_SUCCESS;
     }
+  } else {
+    SYSASSERT(false);
   }
 
-  return(ret);
+  RET_RETURN;
 }
 
 
 Base_t xDeviceInitDevice(const HalfWord_t uid_) {
-  Base_t ret = RETURN_FAILURE;
+  RET_DEFINE;
+
+
   Device_t *device = NULL;
 
-
-  SYSASSERT(zero < uid_);
 
   if(zero < uid_) {
-    device = __DeviceListFind__(uid_);
-    SYSASSERT(ISNOTNULLPTR(device));
-
-    if(ISNOTNULLPTR(device)) {
-      ret = (*device->init)(device);
-      SYSASSERT(RETURN_SUCCESS == ret);
-    }
-  }
-
-  return(ret);
-}
-
-
-Base_t xDeviceConfigDevice(const HalfWord_t uid_, Size_t *size_, Addr_t *config_) {
-  Base_t ret = RETURN_FAILURE;
-  Device_t *device = NULL;
-  Addr_t *config = NULL;
-
-
-  SYSASSERT(zero < uid_);
-  SYSASSERT(zero < *size_);
-  SYSASSERT(ISNOTNULLPTR(config_));
-  SYSASSERT(ISSUCCESSFUL(__MemoryRegionCheckHeap__(config_, MEMORY_REGION_CHECK_OPTION_W_ADDR)));
-
-  if((zero < uid_) && (zero < *size_) && (ISNOTNULLPTR(config_)) && (ISSUCCESSFUL(__MemoryRegionCheckHeap__(config_, MEMORY_REGION_CHECK_OPTION_W_ADDR)))) {
-    device = __DeviceListFind__(uid_);
-    SYSASSERT(ISNOTNULLPTR(device));
-
-    if(ISNOTNULLPTR(device)) {
-      if(ISSUCCESSFUL(__KernelAllocateMemory__((Addr_t *) &config, *size_))) {
-        SYSASSERT(ISNOTNULLPTR(config));
-
-        if(ISNOTNULLPTR(config)) {
-          __memcpy__(config, config_, *size_);
-          ret = (*device->config)(device, size_, config);
-          __memcpy__(config_, config, *size_);
-          SYSASSERT(RETURN_SUCCESS == ret);
-          __KernelFreeMemory__(config);
+    if(ISSUCCESSFUL(__DeviceListFind__(uid_, &device))) {
+      if(ISNOTNULLPTR(device)) {
+        if(ISSUCCESSFUL((*device->init)(device))) {
+          RET_SUCCESS;
         }
       }
     }
   }
 
-  return(ret);
+  RET_RETURN;
+}
+
+
+Base_t xDeviceConfigDevice(const HalfWord_t uid_, Size_t *size_, Addr_t *config_) {
+  RET_DEFINE;
+
+
+  Device_t *device = NULL;
+  Addr_t *config = NULL;
+
+
+  if((zero < uid_) && (zero < *size_) && (ISNOTNULLPTR(config_)) && (ISSUCCESSFUL(__MemoryRegionCheckHeap__(config_, MEMORY_REGION_CHECK_OPTION_W_ADDR)))) {
+    if(ISSUCCESSFUL(__DeviceListFind__(uid_, &device))) {
+      if(ISNOTNULLPTR(device)) {
+        if(ISSUCCESSFUL(__KernelAllocateMemory__((volatile Addr_t **) &config, *size_))) {
+          if(ISNOTNULLPTR(config)) {
+            if(ISSUCCESSFUL(__memcpy__(config, config_, *size_))) {
+              if(ISSUCCESSFUL((*device->config)(device, size_, config))) {
+                if(ISSUCCESSFUL(__memcpy__(config_, config, *size_))) {
+                  if(ISSUCCESSFUL(__KernelFreeMemory__(config))) {
+                    RET_SUCCESS;
+                  } else {
+                    SYSASSERT(false);
+                  }
+                } else {
+                  SYSASSERT(false);
+                }
+              } else {
+                SYSASSERT(false);
+              }
+            } else {
+              SYSASSERT(false);
+            }
+          } else {
+            SYSASSERT(false);
+          }
+        } else {
+          SYSASSERT(false);
+        }
+      } else {
+        SYSASSERT(false);
+      }
+    } else {
+      SYSASSERT(false);
+    }
+  } else {
+    SYSASSERT(false);
+  }
+
+  return (ret);
 }
 
 

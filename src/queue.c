@@ -40,7 +40,6 @@ Queue_t *xQueueCreate(Base_t limit_) {
    * less than the configured minimum limit. */
   SYSASSERT(CONFIG_QUEUE_MINIMUM_LIMIT <= limit_);
 
-
   /* Check if the end-user attempted to create a queue with a limit that is less
    * than the configured minimum limit, if they did then just head toward the
    * exit. */
@@ -48,7 +47,6 @@ Queue_t *xQueueCreate(Base_t limit_) {
     if(ISSUCCESSFUL(__KernelAllocateMemory__((volatile Addr_t **) &ret, sizeof(Queue_t)))) {
       /* Assert if xMemAlloc() didn't return our requested kernel memory. */
       SYSASSERT(ISNOTNULLPTR(ret));
-
 
       /* Check if xMemAlloc() returned our requested kernel memory. */
       if(ISNOTNULLPTR(ret)) {
@@ -72,7 +70,6 @@ void xQueueDelete(Queue_t *queue_) {
   /* Assert if the heap fails its health check or if the queue pointer the
    * end-user passed is invalid. */
   SYSASSERT(ISSUCCESSFUL(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR)));
-
 
   /* Check if the heap is health and the queue pointer the end-user passed is
    * valid. If so, continue. Otherwise, head toward the exit. */
@@ -103,12 +100,10 @@ Base_t xQueueGetLength(const Queue_t *queue_) {
    * end-user passed is invalid. */
   SYSASSERT(ISSUCCESSFUL(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR)));
 
-
   /* Check if the heap is health and the queue pointer the end-user passed is
    * valid. If so, continue. Otherwise, head toward the exit. */
   if(ISSUCCESSFUL(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
     cursor = queue_->head;
-
 
     /* Traverse the queue and count the number of messages it contains. */
     while(ISNOTNULLPTR(cursor)) {
@@ -116,11 +111,9 @@ Base_t xQueueGetLength(const Queue_t *queue_) {
       cursor = cursor->next;
     }
 
-
     /* Assert if the number of messages we counted disagrees with the queue's
      * length. This could indicate a problem. */
     SYSASSERT(messages == queue_->length);
-
 
     /* Check if the number of messages we counted agrees with the queue's
      * length. */
@@ -145,12 +138,10 @@ Base_t xQueueIsQueueEmpty(const Queue_t *queue_) {
    * end-user passed is invalid. */
   SYSASSERT(ISSUCCESSFUL(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR)));
 
-
   /* Check if the heap is health and the queue pointer the end-user passed is
    * valid. If so, continue. Otherwise, head toward the exit. */
   if(ISSUCCESSFUL(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
     cursor = queue_->head;
-
 
     /* Traverse the queue and count the number of messages it contains. */
     while(ISNOTNULLPTR(cursor)) {
@@ -158,11 +149,9 @@ Base_t xQueueIsQueueEmpty(const Queue_t *queue_) {
       cursor = cursor->next;
     }
 
-
     /* Assert if the number of messages we counted disagrees with the queue's
      * length. This could indicate a problem. */
     SYSASSERT(messages = queue_->length);
-
 
     /* Check if the number of messages we counted agrees with the queue's
      * length. Also, for the queue to be empty there must be zero messages. */
@@ -189,12 +178,10 @@ Base_t xQueueIsQueueFull(const Queue_t *queue_) {
    * end-user passed is invalid. */
   SYSASSERT(ISSUCCESSFUL(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR)));
 
-
   /* Check if the heap is health and the queue pointer the end-user passed is
    * valid. If so, continue. Otherwise, head toward the exit. */
   if(ISSUCCESSFUL(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
     cursor = queue_->head;
-
 
     /* Traverse the queue and count the number of messages it contains. */
     while(ISNOTNULLPTR(cursor)) {
@@ -202,11 +189,9 @@ Base_t xQueueIsQueueFull(const Queue_t *queue_) {
       cursor = cursor->next;
     }
 
-
     /* Assert if the number of messages we counted disagrees with the queue's
      * length. This could indicate a problem. */
     SYSASSERT(messages == queue_->length);
-
 
     /* Check if the number of messages we counted agrees with the queue's
      * length. Also, for the queue to be full the number of messages must be
@@ -233,12 +218,10 @@ Base_t xQueueMessagesWaiting(const Queue_t *queue_) {
    * end-user passed is invalid. */
   SYSASSERT(ISSUCCESSFUL(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR)));
 
-
   /* Check if the heap is health and the queue pointer the end-user passed is
    * valid. If so, continue. Otherwise, head toward the exit. */
   if(ISSUCCESSFUL(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
     cursor = queue_->head;
-
 
     /* Traverse the queue and count the number of messages it contains. */
     while(ISNOTNULLPTR(cursor)) {
@@ -246,11 +229,9 @@ Base_t xQueueMessagesWaiting(const Queue_t *queue_) {
       cursor = cursor->next;
     }
 
-
     /* Assert if the number of messages we counted disagrees with the queue's
      * length. This could indicate a problem. */
     SYSASSERT(messages == queue_->length);
-
 
     /* Check if the number of messages we counted agrees with the queue's
      * length. Also, for there to be waiting messages look to make sure the
@@ -290,13 +271,12 @@ Base_t xQueueSend(Queue_t *queue_, const Base_t messageBytes_, const Char_t *mes
   /* Assert if the user passed an invalid queue. */
   SYSASSERT(ISSUCCESSFUL(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR)));
 
-
   /* Check if the message bytes is within parameters and the message value is
    * not null. */
-  if((ISSUCCESSFUL(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) && (zero < messageBytes_) && (CONFIG_MESSAGE_VALUE_BYTES >= messageBytes_) && (ISNOTNULLPTR(messageValue_))) {
+  if((ISSUCCESSFUL(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) && (zero < messageBytes_) && (CONFIG_MESSAGE_VALUE_BYTES >=
+    messageBytes_) && (ISNOTNULLPTR(messageValue_))) {
     /* Assert if the queue is locked (locked queues can not SEND messages). */
     SYSASSERT(false == queue_->locked);
-
 
     /* check to make sure queue is NOT locked (locked queues can not SEND
      * messages). */
@@ -305,12 +285,10 @@ Base_t xQueueSend(Queue_t *queue_, const Base_t messageBytes_, const Char_t *mes
        * end-user passed is invalid. */
       SYSASSERT(ISSUCCESSFUL(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR)));
 
-
       /* Check if the heap is health and the queue pointer the end-user passed
        * is valid. If so, continue. Otherwise, head toward the exit. */
       if(ISSUCCESSFUL(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
         cursor = queue_->head;
-
 
         /* If the queue has a head, iterate through the queue and count the
          * number of messages. */
@@ -318,7 +296,6 @@ Base_t xQueueSend(Queue_t *queue_, const Base_t messageBytes_, const Char_t *mes
           messages++;
           cursor = cursor->next;
         }
-
 
         /* Assert if the queue is full. */
         SYSASSERT(queue_->limit > queue_->length);
@@ -328,7 +305,6 @@ Base_t xQueueSend(Queue_t *queue_, const Base_t messageBytes_, const Char_t *mes
          * there is a problem. */
         SYSASSERT(messages == queue_->length);
 
-
         /* Check if the queue is not full and that the messages counted agrees
          * with the queue length. */
         if((queue_->limit > queue_->length) && (messages == queue_->length)) {
@@ -336,14 +312,12 @@ Base_t xQueueSend(Queue_t *queue_, const Base_t messageBytes_, const Char_t *mes
             /* Assert if xMemAlloc() did not allocate our requested memory. */
             SYSASSERT(ISNOTNULLPTR(message));
 
-
             /* Check if the message was successfully allocated by xMemAlloc().
              */
             if(ISNOTNULLPTR(message)) {
               message->messageBytes = messageBytes_;
               __memcpy__(message->messageValue, messageValue_, CONFIG_MESSAGE_VALUE_BYTES);
               message->next = NULL;
-
 
               /* If the queue tail is not null then it already contains messages
                * and append the new message, otherwise set the head and tail to
@@ -384,7 +358,6 @@ static QueueMessage_t *__QueuePeek__(const Queue_t *queue_) {
    * end-user passed is invalid. */
   SYSASSERT(ISSUCCESSFUL(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR)));
 
-
   /* Check if the heap is health and the queue pointer the end-user passed is
    * valid. If so, continue. Otherwise, head toward the exit. */
   if(ISSUCCESSFUL(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
@@ -394,7 +367,6 @@ static QueueMessage_t *__QueuePeek__(const Queue_t *queue_) {
       if(ISSUCCESSFUL(__HeapAllocateMemory__((volatile Addr_t **) &ret, sizeof(QueueMessage_t)))) {
         /* Assert if xMemAlloc() didn't do its job. */
         SYSASSERT(ISNOTNULLPTR(ret));
-
 
         /* If xMemAlloc() allocated the heap memory then copy the message into
          * the queue message we will return. Otherwise, head toward the exit. */
@@ -427,7 +399,6 @@ static void __QueueDropmessage__(Queue_t *queue_) {
    * end-user passed is invalid. */
   SYSASSERT(ISSUCCESSFUL(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR)));
 
-
   /* Check if the heap is health and the queue pointer the end-user passed is
    * valid. If so, continue. Otherwise, head toward the exit. */
   if(ISSUCCESSFUL(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
@@ -436,7 +407,6 @@ static void __QueueDropmessage__(Queue_t *queue_) {
     if(ISNOTNULLPTR(queue_->head)) {
       message = queue_->head;
       queue_->head = queue_->head->next;
-
 
       /* If the head is now null, then let's set the tail to null too because
        * the queue is now empty. */
@@ -463,7 +433,6 @@ QueueMessage_t *xQueueReceive(Queue_t *queue_) {
    * end-user passed is invalid. */
   SYSASSERT(ISSUCCESSFUL(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR)));
 
-
   /* Check if the heap is health and the queue pointer the end-user passed is
    * valid. If so, continue. Otherwise, head toward the exit. */
   if(ISSUCCESSFUL(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
@@ -473,7 +442,6 @@ QueueMessage_t *xQueueReceive(Queue_t *queue_) {
      *  NOTE: We don't need to allocate any heap memory since xQueuePeek() has
      * already done that for us. */
     ret = __QueuePeek__(queue_);
-
 
     /* See if xQueuePeek() returned a message, if so we need to drop it before
      * we return the message. */
@@ -495,7 +463,6 @@ void xQueueLockQueue(Queue_t *queue_) {
    * end-user passed is invalid. */
   SYSASSERT(ISSUCCESSFUL(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR)));
 
-
   /* Check if the heap is health and the queue pointer the end-user passed is
    * valid. If so, continue. Otherwise, head toward the exit. */
   if(ISSUCCESSFUL(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
@@ -513,7 +480,6 @@ void xQueueUnLockQueue(Queue_t *queue_) {
   /* Assert if the heap fails its health check or if the queue pointer the
    * end-user passed is invalid. */
   SYSASSERT(ISSUCCESSFUL(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR)));
-
 
   /* Check if the heap is health and the queue pointer the end-user passed is
    * valid. If so, continue. Otherwise, head toward the exit. */
