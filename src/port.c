@@ -44,7 +44,7 @@
 #endif /* if defined(CMSIS_ARCH_CORTEXM) */
 
 
-Ticks_t __SysGetSysTicks__(void) {
+Ticks_t __PortGetSysTicks__(void) {
 
 #if defined(ARDUINO_ARCH_AVR)
 
@@ -92,7 +92,7 @@ Ticks_t __SysGetSysTicks__(void) {
 }
 
 
-void __SysInit__(void) {
+void __PortInit__(void) {
 #if defined(ARDUINO_ARCH_AVR)
 
     return;

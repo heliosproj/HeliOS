@@ -816,7 +816,7 @@ void xTaskResetTimer(Task_t *task_) {
 
   /* Check if the task was found. */
   if(RETURN_SUCCESS == __TaskListFindTask__(task_)) {
-    task_->timerStartTime = __SysGetSysTicks__();
+    task_->timerStartTime = __PortGetSysTicks__();
   }
 
   return;
@@ -869,10 +869,10 @@ void xTaskStartScheduler(void) {
 
           /* If the task pointed to by the task cursor is waiting and its timer
            * has expired, then execute it. */
-        } else if((TaskStateWaiting == cursor->state) && (zero < cursor->timerPeriod) && ((__SysGetSysTicks__() - cursor->timerStartTime) >
+        } else if((TaskStateWaiting == cursor->state) && (zero < cursor->timerPeriod) && ((__PortGetSysTicks__() - cursor->timerStartTime) >
           cursor->timerPeriod)) {
           __TaskRun__(cursor);
-          cursor->timerStartTime = __SysGetSysTicks__();
+          cursor->timerStartTime = __PortGetSysTicks__();
 
 
           /* If the task pointed to by the task cursor is running and it's total
@@ -940,7 +940,7 @@ static void __TaskRun__(Task_t *task_) {
 
 
   /* Record the start time of the task. */
-  taskStartTime = __SysGetSysTicks__();
+  taskStartTime = __PortGetSysTicks__();
 
 
   /* Call the task from its callback pointer. */
@@ -948,7 +948,7 @@ static void __TaskRun__(Task_t *task_) {
 
 
   /* Calculate the runtime and store it in last runtime. */
-  task_->lastRunTime = __SysGetSysTicks__() - taskStartTime;
+  task_->lastRunTime = __PortGetSysTicks__() - taskStartTime;
 
 
   /* Add last runtime to the total runtime. */

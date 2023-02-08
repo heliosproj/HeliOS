@@ -62,7 +62,7 @@ void xSystemInit(void) {
   sysFlags.fault = false;
   sysFlags.overflow = false;
   sysFlags.running = false;
-  __SysInit__();
+  __PortInit__();
 
   return;
 }
