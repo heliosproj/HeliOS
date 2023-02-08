@@ -147,7 +147,7 @@ Return_t xDeviceIsAvailable(const HalfWord_t uid_, Base_t *res_) {
 }
 
 
-Base_t xDeviceSimpleWrite(const HalfWord_t uid_, Word_t *data_) {
+Return_t xDeviceSimpleWrite(const HalfWord_t uid_, Word_t *data_) {
   RET_DEFINE;
 
 
@@ -198,7 +198,7 @@ Base_t xDeviceSimpleWrite(const HalfWord_t uid_, Word_t *data_) {
 }
 
 
-Base_t xDeviceWrite(const HalfWord_t uid_, Size_t *size_, Addr_t *data_) {
+Return_t xDeviceWrite(const HalfWord_t uid_, Size_t *size_, Addr_t *data_) {
   RET_DEFINE;
 
 
@@ -250,7 +250,7 @@ Base_t xDeviceWrite(const HalfWord_t uid_, Size_t *size_, Addr_t *data_) {
 }
 
 
-Base_t xDeviceSimpleRead(const HalfWord_t uid_, Word_t *data_) {
+Return_t xDeviceSimpleRead(const HalfWord_t uid_, Word_t *data_) {
   RET_DEFINE;
 
 
@@ -301,7 +301,7 @@ Base_t xDeviceSimpleRead(const HalfWord_t uid_, Word_t *data_) {
 }
 
 
-Base_t xDeviceRead(const HalfWord_t uid_, Size_t *size_, Addr_t *data_) {
+Return_t xDeviceRead(const HalfWord_t uid_, Size_t *size_, Addr_t *data_) {
   RET_DEFINE;
 
 
@@ -382,7 +382,7 @@ static Return_t __DeviceListFind__(const HalfWord_t uid_, Device_t **device_) {
 }
 
 
-Base_t xDeviceInitDevice(const HalfWord_t uid_) {
+Return_t xDeviceInitDevice(const HalfWord_t uid_) {
   RET_DEFINE;
 
 
@@ -394,16 +394,24 @@ Base_t xDeviceInitDevice(const HalfWord_t uid_) {
       if(ISNOTNULLPTR(device)) {
         if(ISSUCCESSFUL((*device->init)(device))) {
           RET_SUCCESS;
+        } else {
+          SYSASSERT(false);
         }
+      } else {
+        SYSASSERT(false);
       }
+    } else {
+      SYSASSERT(false);
     }
+  } else {
+    SYSASSERT(false);
   }
 
   RET_RETURN;
 }
 
 
-Base_t xDeviceConfigDevice(const HalfWord_t uid_, Size_t *size_, Addr_t *config_) {
+Return_t xDeviceConfigDevice(const HalfWord_t uid_, Size_t *size_, Addr_t *config_) {
   RET_DEFINE;
 
 

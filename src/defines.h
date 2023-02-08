@@ -278,4 +278,30 @@
   #define DEREF_TASKPARM(type_, ptr_) (*((type_ *) ptr_))
 
 
+  #if defined(CONCAT)
+    #undef CONCAT
+  #endif /* if defined(CONCAT) */
+  #define CONCAT(a_, b_) a_ ## b_
+
+
+  #if defined(QUOTE)
+    #undef QUOTE
+  #endif /* if defined(QUOTE) */
+  #define QUOTE(a_) #a_
+
+
+  #if defined(TO_FUNCTION)
+    #undef TO_FUNCTION
+  #endif /* if defined(TO_FUNCTION) */
+  #define TO_FUNCTION(a_, b_) CONCAT(a_, b_)
+
+
+
+  #if defined(TO_LITERAL)
+    #undef TO_LITERAL
+  #endif /* if defined(TO_LITERAL) */
+  #define TO_LITERAL(a_) QUOTE(a_)
+
+
+
 #endif /* ifndef DEFINES_H_ */

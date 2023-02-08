@@ -55,21 +55,16 @@
 /* END: DEVICE DRIVER PARAMATER BLOCK */
 
 
-  #define CONCAT(a, b) a ## b
-  #define QUOTE(a) #a
-  #define TO_FUNCTION(a, b) CONCAT(a, b)
-  #define TO_LITERAL(a) QUOTE(a)
-
   #ifdef __cplusplus
     extern "C" {
   #endif /* ifdef __cplusplus */
-  Base_t TO_FUNCTION(DEVICE_NAME, _self_register)(void);
-  Base_t TO_FUNCTION(DEVICE_NAME, _init)(Device_t * device_);
-  Base_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t * device_, Size_t *size_, Addr_t *config_);
-  Base_t TO_FUNCTION(DEVICE_NAME, _read)(Device_t * device_, Size_t *size_, Addr_t *data_);
-  Base_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t * device_, Size_t *size_, Addr_t *data_);
-  Base_t TO_FUNCTION(DEVICE_NAME, _simple_read)(Device_t * device_, Word_t *data_);
-  Base_t TO_FUNCTION(DEVICE_NAME, _simple_write)(Device_t * device_, Word_t *data_);
+  Return_t TO_FUNCTION(DEVICE_NAME, _self_register)(void);
+  Return_t TO_FUNCTION(DEVICE_NAME, _init)(Device_t * device_);
+  Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t * device_, Size_t *size_, Addr_t *config_);
+  Return_t TO_FUNCTION(DEVICE_NAME, _read)(Device_t * device_, Size_t *size_, Addr_t *data_);
+  Return_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t * device_, Size_t *size_, Addr_t *data_);
+  Return_t TO_FUNCTION(DEVICE_NAME, _simple_read)(Device_t * device_, Word_t *data_);
+  Return_t TO_FUNCTION(DEVICE_NAME, _simple_write)(Device_t * device_, Word_t *data_);
 
   #ifdef __cplusplus
     }

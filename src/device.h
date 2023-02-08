@@ -48,12 +48,12 @@
     Addr_t *data_), Return_t (*write_)(Device_t *device_, Size_t *size_, Addr_t *data_), Return_t (*simple_read_)(Device_t *device_, Word_t *data_),
     Return_t (*simple_write_)(Device_t *device_, Word_t *data_));
   Return_t xDeviceIsAvailable(const HalfWord_t uid_, Base_t *res_);
-  Base_t xDeviceSimpleWrite(const HalfWord_t uid_, Word_t *data_);
-  Base_t xDeviceWrite(const HalfWord_t uid_, Size_t *size_, Addr_t *data_);
-  Base_t xDeviceSimpleRead(const HalfWord_t uid_, Word_t *data_);
-  Base_t xDeviceRead(const HalfWord_t uid_, Size_t *size_, Addr_t *data_);
-  Base_t xDeviceInitDevice(const HalfWord_t uid_);
-  Base_t xDeviceConfigDevice(const HalfWord_t uid_, Size_t *size_, Addr_t *config_);
+  Return_t xDeviceSimpleWrite(const HalfWord_t uid_, Word_t *data_);
+  Return_t xDeviceWrite(const HalfWord_t uid_, Size_t *size_, Addr_t *data_);
+  Return_t xDeviceSimpleRead(const HalfWord_t uid_, Word_t *data_);
+  Return_t xDeviceRead(const HalfWord_t uid_, Size_t *size_, Addr_t *data_);
+  Return_t xDeviceInitDevice(const HalfWord_t uid_);
+  Return_t xDeviceConfigDevice(const HalfWord_t uid_, Size_t *size_, Addr_t *config_);
 
   #if defined(POSIX_ARCH_OTHER)
     void __DeviceStateClear__(void);

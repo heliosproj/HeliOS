@@ -1,8 +1,8 @@
 /*UNCRUSTIFY-OFF*/
 /**
- * @file loopback.h
+ * @file driver.h
  * @author Manny Peterson (mannymsp@gmail.com)
- * @brief The HeliOS loopback device driver
+ * @brief A template for HeliOS device drivers
  * @version 0.4.0
  * @date 2022-09-02
  *
@@ -25,8 +25,8 @@
  *
  */
 /*UNCRUSTIFY-ON*/
-#ifndef LOOPBACK_H_
-  #define LOOPBACK_H_
+#ifndef DRIVER_H_
+  #define DRIVER_H_
 
   #include "config.h"
   #include "defines.h"
@@ -55,23 +55,18 @@
 /* END: DEVICE DRIVER PARAMATER BLOCK */
 
 
-  #define CONCAT(a, b) a ## b
-  #define QUOTE(a) #a
-  #define TO_FUNCTION(a, b) CONCAT(a, b)
-  #define TO_LITERAL(a) QUOTE(a)
-
   #ifdef __cplusplus
     extern "C" {
   #endif /* ifdef __cplusplus */
-  Base_t TO_FUNCTION(DEVICE_NAME, _self_register)(void);
-  Base_t TO_FUNCTION(DEVICE_NAME, _init)(Device_t * device_);
-  Base_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t * device_, Size_t *size_, Addr_t *config_);
-  Base_t TO_FUNCTION(DEVICE_NAME, _read)(Device_t * device_, Size_t *size_, Addr_t *data_);
-  Base_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t * device_, Size_t *size_, Addr_t *data_);
-  Base_t TO_FUNCTION(DEVICE_NAME, _simple_read)(Device_t * device_, Word_t *data_);
-  Base_t TO_FUNCTION(DEVICE_NAME, _simple_write)(Device_t * device_, Word_t *data_);
+  Return_t TO_FUNCTION(DEVICE_NAME, _self_register)(void);
+  Return_t TO_FUNCTION(DEVICE_NAME, _init)(Device_t * device_);
+  Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t * device_, Size_t *size_, Addr_t *config_);
+  Return_t TO_FUNCTION(DEVICE_NAME, _read)(Device_t * device_, Size_t *size_, Addr_t *data_);
+  Return_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t * device_, Size_t *size_, Addr_t *data_);
+  Return_t TO_FUNCTION(DEVICE_NAME, _simple_read)(Device_t * device_, Word_t *data_);
+  Return_t TO_FUNCTION(DEVICE_NAME, _simple_write)(Device_t * device_, Word_t *data_);
 
   #ifdef __cplusplus
     }
   #endif /* ifdef __cplusplus */
-#endif /* ifndef LOOPBACK_H_ */
+#endif /* ifndef DRIVER_H_ */
