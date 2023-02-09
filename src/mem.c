@@ -94,12 +94,12 @@ Return_t xMemGetUsed(Size_t *size_) {
   RET_DEFINE;
 
 
-  MemoryEntry_t *cursor = NULL;
+  MemoryEntry_t *cursor = null;
   HalfWord_t used = zero;
 
 
   if(ISNOTNULLPTR(size_) && (false == SYSFLAG_FAULT())) {
-    if(ISSUCCESSFUL(__MemoryRegionCheck__(&heap, NULL, MEMORY_REGION_CHECK_OPTION_WO_ADDR))) {
+    if(ISSUCCESSFUL(__MemoryRegionCheck__(&heap, null, MEMORY_REGION_CHECK_OPTION_WO_ADDR))) {
       cursor = heap.start;
 
       while(ISNOTNULLPTR(cursor)) {
@@ -131,7 +131,7 @@ Return_t xMemGetSize(const volatile Addr_t *addr_, Size_t *size_) {
   RET_DEFINE;
 
 
-  MemoryEntry_t *tosize = NULL;
+  MemoryEntry_t *tosize = null;
 
 
   if(ISNOTNULLPTR(addr_) && ISNOTNULLPTR(size_) && (false == SYSFLAG_FAULT())) {
@@ -162,8 +162,8 @@ static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, co
   RET_DEFINE;
 
 
-  MemoryEntry_t *cursor = NULL;
-  MemoryEntry_t *find = NULL;
+  MemoryEntry_t *cursor = null;
+  MemoryEntry_t *find = null;
   Base_t found = false;
   HalfWord_t blocks = zero;
 
@@ -210,6 +210,7 @@ static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, co
           /* Never use an else statement here to mark SYSFLAG_FAULT() = true.
            * Just because an address wasn't found does not mean the memory
            * region is corrupt. */
+          SYSASSERT(false);
         }
       } else {
         SYSASSERT(false);
@@ -257,9 +258,9 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
   HalfWord_t requested = zero;
   HalfWord_t free = zero;
   HalfWord_t fewest = -1;
-  MemoryEntry_t *cursor = NULL;
-  MemoryEntry_t *candidate = NULL;
-  MemoryEntry_t *candidateNext = NULL;
+  MemoryEntry_t *cursor = null;
+  MemoryEntry_t *candidate = null;
+  MemoryEntry_t *candidateNext = null;
 
 
   DISABLE_INTERRUPTS();
@@ -287,13 +288,13 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
       if(ISSUCCESSFUL(__memset__(region_->mem, zero, MEMORY_REGION_SIZE_IN_BYTES))) {
         region_->start->free = true;
         region_->start->blocks = CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS;
-        region_->start->next = NULL;
+        region_->start->next = null;
       } else {
         SYSASSERT(false);
       }
     }
 
-    if(ISSUCCESSFUL(__MemoryRegionCheck__(region_, NULL, MEMORY_REGION_CHECK_OPTION_WO_ADDR))) {
+    if(ISSUCCESSFUL(__MemoryRegionCheck__(region_, null, MEMORY_REGION_CHECK_OPTION_WO_ADDR))) {
       /* Because the user supplied requested memory in bytes, calculate how many
        * blocks have been requested. */
       requested = ((HalfWord_t) (size_ / CONFIG_MEMORY_REGION_BLOCK_SIZE));
@@ -391,7 +392,7 @@ static Return_t __free__(volatile MemoryRegion_t *region_, const volatile Addr_t
   RET_DEFINE;
 
 
-  MemoryEntry_t *free = NULL;
+  MemoryEntry_t *free = null;
 
 
   DISABLE_INTERRUPTS();
@@ -650,11 +651,11 @@ static Return_t __MemGetRegionStats__(const volatile MemoryRegion_t *region_, Me
   RET_DEFINE;
 
 
-  MemoryEntry_t *cursor = NULL;
+  MemoryEntry_t *cursor = null;
 
 
   if(ISNOTNULLPTR(region_) && ISNOTNULLPTR(stats_) && (false == SYSFLAG_FAULT())) {
-    if(ISSUCCESSFUL(__MemoryRegionCheck__(region_, NULL, MEMORY_REGION_CHECK_OPTION_WO_ADDR))) {
+    if(ISSUCCESSFUL(__MemoryRegionCheck__(region_, null, MEMORY_REGION_CHECK_OPTION_WO_ADDR))) {
       if(ISSUCCESSFUL(__HeapAllocateMemory__((volatile Addr_t **) stats_, sizeof(MemoryRegionStats_t)))) {
         cursor = region_->start;
 
@@ -710,11 +711,11 @@ static Return_t __DefragMemoryRegion__(const volatile MemoryRegion_t *region_) {
   RET_DEFINE;
 
 
-  MemoryEntry_t *cursor = NULL;
+  MemoryEntry_t *cursor = null;
 
 
   if(ISNOTNULLPTR(region_) && (false == SYSFLAG_FAULT())) {
-    if(ISSUCCESSFUL(__MemoryRegionCheck__(region_, NULL, MEMORY_REGION_CHECK_OPTION_WO_ADDR))) {
+    if(ISSUCCESSFUL(__MemoryRegionCheck__(region_, null, MEMORY_REGION_CHECK_OPTION_WO_ADDR))) {
       cursor = region_->start;
 
       while(ISNOTNULLPTR(cursor)) {

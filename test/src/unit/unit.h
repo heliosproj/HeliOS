@@ -49,13 +49,13 @@
     #define false 0x0 /* 0 */
   #endif /* if !defined(false) */
 
-  #if !defined(NULL)
+  #if !defined(null)
     #if !defined(__cplusplus)
-      #define NULL ((void *) 0x0) /* 0 */
+      #define null ((void *) 0x0) /* 0 */
     #else  /* if !defined(__cplusplus) */
-      #define NULL 0x0 /* 0 */
+      #define null 0x0 /* 0 */
     #endif /* if !defined(__cplusplus) */
-  #endif /* if !defined(NULL) */
+  #endif /* if !defined(null) */
   typedef struct unit_s {
     char name[UNIT_NAME_LENGTH];
     int32_t begun;

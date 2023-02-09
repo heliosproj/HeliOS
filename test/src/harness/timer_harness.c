@@ -29,13 +29,13 @@
 
 
 void timer_harness(void) {
-  Timer_t *timer01 = NULL;
+  Timer_t *timer01 = null;
 
 
   unit_begin("xTimerCreate()");
-  timer01 = NULL;
+  timer01 = null;
   timer01 = xTimerCreate(0x3E8);
-  unit_try(NULL != timer01);
+  unit_try(null != timer01);
   unit_end();
   unit_begin("xTimerGetPeriod()");
   unit_try(0x3E8 == xTimerGetPeriod(timer01));

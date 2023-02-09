@@ -43,7 +43,7 @@ void device_harness(void) {
   unit_end();
   unit_begin("xDeviceWrite()");
   bytes1 = 0x26u;
-  data1 = NULL;
+  data1 = null;
   unit_try(ISSUCCESSFUL(xMemAlloc((volatile Addr_t **) &data1, bytes1)));
   memcpy(data1, "THIS IS A TEST OF THE LOOPBACK DEVICE\0", bytes1);
   unit_try(ISSUCCESSFUL(xDeviceWrite(0xFFu, &bytes1, data1)));
@@ -55,7 +55,7 @@ void device_harness(void) {
   unit_end();
   unit_begin("xDeviceRead()");
   bytes2 = 0x26u;
-  data2 = NULL;
+  data2 = null;
   unit_try(ISSUCCESSFUL(xMemAlloc((volatile Addr_t **) &data2, bytes2)));
   unit_try(ISSUCCESSFUL(xDeviceRead(0xFFu, &bytes2, data2)));
   unit_try(0x26u == bytes2);

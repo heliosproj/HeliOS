@@ -45,7 +45,7 @@ void setup() {
 
   /* Create a task to demonstrate event driven multitasking using
   a task timer. */
-  xTask task = xTaskCreate("PRINT", taskPrint_main, NULL);
+  xTask task = xTaskCreate("PRINT", taskPrint_main, null);
 
   /* Check to make sure the task was created by xTaskCreate() before
   attempting to use the task. */

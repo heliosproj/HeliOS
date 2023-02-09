@@ -86,7 +86,7 @@ void xSystemHalt(void) {
  * version and how many tasks are currently in the running, suspended or waiting
  * states. */
 SystemInfo_t *xSystemGetSystemInfo(void) {
-  SystemInfo_t *ret = NULL;
+  SystemInfo_t *ret = null;
 
 
   if(ISSUCCESSFUL(__HeapAllocateMemory__((volatile Addr_t **) &ret, sizeof(SystemInfo_t)))) {

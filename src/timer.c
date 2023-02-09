@@ -29,7 +29,7 @@
 
 
 /* Declare and initialize the task list to null. */
-static TimerList_t *timerList = NULL;
+static TimerList_t *timerList = null;
 static Base_t __TimerListFindTimer__(const Timer_t *timer_);
 
 
@@ -40,8 +40,8 @@ static Base_t __TimerListFindTimer__(const Timer_t *timer_);
  * xTimerCreate() must be freed by xTimerDelete(). Unlike tasks, timers may be
  * created and deleted within tasks. */
 Timer_t *xTimerCreate(const Ticks_t timerPeriod_) {
-  Timer_t *ret = NULL;
-  Timer_t *cursor = NULL;
+  Timer_t *ret = null;
+  Timer_t *cursor = null;
 
 
   /* Check if xMemAlloc() did its job. */
@@ -53,7 +53,7 @@ Timer_t *xTimerCreate(const Ticks_t timerPeriod_) {
         ret->state = TimerStateSuspended;
         ret->timerPeriod = timerPeriod_;
         ret->timerStartTime = __PortGetSysTicks__();
-        ret->next = NULL;
+        ret->next = null;
         cursor = timerList->head;
 
 
@@ -83,8 +83,8 @@ Timer_t *xTimerCreate(const Ticks_t timerPeriod_) {
 /* The xTimerDelete() system call will delete a timer. For more information on
  * timers see the xTaskTimerCreate() system call. */
 void xTimerDelete(const Timer_t *timer_) {
-  Timer_t *cursor = NULL;
-  Timer_t *timerPrevious = NULL;
+  Timer_t *cursor = null;
+  Timer_t *timerPrevious = null;
 
 
   /* Assert if the timer cannot be found in the timer list. */
@@ -94,7 +94,7 @@ void xTimerDelete(const Timer_t *timer_) {
   /* Check if the timer was found in the timer list. */
   if(RETURN_SUCCESS == __TimerListFindTimer__(timer_)) {
     cursor = timerList->head;
-    timerPrevious = NULL;
+    timerPrevious = null;
 
 
     /* Check if the timer cursor is not null a if the timer cursor equals the
@@ -278,7 +278,7 @@ void xTimerStop(Timer_t *timer_) {
  * health of the heap by calling __MemoryRegionCheckKernel__(). */
 static Base_t __TimerListFindTimer__(const Timer_t *timer_) {
   Base_t ret = RETURN_FAILURE;
-  Timer_t *cursor = NULL;
+  Timer_t *cursor = null;
 
 
   /* Assert if the timer list is not initialized. */
@@ -328,7 +328,7 @@ static Base_t __TimerListFindTimer__(const Timer_t *timer_) {
 
 
   void __TimerStateClear__(void) {
-    timerList = NULL;
+    timerList = null;
 
     return;
   }

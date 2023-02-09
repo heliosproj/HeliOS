@@ -70,7 +70,7 @@ void setup() {
 
   /* Create a task to print all task information every
   second. */
-  xTask task = xTaskCreate("PRINT", taskPrint_main, NULL);
+  xTask task = xTaskCreate("PRINT", taskPrint_main, null);
 
   /* Check to make sure the task was created by xTaskCreate() before
   attempting to use the task. */

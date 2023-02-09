@@ -93,7 +93,7 @@ void setup() {
 
   /* Create a task to demonstrate how heap memory is managed
   in HeliOS. */
-  xTask task = xTaskCreate("PRINT", taskPrint_main, NULL);
+  xTask task = xTaskCreate("PRINT", taskPrint_main, null);
 
   /* Check to make sure the task was created by xTaskCreate() before
   attempting to use the task. */

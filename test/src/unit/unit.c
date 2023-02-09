@@ -27,11 +27,11 @@
 /*UNCRUSTIFY-ON*/
 #include "unit.h"
 
-static unit_t *unit = NULL;
+static unit_t *unit = null;
 
 
 void unit_init(void) {
-  if(NULL == unit) {
+  if(null == unit) {
     unit = (unit_t *) calloc(1, sizeof(unit_t));
     printf("unit: intializing...\n");
   }
@@ -41,7 +41,7 @@ void unit_init(void) {
 
 
 void unit_begin(const char *name_) {
-  if((NULL != unit) & (NULL != name_) & (false == unit->begun)) {
+  if((null != unit) & (null != name_) & (false == unit->begun)) {
     strncpy(unit->name, name_, UNIT_NAME_LENGTH);
     unit->begun = true;
     unit->failed = false;
@@ -53,7 +53,7 @@ void unit_begin(const char *name_) {
 
 
 void unit_try(int expr_) {
-  if((NULL != unit) & (true == unit->begun) & (false == expr_)) {
+  if((null != unit) & (true == unit->begun) & (false == expr_)) {
     unit->failed = true;
   }
 
@@ -62,7 +62,7 @@ void unit_try(int expr_) {
 
 
 void unit_end(void) {
-  if((NULL != unit) & (true == unit->begun)) {
+  if((null != unit) & (true == unit->begun)) {
     if(true == unit->failed) {
       printf("unit: end: %s failed\n", unit->name);
       unit->fail++;
@@ -81,7 +81,7 @@ void unit_end(void) {
 
 
 void unit_exit(void) {
-  if(NULL != unit) {
+  if(null != unit) {
     printf("unit: failed = %" PRId32 "\n", unit->fail);
     printf("unit: passed = %" PRId32 "\n", unit->pass);
     printf("unit: total = %" PRId32 "\n", unit->fail + unit->pass);

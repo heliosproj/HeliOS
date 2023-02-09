@@ -45,8 +45,8 @@ void memory_harness(void) {
   Base_t *mem01;
   MemoryRegionStats_t *mem02;
   MemoryRegionStats_t *mem03;
-  Task_t *mem04 = NULL;
-  Byte_t *mem05 = NULL;
+  Task_t *mem04 = null;
+  Byte_t *mem05 = null;
 
 
   unit_begin("Unit test for memory region defragmentation routine");
@@ -81,7 +81,7 @@ void memory_harness(void) {
     }
 
     unit_try(ISSUCCESSFUL(xMemAlloc((volatile Addr_t **) &tests[i].ptr, sizes[i])));
-    unit_try(NULL != tests[i].ptr);
+    unit_try(null != tests[i].ptr);
     used += tests[i].blocks * CONFIG_MEMORY_REGION_BLOCK_SIZE;
     unit_try(ISSUCCESSFUL(xMemGetUsed(&actual)));
     unit_try(used == actual);
@@ -104,9 +104,9 @@ void memory_harness(void) {
   unit_try(ISSUCCESSFUL(xMemFree(mem05)));
   unit_end();
   unit_begin("xMemAlloc()");
-  mem01 = NULL;
+  mem01 = null;
   unit_try(ISSUCCESSFUL(xMemAlloc((volatile Addr_t **) &mem01, 0x32000u)));
-  unit_try(NULL != mem01);
+  unit_try(null != mem01);
   unit_end();
   unit_begin("xMemGetUsed()");
   unit_try(ISSUCCESSFUL(xMemGetUsed(&actual)));
@@ -117,9 +117,9 @@ void memory_harness(void) {
   unit_try(0x32020u == actual);
   unit_end();
   unit_begin("xMemGetHeapStats()");
-  mem02 = NULL;
+  mem02 = null;
   unit_try(ISSUCCESSFUL(xMemGetHeapStats(&mem02)));
-  unit_try(NULL != mem02);
+  unit_try(null != mem02);
   unit_try(0x63A0u == mem02->availableSpaceInBytes);
   unit_try(0x63A0u == mem02->largestFreeEntryInBytes);
   unit_try(0x0u == mem02->minimumEverFreeBytesRemaining);
@@ -129,13 +129,13 @@ void memory_harness(void) {
   unit_try(0x21u == mem02->successfulFrees);
   unit_end();
   unit_begin("xMemGetKernelStats()");
-  mem03 = NULL;
-  mem04 = NULL;
-  mem04 = xTaskCreate((Char_t *) "NONE", memory_harness_task, NULL);
-  unit_try(NULL != mem04);
+  mem03 = null;
+  mem04 = null;
+  mem04 = xTaskCreate((Char_t *) "NONE", memory_harness_task, null);
+  unit_try(null != mem04);
   xTaskDelete(mem04);
   unit_try(ISSUCCESSFUL(xMemGetKernelStats(&mem03)));
-  unit_try(NULL != mem03);
+  unit_try(null != mem03);
   unit_try(0x383C0u == mem03->availableSpaceInBytes);
   unit_try(0x383C0u == mem03->largestFreeEntryInBytes);
   unit_try(0x38340u == mem03->minimumEverFreeBytesRemaining);

@@ -29,15 +29,15 @@
 
 
 void stream_harness(void) {
-  StreamBuffer_t *stream01 = NULL;
+  StreamBuffer_t *stream01 = null;
   HalfWord_t i = zero;
   HalfWord_t stream02 = zero;
-  Byte_t *stream03 = NULL;
+  Byte_t *stream03 = null;
 
 
   unit_begin("xStreamCreate()");
   stream01 = xStreamCreate();
-  unit_try(NULL != stream01);
+  unit_try(null != stream01);
   unit_end();
   unit_begin("xStreamSend()");
 
@@ -58,7 +58,7 @@ void stream_harness(void) {
   unit_end();
   unit_begin("xStreamReceive()");
   stream03 = xStreamReceive(stream01, &stream02);
-  unit_try(NULL != stream03);
+  unit_try(null != stream03);
   unit_try(0x20u == stream02);
   unit_try(0x1Fu == stream03[0x1Fu]);
   unit_end();

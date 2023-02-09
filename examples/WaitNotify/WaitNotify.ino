@@ -62,7 +62,7 @@ void taskReceiver_main(xTask task_, xTaskParm parm_) {
 
     /* Grab the notification value. It is important
     to note that the notification value is not
-    a NULL terminated string. So... */
+    a null terminated string. So... */
     str += notif->notificationValue;
 
     Serial.println(str);
@@ -83,8 +83,8 @@ void setup() {
 
   /* Create two tasks, one to send the direct-to-task notification, the
   other to receive it. */
-  xTask sender = xTaskCreate("SENDER", taskSender_main, NULL);
-  xTask receiver = xTaskCreate("RECEIVER", taskReceiver_main, NULL);
+  xTask sender = xTaskCreate("SENDER", taskSender_main, null);
+  xTask receiver = xTaskCreate("RECEIVER", taskReceiver_main, null);
 
   /* Check to make sure both tasks were created. */
   if (sender && receiver) {

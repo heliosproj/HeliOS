@@ -27,7 +27,7 @@
 /*UNCRUSTIFY-ON*/
 #include "device.h"
 
-static DeviceList_t *deviceList = NULL;
+static DeviceList_t *deviceList = null;
 static Return_t __DeviceListFind__(const HalfWord_t uid_, Device_t **device_);
 
 
@@ -55,8 +55,8 @@ Return_t __RegisterDevice__(const HalfWord_t uid_, const Char_t *name_, const De
   RET_DEFINE;
 
 
-  Device_t *device = NULL;
-  Device_t *cursor = NULL;
+  Device_t *device = null;
+  Device_t *cursor = null;
 
 
   if(((zero < uid_) && (ISNOTNULLPTR(name_)) && (ISNOTNULLPTR(init_)) && (ISNOTNULLPTR(config_)) && (ISNOTNULLPTR(read_)) && (ISNOTNULLPTR(write_)) &&
@@ -125,7 +125,7 @@ Return_t xDeviceIsAvailable(const HalfWord_t uid_, Base_t *res_) {
   RET_DEFINE;
 
 
-  Device_t *device = NULL;
+  Device_t *device = null;
 
 
   if((zero < uid_) && ISNOTNULLPTR(res_)) {
@@ -151,8 +151,8 @@ Return_t xDeviceSimpleWrite(const HalfWord_t uid_, Word_t *data_) {
   RET_DEFINE;
 
 
-  Device_t *device = NULL;
-  Word_t *data = NULL;
+  Device_t *device = null;
+  Word_t *data = null;
 
 
   if((zero < uid_) && (ISNOTNULLPTR(data_)) && (ISSUCCESSFUL(__MemoryRegionCheckHeap__(data_, MEMORY_REGION_CHECK_OPTION_W_ADDR)))) {
@@ -202,8 +202,8 @@ Return_t xDeviceWrite(const HalfWord_t uid_, Size_t *size_, Addr_t *data_) {
   RET_DEFINE;
 
 
-  Device_t *device = NULL;
-  Byte_t *data = NULL;
+  Device_t *device = null;
+  Byte_t *data = null;
 
 
   if((zero < uid_) && (ISNOTNULLPTR(size_)) && (zero < *size_) && (ISNOTNULLPTR(data_)) && (ISSUCCESSFUL(__MemoryRegionCheckHeap__(data_,
@@ -254,8 +254,8 @@ Return_t xDeviceSimpleRead(const HalfWord_t uid_, Word_t *data_) {
   RET_DEFINE;
 
 
-  Device_t *device = NULL;
-  Word_t *data = NULL;
+  Device_t *device = null;
+  Word_t *data = null;
 
 
   if((zero < uid_) && (ISNOTNULLPTR(data_)) && (ISSUCCESSFUL(__MemoryRegionCheckHeap__(data_, MEMORY_REGION_CHECK_OPTION_W_ADDR)))) {
@@ -305,8 +305,8 @@ Return_t xDeviceRead(const HalfWord_t uid_, Size_t *size_, Addr_t *data_) {
   RET_DEFINE;
 
 
-  Device_t *device = NULL;
-  Byte_t *data = NULL;
+  Device_t *device = null;
+  Byte_t *data = null;
 
 
   if((zero < uid_) && (ISNOTNULLPTR(size_)) && (zero < *size_) && (ISNOTNULLPTR(data_)) && (ISSUCCESSFUL(__MemoryRegionCheckHeap__(data_,
@@ -357,7 +357,7 @@ static Return_t __DeviceListFind__(const HalfWord_t uid_, Device_t **device_) {
   RET_DEFINE;
 
 
-  Device_t *cursor = NULL;
+  Device_t *cursor = null;
 
 
   if(ISNOTNULLPTR(device_) && ISNOTNULLPTR(deviceList) && (zero < uid_)) {
@@ -386,7 +386,7 @@ Return_t xDeviceInitDevice(const HalfWord_t uid_) {
   RET_DEFINE;
 
 
-  Device_t *device = NULL;
+  Device_t *device = null;
 
 
   if(zero < uid_) {
@@ -415,8 +415,8 @@ Return_t xDeviceConfigDevice(const HalfWord_t uid_, Size_t *size_, Addr_t *confi
   RET_DEFINE;
 
 
-  Device_t *device = NULL;
-  Addr_t *config = NULL;
+  Device_t *device = null;
+  Addr_t *config = null;
 
 
   if((zero < uid_) && (zero < *size_) && (ISNOTNULLPTR(config_)) && (ISSUCCESSFUL(__MemoryRegionCheckHeap__(config_, MEMORY_REGION_CHECK_OPTION_W_ADDR)))) {
@@ -465,7 +465,7 @@ Return_t xDeviceConfigDevice(const HalfWord_t uid_, Size_t *size_, Addr_t *confi
 
 
   void __DeviceStateClear__(void) {
-    deviceList = NULL;
+    deviceList = null;
 
     return;
   }

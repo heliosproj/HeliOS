@@ -61,9 +61,9 @@ void setup() {
 
   /* Create a new HeliOS task, give it an ASCII name, a reference to
   the task's main function. Since no task paramater is desired,
-  simply set the task paramater argument to NULL. */
-  xTask shortTask = xTaskCreate("SHORT", taskShort_main, NULL);
-  xTask longTask = xTaskCreate("LONG", taskLong_main, NULL);
+  simply set the task paramater argument to null. */
+  xTask shortTask = xTaskCreate("SHORT", taskShort_main, null);
+  xTask longTask = xTaskCreate("LONG", taskLong_main, null);
 
 
   /* Check to make sure the task was created by xTaskCreate() before

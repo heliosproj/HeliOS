@@ -29,7 +29,7 @@
 
 
 /* Declare and initialize the task list to null. */
-static TaskList_t *taskList = NULL;
+static TaskList_t *taskList = null;
 static void __RunTimeReset__(void);
 static void __TaskRun__(Task_t *task_);
 static Base_t __TaskListFindTask__(const Task_t *task_);
@@ -46,8 +46,8 @@ static SchedulerState_t schedulerState = SchedulerStateRunning;
  * system calls cannot be called within a task. They MUST be called outside of
  * the scope of the HeliOS scheduler. */
 Task_t *xTaskCreate(const Char_t *name_, void (*callback_)(Task_t *task_, TaskParm_t *parm_), TaskParm_t *taskParameter_) {
-  Task_t *ret = NULL;
-  Task_t *cursor = NULL;
+  Task_t *ret = null;
+  Task_t *cursor = null;
 
 
   SYSASSERT(false == SYSFLAG_RUNNING());
@@ -71,7 +71,7 @@ Task_t *xTaskCreate(const Char_t *name_, void (*callback_)(Task_t *task_, TaskPa
           ret->state = TaskStateSuspended;
           ret->callback = callback_;
           ret->taskParameter = taskParameter_;
-          ret->next = NULL;
+          ret->next = null;
           cursor = taskList->head;
 
           /* Check if this is the first task in the task list. If it is just set
@@ -103,8 +103,8 @@ Task_t *xTaskCreate(const Char_t *name_, void (*callback_)(Task_t *task_, TaskPa
  * xTaskDelete() system calls cannot be called within a task. They MUST be
  * called outside of the scope of the HeliOS scheduler. */
 void xTaskDelete(const Task_t *task_) {
-  Task_t *cursor = NULL;
-  Task_t *taskPrevious = NULL;
+  Task_t *cursor = null;
+  Task_t *taskPrevious = null;
 
 
   /* Assert if we are within the scope of the scheduler. */
@@ -159,8 +159,8 @@ void xTaskDelete(const Task_t *task_) {
  * dependent on the CONFIG_TASK_NAME_BYTES setting. The name is compared
  * byte-for-byte so the name is case sensitive. */
 Task_t *xTaskGetHandleByName(const Char_t *name_) {
-  Task_t *ret = NULL;
-  Task_t *cursor = NULL;
+  Task_t *ret = null;
+  Task_t *cursor = null;
   Base_t res = false;
 
 
@@ -200,8 +200,8 @@ Task_t *xTaskGetHandleByName(const Char_t *name_) {
 /* The xTaskGetHandleById() system call will return a pointer to the task handle
  * specified by its identifier. */
 Task_t *xTaskGetHandleById(const Base_t id_) {
-  Task_t *ret = NULL;
-  Task_t *cursor = NULL;
+  Task_t *ret = null;
+  Task_t *cursor = null;
 
 
   /* Assert if the task list has not been initialized. We wouldn't have to do
@@ -242,8 +242,8 @@ Task_t *xTaskGetHandleById(const Base_t id_) {
 TaskRunTimeStats_t *xTaskGetAllRunTimeStats(Base_t *tasks_) {
   Base_t task = zero;
   Base_t tasks = zero;
-  Task_t *cursor = NULL;
-  TaskRunTimeStats_t *ret = NULL;
+  Task_t *cursor = null;
+  TaskRunTimeStats_t *ret = null;
 
 
   /* Assert if the task list has not been initialized. We wouldn't have to do
@@ -309,7 +309,7 @@ TaskRunTimeStats_t *xTaskGetAllRunTimeStats(Base_t *tasks_) {
  * the xTaskRunTimeStats type. The memory must be freed by calling xMemFree()
  * after it is no longer needed. */
 TaskRunTimeStats_t *xTaskGetTaskRunTimeStats(const Task_t *task_) {
-  TaskRunTimeStats_t *ret = NULL;
+  TaskRunTimeStats_t *ret = null;
 
 
   /* Assert if the task cannot be found in the task list. */
@@ -339,7 +339,7 @@ TaskRunTimeStats_t *xTaskGetTaskRunTimeStats(const Task_t *task_) {
 Base_t xTaskGetNumberOfTasks(void) {
   Base_t ret = zero;
   Base_t tasks = zero;
-  Task_t *cursor = NULL;
+  Task_t *cursor = null;
 
 
   /* Assert if the task list is not initialized. */
@@ -375,7 +375,7 @@ Base_t xTaskGetNumberOfTasks(void) {
  * the details of the task including its identifier, name, state and runtime
  * statistics. */
 TaskInfo_t *xTaskGetTaskInfo(const Task_t *task_) {
-  TaskInfo_t *ret = NULL;
+  TaskInfo_t *ret = null;
 
 
   /* Assert if the task cannot be found. */
@@ -409,8 +409,8 @@ TaskInfo_t *xTaskGetTaskInfo(const Task_t *task_) {
 TaskInfo_t *xTaskGetAllTaskInfo(Base_t *tasks_) {
   Base_t task = zero;
   Base_t tasks = zero;
-  Task_t *cursor = NULL;
-  TaskInfo_t *ret = NULL;
+  Task_t *cursor = null;
+  TaskInfo_t *ret = null;
 
 
   /* Assert if the task list has not been initialized. */
@@ -493,7 +493,7 @@ TaskState_t xTaskGetTaskState(const Task_t *task_) {
  * of the task is dependent on the setting CONFIG_TASK_NAME_BYTES. The task name
  * is NOT a null terminated char array. */
 Char_t *xTaskGetName(const Task_t *task_) {
-  Char_t *ret = NULL;
+  Char_t *ret = null;
 
 
   /* Assert if the task cannot be found. */
@@ -626,7 +626,7 @@ Base_t xTaskNotifyGive(Task_t *task_, const Base_t notificationBytes_, const Cha
  * xTaskNotification structure containing the notification bytes and its value.
  */
 TaskNotification_t *xTaskNotifyTake(Task_t *task_) {
-  TaskNotification_t *ret = NULL;
+  TaskNotification_t *ret = null;
 
 
   /* Assert if the task cannot be found. */
@@ -767,7 +767,7 @@ Ticks_t xTaskGetPeriod(const Task_t *task_) {
  * heap by calling __MemoryRegionCheckKernel__(). */
 static Base_t __TaskListFindTask__(const Task_t *task_) {
   Base_t ret = RETURN_FAILURE;
-  Task_t *cursor = NULL;
+  Task_t *cursor = null;
 
 
   /* Assert if the task list is not initialized. */
@@ -826,8 +826,8 @@ void xTaskResetTimer(Task_t *task_) {
 /* The xTaskStartScheduler() system call passes control to the HeliOS scheduler.
  */
 void xTaskStartScheduler(void) {
-  Task_t *runTask = NULL;
-  Task_t *cursor = NULL;
+  Task_t *runTask = null;
+  Task_t *cursor = null;
 
 
   /* Underflow unsigned least runtime to get maximum value */
@@ -893,7 +893,7 @@ void xTaskStartScheduler(void) {
        * execute. */
       if(ISNOTNULLPTR(runTask)) {
         __TaskRun__(runTask);
-        runTask = NULL;
+        runTask = null;
       }
 
       /* Underflow unsigned least runtime to get maximum value */
@@ -910,7 +910,7 @@ void xTaskStartScheduler(void) {
 /* If the runtime overflow flag is set, then __RunTimeReset__() is called to
  * reset all of the total runtimes on tasks to their last runtime. */
 static void __RunTimeReset__(void) {
-  Task_t *cursor = NULL;
+  Task_t *cursor = null;
 
 
   cursor = taskList->head;
@@ -1021,7 +1021,7 @@ Ticks_t xTaskGetWDPeriod(const Task_t *task_) {
 
 
   void __TaskStateClear__(void) {
-    taskList = NULL;
+    taskList = null;
 
     return;
   }

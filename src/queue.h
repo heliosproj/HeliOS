@@ -42,18 +42,18 @@
   #ifdef __cplusplus
     extern "C" {
   #endif /* ifdef __cplusplus */
-  Queue_t *xQueueCreate(const Base_t limit_);
-  void xQueueDelete(Queue_t *queue_);
-  Base_t xQueueGetLength(const Queue_t *queue_);
-  Base_t xQueueIsQueueEmpty(const Queue_t *queue_);
-  Base_t xQueueIsQueueFull(const Queue_t *queue_);
-  Base_t xQueueMessagesWaiting(const Queue_t *queue_);
-  Base_t xQueueSend(Queue_t *queue_, const Base_t messageBytes_, const Char_t *messageValue_);
-  QueueMessage_t *xQueuePeek(const Queue_t *queue_);
-  void xQueueDropMessage(Queue_t *queue_);
-  QueueMessage_t *xQueueReceive(Queue_t *queue_);
-  void xQueueLockQueue(Queue_t *queue_);
-  void xQueueUnLockQueue(Queue_t *queue_);
+  Return_t xQueueCreate(Queue_t **queue_, const Base_t limit_);
+  Return_t xQueueDelete(Queue_t *queue_);
+  Return_t xQueueGetLength(const Queue_t *queue_, Base_t *res_);
+  Return_t xQueueIsQueueEmpty(const Queue_t *queue_, Base_t *res_);
+  Return_t xQueueIsQueueFull(const Queue_t *queue_, Base_t *res_);
+  Return_t xQueueMessagesWaiting(const Queue_t *queue_, Base_t *res_);
+  Return_t xQueueSend(Queue_t *queue_, const Base_t messageBytes_, const Char_t *messageValue_);
+  Return_t xQueuePeek(const Queue_t *queue_, QueueMessage_t **message_);
+  Return_t xQueueDropMessage(Queue_t *queue_);
+  Return_t xQueueReceive(Queue_t *queue_, QueueMessage_t **message_);
+  Return_t xQueueLockQueue(Queue_t *queue_);
+  Return_t xQueueUnLockQueue(Queue_t *queue_);
 
   #ifdef __cplusplus
     }

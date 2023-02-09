@@ -31,7 +31,7 @@
 /* The xStreamCreate() system call will create a new stream. Streams are fast
  * for sending streams of bytes between tasks. */
 StreamBuffer_t *xStreamCreate() {
-  StreamBuffer_t *ret = NULL;
+  StreamBuffer_t *ret = null;
 
 
   if(ISSUCCESSFUL(__KernelAllocateMemory__((volatile Addr_t **) &ret, sizeof(StreamBuffer_t)))) {
@@ -102,7 +102,7 @@ Base_t xStreamSend(StreamBuffer_t *stream_, const Byte_t byte_) {
 /* The xStreamReceive() system call will receive all waiting bytes in the
  * stream. */
 Byte_t *xStreamReceive(const StreamBuffer_t *stream_, HalfWord_t *bytes_) {
-  Byte_t *ret = NULL;
+  Byte_t *ret = null;
 
 
   /* Assert if the bytes paramater is null. It can't be null because we need to
