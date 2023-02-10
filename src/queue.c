@@ -379,9 +379,17 @@ Return_t xQueueReceive(Queue_t *queue_, QueueMessage_t **message_) {
       if(ISNOTNULLPTR(*message_)) {
         if(ISSUCCESSFUL(__QueueDropmessage__(queue_))) {
           RET_SUCCESS;
+        } else {
+          SYSASSERT(false);
         }
+      } else {
+        SYSASSERT(false);
       }
+    } else {
+      SYSASSERT(false);
     }
+  } else {
+    SYSASSERT(false);
   }
 
   RET_RETURN;
