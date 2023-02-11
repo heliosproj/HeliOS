@@ -42,14 +42,14 @@
   #ifdef __cplusplus
     extern "C" {
   #endif /* ifdef __cplusplus */
-  StreamBuffer_t *xStreamCreate(void);
-  void xStreamDelete(const StreamBuffer_t *stream_);
-  Base_t xStreamSend(StreamBuffer_t *stream_, const Byte_t byte_);
-  Byte_t *xStreamReceive(const StreamBuffer_t *stream_, HalfWord_t *bytes_);
-  HalfWord_t xStreamBytesAvailable(const StreamBuffer_t *stream_);
-  void xStreamReset(const StreamBuffer_t *stream_);
-  Base_t xStreamIsEmpty(const StreamBuffer_t *stream_);
-  Base_t xStreamIsFull(const StreamBuffer_t *stream_);
+  Return_t xStreamCreate(StreamBuffer_t **stream_);
+  Return_t xStreamDelete(const StreamBuffer_t *stream_);
+  Return_t xStreamSend(StreamBuffer_t *stream_, const Byte_t byte_);
+  Return_t xStreamReceive(const StreamBuffer_t *stream_, HalfWord_t *bytes_, Byte_t **data_);
+  Return_t xStreamBytesAvailable(const StreamBuffer_t *stream_, HalfWord_t *bytes_);
+  Return_t xStreamReset(const StreamBuffer_t *stream_);
+  Return_t xStreamIsEmpty(const StreamBuffer_t *stream_, Base_t *res_);
+  Return_t xStreamIsFull(const StreamBuffer_t *stream_, Base_t *res_);
 
   #ifdef __cplusplus
     }

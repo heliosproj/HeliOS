@@ -33,31 +33,36 @@ void stream_harness(void) {
   HalfWord_t i = zero;
   HalfWord_t stream02 = zero;
   Byte_t *stream03 = null;
+  HalfWord_t stream04 = zero;
+  Base_t res;
 
 
   unit_begin("xStreamCreate()");
-  stream01 = xStreamCreate();
+  unit_try(ISSUCCESSFUL(xStreamCreate(&stream01)));
   unit_try(null != stream01);
   unit_end();
   unit_begin("xStreamSend()");
 
   for(i = 0; i < CONFIG_STREAM_BUFFER_BYTES; i++) {
-    unit_try(RETURN_SUCCESS == xStreamSend(stream01, i));
+    unit_try(ISSUCCESSFUL(xStreamSend(stream01, i)));
   }
 
-  unit_try(RETURN_FAILURE == xStreamSend(stream01, zero));
+  unit_try(!ISSUCCESSFUL(xStreamSend(stream01, zero)));
   unit_end();
   unit_begin("xStreamIsFull()");
-  unit_try(true == xStreamIsFull(stream01));
+  unit_try(ISSUCCESSFUL(xStreamIsFull(stream01, &res)));
+  unit_try(true == res);
   unit_end();
   unit_begin("xStreamIsEmpty()");
-  unit_try(false == xStreamIsEmpty(stream01));
+  unit_try(ISSUCCESSFUL(xStreamIsEmpty(stream01, &res)));
+  unit_try(false == res);
   unit_end();
   unit_begin("xStreamBytesAvailable()");
-  unit_try(0x20u == xStreamBytesAvailable(stream01));
+  unit_try(ISSUCCESSFUL(xStreamBytesAvailable(stream01, &stream04)));
+  unit_try(0x20u == stream04);
   unit_end();
   unit_begin("xStreamReceive()");
-  stream03 = xStreamReceive(stream01, &stream02);
+  unit_try(ISSUCCESSFUL(xStreamReceive(stream01, &stream02, &stream03)));
   unit_try(null != stream03);
   unit_try(0x20u == stream02);
   unit_try(0x1Fu == stream03[0x1Fu]);
@@ -65,18 +70,25 @@ void stream_harness(void) {
   unit_begin("xStreamReset()");
 
   for(i = 0; i < CONFIG_STREAM_BUFFER_BYTES; i++) {
-    unit_try(RETURN_SUCCESS == xStreamSend(stream01, i));
+    unit_try(ISSUCCESSFUL(xStreamSend(stream01, i)));
   }
 
-  unit_try(RETURN_FAILURE == xStreamSend(stream01, zero));
-  unit_try(true == xStreamIsFull(stream01));
-  xStreamReset(stream01);
-  unit_try(true == xStreamIsEmpty(stream01));
+  unit_try(!ISSUCCESSFUL(xStreamSend(stream01, zero)));
+  unit_try(ISSUCCESSFUL(xStreamIsFull(stream01, &res)));
+  unit_try(true == res);
+  unit_try(ISSUCCESSFUL(xStreamReset(stream01)));
+  unit_try(ISSUCCESSFUL(xStreamIsEmpty(stream01, &res)));
+  unit_try(true == res);
   unit_end();
   unit_begin("xStreamDelete()");
-  xStreamReset(stream01);
-  xStreamDelete(stream01);
-  unit_try(RETURN_FAILURE == xStreamSend(stream01, zero));
+
+  if(ISSUCCESSFUL(xStreamReset(stream01))) {
+  }
+
+  if(ISSUCCESSFUL(xStreamDelete(stream01))) {
+  }
+
+  unit_try(!ISSUCCESSFUL(xStreamSend(stream01, zero)));
   unit_end();
 
   return;
