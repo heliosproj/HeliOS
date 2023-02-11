@@ -57,14 +57,23 @@ void __SystemAssert__(const char *file_, const int line_) {
 
 
 /* The xSystemInit() system call initializes the system. */
-void xSystemInit(void) {
-  __MemoryInit__();
-  sysFlags.fault = false;
-  sysFlags.overflow = false;
-  sysFlags.running = false;
-  __PortInit__();
+Return_t xSystemInit(void) {
+  RET_DEFINE;
 
-  return;
+  if(ISSUCCESSFUL(__MemoryInit__())) {
+    if(ISSUCCESSFUL(__PortInit__())) {
+      sysFlags.fault = false;
+      sysFlags.overflow = false;
+      sysFlags.running = false;
+      RET_SUCCESS;
+    } else {
+      SYSASSERT(false);
+    }
+  } else {
+    SYSASSERT(false);
+  }
+
+  RET_RETURN;
 }
 
 

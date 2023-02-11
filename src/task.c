@@ -816,7 +816,8 @@ void xTaskResetTimer(Task_t *task_) {
 
   /* Check if the task was found. */
   if(RETURN_SUCCESS == __TaskListFindTask__(task_)) {
-    task_->timerStartTime = __PortGetSysTicks__();
+    if(ISSUCCESSFUL(__PortGetSysTicks__(&task_->timerStartTime))) {
+    }
   }
 
   return;
@@ -828,6 +829,7 @@ void xTaskResetTimer(Task_t *task_) {
 void xTaskStartScheduler(void) {
   Task_t *runTask = null;
   Task_t *cursor = null;
+  Ticks_t currSysTicks = zero;
 
 
   /* Underflow unsigned least runtime to get maximum value */
@@ -869,10 +871,10 @@ void xTaskStartScheduler(void) {
 
           /* If the task pointed to by the task cursor is waiting and its timer
            * has expired, then execute it. */
-        } else if((TaskStateWaiting == cursor->state) && (zero < cursor->timerPeriod) && ((__PortGetSysTicks__() - cursor->timerStartTime) >
-          cursor->timerPeriod)) {
+        } else if((TaskStateWaiting == cursor->state) && (zero < cursor->timerPeriod) && ISSUCCESSFUL(__PortGetSysTicks__(&currSysTicks)) && ((currSysTicks -
+          cursor->timerStartTime) > cursor->timerPeriod)) {
           __TaskRun__(cursor);
-          cursor->timerStartTime = __PortGetSysTicks__();
+          __PortGetSysTicks__(&cursor->timerStartTime);
 
 
           /* If the task pointed to by the task cursor is running and it's total
@@ -933,6 +935,7 @@ static void __RunTimeReset__(void) {
 static void __TaskRun__(Task_t *task_) {
   Ticks_t taskStartTime = zero;
   Ticks_t prevTotalRunTime = zero;
+  Ticks_t currSysTicks = zero;
 
 
   /* Record the total runtime before executing the task. */
@@ -940,15 +943,16 @@ static void __TaskRun__(Task_t *task_) {
 
 
   /* Record the start time of the task. */
-  taskStartTime = __PortGetSysTicks__();
+  __PortGetSysTicks__(&taskStartTime);
 
 
   /* Call the task from its callback pointer. */
   (*task_->callback)(task_, task_->taskParameter);
+  __PortGetSysTicks__(&currSysTicks);
 
 
   /* Calculate the runtime and store it in last runtime. */
-  task_->lastRunTime = __PortGetSysTicks__() - taskStartTime;
+  task_->lastRunTime = currSysTicks - taskStartTime;
 
 
   /* Add last runtime to the total runtime. */

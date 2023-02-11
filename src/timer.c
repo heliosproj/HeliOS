@@ -52,7 +52,7 @@ Timer_t *xTimerCreate(const Ticks_t timerPeriod_) {
       if(ISNOTNULLPTR(ret)) {
         ret->state = TimerStateSuspended;
         ret->timerPeriod = timerPeriod_;
-        ret->timerStartTime = __PortGetSysTicks__();
+        __PortGetSysTicks__(&ret->timerStartTime);
         ret->next = null;
         cursor = timerList->head;
 
@@ -194,6 +194,7 @@ Base_t xTimerIsTimerActive(const Timer_t *timer_) {
  * xTimerReset(). */
 Base_t xTimerHasTimerExpired(const Timer_t *timer_) {
   Base_t ret = false;
+  Ticks_t currSysTicks = zero;
 
 
   /* Assert if the timer cannot be found in the timer list. */
@@ -209,12 +210,13 @@ Base_t xTimerHasTimerExpired(const Timer_t *timer_) {
     /* Assert if the timer period is zero, it must be greater than zero for the
      * timer to expire. */
     SYSASSERT(zero < timer_->timerPeriod);
+    __PortGetSysTicks__(&currSysTicks);
 
 
     /* The timer should be running, the timer period should be greater than zero
      * and the elapsed time is greater than the timer period. If so, then return
      * true. */
-    if((TimerStateRunning == timer_->state) && (zero < timer_->timerPeriod) && ((__PortGetSysTicks__() - timer_->timerStartTime) > timer_->timerPeriod)) {
+    if((TimerStateRunning == timer_->state) && (zero < timer_->timerPeriod) && ((currSysTicks - timer_->timerStartTime) > timer_->timerPeriod)) {
       ret = true;
     }
   }
@@ -232,7 +234,7 @@ void xTimerReset(Timer_t *timer_) {
 
   /* Check if the timer was found in the timer list. */
   if(RETURN_SUCCESS == __TimerListFindTimer__(timer_)) {
-    timer_->timerStartTime = __PortGetSysTicks__();
+    __PortGetSysTicks__(&timer_->timerStartTime);
   }
 
   return;

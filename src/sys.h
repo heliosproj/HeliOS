@@ -45,7 +45,7 @@
     extern "C" {
   #endif /* ifdef __cplusplus */
   void __SystemAssert__(const char *file_, const int line_);
-  void xSystemInit(void);
+  Return_t xSystemInit(void);
   void xSystemHalt(void);
   SystemInfo_t *xSystemGetSystemInfo(void);
 
