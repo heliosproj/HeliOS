@@ -200,7 +200,7 @@
   #if defined(CONFIG_ENABLE_SYSTEM_ASSERT)
     #define SYSASSERT(expr_)  \
             if((false) == (expr_)) \
-            __SystemAssert__(__FILE__, __LINE__)
+            xSystemAssert(__FILE__, __LINE__)
   #else  /* if defined(CONFIG_ENABLE_SYSTEM_ASSERT) */
     #define SYSASSERT(expr_)
   #endif /* if defined(CONFIG_ENABLE_SYSTEM_ASSERT) */

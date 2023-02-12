@@ -28,35 +28,37 @@
 #include "sys.h"
 
 
-/* "You are not expected to understand this."
- *  Thank you for the best OS on Earth, Dennis. */
+/*UNCRUSTIFY-OFF*/
+/*
+ * If the new process paused because it was
+ * swapped out, set the stack level to the last call
+ * to savu(u_ssav).  This means that the return
+ * which is executed immediately after the call to aretu
+ * actually returns from the last routine which did
+ * the savu.
+ *
+ * You are not expected to understand this.
+ */
 
-
-/* Declare and set the system flags to their default values. */
+/*
+ * Thank you Ken Thompson and Dennis Ritchie for
+ * UNIX and your inspiration.
+ */
+/*UNCRUSTIFY-ON*/
 SysFlags_t sysFlags;
 
 
-/* The __SystemAssert__() system call will be called when the SYSASSERT() macro
- * evaluates false. In order for there to be any effect,
- * CONFIG_ENABLE_SYSTEM_ASSERT and CONFIG_SYSTEM_ASSERT_BEHAVIOR must be
- * defined.
- *
- *  __SystemAssert__() should NOT be called directly because it is an INTERNAL
- * function name and may change in future releases. Instead use the SYSASSERT()
- * C macro. */
-void __SystemAssert__(const char *file_, const int line_) {
-  /* Do not modify this system call directly. Define the behavior (code) through
-   * the CONFIG_SYSTEM_ASSERT_BEHAVIOR setting in the config.h header file. */
+Return_t xSystemAssert(const char *file_, const int line_) {
+  RET_DEFINE;
 
 #if defined(CONFIG_SYSTEM_ASSERT_BEHAVIOR)
     CONFIG_SYSTEM_ASSERT_BEHAVIOR(file_, line_);
+    RET_SUCCESS;
 #endif /* if defined(CONFIG_SYSTEM_ASSERT_BEHAVIOR) */
-
-  return;
+  RET_RETURN;
 }
 
 
-/* The xSystemInit() system call initializes the system. */
 Return_t xSystemInit(void) {
   RET_DEFINE;
 
@@ -77,44 +79,41 @@ Return_t xSystemInit(void) {
 }
 
 
-/* The xSystemHalt() system call halts the system. */
 void xSystemHalt(void) {
-  /* Don't want to service interrupts anymore so disable them. */
   DISABLE_INTERRUPTS();
 
-
-  /* Put the processor into an infinite loop. */
   for(;;) {
     /* Do nothing - literally. */
   }
 }
 
 
-/* The xSystemGetSystemInfo() system call will return the type xSystemInfo
- * containing information about the system including the OS (product) name, its
- * version and how many tasks are currently in the running, suspended or waiting
- * states. */
-SystemInfo_t *xSystemGetSystemInfo(void) {
-  SystemInfo_t *ret = null;
+Return_t xSystemGetSystemInfo(SystemInfo_t **info_) {
+  RET_DEFINE;
 
+  if(ISNOTNULLPTR(info_) && ISSUCCESSFUL(__HeapAllocateMemory__((volatile Addr_t **) info_, sizeof(SystemInfo_t)))) {
+    if(ISNOTNULLPTR(*info_)) {
+      if(ISSUCCESSFUL(__memcpy__((*info_)->productName, OS_PRODUCT_NAME, OS_PRODUCT_NAME_SIZE))) {
+        (*info_)->majorVersion = OS_MAJOR_VERSION_NO;
+        (*info_)->minorVersion = OS_MINOR_VERSION_NO;
+        (*info_)->patchVersion = OS_PATCH_VERSION_NO;
 
-  if(ISSUCCESSFUL(__HeapAllocateMemory__((volatile Addr_t **) &ret, sizeof(SystemInfo_t)))) {
-    /* Assert if xMemAlloc() failed to allocate the heap memory. */
-    SYSASSERT(ISNOTNULLPTR(ret));
-
-
-    /* Check if system info is not null to make sure xMemAlloc() successfully
-     * allocated the memory. */
-    if(ISNOTNULLPTR(ret)) {
-      __memcpy__(ret->productName, OS_PRODUCT_NAME, OS_PRODUCT_NAME_SIZE);
-      ret->majorVersion = OS_MAJOR_VERSION_NO;
-      ret->minorVersion = OS_MINOR_VERSION_NO;
-      ret->patchVersion = OS_PATCH_VERSION_NO;
-      ret->numberOfTasks = xTaskGetNumberOfTasks();
+        if(ISSUCCESSFUL(xTaskGetNumberOfTasks((*info_)->numberOfTasks))) {
+          RET_SUCCESS;
+        } else {
+          SYSASSERT(false);
+        }
+      } else {
+        SYSASSERT(false);
+      }
+    } else {
+      SYSASSERT(false);
     }
+  } else {
+    SYSASSERT(false);
   }
 
-  return(ret);
+  RET_RETURN;
 }
 
 

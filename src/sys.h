@@ -44,10 +44,10 @@
   #ifdef __cplusplus
     extern "C" {
   #endif /* ifdef __cplusplus */
-  void __SystemAssert__(const char *file_, const int line_);
+  Return_t xSystemAssert(const char *file_, const int line_);
   Return_t xSystemInit(void);
   void xSystemHalt(void);
-  SystemInfo_t *xSystemGetSystemInfo(void);
+  Return_t xSystemGetSystemInfo(SystemInfo_t **info_);
 
   #if defined(CONFIG_ENABLE_ARDUINO_CPP_INTERFACE)
     void __ArduinoAssert__(const char *file_, int line_);
