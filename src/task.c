@@ -28,129 +28,119 @@
 #include "task.h"
 
 
-/* Declare and initialize the task list to null. */
+
 static TaskList_t *taskList = null;
 static void __RunTimeReset__(void);
 static void __TaskRun__(Task_t *task_);
-static Base_t __TaskListFindTask__(const Task_t *task_);
+static Return_t __TaskListFindTask__(const Task_t *task_);
 
 
 
-/* Declare and initialize the scheduler state to running. This is controlled
- * with xTaskResumeAll() and xTaskSuspendAll(). */
 static SchedulerState_t schedulerState = SchedulerStateRunning;
 
 
-/* The xTaskCreate() system call will create a new task. The task will be
- * created with its state set to suspended. The xTaskCreate() and xTaskDelete()
- * system calls cannot be called within a task. They MUST be called outside of
- * the scope of the HeliOS scheduler. */
-Task_t *xTaskCreate(const Char_t *name_, void (*callback_)(Task_t *task_, TaskParm_t *parm_), TaskParm_t *taskParameter_) {
-  Task_t *ret = null;
+Return_t xTaskCreate(Task_t **task_, const Char_t *name_, void (*callback_)(Task_t *task_, TaskParm_t *parm_), TaskParm_t *taskParameter_) {
+  RET_DEFINE;
+
+
   Task_t *cursor = null;
 
 
-  SYSASSERT(false == SYSFLAG_RUNNING());
-  SYSASSERT(ISNOTNULLPTR(name_));
-  SYSASSERT(ISNOTNULLPTR(callback_));
-
-  /* Make sure we aren't inside the scope of the scheduler and that the end-user
-   * didn't pass any null pointers.
-   *
-   *  NOTE: It is okay for the task paramater to be null. */
-  if((false == SYSFLAG_RUNNING()) && (ISNOTNULLPTR(name_)) && (ISNOTNULLPTR(callback_))) {
-    /* Check if xMemAlloc() did its job. */
+  if(ISNOTNULLPTR(task_) && (false == SYSFLAG_RUNNING()) && (ISNOTNULLPTR(name_)) && (ISNOTNULLPTR(callback_))) {
     if(ISNOTNULLPTR(taskList) || (ISNULLPTR(taskList) && ISSUCCESSFUL(__KernelAllocateMemory__((volatile Addr_t **) &taskList, sizeof(TaskList_t))))) {
-      if(ISSUCCESSFUL(__KernelAllocateMemory__((volatile Addr_t **) &ret, sizeof(Task_t)))) {
-        /* Check if xMemAlloc() did its job. If so, populate the task with all
-         * the pertinent details. */
-        if(ISNOTNULLPTR(ret)) {
-          taskList->nextId++;
-          ret->id = taskList->nextId;
-          __memcpy__(ret->name, name_, CONFIG_TASK_NAME_BYTES);
-          ret->state = TaskStateSuspended;
-          ret->callback = callback_;
-          ret->taskParameter = taskParameter_;
-          ret->next = null;
-          cursor = taskList->head;
+      if(ISSUCCESSFUL(__KernelAllocateMemory__((volatile Addr_t **) task_, sizeof(Task_t)))) {
+        if(ISNOTNULLPTR(*task_)) {
+          if(ISSUCCESSFUL(__memcpy__((*task_)->name, name_, CONFIG_TASK_NAME_BYTES))) {
+            taskList->nextId++;
+            (*task_)->id = taskList->nextId;
+            (*task_)->state = TaskStateSuspended;
+            (*task_)->callback = callback_;
+            (*task_)->taskParameter = taskParameter_;
+            (*task_)->next = null;
+            cursor = taskList->head;
 
-          /* Check if this is the first task in the task list. If it is just set
-           * the head to it. Otherwise we are going to have to traverse the list
-           * to find the end. */
-          if(ISNOTNULLPTR(taskList->head)) {
-            /* If the task cursor is not null, continue to traverse the list to
-             * find the end. */
-            while(ISNOTNULLPTR(cursor->next)) {
-              cursor = cursor->next;
+            if(ISNOTNULLPTR(taskList->head)) {
+              while(ISNOTNULLPTR(cursor->next)) {
+                cursor = cursor->next;
+              }
+
+              cursor->next = *task_;
+            } else {
+              taskList->head = *task_;
             }
 
-            cursor->next = ret;
+            taskList->length++;
+            RET_SUCCESS;
           } else {
-            taskList->head = ret;
+            SYSASSERT(false);
           }
-
-          taskList->length++;
+        } else {
+          SYSASSERT(false);
         }
+      } else {
+        SYSASSERT(false);
       }
+    } else {
+      SYSASSERT(false);
     }
+  } else {
+    SYSASSERT(false);
   }
 
-  return(ret);
+  RET_RETURN;
 }
 
 
-/* The xTaskDelete() system call will delete a task. The xTaskCreate() and
- * xTaskDelete() system calls cannot be called within a task. They MUST be
- * called outside of the scope of the HeliOS scheduler. */
-void xTaskDelete(const Task_t *task_) {
+Return_t xTaskDelete(const Task_t *task_) {
+  RET_DEFINE;
+
+
   Task_t *cursor = null;
   Task_t *taskPrevious = null;
 
 
-  /* Assert if we are within the scope of the scheduler. */
-  SYSASSERT(false == SYSFLAG_RUNNING());
-
-  /* Check to make sure we aren't in the scope of the scheduler. */
-  if(false == SYSFLAG_RUNNING()) {
-    /* Assert if we can't find the task in the task list. */
-    SYSASSERT(RETURN_SUCCESS == __TaskListFindTask__(task_));
-
-    /* Check if the task is in the task list, if not then head toward the exit.
-     */
-    if(RETURN_SUCCESS == __TaskListFindTask__(task_)) {
+  if(ISNOTNULLPTR(task_) && ISNOTNULLPTR(taskList) && (false == SYSFLAG_RUNNING())) {
+    if(ISSUCCESSFUL(__TaskListFindTask__(task_))) {
       cursor = taskList->head;
 
-      /* If the task is at the head of the task list then just remove it and
-       * free its heap memory. */
       if((ISNOTNULLPTR(cursor)) && (cursor == task_)) {
         taskList->head = cursor->next;
-        __KernelFreeMemory__(cursor);
-        taskList->length--;
-      } else {
-        /* Well, it wasn't at the head of the task list so now we have to go
-         * hunt it down. */
+
+        if(ISSUCCESSFUL(__KernelFreeMemory__(cursor))) {
+          taskList->length--;
+          RET_SUCCESS;
+        } else {
+          SYSASSERT(false);
+        }
+      } else if((ISNOTNULLPTR(cursor)) && (cursor != task_)) {
         while((ISNOTNULLPTR(cursor)) && (cursor != task_)) {
           taskPrevious = cursor;
           cursor = cursor->next;
         }
 
-        /* Assert if we didn't find it which should be impossible given
-         * __TaskListFindTask__() found it. Maybe some cosmic rays bit flipped
-         * the DRAM!? */
-        SYSASSERT(ISNOTNULLPTR(cursor));
-
-        /* Check if the task cursor points to something. That something should
-         * be the task we want to free. */
         if(ISNOTNULLPTR(cursor)) {
           taskPrevious->next = cursor->next;
-          __KernelFreeMemory__(cursor);
-          taskList->length--;
+
+          if(ISSUCCESSFUL(__KernelFreeMemory__(cursor))) {
+            taskList->length--;
+            RET_SUCCESS;
+          } else {
+            SYSASSERT(false);
+          }
+        } else {
+          SYSASSERT(false);
         }
+      } else {
+        SYSASSERT(false);
       }
+    } else {
+      SYSASSERT(false);
     }
+  } else {
+    SYSASSERT(false);
   }
 
-  return;
+  RET_RETURN;
 }
 
 
@@ -762,65 +752,53 @@ Ticks_t xTaskGetPeriod(const Task_t *task_) {
 }
 
 
-/* __TaskListFindTask__() is used to search the task list for a task and returns
- * RETURN_SUCCESS if the task is found. It also always checks the health of the
- * heap by calling __MemoryRegionCheckKernel__(). */
-static Base_t __TaskListFindTask__(const Task_t *task_) {
-  Base_t ret = RETURN_FAILURE;
+static Return_t __TaskListFindTask__(const Task_t *task_) {
+  RET_DEFINE;
+
+
   Task_t *cursor = null;
 
 
-  /* Assert if the task list is not initialized. */
-  SYSASSERT(ISNOTNULLPTR(taskList));
-
-
-  /* Assert if the task pointer is null. */
-  SYSASSERT(ISNOTNULLPTR(task_));
-
-  /* Check if the task list is initialized and the task pointer is not null. */
   if((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(task_))) {
-    /* Assert if __MemoryRegionCheckKernel__() fails on the health check of the
-     * heap OR if the task pointer's entry cannot be found in the heap. */
-    SYSASSERT(ISSUCCESSFUL(__MemoryRegionCheckKernel__(task_, MEMORY_REGION_CHECK_OPTION_W_ADDR)));
-
-    /* Check if __MemoryRegionCheckKernel__() passes on the health check and the
-     * task pointer's entry can be found in the heap. */
     if(ISSUCCESSFUL(__MemoryRegionCheckKernel__(task_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
       cursor = taskList->head;
 
-      /* Traverse the heap to find the task in the task list. */
       while((ISNOTNULLPTR(cursor)) && (cursor != task_)) {
         cursor = cursor->next;
       }
 
-      /* Assert if the task cannot be found. */
       SYSASSERT(ISNOTNULLPTR(cursor));
 
-      /* Check if the task was found, if so then return success! */
       if(ISNOTNULLPTR(cursor)) {
-        ret = RETURN_SUCCESS;
+        RET_SUCCESS;
+      } else {
+        SYSASSERT(false);
       }
+    } else {
+      SYSASSERT(false);
     }
+  } else {
+    SYSASSERT(false);
   }
 
-  return(ret);
+  RET_RETURN;
 }
 
 
-/* The xTaskResetTimer() system call will reset the task timer.
- * xTaskResetTimer() does not change the timer period or the task state when
- * called. See xTaskChangePeriod() for more details on task timers. */
-void xTaskResetTimer(Task_t *task_) {
-  /* Assert if the task cannot be found. */
-  SYSASSERT(RETURN_SUCCESS == __TaskListFindTask__(task_));
+Return_t xTaskResetTimer(Task_t *task_) {
+  RET_DEFINE;
 
-  /* Check if the task was found. */
-  if(RETURN_SUCCESS == __TaskListFindTask__(task_)) {
+  if(ISSUCCESSFUL(__TaskListFindTask__(task_))) {
     if(ISSUCCESSFUL(__PortGetSysTicks__(&task_->timerStartTime))) {
+      RET_SUCCESS;
+    } else {
+      SYSASSERT(false);
     }
+  } else {
+    SYSASSERT(false);
   }
 
-  return;
+  RET_RETURN;
 }
 
 
@@ -935,7 +913,7 @@ static void __RunTimeReset__(void) {
 static void __TaskRun__(Task_t *task_) {
   Ticks_t taskStartTime = zero;
   Ticks_t prevTotalRunTime = zero;
-  Ticks_t currSysTicks = zero;
+  Ticks_t taskEndTime = zero;
 
 
   /* Record the total runtime before executing the task. */
@@ -948,11 +926,11 @@ static void __TaskRun__(Task_t *task_) {
 
   /* Call the task from its callback pointer. */
   (*task_->callback)(task_, task_->taskParameter);
-  __PortGetSysTicks__(&currSysTicks);
+  __PortGetSysTicks__(&taskEndTime);
 
 
   /* Calculate the runtime and store it in last runtime. */
-  task_->lastRunTime = currSysTicks - taskStartTime;
+  task_->lastRunTime = taskEndTime - taskStartTime;
 
 
   /* Add last runtime to the total runtime. */

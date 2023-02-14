@@ -361,18 +361,21 @@ static Return_t __DeviceListFind__(const HalfWord_t uid_, Device_t **device_) {
 
 
   if(ISNOTNULLPTR(device_) && ISNOTNULLPTR(deviceList) && (zero < uid_)) {
-    cursor = deviceList->head;
+    if(ISSUCCESSFUL(__MemoryRegionCheckKernel__(*device_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
+      cursor = deviceList->head;
 
-    while((ISNOTNULLPTR(cursor)) && (cursor->uid != uid_)) {
-      cursor = cursor->next;
-    }
+      while((ISNOTNULLPTR(cursor)) && (cursor->uid != uid_)) {
+        cursor = cursor->next;
+      }
 
-    if(ISNOTNULLPTR(cursor)) {
-      *device_ = cursor;
-      RET_SUCCESS;
+      if(ISNOTNULLPTR(cursor)) {
+        *device_ = cursor;
+        RET_SUCCESS;
+      } else {
+        SYSASSERT(false);
+      }
     } else {
-      *device_ = null;
-      RET_SUCCESS;
+      SYSASSERT(false);
     }
   } else {
     SYSASSERT(false);
