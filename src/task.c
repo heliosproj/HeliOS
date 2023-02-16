@@ -307,121 +307,98 @@ Return_t xTaskGetNumberOfTasks(Base_t *tasks_) {
 }
 
 
-/* The xTaskGetTaskInfo() system call returns the xTaskInfo structure containing
- * the details of the task including its identifier, name, state and runtime
- * statistics. */
-TaskInfo_t *xTaskGetTaskInfo(const Task_t *task_) {
-  TaskInfo_t *ret = null;
+Return_t xTaskGetTaskInfo(TaskInfo_t **info_, const Task_t *task_) {
+  RET_DEFINE;
 
-
-  /* Assert if the task cannot be found. */
-  SYSASSERT(RETURN_SUCCESS == __TaskListFindTask__(task_));
-
-  /* Check if the task cannot be found. */
-  if(RETURN_SUCCESS == __TaskListFindTask__(task_)) {
-    if(ISSUCCESSFUL(__HeapAllocateMemory__((volatile Addr_t **) &ret, sizeof(TaskInfo_t)))) {
-      /* Assert if xMemAlloc() failed to do its one job in life. */
-      SYSASSERT(ISNOTNULLPTR(ret));
-
-      /* Check if the task info memory has been allocated by xMemAlloc(). if it
-       * has then populate the task info and return. */
-      if(ISNOTNULLPTR(ret)) {
-        ret->id = task_->id;
-        ret->state = task_->state;
-        __memcpy__(ret->name, task_->name, CONFIG_TASK_NAME_BYTES);
-        ret->lastRunTime = task_->lastRunTime;
-        ret->totalRunTime = task_->totalRunTime;
+  if(ISSUCCESSFUL(__TaskListFindTask__(task_))) {
+    if(ISSUCCESSFUL(__HeapAllocateMemory__((volatile Addr_t **) info_, sizeof(TaskInfo_t)))) {
+      if(ISNOTNULLPTR(*info_)) {
+        if(ISSUCCESSFUL(__memcpy__((*info_)->name, task_->name, CONFIG_TASK_NAME_BYTES))) {
+          (*info_)->id = task_->id;
+          (*info_)->state = task_->state;
+          (*info_)->lastRunTime = task_->lastRunTime;
+          (*info_)->totalRunTime = task_->totalRunTime;
+          RET_SUCCESS;
+        } else {
+          SYSASSERT(false);
+        }
+      } else {
+        SYSASSERT(false);
       }
+    } else {
+      SYSASSERT(false);
     }
+  } else {
+    SYSASSERT(false);
   }
 
-  return(ret);
+  RET_RETURN;
 }
 
 
-/* The xTaskGetAllTaskInfo() system call returns the xTaskInfo structure
- * containing the details of ALL tasks including its identifier, name, state and
- * runtime statistics. */
-TaskInfo_t *xTaskGetAllTaskInfo(Base_t *tasks_) {
+Return_t xTaskGetAllTaskInfo(TaskInfo_t **info_, Base_t *tasks_) {
+  RET_DEFINE;
+
+
   Base_t task = zero;
   Base_t tasks = zero;
   Task_t *cursor = null;
-  TaskInfo_t *ret = null;
 
 
-  /* Assert if the task list has not been initialized. */
-  SYSASSERT(ISNOTNULLPTR(taskList));
-
-
-  /* Assert if the end-user passed us a null pointer. */
-  SYSASSERT(ISNOTNULLPTR(tasks_));
-
-  /* Check if the task list is not null and the tasks parameter is not null. */
   if((ISNOTNULLPTR(taskList)) && (ISNOTNULLPTR(tasks_))) {
     cursor = taskList->head;
 
-    /* While the task cursor is not null, continue to traverse the task list
-     * counting the number of tasks in the list. */
     while(ISNOTNULLPTR(cursor)) {
       tasks++;
       cursor = cursor->next;
     }
 
-    /* Assert if the number of tasks counted disagrees with the length of the
-     * task list. */
-    SYSASSERT(tasks == taskList->length);
-
-    /* Check if the number of tasks is greater than zero and the length of the
-     * task list equals the number of tasks just counted (this is done as an
-     * integrity check). */
     if((zero < tasks) && (tasks == taskList->length)) {
-      if(ISSUCCESSFUL(__HeapAllocateMemory__((volatile Addr_t **) &ret, tasks * sizeof(TaskInfo_t)))) {
-        /* Assert if xMemAlloc() didn't do its job. */
-        SYSASSERT(ISNOTNULLPTR(ret));
-
-        /* Check if xMemAlloc() successfully allocated the memory. */
-        if(ISNOTNULLPTR(ret)) {
+      if(ISSUCCESSFUL(__HeapAllocateMemory__((volatile Addr_t **) info_, tasks * sizeof(TaskInfo_t)))) {
+        if(ISNOTNULLPTR(*info_)) {
           cursor = taskList->head;
 
-          /* While the task cursor is not null, continue to traverse the task
-           * list adding the runtime statistics of each task to the runtime
-           * stats array to be returned. */
           while(ISNOTNULLPTR(cursor)) {
-            ret[task].id = cursor->id;
-            ret[task].state = cursor->state;
-            __memcpy__(ret[task].name, cursor->name, CONFIG_TASK_NAME_BYTES);
-            ret[task].lastRunTime = cursor->lastRunTime;
-            ret[task].totalRunTime = cursor->totalRunTime;
-            cursor = cursor->next;
-            task++;
+            if(ISSUCCESSFUL(__memcpy__((*info_)[task].name, cursor->name, CONFIG_TASK_NAME_BYTES))) {
+              (*info_)[task].id = cursor->id;
+              (*info_)[task].state = cursor->state;
+              (*info_)[task].lastRunTime = cursor->lastRunTime;
+              (*info_)[task].totalRunTime = cursor->totalRunTime;
+              cursor = cursor->next;
+              task++;
+            }
           }
 
           *tasks_ = tasks;
+          RET_SUCCESS;
         } else {
-          *tasks_ = zero;
+          SYSASSERT(false);
         }
+      } else {
+        SYSASSERT(false);
       }
+    } else {
+      SYSASSERT(false);
     }
+  } else {
+    SYSASSERT(false);
   }
 
-  return(ret);
+  RET_RETURN;
 }
 
 
-/* The xTaskGetTaskState() system call will return the state of the task. */
-TaskState_t xTaskGetTaskState(const Task_t *task_) {
-  TaskState_t ret = TaskStateError;
+Return_t xTaskGetTaskState(const Task_t *task_, TaskState_t *state_) {
+  RET_DEFINE;
 
-
-  /* Assert if the task cannot be found. */
-  SYSASSERT(RETURN_SUCCESS == __TaskListFindTask__(task_));
-
-  /* Check to make sure the task was found. */
-  if(RETURN_SUCCESS == __TaskListFindTask__(task_)) {
-    ret = task_->state;
+  if(ISSUCCESSFUL(__TaskListFindTask__(task_))) {
+    *state_ = task_->state;
+    RET_SUCCESS;
+  } else {
+    SYSASSERT(false);
   }
 
-  return(ret);
+  RET_RETURN;
 }
 
 

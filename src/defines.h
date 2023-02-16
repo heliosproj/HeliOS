@@ -303,5 +303,22 @@
   #define TO_LITERAL(a_) QUOTE(a_)
 
 
+  #if defined(MAGIC_CONST)
+    #undef MAGIC_CONST
+  #endif /* if defined(MAGIC_CONST) */
+  #define MAGIC_CONST 0xB16B00B5u
+
+
+  #if defined(CALCMAGIC)
+    #undef CALCMAGIC
+  #endif /* if defined(CALCMAGIC) */
+  #define CALCMAGIC(ptr_) (((Word_t) ptr_) ^ MAGIC_CONST)
+
+  #if defined(ISGOODMAGIC)
+    #undef ISGOODMAGIC
+  #endif /* if defined(ISGOODMAGIC) */
+  #define ISGOODMAGIC(ptr_) (CALCMAGIC(ptr_) == (ptr_)->magic)
+
+
 
 #endif /* ifndef DEFINES_H_ */

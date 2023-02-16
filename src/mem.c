@@ -181,22 +181,33 @@ static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, co
 
       while(ISNOTNULLPTR(cursor)) {
         if(ISSUCCESSFUL(__MemoryRegionCheckAddr__(region_, cursor))) {
-          blocks += cursor->blocks;
+          if(ISGOODMAGIC(cursor)) {
+            blocks += cursor->blocks;
 
-          /* If we are checking for an address in the memory region, then see if
-           * the cursor matches it and check to make sure the memory entry is
-           * NOT* free. Otherwise ignore this step. */
-          if((MEMORY_REGION_CHECK_OPTION_W_ADDR == option_) && (cursor == find) && (false == cursor->free)) {
-            found = true;
+            /* If we are checking for an address in the memory region, then see
+             * if the cursor matches it and check to make sure the memory entry
+             * is NOT* free. Otherwise ignore this step. */
+            if((MEMORY_REGION_CHECK_OPTION_W_ADDR == option_) && (cursor == find) && (false == cursor->free)) {
+              found = true;
+            }
+
+            cursor = cursor->next;
+          } else {
+            SYSASSERT(false);
+
+
+            /* Set the memfault sysflag to true because the address we just
+             * checked does *NOT* have the correct magic value. Something is
+             * wrong! */
+            SYSFLAG_FAULT() = true;
+            break;
           }
-
-          cursor = cursor->next;
         } else {
           SYSASSERT(false);
 
 
           /* Set the memfault sysflag to true because the address we just
-           * checked is *NOT* inside the memory region. */
+           * checked is *NOT* inside the memory region. Something is wrong! */
           SYSFLAG_FAULT() = true;
           break;
         }
@@ -257,6 +268,10 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
 
   HalfWord_t requested = zero;
   HalfWord_t free = zero;
+
+
+  /* Intentionally underflow the unsigned type so we get the max value of a
+   * HalfWord_t. */
   HalfWord_t fewest = -1;
   MemoryEntry_t *cursor = null;
   MemoryEntry_t *candidate = null;
@@ -286,6 +301,7 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
       region_->start = (MemoryEntry_t *) region_->mem;
 
       if(ISSUCCESSFUL(__memset__(region_->mem, zero, MEMORY_REGION_SIZE_IN_BYTES))) {
+        region_->start->magic = CALCMAGIC(region_->start);
         region_->start->free = true;
         region_->start->blocks = CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS;
         region_->start->next = null;
@@ -337,13 +353,15 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
            * the two blocks for the requested memory. */
           candidateNext = candidate->next;
           candidate->next = (MemoryEntry_t *) ((Byte_t *) candidate + (requested * CONFIG_MEMORY_REGION_BLOCK_SIZE));
-          candidate->next->next = candidateNext;
+          candidate->next->magic = CALCMAGIC(candidate->next);
           candidate->next->free = true;
           candidate->next->blocks = candidate->blocks - requested;
+          candidate->next->next = candidateNext;
 
 
           /* We split the unneeded blocks off into a new entry, now let's mark
            * the entry containing the blocks in-use for the requested memory. */
+          candidate->magic = CALCMAGIC(candidate);
           candidate->free = false;
           candidate->blocks = requested;
 
@@ -368,10 +386,9 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
 
         /* Update the statistics for the memory region before we are done. */
         region_->allocations++;
-        free -= requested;
 
         if((free * CONFIG_MEMORY_REGION_BLOCK_SIZE) < region_->minAvailableEver) {
-          region_->minAvailableEver = (free * CONFIG_MEMORY_REGION_BLOCK_SIZE);
+          region_->minAvailableEver = ((free - requested) * CONFIG_MEMORY_REGION_BLOCK_SIZE);
         }
       } else {
         SYSASSERT(false);
@@ -712,6 +729,7 @@ static Return_t __DefragMemoryRegion__(const volatile MemoryRegion_t *region_) {
 
 
   MemoryEntry_t *cursor = null;
+  MemoryEntry_t *merge = null;
 
 
   if(ISNOTNULLPTR(region_) && (false == SYSFLAG_FAULT())) {
@@ -725,8 +743,17 @@ static Return_t __DefragMemoryRegion__(const volatile MemoryRegion_t *region_) {
          *  3. The entry pointed to be the cursor is free.
          *  4. The entry pointed to be "next" is free. */
         if(ISNOTNULLPTR(cursor) && ISNOTNULLPTR(cursor->next) && (true == cursor->free) && (true == cursor->next->free)) {
-          cursor->blocks += cursor->next->blocks;
-          cursor->next = cursor->next->next;
+          merge = cursor->next;
+          cursor->magic = CALCMAGIC(cursor);
+          cursor->free = false;
+          cursor->blocks += merge->blocks;
+          cursor->next = merge->next;
+
+          if(ISSUCCESSFUL(__memset__(merge, zero, sizeof(MemoryEntry_t)))) {
+          } else {
+            SYSASSERT(false);
+            break;
+          }
         } else {
           cursor = cursor->next;
         }

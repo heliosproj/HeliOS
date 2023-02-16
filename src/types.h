@@ -100,8 +100,8 @@
     struct Device_s *next;
   } Device_t;
   typedef struct MemoryEntry_s {
+    Word_t magic;
     Byte_t free;
-    Byte_t reserved;
     HalfWord_t blocks;
     struct MemoryEntry_s *next;
   } MemoryEntry_t;
