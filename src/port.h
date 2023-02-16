@@ -331,7 +331,7 @@
   #ifdef __cplusplus
     extern "C" {
   #endif /* ifdef __cplusplus */
-  Return_t __PortGetSysTicks__(Ticks_t *ticks_);
+  Ticks_t __PortGetSysTicks__(void);
   Return_t __PortInit__(void);
 
   #ifdef __cplusplus

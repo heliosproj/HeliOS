@@ -44,45 +44,46 @@
 #endif /* if defined(CMSIS_ARCH_CORTEXM) */
 
 
-Return_t __PortGetSysTicks__(Ticks_t *ticks_) {
-  RET_DEFINE;
+Ticks_t __PortGetSysTicks__(void) {
+
 
 #if defined(ARDUINO_ARCH_AVR)
 
-    *ticks_ = timer0_overflow_count;
-    RET_SUCCESS;
+    return(timer0_overflow_count);
+
 
 #elif defined(ARDUINO_ARCH_SAM)
 
-    *ticks_ = GetTickCount();
-    RET_SUCCESS;
+    return(GetTickCount());
+
 
 #elif defined(ARDUINO_ARCH_SAMD)
 
-    *ticks_ = millis();
-    RET_SUCCESS;
+    return(millis());
+
 
 #elif defined(ARDUINO_ARCH_ESP8266)
     yield();
-    *ticks_ = (Ticks_t) (system_get_time() / 1000ULL);
-    RET_SUCCESS;
+
+    return((Ticks_t) (system_get_time() / 1000ULL));
+
 
 #elif defined(ARDUINO_TEENSY_MICROMOD) || defined(ARDUINO_TEENSY40) || defined(ARDUINO_TEENSY41) || \
   defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY35) || defined(ARDUINO_TEENSY31) || defined(ARDUINO_TEENSY32) || \
   defined(ARDUINO_TEENSY30) || defined(ARDUINO_TEENSYLC)
 
-    *ticks_ = systick_millis_count;
-    RET_SUCCESS;
+    return(systick_millis_count);
+
 
 #elif defined(ESP32)
-    RET_SUCCESS;
+
+    return;
 
 
 /* Not supported. */
 #elif defined(CMSIS_ARCH_CORTEXM)
 
-    *ticks_ = sysTicks;
-    RET_SUCCESS;
+    return (sysTicks);
 
 
 #elif defined(POSIX_ARCH_OTHER)
@@ -92,11 +93,11 @@ Return_t __PortGetSysTicks__(Ticks_t *ticks_) {
 
 
     gettimeofday(&t, null);
-    *ticks_ = (t.tv_sec) * 1000 + (t.tv_usec) / 1000;
-    RET_SUCCESS;
+
+    return((t.tv_sec) * 1000 + (t.tv_usec) / 1000);
+
 
 #endif /* if defined(ARDUINO_ARCH_AVR) */
-  RET_RETURN;
 }
 
 

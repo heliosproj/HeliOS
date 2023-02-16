@@ -76,10 +76,12 @@
   typedef UINT16_TYPE HalfWord_t;
   typedef UINT32_TYPE Word_t;
   typedef UINT32_TYPE Ticks_t;
-  typedef UCHAR_TYPE Char_t;
+
+
+  /* typedef UCHAR_TYPE Char_t; */
   typedef struct Device_s {
     HalfWord_t uid;
-    Char_t name[CONFIG_DEVICE_NAME_BYTES];
+    Byte_t name[CONFIG_DEVICE_NAME_BYTES];
     DeviceState_t state;
     DeviceMode_t mode;
     Word_t bytesWritten;
@@ -115,11 +117,11 @@
   } MemoryRegion_t;
   typedef struct TaskNotification_s {
     Base_t notificationBytes;
-    Char_t notificationValue[CONFIG_NOTIFICATION_VALUE_BYTES];
+    Byte_t notificationValue[CONFIG_NOTIFICATION_VALUE_BYTES];
   } TaskNotification_t;
   typedef struct Task_s {
     Base_t id;
-    Char_t name[CONFIG_TASK_NAME_BYTES];
+    Byte_t name[CONFIG_TASK_NAME_BYTES];
     TaskState_t state;
     TaskParm_t *taskParameter;
 
@@ -130,7 +132,7 @@
 
 
     Base_t notificationBytes;
-    Char_t notificationValue[CONFIG_NOTIFICATION_VALUE_BYTES];
+    Byte_t notificationValue[CONFIG_NOTIFICATION_VALUE_BYTES];
     Ticks_t lastRunTime;
     Ticks_t totalRunTime;
     Ticks_t timerPeriod;
@@ -154,7 +156,7 @@
   } MemoryRegionStats_t;
   typedef struct TaskInfo_s {
     Base_t id;
-    Char_t name[CONFIG_TASK_NAME_BYTES];
+    Byte_t name[CONFIG_TASK_NAME_BYTES];
     TaskState_t state;
     Ticks_t lastRunTime;
     Ticks_t totalRunTime;
@@ -186,11 +188,11 @@
   } SysFlags_t;
   typedef struct QueueMessage_s {
     Base_t messageBytes;
-    Char_t messageValue[CONFIG_MESSAGE_VALUE_BYTES];
+    Byte_t messageValue[CONFIG_MESSAGE_VALUE_BYTES];
   } QueueMessage_t;
   typedef struct Message_s {
     Base_t messageBytes;
-    Char_t messageValue[CONFIG_MESSAGE_VALUE_BYTES];
+    Byte_t messageValue[CONFIG_MESSAGE_VALUE_BYTES];
     struct Message_s *next;
   } Message_t;
   typedef struct Queue_s {
@@ -201,7 +203,7 @@
     Message_t *tail;
   } Queue_t;
   typedef struct SystemInfo_s {
-    Char_t productName[OS_PRODUCT_NAME_SIZE];
+    Byte_t productName[OS_PRODUCT_NAME_SIZE];
     Base_t majorVersion;
     Base_t minorVersion;
     Base_t patchVersion;
