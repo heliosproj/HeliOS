@@ -718,8 +718,9 @@ static Return_t __TaskListFindTask__(const Task_t *task_) {
 Return_t xTaskResetTimer(Task_t *task_) {
   RET_DEFINE;
 
-  if(ISSUCCESSFUL(__TaskListFindTask__(task_))) {
-    if(ISSUCCESSFUL(__PortGetSysTicks__(&task_->timerStartTime))) {
+  if(ISNOTNULLPTR(task_) && ISNOTNULLPTR(taskList)) {
+    if(ISSUCCESSFUL(__TaskListFindTask__(task_))) {
+      task_->timerStartTime = __PortGetSysTicks__();
       RET_SUCCESS;
     } else {
       SYSASSERT(false);
@@ -782,9 +783,9 @@ Return_t xTaskStartScheduler(void) {
 }
 
 
-
 static void __RunTimeReset__(void) {
   Task_t *cursor = null;
+
 
   cursor = taskList->head;
 
@@ -799,45 +800,25 @@ static void __RunTimeReset__(void) {
 }
 
 
-
 static void __TaskRun__(Task_t *task_) {
   Ticks_t taskStartTime = zero;
   Ticks_t prevTotalRunTime = zero;
-  Ticks_t taskEndTime = zero;
 
 
-  /* Record the total runtime before executing the task. */
   prevTotalRunTime = task_->totalRunTime;
-
-
-  /* Record the start time of the task. */
-  __PortGetSysTicks__(&taskStartTime);
-
-
-  /* Call the task from its callback pointer. */
+  taskStartTime = __SysGetSysTicks__();
   (*task_->callback)(task_, task_->taskParameter);
-  __PortGetSysTicks__(&taskEndTime);
-
-
-  /* Calculate the runtime and store it in last runtime. */
-  task_->lastRunTime = taskEndTime - taskStartTime;
-
-
-  /* Add last runtime to the total runtime. */
+  task_->lastRunTime = __SysGetSysTicks__() - taskStartTime;
   task_->totalRunTime += task_->lastRunTime;
 
 #if defined(CONFIG_TASK_WD_TIMER_ENABLE)
 
-    /* Check if the task watchdog timer is set and see if the task's last
-    * runtime exceeded it. If it did, set the task state to suspended. */
     if((zero != task_->wdTimerPeriod) && (task_->lastRunTime > task_->wdTimerPeriod)) {
       task_->state = TaskStateSuspended;
     }
 
 #endif /* if defined(CONFIG_TASK_WD_TIMER_ENABLE) */
 
-  /* Check if the new total runtime is less than the previous total runtime, if
-   * so an overflow has occurred so set the runtime over flow system flag. */
   if(task_->totalRunTime < prevTotalRunTime) {
     SYSFLAG_OVERFLOW() = true;
   }
@@ -846,46 +827,63 @@ static void __TaskRun__(Task_t *task_) {
 }
 
 
-/* The xTaskResumeAll() system call will set the scheduler system flag so the
- * next call to xTaskStartScheduler() will resume execute of all tasks. */
-void xTaskResumeAll(void) {
-  schedulerState = SchedulerStateRunning;
+Return_t xTaskResumeAll(void) {
+  RET_DEFINE;
 
-  return;
-}
-
-
-/* The xTaskSuspendAll() system call will set the scheduler system flag so the
- * scheduler will stop and return. */
-void xTaskSuspendAll(void) {
-  schedulerState = SchedulerStateSuspended;
-
-  return;
-}
-
-
-/* The xTaskGetSchedulerState() system call will return the state of the
- * scheduler. */
-SchedulerState_t xTaskGetSchedulerState(void) {
-  return(schedulerState);
-}
-
-
-/* The xTaskGetWDPeriod() system call will return the current task watchdog
- * timer period. */
-Ticks_t xTaskGetWDPeriod(const Task_t *task_) {
-  Ticks_t ret = zero;
-
-
-  /* Assert if the task cannot be found. */
-  SYSASSERT(RETURN_SUCCESS == __TaskListFindTask__(task_));
-
-  /* Check if the task can be found. */
-  if(RETURN_SUCCESS == __TaskListFindTask__(task_)) {
-    ret = task_->wdTimerPeriod;
+  if(ISNOTNULLPTR(taskList)) {
+    schedulerState = SchedulerStateRunning;
+    RET_SUCCESS;
+  } else {
+    SYSASSERT(false);
   }
 
-  return(ret);
+  RET_RETURN;
+}
+
+
+Return_t xTaskSuspendAll(void) {
+  RET_DEFINE;
+
+  if(ISNOTNULLPTR(taskList)) {
+    schedulerState = SchedulerStateSuspended;
+    RET_SUCCESS;
+  } else {
+    SYSASSERT(false);
+  }
+
+  RET_RETURN;
+}
+
+
+Return_t xTaskGetSchedulerState(SchedulerState_t *state_) {
+  RET_DEFINE;
+
+  if(ISNOTNULLPTR(taskList)) {
+    *state_ = schedulerState;
+    RET_SUCCESS;
+  } else {
+    SYSASSERT(false);
+  }
+
+  RET_RETURN;
+}
+
+
+Ticks_t xTaskGetWDPeriod(const Task_t *task_, Ticks_t *wdTimerPeriod_) {
+  RET_DEFINE;
+
+  if(ISNOTNULLPTR(task_) && ISNOTNULLPTR(wdTimerPeriod_) && ISNOTNULLPTR(taskList)) {
+    if(ISSUCCESSFUL(__TaskListFindTask__(task_))) {
+      *wdTimerPeriod_ = task_->wdTimerPeriod;
+      RET_SUCCESS;
+    } else {
+      SYSASSERT(false);
+    }
+  } else {
+    SYSASSERT(false);
+  }
+
+  RET_RETURN;
 }
 
 
