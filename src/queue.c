@@ -210,7 +210,7 @@ Return_t xQueueMessagesWaiting(const Queue_t *queue_, Base_t *res_) {
 }
 
 
-Return_t xQueueSend(Queue_t *queue_, const Base_t messageBytes_, const Char_t *messageValue_) {
+Return_t xQueueSend(Queue_t *queue_, const Base_t messageBytes_, const Byte_t *messageValue_) {
   RET_DEFINE;
 
 

@@ -424,19 +424,19 @@ Return_t xTaskGetName(const Task_t *task_, Byte_t **name_) {
           if(ISSUCCESSFUL(__memcpy__(*name_, task_->name, CONFIG_TASK_NAME_BYTES))) {
             RET_SUCCESS;
           } else {
-            SYSASSERT(fales);
+            SYSASSERT(false);
           }
         } else {
-          SYSASSERT(fales);
+          SYSASSERT(false);
         }
       } else {
-        SYSASSERT(fales);
+        SYSASSERT(false);
       }
     } else {
-      SYSASSERT(fales);
+      SYSASSERT(false);
     }
   } else {
-    SYSASSERT(fales);
+    SYSASSERT(false);
   }
 
   RET_RETURN;
@@ -487,7 +487,7 @@ Return_t xTaskNotifyStateClear(Task_t *task_) {
 }
 
 
-Base_t xTaskNotificationIsWaiting(const Task_t *task_, Base_t *res_) {
+Return_t xTaskNotificationIsWaiting(const Task_t *task_, Base_t *res_) {
   RET_DEFINE;
 
   if(ISNOTNULLPTR(task_) && ISNOTNULLPTR(res_) && ISNOTNULLPTR(taskList)) {
@@ -753,10 +753,10 @@ Return_t xTaskStartScheduler(void) {
       while(ISNOTNULLPTR(cursor)) {
         if((TaskStateWaiting == cursor->state) && (zero < cursor->notificationBytes)) {
           __TaskRun__(cursor);
-        } else if((TaskStateWaiting == cursor->state) && (zero < cursor->timerPeriod) && ((__SysGetSysTicks__() - cursor->timerStartTime) >
+        } else if((TaskStateWaiting == cursor->state) && (zero < cursor->timerPeriod) && ((__PortGetSysTicks__() - cursor->timerStartTime) >
           cursor->timerPeriod)) {
           __TaskRun__(cursor);
-          cursor->timerStartTime = __SysGetSysTicks__();
+          cursor->timerStartTime = __PortGetSysTicks__();
         } else if((TaskStateRunning == cursor->state) && (leastRunTime > cursor->totalRunTime)) {
           leastRunTime = cursor->totalRunTime;
           runTask = cursor;
@@ -806,9 +806,9 @@ static void __TaskRun__(Task_t *task_) {
 
 
   prevTotalRunTime = task_->totalRunTime;
-  taskStartTime = __SysGetSysTicks__();
+  taskStartTime = __PortGetSysTicks__();
   (*task_->callback)(task_, task_->taskParameter);
-  task_->lastRunTime = __SysGetSysTicks__() - taskStartTime;
+  task_->lastRunTime = __PortGetSysTicks__() - taskStartTime;
   task_->totalRunTime += task_->lastRunTime;
 
 #if defined(CONFIG_TASK_WD_TIMER_ENABLE)
@@ -869,7 +869,7 @@ Return_t xTaskGetSchedulerState(SchedulerState_t *state_) {
 }
 
 
-Ticks_t xTaskGetWDPeriod(const Task_t *task_, Ticks_t *wdTimerPeriod_) {
+Return_t xTaskGetWDPeriod(const Task_t *task_, Ticks_t *wdTimerPeriod_) {
   RET_DEFINE;
 
   if(ISNOTNULLPTR(task_) && ISNOTNULLPTR(wdTimerPeriod_) && ISNOTNULLPTR(taskList)) {

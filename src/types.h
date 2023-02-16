@@ -78,7 +78,7 @@
   typedef UINT32_TYPE Ticks_t;
 
 
-  /* typedef UCHAR_TYPE Char_t; */
+  /* typedef UCHAR_TYPE Byte_t; */
   typedef struct Device_s {
     HalfWord_t uid;
     Byte_t name[CONFIG_DEVICE_NAME_BYTES];

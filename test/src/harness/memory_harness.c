@@ -131,7 +131,7 @@ void memory_harness(void) {
   unit_begin("xMemGetKernelStats()");
   mem03 = null;
   mem04 = null;
-  mem04 = xTaskCreate((Char_t *) "NONE", memory_harness_task, null);
+  unit_try(xTaskCreate(&mem04, (Byte_t *) "NONE", memory_harness_task, null));
   unit_try(null != mem04);
   xTaskDelete(mem04);
   unit_try(ISSUCCESSFUL(xMemGetKernelStats(&mem03)));

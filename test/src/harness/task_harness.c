@@ -37,7 +37,7 @@ void task_harness(void) {
   Base_t task05;
   Base_t task06;
   TaskInfo_t *task07;
-  Char_t *task08;
+  Byte_t *task08;
   TaskNotification_t *task09;
   Task_t *task10 = null;
   Task_t *task11 = null;
@@ -46,12 +46,12 @@ void task_harness(void) {
 
   unit_begin("xTaskCreate()");
   task01 = null;
-  task01 = xTaskCreate((Char_t *) "TASK01", task_harness_task, null);
+  task01 = xTaskCreate((Byte_t *) "TASK01", task_harness_task, null);
   unit_try(null != task01);
   unit_end();
   unit_begin("xTaskGetHandleByName()");
   task02 = null;
-  task02 = xTaskGetHandleByName((Char_t *) "TASK01");
+  task02 = xTaskGetHandleByName((Byte_t *) "TASK01");
   unit_try(task02 == task01);
   unit_end();
   unit_begin("xTaskGetHandleById()");
@@ -113,7 +113,7 @@ void task_harness(void) {
   unit_try(0x1 == xTaskGetId(task01));
   unit_end();
   unit_begin("xTaskNotifyGive()");
-  unit_try(RETURN_SUCCESS == xTaskNotifyGive(task01, 0x7, (Char_t *) "MESSAGE"));
+  unit_try(RETURN_SUCCESS == xTaskNotifyGive(task01, 0x7, (Byte_t *) "MESSAGE"));
   unit_end();
   unit_begin("xTaskNotificationIsWaiting()");
   unit_try(true == xTaskNotificationIsWaiting(task01));
@@ -124,7 +124,7 @@ void task_harness(void) {
   unit_end();
   unit_begin("xTaskNotifyTake()");
   task09 = null;
-  unit_try(RETURN_SUCCESS == xTaskNotifyGive(task01, 0x7, (Char_t *) "MESSAGE"));
+  unit_try(RETURN_SUCCESS == xTaskNotifyGive(task01, 0x7, (Byte_t *) "MESSAGE"));
   task09 = xTaskNotifyTake(task01);
   unit_try(null != task09);
   unit_try(0x7 == task09->notificationBytes);
@@ -164,7 +164,7 @@ void task_harness(void) {
   xTaskResumeAll();
   xTaskDelete(task01);
   task10 = null;
-  task10 = xTaskCreate((Char_t *) "TASK10", task_harness_task, null);
+  task10 = xTaskCreate((Byte_t *) "TASK10", task_harness_task, null);
   unit_try(null != task10);
   xTaskChangePeriod(task10, 0xBB8);
   xTaskWait(task10);
@@ -175,10 +175,10 @@ void task_harness(void) {
   unit_begin("Unit test for direct to task notification event");
   xTaskResumeAll();
   task11 = null;
-  task11 = xTaskCreate((Char_t *) "TASK11", task_harness_task, null);
+  task11 = xTaskCreate((Byte_t *) "TASK11", task_harness_task, null);
   unit_try(null != task11);
   xTaskWait(task11);
-  xTaskNotifyGive(task11, 0x7, (Char_t *) "MESSAGE");
+  xTaskNotifyGive(task11, 0x7, (Byte_t *) "MESSAGE");
   unit_try(true == xTaskNotificationIsWaiting(task11));
   xTaskResumeAll();
   xTaskStartScheduler();
@@ -188,7 +188,7 @@ void task_harness(void) {
   unit_begin("Unit test for task watchdog timer");
   xTaskResumeAll();
   task12 = null;
-  task12 = xTaskCreate((Char_t *) "TASK12", task_harness_task2, null);
+  task12 = xTaskCreate((Byte_t *) "TASK12", task_harness_task2, null);
   unit_try(null != task12);
   xTaskChangeWDPeriod(task12, 0x7D0u);
   xTaskResume(task12);

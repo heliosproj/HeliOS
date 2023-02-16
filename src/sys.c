@@ -98,7 +98,7 @@ Return_t xSystemGetSystemInfo(SystemInfo_t **info_) {
         (*info_)->minorVersion = OS_MINOR_VERSION_NO;
         (*info_)->patchVersion = OS_PATCH_VERSION_NO;
 
-        if(ISSUCCESSFUL(xTaskGetNumberOfTasks((*info_)->numberOfTasks))) {
+        if(ISSUCCESSFUL(xTaskGetNumberOfTasks(&(*info_)->numberOfTasks))) {
           RET_SUCCESS;
         } else {
           SYSASSERT(false);

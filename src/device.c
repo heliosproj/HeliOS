@@ -48,7 +48,7 @@ Return_t xDeviceRegisterDevice(Return_t (*device_self_register_)()) {
 }
 
 
-Return_t __RegisterDevice__(const HalfWord_t uid_, const Char_t *name_, const DeviceState_t state_, const DeviceMode_t mode_, Return_t (*init_)(
+Return_t __RegisterDevice__(const HalfWord_t uid_, const Byte_t *name_, const DeviceState_t state_, const DeviceMode_t mode_, Return_t (*init_)(
     Device_t *device_), Return_t (*config_)(Device_t *device_, Size_t *size_, Addr_t *config_), Return_t (*read_)(Device_t *device_, Size_t *size_,
   Addr_t *data_), Return_t (*write_)(Device_t *device_, Size_t *size_, Addr_t *data_), Return_t (*simple_read_)(Device_t *device_, Word_t *data_),
   Return_t (*simple_write_)(Device_t *device_, Word_t *data_)) {

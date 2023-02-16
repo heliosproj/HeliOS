@@ -319,14 +319,14 @@
 /**
  * @brief Data type for a character.
  *
- * The Char_t data type is used to store an 8-bit char and is typically used for
- * char arrays for ASCII names (e.g., task name). Char_t should be declared as
+ * The Byte_t data type is used to store an 8-bit char and is typically used for
+ * char arrays for ASCII names (e.g., task name). Byte_t should be declared as
  * xChar.
  *
  * @sa xChar
  *
  */
-  typedef UCHAR_TYPE Char_t;
+  typedef UCHAR_TYPE Byte_t;
 
 
 /**
@@ -335,7 +335,7 @@
  * @sa Data_t
  *
  */
-  typedef Char_t xChar;
+  typedef Byte_t xChar;
 
 
 /* START OF HANDLE TYPES */
@@ -520,7 +520,7 @@
                                                               * cannot exceed
                                                               * CONFIG_NOTIFICATION_VALUE_BYTES.
                                                               */
-    Char_t notificationValue[CONFIG_NOTIFICATION_VALUE_BYTES]; /**< The
+    Byte_t notificationValue[CONFIG_NOTIFICATION_VALUE_BYTES]; /**< The
                                                                 * notification
                                                                 * value whose
                                                                 * length is
@@ -659,7 +659,7 @@
     Base_t id;                        /**< The task identifier which is used by
                                        * xTaskGetHandleById() to return the task
                                        * handle. */
-    Char_t name[CONFIG_TASK_NAME_BYTES]; /**< The ASCII name of the task which
+    Byte_t name[CONFIG_TASK_NAME_BYTES]; /**< The ASCII name of the task which
                                           * is used by xTaskGetHandleByName() to
                                           * return the task handle - this is
                                           * NOT* a null terminated char array.
@@ -714,7 +714,7 @@
                                                      * value which cannot exceed
                                                      * CONFIG_MESSAGE_VALUE_BYTES.
                                                      */
-    Char_t messageValue[CONFIG_MESSAGE_VALUE_BYTES]; /**< The ASCII queue
+    Byte_t messageValue[CONFIG_MESSAGE_VALUE_BYTES]; /**< The ASCII queue
                                                       * message value - this is
                                                       * NOT* a null terminated
                                                       * character array. */
@@ -755,7 +755,7 @@
  *
  */
   typedef struct SystemInfo_s {
-    Char_t productName[OS_PRODUCT_NAME_SIZE];                          /**< The
+    Byte_t productName[OS_PRODUCT_NAME_SIZE];                          /**< The
                                                                         * ASCII
                                                                         * product
                                                                         * name
