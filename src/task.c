@@ -752,59 +752,42 @@ Return_t xTaskStartScheduler(void) {
       while(ISNOTNULLPTR(cursor)) {
         if((TaskStateWaiting == cursor->state) && (zero < cursor->notificationBytes)) {
           __TaskRun__(cursor);
-
-
-          /* If the task pointed to by the task cursor is waiting and its timer
-           * has expired, then execute it. */
-        } else if((TaskStateWaiting == cursor->state) && (zero < cursor->timerPeriod) && ISSUCCESSFUL(__PortGetSysTicks__(&currSysTicks)) && ((currSysTicks -
-          cursor->timerStartTime) > cursor->timerPeriod)) {
+        } else if((TaskStateWaiting == cursor->state) && (zero < cursor->timerPeriod) && ((__SysGetSysTicks__() - cursor->timerStartTime) >
+          cursor->timerPeriod)) {
           __TaskRun__(cursor);
-          __PortGetSysTicks__(&cursor->timerStartTime);
-
-
-          /* If the task pointed to by the task cursor is running and it's total
-           * runtime is less than the least runtime from previous tasks, then
-           * set the run task pointer to the task cursor. This logic is used to
-           * achieve the runtime balancing. */
+          cursor->timerStartTime = __SysGetSysTicks__();
         } else if((TaskStateRunning == cursor->state) && (leastRunTime > cursor->totalRunTime)) {
           leastRunTime = cursor->totalRunTime;
           runTask = cursor;
-        } else {
-          /* Nothing to do here.. Just for MISRA C:2012 compliance. */
         }
 
         cursor = cursor->next;
       }
 
-      /* If the run task pointer is not null, then there is a running tasks to
-       * execute. */
       if(ISNOTNULLPTR(runTask)) {
         __TaskRun__(runTask);
         runTask = null;
       }
 
-      /* Underflow unsigned least runtime to get maximum value */
       leastRunTime = -1;
     }
 
     SYSFLAG_RUNNING() = false;
     RET_SUCCESS;
+  } else {
+    SYSASSERT(false);
   }
 
   RET_RETURN;
 }
 
 
-/* If the runtime overflow flag is set, then __RunTimeReset__() is called to
- * reset all of the total runtimes on tasks to their last runtime. */
+
 static void __RunTimeReset__(void) {
   Task_t *cursor = null;
 
-
   cursor = taskList->head;
 
-  /* While the task cursor is not null (i.e., there are further tasks in the
-   * task list). */
   while(ISNOTNULLPTR(cursor)) {
     cursor->totalRunTime = cursor->lastRunTime;
     cursor = cursor->next;
@@ -816,8 +799,7 @@ static void __RunTimeReset__(void) {
 }
 
 
-/* Called by the xTaskStartScheduler() system call, __TaskRun__() executes a
- * task and updates all of its runtime statistics. */
+
 static void __TaskRun__(Task_t *task_) {
   Ticks_t taskStartTime = zero;
   Ticks_t prevTotalRunTime = zero;
