@@ -45,7 +45,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _self_register)(void) {
     _simple_write)))) {
     RET_SUCCESS;
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -59,7 +59,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _init)(Device_t * device_) {
     device_->available = false;
     RET_SUCCESS;
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -84,7 +84,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _read)(Device_t * device_, Size_t *size_, Addr
     device_->available = false;
     RET_SUCCESS;
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -99,7 +99,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t * device_, Size_t *size_, Add
     device_->available = true;
     RET_SUCCESS;
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -113,7 +113,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _simple_read)(Device_t * device_, Word_t *data
     device_->available = false;
     RET_SUCCESS;
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -127,7 +127,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _simple_write)(Device_t * device_, Word_t *dat
     device_->available = true;
     RET_SUCCESS;
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;

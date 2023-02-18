@@ -38,10 +38,10 @@ Return_t xDeviceRegisterDevice(Return_t (*device_self_register_)()) {
     if(ISSUCCESSFUL((*device_self_register_)())) {
       RET_SUCCESS;
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -101,25 +101,25 @@ Return_t __RegisterDevice__(const HalfWord_t uid_, const Byte_t *name_, const De
                 deviceList->length++;
                 RET_SUCCESS;
               } else {
-                SYSASSERT(false);
+                ASSERT;
               }
             } else {
-              SYSASSERT(false);
+              ASSERT;
             }
           } else {
-            SYSASSERT(false);
+            ASSERT;
           }
         } else {
-          SYSASSERT(false);
+          ASSERT;
         }
       } else {
-        SYSASSERT(false);
+        ASSERT;
       }
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -139,13 +139,13 @@ Return_t xDeviceIsAvailable(const HalfWord_t uid_, Base_t *res_) {
         *res_ = device->available;
         RET_SUCCESS;
       } else {
-        SYSASSERT(false);
+        ASSERT;
       }
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -172,31 +172,31 @@ Return_t xDeviceSimpleWrite(const HalfWord_t uid_, Word_t *data_) {
                     device->bytesWritten += sizeof(Word_t);
                     RET_SUCCESS;
                   } else {
-                    SYSASSERT(false);
+                    ASSERT;
                   }
                 } else {
-                  SYSASSERT(false);
+                  ASSERT;
                 }
               } else {
-                SYSASSERT(false);
+                ASSERT;
               }
             } else {
-              SYSASSERT(false);
+              ASSERT;
             }
           } else {
-            SYSASSERT(false);
+            ASSERT;
           }
         } else {
-          SYSASSERT(false);
+          ASSERT;
         }
       } else {
-        SYSASSERT(false);
+        ASSERT;
       }
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -224,31 +224,31 @@ Return_t xDeviceWrite(const HalfWord_t uid_, Size_t *size_, Addr_t *data_) {
                     device->bytesWritten += *size_;
                     RET_SUCCESS;
                   } else {
-                    SYSASSERT(false);
+                    ASSERT;
                   }
                 } else {
-                  SYSASSERT(false);
+                  ASSERT;
                 }
               } else {
-                SYSASSERT(false);
+                ASSERT;
               }
             } else {
-              SYSASSERT(false);
+              ASSERT;
             }
           } else {
-            SYSASSERT(false);
+            ASSERT;
           }
         } else {
-          SYSASSERT(false);
+          ASSERT;
         }
       } else {
-        SYSASSERT(false);
+        ASSERT;
       }
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -275,31 +275,31 @@ Return_t xDeviceSimpleRead(const HalfWord_t uid_, Word_t *data_) {
                     device->bytesRead += sizeof(Word_t);
                     RET_SUCCESS;
                   } else {
-                    SYSASSERT(false);
+                    ASSERT;
                   }
                 } else {
-                  SYSASSERT(false);
+                  ASSERT;
                 }
               } else {
-                SYSASSERT(false);
+                ASSERT;
               }
             } else {
-              SYSASSERT(false);
+              ASSERT;
             }
           } else {
-            SYSASSERT(false);
+            ASSERT;
           }
         } else {
-          SYSASSERT(false);
+          ASSERT;
         }
       } else {
-        SYSASSERT(false);
+        ASSERT;
       }
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -327,31 +327,31 @@ Return_t xDeviceRead(const HalfWord_t uid_, Size_t *size_, Addr_t *data_) {
                     device->bytesRead += *size_;
                     RET_SUCCESS;
                   } else {
-                    SYSASSERT(false);
+                    ASSERT;
                   }
                 } else {
-                  SYSASSERT(false);
+                  ASSERT;
                 }
               } else {
-                SYSASSERT(false);
+                ASSERT;
               }
             } else {
-              SYSASSERT(false);
+              ASSERT;
             }
           } else {
-            SYSASSERT(false);
+            ASSERT;
           }
         } else {
-          SYSASSERT(false);
+          ASSERT;
         }
       } else {
-        SYSASSERT(false);
+        ASSERT;
       }
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -376,10 +376,10 @@ static Return_t __DeviceListFind__(const HalfWord_t uid_, Device_t **device_) {
       *device_ = cursor;
       RET_SUCCESS;
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -399,16 +399,16 @@ Return_t xDeviceInitDevice(const HalfWord_t uid_) {
         if(ISSUCCESSFUL((*device->init)(device))) {
           RET_SUCCESS;
         } else {
-          SYSASSERT(false);
+          ASSERT;
         }
       } else {
-        SYSASSERT(false);
+        ASSERT;
       }
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -434,31 +434,31 @@ Return_t xDeviceConfigDevice(const HalfWord_t uid_, Size_t *size_, Addr_t *confi
                   if(ISSUCCESSFUL(__KernelFreeMemory__(config))) {
                     RET_SUCCESS;
                   } else {
-                    SYSASSERT(false);
+                    ASSERT;
                   }
                 } else {
-                  SYSASSERT(false);
+                  ASSERT;
                 }
               } else {
-                SYSASSERT(false);
+                ASSERT;
               }
             } else {
-              SYSASSERT(false);
+              ASSERT;
             }
           } else {
-            SYSASSERT(false);
+            ASSERT;
           }
         } else {
-          SYSASSERT(false);
+          ASSERT;
         }
       } else {
-        SYSASSERT(false);
+        ASSERT;
       }
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   return (ret);

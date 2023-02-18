@@ -39,7 +39,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _self_register)(void) {
     _simple_write)))) {
     RET_SUCCESS;
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;

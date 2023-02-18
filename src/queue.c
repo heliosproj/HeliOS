@@ -43,13 +43,13 @@ Return_t xQueueCreate(Queue_t **queue_, Base_t limit_) {
         (*queue_)->tail = null;
         RET_SUCCESS;
       } else {
-        SYSASSERT(false);
+        ASSERT;
       }
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -63,7 +63,7 @@ Return_t xQueueDelete(Queue_t *queue_) {
     while(ISNOTNULLPTR(queue_->head)) {
       if(ISSUCCESSFUL(xQueueDropMessage(queue_))) {
       } else {
-        SYSASSERT(false);
+        ASSERT;
         break;
       }
     }
@@ -71,10 +71,10 @@ Return_t xQueueDelete(Queue_t *queue_) {
     if(ISSUCCESSFUL(__KernelFreeMemory__(queue_))) {
       RET_SUCCESS;
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -101,10 +101,10 @@ Return_t xQueueGetLength(const Queue_t *queue_, Base_t *res_) {
       *res_ = messages;
       RET_SUCCESS;
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -134,10 +134,10 @@ Return_t xQueueIsQueueEmpty(const Queue_t *queue_, Base_t *res_) {
       *res_ = false;
       RET_SUCCESS;
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -167,10 +167,10 @@ Return_t xQueueIsQueueFull(const Queue_t *queue_, Base_t *res_) {
       *res_ = false;
       RET_SUCCESS;
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -200,10 +200,10 @@ Return_t xQueueMessagesWaiting(const Queue_t *queue_, Base_t *res_) {
       *res_ = false;
       RET_SUCCESS;
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -250,22 +250,22 @@ Return_t xQueueSend(Queue_t *queue_, const Base_t messageBytes_, const Byte_t *m
               queue_->length++;
               RET_SUCCESS;
             } else {
-              SYSASSERT(false);
+              ASSERT;
             }
           } else {
-            SYSASSERT(false);
+            ASSERT;
           }
         } else {
-          SYSASSERT(false);
+          ASSERT;
         }
       } else {
-        SYSASSERT(false);
+        ASSERT;
       }
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -279,10 +279,10 @@ Return_t xQueuePeek(const Queue_t *queue_, QueueMessage_t **message_) {
     if(ISSUCCESSFUL(__QueuePeek__(queue_, message_))) {
       RET_SUCCESS;
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -301,19 +301,19 @@ static Return_t __QueuePeek__(const Queue_t *queue_, QueueMessage_t **message_) 
           if(ISSUCCESSFUL(__memcpy__((*message_)->messageValue, queue_->head->messageValue, CONFIG_MESSAGE_VALUE_BYTES))) {
             RET_SUCCESS;
           } else {
-            SYSASSERT(false);
+            ASSERT;
           }
         } else {
-          SYSASSERT(false);
+          ASSERT;
         }
       } else {
-        SYSASSERT(false);
+        ASSERT;
       }
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -327,10 +327,10 @@ Return_t xQueueDropMessage(Queue_t *queue_) {
     if(ISSUCCESSFUL(__QueueDropmessage__(queue_))) {
       RET_SUCCESS;
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -358,13 +358,13 @@ static Return_t __QueueDropmessage__(Queue_t *queue_) {
       if(ISSUCCESSFUL(__KernelFreeMemory__(message))) {
         RET_SUCCESS;
       } else {
-        SYSASSERT(false);
+        ASSERT;
       }
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -380,16 +380,16 @@ Return_t xQueueReceive(Queue_t *queue_, QueueMessage_t **message_) {
         if(ISSUCCESSFUL(__QueueDropmessage__(queue_))) {
           RET_SUCCESS;
         } else {
-          SYSASSERT(false);
+          ASSERT;
         }
       } else {
-        SYSASSERT(false);
+        ASSERT;
       }
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -404,10 +404,10 @@ Return_t xQueueLockQueue(Queue_t *queue_) {
       queue_->locked = true;
       RET_SUCCESS;
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -422,10 +422,10 @@ Return_t xQueueUnLockQueue(Queue_t *queue_) {
       queue_->locked = false;
       RET_SUCCESS;
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;

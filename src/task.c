@@ -72,19 +72,19 @@ Return_t xTaskCreate(Task_t **task_, const Byte_t *name_, void (*callback_)(Task
             taskList->length++;
             RET_SUCCESS;
           } else {
-            SYSASSERT(false);
+            ASSERT;
           }
         } else {
-          SYSASSERT(false);
+          ASSERT;
         }
       } else {
-        SYSASSERT(false);
+        ASSERT;
       }
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -110,7 +110,7 @@ Return_t xTaskDelete(const Task_t *task_) {
           taskList->length--;
           RET_SUCCESS;
         } else {
-          SYSASSERT(false);
+          ASSERT;
         }
       } else if((ISNOTNULLPTR(cursor)) && (cursor != task_)) {
         while((ISNOTNULLPTR(cursor)) && (cursor != task_)) {
@@ -125,19 +125,19 @@ Return_t xTaskDelete(const Task_t *task_) {
             taskList->length--;
             RET_SUCCESS;
           } else {
-            SYSASSERT(false);
+            ASSERT;
           }
         } else {
-          SYSASSERT(false);
+          ASSERT;
         }
       } else {
-        SYSASSERT(false);
+        ASSERT;
       }
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -163,14 +163,14 @@ Return_t xTaskGetHandleByName(Task_t **task_, const Byte_t *name_) {
           break;
         }
       } else {
-        SYSASSERT(false);
+        ASSERT;
         break;
       }
 
       cursor = cursor->next;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -197,7 +197,7 @@ Return_t xTaskGetHandleById(Task_t **task_, const Base_t id_) {
       cursor = cursor->next;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -237,16 +237,16 @@ Return_t xTaskGetAllRunTimeStats(TaskRunTimeStats_t **stats_, Base_t *tasks_) {
           *tasks_ = tasks;
           RET_SUCCESS;
         } else {
-          SYSASSERT(false);
+          ASSERT;
         }
       } else {
-        SYSASSERT(false);
+        ASSERT;
       }
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -265,16 +265,16 @@ Return_t xTaskGetTaskRunTimeStats(const Task_t *task_, TaskRunTimeStats_t **stat
           (*stats_)->totalRunTime = task_->totalRunTime;
           RET_SUCCESS;
         } else {
-          SYSASSERT(false);
+          ASSERT;
         }
       } else {
-        SYSASSERT(false);
+        ASSERT;
       }
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -301,10 +301,10 @@ Return_t xTaskGetNumberOfTasks(Base_t *tasks_) {
       *tasks_ = tasks;
       RET_SUCCESS;
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -325,19 +325,19 @@ Return_t xTaskGetTaskInfo(const Task_t *task_, TaskInfo_t **info_) {
             (*info_)->totalRunTime = task_->totalRunTime;
             RET_SUCCESS;
           } else {
-            SYSASSERT(false);
+            ASSERT;
           }
         } else {
-          SYSASSERT(false);
+          ASSERT;
         }
       } else {
-        SYSASSERT(false);
+        ASSERT;
       }
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -380,16 +380,16 @@ Return_t xTaskGetAllTaskInfo(TaskInfo_t **info_, Base_t *tasks_) {
           *tasks_ = tasks;
           RET_SUCCESS;
         } else {
-          SYSASSERT(false);
+          ASSERT;
         }
       } else {
-        SYSASSERT(false);
+        ASSERT;
       }
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -404,10 +404,10 @@ Return_t xTaskGetTaskState(const Task_t *task_, TaskState_t *state_) {
       *state_ = task_->state;
       RET_SUCCESS;
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -424,19 +424,19 @@ Return_t xTaskGetName(const Task_t *task_, Byte_t **name_) {
           if(ISSUCCESSFUL(__memcpy__(*name_, task_->name, CONFIG_TASK_NAME_BYTES))) {
             RET_SUCCESS;
           } else {
-            SYSASSERT(false);
+            ASSERT;
           }
         } else {
-          SYSASSERT(false);
+          ASSERT;
         }
       } else {
-        SYSASSERT(false);
+        ASSERT;
       }
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -451,10 +451,10 @@ Return_t xTaskGetId(const Task_t *task_, Base_t *id_) {
       *id_ = task_->id;
       RET_SUCCESS;
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -471,16 +471,16 @@ Return_t xTaskNotifyStateClear(Task_t *task_) {
           task_->notificationBytes = zero;
           RET_SUCCESS;
         } else {
-          SYSASSERT(false);
+          ASSERT;
         }
       } else {
-        SYSASSERT(false);
+        ASSERT;
       }
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -500,10 +500,10 @@ Return_t xTaskNotificationIsWaiting(const Task_t *task_, Base_t *res_) {
         RET_SUCCESS;
       }
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -521,16 +521,16 @@ Return_t xTaskNotifyGive(Task_t *task_, const Base_t notificationBytes_, const B
           task_->notificationBytes = notificationBytes_;
           RET_SUCCESS;
         } else {
-          SYSASSERT(false);
+          ASSERT;
         }
       } else {
-        SYSASSERT(false);
+        ASSERT;
       }
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -551,25 +551,25 @@ Return_t xTaskNotifyTake(Task_t *task_, TaskNotification_t **notification_) {
                 task_->notificationBytes = zero;
                 RET_SUCCESS;
               } else {
-                SYSASSERT(false);
+                ASSERT;
               }
             } else {
-              SYSASSERT(false);
+              ASSERT;
             }
           } else {
-            SYSASSERT(false);
+            ASSERT;
           }
         } else {
-          SYSASSERT(false);
+          ASSERT;
         }
       } else {
-        SYSASSERT(false);
+        ASSERT;
       }
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -584,10 +584,10 @@ Return_t xTaskResume(Task_t *task_) {
       task_->state = TaskStateRunning;
       RET_SUCCESS;
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -602,10 +602,10 @@ Return_t xTaskSuspend(Task_t *task_) {
       task_->state = TaskStateSuspended;
       RET_SUCCESS;
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -620,10 +620,10 @@ Return_t xTaskWait(Task_t *task_) {
       task_->state = TaskStateWaiting;
       RET_SUCCESS;
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -638,10 +638,10 @@ Return_t xTaskChangePeriod(Task_t *task_, const Ticks_t timerPeriod_) {
       task_->timerPeriod = timerPeriod_;
       RET_SUCCESS;
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -656,10 +656,10 @@ Return_t xTaskChangeWDPeriod(Task_t *task_, const Ticks_t wdTimerPeriod_) {
       task_->wdTimerPeriod = wdTimerPeriod_;
       RET_SUCCESS;
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -674,10 +674,10 @@ Return_t xTaskGetPeriod(const Task_t *task_, Ticks_t *timerPeriod_) {
       *timerPeriod_ = task_->timerPeriod;
       RET_SUCCESS;
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -702,13 +702,13 @@ static Return_t __TaskListFindTask__(const Task_t *task_) {
       if(ISNOTNULLPTR(cursor)) {
         RET_SUCCESS;
       } else {
-        SYSASSERT(false);
+        ASSERT;
       }
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -723,10 +723,10 @@ Return_t xTaskResetTimer(Task_t *task_) {
       task_->timerStartTime = __PortGetSysTicks__();
       RET_SUCCESS;
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -776,7 +776,7 @@ Return_t xTaskStartScheduler(void) {
     SYSFLAG_RUNNING() = false;
     RET_SUCCESS;
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -834,7 +834,7 @@ Return_t xTaskResumeAll(void) {
     schedulerState = SchedulerStateRunning;
     RET_SUCCESS;
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -848,7 +848,7 @@ Return_t xTaskSuspendAll(void) {
     schedulerState = SchedulerStateSuspended;
     RET_SUCCESS;
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -862,7 +862,7 @@ Return_t xTaskGetSchedulerState(SchedulerState_t *state_) {
     *state_ = schedulerState;
     RET_SUCCESS;
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -877,10 +877,10 @@ Return_t xTaskGetWDPeriod(const Task_t *task_, Ticks_t *wdTimerPeriod_) {
       *wdTimerPeriod_ = task_->wdTimerPeriod;
       RET_SUCCESS;
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;

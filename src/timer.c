@@ -62,13 +62,13 @@ Return_t xTimerCreate(Timer_t **timer_, const Ticks_t timerPeriod_) {
         timerList->length++;
         RET_SUCCESS;
       } else {
-        SYSASSERT(false);
+        ASSERT;
       }
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -94,7 +94,7 @@ Return_t xTimerDelete(const Timer_t *timer_) {
           timerList->length--;
           RET_SUCCESS;
         } else {
-          SYSASSERT(false);
+          ASSERT;
         }
       } else if((ISNOTNULLPTR(cursor)) && (cursor != timer_)) {
         while((ISNOTNULLPTR(cursor)) && (cursor != timer_)) {
@@ -109,19 +109,19 @@ Return_t xTimerDelete(const Timer_t *timer_) {
             timerList->length--;
             RET_SUCCESS;
           } else {
-            SYSASSERT(false);
+            ASSERT;
           }
         } else {
-          SYSASSERT(false);
+          ASSERT;
         }
       } else {
-        SYSASSERT(false);
+        ASSERT;
       }
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -136,10 +136,10 @@ Return_t xTimerChangePeriod(Timer_t *timer_, const Ticks_t timerPeriod_) {
       timer_->timerPeriod = timerPeriod_;
       RET_SUCCESS;
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -154,10 +154,10 @@ Return_t xTimerGetPeriod(const Timer_t *timer_, Ticks_t *timerPeriod_) {
       *timerPeriod_ = timer_->timerPeriod;
       RET_SUCCESS;
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -177,10 +177,10 @@ Return_t xTimerIsTimerActive(const Timer_t *timer_, Base_t *res_) {
         RET_SUCCESS;
       }
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -200,10 +200,10 @@ Return_t xTimerHasTimerExpired(const Timer_t *timer_, Base_t *res_) {
         RET_SUCCESS;
       }
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -218,10 +218,10 @@ Return_t xTimerReset(Timer_t *timer_) {
       timer_->timerStartTime = __PortGetSysTicks__();
       RET_SUCCESS;
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -236,10 +236,10 @@ Return_t xTimerStart(Timer_t *timer_) {
       timer_->state = TimerStateRunning;
       RET_SUCCESS;
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -254,10 +254,10 @@ Return_t xTimerStop(Timer_t *timer_) {
       timer_->state = TimerStateSuspended;
       RET_SUCCESS;
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -282,13 +282,13 @@ static Return_t __TimerListFindTimer__(const Timer_t *timer_) {
       if(ISNOTNULLPTR(cursor)) {
         RET_SUCCESS;
       } else {
-        SYSASSERT(false);
+        ASSERT;
       }
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;

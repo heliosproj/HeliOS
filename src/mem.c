@@ -46,10 +46,10 @@ Return_t __MemoryInit__(void) {
       kernel.minAvailableEver = CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS * CONFIG_MEMORY_REGION_BLOCK_SIZE;
       RET_SUCCESS;
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -63,10 +63,10 @@ Return_t xMemAlloc(volatile Addr_t **addr_, const Size_t size_) {
     if(ISSUCCESSFUL(__calloc__(&heap, addr_, size_))) {
       RET_SUCCESS;
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -80,10 +80,10 @@ Return_t xMemFree(const volatile Addr_t *addr_) {
     if(ISSUCCESSFUL(__free__(&heap, addr_))) {
       RET_SUCCESS;
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -117,10 +117,10 @@ Return_t xMemGetUsed(Size_t *size_) {
       *size_ = used * CONFIG_MEMORY_REGION_BLOCK_SIZE;
       RET_SUCCESS;
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -145,13 +145,13 @@ Return_t xMemGetSize(const volatile Addr_t *addr_, Size_t *size_) {
         *size_ = tosize->blocks * CONFIG_MEMORY_REGION_BLOCK_SIZE;
         RET_SUCCESS;
       } else {
-        SYSASSERT(false);
+        ASSERT;
       }
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -193,7 +193,7 @@ static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, co
 
             cursor = cursor->next;
           } else {
-            SYSASSERT(false);
+            ASSERT;
 
 
             /* Set the memfault sysflag to true because the address we just
@@ -203,7 +203,7 @@ static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, co
             break;
           }
         } else {
-          SYSASSERT(false);
+          ASSERT;
 
 
           /* Set the memfault sysflag to true because the address we just
@@ -221,10 +221,10 @@ static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, co
           /* Never use an else statement here to mark SYSFLAG_FAULT() = true.
            * Just because an address wasn't found does not mean the memory
            * region is corrupt. */
-          SYSASSERT(false);
+          ASSERT;
         }
       } else {
-        SYSASSERT(false);
+        ASSERT;
 
 
         /* Set the memfault sysflag to true because the number of blocks visited
@@ -233,10 +233,10 @@ static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, co
         SYSFLAG_FAULT() = true;
       }
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -252,10 +252,10 @@ static Return_t __MemoryRegionCheckAddr__(const volatile MemoryRegion_t *region_
     if((addr_ >= (Addr_t *) (region_->mem)) && (addr_ < (Addr_t *) (region_->mem + MEMORY_REGION_SIZE_IN_BYTES))) {
       RET_SUCCESS;
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -306,7 +306,7 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
         region_->start->blocks = CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS;
         region_->start->next = null;
       } else {
-        SYSASSERT(false);
+        ASSERT;
       }
     }
 
@@ -369,7 +369,7 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
             *addr_ = ENTRY2ADDR(candidate, region_);
             RET_SUCCESS;
           } else {
-            SYSASSERT(false);
+            ASSERT;
           }
         } else {
           /* Because we didn't need to split an entry into two, we just need to
@@ -380,7 +380,7 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
             *addr_ = ENTRY2ADDR(candidate, region_);
             RET_SUCCESS;
           } else {
-            SYSASSERT(false);
+            ASSERT;
           }
         }
 
@@ -392,13 +392,13 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
           region_->minAvailableEver = (free * CONFIG_MEMORY_REGION_BLOCK_SIZE);
         }
       } else {
-        SYSASSERT(false);
+        ASSERT;
       }
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   ENABLE_INTERRUPTS();
@@ -424,13 +424,13 @@ static Return_t __free__(volatile MemoryRegion_t *region_, const volatile Addr_t
       if(ISSUCCESSFUL(__DefragMemoryRegion__(region_))) {
         RET_SUCCESS;
       } else {
-        SYSASSERT(false);
+        ASSERT;
       }
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   ENABLE_INTERRUPTS();
@@ -446,13 +446,13 @@ Return_t __KernelAllocateMemory__(volatile Addr_t **addr_, const Size_t size_) {
       if(ISNOTNULLPTR(*addr_)) {
         RET_SUCCESS;
       } else {
-        SYSASSERT(false);
+        ASSERT;
       }
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -466,10 +466,10 @@ Return_t __KernelFreeMemory__(const volatile Addr_t *addr_) {
     if(ISSUCCESSFUL(__free__(&kernel, addr_))) {
       RET_SUCCESS;
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -483,10 +483,10 @@ Return_t __MemoryRegionCheckKernel__(const volatile Addr_t *addr_, const Base_t 
     if(ISSUCCESSFUL(__MemoryRegionCheck__(&kernel, addr_, option_))) {
       RET_SUCCESS;
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -501,13 +501,13 @@ Return_t __HeapAllocateMemory__(volatile Addr_t **addr_, const Size_t size_) {
       if(ISNOTNULLPTR(*addr_)) {
         RET_SUCCESS;
       } else {
-        SYSASSERT(false);
+        ASSERT;
       }
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -521,10 +521,10 @@ Return_t __HeapFreeMemory__(const volatile Addr_t *addr_) {
     if(ISSUCCESSFUL(__free__(&heap, addr_))) {
       RET_SUCCESS;
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -538,10 +538,10 @@ Return_t __MemoryRegionCheckHeap__(const volatile Addr_t *addr_, const Base_t op
     if(ISSUCCESSFUL(__MemoryRegionCheck__(&heap, addr_, option_))) {
       RET_SUCCESS;
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -567,7 +567,7 @@ Return_t __memcpy__(const volatile Addr_t *dest_, const volatile Addr_t *src_, c
 
     RET_SUCCESS;
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -591,7 +591,7 @@ Return_t __memset__(const volatile Addr_t *dest_, const Byte_t val_, const Size_
 
     RET_SUCCESS;
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -624,7 +624,7 @@ Return_t __memcmp__(const volatile Addr_t *s1_, const volatile Addr_t *s2_, cons
 
     RET_SUCCESS;
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -638,10 +638,10 @@ Return_t xMemGetHeapStats(MemoryRegionStats_t **stats_) {
     if(ISSUCCESSFUL(__MemGetRegionStats__(&heap, stats_))) {
       RET_SUCCESS;
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -655,10 +655,10 @@ Return_t xMemGetKernelStats(MemoryRegionStats_t **stats_) {
     if(ISSUCCESSFUL(__MemGetRegionStats__(&kernel, stats_))) {
       RET_SUCCESS;
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -709,16 +709,16 @@ static Return_t __MemGetRegionStats__(const volatile MemoryRegion_t *region_, Me
 
           RET_SUCCESS;
         } else {
-          SYSASSERT(false);
+          ASSERT;
         }
       } else {
-        SYSASSERT(false);
+        ASSERT;
       }
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -752,7 +752,7 @@ static Return_t __DefragMemoryRegion__(const volatile MemoryRegion_t *region_) {
 
           if(ISSUCCESSFUL(__memset__(merge, zero, sizeof(MemoryEntry_t)))) {
           } else {
-            SYSASSERT(false);
+            ASSERT;
             break;
           }
         } else {
@@ -762,10 +762,10 @@ static Return_t __DefragMemoryRegion__(const volatile MemoryRegion_t *region_) {
 
       RET_SUCCESS;
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;

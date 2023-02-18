@@ -35,13 +35,6 @@
   #include <stddef.h>
 
 
-/** TEMPORARY!!!!!! */
-
-  #define RETURN_SUCCESS 1
-  #define RETURN_FAILURE 0
-
-
-/** TEMPORARY!!!!!! */
 /* Check that the system HeliOS is being targeted for has an 8-bit wide byte. */
   #if !defined(CHAR_BIT)
     #pragma message("WARNING: Unable to determine if system has an 8-bit wide byte. CHAR_BIT not defined?")
@@ -194,15 +187,13 @@
   #define ISSUCCESSFUL(expr_) ((ReturnSuccess) == (expr_))
 
 
-  #if defined(SYSASSERT)
-    #undef SYSASSERT
-  #endif /* if defined(SYSASSERT) */
+  #if defined(ASSERT)
+    #undef ASSERT
+  #endif /* if defined(ASSERT) */
   #if defined(CONFIG_ENABLE_SYSTEM_ASSERT)
-    #define SYSASSERT(expr_)  \
-            if((false) == (expr_)) \
-            xSystemAssert(__FILE__, __LINE__)
+    #define ASSERT xSystemAssert(__FILE__, __LINE__)
   #else  /* if defined(CONFIG_ENABLE_SYSTEM_ASSERT) */
-    #define SYSASSERT(expr_)
+    #define ASSERT
   #endif /* if defined(CONFIG_ENABLE_SYSTEM_ASSERT) */
 
 

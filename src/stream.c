@@ -36,10 +36,10 @@ Return_t xStreamCreate(StreamBuffer_t **stream_) {
       (*stream_)->length = zero;
       RET_SUCCESS;
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -53,10 +53,10 @@ Return_t xStreamDelete(const StreamBuffer_t *stream_) {
     if(ISSUCCESSFUL(__KernelFreeMemory__(stream_))) {
       RET_SUCCESS;
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -92,22 +92,22 @@ Return_t xStreamReceive(const StreamBuffer_t *stream_, HalfWord_t *bytes_, Byte_
             if(ISSUCCESSFUL(__memset__(stream_, zero, sizeof(StreamBuffer_t)))) {
               RET_SUCCESS;
             } else {
-              SYSASSERT(false);
+              ASSERT;
             }
           } else {
-            SYSASSERT(false);
+            ASSERT;
           }
         } else {
-          SYSASSERT(false);
+          ASSERT;
         }
       } else {
-        SYSASSERT(false);
+        ASSERT;
       }
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -122,10 +122,10 @@ Return_t xStreamBytesAvailable(const StreamBuffer_t *stream_, HalfWord_t *bytes_
       *bytes_ = stream_->length;
       RET_SUCCESS;
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -140,13 +140,13 @@ Return_t xStreamReset(const StreamBuffer_t *stream_) {
       if(ISSUCCESSFUL(__memset__(stream_, zero, sizeof(StreamBuffer_t)))) {
         RET_SUCCESS;
       } else {
-        SYSASSERT(false);
+        ASSERT;
       }
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -165,7 +165,7 @@ Return_t xStreamIsEmpty(const StreamBuffer_t *stream_, Base_t *res_) {
       RET_SUCCESS;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -184,7 +184,7 @@ Return_t xStreamIsFull(const StreamBuffer_t *stream_, Base_t *res_) {
       RET_SUCCESS;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;

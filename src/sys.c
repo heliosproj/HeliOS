@@ -69,10 +69,10 @@ Return_t xSystemInit(void) {
       sysFlags.running = false;
       RET_SUCCESS;
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
@@ -101,16 +101,16 @@ Return_t xSystemGetSystemInfo(SystemInfo_t **info_) {
         if(ISSUCCESSFUL(xTaskGetNumberOfTasks(&(*info_)->numberOfTasks))) {
           RET_SUCCESS;
         } else {
-          SYSASSERT(false);
+          ASSERT;
         }
       } else {
-        SYSASSERT(false);
+        ASSERT;
       }
     } else {
-      SYSASSERT(false);
+      ASSERT;
     }
   } else {
-    SYSASSERT(false);
+    ASSERT;
   }
 
   RET_RETURN;
