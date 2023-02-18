@@ -131,9 +131,9 @@ void memory_harness(void) {
   unit_begin("xMemGetKernelStats()");
   mem03 = null;
   mem04 = null;
-  unit_try(xTaskCreate(&mem04, (Byte_t *) "NONE", memory_harness_task, null));
+  unit_try(ISSUCCESSFUL(xTaskCreate(&mem04, (Byte_t *) "NONE", memory_harness_task, null)));
   unit_try(null != mem04);
-  xTaskDelete(mem04);
+  unit_try(ISSUCCESSFUL(xTaskDelete(mem04)));
   unit_try(ISSUCCESSFUL(xMemGetKernelStats(&mem03)));
   unit_try(null != mem03);
   unit_try(0x383C0u == mem03->availableSpaceInBytes);

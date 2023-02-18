@@ -386,9 +386,10 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
 
         /* Update the statistics for the memory region before we are done. */
         region_->allocations++;
+        free -= requested;
 
         if((free * CONFIG_MEMORY_REGION_BLOCK_SIZE) < region_->minAvailableEver) {
-          region_->minAvailableEver = ((free - requested) * CONFIG_MEMORY_REGION_BLOCK_SIZE);
+          region_->minAvailableEver = (free * CONFIG_MEMORY_REGION_BLOCK_SIZE);
         }
       } else {
         SYSASSERT(false);
@@ -745,7 +746,7 @@ static Return_t __DefragMemoryRegion__(const volatile MemoryRegion_t *region_) {
         if(ISNOTNULLPTR(cursor) && ISNOTNULLPTR(cursor->next) && (true == cursor->free) && (true == cursor->next->free)) {
           merge = cursor->next;
           cursor->magic = CALCMAGIC(cursor);
-          cursor->free = false;
+          cursor->free = true;
           cursor->blocks += merge->blocks;
           cursor->next = merge->next;
 

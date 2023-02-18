@@ -491,7 +491,7 @@ Return_t xTaskNotificationIsWaiting(const Task_t *task_, Base_t *res_) {
   RET_DEFINE;
 
   if(ISNOTNULLPTR(task_) && ISNOTNULLPTR(res_) && ISNOTNULLPTR(taskList)) {
-    if(ISNOTNULLPTR(__TaskListFindTask__(task_))) {
+    if(ISSUCCESSFUL(__TaskListFindTask__(task_))) {
       if(zero < task_->notificationBytes) {
         *res_ = true;
         RET_SUCCESS;

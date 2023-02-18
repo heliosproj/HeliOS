@@ -33,7 +33,7 @@ static unit_t *unit = null;
 void unit_init(void) {
   if(null == unit) {
     unit = (unit_t *) calloc(1, sizeof(unit_t));
-    printf("unit: intializing...\n");
+    printf("unit: initializing...\n");
   }
 
   return;
@@ -41,7 +41,7 @@ void unit_init(void) {
 
 
 void unit_begin(const char *name_) {
-  if((null != unit) & (null != name_) & (false == unit->begun)) {
+  if((null != unit) && (null != name_) && (false == unit->begun)) {
     strncpy(unit->name, name_, UNIT_NAME_LENGTH);
     unit->begun = true;
     unit->failed = false;
@@ -53,7 +53,7 @@ void unit_begin(const char *name_) {
 
 
 void unit_try(int expr_) {
-  if((null != unit) & (true == unit->begun) & (false == expr_)) {
+  if((null != unit) && (true == unit->begun) && (false == expr_)) {
     unit->failed = true;
   }
 
@@ -62,7 +62,7 @@ void unit_try(int expr_) {
 
 
 void unit_end(void) {
-  if((null != unit) & (true == unit->begun)) {
+  if((null != unit) && (true == unit->begun)) {
     if(true == unit->failed) {
       printf("unit: end: %s failed\n", unit->name);
       unit->fail++;
@@ -93,6 +93,15 @@ void unit_exit(void) {
     } else {
       exit(0x0);
     }
+  }
+
+  return;
+}
+
+
+void unit_print(const char *msg_) {
+  if((null != unit) && (true == unit->begun) && (null != msg_)) {
+    printf("unit: %s\n", msg_);
   }
 
   return;

@@ -95,7 +95,7 @@ void task_harness(void) {
   unit_end();
   unit_begin("xTaskGetNumberOfTasks()");
   task06 = 0;
-  unit_begin(ISSUCCESSFUL(xTaskGetNumberOfTasks(&task06)));
+  unit_try(ISSUCCESSFUL(xTaskGetNumberOfTasks(&task06)));
   unit_try(0x1 == task06);
   unit_end();
   unit_begin("xTaskGetTaskInfo()");
@@ -185,11 +185,11 @@ void task_harness(void) {
   unit_try(SchedulerStateSuspended == task22);
   unit_try(ISSUCCESSFUL(xTaskResumeAll()));
   unit_try(ISSUCCESSFUL(xTaskGetSchedulerState(&task23)));
-  unit_try(SchedulerStateRunning == task24);
+  unit_try(SchedulerStateRunning == task23);
   unit_end();
   unit_begin("Unit test for task timer event");
-  xTaskResumeAll();
-  xTaskDelete(task01);
+  unit_try(ISSUCCESSFUL(xTaskResumeAll()));
+  unit_try(ISSUCCESSFUL(xTaskDelete(task01)));
   task10 = null;
   unit_try(ISSUCCESSFUL(xTaskCreate(&task10, (Byte_t *) "TASK10", task_harness_task, null)));
   unit_try(null != task10);
@@ -221,14 +221,14 @@ void task_harness(void) {
   unit_try(null != task12);
   unit_try(ISSUCCESSFUL(xTaskChangeWDPeriod(task12, 0x7D0u)));
   unit_try(ISSUCCESSFUL(xTaskResume(task12)));
-  unit_try(ISSUCCESSFUL( xTaskGetTaskState(task12, &task26)));
+  unit_try(ISSUCCESSFUL(xTaskGetTaskState(task12, &task26)));
   unit_try(TaskStateRunning == task26);
   unit_try(ISSUCCESSFUL(xTaskStartScheduler()));
   unit_try(ISSUCCESSFUL(xTaskGetTaskState(task12, &task27)));
   unit_try(TaskStateSuspended == task27);
   unit_end();
   unit_begin("xTaskGetWDPeriod()");
-  unit_try(ISSUCCESSFUL( xTaskGetWDPeriod(task12, &task28)));
+  unit_try(ISSUCCESSFUL(xTaskGetWDPeriod(task12, &task28)));
   unit_try(0x7D0u == task28);
   unit_end();
 

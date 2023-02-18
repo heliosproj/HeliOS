@@ -72,6 +72,7 @@
   void unit_try(int expr_);
   void unit_end(void);
   void unit_exit(void);
+  void unit_print(const char *msg_);
 
   #ifdef __cplusplus
     }

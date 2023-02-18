@@ -64,7 +64,12 @@ Return_t __RegisterDevice__(const HalfWord_t uid_, const Byte_t *name_, const De
       init_)) && (ISNOTNULLPTR(config_)) && (ISNOTNULLPTR(read_)) && (ISNOTNULLPTR(write_)) && (ISNOTNULLPTR(simple_read_)) && (ISNOTNULLPTR(simple_write_)) &&
     (ISNULLPTR(deviceList)) && (ISSUCCESSFUL(__KernelAllocateMemory__((volatile Addr_t **) &deviceList, sizeof(DeviceList_t)))))) {
     if(ISNOTNULLPTR(deviceList)) {
-      if(ISSUCCESSFUL(__DeviceListFind__(uid_, &device))) {
+      /* We are expecting *NOT* to find the device UID in the device list. This
+       * is to confirm there isn't already a device with the same UID already
+       * registered. */
+      if(!ISSUCCESSFUL(__DeviceListFind__(uid_, &device))) {
+        /* Likewise this should be null since we expected __DeviceListFind()
+         * will *NOT* find a device by that UID. */
         if(ISNULLPTR(device)) {
           if(ISSUCCESSFUL(__KernelAllocateMemory__((volatile Addr_t **) &device, sizeof(Device_t)))) {
             if(ISNOTNULLPTR(device)) {
@@ -361,19 +366,15 @@ static Return_t __DeviceListFind__(const HalfWord_t uid_, Device_t **device_) {
 
 
   if(ISNOTNULLPTR(device_) && ISNOTNULLPTR(deviceList) && (zero < uid_)) {
-    if(ISSUCCESSFUL(__MemoryRegionCheckKernel__(*device_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
-      cursor = deviceList->head;
+    cursor = deviceList->head;
 
-      while((ISNOTNULLPTR(cursor)) && (cursor->uid != uid_)) {
-        cursor = cursor->next;
-      }
+    while((ISNOTNULLPTR(cursor)) && (cursor->uid != uid_)) {
+      cursor = cursor->next;
+    }
 
-      if(ISNOTNULLPTR(cursor)) {
-        *device_ = cursor;
-        RET_SUCCESS;
-      } else {
-        SYSASSERT(false);
-      }
+    if(ISNOTNULLPTR(cursor)) {
+      *device_ = cursor;
+      RET_SUCCESS;
     } else {
       SYSASSERT(false);
     }
