@@ -68,11 +68,13 @@ Return_t xStreamSend(StreamBuffer_t *stream_, const Byte_t byte_) {
 
   if(ISNOTNULLPTR(stream_) && ISSUCCESSFUL(__MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
     if(CONFIG_STREAM_BUFFER_BYTES > stream_->length) {
+
+      stream_->buffer[stream_->length] = byte_;
+
       stream_->length++;
 
 
-      /* Offset the stream buffer length by -1 because array is base zero. */
-      stream_->buffer[stream_->length - 1] = byte_;
+      
       RET_SUCCESS;
     }
   }
@@ -146,7 +148,7 @@ Return_t xStreamReset(const StreamBuffer_t *stream_) {
         SYSASSERT(false);
       }
     } else {
-      RET_SUCCESS;
+        SYSASSERT(false);
     }
   } else {
     SYSASSERT(false);
