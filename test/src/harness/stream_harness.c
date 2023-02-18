@@ -81,11 +81,8 @@ void stream_harness(void) {
   unit_try(true == res);
   unit_end();
   unit_begin("xStreamDelete()");
-
   unit_try(!ISSUCCESSFUL(xStreamReset(stream01)));
-
   unit_try(ISSUCCESSFUL(xStreamDelete(stream01)));
-
   unit_try(!ISSUCCESSFUL(xStreamSend(stream01, zero)));
   unit_end();
 
