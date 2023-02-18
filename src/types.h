@@ -38,28 +38,28 @@
  *     WARNING: MODIFYING THIS FILE MAY HAVE DISASTROUS CONSEQUENCES. YOU'VE
  * BEEN WARNED.
  */
-  typedef enum {
+  typedef enum TaskState_e {
     TaskStateSuspended,
     TaskStateRunning,
     TaskStateWaiting
   } TaskState_t;
-  typedef enum {
+  typedef enum SchedulerState_e {
     SchedulerStateSuspended,
     SchedulerStateRunning
   } SchedulerState_t;
-  typedef enum {
+  typedef enum Return_e {
     ReturnSuccess,
     ReturnFailure
   } Return_t;
-  typedef enum {
+  typedef enum TimerState_e {
     TimerStateSuspended,
     TimerStateRunning
   } TimerState_t;
-  typedef enum {
+  typedef enum DeviceState_e {
     DeviceStateSuspended,
     DeviceStateRunning
   } DeviceState_t;
-  typedef enum {
+  typedef enum DeviceMode_e {
     DeviceModeReadOnly,
     DeviceModeWriteOnly,
     DeviceModeReadWrite
