@@ -146,7 +146,7 @@ Return_t xStreamReset(const StreamBuffer_t *stream_) {
         SYSASSERT(false);
       }
     } else {
-      SYSASSERT(false);
+      RET_SUCCESS;
     }
   } else {
     SYSASSERT(false);
