@@ -39,13 +39,11 @@
  * BEEN WARNED.
  */
   typedef enum {
-    TaskStateError,
     TaskStateSuspended,
     TaskStateRunning,
     TaskStateWaiting
   } TaskState_t;
   typedef enum {
-    SchedulerStateError,
     SchedulerStateSuspended,
     SchedulerStateRunning
   } SchedulerState_t;
@@ -54,12 +52,10 @@
     ReturnFailure
   } Return_t;
   typedef enum {
-    TimerStateError,
     TimerStateSuspended,
     TimerStateRunning
   } TimerState_t;
   typedef enum {
-    DeviceStateError,
     DeviceStateSuspended,
     DeviceStateRunning
   } DeviceState_t;
