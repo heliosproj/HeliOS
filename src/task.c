@@ -443,7 +443,7 @@ Return_t xTaskGetName(const Task_t *task_, Byte_t **name_) {
 }
 
 
-Return_t xTaskGetId(const Task_t *task_, Byte_t *id_) {
+Return_t xTaskGetId(const Task_t *task_, Base_t *id_) {
   RET_DEFINE;
 
   if(ISNOTNULLPTR(task_) && ISNOTNULLPTR(id_) && ISNOTNULLPTR(taskList)) {
