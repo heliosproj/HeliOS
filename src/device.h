@@ -51,7 +51,7 @@
   Return_t xDeviceSimpleWrite(const HalfWord_t uid_, Word_t *data_);
   Return_t xDeviceWrite(const HalfWord_t uid_, Size_t *size_, Addr_t *data_);
   Return_t xDeviceSimpleRead(const HalfWord_t uid_, Word_t *data_);
-  Return_t xDeviceRead(const HalfWord_t uid_, Size_t *size_, Addr_t *data_);
+  Return_t xDeviceRead(const HalfWord_t uid_, Size_t *size_, Addr_t **data_);
   Return_t xDeviceInitDevice(const HalfWord_t uid_);
   Return_t xDeviceConfigDevice(const HalfWord_t uid_, Size_t *size_, Addr_t *config_);
 

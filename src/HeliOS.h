@@ -142,7 +142,7 @@
   xReturn xDeviceSimpleWrite(const xHalfWord uid_, xWord *data_);
   xReturn xDeviceWrite(const xHalfWord uid_, xSize *size_, xAddr data_);
   xReturn xDeviceSimpleRead(const xHalfWord uid_, xWord *data_);
-  xReturn xDeviceRead(const xHalfWord uid_, xSize *size_, xAddr data_);
+  xReturn xDeviceRead(const xHalfWord uid_, xSize *size_, xAddr *data_);
   xReturn xDeviceInitDevice(const xHalfWord uid_);
   xReturn xDeviceConfigDevice(const xHalfWord uid_, xSize *size_, xAddr config_);
   xReturn xMemAlloc(volatile xAddr *addr_, const xSize size_);

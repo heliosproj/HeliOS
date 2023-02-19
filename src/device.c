@@ -317,7 +317,7 @@ Return_t xDeviceSimpleRead(const HalfWord_t uid_, Word_t *data_) {
 }
 
 
-Return_t xDeviceRead(const HalfWord_t uid_, Size_t *size_, Addr_t *data_) {
+Return_t xDeviceRead(const HalfWord_t uid_, Size_t *size_, Addr_t **data_) {
   RET_DEFINE;
 
 
