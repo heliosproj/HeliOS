@@ -98,7 +98,7 @@ Return_t xMemGetUsed(Size_t *size_) {
   HalfWord_t used = zero;
 
 
-  if(NOTNULLPTR(size_) && (false == SYSFLAG_FAULT())) {
+  if(NOTNULLPTR(size_) && (false == FLAG_MEMFAULT())) {
     if(OK(__MemoryRegionCheck__(&heap, null, MEMORY_REGION_CHECK_OPTION_WO_ADDR))) {
       cursor = heap.start;
 
@@ -134,7 +134,7 @@ Return_t xMemGetSize(const volatile Addr_t *addr_, Size_t *size_) {
   MemoryEntry_t *tosize = null;
 
 
-  if(NOTNULLPTR(addr_) && NOTNULLPTR(size_) && (false == SYSFLAG_FAULT())) {
+  if(NOTNULLPTR(addr_) && NOTNULLPTR(size_) && (false == FLAG_MEMFAULT())) {
     if(OK(__MemoryRegionCheck__(&heap, addr_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
       tosize = ADDR2ENTRY(addr_, &heap);
 
@@ -199,7 +199,7 @@ static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, co
             /* Set the memfault sysflag to true because the address we just
              * checked does *NOT* have the correct magic value. Something is
              * wrong! */
-            SYSFLAG_FAULT() = true;
+            FLAG_MEMFAULT() = true;
             break;
           }
         } else {
@@ -208,19 +208,19 @@ static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, co
 
           /* Set the memfault sysflag to true because the address we just
            * checked is *NOT* inside the memory region. Something is wrong! */
-          SYSFLAG_FAULT() = true;
+          FLAG_MEMFAULT() = true;
           break;
         }
       }
 
       if(CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS == blocks) {
-        if(((MEMORY_REGION_CHECK_OPTION_WO_ADDR == option_) && (false == SYSFLAG_FAULT())) || ((MEMORY_REGION_CHECK_OPTION_W_ADDR == option_) && (false ==
-          SYSFLAG_FAULT()) && (true == found))) {
+        if(((MEMORY_REGION_CHECK_OPTION_WO_ADDR == option_) && (false == FLAG_MEMFAULT())) || ((MEMORY_REGION_CHECK_OPTION_W_ADDR == option_) && (false ==
+          FLAG_MEMFAULT()) && (true == found))) {
           RET_OK;
         } else {
-          /* Never use an else statement here to mark SYSFLAG_FAULT() = true.
-           * Just because an address wasn't found does not mean the memory
-           * region is corrupt. */
+          /* Never use an else statement here to mark FLAG_MEMFAULT() = true. Just
+           * because an address wasn't found does not mean the memory region is
+           * corrupt. */
           ASSERT;
         }
       } else {
@@ -230,7 +230,7 @@ static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, co
         /* Set the memfault sysflag to true because the number of blocks visited
          * does not match the number of blocks the memory region *SHOULD* have.
          */
-        SYSFLAG_FAULT() = true;
+        FLAG_MEMFAULT() = true;
       }
     } else {
       ASSERT;
@@ -280,7 +280,7 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
 
   DISABLE_INTERRUPTS();
 
-  if(NOTNULLPTR(region_) && NOTNULLPTR(addr_) && (false == SYSFLAG_FAULT()) && (zero < size_)) {
+  if(NOTNULLPTR(region_) && NOTNULLPTR(addr_) && (false == FLAG_MEMFAULT()) && (zero < size_)) {
     /* If we haven't already, calculate how many blocks in size a memory entry
      * is. Typically this is one (1), but that may not always be the case. */
     if(zero == region_->entrySize) {
@@ -415,7 +415,7 @@ static Return_t __free__(volatile MemoryRegion_t *region_, const volatile Addr_t
 
   DISABLE_INTERRUPTS();
 
-  if(NOTNULLPTR(region_) && NOTNULLPTR(addr_) && (false == SYSFLAG_FAULT())) {
+  if(NOTNULLPTR(region_) && NOTNULLPTR(addr_) && (false == FLAG_MEMFAULT())) {
     if(OK(__MemoryRegionCheck__(region_, addr_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
       free = ADDR2ENTRY(addr_, region_);
       free->free = true;
@@ -672,7 +672,7 @@ static Return_t __MemGetRegionStats__(const volatile MemoryRegion_t *region_, Me
   MemoryEntry_t *cursor = null;
 
 
-  if(NOTNULLPTR(region_) && NOTNULLPTR(stats_) && (false == SYSFLAG_FAULT())) {
+  if(NOTNULLPTR(region_) && NOTNULLPTR(stats_) && (false == FLAG_MEMFAULT())) {
     if(OK(__MemoryRegionCheck__(region_, null, MEMORY_REGION_CHECK_OPTION_WO_ADDR))) {
       if(OK(__HeapAllocateMemory__((volatile Addr_t **) stats_, sizeof(MemoryRegionStats_t)))) {
         cursor = region_->start;
@@ -733,7 +733,7 @@ static Return_t __DefragMemoryRegion__(const volatile MemoryRegion_t *region_) {
   MemoryEntry_t *merge = null;
 
 
-  if(NOTNULLPTR(region_) && (false == SYSFLAG_FAULT())) {
+  if(NOTNULLPTR(region_) && (false == FLAG_MEMFAULT())) {
     if(OK(__MemoryRegionCheck__(region_, null, MEMORY_REGION_CHECK_OPTION_WO_ADDR))) {
       cursor = region_->start;
 

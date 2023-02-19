@@ -39,7 +39,7 @@
   #include "task.h"
   #include "timer.h"
 
-  extern SysFlags_t sysFlags;
+  extern Flags_t flags;
 
   #ifdef __cplusplus
     extern "C" {

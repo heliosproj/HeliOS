@@ -46,7 +46,7 @@ Return_t xTaskCreate(Task_t **task_, const Byte_t *name_, void (*callback_)(Task
   Task_t *cursor = null;
 
 
-  if(NOTNULLPTR(task_) && (NOTNULLPTR(name_)) && (NOTNULLPTR(callback_)) && (false == SYSFLAG_RUNNING())) {
+  if(NOTNULLPTR(task_) && (NOTNULLPTR(name_)) && (NOTNULLPTR(callback_)) && (false == FLAG_RUNNING())) {
     if(NOTNULLPTR(tlist) || (NULLPTR(tlist) && OK(__KernelAllocateMemory__((volatile Addr_t **) &tlist, sizeof(TaskList_t))))) {
       if(OK(__KernelAllocateMemory__((volatile Addr_t **) task_, sizeof(Task_t)))) {
         if(NOTNULLPTR(*task_)) {
@@ -99,7 +99,7 @@ Return_t xTaskDelete(const Task_t *task_) {
   Task_t *previous = null;
 
 
-  if(NOTNULLPTR(task_) && NOTNULLPTR(tlist) && (false == SYSFLAG_RUNNING())) {
+  if(NOTNULLPTR(task_) && NOTNULLPTR(tlist) && (false == FLAG_RUNNING())) {
     if(OK(__TaskListFindTask__(task_))) {
       cursor = tlist->head;
 
@@ -741,9 +741,9 @@ Return_t xTaskStartScheduler(void) {
   Ticks_t leastRunTime = -1;
 
 
-  if((false == SYSFLAG_RUNNING()) && (NOTNULLPTR(tlist))) {
+  if((false == FLAG_RUNNING()) && (NOTNULLPTR(tlist))) {
     while(SchedulerStateRunning == schedulerState) {
-      if(SYSFLAG_OVERFLOW()) {
+      if(FLAG_OVERFLOW()) {
         __RunTimeReset__();
       }
 
@@ -772,7 +772,7 @@ Return_t xTaskStartScheduler(void) {
       leastRunTime = -1;
     }
 
-    SYSFLAG_RUNNING() = false;
+    FLAG_RUNNING() = false;
     RET_OK;
   } else {
     ASSERT;
@@ -793,7 +793,7 @@ static void __RunTimeReset__(void) {
     cursor = cursor->next;
   }
 
-  SYSFLAG_OVERFLOW() = false;
+  FLAG_OVERFLOW() = false;
 
   return;
 }
@@ -819,7 +819,7 @@ static void __TaskRun__(Task_t *task_) {
 #endif /* if defined(CONFIG_TASK_WD_TIMER_ENABLE) */
 
   if(task_->totalRunTime < prevTotalRunTime) {
-    SYSFLAG_OVERFLOW() = true;
+    FLAG_OVERFLOW() = true;
   }
 
   return;

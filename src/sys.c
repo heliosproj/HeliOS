@@ -45,7 +45,7 @@
  * UNIX and your inspiration.
  */
 /*UNCRUSTIFY-ON*/
-SysFlags_t sysFlags;
+Flags_t flags;
 
 
 Return_t xSystemAssert(const char *file_, const int line_) {
@@ -64,9 +64,9 @@ Return_t xSystemInit(void) {
 
   if(OK(__MemoryInit__())) {
     if(OK(__PortInit__())) {
-      sysFlags.fault = false;
-      sysFlags.overflow = false;
-      sysFlags.running = false;
+      flags.memfault = false;
+      flags.overflow = false;
+      flags.running = false;
       RET_OK;
     } else {
       ASSERT;
@@ -125,7 +125,7 @@ Return_t xSystemGetSystemInfo(SystemInfo_t **info_) {
 
 
   void __SysStateClear__(void) {
-    __memset__(&sysFlags, 0x0, sizeof(SysFlags_t));
+    __memset__(&flags, 0x0, sizeof(Flags_t));
 
     return;
   }

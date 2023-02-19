@@ -116,24 +116,24 @@
 
 
 
-  #if defined(SYSFLAG_RUNNING)
-    #undef SYSFLAG_RUNNING
-  #endif /* if defined(SYSFLAG_RUNNING) */
-  #define SYSFLAG_RUNNING() sysFlags.running
+  #if defined(FLAG_RUNNING)
+    #undef FLAG_RUNNING
+  #endif /* if defined(FLAG_RUNNING) */
+  #define FLAG_RUNNING() flags.running
 
 
 
-  #if defined(SYSFLAG_OVERFLOW)
-    #undef SYSFLAG_OVERFLOW
-  #endif /* if defined(SYSFLAG_OVERFLOW) */
-  #define SYSFLAG_OVERFLOW() sysFlags.overflow
+  #if defined(FLAG_OVERFLOW)
+    #undef FLAG_OVERFLOW
+  #endif /* if defined(FLAG_OVERFLOW) */
+  #define FLAG_OVERFLOW() flags.overflow
 
 
 
-  #if defined(SYSFLAG_FAULT)
-    #undef SYSFLAG_FAULT
-  #endif /* if defined(SYSFLAG_FAULT) */
-  #define SYSFLAG_FAULT() sysFlags.fault
+  #if defined(FLAG_MEMFAULT)
+    #undef FLAG_MEMFAULT
+  #endif /* if defined(FLAG_MEMFAULT) */
+  #define FLAG_MEMFAULT() flags.memfault
 
 
   #if defined(NOTNULLPTR)

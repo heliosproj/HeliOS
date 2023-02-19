@@ -176,12 +176,12 @@
     Base_t length;
     Timer_t *head;
   } TimerList_t;
-  typedef struct SysFlags_s {
+  typedef struct Flags_s {
     Base_t running;
     Base_t overflow;
-    Base_t fault;
+    Base_t memfault;
     Base_t reserved;
-  } SysFlags_t;
+  } Flags_t;
   typedef struct QueueMessage_s {
     Base_t messageBytes;
     Byte_t messageValue[CONFIG_MESSAGE_VALUE_BYTES];
