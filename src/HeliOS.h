@@ -1192,10 +1192,10 @@
  * @sa xQueueReceive()
  *
  * @param  queue_        The queue to send the message to.
- * @param  messageBytes_ The number of bytes contained in the message value. The
+ * @param  bytes_ The number of bytes contained in the message value. The
  *                       number of bytes must be greater than zero and less than
  *                       or equal to the setting CONFIG_MESSAGE_VALUE_BYTES.
- * @param  messageValue_ The message value. If the message value is greater than
+ * @param  value_ The message value. If the message value is greater than
  *                       defined in CONFIG_MESSAGE_VALUE_BYTES, only the number
  *                       of bytes defined in CONFIG_MESSAGE_VALUE_BYTES will be
  *                       copied into the message value. The message value is NOT
@@ -1204,7 +1204,7 @@
  *                       message was sent to the queue successfully. Otherwise
  *                       RETURN_FAILURE if unsuccessful.
  */
-  xBase xQueueSend(xQueue queue_, const xBase messageBytes_, const xChar *messageValue_);
+  xBase xQueueSend(xQueue queue_, const xBase bytes_, const xChar *value_);
 
 
 /**

@@ -210,7 +210,7 @@ Return_t xQueueMessagesWaiting(const Queue_t *queue_, Base_t *res_) {
 }
 
 
-Return_t xQueueSend(Queue_t *queue_, const Base_t messageBytes_, const Byte_t *messageValue_) {
+Return_t xQueueSend(Queue_t *queue_, const Base_t bytes_, const Byte_t *value_) {
   RET_DEFINE;
 
 
@@ -219,7 +219,7 @@ Return_t xQueueSend(Queue_t *queue_, const Base_t messageBytes_, const Byte_t *m
   Message_t *cursor = null;
 
 
-  if(ISNOTNULLPTR(queue_) && (zero < messageBytes_) && (CONFIG_MESSAGE_VALUE_BYTES >= messageBytes_) && (ISNOTNULLPTR(messageValue_)) && (ISOK(
+  if(ISNOTNULLPTR(queue_) && (zero < bytes_) && (CONFIG_MESSAGE_VALUE_BYTES >= bytes_) && (ISNOTNULLPTR(value_)) && (ISOK(
       __MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR)))) {
     if(false == queue_->locked) {
       cursor = queue_->head;
@@ -232,8 +232,8 @@ Return_t xQueueSend(Queue_t *queue_, const Base_t messageBytes_, const Byte_t *m
       if((queue_->limit > queue_->length) && (messages == queue_->length)) {
         if(ISOK(__KernelAllocateMemory__((volatile Addr_t **) &message, sizeof(Message_t)))) {
           if(ISNOTNULLPTR(message)) {
-            if(ISOK(__memcpy__(message->messageValue, messageValue_, CONFIG_MESSAGE_VALUE_BYTES))) {
-              message->messageBytes = messageBytes_;
+            if(ISOK(__memcpy__(message->messageValue, value_, CONFIG_MESSAGE_VALUE_BYTES))) {
+              message->messageBytes = bytes_;
               message->next = null;
 
               /* If the queue tail is not null then it already contains messages
