@@ -44,7 +44,7 @@ Return_t __MemoryInit__(void) {
     if(ISOK(__memset__(&kernel, 0x0, sizeof(MemoryRegion_t)))) {
       heap.minAvailableEver = CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS * CONFIG_MEMORY_REGION_BLOCK_SIZE;
       kernel.minAvailableEver = CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS * CONFIG_MEMORY_REGION_BLOCK_SIZE;
-      RET_SUCCESS;
+      RET_OK;
     } else {
       ASSERT;
     }
@@ -61,7 +61,7 @@ Return_t xMemAlloc(volatile Addr_t **addr_, const Size_t size_) {
 
   if(ISNOTNULLPTR(addr_) && (zero < size_)) {
     if(ISOK(__calloc__(&heap, addr_, size_))) {
-      RET_SUCCESS;
+      RET_OK;
     } else {
       ASSERT;
     }
@@ -78,7 +78,7 @@ Return_t xMemFree(const volatile Addr_t *addr_) {
 
   if(ISNOTNULLPTR(addr_)) {
     if(ISOK(__free__(&heap, addr_))) {
-      RET_SUCCESS;
+      RET_OK;
     } else {
       ASSERT;
     }
@@ -115,7 +115,7 @@ Return_t xMemGetUsed(Size_t *size_) {
       /* We need to give the user back bytes, not blocks so multiply the in-use
        * blocks by the block size in bytes. */
       *size_ = used * CONFIG_MEMORY_REGION_BLOCK_SIZE;
-      RET_SUCCESS;
+      RET_OK;
     } else {
       ASSERT;
     }
@@ -143,7 +143,7 @@ Return_t xMemGetSize(const volatile Addr_t *addr_, Size_t *size_) {
        * in the entry by the block size in bytes. */
       if(false == tosize->free) {
         *size_ = tosize->blocks * CONFIG_MEMORY_REGION_BLOCK_SIZE;
-        RET_SUCCESS;
+        RET_OK;
       } else {
         ASSERT;
       }
@@ -216,7 +216,7 @@ static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, co
       if(CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS == blocks) {
         if(((MEMORY_REGION_CHECK_OPTION_WO_ADDR == option_) && (false == SYSFLAG_FAULT())) || ((MEMORY_REGION_CHECK_OPTION_W_ADDR == option_) && (false ==
           SYSFLAG_FAULT()) && (true == found))) {
-          RET_SUCCESS;
+          RET_OK;
         } else {
           /* Never use an else statement here to mark SYSFLAG_FAULT() = true.
            * Just because an address wasn't found does not mean the memory
@@ -250,7 +250,7 @@ static Return_t __MemoryRegionCheckAddr__(const volatile MemoryRegion_t *region_
     /* Check to make sure the address falls within the bounds of the memory
      * region. */
     if((addr_ >= (Addr_t *) (region_->mem)) && (addr_ < (Addr_t *) (region_->mem + MEMORY_REGION_SIZE_IN_BYTES))) {
-      RET_SUCCESS;
+      RET_OK;
     } else {
       ASSERT;
     }
@@ -367,7 +367,7 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
 
           if(ISOK(__memset__(ENTRY2ADDR(candidate, region_), zero, (requested - region_->entrySize) * CONFIG_MEMORY_REGION_BLOCK_SIZE))) {
             *addr_ = ENTRY2ADDR(candidate, region_);
-            RET_SUCCESS;
+            RET_OK;
           } else {
             ASSERT;
           }
@@ -378,7 +378,7 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
 
           if(ISOK(__memset__(ENTRY2ADDR(candidate, region_), zero, (requested - region_->entrySize) * CONFIG_MEMORY_REGION_BLOCK_SIZE))) {
             *addr_ = ENTRY2ADDR(candidate, region_);
-            RET_SUCCESS;
+            RET_OK;
           } else {
             ASSERT;
           }
@@ -422,7 +422,7 @@ static Return_t __free__(volatile MemoryRegion_t *region_, const volatile Addr_t
       region_->frees++;
 
       if(ISOK(__DefragMemoryRegion__(region_))) {
-        RET_SUCCESS;
+        RET_OK;
       } else {
         ASSERT;
       }
@@ -444,7 +444,7 @@ Return_t __KernelAllocateMemory__(volatile Addr_t **addr_, const Size_t size_) {
   if(ISNOTNULLPTR(addr_) && (zero < size_)) {
     if(ISOK(__calloc__(&kernel, addr_, size_))) {
       if(ISNOTNULLPTR(*addr_)) {
-        RET_SUCCESS;
+        RET_OK;
       } else {
         ASSERT;
       }
@@ -464,7 +464,7 @@ Return_t __KernelFreeMemory__(const volatile Addr_t *addr_) {
 
   if(ISNOTNULLPTR(addr_)) {
     if(ISOK(__free__(&kernel, addr_))) {
-      RET_SUCCESS;
+      RET_OK;
     } else {
       ASSERT;
     }
@@ -481,7 +481,7 @@ Return_t __MemoryRegionCheckKernel__(const volatile Addr_t *addr_, const Base_t 
 
   if((ISNULLPTR(addr_) && (MEMORY_REGION_CHECK_OPTION_WO_ADDR == option_)) || (ISNOTNULLPTR(addr_) && (MEMORY_REGION_CHECK_OPTION_W_ADDR == option_))) {
     if(ISOK(__MemoryRegionCheck__(&kernel, addr_, option_))) {
-      RET_SUCCESS;
+      RET_OK;
     } else {
       ASSERT;
     }
@@ -499,7 +499,7 @@ Return_t __HeapAllocateMemory__(volatile Addr_t **addr_, const Size_t size_) {
   if(ISNOTNULLPTR(addr_) && (zero < size_)) {
     if(ISOK(__calloc__(&heap, addr_, size_))) {
       if(ISNOTNULLPTR(*addr_)) {
-        RET_SUCCESS;
+        RET_OK;
       } else {
         ASSERT;
       }
@@ -519,7 +519,7 @@ Return_t __HeapFreeMemory__(const volatile Addr_t *addr_) {
 
   if(ISNOTNULLPTR(addr_)) {
     if(ISOK(__free__(&heap, addr_))) {
-      RET_SUCCESS;
+      RET_OK;
     } else {
       ASSERT;
     }
@@ -536,7 +536,7 @@ Return_t __MemoryRegionCheckHeap__(const volatile Addr_t *addr_, const Base_t op
 
   if((ISNULLPTR(addr_) && (MEMORY_REGION_CHECK_OPTION_WO_ADDR == option_)) || (ISNOTNULLPTR(addr_) && (MEMORY_REGION_CHECK_OPTION_W_ADDR == option_))) {
     if(ISOK(__MemoryRegionCheck__(&heap, addr_, option_))) {
-      RET_SUCCESS;
+      RET_OK;
     } else {
       ASSERT;
     }
@@ -565,7 +565,7 @@ Return_t __memcpy__(const volatile Addr_t *dest_, const volatile Addr_t *src_, c
       dest[i] = src[i];
     }
 
-    RET_SUCCESS;
+    RET_OK;
   } else {
     ASSERT;
   }
@@ -589,7 +589,7 @@ Return_t __memset__(const volatile Addr_t *dest_, const Byte_t val_, const Size_
       dest[i] = (Byte_t) val_;
     }
 
-    RET_SUCCESS;
+    RET_OK;
   } else {
     ASSERT;
   }
@@ -622,7 +622,7 @@ Return_t __memcmp__(const volatile Addr_t *s1_, const volatile Addr_t *s2_, cons
       s2++;
     }
 
-    RET_SUCCESS;
+    RET_OK;
   } else {
     ASSERT;
   }
@@ -636,7 +636,7 @@ Return_t xMemGetHeapStats(MemoryRegionStats_t **stats_) {
 
   if(ISNOTNULLPTR(stats_)) {
     if(ISOK(__MemGetRegionStats__(&heap, stats_))) {
-      RET_SUCCESS;
+      RET_OK;
     } else {
       ASSERT;
     }
@@ -653,7 +653,7 @@ Return_t xMemGetKernelStats(MemoryRegionStats_t **stats_) {
 
   if(ISNOTNULLPTR(stats_)) {
     if(ISOK(__MemGetRegionStats__(&kernel, stats_))) {
-      RET_SUCCESS;
+      RET_OK;
     } else {
       ASSERT;
     }
@@ -707,7 +707,7 @@ static Return_t __MemGetRegionStats__(const volatile MemoryRegion_t *region_, Me
             cursor = cursor->next;
           }
 
-          RET_SUCCESS;
+          RET_OK;
         } else {
           ASSERT;
         }
@@ -760,7 +760,7 @@ static Return_t __DefragMemoryRegion__(const volatile MemoryRegion_t *region_) {
         }
       }
 
-      RET_SUCCESS;
+      RET_OK;
     } else {
       ASSERT;
     }

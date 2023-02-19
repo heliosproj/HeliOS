@@ -106,38 +106,38 @@ Return_t __PortInit__(void) {
 
 #if defined(ARDUINO_ARCH_AVR)
 
-    RET_SUCCESS;
+    RET_OK;
 
 #elif defined(ARDUINO_ARCH_SAM)
 
-    RET_SUCCESS;
+    RET_OK;
 
 #elif defined(ARDUINO_ARCH_SAMD)
 
-    RET_SUCCESS;
+    RET_OK;
 
 #elif defined(ARDUINO_ARCH_ESP8266)
 
-    RET_SUCCESS;
+    RET_OK;
 
 #elif defined(ARDUINO_TEENSY_MICROMOD) || defined(ARDUINO_TEENSY40) || defined(ARDUINO_TEENSY41) || \
   defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY35) || defined(ARDUINO_TEENSY31) || defined(ARDUINO_TEENSY32) || \
   defined(ARDUINO_TEENSY30) || defined(ARDUINO_TEENSYLC)
 
-    RET_SUCCESS;
+    RET_OK;
 
 #elif defined(ESP32)
-    RET_SUCCESS;
+    RET_OK;
 
 
 /* Not supported. */
 #elif defined(CMSIS_ARCH_CORTEXM)
     SysTick_Config(SYSTEM_CORE_CLOCK_FREQUENCY / SYSTEM_CORE_CLOCK_PRESCALER);
-    RET_SUCCESS;
+    RET_OK;
 
 #elif defined(POSIX_ARCH_OTHER)
 
-    RET_SUCCESS;
+    RET_OK;
 
 #endif /* if defined(ARDUINO_ARCH_AVR) */
   RET_RETURN;

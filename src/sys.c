@@ -53,7 +53,7 @@ Return_t xSystemAssert(const char *file_, const int line_) {
 
 #if defined(CONFIG_SYSTEM_ASSERT_BEHAVIOR)
     CONFIG_SYSTEM_ASSERT_BEHAVIOR(file_, line_);
-    RET_SUCCESS;
+    RET_OK;
 #endif /* if defined(CONFIG_SYSTEM_ASSERT_BEHAVIOR) */
   RET_RETURN;
 }
@@ -67,7 +67,7 @@ Return_t xSystemInit(void) {
       sysFlags.fault = false;
       sysFlags.overflow = false;
       sysFlags.running = false;
-      RET_SUCCESS;
+      RET_OK;
     } else {
       ASSERT;
     }
@@ -99,7 +99,7 @@ Return_t xSystemGetSystemInfo(SystemInfo_t **info_) {
         (*info_)->patchVersion = OS_PATCH_VERSION_NO;
 
         if(ISOK(xTaskGetNumberOfTasks(&(*info_)->numberOfTasks))) {
-          RET_SUCCESS;
+          RET_OK;
         } else {
           ASSERT;
         }

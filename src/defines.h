@@ -175,10 +175,10 @@
   #define RET_RETURN return(ret)
 
 
-  #if defined(RET_SUCCESS)
-    #undef RET_SUCCESS
-  #endif /* if defined(RET_SUCCESS) */
-  #define RET_SUCCESS ret = ReturnOK
+  #if defined(RET_OK)
+    #undef RET_OK
+  #endif /* if defined(RET_OK) */
+  #define RET_OK ret = ReturnOK
 
 
   #if defined(ISOK)

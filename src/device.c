@@ -36,7 +36,7 @@ Return_t xDeviceRegisterDevice(Return_t (*device_self_register_)()) {
 
   if(ISNOTNULLPTR(device_self_register_)) {
     if(ISOK((*device_self_register_)())) {
-      RET_SUCCESS;
+      RET_OK;
     } else {
       ASSERT;
     }
@@ -99,7 +99,7 @@ Return_t __RegisterDevice__(const HalfWord_t uid_, const Byte_t *name_, const De
                 }
 
                 deviceList->length++;
-                RET_SUCCESS;
+                RET_OK;
               } else {
                 ASSERT;
               }
@@ -137,7 +137,7 @@ Return_t xDeviceIsAvailable(const HalfWord_t uid_, Base_t *res_) {
     if(ISOK(__DeviceListFind__(uid_, &device))) {
       if(ISNOTNULLPTR(device)) {
         *res_ = device->available;
-        RET_SUCCESS;
+        RET_OK;
       } else {
         ASSERT;
       }
@@ -170,7 +170,7 @@ Return_t xDeviceSimpleWrite(const HalfWord_t uid_, Word_t *data_) {
                 if(ISOK((*device->simple_write)(device, data))) {
                   if(ISOK(__KernelFreeMemory__(data))) {
                     device->bytesWritten += sizeof(Word_t);
-                    RET_SUCCESS;
+                    RET_OK;
                   } else {
                     ASSERT;
                   }
@@ -222,7 +222,7 @@ Return_t xDeviceWrite(const HalfWord_t uid_, Size_t *size_, Addr_t *data_) {
                 if(ISOK((*device->write)(device, size_, data))) {
                   if(ISOK(__KernelFreeMemory__(data))) {
                     device->bytesWritten += *size_;
-                    RET_SUCCESS;
+                    RET_OK;
                   } else {
                     ASSERT;
                   }
@@ -273,7 +273,7 @@ Return_t xDeviceSimpleRead(const HalfWord_t uid_, Word_t *data_) {
                 if(ISOK(__memcpy__(data_, data, sizeof(Word_t)))) {
                   if(ISOK(__KernelFreeMemory__(data))) {
                     device->bytesRead += sizeof(Word_t);
-                    RET_SUCCESS;
+                    RET_OK;
                   } else {
                     ASSERT;
                   }
@@ -325,7 +325,7 @@ Return_t xDeviceRead(const HalfWord_t uid_, Size_t *size_, Addr_t *data_) {
                 if(ISOK(__memcpy__(data_, data, *size_))) {
                   if(ISOK(__KernelFreeMemory__(data))) {
                     device->bytesRead += *size_;
-                    RET_SUCCESS;
+                    RET_OK;
                   } else {
                     ASSERT;
                   }
@@ -374,7 +374,7 @@ static Return_t __DeviceListFind__(const HalfWord_t uid_, Device_t **device_) {
 
     if(ISNOTNULLPTR(cursor)) {
       *device_ = cursor;
-      RET_SUCCESS;
+      RET_OK;
     } else {
       ASSERT;
     }
@@ -397,7 +397,7 @@ Return_t xDeviceInitDevice(const HalfWord_t uid_) {
     if(ISOK(__DeviceListFind__(uid_, &device))) {
       if(ISNOTNULLPTR(device)) {
         if(ISOK((*device->init)(device))) {
-          RET_SUCCESS;
+          RET_OK;
         } else {
           ASSERT;
         }
@@ -432,7 +432,7 @@ Return_t xDeviceConfigDevice(const HalfWord_t uid_, Size_t *size_, Addr_t *confi
               if(ISOK((*device->config)(device, size_, config))) {
                 if(ISOK(__memcpy__(config_, config, *size_))) {
                   if(ISOK(__KernelFreeMemory__(config))) {
-                    RET_SUCCESS;
+                    RET_OK;
                   } else {
                     ASSERT;
                   }

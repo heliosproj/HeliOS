@@ -41,7 +41,7 @@ Return_t xQueueCreate(Queue_t **queue_, Base_t limit_) {
         (*queue_)->locked = false;
         (*queue_)->head = null;
         (*queue_)->tail = null;
-        RET_SUCCESS;
+        RET_OK;
       } else {
         ASSERT;
       }
@@ -69,7 +69,7 @@ Return_t xQueueDelete(Queue_t *queue_) {
     }
 
     if(ISOK(__KernelFreeMemory__(queue_))) {
-      RET_SUCCESS;
+      RET_OK;
     } else {
       ASSERT;
     }
@@ -99,7 +99,7 @@ Return_t xQueueGetLength(const Queue_t *queue_, Base_t *res_) {
 
     if(messages == queue_->length) {
       *res_ = messages;
-      RET_SUCCESS;
+      RET_OK;
     } else {
       ASSERT;
     }
@@ -129,10 +129,10 @@ Return_t xQueueIsQueueEmpty(const Queue_t *queue_, Base_t *res_) {
 
     if((zero == messages) && (messages == queue_->length)) {
       *res_ = true;
-      RET_SUCCESS;
+      RET_OK;
     } else if((zero != messages) && (messages == queue_->length)) {
       *res_ = false;
-      RET_SUCCESS;
+      RET_OK;
     } else {
       ASSERT;
     }
@@ -162,10 +162,10 @@ Return_t xQueueIsQueueFull(const Queue_t *queue_, Base_t *res_) {
 
     if((messages >= queue_->limit) && (messages == queue_->length)) {
       *res_ = true;
-      RET_SUCCESS;
+      RET_OK;
     } else if((messages < queue_->limit) && (messages == queue_->length)) {
       *res_ = false;
-      RET_SUCCESS;
+      RET_OK;
     } else {
       ASSERT;
     }
@@ -195,10 +195,10 @@ Return_t xQueueMessagesWaiting(const Queue_t *queue_, Base_t *res_) {
 
     if((zero < messages) && (messages == queue_->length)) {
       *res_ = true;
-      RET_SUCCESS;
+      RET_OK;
     } else if((zero == messages) && (messages == queue_->length)) {
       *res_ = false;
-      RET_SUCCESS;
+      RET_OK;
     } else {
       ASSERT;
     }
@@ -248,7 +248,7 @@ Return_t xQueueSend(Queue_t *queue_, const Base_t messageBytes_, const Byte_t *m
               }
 
               queue_->length++;
-              RET_SUCCESS;
+              RET_OK;
             } else {
               ASSERT;
             }
@@ -277,7 +277,7 @@ Return_t xQueuePeek(const Queue_t *queue_, QueueMessage_t **message_) {
 
   if(ISNOTNULLPTR(queue_) && ISNOTNULLPTR(message_)) {
     if(ISOK(__QueuePeek__(queue_, message_))) {
-      RET_SUCCESS;
+      RET_OK;
     } else {
       ASSERT;
     }
@@ -299,7 +299,7 @@ static Return_t __QueuePeek__(const Queue_t *queue_, QueueMessage_t **message_) 
           (*message_)->messageBytes = queue_->head->messageBytes;
 
           if(ISOK(__memcpy__((*message_)->messageValue, queue_->head->messageValue, CONFIG_MESSAGE_VALUE_BYTES))) {
-            RET_SUCCESS;
+            RET_OK;
           } else {
             ASSERT;
           }
@@ -325,7 +325,7 @@ Return_t xQueueDropMessage(Queue_t *queue_) {
 
   if(ISNOTNULLPTR(queue_)) {
     if(ISOK(__QueueDropmessage__(queue_))) {
-      RET_SUCCESS;
+      RET_OK;
     } else {
       ASSERT;
     }
@@ -356,7 +356,7 @@ static Return_t __QueueDropmessage__(Queue_t *queue_) {
       queue_->length--;
 
       if(ISOK(__KernelFreeMemory__(message))) {
-        RET_SUCCESS;
+        RET_OK;
       } else {
         ASSERT;
       }
@@ -378,7 +378,7 @@ Return_t xQueueReceive(Queue_t *queue_, QueueMessage_t **message_) {
     if(ISOK(__QueuePeek__(queue_, message_))) {
       if(ISNOTNULLPTR(*message_)) {
         if(ISOK(__QueueDropmessage__(queue_))) {
-          RET_SUCCESS;
+          RET_OK;
         } else {
           ASSERT;
         }
@@ -402,7 +402,7 @@ Return_t xQueueLockQueue(Queue_t *queue_) {
   if(ISNOTNULLPTR(queue_) && ISOK(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
     if(false == queue_->locked) {
       queue_->locked = true;
-      RET_SUCCESS;
+      RET_OK;
     } else {
       ASSERT;
     }
@@ -420,7 +420,7 @@ Return_t xQueueUnLockQueue(Queue_t *queue_) {
   if(ISNOTNULLPTR(queue_) && ISOK(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
     if(true == queue_->locked) {
       queue_->locked = false;
-      RET_SUCCESS;
+      RET_OK;
     } else {
       ASSERT;
     }
