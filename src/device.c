@@ -50,7 +50,7 @@ Return_t xDeviceRegisterDevice(Return_t (*device_self_register_)()) {
 
 Return_t __RegisterDevice__(const HalfWord_t uid_, const Byte_t *name_, const DeviceState_t state_, const DeviceMode_t mode_, Return_t (*init_)(
     Device_t *device_), Return_t (*config_)(Device_t *device_, Size_t *size_, Addr_t *config_), Return_t (*read_)(Device_t *device_, Size_t *size_,
-  Addr_t **data_), Return_t (*write_)(Device_t *device_, Size_t *size_, Addr_t *data_), Return_t (*simple_read_)(Device_t *device_, Word_t *data_),
+  Addr_t **data_), Return_t (*write_)(Device_t *device_, Size_t *size_, Addr_t *data_), Return_t (*simple_read_)(Device_t *device_, Word_t **data_),
   Return_t (*simple_write_)(Device_t *device_, Word_t *data_)) {
   RET_DEFINE;
 
@@ -262,7 +262,7 @@ Return_t xDeviceWrite(const HalfWord_t uid_, Size_t *size_, Addr_t *data_) {
 }
 
 
-Return_t xDeviceSimpleRead(const HalfWord_t uid_, Word_t *data_) {
+Return_t xDeviceSimpleRead(const HalfWord_t uid_, Word_t **data_) {
   RET_DEFINE;
 
 
@@ -270,20 +270,17 @@ Return_t xDeviceSimpleRead(const HalfWord_t uid_, Word_t *data_) {
   Word_t *data = null;
 
 
-  if((zero < uid_) && (NOTNULLPTR(data_)) && (NOTNULLPTR(dlist))) {
-    if(OK(__MemoryRegionCheckHeap__(data_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
-      if(OK(__DeviceListFind__(uid_, &device))) {
-        if(NOTNULLPTR(device)) {
-          if(((DeviceModeReadWrite == device->mode) || (DeviceModeReadOnly == device->mode)) && (DeviceStateRunning == device->state)) {
-            if(OK(__KernelAllocateMemory__((volatile Addr_t **) &data, sizeof(Word_t)))) {
-              if(NOTNULLPTR(data)) {
-                if(OK((*device->simple_read)(device, data))) {
-                  if(OK(__memcpy__(data_, data, sizeof(Word_t)))) {
+  if((zero < uid_) && NOTNULLPTR(data_) && NOTNULLPTR(dlist)) {
+    if(OK(__DeviceListFind__(uid_, &device))) {
+      if(NOTNULLPTR(device)) {
+        if(((DeviceModeReadWrite == device->mode) || (DeviceModeReadOnly == device->mode)) && (DeviceStateRunning == device->state)) {
+          if(OK((*device->simple_read)(device, &data))) {
+            if(OK(__MemoryRegionCheckKernel__(data, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
+              if(OK(__HeapAllocateMemory__((volatile Addr_t **) data_, sizeof(Word_t)))) {
+                if(NOTNULLPTR(*data_)) {
+                  if(OK(__memcpy__(*data_, data, sizeof(Word_t)))) {
                     if(OK(__KernelFreeMemory__(data))) {
-                      device->bytesRead += sizeof(Word_t);
                       RET_OK;
-                    } else {
-                      ASSERT;
                     }
                   } else {
                     ASSERT;

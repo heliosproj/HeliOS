@@ -79,7 +79,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t * device_, Size_t *size_, Ad
   Return_t TO_FUNCTION(DEVICE_NAME, _read)(Device_t * device_, Size_t *size_, Addr_t **data_) {
   RET_DEFINE;
 
-  __KernelAllocateMemory__(data_, loopback_buffer_size);
+  __KernelAllocateMemory__((volatile Addr_t **) data_, loopback_buffer_size);
 
   __memcpy__(*data_, loopback_buffer, loopback_buffer_size);
 
@@ -107,15 +107,16 @@ Return_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t * device_, Size_t *size_, Add
 }
 
 
-Return_t TO_FUNCTION(DEVICE_NAME, _simple_read)(Device_t * device_, Word_t *data_) {
+Return_t TO_FUNCTION(DEVICE_NAME, _simple_read)(Device_t * device_, Word_t **data_) {
   RET_DEFINE;
 
-  if(OK(__memcpy__(data_, loopback_buffer, sizeof(Word_t)))) {
-    device_->available = false;
-    RET_OK;
-  } else {
-    ASSERT;
-  }
+
+  __KernelAllocateMemory__((volatile Addr_t **) data_, sizeof(Word_t));
+
+  __memcpy__(*data_, loopback_buffer, sizeof(Word_t));
+
+  device_->available = false;
+  RET_OK;
 
   RET_RETURN;
 }

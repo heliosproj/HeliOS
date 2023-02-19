@@ -68,10 +68,10 @@ void device_harness(void) {
   unit_try(OK(xMemFree(data3)));
   unit_end();
   unit_begin("xDeviceSimpleRead()");
-  unit_try(OK(xMemAlloc((volatile Addr_t **) &data4, sizeof(Word_t))));
   *data4 = zero;
-  unit_try(OK(xDeviceSimpleRead(0xFFu, data4)));
+  unit_try(OK(xDeviceSimpleRead(0xFFu, &data4)));
   unit_try(0xFAFAu == *data4);
+  unit_try(OK(xMemFree(data4)));
   unit_end();
 
   return;

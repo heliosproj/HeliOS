@@ -87,7 +87,7 @@
     Return_t (*config)(struct Device_s *device_, Size_t *size_, Addr_t *config_);
     Return_t (*read)(struct Device_s *device_, Size_t *size_, Addr_t **data_);
     Return_t (*write)(struct Device_s *device_, Size_t *size_, Addr_t *data_);
-    Return_t (*simple_read)(struct Device_s *device_, Word_t *data_);
+    Return_t (*simple_read)(struct Device_s *device_, Word_t **data_);
     Return_t (*simple_write)(struct Device_s *device_, Word_t *data_);
 
 
