@@ -119,21 +119,21 @@
   #if defined(FLAG_RUNNING)
     #undef FLAG_RUNNING
   #endif /* if defined(FLAG_RUNNING) */
-  #define FLAG_RUNNING() flags.running
+  #define FLAG_RUNNING flags.running
 
 
 
   #if defined(FLAG_OVERFLOW)
     #undef FLAG_OVERFLOW
   #endif /* if defined(FLAG_OVERFLOW) */
-  #define FLAG_OVERFLOW() flags.overflow
+  #define FLAG_OVERFLOW flags.overflow
 
 
 
   #if defined(FLAG_MEMFAULT)
     #undef FLAG_MEMFAULT
   #endif /* if defined(FLAG_MEMFAULT) */
-  #define FLAG_MEMFAULT() flags.memfault
+  #define FLAG_MEMFAULT flags.memfault
 
 
   #if defined(NOTNULLPTR)
