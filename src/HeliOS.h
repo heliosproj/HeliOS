@@ -35,6 +35,107 @@
   #include "config.h"
   #include "defines.h"
 
+  typedef enum TaskState_e {
+    TaskStateSuspended,
+    TaskStateRunning,
+    TaskStateWaiting
+  } TaskState_t;
+  typedef TaskState_t xTaskState;
+  typedef enum SchedulerState_e {
+    SchedulerStateSuspended,
+    SchedulerStateRunning
+  } SchedulerState_t;
+  typedef SchedulerState_t xSchedulerState;
+  typedef enum Return_e {
+    ReturnOK,
+    ReturnError
+  } Return_t;
+  typedef Return_t xReturn;
+  typedef enum TimerState_e {
+    TimerStateSuspended,
+    TimerStateRunning
+  } TimerState_t;
+  typedef TimerState_t xTimerState;
+  typedef enum DeviceState_e {
+    DeviceStateSuspended,
+    DeviceStateRunning
+  } DeviceState_t;
+  typedef DeviceState_t xDeviceState;
+  typedef enum DeviceMode_e {
+    DeviceModeReadOnly,
+    DeviceModeWriteOnly,
+    DeviceModeReadWrite
+  } DeviceMode_t;
+  typedef DeviceMode_t xDeviceMode;
+  typedef VOID_TYPE TaskParm_t;
+  typedef TaskParm_t xTaskParm;
+  typedef UINT8_TYPE Base_t;
+  typedef Base_t xBase;
+  typedef UINT8_TYPE Byte_t;
+  typedef Byte_t xByte;
+  typedef VOID_TYPE Addr_t;
+  typedef Addr_t xAddr;
+  typedef SIZE_TYPE Size_t;
+  typedef Size_t xSize;
+  typedef UINT16_TYPE HalfWord_t;
+  typedef HalfWord_t xHalfWord;
+  typedef UINT32_TYPE Word_t;
+  typedef Word_t xWord;
+  typedef UINT32_TYPE Ticks_t;
+  typedef Ticks_t xTicks;
+  typedef VOID_TYPE Device_t;
+  typedef Device_t xDevice;
+  typedef VOID_TYPE Task_t;
+  typedef Task_t xTask;
+  typedef VOID_TYPE Timer_t;
+  typedef Timer_t xTimer;
+  typedef VOID_TYPE Queue_t;
+  typedef Queue_t xQueue;
+  typedef VOID_TYPE StreamBuffer_t;
+  typedef StreamBuffer_t xStreamBuffer;
+  typedef struct TaskNotification_s {
+    Base_t notificationBytes;
+    Byte_t notificationValue[CONFIG_NOTIFICATION_VALUE_BYTES];
+  } TaskNotification_t;
+  typedef TaskNotification_t xTaskNotification;
+  typedef struct TaskRunTimeStats_s {
+    Base_t id;
+    Ticks_t lastRunTime;
+    Ticks_t totalRunTime;
+  } TaskRunTimeStats_t;
+  typedef TaskRunTimeStats_t xTaskRunTimeStats;
+  typedef struct MemoryRegionStats_s {
+    Word_t largestFreeEntryInBytes;
+    Word_t smallestFreeEntryInBytes;
+    Word_t numberOfFreeBlocks;
+    Word_t availableSpaceInBytes;
+    Word_t successfulAllocations;
+    Word_t successfulFrees;
+    Word_t minimumEverFreeBytesRemaining;
+  } MemoryRegionStats_t;
+  typedef MemoryRegionStats_t xMemoryRegionStats;
+  typedef struct TaskInfo_s {
+    Base_t id;
+    Byte_t name[CONFIG_TASK_NAME_BYTES];
+    TaskState_t state;
+    Ticks_t lastRunTime;
+    Ticks_t totalRunTime;
+  } TaskInfo_t;
+  typedef TaskInfo_t xTaskInfo;
+  typedef struct QueueMessage_s {
+    Base_t messageBytes;
+    Byte_t messageValue[CONFIG_MESSAGE_VALUE_BYTES];
+  } QueueMessage_t;
+  typedef QueueMessage_t xQueueMessage;
+  typedef struct SystemInfo_s {
+    Byte_t productName[OS_PRODUCT_NAME_SIZE];
+    Base_t majorVersion;
+    Base_t minorVersion;
+    Base_t patchVersion;
+    Base_t numberOfTasks;
+  } SystemInfo_t;
+  typedef SystemInfo_t xSystemInfo;
+
   #ifdef __cplusplus
     extern "C" {
   #endif /* ifdef __cplusplus */
