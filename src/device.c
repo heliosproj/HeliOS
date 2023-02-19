@@ -27,7 +27,7 @@
 /*UNCRUSTIFY-ON*/
 #include "device.h"
 
-static DeviceList_t *deviceList = null;
+static DeviceList_t *dlist = null;
 static Return_t __DeviceListFind__(const HalfWord_t uid_, Device_t **device_);
 
 
@@ -60,10 +60,10 @@ Return_t __RegisterDevice__(const HalfWord_t uid_, const Byte_t *name_, const De
 
 
   if(((zero < uid_) && (NOTNULLPTR(name_)) && (NOTNULLPTR(init_)) && (NOTNULLPTR(config_)) && (NOTNULLPTR(read_)) && (NOTNULLPTR(write_)) && (NOTNULLPTR(
-      simple_read_)) && (NOTNULLPTR(simple_write_)) && (NOTNULLPTR(deviceList))) || ((zero < uid_) && (NOTNULLPTR(name_)) && (NOTNULLPTR(init_)) && (NOTNULLPTR(
-      config_)) && (NOTNULLPTR(read_)) && (NOTNULLPTR(write_)) && (NOTNULLPTR(simple_read_)) && (NOTNULLPTR(simple_write_)) && (NULLPTR(deviceList)) && (OK(
-      __KernelAllocateMemory__((volatile Addr_t **) &deviceList, sizeof(DeviceList_t)))))) {
-    if(NOTNULLPTR(deviceList)) {
+      simple_read_)) && (NOTNULLPTR(simple_write_)) && (NOTNULLPTR(dlist))) || ((zero < uid_) && (NOTNULLPTR(name_)) && (NOTNULLPTR(init_)) && (NOTNULLPTR(
+      config_)) && (NOTNULLPTR(read_)) && (NOTNULLPTR(write_)) && (NOTNULLPTR(simple_read_)) && (NOTNULLPTR(simple_write_)) && (NULLPTR(dlist)) && (OK(
+      __KernelAllocateMemory__((volatile Addr_t **) &dlist, sizeof(DeviceList_t)))))) {
+    if(NOTNULLPTR(dlist)) {
       /* We are expecting *NOT* to find the device UID in the device list. This
        * is to confirm there isn't already a device with the same UID already
        * registered. */
@@ -86,19 +86,19 @@ Return_t __RegisterDevice__(const HalfWord_t uid_, const Byte_t *name_, const De
                 device->write = write_;
                 device->simple_read = simple_read_;
                 device->simple_write = simple_write_;
-                cursor = deviceList->head;
+                cursor = dlist->head;
 
-                if(NOTNULLPTR(deviceList->head)) {
+                if(NOTNULLPTR(dlist->head)) {
                   while(NOTNULLPTR(cursor->next)) {
                     cursor = cursor->next;
                   }
 
                   cursor->next = device;
                 } else {
-                  deviceList->head = device;
+                  dlist->head = device;
                 }
 
-                deviceList->length++;
+                dlist->length++;
                 RET_OK;
               } else {
                 ASSERT;
@@ -365,8 +365,8 @@ static Return_t __DeviceListFind__(const HalfWord_t uid_, Device_t **device_) {
   Device_t *cursor = null;
 
 
-  if(NOTNULLPTR(device_) && NOTNULLPTR(deviceList) && (zero < uid_)) {
-    cursor = deviceList->head;
+  if(NOTNULLPTR(device_) && NOTNULLPTR(dlist) && (zero < uid_)) {
+    cursor = dlist->head;
 
     while((NOTNULLPTR(cursor)) && (cursor->uid != uid_)) {
       cursor = cursor->next;
@@ -469,7 +469,7 @@ Return_t xDeviceConfigDevice(const HalfWord_t uid_, Size_t *size_, Addr_t *confi
 
 
   void __DeviceStateClear__(void) {
-    deviceList = null;
+    dlist = null;
 
     return;
   }
