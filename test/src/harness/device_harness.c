@@ -54,10 +54,9 @@ void device_harness(void) {
   unit_try(true == res);
   unit_end();
   unit_begin("xDeviceRead()");
-  bytes2 = 0x26u;
+  bytes2 = zero;
   data2 = null;
-  unit_try(OK(xMemAlloc((volatile Addr_t **) &data2, bytes2)));
-  unit_try(OK(xDeviceRead(0xFFu, &bytes2, data2)));
+  unit_try(OK(xDeviceRead(0xFFu, &bytes2, &data2)));
   unit_try(0x26u == bytes2);
   unit_try(zero == strncmp((char *) data2, "THIS IS A TEST OF THE LOOPBACK DEVICE\0", bytes2));
   unit_try(OK(xMemFree(data2)));
