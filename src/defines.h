@@ -166,7 +166,7 @@
   #if defined(RET_DEFINE)
     #undef RET_DEFINE
   #endif /* if defined(RET_DEFINE) */
-  #define RET_DEFINE Return_t ret = ReturnFailure
+  #define RET_DEFINE Return_t ret = ReturnError
 
 
   #if defined(RET_RETURN)
@@ -178,13 +178,13 @@
   #if defined(RET_SUCCESS)
     #undef RET_SUCCESS
   #endif /* if defined(RET_SUCCESS) */
-  #define RET_SUCCESS ret = ReturnSuccess
+  #define RET_SUCCESS ret = ReturnOK
 
 
   #if defined(ISSUCCESSFUL)
     #undef ISSUCCESSFUL
   #endif /* if defined(ISSUCCESSFUL) */
-  #define ISSUCCESSFUL(expr_) ((ReturnSuccess) == (expr_))
+  #define ISSUCCESSFUL(expr_) ((ReturnOK) == (expr_))
 
 
   #if defined(ASSERT)

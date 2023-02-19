@@ -48,8 +48,8 @@
     SchedulerStateRunning
   } SchedulerState_t;
   typedef enum Return_e {
-    ReturnSuccess,
-    ReturnFailure
+    ReturnOK,
+    ReturnError
   } Return_t;
   typedef enum TimerState_e {
     TimerStateSuspended,
