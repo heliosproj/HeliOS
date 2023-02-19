@@ -30,20 +30,21 @@
 
 /*UNCRUSTIFY-OFF*/
 /*
- * If the new process paused because it was
- * swapped out, set the stack level to the last call
- * to savu(u_ssav).  This means that the return
- * which is executed immediately after the call to aretu
- * actually returns from the last routine which did
- * the savu.
+ * 
+ * "If the new process paused because it was
+ *  swapped out, set the stack level to the last call
+ *  to savu(u_ssav).  This means that the return
+ *  which is executed immediately after the call to aretu
+ *  actually returns from the last routine which did
+ *  the savu.
  *
- * You are not expected to understand this.
- */
-
-/*
- * Thank you Ken Thompson and Dennis Ritchie for
- * UNIX and your inspiration.
- */
+ *  You are not expected to understand this."
+ *
+ * 
+ * Thank you Ken Thompson and Dennis Ritchie (R.I.P.)
+ * for UNIX and inspiring the computer scientist in me.
+ *
+ * /
 /*UNCRUSTIFY-ON*/
 Flags_t flags;
 
