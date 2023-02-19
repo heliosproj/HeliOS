@@ -1191,18 +1191,18 @@
  * @sa xQueuePeek()
  * @sa xQueueReceive()
  *
- * @param  queue_        The queue to send the message to.
- * @param  bytes_ The number of bytes contained in the message value. The
- *                       number of bytes must be greater than zero and less than
- *                       or equal to the setting CONFIG_MESSAGE_VALUE_BYTES.
+ * @param  queue_ The queue to send the message to.
+ * @param  bytes_ The number of bytes contained in the message value. The number
+ *                of bytes must be greater than zero and less than or equal to
+ *                the setting CONFIG_MESSAGE_VALUE_BYTES.
  * @param  value_ The message value. If the message value is greater than
- *                       defined in CONFIG_MESSAGE_VALUE_BYTES, only the number
- *                       of bytes defined in CONFIG_MESSAGE_VALUE_BYTES will be
- *                       copied into the message value. The message value is NOT
- *                       a null terminated string.
- * @return               xBase xQueueSend() returns RETURN_SUCCESS if the
- *                       message was sent to the queue successfully. Otherwise
- *                       RETURN_FAILURE if unsuccessful.
+ *                defined in CONFIG_MESSAGE_VALUE_BYTES, only the number of
+ *                bytes defined in CONFIG_MESSAGE_VALUE_BYTES will be copied
+ *                into the message value. The message value is NOT a null
+ *                terminated string.
+ * @return        xBase xQueueSend() returns RETURN_SUCCESS if the message was
+ *                sent to the queue successfully. Otherwise RETURN_FAILURE if
+ *                unsuccessful.
  */
   xBase xQueueSend(xQueue queue_, const xBase bytes_, const xChar *value_);
 
@@ -1715,16 +1715,14 @@
  * @sa CONFIG_NOTIFICATION_VALUE_BYTES
  * @sa xTaskNotifyTake()
  *
- * @param  task_              The task to send the task notification to.
- * @param  bytes_ The number of bytes contained in the notification
- *                            value. The number must be between one and the
- *                            CONFIG_NOTIFICATION_VALUE_BYTES setting.
- * @param  value_ A char array containing the notification value.
- *                            The notification value is NOT a null terminated
- *                            string.
- * @return                    xBase RETURN_SUCCESS if the direct to task
- *                            notification was successfully given,
- *                            RETURN_FAILURE if not.
+ * @param  task_  The task to send the task notification to.
+ * @param  bytes_ The number of bytes contained in the notification value. The
+ *                number must be between one and the
+ *                CONFIG_NOTIFICATION_VALUE_BYTES setting.
+ * @param  value_ A char array containing the notification value. The
+ *                notification value is NOT a null terminated string.
+ * @return        xBase RETURN_SUCCESS if the direct to task notification was
+ *                successfully given, RETURN_FAILURE if not.
  */
   xBase xTaskNotifyGive(xTask task_, const xBase bytes_, const xChar *value_);
 

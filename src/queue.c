@@ -219,8 +219,8 @@ Return_t xQueueSend(Queue_t *queue_, const Base_t bytes_, const Byte_t *value_) 
   Message_t *cursor = null;
 
 
-  if(ISNOTNULLPTR(queue_) && (zero < bytes_) && (CONFIG_MESSAGE_VALUE_BYTES >= bytes_) && (ISNOTNULLPTR(value_)) && (ISOK(
-      __MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR)))) {
+  if(ISNOTNULLPTR(queue_) && (zero < bytes_) && (CONFIG_MESSAGE_VALUE_BYTES >= bytes_) && (ISNOTNULLPTR(value_)) && (ISOK(__MemoryRegionCheckKernel__(queue_,
+    MEMORY_REGION_CHECK_OPTION_W_ADDR)))) {
     if(false == queue_->locked) {
       cursor = queue_->head;
 
