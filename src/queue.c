@@ -34,7 +34,7 @@ Return_t xQueueCreate(Queue_t **queue_, Base_t limit_) {
   RET_DEFINE;
 
   if(NOTNULLPTR(queue_) && (CONFIG_QUEUE_MINIMUM_LIMIT <= limit_)) {
-    if(ISOK(__KernelAllocateMemory__((volatile Addr_t **) queue_, sizeof(Queue_t)))) {
+    if(OK(__KernelAllocateMemory__((volatile Addr_t **) queue_, sizeof(Queue_t)))) {
       if(NOTNULLPTR(*queue_)) {
         (*queue_)->length = zero;
         (*queue_)->limit = limit_;
@@ -59,16 +59,16 @@ Return_t xQueueCreate(Queue_t **queue_, Base_t limit_) {
 Return_t xQueueDelete(Queue_t *queue_) {
   RET_DEFINE;
 
-  if(ISOK(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
+  if(OK(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
     while(NOTNULLPTR(queue_->head)) {
-      if(ISOK(xQueueDropMessage(queue_))) {
+      if(OK(xQueueDropMessage(queue_))) {
       } else {
         ASSERT;
         break;
       }
     }
 
-    if(ISOK(__KernelFreeMemory__(queue_))) {
+    if(OK(__KernelFreeMemory__(queue_))) {
       RET_OK;
     } else {
       ASSERT;
@@ -89,7 +89,7 @@ Return_t xQueueGetLength(const Queue_t *queue_, Base_t *res_) {
   Message_t *cursor = null;
 
 
-  if(NOTNULLPTR(queue_) && NOTNULLPTR(res_) && ISOK(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
+  if(NOTNULLPTR(queue_) && NOTNULLPTR(res_) && OK(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
     cursor = queue_->head;
 
     while(NOTNULLPTR(cursor)) {
@@ -119,7 +119,7 @@ Return_t xQueueIsQueueEmpty(const Queue_t *queue_, Base_t *res_) {
   Message_t *cursor = null;
 
 
-  if(NOTNULLPTR(queue_) && NOTNULLPTR(res_) && ISOK(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
+  if(NOTNULLPTR(queue_) && NOTNULLPTR(res_) && OK(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
     cursor = queue_->head;
 
     while(NOTNULLPTR(cursor)) {
@@ -152,7 +152,7 @@ Return_t xQueueIsQueueFull(const Queue_t *queue_, Base_t *res_) {
   Message_t *cursor = null;
 
 
-  if(NOTNULLPTR(queue_) && NOTNULLPTR(res_) && ISOK(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
+  if(NOTNULLPTR(queue_) && NOTNULLPTR(res_) && OK(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
     cursor = queue_->head;
 
     while(NOTNULLPTR(cursor)) {
@@ -185,7 +185,7 @@ Return_t xQueueMessagesWaiting(const Queue_t *queue_, Base_t *res_) {
   Message_t *cursor = null;
 
 
-  if(NOTNULLPTR(queue_) && NOTNULLPTR(res_) && ISOK(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
+  if(NOTNULLPTR(queue_) && NOTNULLPTR(res_) && OK(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
     cursor = queue_->head;
 
     while(NOTNULLPTR(cursor)) {
@@ -219,7 +219,7 @@ Return_t xQueueSend(Queue_t *queue_, const Base_t bytes_, const Byte_t *value_) 
   Message_t *cursor = null;
 
 
-  if(NOTNULLPTR(queue_) && (zero < bytes_) && (CONFIG_MESSAGE_VALUE_BYTES >= bytes_) && (NOTNULLPTR(value_)) && (ISOK(__MemoryRegionCheckKernel__(queue_,
+  if(NOTNULLPTR(queue_) && (zero < bytes_) && (CONFIG_MESSAGE_VALUE_BYTES >= bytes_) && (NOTNULLPTR(value_)) && (OK(__MemoryRegionCheckKernel__(queue_,
     MEMORY_REGION_CHECK_OPTION_W_ADDR)))) {
     if(false == queue_->locked) {
       cursor = queue_->head;
@@ -230,9 +230,9 @@ Return_t xQueueSend(Queue_t *queue_, const Base_t bytes_, const Byte_t *value_) 
       }
 
       if((queue_->limit > queue_->length) && (messages == queue_->length)) {
-        if(ISOK(__KernelAllocateMemory__((volatile Addr_t **) &message, sizeof(Message_t)))) {
+        if(OK(__KernelAllocateMemory__((volatile Addr_t **) &message, sizeof(Message_t)))) {
           if(NOTNULLPTR(message)) {
-            if(ISOK(__memcpy__(message->messageValue, value_, CONFIG_MESSAGE_VALUE_BYTES))) {
+            if(OK(__memcpy__(message->messageValue, value_, CONFIG_MESSAGE_VALUE_BYTES))) {
               message->messageBytes = bytes_;
               message->next = null;
 
@@ -276,7 +276,7 @@ Return_t xQueuePeek(const Queue_t *queue_, QueueMessage_t **message_) {
   RET_DEFINE;
 
   if(NOTNULLPTR(queue_) && NOTNULLPTR(message_)) {
-    if(ISOK(__QueuePeek__(queue_, message_))) {
+    if(OK(__QueuePeek__(queue_, message_))) {
       RET_OK;
     } else {
       ASSERT;
@@ -292,13 +292,13 @@ Return_t xQueuePeek(const Queue_t *queue_, QueueMessage_t **message_) {
 static Return_t __QueuePeek__(const Queue_t *queue_, QueueMessage_t **message_) {
   RET_DEFINE;
 
-  if(NOTNULLPTR(queue_) && NOTNULLPTR(message_) && ISOK(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
+  if(NOTNULLPTR(queue_) && NOTNULLPTR(message_) && OK(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
     if(NOTNULLPTR(queue_->head)) {
-      if(ISOK(__HeapAllocateMemory__((volatile Addr_t **) message_, sizeof(QueueMessage_t)))) {
+      if(OK(__HeapAllocateMemory__((volatile Addr_t **) message_, sizeof(QueueMessage_t)))) {
         if(NOTNULLPTR(*message_)) {
           (*message_)->messageBytes = queue_->head->messageBytes;
 
-          if(ISOK(__memcpy__((*message_)->messageValue, queue_->head->messageValue, CONFIG_MESSAGE_VALUE_BYTES))) {
+          if(OK(__memcpy__((*message_)->messageValue, queue_->head->messageValue, CONFIG_MESSAGE_VALUE_BYTES))) {
             RET_OK;
           } else {
             ASSERT;
@@ -324,7 +324,7 @@ Return_t xQueueDropMessage(Queue_t *queue_) {
   RET_DEFINE;
 
   if(NOTNULLPTR(queue_)) {
-    if(ISOK(__QueueDropmessage__(queue_))) {
+    if(OK(__QueueDropmessage__(queue_))) {
       RET_OK;
     } else {
       ASSERT;
@@ -344,7 +344,7 @@ static Return_t __QueueDropmessage__(Queue_t *queue_) {
   Message_t *message = null;
 
 
-  if(NOTNULLPTR(queue_) && ISOK(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
+  if(NOTNULLPTR(queue_) && OK(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
     if(NOTNULLPTR(queue_->head)) {
       message = queue_->head;
       queue_->head = queue_->head->next;
@@ -355,7 +355,7 @@ static Return_t __QueueDropmessage__(Queue_t *queue_) {
 
       queue_->length--;
 
-      if(ISOK(__KernelFreeMemory__(message))) {
+      if(OK(__KernelFreeMemory__(message))) {
         RET_OK;
       } else {
         ASSERT;
@@ -374,10 +374,10 @@ static Return_t __QueueDropmessage__(Queue_t *queue_) {
 Return_t xQueueReceive(Queue_t *queue_, QueueMessage_t **message_) {
   RET_DEFINE;
 
-  if(NOTNULLPTR(queue_) && NOTNULLPTR(message_) && ISOK(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
-    if(ISOK(__QueuePeek__(queue_, message_))) {
+  if(NOTNULLPTR(queue_) && NOTNULLPTR(message_) && OK(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
+    if(OK(__QueuePeek__(queue_, message_))) {
       if(NOTNULLPTR(*message_)) {
-        if(ISOK(__QueueDropmessage__(queue_))) {
+        if(OK(__QueueDropmessage__(queue_))) {
           RET_OK;
         } else {
           ASSERT;
@@ -399,7 +399,7 @@ Return_t xQueueReceive(Queue_t *queue_, QueueMessage_t **message_) {
 Return_t xQueueLockQueue(Queue_t *queue_) {
   RET_DEFINE;
 
-  if(NOTNULLPTR(queue_) && ISOK(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
+  if(NOTNULLPTR(queue_) && OK(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
     if(false == queue_->locked) {
       queue_->locked = true;
       RET_OK;
@@ -417,7 +417,7 @@ Return_t xQueueLockQueue(Queue_t *queue_) {
 Return_t xQueueUnLockQueue(Queue_t *queue_) {
   RET_DEFINE;
 
-  if(NOTNULLPTR(queue_) && ISOK(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
+  if(NOTNULLPTR(queue_) && OK(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
     if(true == queue_->locked) {
       queue_->locked = false;
       RET_OK;

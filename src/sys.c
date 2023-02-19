@@ -62,8 +62,8 @@ Return_t xSystemAssert(const char *file_, const int line_) {
 Return_t xSystemInit(void) {
   RET_DEFINE;
 
-  if(ISOK(__MemoryInit__())) {
-    if(ISOK(__PortInit__())) {
+  if(OK(__MemoryInit__())) {
+    if(OK(__PortInit__())) {
       sysFlags.fault = false;
       sysFlags.overflow = false;
       sysFlags.running = false;
@@ -91,14 +91,14 @@ void xSystemHalt(void) {
 Return_t xSystemGetSystemInfo(SystemInfo_t **info_) {
   RET_DEFINE;
 
-  if(NOTNULLPTR(info_) && ISOK(__HeapAllocateMemory__((volatile Addr_t **) info_, sizeof(SystemInfo_t)))) {
+  if(NOTNULLPTR(info_) && OK(__HeapAllocateMemory__((volatile Addr_t **) info_, sizeof(SystemInfo_t)))) {
     if(NOTNULLPTR(*info_)) {
-      if(ISOK(__memcpy__((*info_)->productName, OS_PRODUCT_NAME, OS_PRODUCT_NAME_SIZE))) {
+      if(OK(__memcpy__((*info_)->productName, OS_PRODUCT_NAME, OS_PRODUCT_NAME_SIZE))) {
         (*info_)->majorVersion = OS_MAJOR_VERSION_NO;
         (*info_)->minorVersion = OS_MINOR_VERSION_NO;
         (*info_)->patchVersion = OS_PATCH_VERSION_NO;
 
-        if(ISOK(xTaskGetNumberOfTasks(&(*info_)->numberOfTasks))) {
+        if(OK(xTaskGetNumberOfTasks(&(*info_)->numberOfTasks))) {
           RET_OK;
         } else {
           ASSERT;

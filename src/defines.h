@@ -181,10 +181,10 @@
   #define RET_OK ret = ReturnOK
 
 
-  #if defined(ISOK)
-    #undef ISOK
-  #endif /* if defined(ISOK) */
-  #define ISOK(expr_) ((ReturnOK) == (expr_))
+  #if defined(OK)
+    #undef OK
+  #endif /* if defined(OK) */
+  #define OK(expr_) ((ReturnOK) == (expr_))
 
 
   #if defined(ASSERT)

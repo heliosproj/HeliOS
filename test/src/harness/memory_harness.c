@@ -80,45 +80,45 @@ void memory_harness(void) {
       tests[i].blocks += 1;
     }
 
-    unit_try(ISOK(xMemAlloc((volatile Addr_t **) &tests[i].ptr, sizes[i])));
+    unit_try(OK(xMemAlloc((volatile Addr_t **) &tests[i].ptr, sizes[i])));
     unit_try(null != tests[i].ptr);
     used += tests[i].blocks * CONFIG_MEMORY_REGION_BLOCK_SIZE;
-    unit_try(ISOK(xMemGetUsed(&actual)));
+    unit_try(OK(xMemGetUsed(&actual)));
     unit_try(used == actual);
-    unit_try(ISOK(xMemGetSize(tests[i].ptr, &actual)));
+    unit_try(OK(xMemGetSize(tests[i].ptr, &actual)));
     unit_try((tests[i].blocks * CONFIG_MEMORY_REGION_BLOCK_SIZE) == actual);
   }
 
-  unit_try(!ISOK(xMemAlloc((volatile Addr_t **) &mem05, 0x99999u)));
+  unit_try(!OK(xMemAlloc((volatile Addr_t **) &mem05, 0x99999u)));
 
   for(i = 0; i < 0x20u; i++) {
-    unit_try(ISOK(xMemFree(tests[order[i]].ptr)));
+    unit_try(OK(xMemFree(tests[order[i]].ptr)));
   }
 
-  unit_try(ISOK(xMemGetUsed(&actual)));
+  unit_try(OK(xMemGetUsed(&actual)));
   unit_try(0x0u == actual);
-  unit_try(ISOK(xMemAlloc((volatile Addr_t **) &mem05, (CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS - 1) * CONFIG_MEMORY_REGION_BLOCK_SIZE)));
+  unit_try(OK(xMemAlloc((volatile Addr_t **) &mem05, (CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS - 1) * CONFIG_MEMORY_REGION_BLOCK_SIZE)));
   actual = zero;
-  unit_try(ISOK(xMemGetUsed(&actual)));
+  unit_try(OK(xMemGetUsed(&actual)));
   unit_try((CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS * CONFIG_MEMORY_REGION_BLOCK_SIZE) == actual);
-  unit_try(ISOK(xMemFree(mem05)));
+  unit_try(OK(xMemFree(mem05)));
   unit_end();
   unit_begin("xMemAlloc()");
   mem01 = null;
-  unit_try(ISOK(xMemAlloc((volatile Addr_t **) &mem01, 0x32000u)));
+  unit_try(OK(xMemAlloc((volatile Addr_t **) &mem01, 0x32000u)));
   unit_try(null != mem01);
   unit_end();
   unit_begin("xMemGetUsed()");
-  unit_try(ISOK(xMemGetUsed(&actual)));
+  unit_try(OK(xMemGetUsed(&actual)));
   unit_try(0x32020u == actual);
   unit_end();
   unit_begin("xMemGetSize()");
-  unit_try(ISOK(xMemGetSize(mem01, &actual)));
+  unit_try(OK(xMemGetSize(mem01, &actual)));
   unit_try(0x32020u == actual);
   unit_end();
   unit_begin("xMemGetHeapStats()");
   mem02 = null;
-  unit_try(ISOK(xMemGetHeapStats(&mem02)));
+  unit_try(OK(xMemGetHeapStats(&mem02)));
   unit_try(null != mem02);
   unit_try(0x63A0u == mem02->availableSpaceInBytes);
   unit_try(0x63A0u == mem02->largestFreeEntryInBytes);
@@ -131,10 +131,10 @@ void memory_harness(void) {
   unit_begin("xMemGetKernelStats()");
   mem03 = null;
   mem04 = null;
-  unit_try(ISOK(xTaskCreate(&mem04, (Byte_t *) "NONE", memory_harness_task, null)));
+  unit_try(OK(xTaskCreate(&mem04, (Byte_t *) "NONE", memory_harness_task, null)));
   unit_try(null != mem04);
-  unit_try(ISOK(xTaskDelete(mem04)));
-  unit_try(ISOK(xMemGetKernelStats(&mem03)));
+  unit_try(OK(xTaskDelete(mem04)));
+  unit_try(OK(xMemGetKernelStats(&mem03)));
   unit_try(null != mem03);
   unit_try(0x383C0u == mem03->availableSpaceInBytes);
   unit_try(0x383C0u == mem03->largestFreeEntryInBytes);
@@ -143,9 +143,9 @@ void memory_harness(void) {
   unit_try(0x383C0u == mem03->smallestFreeEntryInBytes);
   unit_try(0x2u == mem03->successfulAllocations);
   unit_try(0x1u == mem03->successfulFrees);
-  unit_try(ISOK(xMemFree(mem01)));
-  unit_try(ISOK(xMemFree(mem02)));
-  unit_try(ISOK(xMemFree(mem03)));
+  unit_try(OK(xMemFree(mem01)));
+  unit_try(OK(xMemFree(mem02)));
+  unit_try(OK(xMemFree(mem03)));
   unit_end();
 
   return;

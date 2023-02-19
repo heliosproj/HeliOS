@@ -38,31 +38,31 @@ void stream_harness(void) {
 
 
   unit_begin("xStreamCreate()");
-  unit_try(ISOK(xStreamCreate(&stream01)));
+  unit_try(OK(xStreamCreate(&stream01)));
   unit_try(null != stream01);
   unit_end();
   unit_begin("xStreamSend()");
 
   for(i = 0; i < CONFIG_STREAM_BUFFER_BYTES; i++) {
-    unit_try(ISOK(xStreamSend(stream01, i)));
+    unit_try(OK(xStreamSend(stream01, i)));
   }
 
-  unit_try(!ISOK(xStreamSend(stream01, zero)));
+  unit_try(!OK(xStreamSend(stream01, zero)));
   unit_end();
   unit_begin("xStreamIsFull()");
-  unit_try(ISOK(xStreamIsFull(stream01, &res)));
+  unit_try(OK(xStreamIsFull(stream01, &res)));
   unit_try(true == res);
   unit_end();
   unit_begin("xStreamIsEmpty()");
-  unit_try(ISOK(xStreamIsEmpty(stream01, &res)));
+  unit_try(OK(xStreamIsEmpty(stream01, &res)));
   unit_try(false == res);
   unit_end();
   unit_begin("xStreamBytesAvailable()");
-  unit_try(ISOK(xStreamBytesAvailable(stream01, &stream04)));
+  unit_try(OK(xStreamBytesAvailable(stream01, &stream04)));
   unit_try(0x20u == stream04);
   unit_end();
   unit_begin("xStreamReceive()");
-  unit_try(ISOK(xStreamReceive(stream01, &stream02, &stream03)));
+  unit_try(OK(xStreamReceive(stream01, &stream02, &stream03)));
   unit_try(null != stream03);
   unit_try(0x20u == stream02);
   unit_try(0x1Fu == stream03[0x1Fu]);
@@ -70,20 +70,20 @@ void stream_harness(void) {
   unit_begin("xStreamReset()");
 
   for(i = 0; i < CONFIG_STREAM_BUFFER_BYTES; i++) {
-    unit_try(ISOK(xStreamSend(stream01, i)));
+    unit_try(OK(xStreamSend(stream01, i)));
   }
 
-  unit_try(!ISOK(xStreamSend(stream01, zero)));
-  unit_try(ISOK(xStreamIsFull(stream01, &res)));
+  unit_try(!OK(xStreamSend(stream01, zero)));
+  unit_try(OK(xStreamIsFull(stream01, &res)));
   unit_try(true == res);
-  unit_try(ISOK(xStreamReset(stream01)));
-  unit_try(ISOK(xStreamIsEmpty(stream01, &res)));
+  unit_try(OK(xStreamReset(stream01)));
+  unit_try(OK(xStreamIsEmpty(stream01, &res)));
   unit_try(true == res);
   unit_end();
   unit_begin("xStreamDelete()");
-  unit_try(!ISOK(xStreamReset(stream01)));
-  unit_try(ISOK(xStreamDelete(stream01)));
-  unit_try(!ISOK(xStreamSend(stream01, zero)));
+  unit_try(!OK(xStreamReset(stream01)));
+  unit_try(OK(xStreamDelete(stream01)));
+  unit_try(!OK(xStreamSend(stream01, zero)));
   unit_end();
 
   return;
