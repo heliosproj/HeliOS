@@ -45,21 +45,19 @@
   #endif /* if !defined(CHAR_BIT) */
 
 
-/* Define "true". We are not using "true" for boolean logic, we are using "true"
- * as an integer so we do not use the (1=1) and (!TRUE) constructs. */
+
   #if defined(true)
     #undef true
   #endif /* if defined(true) */
   #define true 0x1u /* 1 */
 
 
-/* Define "false". We are not using "false" for boolean logic, we are using
- * "false" as an integer so we do not use the (1=1) and (!TRUE) constructs. */
+
   #if defined(false)
     #undef false
   #endif /* if defined(false) */
   #define false 0x0u /* 0 */
-/* Define "null". */
+
   #if defined(null)
     #undef null
   #endif /* if defined(null) */
@@ -68,95 +66,83 @@
   #else  /* if defined(__cplusplus) */
     #define null ((void *) 0x0) /* 0 */
   #endif /* if defined(__cplusplus) */
-/* Define "zero". */
+
   #if defined(zero)
     #undef zero
   #endif /* if defined(zero) */
   #define zero 0x0u /* 0 */
 
 
-/* Define the size in bytes of the OS product name which is accessible through
- * xSystemGetSystemInfo(). */
+
   #if defined(OS_PRODUCT_NAME_SIZE)
     #undef OS_PRODUCT_NAME_SIZE
   #endif /* if defined(OS_PRODUCT_NAME_SIZE) */
   #define OS_PRODUCT_NAME_SIZE 0x6u /* 6 */
 
 
-/* Define the OS product name which is accessible through
- * xSystemGetSystemInfo(). */
+
   #if defined(OS_PRODUCT_NAME)
     #undef OS_PRODUCT_NAME
   #endif /* if defined(OS_PRODUCT_NAME) */
   #define OS_PRODUCT_NAME "HeliOS"
 
 
-/* Define the OS product major version number which is accessible through
- * xSystemGetSystemInfo(). */
+
   #if defined(OS_MAJOR_VERSION_NO)
     #undef OS_MAJOR_VERSION_NO
   #endif /* if defined(OS_MAJOR_VERSION_NO) */
   #define OS_MAJOR_VERSION_NO 0x0u /* 0 */
 
 
-/* Define the OS product minor version number which is accessible through
- * xSystemGetSystemInfo(). */
+
   #if defined(OS_MINOR_VERSION_NO)
     #undef OS_MINOR_VERSION_NO
   #endif /* if defined(OS_MINOR_VERSION_NO) */
   #define OS_MINOR_VERSION_NO 0x4u /* 4 */
 
 
-/* Define the OS product patch version number which is accessible through
- * xSystemGetSystemInfo(). */
+
   #if defined(OS_PATCH_VERSION_NO)
     #undef OS_PATCH_VERSION_NO
   #endif /* if defined(OS_PATCH_VERSION_NO) */
   #define OS_PATCH_VERSION_NO 0x0u /* 0 */
 
 
-/* Define the raw size of the heap in bytes based on the number of blocks the
- * heap contains and the size of each block in bytes. */
+
   #if defined(MEMORY_REGION_SIZE_IN_BYTES)
     #undef MEMORY_REGION_SIZE_IN_BYTES
   #endif /* if defined(MEMORY_REGION_SIZE_IN_BYTES) */
   #define MEMORY_REGION_SIZE_IN_BYTES CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS *CONFIG_MEMORY_REGION_BLOCK_SIZE
 
 
-/* Define a macro to access the running system flag which is used by
- * xTaskStartScheduler() to indicate whether the scheduler is running. */
+
   #if defined(SYSFLAG_RUNNING)
     #undef SYSFLAG_RUNNING
   #endif /* if defined(SYSFLAG_RUNNING) */
   #define SYSFLAG_RUNNING() sysFlags.running
 
 
-/* Define a macro to access the overflow system flag which is used by the
- * scheduler to determine when a task's runtime has overflowed and all runtimes
- * need to be reset. */
+
   #if defined(SYSFLAG_OVERFLOW)
     #undef SYSFLAG_OVERFLOW
   #endif /* if defined(SYSFLAG_OVERFLOW) */
   #define SYSFLAG_OVERFLOW() sysFlags.overflow
 
 
-/* Define a macro to access the corrupt system flag which is used by the memory
- * management system calls to flag if corruption of the heap has been detected.
- */
+
   #if defined(SYSFLAG_FAULT)
     #undef SYSFLAG_FAULT
   #endif /* if defined(SYSFLAG_FAULT) */
   #define SYSFLAG_FAULT() sysFlags.fault
 
 
-/* Define a marco which makes null pointer checks more readable and concise */
   #if defined(NOTNULLPTR)
     #undef NOTNULLPTR
   #endif /* if defined(NOTNULLPTR) */
   #define NOTNULLPTR(addr_) ((null) != (addr_))
 
 
-/* Define a marco which makes null pointer checks more readable and concise */
+
   #if defined(NULLPTR)
     #undef NULLPTR
   #endif /* if defined(NULLPTR) */
@@ -209,8 +195,7 @@
   #define MEMORY_REGION_CHECK_OPTION_W_ADDR 0x2u /* 2 */
 
 
-/* Define a macro to convert a heap memory address to it's corresponding heap
- * entry. */
+
   #if defined(ADDR2ENTRY)
     #undef ADDR2ENTRY
   #endif /* if defined(ADDR2ENTRY) */
@@ -218,8 +203,7 @@
           CONFIG_MEMORY_REGION_BLOCK_SIZE)))
 
 
-/* Define a macro to convert a heap entry to it's corresponding heap memory
- * address. */
+
   #if defined(ENTRY2ADDR)
     #undef ENTRY2ADDR
   #endif /* if defined(ENTRY2ADDR) */
@@ -305,10 +289,10 @@
   #endif /* if defined(CALCMAGIC) */
   #define CALCMAGIC(ptr_) (((Word_t) ptr_) ^ MAGIC_CONST)
 
-  #if defined(ISGOODMAGIC)
-    #undef ISGOODMAGIC
-  #endif /* if defined(ISGOODMAGIC) */
-  #define ISGOODMAGIC(ptr_) (CALCMAGIC(ptr_) == (ptr_)->magic)
+  #if defined(OKMAGIC)
+    #undef OKMAGIC
+  #endif /* if defined(OKMAGIC) */
+  #define OKMAGIC(ptr_) (CALCMAGIC(ptr_) == (ptr_)->magic)
 
 
 

@@ -181,7 +181,7 @@ static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, co
 
       while(NOTNULLPTR(cursor)) {
         if(OK(__MemoryRegionCheckAddr__(region_, cursor))) {
-          if(ISGOODMAGIC(cursor)) {
+          if(OKMAGIC(cursor)) {
             blocks += cursor->blocks;
 
             /* If we are checking for an address in the memory region, then see
