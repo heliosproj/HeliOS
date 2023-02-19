@@ -39,18 +39,18 @@ Return_t xTimerCreate(Timer_t **timer_, const Ticks_t period_) {
   Timer_t *cursor = null;
 
 
-  if((ISNOTNULLPTR(timer_) && ISNOTNULLPTR(timerList)) || (ISNOTNULLPTR(timer_) && (ISNULLPTR(timerList) && ISOK(__KernelAllocateMemory__((volatile
+  if((NOTNULLPTR(timer_) && NOTNULLPTR(timerList)) || (NOTNULLPTR(timer_) && (NULLPTR(timerList) && ISOK(__KernelAllocateMemory__((volatile
     Addr_t **) &timerList, sizeof(TimerList_t)))))) {
     if(ISOK(__KernelAllocateMemory__((volatile Addr_t **) timer_, sizeof(Task_t)))) {
-      if(ISNOTNULLPTR(*timer_)) {
+      if(NOTNULLPTR(*timer_)) {
         (*timer_)->state = TimerStateSuspended;
         (*timer_)->timerPeriod = period_;
         (*timer_)->timerStartTime = __PortGetSysTicks__();
         (*timer_)->next = null;
         cursor = timerList->head;
 
-        if(ISNOTNULLPTR(timerList->head)) {
-          while(ISNOTNULLPTR(cursor->next)) {
+        if(NOTNULLPTR(timerList->head)) {
+          while(NOTNULLPTR(cursor->next)) {
             cursor = cursor->next;
           }
 
@@ -83,11 +83,11 @@ Return_t xTimerDelete(const Timer_t *timer_) {
   Timer_t *previous = null;
 
 
-  if(ISNOTNULLPTR(timer_) && ISNOTNULLPTR(timerList)) {
+  if(NOTNULLPTR(timer_) && NOTNULLPTR(timerList)) {
     if(ISOK(__TimerListFindTimer__(timer_))) {
       cursor = timerList->head;
 
-      if((ISNOTNULLPTR(cursor)) && (cursor == timer_)) {
+      if((NOTNULLPTR(cursor)) && (cursor == timer_)) {
         timerList->head = cursor->next;
 
         if(ISOK(__KernelFreeMemory__(cursor))) {
@@ -96,13 +96,13 @@ Return_t xTimerDelete(const Timer_t *timer_) {
         } else {
           ASSERT;
         }
-      } else if((ISNOTNULLPTR(cursor)) && (cursor != timer_)) {
-        while((ISNOTNULLPTR(cursor)) && (cursor != timer_)) {
+      } else if((NOTNULLPTR(cursor)) && (cursor != timer_)) {
+        while((NOTNULLPTR(cursor)) && (cursor != timer_)) {
           previous = cursor;
           cursor = cursor->next;
         }
 
-        if(ISNOTNULLPTR(cursor)) {
+        if(NOTNULLPTR(cursor)) {
           previous->next = cursor->next;
 
           if(ISOK(__KernelFreeMemory__(cursor))) {
@@ -131,7 +131,7 @@ Return_t xTimerDelete(const Timer_t *timer_) {
 Return_t xTimerChangePeriod(Timer_t *timer_, const Ticks_t period_) {
   RET_DEFINE;
 
-  if(ISNOTNULLPTR(timer_) && ISNOTNULLPTR(timerList)) {
+  if(NOTNULLPTR(timer_) && NOTNULLPTR(timerList)) {
     if(ISOK(__TimerListFindTimer__(timer_))) {
       timer_->timerPeriod = period_;
       RET_OK;
@@ -149,7 +149,7 @@ Return_t xTimerChangePeriod(Timer_t *timer_, const Ticks_t period_) {
 Return_t xTimerGetPeriod(const Timer_t *timer_, Ticks_t *period_) {
   RET_DEFINE;
 
-  if(ISNOTNULLPTR(timer_) && ISNOTNULLPTR(period_) && ISNOTNULLPTR(timerList)) {
+  if(NOTNULLPTR(timer_) && NOTNULLPTR(period_) && NOTNULLPTR(timerList)) {
     if(ISOK(__TimerListFindTimer__(timer_))) {
       *period_ = timer_->timerPeriod;
       RET_OK;
@@ -167,7 +167,7 @@ Return_t xTimerGetPeriod(const Timer_t *timer_, Ticks_t *period_) {
 Return_t xTimerIsTimerActive(const Timer_t *timer_, Base_t *res_) {
   RET_DEFINE;
 
-  if(ISNOTNULLPTR(timer_) && ISNOTNULLPTR(res_) && ISNOTNULLPTR(timerList)) {
+  if(NOTNULLPTR(timer_) && NOTNULLPTR(res_) && NOTNULLPTR(timerList)) {
     if(ISOK(__TimerListFindTimer__(timer_))) {
       if(TimerStateRunning == timer_->state) {
         *res_ = true;
@@ -190,7 +190,7 @@ Return_t xTimerIsTimerActive(const Timer_t *timer_, Base_t *res_) {
 Return_t xTimerHasTimerExpired(const Timer_t *timer_, Base_t *res_) {
   RET_DEFINE;
 
-  if(ISNOTNULLPTR(timer_) && ISNOTNULLPTR(res_) && ISNOTNULLPTR(timerList)) {
+  if(NOTNULLPTR(timer_) && NOTNULLPTR(res_) && NOTNULLPTR(timerList)) {
     if(ISOK(__TimerListFindTimer__(timer_))) {
       if((zero < timer_->timerPeriod) && ((__PortGetSysTicks__() - timer_->timerStartTime) > timer_->timerPeriod)) {
         *res_ = true;
@@ -213,7 +213,7 @@ Return_t xTimerHasTimerExpired(const Timer_t *timer_, Base_t *res_) {
 Return_t xTimerReset(Timer_t *timer_) {
   RET_DEFINE;
 
-  if(ISNOTNULLPTR(timer_) && ISNOTNULLPTR(timerList)) {
+  if(NOTNULLPTR(timer_) && NOTNULLPTR(timerList)) {
     if(ISOK(__TimerListFindTimer__(timer_))) {
       timer_->timerStartTime = __PortGetSysTicks__();
       RET_OK;
@@ -231,7 +231,7 @@ Return_t xTimerReset(Timer_t *timer_) {
 Return_t xTimerStart(Timer_t *timer_) {
   RET_DEFINE;
 
-  if(ISNOTNULLPTR(timer_) && ISNOTNULLPTR(timerList)) {
+  if(NOTNULLPTR(timer_) && NOTNULLPTR(timerList)) {
     if(ISOK(__TimerListFindTimer__(timer_))) {
       timer_->state = TimerStateRunning;
       RET_OK;
@@ -249,7 +249,7 @@ Return_t xTimerStart(Timer_t *timer_) {
 Return_t xTimerStop(Timer_t *timer_) {
   RET_DEFINE;
 
-  if(ISNOTNULLPTR(timer_) && ISNOTNULLPTR(timerList)) {
+  if(NOTNULLPTR(timer_) && NOTNULLPTR(timerList)) {
     if(ISOK(__TimerListFindTimer__(timer_))) {
       timer_->state = TimerStateSuspended;
       RET_OK;
@@ -271,15 +271,15 @@ static Return_t __TimerListFindTimer__(const Timer_t *timer_) {
   Timer_t *cursor = null;
 
 
-  if((ISNOTNULLPTR(timer_)) && (ISNOTNULLPTR(timerList))) {
+  if((NOTNULLPTR(timer_)) && (NOTNULLPTR(timerList))) {
     if(ISOK(__MemoryRegionCheckKernel__(timer_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
       cursor = timerList->head;
 
-      while((ISNOTNULLPTR(cursor)) && (cursor != timer_)) {
+      while((NOTNULLPTR(cursor)) && (cursor != timer_)) {
         cursor = cursor->next;
       }
 
-      if(ISNOTNULLPTR(cursor)) {
+      if(NOTNULLPTR(cursor)) {
         RET_OK;
       } else {
         ASSERT;

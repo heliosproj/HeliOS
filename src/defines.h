@@ -150,17 +150,17 @@
 
 
 /* Define a marco which makes null pointer checks more readable and concise */
-  #if defined(ISNOTNULLPTR)
-    #undef ISNOTNULLPTR
-  #endif /* if defined(ISNOTNULLPTR) */
-  #define ISNOTNULLPTR(addr_) ((null) != (addr_))
+  #if defined(NOTNULLPTR)
+    #undef NOTNULLPTR
+  #endif /* if defined(NOTNULLPTR) */
+  #define NOTNULLPTR(addr_) ((null) != (addr_))
 
 
 /* Define a marco which makes null pointer checks more readable and concise */
-  #if defined(ISNULLPTR)
-    #undef ISNULLPTR
-  #endif /* if defined(ISNULLPTR) */
-  #define ISNULLPTR(addr_) ((null) == (addr_))
+  #if defined(NULLPTR)
+    #undef NULLPTR
+  #endif /* if defined(NULLPTR) */
+  #define NULLPTR(addr_) ((null) == (addr_))
 
 
   #if defined(RET_DEFINE)

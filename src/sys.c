@@ -91,8 +91,8 @@ void xSystemHalt(void) {
 Return_t xSystemGetSystemInfo(SystemInfo_t **info_) {
   RET_DEFINE;
 
-  if(ISNOTNULLPTR(info_) && ISOK(__HeapAllocateMemory__((volatile Addr_t **) info_, sizeof(SystemInfo_t)))) {
-    if(ISNOTNULLPTR(*info_)) {
+  if(NOTNULLPTR(info_) && ISOK(__HeapAllocateMemory__((volatile Addr_t **) info_, sizeof(SystemInfo_t)))) {
+    if(NOTNULLPTR(*info_)) {
       if(ISOK(__memcpy__((*info_)->productName, OS_PRODUCT_NAME, OS_PRODUCT_NAME_SIZE))) {
         (*info_)->majorVersion = OS_MAJOR_VERSION_NO;
         (*info_)->minorVersion = OS_MINOR_VERSION_NO;

@@ -46,10 +46,10 @@ Return_t xTaskCreate(Task_t **task_, const Byte_t *name_, void (*callback_)(Task
   Task_t *cursor = null;
 
 
-  if(ISNOTNULLPTR(task_) && (ISNOTNULLPTR(name_)) && (ISNOTNULLPTR(callback_)) && (false == SYSFLAG_RUNNING())) {
-    if(ISNOTNULLPTR(taskList) || (ISNULLPTR(taskList) && ISOK(__KernelAllocateMemory__((volatile Addr_t **) &taskList, sizeof(TaskList_t))))) {
+  if(NOTNULLPTR(task_) && (NOTNULLPTR(name_)) && (NOTNULLPTR(callback_)) && (false == SYSFLAG_RUNNING())) {
+    if(NOTNULLPTR(taskList) || (NULLPTR(taskList) && ISOK(__KernelAllocateMemory__((volatile Addr_t **) &taskList, sizeof(TaskList_t))))) {
       if(ISOK(__KernelAllocateMemory__((volatile Addr_t **) task_, sizeof(Task_t)))) {
-        if(ISNOTNULLPTR(*task_)) {
+        if(NOTNULLPTR(*task_)) {
           if(ISOK(__memcpy__((*task_)->name, name_, CONFIG_TASK_NAME_BYTES))) {
             taskList->nextId++;
             (*task_)->id = taskList->nextId;
@@ -59,8 +59,8 @@ Return_t xTaskCreate(Task_t **task_, const Byte_t *name_, void (*callback_)(Task
             (*task_)->next = null;
             cursor = taskList->head;
 
-            if(ISNOTNULLPTR(taskList->head)) {
-              while(ISNOTNULLPTR(cursor->next)) {
+            if(NOTNULLPTR(taskList->head)) {
+              while(NOTNULLPTR(cursor->next)) {
                 cursor = cursor->next;
               }
 
@@ -99,11 +99,11 @@ Return_t xTaskDelete(const Task_t *task_) {
   Task_t *previous = null;
 
 
-  if(ISNOTNULLPTR(task_) && ISNOTNULLPTR(taskList) && (false == SYSFLAG_RUNNING())) {
+  if(NOTNULLPTR(task_) && NOTNULLPTR(taskList) && (false == SYSFLAG_RUNNING())) {
     if(ISOK(__TaskListFindTask__(task_))) {
       cursor = taskList->head;
 
-      if((ISNOTNULLPTR(cursor)) && (cursor == task_)) {
+      if((NOTNULLPTR(cursor)) && (cursor == task_)) {
         taskList->head = cursor->next;
 
         if(ISOK(__KernelFreeMemory__(cursor))) {
@@ -112,13 +112,13 @@ Return_t xTaskDelete(const Task_t *task_) {
         } else {
           ASSERT;
         }
-      } else if((ISNOTNULLPTR(cursor)) && (cursor != task_)) {
-        while((ISNOTNULLPTR(cursor)) && (cursor != task_)) {
+      } else if((NOTNULLPTR(cursor)) && (cursor != task_)) {
+        while((NOTNULLPTR(cursor)) && (cursor != task_)) {
           previous = cursor;
           cursor = cursor->next;
         }
 
-        if(ISNOTNULLPTR(cursor)) {
+        if(NOTNULLPTR(cursor)) {
           previous->next = cursor->next;
 
           if(ISOK(__KernelFreeMemory__(cursor))) {
@@ -152,10 +152,10 @@ Return_t xTaskGetHandleByName(Task_t **task_, const Byte_t *name_) {
   Base_t res = false;
 
 
-  if((ISNOTNULLPTR(task_)) && (ISNOTNULLPTR(name_)) && (ISNOTNULLPTR(taskList))) {
+  if((NOTNULLPTR(task_)) && (NOTNULLPTR(name_)) && (NOTNULLPTR(taskList))) {
     cursor = taskList->head;
 
-    while(ISNOTNULLPTR(cursor)) {
+    while(NOTNULLPTR(cursor)) {
       if(ISOK(__memcmp__(cursor->name, name_, CONFIG_TASK_NAME_BYTES, &res))) {
         if(true == res) {
           *task_ = cursor;
@@ -184,10 +184,10 @@ Return_t xTaskGetHandleById(Task_t **task_, const Base_t id_) {
   Task_t *cursor = null;
 
 
-  if((ISNOTNULLPTR(task_)) && (zero < id_) && (ISNOTNULLPTR(taskList))) {
+  if((NOTNULLPTR(task_)) && (zero < id_) && (NOTNULLPTR(taskList))) {
     cursor = taskList->head;
 
-    while(ISNOTNULLPTR(cursor)) {
+    while(NOTNULLPTR(cursor)) {
       if(id_ == cursor->id) {
         *task_ = cursor;
         RET_OK;
@@ -213,20 +213,20 @@ Return_t xTaskGetAllRunTimeStats(TaskRunTimeStats_t **stats_, Base_t *tasks_) {
   Task_t *cursor = null;
 
 
-  if((ISNOTNULLPTR(stats_)) && (ISNOTNULLPTR(tasks_)) && (ISNOTNULLPTR(taskList))) {
+  if((NOTNULLPTR(stats_)) && (NOTNULLPTR(tasks_)) && (NOTNULLPTR(taskList))) {
     cursor = taskList->head;
 
-    while(ISNOTNULLPTR(cursor)) {
+    while(NOTNULLPTR(cursor)) {
       tasks++;
       cursor = cursor->next;
     }
 
     if((zero < tasks) && (tasks == taskList->length)) {
       if(ISOK(__HeapAllocateMemory__((volatile Addr_t **) stats_, tasks * sizeof(TaskRunTimeStats_t)))) {
-        if(ISNOTNULLPTR(*stats_)) {
+        if(NOTNULLPTR(*stats_)) {
           cursor = taskList->head;
 
-          while(ISNOTNULLPTR(cursor)) {
+          while(NOTNULLPTR(cursor)) {
             (*stats_)[task].id = cursor->id;
             (*stats_)[task].lastRunTime = cursor->lastRunTime;
             (*stats_)[task].totalRunTime = cursor->totalRunTime;
@@ -256,10 +256,10 @@ Return_t xTaskGetAllRunTimeStats(TaskRunTimeStats_t **stats_, Base_t *tasks_) {
 Return_t xTaskGetTaskRunTimeStats(const Task_t *task_, TaskRunTimeStats_t **stats_) {
   RET_DEFINE;
 
-  if(ISNOTNULLPTR(task_) && ISNOTNULLPTR(stats_) && ISNOTNULLPTR(taskList)) {
+  if(NOTNULLPTR(task_) && NOTNULLPTR(stats_) && NOTNULLPTR(taskList)) {
     if(ISOK(__TaskListFindTask__(task_))) {
       if(ISOK(__HeapAllocateMemory__((volatile Addr_t **) stats_, sizeof(TaskRunTimeStats_t)))) {
-        if(ISNOTNULLPTR(*stats_)) {
+        if(NOTNULLPTR(*stats_)) {
           (*stats_)->id = task_->id;
           (*stats_)->lastRunTime = task_->lastRunTime;
           (*stats_)->totalRunTime = task_->totalRunTime;
@@ -289,10 +289,10 @@ Return_t xTaskGetNumberOfTasks(Base_t *tasks_) {
   Task_t *cursor = null;
 
 
-  if(ISNOTNULLPTR(tasks_) && ISNOTNULLPTR(taskList)) {
+  if(NOTNULLPTR(tasks_) && NOTNULLPTR(taskList)) {
     cursor = taskList->head;
 
-    while(ISNOTNULLPTR(cursor)) {
+    while(NOTNULLPTR(cursor)) {
       tasks++;
       cursor = cursor->next;
     }
@@ -314,10 +314,10 @@ Return_t xTaskGetNumberOfTasks(Base_t *tasks_) {
 Return_t xTaskGetTaskInfo(const Task_t *task_, TaskInfo_t **info_) {
   RET_DEFINE;
 
-  if(ISNOTNULLPTR(task_) && ISNOTNULLPTR(info_) && ISNOTNULLPTR(taskList)) {
+  if(NOTNULLPTR(task_) && NOTNULLPTR(info_) && NOTNULLPTR(taskList)) {
     if(ISOK(__TaskListFindTask__(task_))) {
       if(ISOK(__HeapAllocateMemory__((volatile Addr_t **) info_, sizeof(TaskInfo_t)))) {
-        if(ISNOTNULLPTR(*info_)) {
+        if(NOTNULLPTR(*info_)) {
           if(ISOK(__memcpy__((*info_)->name, task_->name, CONFIG_TASK_NAME_BYTES))) {
             (*info_)->id = task_->id;
             (*info_)->state = task_->state;
@@ -353,20 +353,20 @@ Return_t xTaskGetAllTaskInfo(TaskInfo_t **info_, Base_t *tasks_) {
   Task_t *cursor = null;
 
 
-  if(ISNOTNULLPTR(info_) && (ISNOTNULLPTR(tasks_)) && ISNOTNULLPTR(taskList)) {
+  if(NOTNULLPTR(info_) && (NOTNULLPTR(tasks_)) && NOTNULLPTR(taskList)) {
     cursor = taskList->head;
 
-    while(ISNOTNULLPTR(cursor)) {
+    while(NOTNULLPTR(cursor)) {
       tasks++;
       cursor = cursor->next;
     }
 
     if((zero < tasks) && (tasks == taskList->length)) {
       if(ISOK(__HeapAllocateMemory__((volatile Addr_t **) info_, tasks * sizeof(TaskInfo_t)))) {
-        if(ISNOTNULLPTR(*info_)) {
+        if(NOTNULLPTR(*info_)) {
           cursor = taskList->head;
 
-          while(ISNOTNULLPTR(cursor)) {
+          while(NOTNULLPTR(cursor)) {
             if(ISOK(__memcpy__((*info_)[task].name, cursor->name, CONFIG_TASK_NAME_BYTES))) {
               (*info_)[task].id = cursor->id;
               (*info_)[task].state = cursor->state;
@@ -399,7 +399,7 @@ Return_t xTaskGetAllTaskInfo(TaskInfo_t **info_, Base_t *tasks_) {
 Return_t xTaskGetTaskState(const Task_t *task_, TaskState_t *state_) {
   RET_DEFINE;
 
-  if(ISNOTNULLPTR(task_) && ISNOTNULLPTR(state_) && ISNOTNULLPTR(taskList)) {
+  if(NOTNULLPTR(task_) && NOTNULLPTR(state_) && NOTNULLPTR(taskList)) {
     if(ISOK(__TaskListFindTask__(task_))) {
       *state_ = task_->state;
       RET_OK;
@@ -417,10 +417,10 @@ Return_t xTaskGetTaskState(const Task_t *task_, TaskState_t *state_) {
 Return_t xTaskGetName(const Task_t *task_, Byte_t **name_) {
   RET_DEFINE;
 
-  if(ISNOTNULLPTR(task_) && ISNOTNULLPTR(name_) && ISNOTNULLPTR(taskList)) {
+  if(NOTNULLPTR(task_) && NOTNULLPTR(name_) && NOTNULLPTR(taskList)) {
     if(ISOK(__TaskListFindTask__(task_))) {
       if(ISOK(__HeapAllocateMemory__((volatile Addr_t **) name_, CONFIG_TASK_NAME_BYTES))) {
-        if(ISNOTNULLPTR(*name_)) {
+        if(NOTNULLPTR(*name_)) {
           if(ISOK(__memcpy__(*name_, task_->name, CONFIG_TASK_NAME_BYTES))) {
             RET_OK;
           } else {
@@ -446,7 +446,7 @@ Return_t xTaskGetName(const Task_t *task_, Byte_t **name_) {
 Return_t xTaskGetId(const Task_t *task_, Base_t *id_) {
   RET_DEFINE;
 
-  if(ISNOTNULLPTR(task_) && ISNOTNULLPTR(id_) && ISNOTNULLPTR(taskList)) {
+  if(NOTNULLPTR(task_) && NOTNULLPTR(id_) && NOTNULLPTR(taskList)) {
     if(ISOK(__TaskListFindTask__(task_))) {
       *id_ = task_->id;
       RET_OK;
@@ -464,7 +464,7 @@ Return_t xTaskGetId(const Task_t *task_, Base_t *id_) {
 Return_t xTaskNotifyStateClear(Task_t *task_) {
   RET_DEFINE;
 
-  if(ISNOTNULLPTR(task_) && ISNOTNULLPTR(taskList)) {
+  if(NOTNULLPTR(task_) && NOTNULLPTR(taskList)) {
     if(ISOK(__TaskListFindTask__(task_))) {
       if(zero < task_->notificationBytes) {
         if(ISOK(__memset__(task_->notificationValue, zero, CONFIG_NOTIFICATION_VALUE_BYTES))) {
@@ -490,7 +490,7 @@ Return_t xTaskNotifyStateClear(Task_t *task_) {
 Return_t xTaskNotificationIsWaiting(const Task_t *task_, Base_t *res_) {
   RET_DEFINE;
 
-  if(ISNOTNULLPTR(task_) && ISNOTNULLPTR(res_) && ISNOTNULLPTR(taskList)) {
+  if(NOTNULLPTR(task_) && NOTNULLPTR(res_) && NOTNULLPTR(taskList)) {
     if(ISOK(__TaskListFindTask__(task_))) {
       if(zero < task_->notificationBytes) {
         *res_ = true;
@@ -513,7 +513,7 @@ Return_t xTaskNotificationIsWaiting(const Task_t *task_, Base_t *res_) {
 Return_t xTaskNotifyGive(Task_t *task_, const Base_t bytes_, const Byte_t *value_) {
   RET_DEFINE;
 
-  if(ISNOTNULLPTR(task_) && (zero < bytes_) && (CONFIG_NOTIFICATION_VALUE_BYTES >= bytes_) && (ISNOTNULLPTR(value_)) && ISNOTNULLPTR(taskList)) {
+  if(NOTNULLPTR(task_) && (zero < bytes_) && (CONFIG_NOTIFICATION_VALUE_BYTES >= bytes_) && (NOTNULLPTR(value_)) && NOTNULLPTR(taskList)) {
     if(ISOK(__TaskListFindTask__(task_))) {
       if(zero == task_->notificationBytes) {
         if(ISOK(__memcpy__(task_->notificationValue, value_, CONFIG_NOTIFICATION_VALUE_BYTES))) {
@@ -539,11 +539,11 @@ Return_t xTaskNotifyGive(Task_t *task_, const Base_t bytes_, const Byte_t *value
 Return_t xTaskNotifyTake(Task_t *task_, TaskNotification_t **notification_) {
   RET_DEFINE;
 
-  if(ISNOTNULLPTR(task_) && ISNOTNULLPTR(notification_) && ISNOTNULLPTR(taskList)) {
+  if(NOTNULLPTR(task_) && NOTNULLPTR(notification_) && NOTNULLPTR(taskList)) {
     if(ISOK(__TaskListFindTask__(task_))) {
       if(zero < task_->notificationBytes) {
         if(ISOK(__HeapAllocateMemory__((volatile Addr_t **) notification_, sizeof(TaskNotification_t)))) {
-          if(ISNOTNULLPTR(*notification_)) {
+          if(NOTNULLPTR(*notification_)) {
             if(ISOK(__memcpy__((*notification_)->notificationValue, task_->notificationValue, CONFIG_NOTIFICATION_VALUE_BYTES))) {
               if(ISOK(__memset__(task_->notificationValue, zero, CONFIG_NOTIFICATION_VALUE_BYTES))) {
                 (*notification_)->notificationBytes = task_->notificationBytes;
@@ -578,7 +578,7 @@ Return_t xTaskNotifyTake(Task_t *task_, TaskNotification_t **notification_) {
 Return_t xTaskResume(Task_t *task_) {
   RET_DEFINE;
 
-  if(ISNOTNULLPTR(task_) && ISNOTNULLPTR(taskList)) {
+  if(NOTNULLPTR(task_) && NOTNULLPTR(taskList)) {
     if(ISOK(__TaskListFindTask__(task_))) {
       task_->state = TaskStateRunning;
       RET_OK;
@@ -596,7 +596,7 @@ Return_t xTaskResume(Task_t *task_) {
 Return_t xTaskSuspend(Task_t *task_) {
   RET_DEFINE;
 
-  if(ISNOTNULLPTR(task_) && ISNOTNULLPTR(taskList)) {
+  if(NOTNULLPTR(task_) && NOTNULLPTR(taskList)) {
     if(ISOK(__TaskListFindTask__(task_))) {
       task_->state = TaskStateSuspended;
       RET_OK;
@@ -614,7 +614,7 @@ Return_t xTaskSuspend(Task_t *task_) {
 Return_t xTaskWait(Task_t *task_) {
   RET_DEFINE;
 
-  if(ISNOTNULLPTR(task_) && ISNOTNULLPTR(taskList)) {
+  if(NOTNULLPTR(task_) && NOTNULLPTR(taskList)) {
     if(ISOK(__TaskListFindTask__(task_))) {
       task_->state = TaskStateWaiting;
       RET_OK;
@@ -632,7 +632,7 @@ Return_t xTaskWait(Task_t *task_) {
 Return_t xTaskChangePeriod(Task_t *task_, const Ticks_t period_) {
   RET_DEFINE;
 
-  if(ISNOTNULLPTR(task_) && ISNOTNULLPTR(taskList)) {
+  if(NOTNULLPTR(task_) && NOTNULLPTR(taskList)) {
     if(ISOK(__TaskListFindTask__(task_))) {
       task_->timerPeriod = period_;
       RET_OK;
@@ -650,7 +650,7 @@ Return_t xTaskChangePeriod(Task_t *task_, const Ticks_t period_) {
 Return_t xTaskChangeWDPeriod(Task_t *task_, const Ticks_t period_) {
   RET_DEFINE;
 
-  if(ISNOTNULLPTR(task_) && ISNOTNULLPTR(taskList)) {
+  if(NOTNULLPTR(task_) && NOTNULLPTR(taskList)) {
     if(ISOK(__TaskListFindTask__(task_))) {
       task_->wdTimerPeriod = period_;
       RET_OK;
@@ -668,7 +668,7 @@ Return_t xTaskChangeWDPeriod(Task_t *task_, const Ticks_t period_) {
 Return_t xTaskGetPeriod(const Task_t *task_, Ticks_t *period_) {
   RET_DEFINE;
 
-  if(ISNOTNULLPTR(task_) && ISNOTNULLPTR(period_) && ISNOTNULLPTR(taskList)) {
+  if(NOTNULLPTR(task_) && NOTNULLPTR(period_) && NOTNULLPTR(taskList)) {
     if(ISOK(__TaskListFindTask__(task_))) {
       *period_ = task_->timerPeriod;
       RET_OK;
@@ -690,15 +690,15 @@ static Return_t __TaskListFindTask__(const Task_t *task_) {
   Task_t *cursor = null;
 
 
-  if((ISNOTNULLPTR(task_)) && (ISNOTNULLPTR(taskList))) {
+  if((NOTNULLPTR(task_)) && (NOTNULLPTR(taskList))) {
     if(ISOK(__MemoryRegionCheckKernel__(task_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
       cursor = taskList->head;
 
-      while((ISNOTNULLPTR(cursor)) && (cursor != task_)) {
+      while((NOTNULLPTR(cursor)) && (cursor != task_)) {
         cursor = cursor->next;
       }
 
-      if(ISNOTNULLPTR(cursor)) {
+      if(NOTNULLPTR(cursor)) {
         RET_OK;
       } else {
         ASSERT;
@@ -717,7 +717,7 @@ static Return_t __TaskListFindTask__(const Task_t *task_) {
 Return_t xTaskResetTimer(Task_t *task_) {
   RET_DEFINE;
 
-  if(ISNOTNULLPTR(task_) && ISNOTNULLPTR(taskList)) {
+  if(NOTNULLPTR(task_) && NOTNULLPTR(taskList)) {
     if(ISOK(__TaskListFindTask__(task_))) {
       task_->timerStartTime = __PortGetSysTicks__();
       RET_OK;
@@ -741,7 +741,7 @@ Return_t xTaskStartScheduler(void) {
   Ticks_t leastRunTime = -1;
 
 
-  if((false == SYSFLAG_RUNNING()) && (ISNOTNULLPTR(taskList))) {
+  if((false == SYSFLAG_RUNNING()) && (NOTNULLPTR(taskList))) {
     while(SchedulerStateRunning == schedulerState) {
       if(SYSFLAG_OVERFLOW()) {
         __RunTimeReset__();
@@ -749,7 +749,7 @@ Return_t xTaskStartScheduler(void) {
 
       cursor = taskList->head;
 
-      while(ISNOTNULLPTR(cursor)) {
+      while(NOTNULLPTR(cursor)) {
         if((TaskStateWaiting == cursor->state) && (zero < cursor->notificationBytes)) {
           __TaskRun__(cursor);
         } else if((TaskStateWaiting == cursor->state) && (zero < cursor->timerPeriod) && ((__PortGetSysTicks__() - cursor->timerStartTime) >
@@ -764,7 +764,7 @@ Return_t xTaskStartScheduler(void) {
         cursor = cursor->next;
       }
 
-      if(ISNOTNULLPTR(runTask)) {
+      if(NOTNULLPTR(runTask)) {
         __TaskRun__(runTask);
         runTask = null;
       }
@@ -788,7 +788,7 @@ static void __RunTimeReset__(void) {
 
   cursor = taskList->head;
 
-  while(ISNOTNULLPTR(cursor)) {
+  while(NOTNULLPTR(cursor)) {
     cursor->totalRunTime = cursor->lastRunTime;
     cursor = cursor->next;
   }
@@ -829,7 +829,7 @@ static void __TaskRun__(Task_t *task_) {
 Return_t xTaskResumeAll(void) {
   RET_DEFINE;
 
-  if(ISNOTNULLPTR(taskList)) {
+  if(NOTNULLPTR(taskList)) {
     schedulerState = SchedulerStateRunning;
     RET_OK;
   } else {
@@ -843,7 +843,7 @@ Return_t xTaskResumeAll(void) {
 Return_t xTaskSuspendAll(void) {
   RET_DEFINE;
 
-  if(ISNOTNULLPTR(taskList)) {
+  if(NOTNULLPTR(taskList)) {
     schedulerState = SchedulerStateSuspended;
     RET_OK;
   } else {
@@ -857,7 +857,7 @@ Return_t xTaskSuspendAll(void) {
 Return_t xTaskGetSchedulerState(SchedulerState_t *state_) {
   RET_DEFINE;
 
-  if(ISNOTNULLPTR(taskList)) {
+  if(NOTNULLPTR(taskList)) {
     *state_ = schedulerState;
     RET_OK;
   } else {
@@ -871,7 +871,7 @@ Return_t xTaskGetSchedulerState(SchedulerState_t *state_) {
 Return_t xTaskGetWDPeriod(const Task_t *task_, Ticks_t *period_) {
   RET_DEFINE;
 
-  if(ISNOTNULLPTR(task_) && ISNOTNULLPTR(period_) && ISNOTNULLPTR(taskList)) {
+  if(NOTNULLPTR(task_) && NOTNULLPTR(period_) && NOTNULLPTR(taskList)) {
     if(ISOK(__TaskListFindTask__(task_))) {
       *period_ = task_->wdTimerPeriod;
       RET_OK;
