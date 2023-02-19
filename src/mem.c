@@ -275,7 +275,7 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
   HalfWord_t fewest = -1;
   MemoryEntry_t *cursor = null;
   MemoryEntry_t *candidate = null;
-  MemoryEntry_t *candidateNext = null;
+  MemoryEntry_t *next = null;
 
 
   DISABLE_INTERRUPTS();
@@ -351,12 +351,12 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
         if((region_->entrySize + 1) <= (candidate->blocks - requested)) {
           /* This block of code splits the block in two and uses the first of
            * the two blocks for the requested memory. */
-          candidateNext = candidate->next;
+          next = candidate->next;
           candidate->next = (MemoryEntry_t *) ((Byte_t *) candidate + (requested * CONFIG_MEMORY_REGION_BLOCK_SIZE));
           candidate->next->magic = CALCMAGIC(candidate->next);
           candidate->next->free = true;
           candidate->next->blocks = candidate->blocks - requested;
-          candidate->next->next = candidateNext;
+          candidate->next->next = next;
 
 
           /* We split the unneeded blocks off into a new entry, now let's mark
