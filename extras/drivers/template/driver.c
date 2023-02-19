@@ -25,23 +25,16 @@
  *
  */
 /*UNCRUSTIFY-ON*/
-#include "loopback.h"
-
-
+#include "driver.h"
 /*UNCRUSTIFY-OFF*/
 
 
-#define BUFFER_LENGTH 0xFFu
-static Byte_t loopback_buffer[BUFFER_LENGTH];
-static HalfWord_t loopback_buffer_size = zero;
-
-
 Return_t TO_FUNCTION(DEVICE_NAME, _self_register)(void) {
-  /* DO NOT MODIFY THIS FUNCTION */
+  /* DO NOT MODIFY THIS SYSCALL */
   RET_DEFINE;
 
-  if(OK(__RegisterDevice__(DEVICE_UID, (Byte_t *) TO_LITERAL(DEVICE_NAME), DEVICE_STATE, DEVICE_MODE, TO_FUNCTION(DEVICE_NAME, _init), TO_FUNCTION(
-      DEVICE_NAME, _config), TO_FUNCTION(DEVICE_NAME, _read), TO_FUNCTION(DEVICE_NAME, _write), TO_FUNCTION(DEVICE_NAME, _simple_read), TO_FUNCTION(DEVICE_NAME,
+  if(OK(__RegisterDevice__(DEVICE_UID, (Byte_t *) TO_LITERAL(DEVICE_NAME), DEVICE_STATE, DEVICE_MODE, TO_FUNCTION(DEVICE_NAME, _init), TO_FUNCTION(DEVICE_NAME,
+    _config), TO_FUNCTION(DEVICE_NAME, _read), TO_FUNCTION(DEVICE_NAME, _write), TO_FUNCTION(DEVICE_NAME, _simple_read), TO_FUNCTION(DEVICE_NAME,
     _simple_write)))) {
     RET_OK;
   } else {
@@ -49,18 +42,17 @@ Return_t TO_FUNCTION(DEVICE_NAME, _self_register)(void) {
   }
 
   RET_RETURN;
+  /* DO NOT MODIFY THIS SYSCALL */
 }
 
 
 Return_t TO_FUNCTION(DEVICE_NAME, _init)(Device_t * device_) {
   RET_DEFINE;
 
-  if(OK(__memset__(loopback_buffer, zero, BUFFER_LENGTH))) {
-    device_->available = false;
-    RET_OK;
-  } else {
-    ASSERT;
-  }
+
+  /* INSERT DEVICE DRIVER CODE HERE CALL RET_OK IF SYSCALL WAS SUCCESSFUL BEFORE
+   * RETURNING. */
+
 
   RET_RETURN;
 }
@@ -70,8 +62,10 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t * device_, Size_t *size_, Ad
   RET_DEFINE;
 
 
-  /* INSERT DEVICE DRIVER CODE HERE CALL RET_OK IF SYSTEM CALL WAS
-   * SUCCESSFUL BEFORE RETURNING. */
+  /* INSERT DEVICE DRIVER CODE HERE CALL RET_OK IF SYSCALL WAS SUCCESSFUL BEFORE
+   * RETURNING. */
+
+
   RET_RETURN;
 }
 
@@ -79,13 +73,10 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t * device_, Size_t *size_, Ad
 Return_t TO_FUNCTION(DEVICE_NAME, _read)(Device_t * device_, Size_t *size_, Addr_t *data_) {
   RET_DEFINE;
 
-  if(OK(__memcpy__(data_, loopback_buffer, *size_))) {
-    *size_ = loopback_buffer_size;
-    device_->available = false;
-    RET_OK;
-  } else {
-    ASSERT;
-  }
+
+  /* INSERT DEVICE DRIVER CODE HERE CALL RET_OK IF SYSCALL WAS SUCCESSFUL BEFORE
+   * RETURNING. */
+
 
   RET_RETURN;
 }
@@ -94,13 +85,10 @@ Return_t TO_FUNCTION(DEVICE_NAME, _read)(Device_t * device_, Size_t *size_, Addr
 Return_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t * device_, Size_t *size_, Addr_t *data_) {
   RET_DEFINE;
 
-  if(OK(__memcpy__(loopback_buffer, data_, *size_))) {
-    loopback_buffer_size = *size_;
-    device_->available = true;
-    RET_OK;
-  } else {
-    ASSERT;
-  }
+
+  /* INSERT DEVICE DRIVER CODE HERE CALL RET_OK IF SYSCALL WAS SUCCESSFUL BEFORE
+   * RETURNING. */
+
 
   RET_RETURN;
 }
@@ -109,12 +97,10 @@ Return_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t * device_, Size_t *size_, Add
 Return_t TO_FUNCTION(DEVICE_NAME, _simple_read)(Device_t * device_, Word_t *data_) {
   RET_DEFINE;
 
-  if(OK(__memcpy__(data_, loopback_buffer, sizeof(Word_t)))) {
-    device_->available = false;
-    RET_OK;
-  } else {
-    ASSERT;
-  }
+
+  /* INSERT DEVICE DRIVER CODE HERE CALL RET_OK IF SYSCALL WAS SUCCESSFUL BEFORE
+   * RETURNING. */
+
 
   RET_RETURN;
 }
@@ -123,12 +109,10 @@ Return_t TO_FUNCTION(DEVICE_NAME, _simple_read)(Device_t * device_, Word_t *data
 Return_t TO_FUNCTION(DEVICE_NAME, _simple_write)(Device_t * device_, Word_t *data_) {
   RET_DEFINE;
 
-  if(OK(__memcpy__(loopback_buffer, data_, sizeof(Word_t)))) {
-    device_->available = true;
-    RET_OK;
-  } else {
-    ASSERT;
-  }
+
+  /* INSERT DEVICE DRIVER CODE HERE CALL RET_OK IF SYSCALL WAS SUCCESSFUL BEFORE
+   * RETURNING. */
+
 
   RET_RETURN;
 }
