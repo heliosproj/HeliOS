@@ -196,7 +196,7 @@ static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, co
             ASSERT;
 
 
-            /* Set the memfault sysflag to true because the address we just
+            /* Set the memfault flag to true because the address we just
              * checked does *NOT* have the correct magic value. Something is
              * wrong! */
             FLAG_MEMFAULT() = true;
@@ -206,7 +206,7 @@ static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, co
           ASSERT;
 
 
-          /* Set the memfault sysflag to true because the address we just
+          /* Set the memfault flag to true because the address we just
            * checked is *NOT* inside the memory region. Something is wrong! */
           FLAG_MEMFAULT() = true;
           break;
@@ -227,7 +227,7 @@ static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, co
         ASSERT;
 
 
-        /* Set the memfault sysflag to true because the number of blocks visited
+        /* Set the memfault flag to true because the number of blocks visited
          * does not match the number of blocks the memory region *SHOULD* have.
          */
         FLAG_MEMFAULT() = true;
