@@ -81,8 +81,7 @@ Return_t xStreamSend(StreamBuffer_t *stream_, const Byte_t byte_) {
 Return_t xStreamReceive(const StreamBuffer_t *stream_, HalfWord_t *bytes_, Byte_t **data_) {
   RET_DEFINE;
 
-  if(ISNOTNULLPTR(stream_) && ISNOTNULLPTR(bytes_) && ISNOTNULLPTR(data_) && ISOK(__MemoryRegionCheckKernel__(stream_,
-    MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
+  if(ISNOTNULLPTR(stream_) && ISNOTNULLPTR(bytes_) && ISNOTNULLPTR(data_) && ISOK(__MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
     if(zero < stream_->length) {
       if(ISOK(__HeapAllocateMemory__((volatile Addr_t **) data_, stream_->length * sizeof(Byte_t)))) {
         if(ISNOTNULLPTR(*data_)) {
