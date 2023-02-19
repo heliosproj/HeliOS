@@ -133,7 +133,7 @@ Return_t xDeviceIsAvailable(const HalfWord_t uid_, Base_t *res_) {
   Device_t *device = null;
 
 
-  if((zero < uid_) && NOTNULLPTR(res_)) {
+  if((zero < uid_) && NOTNULLPTR(res_) && (NOTNULLPTR(dlist))) {
     if(OK(__DeviceListFind__(uid_, &device))) {
       if(NOTNULLPTR(device)) {
         *res_ = device->available;
@@ -160,7 +160,7 @@ Return_t xDeviceSimpleWrite(const HalfWord_t uid_, Word_t *data_) {
   Word_t *data = null;
 
 
-  if((zero < uid_) && (NOTNULLPTR(data_)) && (OK(__MemoryRegionCheckHeap__(data_, MEMORY_REGION_CHECK_OPTION_W_ADDR)))) {
+  if((zero < uid_) && (NOTNULLPTR(data_)) && (NOTNULLPTR(dlist)) && (OK(__MemoryRegionCheckHeap__(data_, MEMORY_REGION_CHECK_OPTION_W_ADDR)))) {
     if(OK(__DeviceListFind__(uid_, &device))) {
       if(NOTNULLPTR(device)) {
         if(((DeviceModeReadWrite == device->mode) || (DeviceModeWriteOnly == device->mode)) && (DeviceStateRunning == device->state)) {
@@ -211,7 +211,7 @@ Return_t xDeviceWrite(const HalfWord_t uid_, Size_t *size_, Addr_t *data_) {
   Byte_t *data = null;
 
 
-  if((zero < uid_) && (NOTNULLPTR(size_)) && (zero < *size_) && (NOTNULLPTR(data_)) && (OK(__MemoryRegionCheckHeap__(data_,
+  if((zero < uid_) && (NOTNULLPTR(size_)) && (zero < *size_) && (NOTNULLPTR(data_)) && NOTNULLPTR(dlist) && (OK(__MemoryRegionCheckHeap__(data_,
     MEMORY_REGION_CHECK_OPTION_W_ADDR)))) {
     if(OK(__DeviceListFind__(uid_, &device))) {
       if(NOTNULLPTR(device)) {
@@ -263,7 +263,7 @@ Return_t xDeviceSimpleRead(const HalfWord_t uid_, Word_t *data_) {
   Word_t *data = null;
 
 
-  if((zero < uid_) && (NOTNULLPTR(data_)) && (OK(__MemoryRegionCheckHeap__(data_, MEMORY_REGION_CHECK_OPTION_W_ADDR)))) {
+  if((zero < uid_) && (NOTNULLPTR(data_)) && (NOTNULLPTR(dlist)) && (OK(__MemoryRegionCheckHeap__(data_, MEMORY_REGION_CHECK_OPTION_W_ADDR)))) {
     if(OK(__DeviceListFind__(uid_, &device))) {
       if(NOTNULLPTR(device)) {
         if(((DeviceModeReadWrite == device->mode) || (DeviceModeReadOnly == device->mode)) && (DeviceStateRunning == device->state)) {
@@ -314,7 +314,7 @@ Return_t xDeviceRead(const HalfWord_t uid_, Size_t *size_, Addr_t *data_) {
   Byte_t *data = null;
 
 
-  if((zero < uid_) && (NOTNULLPTR(size_)) && (zero < *size_) && (NOTNULLPTR(data_)) && (OK(__MemoryRegionCheckHeap__(data_,
+  if((zero < uid_) && (NOTNULLPTR(size_)) && (zero < *size_) && (NOTNULLPTR(data_)) && (NOTNULLPTR(dlist)) && (OK(__MemoryRegionCheckHeap__(data_,
     MEMORY_REGION_CHECK_OPTION_W_ADDR)))) {
     if(OK(__DeviceListFind__(uid_, &device))) {
       if(NOTNULLPTR(device)) {
@@ -365,7 +365,7 @@ static Return_t __DeviceListFind__(const HalfWord_t uid_, Device_t **device_) {
   Device_t *cursor = null;
 
 
-  if(NOTNULLPTR(device_) && NOTNULLPTR(dlist) && (zero < uid_)) {
+  if((zero < uid_) && (NOTNULLPTR(device_)) && (NOTNULLPTR(dlist))) {
     cursor = dlist->head;
 
     while((NOTNULLPTR(cursor)) && (cursor->uid != uid_)) {
@@ -393,7 +393,7 @@ Return_t xDeviceInitDevice(const HalfWord_t uid_) {
   Device_t *device = null;
 
 
-  if(zero < uid_) {
+  if((zero < uid_) && (NOTNULLPTR(dlist))) {
     if(OK(__DeviceListFind__(uid_, &device))) {
       if(NOTNULLPTR(device)) {
         if(OK((*device->init)(device))) {
@@ -423,7 +423,8 @@ Return_t xDeviceConfigDevice(const HalfWord_t uid_, Size_t *size_, Addr_t *confi
   Addr_t *config = null;
 
 
-  if((zero < uid_) && (zero < *size_) && (NOTNULLPTR(config_)) && (OK(__MemoryRegionCheckHeap__(config_, MEMORY_REGION_CHECK_OPTION_W_ADDR)))) {
+  if((zero < uid_) && (zero < *size_) && (NOTNULLPTR(config_)) && (NOTNULLPTR(dlist)) && (OK(__MemoryRegionCheckHeap__(config_,
+    MEMORY_REGION_CHECK_OPTION_W_ADDR)))) {
     if(OK(__DeviceListFind__(uid_, &device))) {
       if(NOTNULLPTR(device)) {
         if(OK(__KernelAllocateMemory__((volatile Addr_t **) &config, *size_))) {
