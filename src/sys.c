@@ -44,7 +44,7 @@
  * Thank you Ken Thompson and Dennis Ritchie (R.I.P.)
  * for UNIX and inspiring the computer scientist in me.
  *
- * /
+ */
 /*UNCRUSTIFY-ON*/
 Flags_t flags;
 
