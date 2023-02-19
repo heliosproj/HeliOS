@@ -35,7 +35,7 @@ Return_t xDeviceRegisterDevice(Return_t (*device_self_register_)()) {
   RET_DEFINE;
 
   if(ISNOTNULLPTR(device_self_register_)) {
-    if(ISSUCCESSFUL((*device_self_register_)())) {
+    if(ISOK((*device_self_register_)())) {
       RET_SUCCESS;
     } else {
       ASSERT;
@@ -62,18 +62,18 @@ Return_t __RegisterDevice__(const HalfWord_t uid_, const Byte_t *name_, const De
   if(((zero < uid_) && (ISNOTNULLPTR(name_)) && (ISNOTNULLPTR(init_)) && (ISNOTNULLPTR(config_)) && (ISNOTNULLPTR(read_)) && (ISNOTNULLPTR(write_)) &&
     (ISNOTNULLPTR(simple_read_)) && (ISNOTNULLPTR(simple_write_)) && (ISNOTNULLPTR(deviceList))) || ((zero < uid_) && (ISNOTNULLPTR(name_)) && (ISNOTNULLPTR(
       init_)) && (ISNOTNULLPTR(config_)) && (ISNOTNULLPTR(read_)) && (ISNOTNULLPTR(write_)) && (ISNOTNULLPTR(simple_read_)) && (ISNOTNULLPTR(simple_write_)) &&
-    (ISNULLPTR(deviceList)) && (ISSUCCESSFUL(__KernelAllocateMemory__((volatile Addr_t **) &deviceList, sizeof(DeviceList_t)))))) {
+    (ISNULLPTR(deviceList)) && (ISOK(__KernelAllocateMemory__((volatile Addr_t **) &deviceList, sizeof(DeviceList_t)))))) {
     if(ISNOTNULLPTR(deviceList)) {
       /* We are expecting *NOT* to find the device UID in the device list. This
        * is to confirm there isn't already a device with the same UID already
        * registered. */
-      if(!ISSUCCESSFUL(__DeviceListFind__(uid_, &device))) {
+      if(!ISOK(__DeviceListFind__(uid_, &device))) {
         /* Likewise this should be null since we expected __DeviceListFind()
          * will *NOT* find a device by that UID. */
         if(ISNULLPTR(device)) {
-          if(ISSUCCESSFUL(__KernelAllocateMemory__((volatile Addr_t **) &device, sizeof(Device_t)))) {
+          if(ISOK(__KernelAllocateMemory__((volatile Addr_t **) &device, sizeof(Device_t)))) {
             if(ISNOTNULLPTR(device)) {
-              if(ISSUCCESSFUL(__memcpy__(device->name, name_, CONFIG_DEVICE_NAME_BYTES))) {
+              if(ISOK(__memcpy__(device->name, name_, CONFIG_DEVICE_NAME_BYTES))) {
                 device->uid = uid_;
                 device->state = state_;
                 device->mode = mode_;
@@ -134,7 +134,7 @@ Return_t xDeviceIsAvailable(const HalfWord_t uid_, Base_t *res_) {
 
 
   if((zero < uid_) && ISNOTNULLPTR(res_)) {
-    if(ISSUCCESSFUL(__DeviceListFind__(uid_, &device))) {
+    if(ISOK(__DeviceListFind__(uid_, &device))) {
       if(ISNOTNULLPTR(device)) {
         *res_ = device->available;
         RET_SUCCESS;
@@ -160,15 +160,15 @@ Return_t xDeviceSimpleWrite(const HalfWord_t uid_, Word_t *data_) {
   Word_t *data = null;
 
 
-  if((zero < uid_) && (ISNOTNULLPTR(data_)) && (ISSUCCESSFUL(__MemoryRegionCheckHeap__(data_, MEMORY_REGION_CHECK_OPTION_W_ADDR)))) {
-    if(ISSUCCESSFUL(__DeviceListFind__(uid_, &device))) {
+  if((zero < uid_) && (ISNOTNULLPTR(data_)) && (ISOK(__MemoryRegionCheckHeap__(data_, MEMORY_REGION_CHECK_OPTION_W_ADDR)))) {
+    if(ISOK(__DeviceListFind__(uid_, &device))) {
       if(ISNOTNULLPTR(device)) {
         if(((DeviceModeReadWrite == device->mode) || (DeviceModeWriteOnly == device->mode)) && (DeviceStateRunning == device->state)) {
-          if(ISSUCCESSFUL(__KernelAllocateMemory__((volatile Addr_t **) &data, sizeof(Word_t)))) {
+          if(ISOK(__KernelAllocateMemory__((volatile Addr_t **) &data, sizeof(Word_t)))) {
             if(ISNOTNULLPTR(data)) {
-              if(ISSUCCESSFUL(__memcpy__(data, data_, sizeof(Word_t)))) {
-                if(ISSUCCESSFUL((*device->simple_write)(device, data))) {
-                  if(ISSUCCESSFUL(__KernelFreeMemory__(data))) {
+              if(ISOK(__memcpy__(data, data_, sizeof(Word_t)))) {
+                if(ISOK((*device->simple_write)(device, data))) {
+                  if(ISOK(__KernelFreeMemory__(data))) {
                     device->bytesWritten += sizeof(Word_t);
                     RET_SUCCESS;
                   } else {
@@ -211,16 +211,16 @@ Return_t xDeviceWrite(const HalfWord_t uid_, Size_t *size_, Addr_t *data_) {
   Byte_t *data = null;
 
 
-  if((zero < uid_) && (ISNOTNULLPTR(size_)) && (zero < *size_) && (ISNOTNULLPTR(data_)) && (ISSUCCESSFUL(__MemoryRegionCheckHeap__(data_,
+  if((zero < uid_) && (ISNOTNULLPTR(size_)) && (zero < *size_) && (ISNOTNULLPTR(data_)) && (ISOK(__MemoryRegionCheckHeap__(data_,
     MEMORY_REGION_CHECK_OPTION_W_ADDR)))) {
-    if(ISSUCCESSFUL(__DeviceListFind__(uid_, &device))) {
+    if(ISOK(__DeviceListFind__(uid_, &device))) {
       if(ISNOTNULLPTR(device)) {
         if(((DeviceModeReadWrite == device->mode) || (DeviceModeWriteOnly == device->mode)) && (DeviceStateRunning == device->state)) {
-          if(ISSUCCESSFUL(__KernelAllocateMemory__((volatile Addr_t **) &data, *size_))) {
+          if(ISOK(__KernelAllocateMemory__((volatile Addr_t **) &data, *size_))) {
             if(ISNOTNULLPTR(data)) {
-              if(ISSUCCESSFUL(__memcpy__(data, data_, *size_))) {
-                if(ISSUCCESSFUL((*device->write)(device, size_, data))) {
-                  if(ISSUCCESSFUL(__KernelFreeMemory__(data))) {
+              if(ISOK(__memcpy__(data, data_, *size_))) {
+                if(ISOK((*device->write)(device, size_, data))) {
+                  if(ISOK(__KernelFreeMemory__(data))) {
                     device->bytesWritten += *size_;
                     RET_SUCCESS;
                   } else {
@@ -263,15 +263,15 @@ Return_t xDeviceSimpleRead(const HalfWord_t uid_, Word_t *data_) {
   Word_t *data = null;
 
 
-  if((zero < uid_) && (ISNOTNULLPTR(data_)) && (ISSUCCESSFUL(__MemoryRegionCheckHeap__(data_, MEMORY_REGION_CHECK_OPTION_W_ADDR)))) {
-    if(ISSUCCESSFUL(__DeviceListFind__(uid_, &device))) {
+  if((zero < uid_) && (ISNOTNULLPTR(data_)) && (ISOK(__MemoryRegionCheckHeap__(data_, MEMORY_REGION_CHECK_OPTION_W_ADDR)))) {
+    if(ISOK(__DeviceListFind__(uid_, &device))) {
       if(ISNOTNULLPTR(device)) {
         if(((DeviceModeReadWrite == device->mode) || (DeviceModeReadOnly == device->mode)) && (DeviceStateRunning == device->state)) {
-          if(ISSUCCESSFUL(__KernelAllocateMemory__((volatile Addr_t **) &data, sizeof(Word_t)))) {
+          if(ISOK(__KernelAllocateMemory__((volatile Addr_t **) &data, sizeof(Word_t)))) {
             if(ISNOTNULLPTR(data)) {
-              if(ISSUCCESSFUL((*device->simple_read)(device, data))) {
-                if(ISSUCCESSFUL(__memcpy__(data_, data, sizeof(Word_t)))) {
-                  if(ISSUCCESSFUL(__KernelFreeMemory__(data))) {
+              if(ISOK((*device->simple_read)(device, data))) {
+                if(ISOK(__memcpy__(data_, data, sizeof(Word_t)))) {
+                  if(ISOK(__KernelFreeMemory__(data))) {
                     device->bytesRead += sizeof(Word_t);
                     RET_SUCCESS;
                   } else {
@@ -314,16 +314,16 @@ Return_t xDeviceRead(const HalfWord_t uid_, Size_t *size_, Addr_t *data_) {
   Byte_t *data = null;
 
 
-  if((zero < uid_) && (ISNOTNULLPTR(size_)) && (zero < *size_) && (ISNOTNULLPTR(data_)) && (ISSUCCESSFUL(__MemoryRegionCheckHeap__(data_,
+  if((zero < uid_) && (ISNOTNULLPTR(size_)) && (zero < *size_) && (ISNOTNULLPTR(data_)) && (ISOK(__MemoryRegionCheckHeap__(data_,
     MEMORY_REGION_CHECK_OPTION_W_ADDR)))) {
-    if(ISSUCCESSFUL(__DeviceListFind__(uid_, &device))) {
+    if(ISOK(__DeviceListFind__(uid_, &device))) {
       if(ISNOTNULLPTR(device)) {
         if(((DeviceModeReadWrite == device->mode) || (DeviceModeReadOnly == device->mode)) && (DeviceStateRunning == device->state)) {
-          if(ISSUCCESSFUL(__KernelAllocateMemory__((volatile Addr_t **) &data, *size_))) {
+          if(ISOK(__KernelAllocateMemory__((volatile Addr_t **) &data, *size_))) {
             if(ISNOTNULLPTR(data)) {
-              if(ISSUCCESSFUL((*device->read)(device, size_, data))) {
-                if(ISSUCCESSFUL(__memcpy__(data_, data, *size_))) {
-                  if(ISSUCCESSFUL(__KernelFreeMemory__(data))) {
+              if(ISOK((*device->read)(device, size_, data))) {
+                if(ISOK(__memcpy__(data_, data, *size_))) {
+                  if(ISOK(__KernelFreeMemory__(data))) {
                     device->bytesRead += *size_;
                     RET_SUCCESS;
                   } else {
@@ -394,9 +394,9 @@ Return_t xDeviceInitDevice(const HalfWord_t uid_) {
 
 
   if(zero < uid_) {
-    if(ISSUCCESSFUL(__DeviceListFind__(uid_, &device))) {
+    if(ISOK(__DeviceListFind__(uid_, &device))) {
       if(ISNOTNULLPTR(device)) {
-        if(ISSUCCESSFUL((*device->init)(device))) {
+        if(ISOK((*device->init)(device))) {
           RET_SUCCESS;
         } else {
           ASSERT;
@@ -423,15 +423,15 @@ Return_t xDeviceConfigDevice(const HalfWord_t uid_, Size_t *size_, Addr_t *confi
   Addr_t *config = null;
 
 
-  if((zero < uid_) && (zero < *size_) && (ISNOTNULLPTR(config_)) && (ISSUCCESSFUL(__MemoryRegionCheckHeap__(config_, MEMORY_REGION_CHECK_OPTION_W_ADDR)))) {
-    if(ISSUCCESSFUL(__DeviceListFind__(uid_, &device))) {
+  if((zero < uid_) && (zero < *size_) && (ISNOTNULLPTR(config_)) && (ISOK(__MemoryRegionCheckHeap__(config_, MEMORY_REGION_CHECK_OPTION_W_ADDR)))) {
+    if(ISOK(__DeviceListFind__(uid_, &device))) {
       if(ISNOTNULLPTR(device)) {
-        if(ISSUCCESSFUL(__KernelAllocateMemory__((volatile Addr_t **) &config, *size_))) {
+        if(ISOK(__KernelAllocateMemory__((volatile Addr_t **) &config, *size_))) {
           if(ISNOTNULLPTR(config)) {
-            if(ISSUCCESSFUL(__memcpy__(config, config_, *size_))) {
-              if(ISSUCCESSFUL((*device->config)(device, size_, config))) {
-                if(ISSUCCESSFUL(__memcpy__(config_, config, *size_))) {
-                  if(ISSUCCESSFUL(__KernelFreeMemory__(config))) {
+            if(ISOK(__memcpy__(config, config_, *size_))) {
+              if(ISOK((*device->config)(device, size_, config))) {
+                if(ISOK(__memcpy__(config_, config, *size_))) {
+                  if(ISOK(__KernelFreeMemory__(config))) {
                     RET_SUCCESS;
                   } else {
                     ASSERT;

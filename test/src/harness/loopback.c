@@ -40,7 +40,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _self_register)(void) {
   /* DO NOT MODIFY THIS FUNCTION */
   RET_DEFINE;
 
-  if(ISSUCCESSFUL(__RegisterDevice__(DEVICE_UID, (Byte_t *) TO_LITERAL(DEVICE_NAME), DEVICE_STATE, DEVICE_MODE, TO_FUNCTION(DEVICE_NAME, _init), TO_FUNCTION(
+  if(ISOK(__RegisterDevice__(DEVICE_UID, (Byte_t *) TO_LITERAL(DEVICE_NAME), DEVICE_STATE, DEVICE_MODE, TO_FUNCTION(DEVICE_NAME, _init), TO_FUNCTION(
       DEVICE_NAME, _config), TO_FUNCTION(DEVICE_NAME, _read), TO_FUNCTION(DEVICE_NAME, _write), TO_FUNCTION(DEVICE_NAME, _simple_read), TO_FUNCTION(DEVICE_NAME,
     _simple_write)))) {
     RET_SUCCESS;
@@ -55,7 +55,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _self_register)(void) {
 Return_t TO_FUNCTION(DEVICE_NAME, _init)(Device_t * device_) {
   RET_DEFINE;
 
-  if(ISSUCCESSFUL(__memset__(loopback_buffer, zero, BUFFER_LENGTH))) {
+  if(ISOK(__memset__(loopback_buffer, zero, BUFFER_LENGTH))) {
     device_->available = false;
     RET_SUCCESS;
   } else {
@@ -79,7 +79,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t * device_, Size_t *size_, Ad
 Return_t TO_FUNCTION(DEVICE_NAME, _read)(Device_t * device_, Size_t *size_, Addr_t *data_) {
   RET_DEFINE;
 
-  if(ISSUCCESSFUL(__memcpy__(data_, loopback_buffer, *size_))) {
+  if(ISOK(__memcpy__(data_, loopback_buffer, *size_))) {
     *size_ = loopback_buffer_size;
     device_->available = false;
     RET_SUCCESS;
@@ -94,7 +94,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _read)(Device_t * device_, Size_t *size_, Addr
 Return_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t * device_, Size_t *size_, Addr_t *data_) {
   RET_DEFINE;
 
-  if(ISSUCCESSFUL(__memcpy__(loopback_buffer, data_, *size_))) {
+  if(ISOK(__memcpy__(loopback_buffer, data_, *size_))) {
     loopback_buffer_size = *size_;
     device_->available = true;
     RET_SUCCESS;
@@ -109,7 +109,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t * device_, Size_t *size_, Add
 Return_t TO_FUNCTION(DEVICE_NAME, _simple_read)(Device_t * device_, Word_t *data_) {
   RET_DEFINE;
 
-  if(ISSUCCESSFUL(__memcpy__(data_, loopback_buffer, sizeof(Word_t)))) {
+  if(ISOK(__memcpy__(data_, loopback_buffer, sizeof(Word_t)))) {
     device_->available = false;
     RET_SUCCESS;
   } else {
@@ -123,7 +123,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _simple_read)(Device_t * device_, Word_t *data
 Return_t TO_FUNCTION(DEVICE_NAME, _simple_write)(Device_t * device_, Word_t *data_) {
   RET_DEFINE;
 
-  if(ISSUCCESSFUL(__memcpy__(loopback_buffer, data_, sizeof(Word_t)))) {
+  if(ISOK(__memcpy__(loopback_buffer, data_, sizeof(Word_t)))) {
     device_->available = true;
     RET_SUCCESS;
   } else {

@@ -181,10 +181,10 @@
   #define RET_SUCCESS ret = ReturnOK
 
 
-  #if defined(ISSUCCESSFUL)
-    #undef ISSUCCESSFUL
-  #endif /* if defined(ISSUCCESSFUL) */
-  #define ISSUCCESSFUL(expr_) ((ReturnOK) == (expr_))
+  #if defined(ISOK)
+    #undef ISOK
+  #endif /* if defined(ISOK) */
+  #define ISOK(expr_) ((ReturnOK) == (expr_))
 
 
   #if defined(ASSERT)

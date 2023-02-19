@@ -31,7 +31,7 @@
 Return_t xStreamCreate(StreamBuffer_t **stream_) {
   RET_DEFINE;
 
-  if(ISNOTNULLPTR(stream_) && ISSUCCESSFUL(__KernelAllocateMemory__((volatile Addr_t **) stream_, sizeof(StreamBuffer_t)))) {
+  if(ISNOTNULLPTR(stream_) && ISOK(__KernelAllocateMemory__((volatile Addr_t **) stream_, sizeof(StreamBuffer_t)))) {
     if(ISNOTNULLPTR(*stream_)) {
       (*stream_)->length = zero;
       RET_SUCCESS;
@@ -49,8 +49,8 @@ Return_t xStreamCreate(StreamBuffer_t **stream_) {
 Return_t xStreamDelete(const StreamBuffer_t *stream_) {
   RET_DEFINE;
 
-  if(ISNOTNULLPTR(stream_) && ISSUCCESSFUL(__MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
-    if(ISSUCCESSFUL(__KernelFreeMemory__(stream_))) {
+  if(ISNOTNULLPTR(stream_) && ISOK(__MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
+    if(ISOK(__KernelFreeMemory__(stream_))) {
       RET_SUCCESS;
     } else {
       ASSERT;
@@ -66,7 +66,7 @@ Return_t xStreamDelete(const StreamBuffer_t *stream_) {
 Return_t xStreamSend(StreamBuffer_t *stream_, const Byte_t byte_) {
   RET_DEFINE;
 
-  if(ISNOTNULLPTR(stream_) && ISSUCCESSFUL(__MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
+  if(ISNOTNULLPTR(stream_) && ISOK(__MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
     if(CONFIG_STREAM_BUFFER_BYTES > stream_->length) {
       stream_->buffer[stream_->length] = byte_;
       stream_->length++;
@@ -81,15 +81,15 @@ Return_t xStreamSend(StreamBuffer_t *stream_, const Byte_t byte_) {
 Return_t xStreamReceive(const StreamBuffer_t *stream_, HalfWord_t *bytes_, Byte_t **data_) {
   RET_DEFINE;
 
-  if(ISNOTNULLPTR(stream_) && ISNOTNULLPTR(bytes_) && ISNOTNULLPTR(data_) && ISSUCCESSFUL(__MemoryRegionCheckKernel__(stream_,
+  if(ISNOTNULLPTR(stream_) && ISNOTNULLPTR(bytes_) && ISNOTNULLPTR(data_) && ISOK(__MemoryRegionCheckKernel__(stream_,
     MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
     if(zero < stream_->length) {
-      if(ISSUCCESSFUL(__HeapAllocateMemory__((volatile Addr_t **) data_, stream_->length * sizeof(Byte_t)))) {
+      if(ISOK(__HeapAllocateMemory__((volatile Addr_t **) data_, stream_->length * sizeof(Byte_t)))) {
         if(ISNOTNULLPTR(*data_)) {
           *bytes_ = stream_->length;
 
-          if(ISSUCCESSFUL(__memcpy__(*data_, stream_->buffer, stream_->length * sizeof(Byte_t)))) {
-            if(ISSUCCESSFUL(__memset__(stream_, zero, sizeof(StreamBuffer_t)))) {
+          if(ISOK(__memcpy__(*data_, stream_->buffer, stream_->length * sizeof(Byte_t)))) {
+            if(ISOK(__memset__(stream_, zero, sizeof(StreamBuffer_t)))) {
               RET_SUCCESS;
             } else {
               ASSERT;
@@ -117,7 +117,7 @@ Return_t xStreamReceive(const StreamBuffer_t *stream_, HalfWord_t *bytes_, Byte_
 Return_t xStreamBytesAvailable(const StreamBuffer_t *stream_, HalfWord_t *bytes_) {
   RET_DEFINE;
 
-  if(ISNOTNULLPTR(stream_) && ISNOTNULLPTR(bytes_) && ISSUCCESSFUL(__MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
+  if(ISNOTNULLPTR(stream_) && ISNOTNULLPTR(bytes_) && ISOK(__MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
     if(zero < stream_->length) {
       *bytes_ = stream_->length;
       RET_SUCCESS;
@@ -135,9 +135,9 @@ Return_t xStreamBytesAvailable(const StreamBuffer_t *stream_, HalfWord_t *bytes_
 Return_t xStreamReset(const StreamBuffer_t *stream_) {
   RET_DEFINE;
 
-  if(ISNOTNULLPTR(stream_) && ISSUCCESSFUL(__MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
+  if(ISNOTNULLPTR(stream_) && ISOK(__MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
     if(zero < stream_->length) {
-      if(ISSUCCESSFUL(__memset__(stream_, zero, sizeof(StreamBuffer_t)))) {
+      if(ISOK(__memset__(stream_, zero, sizeof(StreamBuffer_t)))) {
         RET_SUCCESS;
       } else {
         ASSERT;
@@ -156,7 +156,7 @@ Return_t xStreamReset(const StreamBuffer_t *stream_) {
 Return_t xStreamIsEmpty(const StreamBuffer_t *stream_, Base_t *res_) {
   RET_DEFINE;
 
-  if(ISNOTNULLPTR(stream_) && ISNOTNULLPTR(res_) && ISSUCCESSFUL(__MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
+  if(ISNOTNULLPTR(stream_) && ISNOTNULLPTR(res_) && ISOK(__MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
     if(zero < stream_->length) {
       *res_ = false;
       RET_SUCCESS;
@@ -175,7 +175,7 @@ Return_t xStreamIsEmpty(const StreamBuffer_t *stream_, Base_t *res_) {
 Return_t xStreamIsFull(const StreamBuffer_t *stream_, Base_t *res_) {
   RET_DEFINE;
 
-  if(ISNOTNULLPTR(stream_) && ISNOTNULLPTR(res_) && ISSUCCESSFUL(__MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
+  if(ISNOTNULLPTR(stream_) && ISNOTNULLPTR(res_) && ISOK(__MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
     if(CONFIG_STREAM_BUFFER_BYTES == stream_->length) {
       *res_ = true;
       RET_SUCCESS;
