@@ -235,36 +235,40 @@ Return_t xQueueSend(Queue_t *queue_, const Base_t bytes_, const Byte_t *value_) 
   Message_t *cursor = null;
 
 
-  if(NOTNULLPTR(queue_) && (zero < bytes_) && (CONFIG_MESSAGE_VALUE_BYTES >= bytes_) && (NOTNULLPTR(value_)) && (OK(__MemoryRegionCheckKernel__(queue_,
-    MEMORY_REGION_CHECK_OPTION_W_ADDR)))) {
-    if(false == queue_->locked) {
-      cursor = queue_->head;
+  if(NOTNULLPTR(queue_) && (zero < bytes_) && (CONFIG_MESSAGE_VALUE_BYTES >= bytes_) && (NOTNULLPTR(value_))) {
+    if(OK(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
+      if(false == queue_->locked) {
+        cursor = queue_->head;
 
-      while(NOTNULLPTR(cursor)) {
-        messages++;
-        cursor = cursor->next;
-      }
+        while(NOTNULLPTR(cursor)) {
+          messages++;
+          cursor = cursor->next;
+        }
 
-      if((queue_->limit > queue_->length) && (messages == queue_->length)) {
-        if(OK(__KernelAllocateMemory__((volatile Addr_t **) &message, sizeof(Message_t)))) {
-          if(NOTNULLPTR(message)) {
-            if(OK(__memcpy__(message->messageValue, value_, CONFIG_MESSAGE_VALUE_BYTES))) {
-              message->messageBytes = bytes_;
-              message->next = null;
+        if((queue_->limit > queue_->length) && (messages == queue_->length)) {
+          if(OK(__KernelAllocateMemory__((volatile Addr_t **) &message, sizeof(Message_t)))) {
+            if(NOTNULLPTR(message)) {
+              if(OK(__memcpy__(message->messageValue, value_, CONFIG_MESSAGE_VALUE_BYTES))) {
+                message->messageBytes = bytes_;
+                message->next = null;
 
-              /* If the queue tail is not null then it already contains messages
-               * and append the new message, otherwise set the head and tail to
-               * the new message. */
-              if(NOTNULLPTR(queue_->tail)) {
-                queue_->tail->next = message;
-                queue_->tail = message;
+
+                /* If the queue tail is not null then it already contains
+                 * messages and append the new message, otherwise set the head
+                 * and tail to the new message. */
+                if(NOTNULLPTR(queue_->tail)) {
+                  queue_->tail->next = message;
+                  queue_->tail = message;
+                } else {
+                  queue_->head = message;
+                  queue_->tail = message;
+                }
+
+                queue_->length++;
+                RET_OK;
               } else {
-                queue_->head = message;
-                queue_->tail = message;
+                ASSERT;
               }
-
-              queue_->length++;
-              RET_OK;
             } else {
               ASSERT;
             }
