@@ -32,7 +32,7 @@ static TimerList_t *timerList = null;
 static Return_t __TimerListFindTimer__(const Timer_t *timer_);
 
 
-Return_t xTimerCreate(Timer_t **timer_, const Ticks_t timerPeriod_) {
+Return_t xTimerCreate(Timer_t **timer_, const Ticks_t period_) {
   RET_DEFINE;
 
 
@@ -44,7 +44,7 @@ Return_t xTimerCreate(Timer_t **timer_, const Ticks_t timerPeriod_) {
     if(ISOK(__KernelAllocateMemory__((volatile Addr_t **) timer_, sizeof(Task_t)))) {
       if(ISNOTNULLPTR(*timer_)) {
         (*timer_)->state = TimerStateSuspended;
-        (*timer_)->timerPeriod = timerPeriod_;
+        (*timer_)->timerPeriod = period_;
         (*timer_)->timerStartTime = __PortGetSysTicks__();
         (*timer_)->next = null;
         cursor = timerList->head;
@@ -80,7 +80,7 @@ Return_t xTimerDelete(const Timer_t *timer_) {
 
 
   Timer_t *cursor = null;
-  Timer_t *timerPrevious = null;
+  Timer_t *previous = null;
 
 
   if(ISNOTNULLPTR(timer_) && ISNOTNULLPTR(timerList)) {
@@ -98,12 +98,12 @@ Return_t xTimerDelete(const Timer_t *timer_) {
         }
       } else if((ISNOTNULLPTR(cursor)) && (cursor != timer_)) {
         while((ISNOTNULLPTR(cursor)) && (cursor != timer_)) {
-          timerPrevious = cursor;
+          previous = cursor;
           cursor = cursor->next;
         }
 
         if(ISNOTNULLPTR(cursor)) {
-          timerPrevious->next = cursor->next;
+          previous->next = cursor->next;
 
           if(ISOK(__KernelFreeMemory__(cursor))) {
             timerList->length--;
@@ -128,12 +128,12 @@ Return_t xTimerDelete(const Timer_t *timer_) {
 }
 
 
-Return_t xTimerChangePeriod(Timer_t *timer_, const Ticks_t timerPeriod_) {
+Return_t xTimerChangePeriod(Timer_t *timer_, const Ticks_t period_) {
   RET_DEFINE;
 
   if(ISNOTNULLPTR(timer_) && ISNOTNULLPTR(timerList)) {
     if(ISOK(__TimerListFindTimer__(timer_))) {
-      timer_->timerPeriod = timerPeriod_;
+      timer_->timerPeriod = period_;
       RET_OK;
     } else {
       ASSERT;
@@ -146,12 +146,12 @@ Return_t xTimerChangePeriod(Timer_t *timer_, const Ticks_t timerPeriod_) {
 }
 
 
-Return_t xTimerGetPeriod(const Timer_t *timer_, Ticks_t *timerPeriod_) {
+Return_t xTimerGetPeriod(const Timer_t *timer_, Ticks_t *period_) {
   RET_DEFINE;
 
-  if(ISNOTNULLPTR(timer_) && ISNOTNULLPTR(timerPeriod_) && ISNOTNULLPTR(timerList)) {
+  if(ISNOTNULLPTR(timer_) && ISNOTNULLPTR(period_) && ISNOTNULLPTR(timerList)) {
     if(ISOK(__TimerListFindTimer__(timer_))) {
-      *timerPeriod_ = timer_->timerPeriod;
+      *period_ = timer_->timerPeriod;
       RET_OK;
     } else {
       ASSERT;

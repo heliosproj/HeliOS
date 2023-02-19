@@ -61,15 +61,15 @@
   Return_t xTaskResume(Task_t *task_);
   Return_t xTaskSuspend(Task_t *task_);
   Return_t xTaskWait(Task_t *task_);
-  Return_t xTaskChangePeriod(Task_t *task_, const Ticks_t timerPeriod_);
-  Return_t xTaskChangeWDPeriod(Task_t *task_, const Ticks_t wdTimerPeriod_);
-  Return_t xTaskGetPeriod(const Task_t *task_, Ticks_t *timerPeriod_);
+  Return_t xTaskChangePeriod(Task_t *task_, const Ticks_t period_);
+  Return_t xTaskChangeWDPeriod(Task_t *task_, const Ticks_t period_);
+  Return_t xTaskGetPeriod(const Task_t *task_, Ticks_t *period_);
   Return_t xTaskResetTimer(Task_t *task_);
   Return_t xTaskStartScheduler(void);
   Return_t xTaskResumeAll(void);
   Return_t xTaskSuspendAll(void);
   Return_t xTaskGetSchedulerState(SchedulerState_t *state_);
-  Return_t xTaskGetWDPeriod(const Task_t *task_, Ticks_t *wdTimerPeriod_);
+  Return_t xTaskGetWDPeriod(const Task_t *task_, Ticks_t *period_);
 
 
   #if defined(POSIX_ARCH_OTHER)

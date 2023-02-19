@@ -42,10 +42,10 @@
   #ifdef __cplusplus
     extern "C" {
   #endif /* ifdef __cplusplus */
-  Return_t xTimerCreate(Timer_t **timer_, const Ticks_t timerPeriod_);
+  Return_t xTimerCreate(Timer_t **timer_, const Ticks_t period_);
   Return_t xTimerDelete(const Timer_t *timer_);
-  Return_t xTimerChangePeriod(Timer_t *timer_, const Ticks_t timerPeriod_);
-  Return_t xTimerGetPeriod(const Timer_t *timer_, Ticks_t *timerPeriod_);
+  Return_t xTimerChangePeriod(Timer_t *timer_, const Ticks_t period_);
+  Return_t xTimerGetPeriod(const Timer_t *timer_, Ticks_t *period_);
   Return_t xTimerIsTimerActive(const Timer_t *timer_, Base_t *res_);
   Return_t xTimerHasTimerExpired(const Timer_t *timer_, Base_t *res_);
   Return_t xTimerReset(Timer_t *timer_);

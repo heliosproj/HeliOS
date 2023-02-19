@@ -630,12 +630,12 @@ Return_t xTaskWait(Task_t *task_) {
 }
 
 
-Return_t xTaskChangePeriod(Task_t *task_, const Ticks_t timerPeriod_) {
+Return_t xTaskChangePeriod(Task_t *task_, const Ticks_t period_) {
   RET_DEFINE;
 
   if(ISNOTNULLPTR(task_) && ISNOTNULLPTR(taskList)) {
     if(ISOK(__TaskListFindTask__(task_))) {
-      task_->timerPeriod = timerPeriod_;
+      task_->timerPeriod = period_;
       RET_OK;
     } else {
       ASSERT;
@@ -648,12 +648,12 @@ Return_t xTaskChangePeriod(Task_t *task_, const Ticks_t timerPeriod_) {
 }
 
 
-Return_t xTaskChangeWDPeriod(Task_t *task_, const Ticks_t wdTimerPeriod_) {
+Return_t xTaskChangeWDPeriod(Task_t *task_, const Ticks_t period_) {
   RET_DEFINE;
 
   if(ISNOTNULLPTR(task_) && ISNOTNULLPTR(taskList)) {
     if(ISOK(__TaskListFindTask__(task_))) {
-      task_->wdTimerPeriod = wdTimerPeriod_;
+      task_->wdTimerPeriod = period_;
       RET_OK;
     } else {
       ASSERT;
@@ -666,12 +666,12 @@ Return_t xTaskChangeWDPeriod(Task_t *task_, const Ticks_t wdTimerPeriod_) {
 }
 
 
-Return_t xTaskGetPeriod(const Task_t *task_, Ticks_t *timerPeriod_) {
+Return_t xTaskGetPeriod(const Task_t *task_, Ticks_t *period_) {
   RET_DEFINE;
 
-  if(ISNOTNULLPTR(task_) && ISNOTNULLPTR(timerPeriod_) && ISNOTNULLPTR(taskList)) {
+  if(ISNOTNULLPTR(task_) && ISNOTNULLPTR(period_) && ISNOTNULLPTR(taskList)) {
     if(ISOK(__TaskListFindTask__(task_))) {
-      *timerPeriod_ = task_->timerPeriod;
+      *period_ = task_->timerPeriod;
       RET_OK;
     } else {
       ASSERT;
@@ -869,12 +869,12 @@ Return_t xTaskGetSchedulerState(SchedulerState_t *state_) {
 }
 
 
-Return_t xTaskGetWDPeriod(const Task_t *task_, Ticks_t *wdTimerPeriod_) {
+Return_t xTaskGetWDPeriod(const Task_t *task_, Ticks_t *period_) {
   RET_DEFINE;
 
-  if(ISNOTNULLPTR(task_) && ISNOTNULLPTR(wdTimerPeriod_) && ISNOTNULLPTR(taskList)) {
+  if(ISNOTNULLPTR(task_) && ISNOTNULLPTR(period_) && ISNOTNULLPTR(taskList)) {
     if(ISOK(__TaskListFindTask__(task_))) {
-      *wdTimerPeriod_ = task_->wdTimerPeriod;
+      *period_ = task_->wdTimerPeriod;
       RET_OK;
     } else {
       ASSERT;
