@@ -1811,16 +1811,15 @@
  * task timer for the specified task. The timer period must be greater than
  * zero. To have any effect, the task must be in the waiting state set by
  * calling xTaskWait() on the task. Once the timer period is set and the task is
- * in the waiting state, the task will be executed every period_ ticks.
- * Changing the period to zero will prevent the task from being executed even if
- * it is in the waiting state unless it were to receive a direct to task
- * notification.
+ * in the waiting state, the task will be executed every period_ ticks. Changing
+ * the period to zero will prevent the task from being executed even if it is in
+ * the waiting state unless it were to receive a direct to task notification.
  *
  * @sa xTaskWait()
  * @sa xTaskGetPeriod()
  * @sa xTaskResetTimer()
  *
- * @param task_        The task to change the timer period for.
+ * @param task_   The task to change the timer period for.
  * @param period_ The timer period in ticks.
  */
   void xTaskChangePeriod(xTask task_, const xTicks period_);
@@ -1925,10 +1924,9 @@
  * task will automatically be placed in a suspended state.
  *
  * @sa xTaskGetWDPeriod()
- * @param task_          The task to change the task watchdog timer for.
- * @param period_ The task watchdog timer period which is measured in
- *                       ticks. If zero, the task watchdog timer will not have
- *                       any effect.
+ * @param task_   The task to change the task watchdog timer for.
+ * @param period_ The task watchdog timer period which is measured in ticks. If
+ *                zero, the task watchdog timer will not have any effect.
  */
   void xTaskChangeWDPeriod(xTask task_, const xTicks period_);
 
@@ -1961,10 +1959,9 @@
  * @sa xTimerDelete()
  *
  * @param  period_ The number of ticks before the timer expires.
- * @return              xTimer The newly created timer. If the timer period
- *                      parameter is less than zero or xTimerCreate() was unable
- *                      to allocate the required memory, xTimerCreate() will
- *                      return null.
+ * @return         xTimer The newly created timer. If the timer period parameter
+ *                 is less than zero or xTimerCreate() was unable to allocate
+ *                 the required memory, xTimerCreate() will return null.
  *
  * @warning The timer memory can only be freed by xTimerDelete().
  */
@@ -1993,9 +1990,9 @@
  *
  * @sa xTimerHasTimerExpired()
  *
- * @param timer_       The timer to change the period for.
- * @param period_ The timer period in is ticks. Timer period must be zero
- *                     or greater.
+ * @param timer_  The timer to change the period for.
+ * @param period_ The timer period in is ticks. Timer period must be zero or
+ *                greater.
  */
   void xTimerChangePeriod(xTimer timer_, const xTicks period_);
 

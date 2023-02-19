@@ -96,7 +96,7 @@ Return_t xTaskDelete(const Task_t *task_) {
 
 
   Task_t *cursor = null;
-  Task_t *taskPrevious = null;
+  Task_t *previous = null;
 
 
   if(ISNOTNULLPTR(task_) && ISNOTNULLPTR(taskList) && (false == SYSFLAG_RUNNING())) {
@@ -114,12 +114,12 @@ Return_t xTaskDelete(const Task_t *task_) {
         }
       } else if((ISNOTNULLPTR(cursor)) && (cursor != task_)) {
         while((ISNOTNULLPTR(cursor)) && (cursor != task_)) {
-          taskPrevious = cursor;
+          previous = cursor;
           cursor = cursor->next;
         }
 
         if(ISNOTNULLPTR(cursor)) {
-          taskPrevious->next = cursor->next;
+          previous->next = cursor->next;
 
           if(ISOK(__KernelFreeMemory__(cursor))) {
             taskList->length--;
