@@ -1716,17 +1716,17 @@
  * @sa xTaskNotifyTake()
  *
  * @param  task_              The task to send the task notification to.
- * @param  notificationBytes_ The number of bytes contained in the notification
+ * @param  bytes_ The number of bytes contained in the notification
  *                            value. The number must be between one and the
  *                            CONFIG_NOTIFICATION_VALUE_BYTES setting.
- * @param  notificationValue_ A char array containing the notification value.
+ * @param  value_ A char array containing the notification value.
  *                            The notification value is NOT a null terminated
  *                            string.
  * @return                    xBase RETURN_SUCCESS if the direct to task
  *                            notification was successfully given,
  *                            RETURN_FAILURE if not.
  */
-  xBase xTaskNotifyGive(xTask task_, const xBase notificationBytes_, const xChar *notificationValue_);
+  xBase xTaskNotifyGive(xTask task_, const xBase bytes_, const xChar *value_);
 
 
 /**

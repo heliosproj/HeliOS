@@ -56,7 +56,7 @@
   Return_t xTaskGetId(const Task_t *task_, Base_t *id_);
   Return_t xTaskNotifyStateClear(Task_t *task_);
   Return_t xTaskNotificationIsWaiting(const Task_t *task_, Base_t *res_);
-  Return_t xTaskNotifyGive(Task_t *task_, const Base_t notificationBytes_, const Byte_t *notificationValue_);
+  Return_t xTaskNotifyGive(Task_t *task_, const Base_t bytes_, const Byte_t *value_);
   Return_t xTaskNotifyTake(Task_t *task_, TaskNotification_t **notification_);
   Return_t xTaskResume(Task_t *task_);
   Return_t xTaskSuspend(Task_t *task_);

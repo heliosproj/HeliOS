@@ -510,15 +510,15 @@ Return_t xTaskNotificationIsWaiting(const Task_t *task_, Base_t *res_) {
 }
 
 
-Return_t xTaskNotifyGive(Task_t *task_, const Base_t notificationBytes_, const Byte_t *notificationValue_) {
+Return_t xTaskNotifyGive(Task_t *task_, const Base_t bytes_, const Byte_t *value_) {
   RET_DEFINE;
 
-  if(ISNOTNULLPTR(task_) && (zero < notificationBytes_) && (CONFIG_NOTIFICATION_VALUE_BYTES >= notificationBytes_) && (ISNOTNULLPTR(notificationValue_)) &&
+  if(ISNOTNULLPTR(task_) && (zero < bytes_) && (CONFIG_NOTIFICATION_VALUE_BYTES >= bytes_) && (ISNOTNULLPTR(value_)) &&
     ISNOTNULLPTR(taskList)) {
     if(ISOK(__TaskListFindTask__(task_))) {
       if(zero == task_->notificationBytes) {
-        if(ISOK(__memcpy__(task_->notificationValue, notificationValue_, CONFIG_NOTIFICATION_VALUE_BYTES))) {
-          task_->notificationBytes = notificationBytes_;
+        if(ISOK(__memcpy__(task_->notificationValue, value_, CONFIG_NOTIFICATION_VALUE_BYTES))) {
+          task_->notificationBytes = bytes_;
           RET_OK;
         } else {
           ASSERT;
