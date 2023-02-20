@@ -173,7 +173,7 @@
   xReturn xStreamIsFull(const xStreamBuffer stream_, xBase *res_);
   xReturn xSystemAssert(const char *file_, const int line_);
   xReturn xSystemInit(void);
-  void xSystemHalt(void);
+  xReturn xSystemHalt(void);
   xReturn xSystemGetSystemInfo(xSystemInfo *info_);
   xReturn xTaskCreate(xTask *task_, const xByte *name_, void (*callback_)(xTask task_, xTaskParm parm_), xTaskParm taskParameter_);
   xReturn xTaskDelete(const xTask task_);

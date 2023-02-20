@@ -46,7 +46,7 @@
   #endif /* ifdef __cplusplus */
   Return_t xSystemAssert(const char *file_, const int line_);
   Return_t xSystemInit(void);
-  void xSystemHalt(void);
+  Return_t xSystemHalt(void);
   Return_t xSystemGetSystemInfo(SystemInfo_t **info_);
 
   #if defined(CONFIG_ENABLE_ARDUINO_CPP_INTERFACE)

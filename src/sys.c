@@ -80,12 +80,15 @@ Return_t xSystemInit(void) {
 }
 
 
-void xSystemHalt(void) {
+Return_t xSystemHalt(void) {
+  RET_DEFINE;
   DISABLE_INTERRUPTS();
 
   for(;;) {
     /* Do nothing - literally. */
   }
+
+  RET_RETURN;
 }
 
 
