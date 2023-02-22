@@ -35,6 +35,8 @@ Return_t xDeviceRegisterDevice(Return_t (*device_self_register_)()) {
   RET_DEFINE;
 
   if(NOTNULLPTR(device_self_register_)) {
+    /* Call the device driver's DEVICENAME_self_register() function which will
+     * in turn call __RegisterDevice__() in this file. */
     if(OK((*device_self_register_)())) {
       RET_OK;
     } else {
@@ -68,9 +70,11 @@ Return_t __RegisterDevice__(const HalfWord_t uid_, const Byte_t *name_, const De
        * is to confirm there isn't already a device with the same UID already
        * registered. */
       if(!OK(__DeviceListFind__(uid_, &device))) {
-        /* Likewise this should be null since we expected __DeviceListFind()
+        /* Likewise this should be null since we expected __DeviceListFind__()
          * will *NOT* find a device by that UID. */
         if(NULLPTR(device)) {
+          /* Allocate kernel memory for the device structure then if all goes
+           * well, populate the structure with all of the device details. */
           if(OK(__KernelAllocateMemory__((volatile Addr_t **) &device, sizeof(Device_t)))) {
             if(NOTNULLPTR(device)) {
               if(OK(__memcpy__(device->name, name_, CONFIG_DEVICE_NAME_BYTES))) {
@@ -88,6 +92,9 @@ Return_t __RegisterDevice__(const HalfWord_t uid_, const Byte_t *name_, const De
                 device->simple_write = simple_write_;
                 cursor = dlist->head;
 
+                /* If this is the first device added to the device list, then go
+                 * ahead and set the device list head to the device. Otherwise
+                 * we need to traverse the list until we reach the end. */
                 if(NOTNULLPTR(dlist->head)) {
                   while(NOTNULLPTR(cursor->next)) {
                     cursor = cursor->next;
@@ -102,6 +109,11 @@ Return_t __RegisterDevice__(const HalfWord_t uid_, const Byte_t *name_, const De
                 RET_OK;
               } else {
                 ASSERT;
+
+
+                /* Because the __memcpy__() failed, we need to free the kernel
+                 * memory occupied by the device. */
+                __KernelFreeMemory__(device);
               }
             } else {
               ASSERT;
@@ -161,14 +173,27 @@ Return_t xDeviceSimpleWrite(const HalfWord_t uid_, Word_t *data_) {
 
 
   if((zero < uid_) && (NOTNULLPTR(data_)) && (NOTNULLPTR(dlist))) {
+    /* First, confirm the data to be written to the device is waiting for us in
+     * heap memory. */
     if(OK(__MemoryRegionCheckHeap__(data_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
+      /* Second, look-up the device by its unique identifier in the device list.
+       */
       if(OK(__DeviceListFind__(uid_, &device))) {
         if(NOTNULLPTR(device)) {
+          /* Third, let's check to make sure the device is running *AND*
+           * writable. */
           if(((DeviceModeReadWrite == device->mode) || (DeviceModeWriteOnly == device->mode)) && (DeviceStateRunning == device->state)) {
+            /* Fourth, allocate some kernel memory we will copy the data from
+             * the heap into. */
             if(OK(__KernelAllocateMemory__((volatile Addr_t **) &data, sizeof(Word_t)))) {
               if(NOTNULLPTR(data)) {
+                /* Copy the data from the heap into the kernel memory then call
+                 * the device driver's DEVICENAME_simple_write() function. */
                 if(OK(__memcpy__(data, data_, sizeof(Word_t)))) {
                   if(OK((*device->simple_write)(device, data))) {
+                    /* Free the kernel memory now that we are done. It is up to
+                     * the end-user to free the heap memory the data occupies.
+                     */
                     if(OK(__KernelFreeMemory__(data))) {
                       device->bytesWritten += sizeof(Word_t);
                       RET_OK;
@@ -177,9 +202,19 @@ Return_t xDeviceSimpleWrite(const HalfWord_t uid_, Word_t *data_) {
                     }
                   } else {
                     ASSERT;
+
+
+                    /* Because DEVICENAME_simple_write() returned an error, need
+                     * to free the kernel memory. */
+                    __KernelFreeMemory__(data);
                   }
                 } else {
                   ASSERT;
+
+
+                  /* Because __memcpy__() returned an error, we need to free the
+                   * kernel memory. */
+                  __KernelFreeMemory__(data);
                 }
               } else {
                 ASSERT;
@@ -216,14 +251,27 @@ Return_t xDeviceWrite(const HalfWord_t uid_, Size_t *size_, Addr_t *data_) {
 
 
   if((zero < uid_) && (NOTNULLPTR(size_)) && (zero < *size_) && (NOTNULLPTR(data_)) && NOTNULLPTR(dlist)) {
+    /* First, confirm the data to be written to the device is waiting for us in
+     * heap memory. */
     if(OK(__MemoryRegionCheckHeap__(data_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
+      /* Second, look-up the device by its unique identifier in the device list.
+       */
       if(OK(__DeviceListFind__(uid_, &device))) {
         if(NOTNULLPTR(device)) {
+          /* Third, let's check to make sure the device is running *AND*
+           * writable. */
           if(((DeviceModeReadWrite == device->mode) || (DeviceModeWriteOnly == device->mode)) && (DeviceStateRunning == device->state)) {
+            /* Fourth, allocate some kernel memory we will copy the data from
+             * the heap into. */
             if(OK(__KernelAllocateMemory__((volatile Addr_t **) &data, *size_))) {
               if(NOTNULLPTR(data)) {
+                /* Copy the data from the heap into the kernel memory then call
+                 * the device driver's DEVICENAME_write() function. */
                 if(OK(__memcpy__(data, data_, *size_))) {
                   if(OK((*device->write)(device, size_, data))) {
+                    /* Free the kernel memory now that we are done. It is up to
+                     * the end-user to free the heap memory the data occupies.
+                     */
                     if(OK(__KernelFreeMemory__(data))) {
                       device->bytesWritten += *size_;
                       RET_OK;
@@ -232,9 +280,19 @@ Return_t xDeviceWrite(const HalfWord_t uid_, Size_t *size_, Addr_t *data_) {
                     }
                   } else {
                     ASSERT;
+
+
+                    /* Because DEVICENAME_write() returned an error, we need to
+                     * free the kernel memory. */
+                    __KernelFreeMemory__(data);
                   }
                 } else {
                   ASSERT;
+
+
+                  /* Because __memcpy__() returned an error, we need to free the
+                   * kernel memory. */
+                  __KernelFreeMemory__(data);
                 }
               } else {
                 ASSERT;
@@ -271,22 +329,63 @@ Return_t xDeviceSimpleRead(const HalfWord_t uid_, Word_t **data_) {
 
 
   if((zero < uid_) && NOTNULLPTR(data_) && NOTNULLPTR(dlist)) {
+    /* First, look-up the device by its unique identifier in the device list.
+     */
     if(OK(__DeviceListFind__(uid_, &device))) {
       if(NOTNULLPTR(device)) {
+        /* Second, let's check to make sure the device is running *AND*
+         * readable. */
         if(((DeviceModeReadWrite == device->mode) || (DeviceModeReadOnly == device->mode)) && (DeviceStateRunning == device->state)) {
+          /* Third, call the device driver's DEVICENAME_simple_read() function
+           * and check that the data returned by the device driver is waiting
+           * for us in kernel memory. */
           if(OK((*device->simple_read)(device, &data))) {
-            if(OK(__MemoryRegionCheckKernel__(data, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
-              if(OK(__HeapAllocateMemory__((volatile Addr_t **) data_, sizeof(Word_t)))) {
-                if(NOTNULLPTR(*data_)) {
-                  if(OK(__memcpy__(*data_, data, sizeof(Word_t)))) {
-                    if(OK(__KernelFreeMemory__(data))) {
-                      RET_OK;
+            if(NOTNULLPTR(data)) {
+              if(OK(__MemoryRegionCheckKernel__(data, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
+                /* Allocate the same amount of heap memory to copy the data from
+                 * kernel memory into. */
+                if(OK(__HeapAllocateMemory__((volatile Addr_t **) data_, sizeof(Word_t)))) {
+                  if(NOTNULLPTR(*data_)) {
+                    /* Perform the copy from kernel memory to heap memory. */
+                    if(OK(__memcpy__(*data_, data, sizeof(Word_t)))) {
+                      /* Free the kernel memory now that we are done. It is up
+                       * to the end-user to free the heap memory the data
+                       * occupies.
+                       */
+                      if(OK(__KernelFreeMemory__(data))) {
+                        device->bytesRead += sizeof(Word_t);
+                        RET_OK;
+                      } else {
+                        ASSERT;
+                      }
+                    } else {
+                      ASSERT;
+
+
+                      /* Because __memcpy__() returned an error, we need to free
+                       * the kernel memory. */
+                      __KernelFreeMemory__(data);
+
+
+                      /* Because __memcpy__() returned an error, we also need to
+                       * free the heap memory. */
+                      __HeapFreeMemory__(*data_);
                     }
                   } else {
                     ASSERT;
+
+
+                    /* Because __HeapAllocateMemory__() returned a null pointer,
+                     * we need to free the kernel memory. */
+                    __KernelFreeMemory__(data);
                   }
                 } else {
                   ASSERT;
+
+
+                  /* Because __HeapAllocateMemory__() returned an error, we need
+                   * to free the kernel memory. */
+                  __KernelFreeMemory__(data);
                 }
               } else {
                 ASSERT;
@@ -323,26 +422,61 @@ Return_t xDeviceRead(const HalfWord_t uid_, Size_t *size_, Addr_t **data_) {
 
 
   if((zero < uid_) && NOTNULLPTR(size_) && NOTNULLPTR(data_) && NOTNULLPTR(dlist)) {
+    /* First, look-up the device by its unique identifier in the device list.
+     */
     if(OK(__DeviceListFind__(uid_, &device))) {
       if(NOTNULLPTR(device)) {
+        /* Second, let's check to make sure the device is running *AND*
+         * readable. */
         if(((DeviceModeReadWrite == device->mode) || (DeviceModeReadOnly == device->mode)) && (DeviceStateRunning == device->state)) {
+          /* Third, call the device driver's DEVICENAME_read() function and
+           * check that the data returned by the device driver is waiting for us
+           * in kernel memory. */
           if(OK((*device->read)(device, size_, &data))) {
-            if(zero < *size_) {
+            if((zero < *size_) && NOTNULLPTR(data)) {
               if(OK(__MemoryRegionCheckKernel__(data, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
+                /* Allocate the same amount of heap memory to copy the data from
+                 * kernel memory into. */
                 if(OK(__HeapAllocateMemory__((volatile Addr_t **) data_, *size_))) {
                   if(NOTNULLPTR(*data_)) {
+                    /* Perform the copy from kernel memory to heap memory. */
                     if(OK(__memcpy__(*data_, data, *size_))) {
+                      /* Free the kernel memory now that we are done. It is up
+                       * to the end-user to free the heap memory the data
+                       * occupies.
+                       */
                       if(OK(__KernelFreeMemory__(data))) {
+                        device->bytesRead += *size_;
                         RET_OK;
                       }
                     } else {
                       ASSERT;
+
+
+                      /* Because __memcpy__() returned an error, we need to free
+                       * the kernel memory. */
+                      __KernelFreeMemory__(data);
+
+
+                      /* Because __memcpy__() returned an error, we also need to
+                       * free the heap memory. */
+                      __HeapFreeMemory__(*data_);
                     }
                   } else {
                     ASSERT;
+
+
+                    /* Because __HeapAllocateMemory__() returned a null pointer,
+                     * we need to free the kernel memory. */
+                    __KernelFreeMemory__(data);
                   }
                 } else {
                   ASSERT;
+
+
+                  /* Because __HeapAllocateMemory__() returned an error, we need
+                   * to free the kernel memory. */
+                  __KernelFreeMemory__(data);
                 }
               } else {
                 ASSERT;
