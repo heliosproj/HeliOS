@@ -61,17 +61,19 @@ Return_t __RegisterDevice__(const HalfWord_t uid_, const Byte_t *name_, const De
   Device_t *cursor = null;
 
 
+  /* NOTE: There is a __KernelAllocateMemory__() syscall buried in this if()
+   * statement. */
   if(((zero < uid_) && (NOTNULLPTR(name_)) && (NOTNULLPTR(init_)) && (NOTNULLPTR(config_)) && (NOTNULLPTR(read_)) && (NOTNULLPTR(write_)) && (NOTNULLPTR(
       simple_read_)) && (NOTNULLPTR(simple_write_)) && (NOTNULLPTR(dlist))) || ((zero < uid_) && (NOTNULLPTR(name_)) && (NOTNULLPTR(init_)) && (NOTNULLPTR(
       config_)) && (NOTNULLPTR(read_)) && (NOTNULLPTR(write_)) && (NOTNULLPTR(simple_read_)) && (NOTNULLPTR(simple_write_)) && (NULLPTR(dlist)) && (OK(
       __KernelAllocateMemory__((volatile Addr_t **) &dlist, sizeof(DeviceList_t)))))) {
     if(NOTNULLPTR(dlist)) {
-      /* We are expecting *NOT* to find the device UID in the device list. This
-       * is to confirm there isn't already a device with the same UID already
-       * registered. */
+      /* We are expecting *NOT* to find the device unique identifier in the
+       * device list. This is to confirm there isn't already a device with the
+       * same unique identifier already registered. */
       if(!OK(__DeviceListFind__(uid_, &device))) {
         /* Likewise this should be null since we expected __DeviceListFind__()
-         * will *NOT* find a device by that UID. */
+         * will *NOT* find a device by that unique identifier. */
         if(NULLPTR(device)) {
           /* Allocate kernel memory for the device structure then if all goes
            * well, populate the structure with all of the device details. */
@@ -146,8 +148,15 @@ Return_t xDeviceIsAvailable(const HalfWord_t uid_, Base_t *res_) {
 
 
   if((zero < uid_) && NOTNULLPTR(res_) && (NOTNULLPTR(dlist))) {
+    /* Look-up the device by its unique identifier in the device list.
+     */
     if(OK(__DeviceListFind__(uid_, &device))) {
       if(NOTNULLPTR(device)) {
+        /* Set the result paramater of xDeviceIsAvailable() to the value of the
+         * device structure available member.
+         *
+         * NOTE: There is *NO* particular meaning to the device's available
+         * value, this is defined by the device driver's author. */
         *res_ = device->available;
         RET_OK;
       } else {
@@ -173,22 +182,23 @@ Return_t xDeviceSimpleWrite(const HalfWord_t uid_, Word_t *data_) {
 
 
   if((zero < uid_) && (NOTNULLPTR(data_)) && (NOTNULLPTR(dlist))) {
-    /* First, confirm the data to be written to the device is waiting for us in
-     * heap memory. */
+    /* Confirm the data to be written to the device is waiting for us in heap
+     * memory. */
     if(OK(__MemoryRegionCheckHeap__(data_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
-      /* Second, look-up the device by its unique identifier in the device list.
+      /* Look-up the device by its unique identifier in the device list.
        */
       if(OK(__DeviceListFind__(uid_, &device))) {
         if(NOTNULLPTR(device)) {
-          /* Third, let's check to make sure the device is running *AND*
+          /* Check to make sure the device is running *AND*
            * writable. */
           if(((DeviceModeReadWrite == device->mode) || (DeviceModeWriteOnly == device->mode)) && (DeviceStateRunning == device->state)) {
-            /* Fourth, allocate some kernel memory we will copy the data from
-             * the heap into. */
+            /* Allocate some kernel memory we will copy the data to be written
+             * to the device from the heap into. */
             if(OK(__KernelAllocateMemory__((volatile Addr_t **) &data, sizeof(Word_t)))) {
               if(NOTNULLPTR(data)) {
-                /* Copy the data from the heap into the kernel memory then call
-                 * the device driver's DEVICENAME_simple_write() function. */
+                /* Copy the data to be written to the device from the heap into
+                 * the kernel memory then call the device driver's
+                 * DEVICENAME_simple_write() function. */
                 if(OK(__memcpy__(data, data_, sizeof(Word_t)))) {
                   if(OK((*device->simple_write)(device, data))) {
                     /* Free the kernel memory now that we are done. It is up to
@@ -204,8 +214,8 @@ Return_t xDeviceSimpleWrite(const HalfWord_t uid_, Word_t *data_) {
                     ASSERT;
 
 
-                    /* Because DEVICENAME_simple_write() returned an error, need
-                     * to free the kernel memory. */
+                    /* Because DEVICENAME_simple_write() returned an error, we
+                     * need to free the kernel memory. */
                     __KernelFreeMemory__(data);
                   }
                 } else {
@@ -251,22 +261,23 @@ Return_t xDeviceWrite(const HalfWord_t uid_, Size_t *size_, Addr_t *data_) {
 
 
   if((zero < uid_) && (NOTNULLPTR(size_)) && (zero < *size_) && (NOTNULLPTR(data_)) && NOTNULLPTR(dlist)) {
-    /* First, confirm the data to be written to the device is waiting for us in
-     * heap memory. */
+    /* Confirm the data to be written to the device is waiting for us in heap
+     * memory. */
     if(OK(__MemoryRegionCheckHeap__(data_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
-      /* Second, look-up the device by its unique identifier in the device list.
+      /* Look-up the device by its unique identifier in the device list.
        */
       if(OK(__DeviceListFind__(uid_, &device))) {
         if(NOTNULLPTR(device)) {
-          /* Third, let's check to make sure the device is running *AND*
+          /* Check to make sure the device is running *AND*
            * writable. */
           if(((DeviceModeReadWrite == device->mode) || (DeviceModeWriteOnly == device->mode)) && (DeviceStateRunning == device->state)) {
-            /* Fourth, allocate some kernel memory we will copy the data from
-             * the heap into. */
+            /* Allocate some kernel memory we will copy the data to be written
+             * to the device from the heap into. */
             if(OK(__KernelAllocateMemory__((volatile Addr_t **) &data, *size_))) {
               if(NOTNULLPTR(data)) {
-                /* Copy the data from the heap into the kernel memory then call
-                 * the device driver's DEVICENAME_write() function. */
+                /* Copy the data to be written to the device from the heap into
+                 * the kernel memory then call the device driver's
+                 * DEVICENAME_write() function. */
                 if(OK(__memcpy__(data, data_, *size_))) {
                   if(OK((*device->write)(device, size_, data))) {
                     /* Free the kernel memory now that we are done. It is up to
@@ -329,21 +340,21 @@ Return_t xDeviceSimpleRead(const HalfWord_t uid_, Word_t **data_) {
 
 
   if((zero < uid_) && NOTNULLPTR(data_) && NOTNULLPTR(dlist)) {
-    /* First, look-up the device by its unique identifier in the device list.
+    /* Look-up the device by its unique identifier in the device list.
      */
     if(OK(__DeviceListFind__(uid_, &device))) {
       if(NOTNULLPTR(device)) {
-        /* Second, let's check to make sure the device is running *AND*
+        /* Check to make sure the device is running *AND*
          * readable. */
         if(((DeviceModeReadWrite == device->mode) || (DeviceModeReadOnly == device->mode)) && (DeviceStateRunning == device->state)) {
-          /* Third, call the device driver's DEVICENAME_simple_read() function
-           * and check that the data returned by the device driver is waiting
-           * for us in kernel memory. */
+          /* Call the device driver's DEVICENAME_simple_read() function and
+           * check that the data returned by the device driver is waiting for us
+           * in kernel memory. */
           if(OK((*device->simple_read)(device, &data))) {
             if(NOTNULLPTR(data)) {
               if(OK(__MemoryRegionCheckKernel__(data, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
-                /* Allocate the same amount of heap memory to copy the data from
-                 * kernel memory into. */
+                /* Allocate a word of heap memory to copy the data read from the
+                 * device in kernel memory into. */
                 if(OK(__HeapAllocateMemory__((volatile Addr_t **) data_, sizeof(Word_t)))) {
                   if(NOTNULLPTR(*data_)) {
                     /* Perform the copy from kernel memory to heap memory. */
@@ -422,21 +433,21 @@ Return_t xDeviceRead(const HalfWord_t uid_, Size_t *size_, Addr_t **data_) {
 
 
   if((zero < uid_) && NOTNULLPTR(size_) && NOTNULLPTR(data_) && NOTNULLPTR(dlist)) {
-    /* First, look-up the device by its unique identifier in the device list.
+    /* Look-up the device by its unique identifier in the device list.
      */
     if(OK(__DeviceListFind__(uid_, &device))) {
       if(NOTNULLPTR(device)) {
-        /* Second, let's check to make sure the device is running *AND*
+        /* Check to make sure the device is running *AND*
          * readable. */
         if(((DeviceModeReadWrite == device->mode) || (DeviceModeReadOnly == device->mode)) && (DeviceStateRunning == device->state)) {
-          /* Third, call the device driver's DEVICENAME_read() function and
-           * check that the data returned by the device driver is waiting for us
-           * in kernel memory. */
+          /* Call the device driver's DEVICENAME_read() function and check that
+           * the data returned by the device driver is waiting for us in kernel
+           * memory. */
           if(OK((*device->read)(device, size_, &data))) {
             if((zero < *size_) && NOTNULLPTR(data)) {
               if(OK(__MemoryRegionCheckKernel__(data, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
-                /* Allocate the same amount of heap memory to copy the data from
-                 * kernel memory into. */
+                /* Allocate "size_" of heap memory to copy the data read from
+                 * the device in kernel memory into. */
                 if(OK(__HeapAllocateMemory__((volatile Addr_t **) data_, *size_))) {
                   if(NOTNULLPTR(*data_)) {
                     /* Perform the copy from kernel memory to heap memory. */
@@ -514,6 +525,9 @@ static Return_t __DeviceListFind__(const HalfWord_t uid_, Device_t **device_) {
   if((zero < uid_) && (NOTNULLPTR(device_)) && (NOTNULLPTR(dlist))) {
     cursor = dlist->head;
 
+    /* Traverse the device list while the cursor is not null and the unique
+     * identifier passed to __DeviceListFind__() doesn't match the device
+     * pointed to by the cursor. */
     while((NOTNULLPTR(cursor)) && (cursor->uid != uid_)) {
       cursor = cursor->next;
     }
@@ -540,8 +554,15 @@ Return_t xDeviceInitDevice(const HalfWord_t uid_) {
 
 
   if((zero < uid_) && (NOTNULLPTR(dlist))) {
+    /* Look-up the device by its unique identifier in the device list.
+     */
     if(OK(__DeviceListFind__(uid_, &device))) {
       if(NOTNULLPTR(device)) {
+        /* Call the device drivers DEVICENAME_init() function to initialize the
+         * device.
+         *
+         * NOTE: the behavior of the init function is defined by the device
+         * driver's author. */
         if(OK((*device->init)(device))) {
           RET_OK;
         } else {
@@ -570,14 +591,31 @@ Return_t xDeviceConfigDevice(const HalfWord_t uid_, Size_t *size_, Addr_t *confi
 
 
   if((zero < uid_) && (zero < *size_) && (NOTNULLPTR(config_)) && (NOTNULLPTR(dlist))) {
+    /* Confirm the data to be written to the device is waiting for us in heap
+     * memory. */
     if(OK(__MemoryRegionCheckHeap__(config_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
+      /* Look-up the device by its unique identifier in the device list.
+       */
       if(OK(__DeviceListFind__(uid_, &device))) {
         if(NOTNULLPTR(device)) {
+          /* Allocate some kernel memory we will copy the configuration data to
+           * be written to the device from the heap into. */
           if(OK(__KernelAllocateMemory__((volatile Addr_t **) &config, *size_))) {
             if(NOTNULLPTR(config)) {
+              /* Copy the configuration data to be written to the device from
+               * the heap into the kernel memory then call the device driver's
+               * DEVICENAME_config() function.
+               *
+               * NOTE: DEVICENAME_config() is bi-direction, the configuration
+               * data is read into and read out of the device. */
               if(OK(__memcpy__(config, config_, *size_))) {
                 if(OK((*device->config)(device, size_, config))) {
+                  /* Copy the configuration data read back from the device from
+                   * the kernel back into heap memory. */
                   if(OK(__memcpy__(config_, config, *size_))) {
+                    /* Free the kernel memory now that we are done. It is up to
+                     * the end-user to free the heap memory the data occupies.
+                     */
                     if(OK(__KernelFreeMemory__(config))) {
                       RET_OK;
                     } else {
@@ -585,12 +623,27 @@ Return_t xDeviceConfigDevice(const HalfWord_t uid_, Size_t *size_, Addr_t *confi
                     }
                   } else {
                     ASSERT;
+
+
+                    /* Because __memcpy__() returned an error, we need to free
+                     * the kernel memory. */
+                    __KernelFreeMemory__(config);
                   }
                 } else {
                   ASSERT;
+
+
+                  /* Because DEVICENAME_config() returned an error, we need to
+                   * free the kernel memory. */
+                  __KernelFreeMemory__(config);
                 }
               } else {
                 ASSERT;
+
+
+                /* Because __memcpy__() returned an error, we need to free the
+                 * kernel memory. */
+                __KernelFreeMemory__(config);
               }
             } else {
               ASSERT;
@@ -618,6 +671,7 @@ Return_t xDeviceConfigDevice(const HalfWord_t uid_, Size_t *size_, Addr_t *confi
 #if defined(POSIX_ARCH_OTHER)
 
 
+  /* For unit testing only! */
   void __DeviceStateClear__(void) {
     dlist = null;
 
