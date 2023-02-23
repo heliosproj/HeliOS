@@ -40,6 +40,8 @@ static Return_t __DefragMemoryRegion__(const volatile MemoryRegion_t *region_);
 Return_t __MemoryInit__(void) {
   RET_DEFINE;
 
+  /* Call __memset__() on the heap and kernel memory regions to clear (i.e. zero
+   * out) them then set the starting memory statistics for both regions.*/
   if(OK(__memset__(&heap, 0x0, sizeof(MemoryRegion_t)))) {
     if(OK(__memset__(&kernel, 0x0, sizeof(MemoryRegion_t)))) {
       heap.minAvailableEver = CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS * CONFIG_MEMORY_REGION_BLOCK_SIZE;
@@ -60,6 +62,9 @@ Return_t xMemAlloc(volatile Addr_t **addr_, const Size_t size_) {
   RET_DEFINE;
 
   if(NOTNULLPTR(addr_) && (zero < size_)) {
+    /* Simply passthrough the address pointer and size parameters to
+     * __calloc__() for the heap memory region since xMemAlloc() can only
+     * allocate heap memory. */
     if(OK(__calloc__(&heap, addr_, size_))) {
       RET_OK;
     } else {
@@ -77,6 +82,8 @@ Return_t xMemFree(const volatile Addr_t *addr_) {
   RET_DEFINE;
 
   if(NOTNULLPTR(addr_)) {
+    /* Simply passthrough the address pointer to __free__() for the heap memory
+     * region since xMemFree() can only free heap memory. */
     if(OK(__free__(&heap, addr_))) {
       RET_OK;
     } else {
@@ -102,6 +109,8 @@ Return_t xMemGetUsed(Size_t *size_) {
     if(OK(__MemoryRegionCheck__(&heap, null, MEMORY_REGION_CHECK_OPTION_WO_ADDR))) {
       cursor = heap.start;
 
+      /* Traverse, while the cursor is not null, the memory entries in the heap
+       * memory region and add up the in-use blocks as we go. */
       while(NOTNULLPTR(cursor)) {
         /* If the memory entry is *NOT* free, then add the number of blocks it
          * contains to the in-use count. */
@@ -136,6 +145,8 @@ Return_t xMemGetSize(const volatile Addr_t *addr_, Size_t *size_) {
 
   if(NOTNULLPTR(addr_) && NOTNULLPTR(size_)) {
     if(OK(__MemoryRegionCheck__(&heap, addr_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
+      /* ADDR2ENTRY() calculates the location of the memory entry for the
+       * allocated memory pointed to by the address pointer. */
       tosize = ADDR2ENTRY(addr_, &heap);
 
       /* If the memory entry pointed to by tosize is *NOT* free, then give the
@@ -170,24 +181,40 @@ static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, co
 
   if((NOTNULLPTR(region_) && NULLPTR(addr_) && (MEMORY_REGION_CHECK_OPTION_WO_ADDR == option_)) || (NOTNULLPTR(region_) && NOTNULLPTR(addr_) &&
     (MEMORY_REGION_CHECK_OPTION_W_ADDR == option_))) {
+    /* Check to make sure a previous call to __MemoryRegionCheck__() did not
+     * detect a memory fault. If it did, just give up and go home. */
     if(false == FLAG_MEMFAULT) {
+      /* Check to make sure the memory region has been initialized. If it
+       * hasn't, then the region structure start member will be null. */
       if(NOTNULLPTR(region_->start)) {
         cursor = region_->start;
 
         /* Check option to see if we also need to check an address in the memory
          * region, if so then set find to the memory entry address. */
         if(MEMORY_REGION_CHECK_OPTION_W_ADDR == option_) {
+          /* ADDR2ENTRY() calculates the location of the memory entry for the
+           * allocated memory pointed to by the address pointer. */
           find = ADDR2ENTRY(addr_, region_);
         }
 
+        /* Start traversing the memory entries in the memory region while the
+         * cursor is null. */
         while(NOTNULLPTR(cursor)) {
           if(OK(__MemoryRegionCheckAddr__(region_, cursor))) {
+            /* OKMAGIC() compares the memory entry's magic value (i.e. the magic
+             * member of the memory entry structure) to the magic value
+             * calculated by XOR'ing the address of the memory entry with the
+             * MAGIC_CONST. This operation helps ensure we are accessing a valid
+             * memory entry in the memory region being checked. */
             if(OKMAGIC(cursor)) {
               blocks += cursor->blocks;
 
               /* If we are checking for an address in the memory region, then
                * see if the cursor matches it and check to make sure the memory
-               * entry is NOT* free. Otherwise ignore this step. */
+               * entry is *NOT* free. If the cursor matches and the entry is
+               * NOT*
+               * free then we set "found" to true because we found the entry
+               * being searched for. Otherwise ignore this step. */
               if((MEMORY_REGION_CHECK_OPTION_W_ADDR == option_) && (cursor == find) && (false == cursor->free)) {
                 found = true;
               }
@@ -197,9 +224,12 @@ static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, co
               ASSERT;
 
 
-              /* Set the memfault flag to true because the address we just
+              /* "Houston, we've had a problem." ~ Jim Lovell
+               *
+               *
+               * Set the memfault flag to true because the address we just
                * checked does *NOT* have the correct magic value. Something is
-               * wrong! */
+               * very wrong! */
               FLAG_MEMFAULT = true;
               break;
             }
@@ -207,30 +237,39 @@ static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, co
             ASSERT;
 
 
-            /* Set the memfault flag to true because the address we just checked
-             * is *NOT* inside the memory region. Something is wrong! */
+            /* "Houston, we've had a problem." ~ Jim Lovell
+             *
+             *
+             * Set the memfault flag to true because the address we just checked
+             * is *NOT* inside the memory region. Something is very wrong!
+             */
             FLAG_MEMFAULT = true;
             break;
           }
         }
 
+        /* Check to make sure the number of blocks we visited equals the number
+         * of blocks that *SHOULD* be in the memory region which is defined by
+         * CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS. */
         if(CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS == blocks) {
           if(((MEMORY_REGION_CHECK_OPTION_WO_ADDR == option_) && (false == FLAG_MEMFAULT)) || ((MEMORY_REGION_CHECK_OPTION_W_ADDR == option_) && (false ==
             FLAG_MEMFAULT) && (true == found))) {
             RET_OK;
           } else {
-            /* Never use an else statement here to mark FLAG_MEMFAULT = true.
-             * Just because an address wasn't found does not mean the memory
-             * region is corrupt. */
+            /* Never set FLAG_MEMFAULT = true here! Just because an address
+             * wasn't found does not mean the memory region is corrupt. */
             ASSERT;
           }
         } else {
           ASSERT;
 
 
-          /* Set the memfault flag to true because the number of blocks visited
+          /* "Houston, we've had a problem." ~ Jim Lovell
+           *
+           *
+           * Set the memfault flag to true because the number of blocks visited
            * does not match the number of blocks the memory region *SHOULD*
-           * have.
+           * have. Something is very wrong!
            */
           FLAG_MEMFAULT = true;
         }
