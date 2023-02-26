@@ -49,7 +49,11 @@
   #if defined(true)
     #undef true
   #endif /* if defined(true) */
-  #define true 0x33u /* 51 */
+  #define true 0xFFu /* 255 reason: using the conventional TRUE and FALSE
+                      * defines, the difference in the bit pattern between 0
+                      * (false) and 1 (true) is one bit. The difference in the
+                      * bit pattern between 0 (false) and 255 (true) is eight
+                      * bits. */
 
 
 
@@ -302,6 +306,6 @@
   #if defined(FREE)
     #undef FREE
   #endif /* if defined(FREE) */
-  #define FREE 0xCCu /* 204 */
+  #define FREE 0xD5u /* 213 */
 
 #endif /* ifndef DEFINES_H_ */
