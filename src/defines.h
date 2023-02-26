@@ -297,11 +297,11 @@
   #if defined(INUSE)
     #undef INUSE
   #endif /* if defined(INUSE) */
-  #define INUSE 0xAAu
+  #define INUSE 0xAAu /* 170 */
 
   #if defined(FREE)
     #undef FREE
   #endif /* if defined(FREE) */
-  #define FREE 0xCCu
+  #define FREE 0xCCu /* 204 */
 
 #endif /* ifndef DEFINES_H_ */
