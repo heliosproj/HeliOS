@@ -294,6 +294,14 @@
   #endif /* if defined(OKMAGIC) */
   #define OKMAGIC(ptr_) (CALCMAGIC(ptr_) == (ptr_)->magic)
 
+  #if defined(INUSE)
+    #undef INUSE
+  #endif /* if defined(INUSE) */
+  #define INUSE 0xAAu
 
+  #if defined(FREE)
+    #undef FREE
+  #endif /* if defined(FREE) */
+  #define FREE 0xCCu
 
 #endif /* ifndef DEFINES_H_ */

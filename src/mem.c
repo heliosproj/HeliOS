@@ -27,6 +27,141 @@
 /*UNCRUSTIFY-ON*/
 #include "mem.h"
 
+
+/*UNCRUSTIFY-OFF*/
+/*
+ *  BYTE   STRUCTURE OF A MEMORY ENTRY AND BLOCKS
+ * +----+ +--------------------------------------+
+ * | 01 | |                                      | <-- START OF MEMORY ENTRY
+ * +----+ |                                      |
+ * | 02 | |                                      |
+ * +----+ |  MAGIC VALUE (4 BYTES)               |
+ * | 03 | |                                      |
+ * +----+ |                                      |
+ * | 04 | |                                      |
+ * +----+ +--------------------------------------+
+ * | 05 | |  FREE (1 BYTE)                       |
+ * +----+ +--------------------------------------+
+ * | 06 | |                                      |
+ * +----+ |  BLOCKS (2 BYTES)                    |
+ * | 07 | |                                      |
+ * +----+ +--------------------------------------+
+ * | 08 | |                                      |
+ * +----+ |                                      |
+ * | 09 | |                                      |
+ * +----+ |                                      |
+ * | 10 | |                                      |
+ * +----+ |                                      |
+ * | 11 | |                                      |
+ * +----+ |  NEXT (4 - 8 BYTES)                  |
+ * | 12 | |                                      |
+ * +----+ |                                      |
+ * | 13 | |                                      |
+ * +----+ |                                      |
+ * | 14 | |                                      |
+ * +----+ |                                      |
+ * | 15 | |                                      |
+ * +----+ +--------------------------------------+
+ * | 16 | |                                      |
+ * +----+ |                                      |
+ * | 17 | |                                      |
+ * +----+ |                                      |
+ * | 18 | |                                      |
+ * +----+ |                                      |
+ * | 19 | |                                      |
+ * +----+ |                                      |
+ * | 20 | |                                      |
+ * +----+ |                                      |
+ * | 21 | |                                      |
+ * +----+ |                                      |
+ * | 22 | |                                      |
+ * +----+ |                                      |
+ * | 23 | |                                      |
+ * +----+ |  UNUSED (17 - 21 BYTES)              |
+ * | 24 | |                                      |
+ * +----+ |                                      |
+ * | 25 | |                                      |
+ * +----+ |                                      |
+ * | 26 | |                                      |
+ * +----+ |                                      |
+ * | 27 | |                                      |
+ * +----+ |                                      |
+ * | 28 | |                                      |
+ * +----+ |                                      |
+ * | 29 | |                                      |
+ * +----+ |                                      |
+ * | 30 | |                                      |
+ * +----+ |                                      |
+ * | 31 | |                                      |
+ * +----+ |                                      |
+ * | 32 | |                                      | <-- END OF MEMORY ENTRY
+ * +----+ +--------------------------------------+
+ * | 33 | |                                      | <-- START OF ALLOCATED MEMORY BLOCK
+ * +----+ |                                      |     (ADDRESS GIVEN TO CALLER BY _calloc__())
+ * | 34 | |                                      |
+ * +----+ |                                      |
+ * | 35 | |                                      |
+ * +----+ |                                      |
+ * | 36 | |                                      |
+ * +----+ |                                      |
+ * | 37 | |                                      |
+ * +----+ |                                      |
+ * | 38 | |                                      |
+ * +----+ |                                      |
+ * | 39 | |                                      |
+ * +----+ |                                      |
+ * | 40 | |                                      |
+ * +----+ |                                      |
+ * | 41 | |                                      |
+ * +----+ |                                      |
+ * | 42 | |                                      |
+ * +----+ |                                      |
+ * | 43 | |                                      |
+ * +----+ |                                      |
+ * | 44 | |                                      |
+ * +----+ |                                      |
+ * | 45 | |                                      |
+ * +----+ |                                      |
+ * | 46 | |                                      |
+ * +----+ |                                      |
+ * | 47 | |                                      |
+ * +----+ |                                      |
+ * | 48 | |                                      |
+ * +----+ |  ALLOCATED MEMORY BLOCK (32 BYTES)   |
+ * | 49 | |                                      |
+ * +----+ |                                      |
+ * | 50 | |                                      |
+ * +----+ |                                      |
+ * | 51 | |                                      |
+ * +----+ |                                      |
+ * | 52 | |                                      |
+ * +----+ |                                      |
+ * | 53 | |                                      |
+ * +----+ |                                      |
+ * | 54 | |                                      |
+ * +----+ |                                      |
+ * | 55 | |                                      |
+ * +----+ |                                      |
+ * | 56 | |                                      |
+ * +----+ |                                      |
+ * | 57 | |                                      |
+ * +----+ |                                      |
+ * | 58 | |                                      |
+ * +----+ |                                      |
+ * | 59 | |                                      |
+ * +----+ |                                      |
+ * | 50 | |                                      |
+ * +----+ |                                      |
+ * | 61 | |                                      |
+ * +----+ |                                      |
+ * | 62 | |                                      |
+ * +----+ |                                      |
+ * | 63 | |                                      |
+ * +----+ |                                      |
+ * | 64 | |                                      | <-- END OF ALLOCATED MEMORY BLOCK
+ * +----+ +--------------------------------------+
+ */
+/*UNCRUSTIFY-ON*/
 static volatile MemoryRegion_t heap;
 static volatile MemoryRegion_t kernel;
 static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, const volatile Addr_t *addr_, const Base_t option_);
@@ -106,6 +241,7 @@ Return_t xMemGetUsed(Size_t *size_) {
 
 
   if(NOTNULLPTR(size_)) {
+    /* Check the consistency of the heap memory region. */
     if(OK(__MemoryRegionCheck__(&heap, null, MEMORY_REGION_CHECK_OPTION_WO_ADDR))) {
       cursor = heap.start;
 
@@ -144,6 +280,8 @@ Return_t xMemGetSize(const volatile Addr_t *addr_, Size_t *size_) {
 
 
   if(NOTNULLPTR(addr_) && NOTNULLPTR(size_)) {
+    /* Check the consistency of the heap memory region *AND* check the address
+     * pointer to ensure it is pointing to a valid block of heap memory. */
     if(OK(__MemoryRegionCheck__(&heap, addr_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
       /* ADDR2ENTRY() calculates the location of the memory entry for the
        * allocated memory pointed to by the address pointer. */
@@ -322,11 +460,13 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
   MemoryEntry_t *next = null;
 
 
+  /* Because we are modifying memory entries, we need to disable interrupts
+   * until __calloc__() is done. */
   DISABLE_INTERRUPTS();
 
   if(NOTNULLPTR(region_) && NOTNULLPTR(addr_) && (zero < size_)) {
     /* If we haven't already, calculate how many blocks in size a memory entry
-     * is. Typically this is one (1), but that may not always be the case. */
+     * is. Typically this is one, but that may not always be the case. */
     if(zero == region_->entrySize) {
       /* Divide the size of the memory entry type by the block size to determine
        * how many blocks one entry requires. */
@@ -340,11 +480,19 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
     }
 
     /* Check to see if the memory region has been initialized yet, if it hasn't
-     * we need to zero out the memory and set the first block. */
+     * we need to set the start member of the memory region structure and zero
+     * out the memory and set the first block. */
     if(NULLPTR(region_->start)) {
+      /* Setting the start member indicates the memory region has been
+       * initialized. */
       region_->start = (MemoryEntry_t *) region_->mem;
 
       if(OK(__memset__(region_->mem, zero, MEMORY_REGION_SIZE_IN_BYTES))) {
+        /* CALCMAGIC() calculates the memory entry's magic value (i.e. the magic
+         * member of the memory entry structure) by XOR'ing the address of the
+         * memory entry with the MAGIC_CONST. The magic value is used by
+         * __MemoryRegionCheck__() to check the consistency of the memory
+         * region. */
         region_->start->magic = CALCMAGIC(region_->start);
         region_->start->free = true;
         region_->start->blocks = CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS;
@@ -354,6 +502,7 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
       }
     }
 
+    /* Check the consistency of the memory region before we modify anything. */
     if(OK(__MemoryRegionCheck__(region_, null, MEMORY_REGION_CHECK_OPTION_WO_ADDR))) {
       /* Because the user supplied requested memory in bytes, calculate how many
        * blocks have been requested. */
@@ -363,6 +512,9 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
         requested++;
       }
 
+      /* Add the number of blocks(s) required by the memory entry to the
+       * requested blocks. This is the total number of free blocks that will be
+       * needed. */
       requested += region_->entrySize;
       cursor = region_->start;
 
@@ -397,6 +549,13 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
            * the two blocks for the requested memory. */
           next = candidate->next;
           candidate->next = (MemoryEntry_t *) ((Byte_t *) candidate + (requested * CONFIG_MEMORY_REGION_BLOCK_SIZE));
+
+
+          /* CALCMAGIC() calculates the memory entry's magic value (i.e. the
+           * magic member of the memory entry structure) by XOR'ing the address
+           * of the memory entry with the MAGIC_CONST. The magic value is used
+           * by __MemoryRegionCheck__() to check the consistency of the memory
+           * region. */
           candidate->next->magic = CALCMAGIC(candidate->next);
           candidate->next->free = true;
           candidate->next->blocks = candidate->blocks - requested;
@@ -410,6 +569,9 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
           candidate->blocks = requested;
 
           if(OK(__memset__(ENTRY2ADDR(candidate, region_), zero, (requested - region_->entrySize) * CONFIG_MEMORY_REGION_BLOCK_SIZE))) {
+            /* ENTRY2ADDR() does the opposite of ADDR2ENTRY(), it converts the
+             * memory entry address to the address of the first block after the
+             * memory entry. */
             *addr_ = ENTRY2ADDR(candidate, region_);
             RET_OK;
           } else {
@@ -421,6 +583,9 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
           candidate->free = false;
 
           if(OK(__memset__(ENTRY2ADDR(candidate, region_), zero, (requested - region_->entrySize) * CONFIG_MEMORY_REGION_BLOCK_SIZE))) {
+            /* ENTRY2ADDR() does the opposite of ADDR2ENTRY(), it converts the
+             * memory entry address to the address of the first block after the
+             * memory entry. */
             *addr_ = ENTRY2ADDR(candidate, region_);
             RET_OK;
           } else {
@@ -445,6 +610,7 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
     ASSERT;
   }
 
+  /* __calloc__() is done so re-enable interrupts. */
   ENABLE_INTERRUPTS();
   RET_RETURN;
 }
@@ -457,14 +623,22 @@ static Return_t __free__(volatile MemoryRegion_t *region_, const volatile Addr_t
   MemoryEntry_t *free = null;
 
 
+  /* Because we are modifying memory entries, we need to disable interrupts
+   * until __free__() is done. */
   DISABLE_INTERRUPTS();
 
   if(NOTNULLPTR(region_) && NOTNULLPTR(addr_)) {
+    /* Check the consistency of the heap memory region *AND* check the address
+     * pointer to ensure it is pointing to a valid block of heap memory. */
     if(OK(__MemoryRegionCheck__(region_, addr_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
+      /* ADDR2ENTRY() calculates the location of the memory entry for the
+       * allocated memory pointed to by the address pointer. */
       free = ADDR2ENTRY(addr_, region_);
       free->free = true;
       region_->frees++;
 
+      /* After freeing memory, call __DefragMemoryRegion__() to consolidate any
+       * adjacent free blocks. */
       if(OK(__DefragMemoryRegion__(region_))) {
         RET_OK;
       } else {
@@ -477,6 +651,7 @@ static Return_t __free__(volatile MemoryRegion_t *region_, const volatile Addr_t
     ASSERT;
   }
 
+  /* __free__() is done so re-enable interrupts. */
   ENABLE_INTERRUPTS();
   RET_RETURN;
 }
