@@ -250,7 +250,8 @@ Return_t xMemGetUsed(Size_t *size_) {
       while(NOTNULLPTR(cursor)) {
         /* If the memory entry is *NOT* free, then add the number of blocks it
          * contains to the in-use count. */
-        if(false == cursor->free) {
+        /* if(false == cursor->free) { */
+        if(INUSE == cursor->free) {
           used += cursor->blocks;
         }
 
@@ -290,7 +291,8 @@ Return_t xMemGetSize(const volatile Addr_t *addr_, Size_t *size_) {
       /* If the memory entry pointed to by tosize is *NOT* free, then give the
        * user back the number of bytes in-use by multiply the blocks contained
        * in the entry by the block size in bytes. */
-      if(false == tosize->free) {
+      /* if(false == tosize->free) { */
+      if(INUSE == tosize->free) {
         *size_ = tosize->blocks * CONFIG_MEMORY_REGION_BLOCK_SIZE;
         RET_OK;
       } else {
@@ -353,7 +355,8 @@ static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, co
                * NOT*
                * free then we set "found" to true because we found the entry
                * being searched for. Otherwise ignore this step. */
-              if((MEMORY_REGION_CHECK_OPTION_W_ADDR == option_) && (cursor == find) && (false == cursor->free)) {
+              /* if((MEMORY_REGION_CHECK_OPTION_W_ADDR == option_) && (cursor == find) && (false == cursor->free)) { */
+              if((MEMORY_REGION_CHECK_OPTION_W_ADDR == option_) && (cursor == find) && (INUSE == cursor->free)) {
                 found = true;
               }
 
@@ -494,7 +497,8 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
          * __MemoryRegionCheck__() to check the consistency of the memory
          * region. */
         region_->start->magic = CALCMAGIC(region_->start);
-        region_->start->free = true;
+        /* region_->start->free = true; */
+        region_->start->free = FREE;
         region_->start->blocks = CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS;
         region_->start->next = null;
       } else {
@@ -525,14 +529,16 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
          *  2. Must contain enough blocks to cover the request.
          *  3. Must be an entry with the fewest blocks (this is to reduce
          * fragmentation). */
-        if((true == cursor->free) && (requested <= cursor->blocks) && (fewest > cursor->blocks)) {
+        /* if((true == cursor->free) && (requested <= cursor->blocks) && (fewest > cursor->blocks)) { */
+        if((FREE == cursor->free) && (requested <= cursor->blocks) && (fewest > cursor->blocks)) {
           fewest = cursor->blocks;
           candidate = cursor;
         }
 
         /* Keep track of how many free blocks remain as we need to update the
          * statistics for the memory region later. */
-        if(true == cursor->free) {
+        /* if(true == cursor->free) { */
+        if(FREE == cursor->free) {
           free += cursor->blocks;
         }
 
@@ -557,7 +563,8 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
            * by __MemoryRegionCheck__() to check the consistency of the memory
            * region. */
           candidate->next->magic = CALCMAGIC(candidate->next);
-          candidate->next->free = true;
+          /* candidate->next->free = true; */
+          candidate->next->free = FREE;
           candidate->next->blocks = candidate->blocks - requested;
           candidate->next->next = next;
 
@@ -565,7 +572,8 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
           /* We split the unneeded blocks off into a new entry, now let's mark
            * the entry containing the blocks in-use for the requested memory. */
           candidate->magic = CALCMAGIC(candidate);
-          candidate->free = false;
+          /* candidate->free = false; */
+          candidate->free = INUSE;
           candidate->blocks = requested;
 
           if(OK(__memset__(ENTRY2ADDR(candidate, region_), zero, (requested - region_->entrySize) * CONFIG_MEMORY_REGION_BLOCK_SIZE))) {
@@ -580,7 +588,8 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
         } else {
           /* Because we didn't need to split an entry into two, we just need to
            * mark the entry as in-use and that's it. */
-          candidate->free = false;
+          /* candidate->free = false; */
+          candidate->free = INUSE;
 
           if(OK(__memset__(ENTRY2ADDR(candidate, region_), zero, (requested - region_->entrySize) * CONFIG_MEMORY_REGION_BLOCK_SIZE))) {
             /* ENTRY2ADDR() does the opposite of ADDR2ENTRY(), it converts the
@@ -634,7 +643,8 @@ static Return_t __free__(volatile MemoryRegion_t *region_, const volatile Addr_t
       /* ADDR2ENTRY() calculates the location of the memory entry for the
        * allocated memory pointed to by the address pointer. */
       free = ADDR2ENTRY(addr_, region_);
-      free->free = true;
+      /* free->free = true; */
+      free->free = FREE;
       region_->frees++;
 
       /* After freeing memory, call __DefragMemoryRegion__() to consolidate any
@@ -910,7 +920,8 @@ static Return_t __MemGetRegionStats__(const volatile MemoryRegion_t *region_, Me
           /* Traverse the memory region to calculate the remaining statistics.
            */
           while(NOTNULLPTR(cursor)) {
-            if(true == cursor->free) {
+            /* if(true == cursor->free) { */
+            if(FREE == cursor->free) {
               if((*stats_)->largestFreeEntryInBytes < (cursor->blocks * CONFIG_MEMORY_REGION_BLOCK_SIZE)) {
                 (*stats_)->largestFreeEntryInBytes = cursor->blocks * CONFIG_MEMORY_REGION_BLOCK_SIZE;
               }
@@ -962,10 +973,12 @@ static Return_t __DefragMemoryRegion__(const volatile MemoryRegion_t *region_) {
          *  2. "next" points to an entry.
          *  3. The entry pointed to be the cursor is free.
          *  4. The entry pointed to be "next" is free. */
-        if(NOTNULLPTR(cursor) && NOTNULLPTR(cursor->next) && (true == cursor->free) && (true == cursor->next->free)) {
+        /* if(NOTNULLPTR(cursor) && NOTNULLPTR(cursor->next) && (true == cursor->free) && (true == cursor->next->free)) { */
+        if(NOTNULLPTR(cursor) && NOTNULLPTR(cursor->next) && (FREE == cursor->free) && (FREE == cursor->next->free)) {
           merge = cursor->next;
           cursor->magic = CALCMAGIC(cursor);
-          cursor->free = true;
+          /* cursor->free = true; */
+          cursor->free = FREE;
           cursor->blocks += merge->blocks;
           cursor->next = merge->next;
 
