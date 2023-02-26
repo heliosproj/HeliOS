@@ -49,7 +49,7 @@
   #if defined(true)
     #undef true
   #endif /* if defined(true) */
-  #define true 0x1u /* 1 */
+  #define true 0x33u /* 51 */
 
 
 
