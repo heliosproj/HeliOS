@@ -175,8 +175,8 @@ static Return_t __DefragMemoryRegion__(const volatile MemoryRegion_t *region_);
 Return_t __MemoryInit__(void) {
   RET_DEFINE;
 
-  /* Call __memset__() on the heap and kernel memory regions to clear (i.e. zero
-   * out) them then set the starting memory statistics for both regions.*/
+  /* Call __memset__() on the heap and kernel memory regions to clear (i.e.,
+   * zero out) them then set the starting memory statistics for both regions.*/
   if(OK(__memset__(&heap, 0x0, sizeof(MemoryRegion_t)))) {
     if(OK(__memset__(&kernel, 0x0, sizeof(MemoryRegion_t)))) {
       heap.minAvailableEver = CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS * CONFIG_MEMORY_REGION_BLOCK_SIZE;
@@ -257,7 +257,7 @@ Return_t xMemGetUsed(Size_t *size_) {
         cursor = cursor->next;
       }
 
-      /* We need to give the user back bytes, not blocks so multiply the in-use
+      /* We need to give the user back bytes, not blocks, so multiply the in-use
        * blocks by the block size in bytes. */
       *size_ = used * CONFIG_MEMORY_REGION_BLOCK_SIZE;
       RET_OK;
@@ -339,8 +339,8 @@ static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, co
          * cursor is null. */
         while(NOTNULLPTR(cursor)) {
           if(OK(__MemoryRegionCheckAddr__(region_, cursor))) {
-            /* OKMAGIC() compares the memory entry's magic value (i.e. the magic
-             * member of the memory entry structure) to the magic value
+            /* OKMAGIC() compares the memory entry's magic value (i.e., the
+             * magic member of the memory entry structure) to the magic value
              * calculated by XOR'ing the address of the memory entry with the
              * MAGIC_CONST. This operation helps ensure we are accessing a valid
              * memory entry in the memory region being checked. */
