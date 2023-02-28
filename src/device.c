@@ -72,10 +72,11 @@ Return_t __RegisterDevice__(const HalfWord_t uid_, const Byte_t *name_, const De
        * device list. This is to confirm there isn't already a device with the
        * same unique identifier already registered. */
       if(!OK(__DeviceListFind__(uid_, &device))) {
-        /* Likewise this should be null since we expected __DeviceListFind__()
-         * will *NOT* find a device by that unique identifier. */
+        /* Likewise this should be null since we are expecting
+         * __DeviceListFind__() will *NOT* find a device by that unique
+         * identifier. */
         if(NULLPTR(device)) {
-          /* Allocate kernel memory for the device structure then if all goes
+          /* Allocate kernel memory for the device structure; then, if all goes
            * well, populate the structure with all of the device details. */
           if(OK(__KernelAllocateMemory__((volatile Addr_t **) &device, sizeof(Device_t)))) {
             if(NOTNULLPTR(device)) {
@@ -607,7 +608,8 @@ Return_t xDeviceConfigDevice(const HalfWord_t uid_, Size_t *size_, Addr_t *confi
                * DEVICENAME_config() function.
                *
                * NOTE: DEVICENAME_config() is bi-direction, the configuration
-               * data is read into and read out of the device. */
+               * data is read into and read out of the device so there are two
+               * calls to __memcpy__(). */
               if(OK(__memcpy__(config, config_, *size_))) {
                 if(OK((*device->config)(device, size_, config))) {
                   /* Copy the configuration data read back from the device from

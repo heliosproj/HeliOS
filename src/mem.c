@@ -35,7 +35,7 @@
  * | 01 | |                                      | <-- START OF MEMORY ENTRY
  * +----+ |                                      |
  * | 02 | |                                      |
- * +----+ |  MAGIC VALUE (4 BYTES)               |
+ * +----+ |  MAGIC (4 BYTES)                     |
  * | 03 | |                                      |
  * +----+ |                                      |
  * | 04 | |                                      |
@@ -97,7 +97,7 @@
  * | 32 | |                                      | <-- END OF MEMORY ENTRY
  * +----+ +--------------------------------------+
  * | 33 | |                                      | <-- START OF ALLOCATED MEMORY BLOCK
- * +----+ |                                      |     (ADDRESS GIVEN TO CALLER BY _calloc__())
+ * +----+ |                                      |     (ADDRESS GIVEN TO CALLER BY __calloc__())
  * | 34 | |                                      |
  * +----+ |                                      |
  * | 35 | |                                      |
