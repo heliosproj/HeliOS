@@ -856,6 +856,8 @@ Return_t xMemGetHeapStats(MemoryRegionStats_t **stats_) {
   RET_DEFINE;
 
   if(NOTNULLPTR(stats_)) {
+    /* Simply passthrough the address pointer to __MemGetRegionStats__() for the
+     * heap memory region. */
     if(OK(__MemGetRegionStats__(&heap, stats_))) {
       RET_OK;
     } else {
@@ -873,6 +875,8 @@ Return_t xMemGetKernelStats(MemoryRegionStats_t **stats_) {
   RET_DEFINE;
 
   if(NOTNULLPTR(stats_)) {
+    /* Simply passthrough the address pointer to __MemGetRegionStats__() for the
+     * kernel memory region. */
     if(OK(__MemGetRegionStats__(&kernel, stats_))) {
       RET_OK;
     } else {
@@ -894,7 +898,11 @@ static Return_t __MemGetRegionStats__(const volatile MemoryRegion_t *region_, Me
 
 
   if(NOTNULLPTR(region_) && NOTNULLPTR(stats_)) {
+    /* Check the memory region consistency before we calculate the statistics
+     * for the memory region. */
     if(OK(__MemoryRegionCheck__(region_, null, MEMORY_REGION_CHECK_OPTION_WO_ADDR))) {
+      /* Allocate some heap memory to hold the memory region statistics
+       * structure. */
       if(OK(__HeapAllocateMemory__((volatile Addr_t **) stats_, sizeof(MemoryRegionStats_t)))) {
         cursor = region_->start;
 
@@ -931,6 +939,10 @@ static Return_t __MemGetRegionStats__(const volatile MemoryRegion_t *region_, Me
           RET_OK;
         } else {
           ASSERT;
+
+
+          /* Free the heap memory because the call to __memset__() failed. */
+          __HeapFreeMemory__(stats_);
         }
       } else {
         ASSERT;
@@ -955,6 +967,8 @@ static Return_t __DefragMemoryRegion__(const volatile MemoryRegion_t *region_) {
 
 
   if(NOTNULLPTR(region_)) {
+    /* Check the memory region consistency before we attempt to defrag the
+     * memory region. */
     if(OK(__MemoryRegionCheck__(region_, null, MEMORY_REGION_CHECK_OPTION_WO_ADDR))) {
       cursor = region_->start;
 
@@ -966,12 +980,22 @@ static Return_t __DefragMemoryRegion__(const volatile MemoryRegion_t *region_) {
          *  4. The entry pointed to be "next" is free. */
         if(NOTNULLPTR(cursor) && NOTNULLPTR(cursor->next) && (FREE == cursor->free) && (FREE == cursor->next->free)) {
           merge = cursor->next;
+
+
+          /* CALCMAGIC() calculates the memory entry's magic value (i.e. the
+           * magic member of the memory entry structure) by XOR'ing the address
+           * of the memory entry with the MAGIC_CONST. The magic value is used
+           * by __MemoryRegionCheck__() to check the consistency of the memory
+           * region. */
           cursor->magic = CALCMAGIC(cursor);
           cursor->free = FREE;
           cursor->blocks += merge->blocks;
           cursor->next = merge->next;
 
+          /* Zero out the block formerly occupied by the memory entry that was
+           * merged. */
           if(OK(__memset__(merge, zero, sizeof(MemoryEntry_t)))) {
+            /* Nothing to do here. */
           } else {
             ASSERT;
             break;
@@ -996,6 +1020,7 @@ static Return_t __DefragMemoryRegion__(const volatile MemoryRegion_t *region_) {
 #if defined(POSIX_ARCH_OTHER)
 
 
+  /* For unit testing only! */
   void __MemoryClear__(void) {
     __memset__(&heap, 0x0, sizeof(MemoryRegion_t));
     heap.minAvailableEver = CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS * CONFIG_MEMORY_REGION_BLOCK_SIZE;
