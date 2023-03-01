@@ -165,7 +165,6 @@
 static volatile MemoryRegion_t heap;
 static volatile MemoryRegion_t kernel;
 static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, const volatile Addr_t *addr_, const Base_t option_);
-static Return_t __MemoryRegionCheckAddr__(const volatile MemoryRegion_t *region_, const volatile Addr_t *addr_);
 static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **addr_, const Size_t size_);
 static Return_t __free__(volatile MemoryRegion_t *region_, const volatile Addr_t *addr_);
 static Return_t __MemGetRegionStats__(const volatile MemoryRegion_t *region_, MemoryRegionStats_t **stats_);
@@ -338,7 +337,9 @@ static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, co
         /* Start traversing the memory entries in the memory region while the
          * cursor is null. */
         while(NOTNULLPTR(cursor)) {
-          if(OK(__MemoryRegionCheckAddr__(region_, cursor))) {
+          /* OKADDR() is a C macro that simply checks that the address, in this
+           * case "cursor", falls within the bounds of the memory region. */
+          if(OKADDR(region_, cursor)) {
             /* OKMAGIC() compares the memory entry's magic value (i.e., the
              * magic member of the memory entry structure) to the magic value
              * calculated by XOR'ing the address of the memory entry with the
@@ -414,25 +415,6 @@ static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, co
       } else {
         ASSERT;
       }
-    } else {
-      ASSERT;
-    }
-  } else {
-    ASSERT;
-  }
-
-  RET_RETURN;
-}
-
-
-static Return_t __MemoryRegionCheckAddr__(const volatile MemoryRegion_t *region_, const volatile Addr_t *addr_) {
-  RET_DEFINE;
-
-  if(NOTNULLPTR(region_) && NOTNULLPTR(addr_)) {
-    /* Check to make sure the address falls within the bounds of the memory
-     * region. */
-    if((addr_ >= (Addr_t *) (region_->mem)) && (addr_ < (Addr_t *) (region_->mem + MEMORY_REGION_SIZE_IN_BYTES))) {
-      RET_OK;
     } else {
       ASSERT;
     }
@@ -568,6 +550,8 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
           candidate->free = INUSE;
           candidate->blocks = requested;
 
+          /* Zero out all of the requested blocks (excluding the memory entry).
+           */
           if(OK(__memset__(ENTRY2ADDR(candidate, region_), zero, (requested - region_->entrySize) * CONFIG_MEMORY_REGION_BLOCK_SIZE))) {
             /* ENTRY2ADDR() does the opposite of ADDR2ENTRY(), it converts the
              * memory entry address to the address of the first block after the
@@ -582,6 +566,8 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
            * mark the entry as in-use and that's it. */
           candidate->free = INUSE;
 
+          /* Zero out all of the requested blocks (excluding the memory
+           * entry).*/
           if(OK(__memset__(ENTRY2ADDR(candidate, region_), zero, (requested - region_->entrySize) * CONFIG_MEMORY_REGION_BLOCK_SIZE))) {
             /* ENTRY2ADDR() does the opposite of ADDR2ENTRY(), it converts the
              * memory entry address to the address of the first block after the
@@ -661,6 +647,8 @@ Return_t __KernelAllocateMemory__(volatile Addr_t **addr_, const Size_t size_) {
   RET_DEFINE;
 
   if(NOTNULLPTR(addr_) && (zero < size_)) {
+    /* Simply passthrough the address pointer to __calloc__() for the kernel
+     * memory region. */
     if(OK(__calloc__(&kernel, addr_, size_))) {
       if(NOTNULLPTR(*addr_)) {
         RET_OK;
@@ -682,6 +670,8 @@ Return_t __KernelFreeMemory__(const volatile Addr_t *addr_) {
   RET_DEFINE;
 
   if(NOTNULLPTR(addr_)) {
+    /* Simply passthrough the address pointer to __free__() for the kernel
+     * memory region. */
     if(OK(__free__(&kernel, addr_))) {
       RET_OK;
     } else {
@@ -699,6 +689,8 @@ Return_t __MemoryRegionCheckKernel__(const volatile Addr_t *addr_, const Base_t 
   RET_DEFINE;
 
   if((NULLPTR(addr_) && (MEMORY_REGION_CHECK_OPTION_WO_ADDR == option_)) || (NOTNULLPTR(addr_) && (MEMORY_REGION_CHECK_OPTION_W_ADDR == option_))) {
+    /* Simply passthrough the address pointer to __MemoryRegionCheck__() for the
+     * kernel memory region, address and option parameters. */
     if(OK(__MemoryRegionCheck__(&kernel, addr_, option_))) {
       RET_OK;
     } else {
@@ -716,6 +708,8 @@ Return_t __HeapAllocateMemory__(volatile Addr_t **addr_, const Size_t size_) {
   RET_DEFINE;
 
   if(NOTNULLPTR(addr_) && (zero < size_)) {
+    /* Simply passthrough the address pointer to __calloc__() for the heap
+     * memory region. */
     if(OK(__calloc__(&heap, addr_, size_))) {
       if(NOTNULLPTR(*addr_)) {
         RET_OK;
@@ -737,6 +731,8 @@ Return_t __HeapFreeMemory__(const volatile Addr_t *addr_) {
   RET_DEFINE;
 
   if(NOTNULLPTR(addr_)) {
+    /* Simply passthrough the address pointer to __free__() for the heap memory
+     * region. */
     if(OK(__free__(&heap, addr_))) {
       RET_OK;
     } else {
@@ -754,6 +750,8 @@ Return_t __MemoryRegionCheckHeap__(const volatile Addr_t *addr_, const Base_t op
   RET_DEFINE;
 
   if((NULLPTR(addr_) && (MEMORY_REGION_CHECK_OPTION_WO_ADDR == option_)) || (NOTNULLPTR(addr_) && (MEMORY_REGION_CHECK_OPTION_W_ADDR == option_))) {
+    /* Simply passthrough the address pointer to __MemoryRegionCheck__() for the
+     * heap memory region, address and option parameters. */
     if(OK(__MemoryRegionCheck__(&heap, addr_, option_))) {
       RET_OK;
     } else {
@@ -827,12 +825,16 @@ Return_t __memcmp__(const volatile Addr_t *s1_, const volatile Addr_t *s2_, cons
 
 
   if(NOTNULLPTR(s1_) && NOTNULLPTR(s2_) && (zero < size_) && NOTNULLPTR(res_)) {
+    /* Make res_ default to true which means that the memory is comparable. If
+     * we later find that the memory is *NOT* comparable we will set res_ to
+     * false. */
     *res_ = true;
     s1 = (Byte_t *) s1_;
     s2 = (Byte_t *) s2_;
 
     for(i = zero; i < size_; i++) {
       if(*s1 != *s2) {
+        /* Set res_ to false which means that the memory is *NOT* comparable. */
         *res_ = false;
         break;
       }

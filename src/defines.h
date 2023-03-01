@@ -298,6 +298,12 @@
   #endif /* if defined(OKMAGIC) */
   #define OKMAGIC(ptr_) (CALCMAGIC(ptr_) == (ptr_)->magic)
 
+  #if defined(OKADDR)
+    #undef OKADDR
+  #endif /* if defined(OKADDR) */
+  #define OKADDR(region_, addr_) (((const volatile Addr_t *) (addr_) >= (Addr_t *) ((region_)->mem)) && ((const volatile Addr_t *) (addr_) < \
+          (Addr_t *) ((region_)->mem + MEMORY_REGION_SIZE_IN_BYTES)))
+
   #if defined(INUSE)
     #undef INUSE
   #endif /* if defined(INUSE) */
