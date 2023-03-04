@@ -260,7 +260,8 @@
 
     #define ENABLE_INTERRUPTS() __asm volatile ("cpsie i")
 
-  #elif defined(ESP32)
+  #elif defined(ESP32) /* The ESP32 Arduino core is not supported as it is
+                        * bundled with FreeRTOS. */
 
     #pragma \
   message("WARNING: The ESP32 Arduino core uses FreeRTOS. HeliOS and FreeRTOS cannot coexist in the same application. If your application requires an embedded operating system, use the built-in FreeRTOS included with the ESP32 Arduino core.")

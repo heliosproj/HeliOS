@@ -995,7 +995,7 @@ static Return_t __DefragMemoryRegion__(const volatile MemoryRegion_t *region_) {
           /* Zero out the block formerly occupied by the memory entry that was
            * merged. */
           if(OK(__memset__(merge, zero, sizeof(MemoryEntry_t)))) {
-            /* Nothing to do here. */
+            /* Do nothing - literally. */
           } else {
             ASSERT;
             break;

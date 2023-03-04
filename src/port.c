@@ -126,11 +126,11 @@ Return_t __PortInit__(void) {
 
     RET_OK;
 
-#elif defined(ESP32)
+#elif defined(ESP32) /* The ESP32 Arduino core is not supported as it is bundled
+                      * with FreeRTOS. */
     RET_OK;
 
 
-/* Not supported. */
 #elif defined(CMSIS_ARCH_CORTEXM)
     SysTick_Config(SYSTEM_CORE_CLOCK_FREQUENCY / SYSTEM_CORE_CLOCK_PRESCALER);
     RET_OK;

@@ -60,8 +60,11 @@ Return_t xQueueDelete(Queue_t *queue_) {
   RET_DEFINE;
 
   if(OK(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
+    /* Loop through the queue while it contains messages and drop each message
+     * until there are no more messages. */
     while(NOTNULLPTR(queue_->head)) {
-      if(OK(xQueueDropMessage(queue_))) {
+      if(OK(__QueueDropmessage__(queue_))) {
+        /* Do nothing - literally. */
       } else {
         ASSERT;
         break;
@@ -98,6 +101,10 @@ Return_t xQueueGetLength(const Queue_t *queue_, Base_t *res_) {
         cursor = cursor->next;
       }
 
+
+      /* Confirm the length of the queue matches the number of the messages we
+       * counted while traversing the queue. If they match, then set res_ to the
+       * number of messages. */
       if(messages == queue_->length) {
         *res_ = messages;
         RET_OK;
@@ -132,6 +139,14 @@ Return_t xQueueIsQueueEmpty(const Queue_t *queue_, Base_t *res_) {
         cursor = cursor->next;
       }
 
+
+      /* Confirm the length of the queue matches the number of the messages we
+       * counted while traversing the queue. If they match, then set res_ to the
+       * number of messages.
+       *
+       * If the number of messages is zero, then set res_ to true because the
+       * queue is empty. Otherwise set res_ to false because the queue is *NOT*
+       * empty. */
       if((zero == messages) && (messages == queue_->length)) {
         *res_ = true;
         RET_OK;
@@ -169,6 +184,15 @@ Return_t xQueueIsQueueFull(const Queue_t *queue_, Base_t *res_) {
         cursor = cursor->next;
       }
 
+
+      /* Confirm the length of the queue matches the number of the messages we
+       * counted while traversing the queue. If they match, then set res_ to the
+       * number of messages.
+       *
+       * If the number of messages greater than or equal to the queue length
+       * limit, then set res_ to true because the queue is full. If the number
+       * of messages is less than the queue length limit, then set res_ to false
+       * because the queue is *NOT* full. */
       if((messages >= queue_->limit) && (messages == queue_->length)) {
         *res_ = true;
         RET_OK;
@@ -206,6 +230,15 @@ Return_t xQueueMessagesWaiting(const Queue_t *queue_, Base_t *res_) {
         cursor = cursor->next;
       }
 
+
+      /* Confirm the length of the queue matches the number of the messages we
+       * counted while traversing the queue. If they match, then set res_ to the
+       * number of messages.
+       *
+       * If the number of messages greater than zero, then set res_ to true
+       * because there is at least one message waiting - possibly more.
+       * Otherwise set res_ to false because there are no messages waiting in
+       * the queue. */
       if((zero < messages) && (messages == queue_->length)) {
         *res_ = true;
         RET_OK;
@@ -268,6 +301,10 @@ Return_t xQueueSend(Queue_t *queue_, const Base_t bytes_, const Byte_t *value_) 
                 RET_OK;
               } else {
                 ASSERT;
+
+
+                /* Free the kernel memory because __memcpy__() failed. */
+                __KernelFreeMemory__(message);
               }
             } else {
               ASSERT;
@@ -323,6 +360,10 @@ static Return_t __QueuePeek__(const Queue_t *queue_, QueueMessage_t **message_) 
               RET_OK;
             } else {
               ASSERT;
+
+
+              /* Free the heap memory because __memcpy__() failed. */
+              __HeapFreeMemory__(*message_);
             }
           } else {
             ASSERT;
@@ -378,9 +419,8 @@ static Return_t __QueueDropmessage__(Queue_t *queue_) {
           queue_->tail = null;
         }
 
-        queue_->length--;
-
         if(OK(__KernelFreeMemory__(message))) {
+          queue_->length--;
           RET_OK;
         } else {
           ASSERT;
