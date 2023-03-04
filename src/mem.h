@@ -61,9 +61,6 @@
 
   #if defined(POSIX_ARCH_OTHER)
     void __MemoryClear__(void);
-    void __MemoryRegionDumpKernel__(void);
-    void __MemoryRegionDumpHeap__(void);
-    void __memdump__(const volatile MemoryRegion_t *region_);
   #endif /* if defined(POSIX_ARCH_OTHER) */
 
   #ifdef __cplusplus

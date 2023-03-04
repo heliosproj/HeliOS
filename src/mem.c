@@ -648,7 +648,7 @@ Return_t __KernelAllocateMemory__(volatile Addr_t **addr_, const Size_t size_) {
 
   if(NOTNULLPTR(addr_) && (zero < size_)) {
     /* Simply passthrough the address pointer to __calloc__() for the kernel
-     * memory region. */
+     * memory region and the size of the requested memory. */
     if(OK(__calloc__(&kernel, addr_, size_))) {
       if(NOTNULLPTR(*addr_)) {
         RET_OK;
@@ -690,7 +690,7 @@ Return_t __MemoryRegionCheckKernel__(const volatile Addr_t *addr_, const Base_t 
 
   if((NULLPTR(addr_) && (MEMORY_REGION_CHECK_OPTION_WO_ADDR == option_)) || (NOTNULLPTR(addr_) && (MEMORY_REGION_CHECK_OPTION_W_ADDR == option_))) {
     /* Simply passthrough the address pointer to __MemoryRegionCheck__() for the
-     * kernel memory region, address and option parameters. */
+     * kernel memory region and the region check option. */
     if(OK(__MemoryRegionCheck__(&kernel, addr_, option_))) {
       RET_OK;
     } else {
@@ -709,7 +709,7 @@ Return_t __HeapAllocateMemory__(volatile Addr_t **addr_, const Size_t size_) {
 
   if(NOTNULLPTR(addr_) && (zero < size_)) {
     /* Simply passthrough the address pointer to __calloc__() for the heap
-     * memory region. */
+     * memory region and the size of the requested memory. */
     if(OK(__calloc__(&heap, addr_, size_))) {
       if(NOTNULLPTR(*addr_)) {
         RET_OK;
@@ -751,7 +751,7 @@ Return_t __MemoryRegionCheckHeap__(const volatile Addr_t *addr_, const Base_t op
 
   if((NULLPTR(addr_) && (MEMORY_REGION_CHECK_OPTION_WO_ADDR == option_)) || (NOTNULLPTR(addr_) && (MEMORY_REGION_CHECK_OPTION_W_ADDR == option_))) {
     /* Simply passthrough the address pointer to __MemoryRegionCheck__() for the
-     * heap memory region, address and option parameters. */
+     * heap memory region and the region check option. */
     if(OK(__MemoryRegionCheck__(&heap, addr_, option_))) {
       RET_OK;
     } else {
@@ -825,8 +825,8 @@ Return_t __memcmp__(const volatile Addr_t *s1_, const volatile Addr_t *s2_, cons
 
 
   if(NOTNULLPTR(s1_) && NOTNULLPTR(s2_) && (zero < size_) && NOTNULLPTR(res_)) {
-    /* Make res_ default to true which means that the memory is comparable. If
-     * we later find that the memory is *NOT* comparable we will set res_ to
+    /* Set res_ to true by default which indicates the memory is comparable. If
+     * we later discover the memory is *NOT* comparable, we will set res_ to
      * false. */
     *res_ = true;
     s1 = (Byte_t *) s1_;
@@ -834,7 +834,7 @@ Return_t __memcmp__(const volatile Addr_t *s1_, const volatile Addr_t *s2_, cons
 
     for(i = zero; i < size_; i++) {
       if(*s1 != *s2) {
-        /* Set res_ to false which means that the memory is *NOT* comparable. */
+        /* The memory is *NOT* comparable so set res_ to false. */
         *res_ = false;
         break;
       }
@@ -857,7 +857,7 @@ Return_t xMemGetHeapStats(MemoryRegionStats_t **stats_) {
 
   if(NOTNULLPTR(stats_)) {
     /* Simply passthrough the address pointer to __MemGetRegionStats__() for the
-     * heap memory region. */
+     * heap memory region and a pointer to the stats structure. */
     if(OK(__MemGetRegionStats__(&heap, stats_))) {
       RET_OK;
     } else {
@@ -876,7 +876,7 @@ Return_t xMemGetKernelStats(MemoryRegionStats_t **stats_) {
 
   if(NOTNULLPTR(stats_)) {
     /* Simply passthrough the address pointer to __MemGetRegionStats__() for the
-     * kernel memory region. */
+     * kernel memory region and a pointer to the stats structure. */
     if(OK(__MemGetRegionStats__(&kernel, stats_))) {
       RET_OK;
     } else {
@@ -1026,49 +1026,6 @@ static Return_t __DefragMemoryRegion__(const volatile MemoryRegion_t *region_) {
     heap.minAvailableEver = CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS * CONFIG_MEMORY_REGION_BLOCK_SIZE;
     __memset__(&kernel, 0x0, sizeof(MemoryRegion_t));
     kernel.minAvailableEver = CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS * CONFIG_MEMORY_REGION_BLOCK_SIZE;
-
-    return;
-  }
-
-
-/* Just a debugging function to dump the contents of kernel memory. */
-  void __MemoryRegionDumpKernel__(void) {
-    __memdump__(&kernel);
-
-    return;
-  }
-
-
-/* Just a debugging function to dump the contents of heap memory. */
-  void __MemoryRegionDumpHeap__(void) {
-    __memdump__(&heap);
-
-    return;
-  }
-
-
-/* Function to dump the memory of the specified memory region. */
-  void __memdump__(const volatile MemoryRegion_t *region_) {
-    Size_t i = zero;
-    Size_t j = zero;
-    Size_t k = zero;
-
-
-    for(i = zero; i < (MEMORY_REGION_SIZE_IN_BYTES / CONFIG_MEMORY_REGION_BLOCK_SIZE); i++) {
-      printf("%p:", (region_->mem + k));
-
-      for(j = zero; j < CONFIG_MEMORY_REGION_BLOCK_SIZE; j++) {
-        if(zero == *(region_->mem + k)) {
-          printf(" --");
-        } else {
-          printf(" %02X", *(region_->mem + k));
-        }
-
-        k++;
-      }
-
-      printf("\n");
-    }
 
     return;
   }
