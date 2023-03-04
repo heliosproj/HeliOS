@@ -47,6 +47,8 @@ Return_t xTaskCreate(Task_t **task_, const Byte_t *name_, void (*callback_)(Task
 
 
   if(NOTNULLPTR(task_) && (NOTNULLPTR(name_)) && (NOTNULLPTR(callback_)) && (false == FLAG_RUNNING)) {
+    /* NOTE: There is a __KernelAllocateMemory__() syscall buried in this if()
+     * statement. */
     if(NOTNULLPTR(tlist) || (NULLPTR(tlist) && OK(__KernelAllocateMemory__((volatile Addr_t **) &tlist, sizeof(TaskList_t))))) {
       if(OK(__KernelAllocateMemory__((volatile Addr_t **) task_, sizeof(Task_t)))) {
         if(NOTNULLPTR(*task_)) {
@@ -73,6 +75,10 @@ Return_t xTaskCreate(Task_t **task_, const Byte_t *name_, void (*callback_)(Task
             RET_OK;
           } else {
             ASSERT;
+
+
+            /* Free kernel memory because __memcpy__() failed.*/
+            __KernelFreeMemory__(*task_);
           }
         } else {
           ASSERT;

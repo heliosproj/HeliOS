@@ -39,6 +39,8 @@ Return_t xTimerCreate(Timer_t **timer_, const Ticks_t period_) {
   Timer_t *cursor = null;
 
 
+  /* NOTE: There is a __KernelAllocateMemory__() syscall buried in this if()
+   * statement. */
   if((NOTNULLPTR(timer_) && NOTNULLPTR(tlist)) || (NOTNULLPTR(timer_) && (NULLPTR(tlist) && OK(__KernelAllocateMemory__((volatile Addr_t **) &tlist,
     sizeof(TimerList_t)))))) {
     if(OK(__KernelAllocateMemory__((volatile Addr_t **) timer_, sizeof(Task_t)))) {
