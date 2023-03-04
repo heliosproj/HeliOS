@@ -332,6 +332,10 @@ Return_t xTaskGetTaskInfo(const Task_t *task_, TaskInfo_t **info_) {
             RET_OK;
           } else {
             ASSERT;
+
+
+            /* Free heap memory because __memcpy__() failed. */
+            __HeapFreeMemory__(*info_);
           }
         } else {
           ASSERT;
@@ -431,6 +435,10 @@ Return_t xTaskGetName(const Task_t *task_, Byte_t **name_) {
             RET_OK;
           } else {
             ASSERT;
+
+
+            /* Free heap memory because __memcpy__() failed. */
+            __HeapFreeMemory__(*name_);
           }
         } else {
           ASSERT;
@@ -557,9 +565,17 @@ Return_t xTaskNotifyTake(Task_t *task_, TaskNotification_t **notification_) {
                 RET_OK;
               } else {
                 ASSERT;
+
+
+                /* Free heap memory because __memset__() failed. */
+                __HeapFreeMemory__(*notification_);
               }
             } else {
               ASSERT;
+
+
+              /* Free heap memory because __memcpy__() failed. */
+              __HeapFreeMemory__(*notification_);
             }
           } else {
             ASSERT;
@@ -744,24 +760,41 @@ Return_t xTaskStartScheduler(void) {
 
   Task_t *runTask = null;
   Task_t *cursor = null;
+
+
+  /* Intentionally underflow to get the maximum value of Ticks_t. */
   Ticks_t leastRunTime = -1;
 
 
   if((false == FLAG_RUNNING) && (NOTNULLPTR(tlist))) {
     while(SchedulerStateRunning == schedulerState) {
-      if(FLAG_OVERFLOW) {
+      /* If the total runtime on a task has overflowed, reset the total runtime
+       * for all tasks to their last runtime. */
+      if(true == FLAG_OVERFLOW) {
         __RunTimeReset__();
       }
 
       cursor = tlist->head;
 
       while(NOTNULLPTR(cursor)) {
+        /* If the task is in a waiting state *AND* has a waiting notification,
+         * then run the task. */
         if((TaskStateWaiting == cursor->state) && (zero < cursor->notificationBytes)) {
           __TaskRun__(cursor);
+
+
+          /* If the task is in a waiting state *AND* the task timer has elapsed,
+           * then run the task. */
         } else if((TaskStateWaiting == cursor->state) && (zero < cursor->timerPeriod) && ((__PortGetSysTicks__() - cursor->timerStartTime) >
           cursor->timerPeriod)) {
           __TaskRun__(cursor);
           cursor->timerStartTime = __PortGetSysTicks__();
+
+
+          /* If the task is in the running state *AND* its total runtime is less
+           * than the least runtime of the tasks thus far, then update lest
+           * runtime and remember the task because it will get ran later if it
+           * is in fact the task with the least runtime. */
         } else if((TaskStateRunning == cursor->state) && (leastRunTime > cursor->totalRunTime)) {
           leastRunTime = cursor->totalRunTime;
           runTask = cursor;
@@ -770,11 +803,14 @@ Return_t xTaskStartScheduler(void) {
         cursor = cursor->next;
       }
 
+      /* If a running task was found with the least runtime of all of the
+       * running tasks then we run it here, otherwise we ignore this step. */
       if(NOTNULLPTR(runTask)) {
         __TaskRun__(runTask);
         runTask = null;
       }
 
+      /* Intentionally underflow to get the maximum value of Ticks_t. */
       leastRunTime = -1;
     }
 
@@ -794,6 +830,8 @@ static void __RunTimeReset__(void) {
 
   cursor = tlist->head;
 
+  /* Go through all of the tasks and set their total runtime to their last
+   * runtime. */
   while(NOTNULLPTR(cursor)) {
     cursor->totalRunTime = cursor->lastRunTime;
     cursor = cursor->next;
