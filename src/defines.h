@@ -35,7 +35,8 @@
   #include <stddef.h>
 
 
-/* Check that the system HeliOS is being targeted for has an 8-bit wide byte. */
+  /* Check that the system HeliOS is being targeted for has an 8-bit wide byte.
+   */
   #if !defined(CHAR_BIT)
     #pragma message("WARNING: Unable to determine if system has an 8-bit wide byte. CHAR_BIT not defined?")
   #else  /* if !defined(CHAR_BIT) */
@@ -285,7 +286,7 @@
   #if defined(MAGIC_CONST)
     #undef MAGIC_CONST
   #endif /* if defined(MAGIC_CONST) */
-  #define MAGIC_CONST 0xB16B00B5u
+  #define MAGIC_CONST 0xB16B00B5u /* https://en.wikipedia.org/wiki/Hexspeak */
 
 
   #if defined(CALCMAGIC)
