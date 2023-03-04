@@ -850,15 +850,32 @@ static void __TaskRun__(Task_t *task_) {
   Ticks_t prevTotalRunTime = zero;
 
 
+  /* Store the previous total runtime to detect for overflow later. */
   prevTotalRunTime = task_->totalRunTime;
+
+
+  /* Capture the start time of the task in ticks. */
   taskStartTime = __PortGetSysTicks__();
+
+
+  /* Call the task main function through it's callback. */
   (*task_->callback)(task_, task_->taskParameter);
+
+
+  /* Capture the task runtime by subtracting the start time from the end time.
+   */
   task_->lastRunTime = __PortGetSysTicks__() - taskStartTime;
+
+
+  /* Add the last runtime to the total runtime. */
   task_->totalRunTime += task_->lastRunTime;
 
 #if defined(CONFIG_TASK_WD_TIMER_ENABLE)
 
-    if((zero != task_->wdTimerPeriod) && (task_->lastRunTime > task_->wdTimerPeriod)) {
+    /* If the task WD timer feature is enabled, if the WD timer period is
+     * greater than zero *AND*
+     *  the last runtime exceeded the WD timer period, then suspend the task. */
+    if((zero < task_->wdTimerPeriod) && (task_->lastRunTime > task_->wdTimerPeriod)) {
       task_->state = TaskStateSuspended;
     }
 
