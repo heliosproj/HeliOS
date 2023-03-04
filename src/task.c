@@ -671,18 +671,20 @@ Return_t xTaskChangePeriod(Task_t *task_, const Ticks_t period_) {
 
 Return_t xTaskChangeWDPeriod(Task_t *task_, const Ticks_t period_) {
   RET_DEFINE;
+#if defined(CONFIG_TASK_WD_TIMER_ENABLE)
 
-  if(NOTNULLPTR(task_) && NOTNULLPTR(tlist)) {
-    if(OK(__TaskListFindTask__(task_))) {
-      task_->wdTimerPeriod = period_;
-      RET_OK;
+    if(NOTNULLPTR(task_) && NOTNULLPTR(tlist)) {
+      if(OK(__TaskListFindTask__(task_))) {
+        task_->wdTimerPeriod = period_;
+        RET_OK;
+      } else {
+        ASSERT;
+      }
     } else {
       ASSERT;
     }
-  } else {
-    ASSERT;
-  }
 
+#endif /* if defined(CONFIG_TASK_WD_TIMER_ENABLE) */
   RET_RETURN;
 }
 
@@ -862,6 +864,8 @@ static void __TaskRun__(Task_t *task_) {
 
 #endif /* if defined(CONFIG_TASK_WD_TIMER_ENABLE) */
 
+  /* Detect overflow of total runtime. If an overflow occurs, then set the
+   * overflow flag to true. */
   if(task_->totalRunTime < prevTotalRunTime) {
     FLAG_OVERFLOW = true;
   }
@@ -914,18 +918,20 @@ Return_t xTaskGetSchedulerState(SchedulerState_t *state_) {
 
 Return_t xTaskGetWDPeriod(const Task_t *task_, Ticks_t *period_) {
   RET_DEFINE;
+#if defined(CONFIG_TASK_WD_TIMER_ENABLE)
 
-  if(NOTNULLPTR(task_) && NOTNULLPTR(period_) && NOTNULLPTR(tlist)) {
-    if(OK(__TaskListFindTask__(task_))) {
-      *period_ = task_->wdTimerPeriod;
-      RET_OK;
+    if(NOTNULLPTR(task_) && NOTNULLPTR(period_) && NOTNULLPTR(tlist)) {
+      if(OK(__TaskListFindTask__(task_))) {
+        *period_ = task_->wdTimerPeriod;
+        RET_OK;
+      } else {
+        ASSERT;
+      }
     } else {
       ASSERT;
     }
-  } else {
-    ASSERT;
-  }
 
+#endif /* if defined(CONFIG_TASK_WD_TIMER_ENABLE) */
   RET_RETURN;
 }
 

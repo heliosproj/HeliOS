@@ -130,7 +130,15 @@
     Ticks_t totalRunTime;
     Ticks_t timerPeriod;
     Ticks_t timerStartTime;
-    Ticks_t wdTimerPeriod;
+
+
+
+  #if defined(CONFIG_TASK_WD_TIMER_ENABLE)
+      Ticks_t wdTimerPeriod;
+
+
+
+  #endif /* if defined(CONFIG_TASK_WD_TIMER_ENABLE) */
     struct Task_s *next;
   } Task_t;
   typedef struct TaskRunTimeStats_s {
