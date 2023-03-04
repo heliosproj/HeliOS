@@ -889,6 +889,7 @@ Return_t xTaskGetWDPeriod(const Task_t *task_, Ticks_t *period_) {
 #if defined(POSIX_ARCH_OTHER)
 
 
+  /* For unit testing only! */
   void __TaskStateClear__(void) {
     tlist = null;
 

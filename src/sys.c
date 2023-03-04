@@ -107,9 +107,17 @@ Return_t xSystemGetSystemInfo(SystemInfo_t **info_) {
             RET_OK;
           } else {
             ASSERT;
+
+
+            /* Free heap memory because xTaskGetNumberOfTasks() failed. */
+            __HeapFreeMemory__(*info_);
           }
         } else {
           ASSERT;
+
+
+          /* Free heap memory because __memcpy__() failed. */
+          __HeapFreeMemory__(*info_);
         }
       } else {
         ASSERT;
@@ -128,6 +136,7 @@ Return_t xSystemGetSystemInfo(SystemInfo_t **info_) {
 #if defined(POSIX_ARCH_OTHER)
 
 
+  /* For unit testing only! */
   void __SysStateClear__(void) {
     __memset__(&flags, 0x0, sizeof(Flags_t));
 

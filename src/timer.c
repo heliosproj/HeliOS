@@ -298,6 +298,7 @@ static Return_t __TimerListFindTimer__(const Timer_t *timer_) {
 #if defined(POSIX_ARCH_OTHER)
 
 
+  /* For unit testing only! */
   void __TimerStateClear__(void) {
     tlist = null;
 
