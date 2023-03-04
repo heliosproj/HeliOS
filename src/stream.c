@@ -109,9 +109,17 @@ Return_t xStreamReceive(const StreamBuffer_t *stream_, HalfWord_t *bytes_, Byte_
                 RET_OK;
               } else {
                 ASSERT;
+
+
+                /* Free heap memory because __memset__() failed. */
+                __HeapFreeMemory__(*data_);
               }
             } else {
               ASSERT;
+
+
+              /* Free heap memory because __memcpy__() failed. */
+              __HeapFreeMemory__(*data_);
             }
           } else {
             ASSERT;
