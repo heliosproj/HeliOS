@@ -29,6 +29,7 @@
   #define UNIT_H_
 
   #include "posix.h"
+  #include "defines.h"
 
   #include <stdint.h>
   #include <inttypes.h>
@@ -37,25 +38,10 @@
   #include <stdio.h>
   #include <unistd.h>
 
-  #if !defined(UNIT_NAME_LENGTH)
-    #define UNIT_NAME_LENGTH 0x40 /* 64 */
-  #endif /* if !defined(UNIT_NAME_LENGTH) */
-
-  #if !defined(true)
-    #define true 0x1 /* 1 */
-  #endif /* if !defined(true) */
-
-  #if !defined(false)
-    #define false 0x0 /* 0 */
-  #endif /* if !defined(false) */
-
-  #if !defined(null)
-    #if !defined(__cplusplus)
-      #define null ((void *) 0x0) /* 0 */
-    #else  /* if !defined(__cplusplus) */
-      #define null 0x0 /* 0 */
-    #endif /* if !defined(__cplusplus) */
-  #endif /* if !defined(null) */
+  #if defined(UNIT_NAME_LENGTH)
+    #undef UNIT_NAME_LENGTH
+  #endif /* if defined(UNIT_NAME_LENGTH) */
+  #define UNIT_NAME_LENGTH 0x40   /* 64 */
   typedef struct unit_s {
     char name[UNIT_NAME_LENGTH];
     int32_t begun;
