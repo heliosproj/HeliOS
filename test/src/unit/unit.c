@@ -33,7 +33,11 @@ static unit_t *unit = null;
 void unit_init(void) {
   if(null == unit) {
     unit = (unit_t *) calloc(1, sizeof(unit_t));
-    printf("unit: initializing...\n");
+#if defined(UNIT_TEST_COLORIZE)
+      printf("\033[92munit: initializing...\n\033[39m");
+#else  /* if defined(UNIT_TEST_COLORIZE) */
+      printf("unit: initializing...\n");
+#endif /* if defined(UNIT_TEST_COLORIZE) */
   }
 
   return;
@@ -45,7 +49,11 @@ void unit_begin(const char *name_) {
     strncpy(unit->name, name_, UNIT_NAME_LENGTH);
     unit->begun = true;
     unit->failed = false;
-    printf("unit: begin: %s\n", unit->name);
+#if defined(UNIT_TEST_COLORIZE)
+      printf("\033[92munit: begin: %s\n\033[39m", unit->name);
+#else  /* if defined(UNIT_TEST_COLORIZE) */
+      printf("unit: begin: %s\n", unit->name);
+#endif /* if defined(UNIT_TEST_COLORIZE) */
   }
 
   return;
@@ -64,10 +72,18 @@ void unit_try(int expr_) {
 void unit_end(void) {
   if((null != unit) && (true == unit->begun)) {
     if(true == unit->failed) {
-      printf("unit: end: %s failed\n", unit->name);
+#if defined(UNIT_TEST_COLORIZE)
+        printf("\033[91munit: end: %s failed\n\033[39m", unit->name);
+#else  /* if defined(UNIT_TEST_COLORIZE) */
+        printf("unit: end: %s failed\n", unit->name);
+#endif /* if defined(UNIT_TEST_COLORIZE) */
       unit->fail++;
     } else {
-      printf("unit: end: %s\n", unit->name);
+#if defined(UNIT_TEST_COLORIZE)
+        printf("\033[92munit: end: %s\n\033[39m", unit->name);
+#else  /* if defined(UNIT_TEST_COLORIZE) */
+        printf("unit: end: %s\n", unit->name);
+#endif /* if defined(UNIT_TEST_COLORIZE) */
       unit->pass++;
     }
 
@@ -82,10 +98,17 @@ void unit_end(void) {
 
 void unit_exit(void) {
   if(null != unit) {
-    printf("unit: failed = %" PRId32 "\n", unit->fail);
-    printf("unit: passed = %" PRId32 "\n", unit->pass);
-    printf("unit: total = %" PRId32 "\n", unit->fail + unit->pass);
-    printf("unit: exiting...\n");
+#if defined(UNIT_TEST_COLORIZE)
+      printf("\033[92munit: failed = %" PRId32 "\n\033[39m", unit->fail);
+      printf("\033[92munit: passed = %" PRId32 "\n\033[39m", unit->pass);
+      printf("\033[92munit: total = %" PRId32 "\n\033[39m", unit->fail + unit->pass);
+      printf("\033[92munit: exiting...\n\033[39m");
+#else  /* if defined(UNIT_TEST_COLORIZE) */
+      printf("unit: failed = %" PRId32 "\n", unit->fail);
+      printf("unit: passed = %" PRId32 "\n", unit->pass);
+      printf("unit: total = %" PRId32 "\n", unit->fail + unit->pass);
+      printf("unit: exiting...\n");
+#endif /* if defined(UNIT_TEST_COLORIZE) */
     free(unit);
 
     if(0x0 < unit->fail) {

@@ -85,6 +85,7 @@
     "Manny"
   ],
   "C_Cpp.default.defines": [
-    "POSIX_ARCH_OTHER"
+    "POSIX_ARCH_OTHER",
+    "UNIT_TEST_COLORIZE"
   ]
 }
