@@ -137,6 +137,21 @@
   #ifdef __cplusplus
     extern "C" {
   #endif /* ifdef __cplusplus */
+
+
+  /**
+   * @brief
+   *
+   * @param  device_self_register_
+   * @return                       xReturn On success, the syscall returns
+   *                               ReturnOK. On failure, the syscall returns
+   *                               ReturnError. All HeliOS syscalls return the
+   *                               xReturn (a.k.a., Return_t) type which can
+   *                               either be ReturnOK or ReturnError. The C
+   *                               macro OK() can be used as a more concise way
+   *                               of checking the return value of a syscall
+   *                               (e.g., if(OK(xMemGetUsed(&size))) {} ).
+   */
   xReturn xDeviceRegisterDevice(xReturn (*device_self_register_)());
   xReturn xDeviceIsAvailable(const xHalfWord uid_, xBase *res_);
   xReturn xDeviceSimpleWrite(const xHalfWord uid_, xWord *data_);
