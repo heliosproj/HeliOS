@@ -120,9 +120,9 @@ void unit_end(void) {
 void unit_exit(void) {
   if(null != unit) {
 #if defined(UNIT_TEST_COLORIZE)
-      printf("\033[92munit: failed: %" PRId32 "\n\033[39m", unit->fail);
-      printf("\033[92munit: passed: %" PRId32 "\n\033[39m", unit->pass);
-      printf("\033[92munit: total: %" PRId32 "\n\033[39m", unit->fail + unit->pass);
+      printf("\033[92munit: failed:\033[96m %" PRId32 "\n\033[39m", unit->fail);
+      printf("\033[92munit: passed:\033[96m %" PRId32 "\n\033[39m", unit->pass);
+      printf("\033[92munit: total:\033[96m %" PRId32 "\n\033[39m", unit->fail + unit->pass);
       printf("\033[92munit: exiting...\n\033[39m");
 #else  /* if defined(UNIT_TEST_COLORIZE) */
       printf("unit: failed: %" PRId32 "\n", unit->fail);
