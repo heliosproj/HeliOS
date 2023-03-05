@@ -54,6 +54,13 @@ void unit_begin(const char *name_) {
 #else  /* if defined(UNIT_TEST_COLORIZE) */
       printf("unit: begin: %s\n", unit->name);
 #endif /* if defined(UNIT_TEST_COLORIZE) */
+  } else if(true == unit->begun) {
+
+#if defined(UNIT_TEST_COLORIZE)
+      printf("\033[91munit: error: unit_begin() called inside a unit test\n\033[39m", unit->name);
+#else  /* if defined(UNIT_TEST_COLORIZE) */
+      printf("unit: error: unit_begin() called inside a unit test\n", unit->name);
+#endif /* if defined(UNIT_TEST_COLORIZE) */
   }
 
   return;
@@ -63,6 +70,13 @@ void unit_begin(const char *name_) {
 void unit_try(int expr_) {
   if((null != unit) && (true == unit->begun) && (false == expr_)) {
     unit->failed = true;
+  } else if(false == unit->begun) {
+
+#if defined(UNIT_TEST_COLORIZE)
+      printf("\033[91munit: error: unit_try() called outside a unit test\n\033[39m", unit->name);
+#else  /* if defined(UNIT_TEST_COLORIZE) */
+      printf("unit: error: unit_try() called outside a unit test\n", unit->name);
+#endif /* if defined(UNIT_TEST_COLORIZE) */
   }
 
   return;
@@ -90,6 +104,13 @@ void unit_end(void) {
     memset(unit->name, 0x0, UNIT_NAME_LENGTH);
     unit->begun = false;
     unit->failed = false;
+ } else if(false == unit->begun) {
+
+#if defined(UNIT_TEST_COLORIZE)
+      printf("\033[91munit: error: unit_end() called outside a unit test\n\033[39m", unit->name);
+#else  /* if defined(UNIT_TEST_COLORIZE) */
+      printf("unit: error: unit_end() called outside a unit test\n", unit->name);
+#endif /* if defined(UNIT_TEST_COLORIZE) */
   }
 
   return;

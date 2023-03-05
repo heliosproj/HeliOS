@@ -81,6 +81,7 @@ void timer_harness(void) {
   unit_try(OK(xTimerHasTimerExpired(timer01, &timer09)));
   unit_try(true == timer09);
   unit_try(OK(xTimerReset(timer01)));
+  unit_end();
   unit_begin("xTimerDelete()");
   unit_try(OK(xTimerDelete(timer01)));
   unit_try(!OK(xTimerGetPeriod(timer01, &timer10)));

@@ -56,25 +56,7 @@ void memory_1_harness(void) {
 
   for(i = 0; i < 0x20u; i++) {
     tests[i].size = sizes[i];
-    tests[i].blocks = (sizes[i] / CONFIG_MEMORY_REGION_BLOCK_SIZE) + 1; /* ... +
-                                                                         * 1;
-                                                                         * Assuming
-                                                                         * a memory
-                                                                         * region
-                                                                         * entry
-                                                                         * only
-                                                                         * takes
-                                                                         * one
-                                                                         * (1)
-                                                                         * block
-                                                                         * -
-                                                                         * that
-                                                                         * may
-                                                                         * not
-                                                                         * always
-                                                                         * be
-                                                                         * true.
-                                                                         */
+    tests[i].blocks = (sizes[i] / CONFIG_MEMORY_REGION_BLOCK_SIZE) + 1;
 
     if(zero < ((Size_t) (sizes[i] % CONFIG_MEMORY_REGION_BLOCK_SIZE))) {
       tests[i].blocks += 1;
