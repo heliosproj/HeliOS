@@ -1,6 +1,6 @@
 /*UNCRUSTIFY-OFF*/
 /**
- * @file memory_harness.c
+ * @file memory_1_harness.c
  * @author Manny Peterson (mannymsp@gmail.com)
  * @brief
  * @version 0.4.0
@@ -25,7 +25,7 @@
  *
  */
 /*UNCRUSTIFY-ON*/
-#include "memory_harness.h"
+#include "memory_1_harness.h"
 
 static Size_t sizes[0x20u] = {
   0x2532u, 0x1832u, 0x132u, 0x2932u, 0x332u, 0x1432u, 0x1332u, 0x532u, 0x1732u, 0x932u, 0x1432u, 0x2232u, 0x1432u, 0x3132u, 0x032u, 0x1132u, 0x632u, 0x932u,
@@ -38,7 +38,7 @@ static Size_t order[0x20u] = {
 static MemoryTest_t tests[0x20u];
 
 
-void memory_harness(void) {
+void memory_1_harness(void) {
   Size_t i;
   Size_t used;
   Size_t actual;
@@ -131,7 +131,7 @@ void memory_harness(void) {
   unit_begin("xMemGetKernelStats()");
   mem03 = null;
   mem04 = null;
-  unit_try(OK(xTaskCreate(&mem04, (Byte_t *) "NONE", memory_harness_task, null)));
+  unit_try(OK(xTaskCreate(&mem04, (Byte_t *) "NONE", memory_1_harness_task, null)));
   unit_try(null != mem04);
   unit_try(OK(xTaskDelete(mem04)));
   unit_try(OK(xMemGetKernelStats(&mem03)));
@@ -152,7 +152,7 @@ void memory_harness(void) {
 }
 
 
-void memory_harness_task(Task_t *task_, TaskParm_t *parm_) {
+void memory_1_harness_task(Task_t *task_, TaskParm_t *parm_) {
   xTaskSuspendAll();
 
   return;

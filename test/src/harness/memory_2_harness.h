@@ -1,10 +1,10 @@
 /*UNCRUSTIFY-OFF*/
 /**
- * @file test.c
+ * @file memory_2_harness.h
  * @author Manny Peterson (mannymsp@gmail.com)
- * @brief Source code for HeliOS unit testing
+ * @brief
  * @version 0.4.0
- * @date 2022-08-23
+ * @date 2022-08-27
  *
  * @copyright
  * HeliOS Embedded Operating System
@@ -25,37 +25,30 @@
  *
  */
 /*UNCRUSTIFY-ON*/
-#include "test.h"
+#ifndef MEMORY_2_HARNESS_H_
+  #define MEMORY_2_HARNESS_H_
+
+  #include "config.h"
+  #include "defines.h"
+  #include "types.h"
+  #include "port.h"
+  #include "device.h"
+  #include "mem.h"
+  #include "queue.h"
+  #include "stream.h"
+  #include "sys.h"
+  #include "task.h"
+  #include "timer.h"
+
+  #include "unit.h"
+
+  #ifdef __cplusplus
+    extern "C" {
+  #endif /* ifdef __cplusplus */
+  void memory_2_harness(void);
 
 
-int main(int argc, char **argv) {
-  unit_init();
-  reset();
-  memory_1_harness();
-  reset();
-  memory_2_harness();
-  reset();
-  queue_harness();
-  reset();
-  timer_harness();
-  reset();
-  task_harness();
-  reset();
-  stream_harness();
-  reset();
-  device_harness();
-  unit_exit();
-
-  return(0);
-}
-
-
-void reset(void) {
-  __MemoryClear__();
-  __SysStateClear__();
-  __TaskStateClear__();
-  __TimerStateClear__();
-  __DeviceStateClear__();
-
-  return;
-}
+  #ifdef __cplusplus
+    }
+  #endif /* ifdef __cplusplus */
+#endif /* ifndef MEMORY_2_HARNESS_H_ */

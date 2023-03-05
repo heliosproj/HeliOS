@@ -25,8 +25,8 @@
  *
  */
 /*UNCRUSTIFY-ON*/
-#ifndef MEMORY_HARNESS_H_
-  #define MEMORY_HARNESS_H_
+#ifndef MEMORY_1_HARNESS_H_
+  #define MEMORY_1_HARNESS_H_
 
   #include "config.h"
   #include "defines.h"
@@ -51,10 +51,10 @@
   #ifdef __cplusplus
     extern "C" {
   #endif /* ifdef __cplusplus */
-  void memory_harness(void);
-  void memory_harness_task(Task_t *task_, TaskParm_t *parm_);
+  void memory_1_harness(void);
+  void memory_1_harness_task(Task_t *task_, TaskParm_t *parm_);
 
   #ifdef __cplusplus
     }
   #endif /* ifdef __cplusplus */
-#endif /* ifndef MEMORY_HARNESS_H_ */
+#endif /* ifndef MEMORY_1_HARNESS_H_ */
