@@ -153,10 +153,10 @@
    * note that the implementation of and support for device state and mode is up
    * to the device driver's author.
    *
-   * @note A device driver unique identifier ("uid") *MUST* be a globally unique
+   * @note A device driver's unique identifier ("UID") must be a globally unique
    * identifier. No two device drivers in the same application can share the
-   * same uid. This is best achieved by ensuring the device driver author
-   * selects a uid for his device driver that is not in use by other device
+   * same UID. This is best achieved by ensuring the device driver author
+   * selects a UID for his device driver that is not in use by other device
    * drivers. A device driver template and device drivers can be found in
    * /drivers.
    *
@@ -181,8 +181,95 @@
    *                               if(OK(xMemGetUsed(&size))) {} ).
    */
   xReturn xDeviceRegisterDevice(xReturn (*device_self_register_)());
+
+
+  /**
+   * @brief Syscall to query the device driver about the availability of a
+   * device
+   *
+   * The xDeviceIsAvailable() syscall queries the device driver about the
+   * availability of a device. Generally "available" means the that the device
+   * is available for read and/or write operations though the meaning is
+   * implementation specific and left up to the device driver's author.
+   *
+   * @param  uid_ The unique identifier ("UID") of the device driver to be
+   *              operated on.
+   * @param  res_ The result ("res") of the inquiry; here, taken to mean the
+   *              availability of the device. The meaning of which is
+   *              implementation specific and is left up to the device driver's
+   *              author.
+   * @return      xReturn On success, the syscall returns ReturnOK. On failure,
+   *              the syscall returns ReturnError. A failure is any condition in
+   *              which the syscall was unable to achieve its intended
+   *              objective. For example, if xTaskGetId() was unable to locate
+   *              the task by the task handle (i.e., xTask) passed to the
+   *              syscall, because either the handle was null or invalid (e.g.,
+   *              points to a deleted task), xTaskGetId() would return
+   *              ReturnError. All HeliOS syscalls return the xReturn (a.k.a.,
+   *              Return_t) type which can either be ReturnOK or ReturnError.
+   *              The C macro OK() can be used as a more concise way of checking
+   *              the return value of a syscall (e.g.,
+   *              if(OK(xMemGetUsed(&size))) {} ).
+   */
   xReturn xDeviceIsAvailable(const xHalfWord uid_, xBase *res_);
+
+
+  /**
+   * @brief Syscall to write a word of data to the device
+   *
+   * The xDeviceSimpleWrite() syscall will write a word (i.e., xWord) of data to
+   * a device. The data must reside in the heap which has been allocated by
+   * xMemAlloc(). Whether the data is written to the device is dependent on the
+   * device driver mode, state and implementation of these features by the
+   * device driver's author.
+   *
+   * @param  uid_  The unique identifier ("UID") of the device driver to be
+   *               operated on.
+   * @param  data_ A pointer to a word (i.e., xWord) of data in the heap which
+   *               has been allocated by xMemAlloc().
+   * @return       xReturn On success, the syscall returns ReturnOK. On failure,
+   *               the syscall returns ReturnError. A failure is any condition
+   *               in which the syscall was unable to achieve its intended
+   *               objective. For example, if xTaskGetId() was unable to locate
+   *               the task by the task handle (i.e., xTask) passed to the
+   *               syscall, because either the handle was null or invalid (e.g.,
+   *               points to a deleted task), xTaskGetId() would return
+   *               ReturnError. All HeliOS syscalls return the xReturn (a.k.a.,
+   *               Return_t) type which can either be ReturnOK or ReturnError.
+   *               The C macro OK() can be used as a more concise way of
+   *               checking the return value of a syscall (e.g.,
+   *               if(OK(xMemGetUsed(&size))) {} ).
+   */
   xReturn xDeviceSimpleWrite(const xHalfWord uid_, xWord *data_);
+
+
+  /**
+   * @brief Syscall to write multiple bytes of data to a device
+   *
+   * The xDeviceWrite() syscall will write multiple bytes of data contained in
+   * the data buffer to a device. The data must reside in the heap which has
+   * been allocated by xMemAlloc(). Whether the data is written to the device is
+   * dependent on the device driver mode, state and implementation of these
+   * features by the device driver's author.
+   *
+   * @param  uid_  The unique identifier ("UID") of the device driver to be
+   *               operated on.
+   * @param  size_ The size of the data buffer, in bytes, pointed to by "data_".
+   * @param  data_ A pointer to the data buffer, a byte (i.e., xByte) array, in
+   *               the heap which has been allocated by xMemAlloc().
+   * @return       xReturn On success, the syscall returns ReturnOK. On failure,
+   *               the syscall returns ReturnError. A failure is any condition
+   *               in which the syscall was unable to achieve its intended
+   *               objective. For example, if xTaskGetId() was unable to locate
+   *               the task by the task handle (i.e., xTask) passed to the
+   *               syscall, because either the handle was null or invalid (e.g.,
+   *               points to a deleted task), xTaskGetId() would return
+   *               ReturnError. All HeliOS syscalls return the xReturn (a.k.a.,
+   *               Return_t) type which can either be ReturnOK or ReturnError.
+   *               The C macro OK() can be used as a more concise way of
+   *               checking the return value of a syscall (e.g.,
+   *               if(OK(xMemGetUsed(&size))) {} ).
+   */
   xReturn xDeviceWrite(const xHalfWord uid_, xSize *size_, xAddr data_);
   xReturn xDeviceSimpleRead(const xHalfWord uid_, xWord *data_);
   xReturn xDeviceRead(const xHalfWord uid_, xSize *size_, xAddr *data_);
