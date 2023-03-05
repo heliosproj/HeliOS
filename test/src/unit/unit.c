@@ -104,7 +104,7 @@ void unit_end(void) {
     memset(unit->name, 0x0, UNIT_NAME_LENGTH);
     unit->begun = false;
     unit->failed = false;
- } else if(false == unit->begun) {
+  } else if(false == unit->begun) {
 
 #if defined(UNIT_TEST_COLORIZE)
       printf("\033[91munit: error: unit_end() called outside a unit test\n\033[39m", unit->name);
@@ -120,14 +120,14 @@ void unit_end(void) {
 void unit_exit(void) {
   if(null != unit) {
 #if defined(UNIT_TEST_COLORIZE)
-      printf("\033[92munit: failed = %" PRId32 "\n\033[39m", unit->fail);
-      printf("\033[92munit: passed = %" PRId32 "\n\033[39m", unit->pass);
-      printf("\033[92munit: total = %" PRId32 "\n\033[39m", unit->fail + unit->pass);
+      printf("\033[92munit: failed: %" PRId32 "\n\033[39m", unit->fail);
+      printf("\033[92munit: passed: %" PRId32 "\n\033[39m", unit->pass);
+      printf("\033[92munit: total: %" PRId32 "\n\033[39m", unit->fail + unit->pass);
       printf("\033[92munit: exiting...\n\033[39m");
 #else  /* if defined(UNIT_TEST_COLORIZE) */
-      printf("unit: failed = %" PRId32 "\n", unit->fail);
-      printf("unit: passed = %" PRId32 "\n", unit->pass);
-      printf("unit: total = %" PRId32 "\n", unit->fail + unit->pass);
+      printf("unit: failed: %" PRId32 "\n", unit->fail);
+      printf("unit: passed: %" PRId32 "\n", unit->pass);
+      printf("unit: total: %" PRId32 "\n", unit->fail + unit->pass);
       printf("unit: exiting...\n");
 #endif /* if defined(UNIT_TEST_COLORIZE) */
     free(unit);
@@ -145,7 +145,12 @@ void unit_exit(void) {
 
 void unit_print(const char *msg_) {
   if((null != unit) && (true == unit->begun) && (null != msg_)) {
-    printf("unit: %s\n", msg_);
+
+#if defined(UNIT_TEST_COLORIZE)
+      printf("\033[92munit: %s\n\033[39m", msg_);
+#else  /* if defined(UNIT_TEST_COLORIZE) */
+      printf("unit: %s\n", msg_);
+#endif /* if defined(UNIT_TEST_COLORIZE) */
   }
 
   return;
