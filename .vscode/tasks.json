@@ -13,6 +13,7 @@
                 "-Wall",
                 "-Wextra",
                 "-Wno-unused-parameter",
+                "-Wno-pointer-to-int-cast",
                 "-I${workspaceFolder}/src",
                 "-I${workspaceFolder}/test/src",
                 "-I${workspaceFolder}/test/src/harness",

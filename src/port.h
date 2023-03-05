@@ -324,7 +324,7 @@
 
     #define ENABLE_INTERRUPTS()
     #if defined(UNIT_TEST_COLORIZE)
-      #define CONFIG_SYSTEM_ASSERT_BEHAVIOR(f, l) printf("\033[93mkernel: assert at %s:%d\n\033[39m", f, l)
+      #define CONFIG_SYSTEM_ASSERT_BEHAVIOR(f, l) printf("\033[95mkernel:\033[93m assert at %s:%d\n\033[39m", f, l)
     #else  /* if defined(UNIT_TEST_COLORIZE) */
       #define CONFIG_SYSTEM_ASSERT_BEHAVIOR(f, l) printf("kernel: assert at %s:%d\n", f, l)
     #endif /* if defined(UNIT_TEST_COLORIZE) */

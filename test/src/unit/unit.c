@@ -34,7 +34,7 @@ void unit_init(void) {
   if(null == unit) {
     unit = (unit_t *) calloc(1, sizeof(unit_t));
 #if defined(UNIT_TEST_COLORIZE)
-      printf("\033[92munit: initializing...\n\033[39m");
+      printf("\033[95munit:\033[92m initializing...\n\033[39m");
 #else  /* if defined(UNIT_TEST_COLORIZE) */
       printf("unit: initializing...\n");
 #endif /* if defined(UNIT_TEST_COLORIZE) */
@@ -50,14 +50,14 @@ void unit_begin(const char *name_) {
     unit->begun = true;
     unit->failed = false;
 #if defined(UNIT_TEST_COLORIZE)
-      printf("\033[92munit: begin: %s\n\033[39m", unit->name);
+      printf("\033[95munit:\033[92m begin: %s\n\033[39m", unit->name);
 #else  /* if defined(UNIT_TEST_COLORIZE) */
       printf("unit: begin: %s\n", unit->name);
 #endif /* if defined(UNIT_TEST_COLORIZE) */
   } else if(true == unit->begun) {
 
 #if defined(UNIT_TEST_COLORIZE)
-      printf("\033[91munit: error: unit_begin() called inside a unit test\n\033[39m");
+      printf("\033[95munit:\033[91m error: unit_begin() called inside a unit test\n\033[39m");
 #else  /* if defined(UNIT_TEST_COLORIZE) */
       printf("unit: error: unit_begin() called inside a unit test\n");
 #endif /* if defined(UNIT_TEST_COLORIZE) */
@@ -73,7 +73,7 @@ void unit_try(int expr_) {
   } else if(false == unit->begun) {
 
 #if defined(UNIT_TEST_COLORIZE)
-      printf("\033[91munit: error: unit_try() called outside a unit test\n\033[39m");
+      printf("\033[95munit:\033[91m error: unit_try() called outside a unit test\n\033[39m");
 #else  /* if defined(UNIT_TEST_COLORIZE) */
       printf("unit: error: unit_try() called outside a unit test\n");
 #endif /* if defined(UNIT_TEST_COLORIZE) */
@@ -87,14 +87,14 @@ void unit_end(void) {
   if((null != unit) && (true == unit->begun)) {
     if(true == unit->failed) {
 #if defined(UNIT_TEST_COLORIZE)
-        printf("\033[91munit: end: %s failed\n\033[39m", unit->name);
+        printf("\033[95munit:\033[91m end: %s failed\n\033[39m", unit->name);
 #else  /* if defined(UNIT_TEST_COLORIZE) */
         printf("unit: end: %s failed\n", unit->name);
 #endif /* if defined(UNIT_TEST_COLORIZE) */
       unit->fail++;
     } else {
 #if defined(UNIT_TEST_COLORIZE)
-        printf("\033[92munit: end: %s\n\033[39m", unit->name);
+        printf("\033[95munit:\033[92m end: %s\n\033[39m", unit->name);
 #else  /* if defined(UNIT_TEST_COLORIZE) */
         printf("unit: end: %s\n", unit->name);
 #endif /* if defined(UNIT_TEST_COLORIZE) */
@@ -107,7 +107,7 @@ void unit_end(void) {
   } else if(false == unit->begun) {
 
 #if defined(UNIT_TEST_COLORIZE)
-      printf("\033[91munit: error: unit_end() called outside a unit test\n\033[39m");
+      printf("\033[95munit:\033[91m error: unit_end() called outside a unit test\n\033[39m");
 #else  /* if defined(UNIT_TEST_COLORIZE) */
       printf("unit: error: unit_end() called outside a unit test\n");
 #endif /* if defined(UNIT_TEST_COLORIZE) */
@@ -120,10 +120,10 @@ void unit_end(void) {
 void unit_exit(void) {
   if(null != unit) {
 #if defined(UNIT_TEST_COLORIZE)
-      printf("\033[92munit: failed:\033[96m %" PRId32 "\n\033[39m", unit->fail);
-      printf("\033[92munit: passed:\033[96m %" PRId32 "\n\033[39m", unit->pass);
-      printf("\033[92munit: total:\033[96m %" PRId32 "\n\033[39m", unit->fail + unit->pass);
-      printf("\033[92munit: exiting...\n\033[39m");
+      printf("\033[95munit:\033[92m failed:\033[95m %" PRId32 "\n\033[39m", unit->fail);
+      printf("\033[95munit:\033[92m passed:\033[95m %" PRId32 "\n\033[39m", unit->pass);
+      printf("\033[95munit:\033[92m total:\033[95m %" PRId32 "\n\033[39m", unit->fail + unit->pass);
+      printf("\033[95munit:\033[92m exiting...\n\033[39m");
 #else  /* if defined(UNIT_TEST_COLORIZE) */
       printf("unit: failed: %" PRId32 "\n", unit->fail);
       printf("unit: passed: %" PRId32 "\n", unit->pass);
