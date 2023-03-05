@@ -29,8 +29,10 @@
 
 
 void memory_2_harness(void) {
-
   unit_begin("unit name");
+
+
+  /*UNCRUSTIFY-OFF*/
   /*
     1) Create something in the heap
     2) Call a memory syscall like xMemGetUsed() which should return ReturnOK
@@ -46,9 +48,8 @@ void memory_2_harness(void) {
     3) blocks
     4) next
   */
-
+  /*UNCRUSTIFY-ON*/
   unit_end();
-
 
   return;
 }
