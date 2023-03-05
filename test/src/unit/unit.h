@@ -41,7 +41,7 @@
   #if defined(UNIT_NAME_LENGTH)
     #undef UNIT_NAME_LENGTH
   #endif /* if defined(UNIT_NAME_LENGTH) */
-  #define UNIT_NAME_LENGTH 0x40   /* 64 */
+  #define UNIT_NAME_LENGTH 0x40 /* 64 */
   typedef struct unit_s {
     char name[UNIT_NAME_LENGTH];
     int32_t begun;

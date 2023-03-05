@@ -140,17 +140,45 @@
 
 
   /**
-   * @brief
+   * @brief Syscall to register a device driver with the kernel
    *
-   * @param  device_self_register_
+   * The xDeviceRegisterDevice() syscall is a component of the HeliOS device
+   * driver model which registers a device driver with the HeliOS kernel. This
+   * syscall must be made before a device driver can be called by xDeviceRead(),
+   * xDeviceWrite(), etc. If the device driver is successfully registered with
+   * the kernel, xDeviceRegisterDevice() will return ReturnOK. Once a device is
+   * registered, it cannot be un-registered - it can only be placed in a
+   * suspended state which is done by calling xDeviceConfigDevice(). However, as
+   * with most aspects of the device driver model in HeliOS, it is important to
+   * note that the implementation of and support for device state and mode is up
+   * to the device driver's author.
+   *
+   * @note A device driver unique identifier ("uid") *MUST* be a globally unique
+   * identifier. No two device drivers in the same application can share the
+   * same uid. This is best achieved by ensuring the device driver author
+   * selects a uid for his device driver that is not in use by other device
+   * drivers. A device driver template and device drivers can be found in
+   * /drivers.
+   *
+   * @param  device_self_register_ A pointer to the device driver's self
+   *                               registration function; often,
+   *                               DRIVERNAME_self_register().
    * @return                       xReturn On success, the syscall returns
    *                               ReturnOK. On failure, the syscall returns
-   *                               ReturnError. All HeliOS syscalls return the
-   *                               xReturn (a.k.a., Return_t) type which can
-   *                               either be ReturnOK or ReturnError. The C
-   *                               macro OK() can be used as a more concise way
-   *                               of checking the return value of a syscall
-   *                               (e.g., if(OK(xMemGetUsed(&size))) {} ).
+   *                               ReturnError. A failure is any condition in
+   *                               which the syscall was unable to achieve its
+   *                               intended objective. For example, if
+   *                               xTaskGetId() was unable to locate the task by
+   *                               the task handle (i.e., xTask) passed to the
+   *                               syscall, because either the handle was null
+   *                               or invalid (e.g., points to a deleted task),
+   *                               xTaskGetId() would return ReturnError. All
+   *                               HeliOS syscalls return the xReturn (a.k.a.,
+   *                               Return_t) type which can either be ReturnOK
+   *                               or ReturnError. The C macro OK() can be used
+   *                               as a more concise way of checking the return
+   *                               value of a syscall (e.g.,
+   *                               if(OK(xMemGetUsed(&size))) {} ).
    */
   xReturn xDeviceRegisterDevice(xReturn (*device_self_register_)());
   xReturn xDeviceIsAvailable(const xHalfWord uid_, xBase *res_);
