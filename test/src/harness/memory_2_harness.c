@@ -29,5 +29,26 @@
 
 
 void memory_2_harness(void) {
+
+  unit_begin("unit name");
+  /*
+    1) Create something in the heap
+    2) Call a memory syscall like xMemGetUsed() which should return ReturnOK
+    3) Check the memfault flag (should be "false" at this point)
+    4) Modify some part of the memory entry
+    5) Call a memory syscall like xMemGetUsed() which should return ReturnError
+    6) Check the memfault flag (should be "true" at this point)
+    7) Call __MemoryClear__() and __SysStateClear__()
+
+    Things we can screw with in the memory entry
+    1) magic
+    2) free
+    3) blocks
+    4) next
+  */
+
+  unit_end();
+
+
   return;
 }
