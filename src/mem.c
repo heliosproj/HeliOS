@@ -346,19 +346,33 @@ static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, co
              * MAGIC_CONST. This operation helps ensure we are accessing a valid
              * memory entry in the memory region being checked. */
             if(OKMAGIC(cursor)) {
-              blocks += cursor->blocks;
+              if((FREE == cursor->free) || (INUSE == cursor->free)) {
+                blocks += cursor->blocks;
 
-              /* If we are checking for an address in the memory region, then
-               * see if the cursor matches it and check to make sure the memory
-               * entry is *NOT* free. If the cursor matches and the entry is
-               * NOT*
-               * free then we set "found" to true because we found the entry
-               * being searched for. Otherwise ignore this step. */
-              if((MEMORY_REGION_CHECK_OPTION_W_ADDR == option_) && (cursor == find) && (INUSE == cursor->free)) {
-                found = true;
+                /* If we are checking for an address in the memory region, then
+                 * see if the cursor matches it and check to make sure the
+                 * memory entry is *NOT* free. If the cursor matches and the
+                 * entry is NOT*
+                 * free then we set "found" to true because we found the entry
+                 * being searched for. Otherwise ignore this step. */
+                if((MEMORY_REGION_CHECK_OPTION_W_ADDR == option_) && (cursor == find) && (INUSE == cursor->free)) {
+                  found = true;
+                }
+
+                cursor = cursor->next;
+              } else {
+                ASSERT;
+
+
+                /* "Houston, we've had a problem." ~ Jim Lovell
+                 *
+                 *
+                 * Set the memfault flag to true because the address we just
+                 * checked does *NOT* have the correct value for free. Something
+                 * is very wrong! */
+                FLAG_MEMFAULT = true;
+                break;
               }
-
-              cursor = cursor->next;
             } else {
               ASSERT;
 

@@ -42,10 +42,24 @@
 
   #include "unit.h"
 
+  #if defined(ENTRYSIZE)
+    #undef ENTRYSIZE
+  #endif /* if defined(ENTRYSIZE) */
+  #define ENTRYSIZE ((sizeof(MemoryEntry_t) / CONFIG_MEMORY_REGION_BLOCK_SIZE) + (zero < (sizeof(MemoryEntry_t) % CONFIG_MEMORY_REGION_BLOCK_SIZE) ? 1 : 0))
+
+  #if defined(ADDR2ENTRY)
+    #undef ADDR2ENTRY
+  #endif /* if defined(ADDR2ENTRY) */
+  #define ADDR2ENTRY(addr_) ((MemoryEntry_t *) ((Byte_t *) (addr_) - (ENTRYSIZE * CONFIG_MEMORY_REGION_BLOCK_SIZE)))
+
   #ifdef __cplusplus
     extern "C" {
   #endif /* ifdef __cplusplus */
   void memory_2_harness(void);
+  void test_magic(void);
+  void test_free(void);
+  void test_blocks(void);
+  void test_next(void);
 
 
   #ifdef __cplusplus
