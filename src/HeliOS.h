@@ -247,10 +247,10 @@
    * @brief Syscall to write multiple bytes of data to a device
    *
    * The xDeviceWrite() syscall will write multiple bytes of data contained in
-   * the data buffer to a device. The data must reside in the heap which has
-   * been allocated by xMemAlloc(). Whether the data is written to the device is
-   * dependent on the device driver mode, state and implementation of these
-   * features by the device driver's author.
+   * the data buffer to a device. The data buffer must reside in the heap which
+   * has been allocated by xMemAlloc(). Whether the data is written to the
+   * device is dependent on the device driver mode, state and implementation of
+   * these features by the device driver's author.
    *
    * @param  uid_  The unique identifier ("UID") of the device driver to be
    *               operated on.
@@ -271,9 +271,141 @@
    *               if(OK(xMemGetUsed(&size))) {} ).
    */
   xReturn xDeviceWrite(const xHalfWord uid_, xSize *size_, xAddr data_);
+
+
+  /**
+   * @brief Syscall to read a word of data from the device
+   *
+   * The xDeviceSimpleRead() syscall will read a word (i.e., xWord) of data from
+   * a device. The word of data should not be allocated before calling
+   * xDeviceSimpleRead(). The syscall will allocate memory from the heap and set
+   * the "data_" pointer to that memory address before returning. The memory
+   * occupied by the data must be freed by the application when the data is no
+   * longer needed. Whether the data is read from the device is dependent on the
+   * device driver mode, state and implementation of these features by the
+   * device driver's author.
+   *
+   * @param  uid_  The unique identifier ("UID") of the device driver to be
+   *               operated on.
+   * @param  data_ A pointer, of type xWord, which will be set to an address
+   *               containing the data before returning.
+   * @return       xReturn On success, the syscall returns ReturnOK. On failure,
+   *               the syscall returns ReturnError. A failure is any condition
+   *               in which the syscall was unable to achieve its intended
+   *               objective. For example, if xTaskGetId() was unable to locate
+   *               the task by the task handle (i.e., xTask) passed to the
+   *               syscall, because either the handle was null or invalid (e.g.,
+   *               points to a deleted task), xTaskGetId() would return
+   *               ReturnError. All HeliOS syscalls return the xReturn (a.k.a.,
+   *               Return_t) type which can either be ReturnOK or ReturnError.
+   *               The C macro OK() can be used as a more concise way of
+   *               checking the return value of a syscall (e.g.,
+   *               if(OK(xMemGetUsed(&size))) {} ).
+   */
   xReturn xDeviceSimpleRead(const xHalfWord uid_, xWord *data_);
+
+
+  /**
+   * @brief Syscall to read multiple bytes from a device
+   *
+   * The xDeviceRead() syscall will read multiple bytes of data from a device
+   * into a data buffer. The data buffer should not be allocated before calling
+   * xDeviceRead(). The syscall will allocate memory from the heap, set the
+   * "data_" pointer to that memory address and set the "size_"
+   * parameter to the number of bytes read before returning. The memory occupied
+   * by the data must be freed by the application when the data is no longer
+   * needed. Whether the data is read from the device is dependent on the device
+   * driver mode, state and implementation of these features by the device
+   * driver's author.
+   *
+   * @param  uid_  The unique identifier ("UID") of the device driver to be
+   *               operated on.
+   * @param  size_ The size of the data buffer, in bytes, pointed to by "data_".
+   * @param  data_ A pointer to the data buffer, a byte (i.e., xByte) array,
+   *               which will be set to an address containing the data before
+   *               returning.
+   * @return       xReturn On success, the syscall returns ReturnOK. On failure,
+   *               the syscall returns ReturnError. A failure is any condition
+   *               in which the syscall was unable to achieve its intended
+   *               objective. For example, if xTaskGetId() was unable to locate
+   *               the task by the task handle (i.e., xTask) passed to the
+   *               syscall, because either the handle was null or invalid (e.g.,
+   *               points to a deleted task), xTaskGetId() would return
+   *               ReturnError. All HeliOS syscalls return the xReturn (a.k.a.,
+   *               Return_t) type which can either be ReturnOK or ReturnError.
+   *               The C macro OK() can be used as a more concise way of
+   *               checking the return value of a syscall (e.g.,
+   *               if(OK(xMemGetUsed(&size))) {} ).
+   */
   xReturn xDeviceRead(const xHalfWord uid_, xSize *size_, xAddr *data_);
+
+
+  /**
+   * @brief Syscall to initialize a device
+   *
+   * The xDeviceInitDevice() syscall will call the device driver's
+   * DRIVERNAME_init() function to bootstrap the device. For example, setting
+   * memory mapped registers to starting values or setting the device driver's
+   * state and mode. This syscall is optional and is dependent on the specifics
+   * of the device driver's implementation by its author.
+   *
+   * @param  uid_ The unique identifier ("UID") of the device driver to be
+   *              operated on.
+   * @return      xReturn On success, the syscall returns ReturnOK. On failure,
+   *              the syscall returns ReturnError. A failure is any condition in
+   *              which the syscall was unable to achieve its intended
+   *              objective. For example, if xTaskGetId() was unable to locate
+   *              the task by the task handle (i.e., xTask) passed to the
+   *              syscall, because either the handle was null or invalid (e.g.,
+   *              points to a deleted task), xTaskGetId() would return
+   *              ReturnError. All HeliOS syscalls return the xReturn (a.k.a.,
+   *              Return_t) type which can either be ReturnOK or ReturnError.
+   *              The C macro OK() can be used as a more concise way of checking
+   *              the return value of a syscall (e.g.,
+   *              if(OK(xMemGetUsed(&size))) {} ).
+   */
   xReturn xDeviceInitDevice(const xHalfWord uid_);
+
+
+  /**
+   * @brief Syscall to configure a device
+   *
+   * The xDeviceConfigDevice() will call the device driver's DEVICENAME_config()
+   * function to configure the device. The syscall is bi-directional (i.e., it
+   * will write the configuration structure to the device and read the same
+   * structure from the device). The purpose of the bi-directional functionality
+   * is to allow the device's configuration to be set and queried using one
+   * syscall. The defintion of the configuration structure is left to the device
+   * driver's author. What is required is that the configuration structure
+   * memory is allocated from the heap using xMemAlloc() and that the "size_"
+   * parameter is set to the size of the configuration structure (e.g.,
+   * sizeof(MyDeviceDriverConfig)).
+   *
+   * @param  uid_    The unique identifier ("UID") of the device driver to be
+   *                 operated on.
+   * @param  size_   The size of the configuration structure, in bytes, pointed
+   *                 to by "config_".
+   * @param  config_ A pointer to the configuration structure which must be
+   *                 allocated with xMemAlloc() prior to calling
+   *                 xDeviceConfigDevice(). The configuration structure will be
+   *                 read by the device driver and may be updated by the device
+   *                 driver before returning. This specifics of the
+   *                 implementation of xDeviceConfigDevice() and the defintion
+   *                 of the configuration structure are dependent on the device
+   *                 driver's author.
+   * @return         xReturn On success, the syscall returns ReturnOK. On
+   *                 failure, the syscall returns ReturnError. A failure is any
+   *                 condition in which the syscall was unable to achieve its
+   *                 intended objective. For example, if xTaskGetId() was unable
+   *                 to locate the task by the task handle (i.e., xTask) passed
+   *                 to the syscall, because either the handle was null or
+   *                 invalid (e.g., points to a deleted task), xTaskGetId()
+   *                 would return ReturnError. All HeliOS syscalls return the
+   *                 xReturn (a.k.a., Return_t) type which can either be
+   *                 ReturnOK or ReturnError. The C macro OK() can be used as a
+   *                 more concise way of checking the return value of a syscall
+   *                 (e.g., if(OK(xMemGetUsed(&size))) {} ).
+   */
   xReturn xDeviceConfigDevice(const xHalfWord uid_, xSize *size_, xAddr config_);
   xReturn xMemAlloc(volatile xAddr *addr_, const xSize size_);
   xReturn xMemFree(const volatile xAddr addr_);
