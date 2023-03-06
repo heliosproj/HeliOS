@@ -59,10 +59,9 @@ void setup() {
   Serial.begin(9600);
 
 
-  /* Call xSystemInit() to initialize any interrupt handlers and/or memory
-   * required by HeliOS to execute on the target platform or architecture. The
-   * xSystemInit() syscall must be called prior to calling any other syscall. */
-  xSystemInit();
+ if(ERROR( xSystemInit())) {
+  xSystemHalt();
+ }
 
 
   /* Declare the task object (a.k.a., task handle) which will be used inside of
