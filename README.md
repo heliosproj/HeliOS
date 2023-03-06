@@ -74,7 +74,7 @@ Please note, HeliOS does not have built-in support for ESP32. This is because th
 # Example
 Many embedded applications implement what is called a "super loop". A super loop is a loop that never exits (i.e., while(1) {}) and contains most of the code executed by the microcontroller. The problem with super loops is they can grow out of control and become difficult to manage. This becomes especially challenging given the relatively few options for controlling timing (e.g., delay()). Unfortunately the use of delay() to control timing also means the microcontroller is unable to perform other operations (at least without the help of an ISR) until delay() returns. Below is an example of how easy it is to leverage the event-driven multitasking capabilities within HeliOS to implement the Arduino "Blink" example.
 ## Arduino "Blink" Example
-Below is the "Blink" example code included with the Arduino platform.
+Below is the "Blink" example sketch included with the Arduino platform.
 ```C
 // the setup function runs once when you press reset or power the board
 void setup() {
@@ -91,7 +91,7 @@ void loop() {
 }
 ```
 ## HeliOS "Blink" Example
-Below is the Arduino "Blink" example code implemented using HeliOS. In this example, a HeliOS task, which alternates the microcontroller's GPIO pin state between high and low, is added in a "wait" state and a timer is set instructing HeliOS's scheduler to execute the task every 1,000 ticks (milliseconds on many MCUs).
+Below is the Arduino "Blink" example sketch implemented using HeliOS. In this example, a HeliOS task, which alternates the microcontroller's GPIO pin state between high and low, is added in a "wait" state and a timer is set instructing HeliOS's scheduler to execute the task every 1,000 ticks (milliseconds on many MCUs).
 ```C
 /* Include the HeliOS header. Do not include any other HeliOS headers. */
 #include <HeliOS.h>
