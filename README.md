@@ -226,14 +226,14 @@ void setup() {
 
 
 void loop() {
-  /* The Arduino loop() is not used in a HeliOS application and must remain
+  /* The Arduino loop() function is not used in a HeliOS application and must remain
    * empty. */
 }
 ```
 ***
 # Releases
 All releases, including the current release, can be found [here](https://github.com/MannyPeterson/HeliOS/releases).
-* 0.4.0 - TBD
+* 0.4.0 - Consistent return type for all syscalls, additional memory consistency checking, new HeliOS Developer's Guide, new code documentation and many more changes and improvements. 
 * 0.3.5 - Several new features including device drivers, stream buffers, task watchdog timer, improved memory defragmentation and many more including improvements to source code and documentation.
 * 0.3.4 - Corrected "blink" example in readme and in examples, fixed ESP8266 support, added queue locking and other improvements
 * 0.3.3 - Multi-region memory support, memory defragmentation, CMSIS support, new portability layer and other code improvements
