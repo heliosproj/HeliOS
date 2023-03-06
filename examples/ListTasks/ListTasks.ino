@@ -1,8 +1,9 @@
+/*UNCRUSTIFY-OFF*/
 /**
  * @file ListTasks.ino
  * @author Manny Peterson (mannymsp@gmail.com)
  * @brief Example code to print runtime statistics for all tasks
- * @version 0.3.6
+ * @version 0.4.0
  * @date 2022-02-14
  *
  * @copyright
@@ -23,28 +24,28 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
-
+/*UNCRUSTIFY-ON*/
 #include <HeliOS.h>
 
+
 /*
- * The task definition for the task to print all
- * task informaiton every one second.
+ * The task definition for the task to print all task informaiton every one
+ * second.
  */
 void taskPrint_main(xTask task_, xTaskParm parm_) {
-
   String str = "";
-
   xBase tasks = 0;
 
-  /* Get information about the this task by
-  calling xTaskGetAllRunTimeStats() on the task handle. */
+
+  /* Get information about the this task by calling xTaskGetAllRunTimeStats() on
+   * the task handle. */
   xTaskRunTimeStats stats = xTaskGetAllRunTimeStats(&tasks);
 
-  /* Check to make sure the task information was
-  returned by xTaskGetAllRunTimeStats() before attempting
-  to access it. */
-  if (stats) {
-    for (int i = 0; i < tasks; i++) {
+
+  /* Check to make sure the task information was returned by
+   * xTaskGetAllRunTimeStats() before attempting to access it. */
+  if(stats) {
+    for(int i = 0; i < tasks; i++) {
       str += "taskPrint_main(): ltime = ";
       str += stats->lastRunTime;
       str += ", ttime = ";
@@ -54,46 +55,51 @@ void taskPrint_main(xTask task_, xTaskParm parm_) {
     Serial.println(str);
   }
 
-  /* Free the memory allocated to the task information
-  structure. */
+
+  /* Free the memory allocated to the task information structure. */
   xMemFree(stats);
 }
 
-void setup() {
 
+void setup() {
   Serial.begin(9600);
 
-  /* Call xSystemInit() to initialize any interrupt handlers and/or
-  memory required by HeliOS to execute on the target platform/architecture. */
+
+  /* Call xSystemInit() to initialize any interrupt handlers and/or memory
+   * required by HeliOS to execute on the target platform/architecture. */
   xSystemInit();
 
-  /* Create a task to print all task information every
-  second. */
-  xTask task = xTaskCreate("PRINT", taskPrint_main, NULL);
 
-  /* Check to make sure the task was created by xTaskCreate() before
-  attempting to use the task. */
-  if (task) {
+  /* Create a task to print all task information every second. */
+  xTask task = xTaskCreate("PRINT", taskPrint_main, null);
 
+
+  /* Check to make sure the task was created by xTaskCreate() before attempting
+   * to use the task. */
+  if(task) {
     /* Place the task in the waiting state. */
     xTaskWait(task);
+
 
     /* Set the task timer to one second. */
     xTaskChangePeriod(task, 1000000);
 
-    /* Pass control to the HeliOS scheduler. The HeliOS scheduler will
-    not relinquish control unless xTaskSuspendAll() is called. */
+
+    /* Pass control to the HeliOS scheduler. The HeliOS scheduler will not
+     * relinquish control unless xTaskSuspendAll() is called. */
     xTaskStartScheduler();
 
-    /* If the scheduler relinquishes control, do some clean-up by
-    deleting the task. */
+
+    /* If the scheduler relinquishes control, do some clean-up by deleting the
+     * task. */
     xTaskDelete(task);
   }
 
-  /* Halt the system. Once called, the system must be reset to
-  recover. */
+
+  /* Halt the system. Once called, the system must be reset to recover. */
   xSystemHalt();
 }
+
 
 void loop() {
   /* The loop function is not used and should remain empty. */

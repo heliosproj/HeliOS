@@ -1,8 +1,9 @@
+/*UNCRUSTIFY-OFF*/
 /**
- * @file loopback.c
+ * @file driver.c
  * @author Manny Peterson (mannymsp@gmail.com)
- * @brief The HeliOS loopback device driver
- * @version 0.3.6
+ * @brief A template for HeliOS device drivers
+ * @version 0.4.0
  * @date 2022-09-02
  *
  * @copyright
@@ -23,93 +24,114 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
-
+/*UNCRUSTIFY-ON*/
 #include "loopback.h"
 
+
+/*UNCRUSTIFY-OFF*/
+
+
 #define BUFFER_LENGTH 0xFFu
-static Char_t loopback_buffer[BUFFER_LENGTH];
+static Byte_t loopback_buffer[BUFFER_LENGTH];
 static HalfWord_t loopback_buffer_size = zero;
 
-Base_t TO_FUNCTION(DEVICE_NAME, _self_register)(void) {
 
+Return_t TO_FUNCTION(DEVICE_NAME, _self_register)(void) {
   /* DO NOT MODIFY THIS FUNCTION */
+  RET_DEFINE;
 
-  return __RegisterDevice__(DEVICE_UID, (Char_t *)TO_LITERAL(DEVICE_NAME), DEVICE_STATE, DEVICE_MODE, TO_FUNCTION(DEVICE_NAME, _init),
-                            TO_FUNCTION(DEVICE_NAME, _config), TO_FUNCTION(DEVICE_NAME, _read), TO_FUNCTION(DEVICE_NAME, _write),
-                            TO_FUNCTION(DEVICE_NAME, _simple_read), TO_FUNCTION(DEVICE_NAME, _simple_write));
+  if(OK(__RegisterDevice__(DEVICE_UID, (Byte_t *) TO_LITERAL(DEVICE_NAME), DEVICE_STATE, DEVICE_MODE, TO_FUNCTION(DEVICE_NAME, _init), TO_FUNCTION(
+      DEVICE_NAME, _config), TO_FUNCTION(DEVICE_NAME, _read), TO_FUNCTION(DEVICE_NAME, _write), TO_FUNCTION(DEVICE_NAME, _simple_read), TO_FUNCTION(DEVICE_NAME,
+    _simple_write)))) {
+    RET_OK;
+  } else {
+    ASSERT;
+  }
+
+  RET_RETURN;
 }
 
 
+Return_t TO_FUNCTION(DEVICE_NAME, _init)(Device_t * device_) {
+  RET_DEFINE;
 
-Base_t TO_FUNCTION(DEVICE_NAME, _init)(Device_t *device_) {
-  Base_t ret = RETURN_SUCCESS;
+  if(OK(__memset__(loopback_buffer, zero, BUFFER_LENGTH))) {
+    device_->available = false;
+    RET_OK;
+  } else {
+    ASSERT;
+  }
 
-  __memset__(loopback_buffer, zero, BUFFER_LENGTH);
-
-  device_->available = false;
-
-  return ret;
+  RET_RETURN;
 }
 
 
+Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t * device_, Size_t *size_, Addr_t *config_) {
+  RET_DEFINE;
 
-Base_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Addr_t *config_) {
-  Base_t ret = RETURN_FAILURE;
 
-  /* INSERT CODE TO CONFIGURE DEVICE HERE */
-
-  return ret;
+  /* INSERT DEVICE DRIVER CODE HERE CALL RET_OK IF SYSTEM CALL WAS
+   * SUCCESSFUL BEFORE RETURNING. */
+  RET_RETURN;
 }
 
 
+  Return_t TO_FUNCTION(DEVICE_NAME, _read)(Device_t * device_, Size_t *size_, Addr_t **data_) {
+  RET_DEFINE;
 
-Base_t TO_FUNCTION(DEVICE_NAME, _read)(Device_t *device_, Size_t *size_, Addr_t *data_) {
-  Base_t ret = RETURN_SUCCESS;
+  __KernelAllocateMemory__((volatile Addr_t **) data_, loopback_buffer_size);
+
+  __memcpy__(*data_, loopback_buffer, loopback_buffer_size);
 
   *size_ = loopback_buffer_size;
+  device_->available = false;
+  RET_OK;
 
-  __memcpy__(data_, loopback_buffer, *size_);
+
+  RET_RETURN;
+}
+
+
+Return_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t * device_, Size_t *size_, Addr_t *data_) {
+  RET_DEFINE;
+
+  if(OK(__memcpy__(loopback_buffer, data_, *size_))) {
+    loopback_buffer_size = *size_;
+    device_->available = true;
+    RET_OK;
+  } else {
+    ASSERT;
+  }
+
+  RET_RETURN;
+}
+
+
+Return_t TO_FUNCTION(DEVICE_NAME, _simple_read)(Device_t * device_, Word_t **data_) {
+  RET_DEFINE;
+
+
+  __KernelAllocateMemory__((volatile Addr_t **) data_, sizeof(Word_t));
+
+  __memcpy__(*data_, loopback_buffer, sizeof(Word_t));
 
   device_->available = false;
+  RET_OK;
 
-  return ret;
+  RET_RETURN;
 }
 
 
+Return_t TO_FUNCTION(DEVICE_NAME, _simple_write)(Device_t * device_, Word_t *data_) {
+  RET_DEFINE;
 
-Base_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t *device_, Size_t *size_, Addr_t *data_) {
-  Base_t ret = RETURN_SUCCESS;
+  if(OK(__memcpy__(loopback_buffer, data_, sizeof(Word_t)))) {
+    device_->available = true;
+    RET_OK;
+  } else {
+    ASSERT;
+  }
 
-  loopback_buffer_size = *size_;
-
-  __memcpy__(loopback_buffer, data_, *size_);
-
-  device_->available = true;
-
-  return ret;
+  RET_RETURN;
 }
-
-
-
-Base_t TO_FUNCTION(DEVICE_NAME, _simple_read)(Device_t *device_, Word_t *data_) {
-  Base_t ret = RETURN_SUCCESS;
-
-  __memcpy__(data_, loopback_buffer, sizeof(Word_t));
-
-  device_->available = false;
-
-  return ret;
-}
-
-
-
-Base_t TO_FUNCTION(DEVICE_NAME, _simple_write)(Device_t *device_, Word_t *data_) {
-  Base_t ret = RETURN_SUCCESS;
-
-  __memcpy__(loopback_buffer, data_, sizeof(Word_t));
-
-
-  device_->available = true;
-
-  return ret;
-}
+/*UNCRUSTIFY-ON*/

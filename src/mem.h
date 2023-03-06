@@ -1,8 +1,9 @@
+/*UNCRUSTIFY-OFF*/
 /**
  * @file mem.h
  * @author Manny Peterson (mannymsp@gmail.com)
  * @brief Kernel sources for memory management
- * @version 0.3.6
+ * @version 0.4.0
  * @date 2022-01-31
  *
  * @copyright
@@ -23,49 +24,46 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
+/*UNCRUSTIFY-ON*/
 #ifndef MEM_H_
-#define MEM_H_
+  #define MEM_H_
 
-#include "config.h"
-#include "defines.h"
-#include "types.h"
-#include "port.h"
-#include "device.h"
-#include "queue.h"
-#include "stream.h"
-#include "sys.h"
-#include "task.h"
-#include "timer.h"
+  #include "config.h"
+  #include "defines.h"
+  #include "types.h"
+  #include "port.h"
+  #include "device.h"
+  #include "queue.h"
+  #include "stream.h"
+  #include "sys.h"
+  #include "task.h"
+  #include "timer.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+  #ifdef __cplusplus
+    extern "C" {
+  #endif /* ifdef __cplusplus */
+  Return_t xMemAlloc(volatile Addr_t **addr_, const Size_t size_);
+  Return_t xMemFree(const volatile Addr_t *addr_);
+  Return_t xMemGetUsed(Size_t *size_);
+  Return_t xMemGetSize(const volatile Addr_t *addr_, Size_t *size_);
+  Return_t __KernelAllocateMemory__(volatile Addr_t **addr_, const Size_t size_);
+  Return_t __KernelFreeMemory__(const volatile Addr_t *addr_);
+  Return_t __MemoryRegionCheckKernel__(const volatile Addr_t *addr_, const Base_t option_);
+  Return_t __HeapAllocateMemory__(volatile Addr_t **addr_, const Size_t size_);
+  Return_t __HeapFreeMemory__(const volatile Addr_t *addr_);
+  Return_t __MemoryRegionCheckHeap__(const volatile Addr_t *addr_, const Base_t option_);
+  Return_t __memcpy__(const volatile Addr_t *dest_, const volatile Addr_t *src_, const Size_t size_);
+  Return_t __memset__(const volatile Addr_t *dest_, const Byte_t val_, const Size_t size_);
+  Return_t __memcmp__(const volatile Addr_t *s1_, const volatile Addr_t *s2_, const Size_t size_, Base_t *res_);
+  Return_t __MemoryInit__(void);
+  Return_t xMemGetHeapStats(MemoryRegionStats_t **stats_);
+  Return_t xMemGetKernelStats(MemoryRegionStats_t **stats_);
 
-Addr_t *xMemAlloc(const Size_t size_);
-void xMemFree(const volatile Addr_t *addr_);
-Size_t xMemGetUsed(void);
-Size_t xMemGetSize(const volatile Addr_t *addr_);
-Addr_t *__KernelAllocateMemory__(const Size_t size_);
-void __KernelFreeMemory__(const volatile Addr_t *addr_);
-Base_t __MemoryRegionCheckKernel__(const volatile Addr_t *addr_, const Base_t option_);
-Addr_t *__HeapAllocateMemory__(const Size_t size_);
-void __HeapFreeMemory__(const volatile Addr_t *addr_);
-Base_t __MemoryRegionCheckHeap__(const volatile Addr_t *addr_, const Base_t option_);
-void __memcpy__(const volatile Addr_t *dest_, const volatile Addr_t *src_, const Size_t size_);
-void __memset__(const volatile Addr_t *dest_, const Byte_t val_, const Size_t size_);
-Base_t __memcmp__(const volatile Addr_t *s1_, const volatile Addr_t *s2_, const Size_t size_);
-void __MemoryInit__(void);
-MemoryRegionStats_t *xMemGetHeapStats(void);
-MemoryRegionStats_t *xMemGetKernelStats(void);
+  #if defined(POSIX_ARCH_OTHER)
+    void __MemoryClear__(void);
+  #endif /* if defined(POSIX_ARCH_OTHER) */
 
-#if defined(POSIX_ARCH_OTHER)
-void __MemoryClear__(void);
-void __MemoryRegionDumpKernel__(void);
-void __MemoryRegionDumpHeap__(void);
-void __memdump__(const volatile MemoryRegion_t *region_);
-#endif
-
-#ifdef __cplusplus
-}
-#endif
-#endif
+  #ifdef __cplusplus
+    }
+  #endif /* ifdef __cplusplus */
+#endif /* ifndef MEM_H_ */

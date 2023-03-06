@@ -1,8 +1,9 @@
+/*UNCRUSTIFY-OFF*/
 /**
  * @file sys.c
  * @author Manny Peterson (mannymsp@gmail.com)
  * @brief Kernel sources system related calls
- * @version 0.3.6
+ * @version 0.4.0
  * @date 2022-01-31
  *
  * @copyright
@@ -23,120 +24,124 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
-
+/*UNCRUSTIFY-ON*/
 #include "sys.h"
 
-/* "You are not expected to understand this."
-   Thank you for the best OS on Earth, Dennis. */
+
+/*UNCRUSTIFY-OFF*/
+/*
+ * 
+ * "If the new process paused because it was
+ *  swapped out, set the stack level to the last call
+ *  to savu(u_ssav).  This means that the return
+ *  which is executed immediately after the call to aretu
+ *  actually returns from the last routine which did
+ *  the savu.
+ *
+ *  You are not expected to understand this."
+ *
+ * 
+ * Thank you Ken Thompson and Dennis Ritchie (R.I.P.)
+ * for UNIX and inspiring the computer scientist in me.
+ *
+ */
+/*UNCRUSTIFY-ON*/
+Flags_t flags;
 
 
-
-/* Declare and set the system flags to their default values. */
-SysFlags_t sysFlags;
-
-
-
-/* The __SystemAssert__() system call will be called when
-   the SYSASSERT() macro evaluates false. In order for there
-   to be any effect, CONFIG_ENABLE_SYSTEM_ASSERT and
-   CONFIG_SYSTEM_ASSERT_BEHAVIOR must be defined.
-
-   __SystemAssert__() should NOT be called directly because it is an INTERNAL
-   function name and may change in future releases. Instead use the SYSASSERT() C macro. */
-void __SystemAssert__(const char *file_, const int line_) {
-
-  /* Do not modify this system call directly. Define
-     the behavior (code) through the CONFIG_SYSTEM_ASSERT_BEHAVIOR
-     setting in the config.h header file. */
+Return_t xSystemAssert(const char *file_, const int line_) {
+  RET_DEFINE;
 
 #if defined(CONFIG_SYSTEM_ASSERT_BEHAVIOR)
-  CONFIG_SYSTEM_ASSERT_BEHAVIOR(file_, line_);
-#endif
-
-
-
-  return;
+    CONFIG_SYSTEM_ASSERT_BEHAVIOR(file_, line_);
+    RET_OK;
+#endif /* if defined(CONFIG_SYSTEM_ASSERT_BEHAVIOR) */
+  RET_RETURN;
 }
 
 
-/* The xSystemInit() system call initializes the system. */
-void xSystemInit(void) {
+Return_t xSystemInit(void) {
+  RET_DEFINE;
 
-  __MemoryInit__();
+  if(OK(__MemoryInit__())) {
+    if(OK(__PortInit__())) {
+      flags.memfault = false;
+      flags.overflow = false;
+      flags.running = false;
+      RET_OK;
+    } else {
+      ASSERT;
+    }
+  } else {
+    ASSERT;
+  }
 
-  sysFlags.fault = false;
-  sysFlags.overflow = false;
-  sysFlags.running = false;
-
-  __SysInit__();
-
-  return;
+  RET_RETURN;
 }
 
 
-
-/* The xSystemHalt() system call halts the system. */
-void xSystemHalt(void) {
-
-
-  /* Don't want to service interrupts anymore so disable them. */
+Return_t xSystemHalt(void) {
+  RET_DEFINE;
   DISABLE_INTERRUPTS();
 
-
-
-  /* Put the processor into an infinite loop. */
-  for (;;) {
+  for(;;) {
     /* Do nothing - literally. */
   }
+
+  RET_RETURN;
 }
 
 
+Return_t xSystemGetSystemInfo(SystemInfo_t **info_) {
+  RET_DEFINE;
+
+  if(NOTNULLPTR(info_)) {
+    if(OK(__HeapAllocateMemory__((volatile Addr_t **) info_, sizeof(SystemInfo_t)))) {
+      if(NOTNULLPTR(*info_)) {
+        if(OK(__memcpy__((*info_)->productName, OS_PRODUCT_NAME, OS_PRODUCT_NAME_SIZE))) {
+          (*info_)->majorVersion = OS_MAJOR_VERSION_NO;
+          (*info_)->minorVersion = OS_MINOR_VERSION_NO;
+          (*info_)->patchVersion = OS_PATCH_VERSION_NO;
+
+          if(OK(xTaskGetNumberOfTasks(&(*info_)->numberOfTasks))) {
+            RET_OK;
+          } else {
+            ASSERT;
 
 
-/* The xSystemGetSystemInfo() system call will return the type xSystemInfo containing
-   information about the system including the OS (product) name, its version and how many tasks
-   are currently in the running, suspended or waiting states. */
-SystemInfo_t *xSystemGetSystemInfo(void) {
-
-  SystemInfo_t *ret = NULL;
-
+            /* Free heap memory because xTaskGetNumberOfTasks() failed. */
+            __HeapFreeMemory__(*info_);
+          }
+        } else {
+          ASSERT;
 
 
-  ret = (SystemInfo_t *)__HeapAllocateMemory__(sizeof(SystemInfo_t));
-
-
-
-  /* Assert if xMemAlloc() failed to allocate the heap memory. */
-  SYSASSERT(ISNOTNULLPTR(ret));
-
-
-
-  /* Check if system info is not null to make sure xMemAlloc() successfully allocated
-     the memory. */
-  if (ISNOTNULLPTR(ret)) {
-
-
-    __memcpy__(ret->productName, OS_PRODUCT_NAME, OS_PRODUCT_NAME_SIZE);
-
-    ret->majorVersion = OS_MAJOR_VERSION_NO;
-
-    ret->minorVersion = OS_MINOR_VERSION_NO;
-
-    ret->patchVersion = OS_PATCH_VERSION_NO;
-
-    ret->numberOfTasks = xTaskGetNumberOfTasks();
+          /* Free heap memory because __memcpy__() failed. */
+          __HeapFreeMemory__(*info_);
+        }
+      } else {
+        ASSERT;
+      }
+    } else {
+      ASSERT;
+    }
+  } else {
+    ASSERT;
   }
 
-  return ret;
+  RET_RETURN;
 }
-
 
 
 #if defined(POSIX_ARCH_OTHER)
-void __SysStateClear__(void) {
 
-  __memset__(&sysFlags, 0x0, sizeof(SysFlags_t));
 
-  return;
-}
-#endif
+  /* For unit testing only! */
+  void __SysStateClear__(void) {
+    __memset__(&flags, 0x0, sizeof(Flags_t));
+
+    return;
+  }
+
+
+#endif /* if defined(POSIX_ARCH_OTHER) */

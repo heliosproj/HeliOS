@@ -1,8 +1,9 @@
+/*UNCRUSTIFY-OFF*/
 /**
  * @file test.c
  * @author Manny Peterson (mannymsp@gmail.com)
  * @brief Source code for HeliOS unit testing
- * @version 0.3.6
+ * @version 0.4.0
  * @date 2022-08-23
  *
  * @copyright
@@ -23,54 +24,33 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
+/*UNCRUSTIFY-ON*/
 #include "test.h"
 
+
 int main(int argc, char **argv) {
-
   unit_init();
-
-
-
   reset();
-
-  memory_harness();
-
-
-
+  memory_1_harness();
   reset();
-
+  memory_2_harness();
+  reset();
   queue_harness();
-
-
-
   reset();
-
   timer_harness();
-
-
-
   reset();
-
   task_harness();
-
-
   reset();
-
   stream_harness();
-
-
   reset();
-
   device_harness();
-
-
   unit_exit();
 
-  return 0;
+  return(0);
 }
 
-void reset(void) {
 
+void reset(void) {
   __MemoryClear__();
   __SysStateClear__();
   __TaskStateClear__();

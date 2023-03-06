@@ -13,6 +13,7 @@
                 "-Wall",
                 "-Wextra",
                 "-Wno-unused-parameter",
+                "-Wno-pointer-to-int-cast",
                 "-I${workspaceFolder}/src",
                 "-I${workspaceFolder}/test/src",
                 "-I${workspaceFolder}/test/src/harness",
@@ -20,6 +21,7 @@
                 "-DPOSIX_ARCH_OTHER",
                 "-DCONFIG_MEMORY_REGION_SIZE_IN_BLOCKS=0x1C20u",
                 "-DCONFIG_ENABLE_SYSTEM_ASSERT",
+                "-DUNIT_TEST_COLORIZE",
                 "-o${workspaceFolder}/test/bin/test",
                 "${workspaceFolder}/src/*.c",
                 "${workspaceFolder}/test/src/*.c",
@@ -40,7 +42,7 @@
         {
             "type": "shell",
             "label": "HeliOS Uncrustify",
-            "command": "find . \\( -name \"*.c\" -o -name \"*.h\" \\) -exec uncrustify -c extras/uncrustify/helios.cfg -lC --no-backup {} +",
+            "command": "find . \\( -name \"*.c\" -o -name \"*.h\" -o -name \"*.ino\" \\) -exec uncrustify -c extras/uncrustify/helios.cfg -lC --no-backup {} +",
             "options": {
                 "cwd": "${workspaceFolder}"
             },

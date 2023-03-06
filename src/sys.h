@@ -1,8 +1,9 @@
+/*UNCRUSTIFY-OFF*/
 /**
  * @file sys.h
  * @author Manny Peterson (mannymsp@gmail.com)
  * @brief Kernel sources system related calls
- * @version 0.3.6
+ * @version 0.4.0
  * @date 2022-01-31
  *
  * @copyright
@@ -23,40 +24,40 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
+/*UNCRUSTIFY-ON*/
 #ifndef SYS_H_
-#define SYS_H_
+  #define SYS_H_
 
-#include "config.h"
-#include "defines.h"
-#include "types.h"
-#include "port.h"
-#include "device.h"
-#include "mem.h"
-#include "queue.h"
-#include "stream.h"
-#include "task.h"
-#include "timer.h"
+  #include "config.h"
+  #include "defines.h"
+  #include "types.h"
+  #include "port.h"
+  #include "device.h"
+  #include "mem.h"
+  #include "queue.h"
+  #include "stream.h"
+  #include "task.h"
+  #include "timer.h"
 
-extern SysFlags_t sysFlags;
+  extern Flags_t flags;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+  #ifdef __cplusplus
+    extern "C" {
+  #endif /* ifdef __cplusplus */
+  Return_t xSystemAssert(const char *file_, const int line_);
+  Return_t xSystemInit(void);
+  Return_t xSystemHalt(void);
+  Return_t xSystemGetSystemInfo(SystemInfo_t **info_);
 
-void __SystemAssert__(const char *file_, const int line_);
-void xSystemInit(void);
-void xSystemHalt(void);
-SystemInfo_t *xSystemGetSystemInfo(void);
+  #if defined(CONFIG_ENABLE_ARDUINO_CPP_INTERFACE)
+    void __ArduinoAssert__(const char *file_, int line_);
+  #endif /* if defined(CONFIG_ENABLE_ARDUINO_CPP_INTERFACE) */
 
-#if defined(CONFIG_ENABLE_ARDUINO_CPP_INTERFACE)
-void __ArduinoAssert__(const char *file_, int line_);
-#endif
+  #if defined(POSIX_ARCH_OTHER)
+    void __SysStateClear__(void);
+  #endif /* if defined(POSIX_ARCH_OTHER) */
 
-#if defined(POSIX_ARCH_OTHER)
-void __SysStateClear__(void);
-#endif
-
-#ifdef __cplusplus
-}
-#endif
-#endif
+  #ifdef __cplusplus
+    }
+  #endif /* ifdef __cplusplus */
+#endif /* ifndef SYS_H_ */

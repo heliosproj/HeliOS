@@ -1,8 +1,9 @@
+/*UNCRUSTIFY-OFF*/
 /**
  * @file timer.h
  * @author Manny Peterson (mannymsp@gmail.com)
  * @brief Kernel sources for timers
- * @version 0.3.6
+ * @version 0.4.0
  * @date 2022-01-31
  *
  * @copyright
@@ -23,40 +24,40 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
+/*UNCRUSTIFY-ON*/
 #ifndef TIMER_H_
-#define TIMER_H_
+  #define TIMER_H_
 
-#include "config.h"
-#include "defines.h"
-#include "types.h"
-#include "port.h"
-#include "device.h"
-#include "mem.h"
-#include "queue.h"
-#include "stream.h"
-#include "sys.h"
-#include "task.h"
+  #include "config.h"
+  #include "defines.h"
+  #include "types.h"
+  #include "port.h"
+  #include "device.h"
+  #include "mem.h"
+  #include "queue.h"
+  #include "stream.h"
+  #include "sys.h"
+  #include "task.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+  #ifdef __cplusplus
+    extern "C" {
+  #endif /* ifdef __cplusplus */
+  Return_t xTimerCreate(Timer_t **timer_, const Ticks_t period_);
+  Return_t xTimerDelete(const Timer_t *timer_);
+  Return_t xTimerChangePeriod(Timer_t *timer_, const Ticks_t period_);
+  Return_t xTimerGetPeriod(const Timer_t *timer_, Ticks_t *period_);
+  Return_t xTimerIsTimerActive(const Timer_t *timer_, Base_t *res_);
+  Return_t xTimerHasTimerExpired(const Timer_t *timer_, Base_t *res_);
+  Return_t xTimerReset(Timer_t *timer_);
+  Return_t xTimerStart(Timer_t *timer_);
+  Return_t xTimerStop(Timer_t *timer_);
 
-Timer_t *xTimerCreate(const Ticks_t timerPeriod_);
-void xTimerDelete(const Timer_t *timer_);
-void xTimerChangePeriod(Timer_t *timer_, const Ticks_t timerPeriod_);
-Ticks_t xTimerGetPeriod(const Timer_t *timer_);
-Base_t xTimerIsTimerActive(const Timer_t *timer_);
-Base_t xTimerHasTimerExpired(const Timer_t *timer_);
-void xTimerReset(Timer_t *timer_);
-void xTimerStart(Timer_t *timer_);
-void xTimerStop(Timer_t *timer_);
 
+  #if defined(POSIX_ARCH_OTHER)
+    void __TimerStateClear__(void);
+  #endif /* if defined(POSIX_ARCH_OTHER) */
 
-#if defined(POSIX_ARCH_OTHER)
-void __TimerStateClear__(void);
-#endif
-
-#ifdef __cplusplus
-}
-#endif
-#endif
+  #ifdef __cplusplus
+    }
+  #endif /* ifdef __cplusplus */
+#endif /* ifndef TIMER_H_ */

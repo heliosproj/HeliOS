@@ -1,10 +1,10 @@
 /*UNCRUSTIFY-OFF*/
 /**
- * @file driver.h
+ * @file memory_2_harness.h
  * @author Manny Peterson (mannymsp@gmail.com)
- * @brief A template for HeliOS device drivers
+ * @brief
  * @version 0.4.0
- * @date 2022-09-02
+ * @date 2022-08-27
  *
  * @copyright
  * HeliOS Embedded Operating System
@@ -25,8 +25,8 @@
  *
  */
 /*UNCRUSTIFY-ON*/
-#ifndef DRIVER_H_
-  #define DRIVER_H_
+#ifndef MEMORY_2_HARNESS_H_
+  #define MEMORY_2_HARNESS_H_
 
   #include "config.h"
   #include "defines.h"
@@ -40,33 +40,29 @@
   #include "task.h"
   #include "timer.h"
 
+  #include "unit.h"
 
-/* START: DEVICE DRIVER PARAMATER BLOCK
- *
- * IMPORTANT: THE DEVICE NAME MUST BE SUPPLIED HERE AND MUST BE EXACTLY
- * CONFIG_DEVICE_NAME_BYTES (DEFAULT IS 8) IN LENGTH, IT MAY BE NECESSARY TO PAD
- * SHORTER DEVICE NAMES. */
-  #define DEVICE_NAME DRIVERNAME
-  #define DEVICE_UID 0x1u
-  #define DEVICE_MODE DeviceModeReadWrite
-  #define DEVICE_STATE DeviceStateRunning
+  #if defined(ENTRYSIZE)
+    #undef ENTRYSIZE
+  #endif /* if defined(ENTRYSIZE) */
+  #define ENTRYSIZE ((sizeof(MemoryEntry_t) / CONFIG_MEMORY_REGION_BLOCK_SIZE) + (zero < (sizeof(MemoryEntry_t) % CONFIG_MEMORY_REGION_BLOCK_SIZE) ? 1 : 0))
 
-
-/* END: DEVICE DRIVER PARAMATER BLOCK */
-
+  #if defined(ADDR2ENTRY)
+    #undef ADDR2ENTRY
+  #endif /* if defined(ADDR2ENTRY) */
+  #define ADDR2ENTRY(addr_) ((MemoryEntry_t *) ((Byte_t *) (addr_) - (ENTRYSIZE * CONFIG_MEMORY_REGION_BLOCK_SIZE)))
 
   #ifdef __cplusplus
     extern "C" {
   #endif /* ifdef __cplusplus */
-  Return_t TO_FUNCTION(DEVICE_NAME, _self_register)(void);
-  Return_t TO_FUNCTION(DEVICE_NAME, _init)(Device_t * device_);
-  Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t * device_, Size_t *size_, Addr_t *config_);
-  Return_t TO_FUNCTION(DEVICE_NAME, _read)(Device_t * device_, Size_t *size_, Addr_t **data_);
-  Return_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t * device_, Size_t *size_, Addr_t *data_);
-  Return_t TO_FUNCTION(DEVICE_NAME, _simple_read)(Device_t * device_, Word_t **data_);
-  Return_t TO_FUNCTION(DEVICE_NAME, _simple_write)(Device_t * device_, Word_t *data_);
+  void memory_2_harness(void);
+  void test_magic(void);
+  void test_free(void);
+  void test_blocks(void);
+  void test_next(void);
+
 
   #ifdef __cplusplus
     }
   #endif /* ifdef __cplusplus */
-#endif /* ifndef DRIVER_H_ */
+#endif /* ifndef MEMORY_2_HARNESS_H_ */

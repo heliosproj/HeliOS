@@ -1,8 +1,9 @@
+/*UNCRUSTIFY-OFF*/
 /**
  * @file test.h
  * @author Manny Peterson (mannymsp@gmail.com)
  * @brief
- * @version 0.3.6
+ * @version 0.4.0
  * @date 2022-08-27
  *
  * @copyright
@@ -23,25 +24,26 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
+/*UNCRUSTIFY-ON*/
 #ifndef TEST_H_
-#define TEST_H_
+  #define TEST_H_
 
-#include "unit.h"
-#include "memory_harness.h"
-#include "queue_harness.h"
-#include "task_harness.h"
-#include "timer_harness.h"
-#include "stream_harness.h"
-#include "device_harness.h"
+  #include "unit.h"
+  #include "memory_1_harness.h"
+  #include "memory_2_harness.h"
+  #include "queue_harness.h"
+  #include "task_harness.h"
+  #include "timer_harness.h"
+  #include "stream_harness.h"
+  #include "device_harness.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+  #ifdef __cplusplus
+    extern "C" {
+  #endif /* ifdef __cplusplus */
+  int main(int argc, char **argv);
+  void reset(void);
 
-int main(int argc, char **argv);
-void reset(void);
-
-#ifdef __cplusplus
-}
-#endif
-#endif
+  #ifdef __cplusplus
+    }
+  #endif /* ifdef __cplusplus */
+#endif /* ifndef TEST_H_ */

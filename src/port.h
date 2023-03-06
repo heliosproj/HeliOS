@@ -1,8 +1,9 @@
+/*UNCRUSTIFY-OFF*/
 /**
  * @file port.h
  * @author Manny Peterson (mannymsp@gmail.com)
  * @brief Kernel sources for portability layer
- * @version 0.3.6
+ * @version 0.4.0
  * @date 2022-03-24
  *
  * @copyright
@@ -23,24 +24,24 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
+/*UNCRUSTIFY-ON*/
 #ifndef PORT_H_
-#define PORT_H_
+  #define PORT_H_
 
-#include "config.h"
-#include "defines.h"
-#include "types.h"
-#include "device.h"
-#include "mem.h"
-#include "queue.h"
-#include "stream.h"
-#include "sys.h"
-#include "task.h"
-#include "timer.h"
+  #include "config.h"
+  #include "defines.h"
+  #include "types.h"
+  #include "device.h"
+  #include "mem.h"
+  #include "queue.h"
+  #include "stream.h"
+  #include "sys.h"
+  #include "task.h"
+  #include "timer.h"
 
 
-
-#if defined(ARDUINO_ARCH_AVR) /* TESTED 2022-03-24 */
-
+  #if defined(ARDUINO_ARCH_AVR) /* TESTED 2022-03-24 */
+/*UNCRUSTIFY-OFF*/
 /*
 
    https://github.com/arduino/ArduinoCore-avr/blob/master/cores/arduino/wiring.c
@@ -75,15 +76,17 @@
    }
 
  */
+/*UNCRUSTIFY-ON*/
+    extern unsigned long timer0_overflow_count;
 
-extern unsigned long timer0_overflow_count;
+    #define DISABLE_INTERRUPTS() __asm__ __volatile__ ("cli")
 
-#define DISABLE_INTERRUPTS() __asm__ __volatile__ ("cli")
+    #define ENABLE_INTERRUPTS() __asm__ __volatile__ ("sei")
 
-#define ENABLE_INTERRUPTS() __asm__ __volatile__ ("sei")
+  #elif defined(ARDUINO_ARCH_SAM)
 
-#elif defined(ARDUINO_ARCH_SAM)
 
+/*UNCRUSTIFY-OFF*/
 /*
 
    https://github.com/arduino/ArduinoCore-sam/blob/master/cores/arduino/cortex_handlers.c
@@ -118,15 +121,17 @@ extern unsigned long timer0_overflow_count;
    }
 
  */
+/*UNCRUSTIFY-ON*/
+    extern uint32_t GetTickCount(void);
 
-extern uint32_t GetTickCount(void);
 
-#define DISABLE_INTERRUPTS() __asm volatile ("cpsid i")
 
-#define ENABLE_INTERRUPTS() __asm volatile ("cpsie i")
+    #define DISABLE_INTERRUPTS() __asm volatile ("cpsid i")
 
-#elif defined(ARDUINO_ARCH_SAMD) /* TESTED 2022-03-24 */
+    #define ENABLE_INTERRUPTS() __asm volatile ("cpsie i")
 
+  #elif defined(ARDUINO_ARCH_SAMD) /* TESTED 2022-03-24 */
+/*UNCRUSTIFY-OFF*/
 /*
 
    https://github.com/arduino/ArduinoCore-samd/blob/master/cores/arduino/delay.c
@@ -149,15 +154,15 @@ extern uint32_t GetTickCount(void);
    }
 
  */
+/*UNCRUSTIFY-ON*/
+    extern unsigned long millis(void);
 
-extern unsigned long millis(void);
+    #define DISABLE_INTERRUPTS() __asm volatile ("cpsid i")
 
-#define DISABLE_INTERRUPTS() __asm volatile ("cpsid i")
+    #define ENABLE_INTERRUPTS() __asm volatile ("cpsie i")
 
-#define ENABLE_INTERRUPTS() __asm volatile ("cpsie i")
-
-#elif defined(ARDUINO_ARCH_ESP8266) /* TESTED 2022-08-22 */
-
+  #elif defined(ARDUINO_ARCH_ESP8266) /* TESTED 2022-08-22 */
+/*UNCRUSTIFY-OFF*/
 /*
 
    https://github.com/esp8266/Arduino/blob/master/cores/esp8266/core_esp8266_wiring.cpp
@@ -169,18 +174,58 @@ extern unsigned long millis(void);
    }
 
  */
-#include "core_esp8266_features.h"
+/*UNCRUSTIFY-ON*/
+    #include "core_esp8266_features.h"
 
-typedef uint32_t uint32;
-extern uint32 system_get_time(void);
-extern void yield(void);
+    typedef uint32_t uint32;
+    extern uint32 system_get_time(void);
+    extern void yield(void);
 
-#define DISABLE_INTERRUPTS() xt_rsil(15)
 
-#define ENABLE_INTERRUPTS() xt_rsil(0)
 
-#elif defined(ARDUINO_TEENSY_MICROMOD) || defined(ARDUINO_TEENSY40) || defined(ARDUINO_TEENSY41) || defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY35) || defined(ARDUINO_TEENSY31) || defined(ARDUINO_TEENSY32) || defined(ARDUINO_TEENSY30) || defined(ARDUINO_TEENSYLC) /* TESTED 2022-03-24 */
+    #define DISABLE_INTERRUPTS() xt_rsil(15)
 
+    #define ENABLE_INTERRUPTS() xt_rsil(0)
+
+  #elif defined(ARDUINO_TEENSY_MICROMOD) || defined(ARDUINO_TEENSY40) || defined(ARDUINO_TEENSY41) || \
+  defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY35) || defined(ARDUINO_TEENSY31) || defined(ARDUINO_TEENSY32) || \
+  defined(ARDUINO_TEENSY30) || defined(ARDUINO_TEENSYLC) /*
+                                                          *
+                                                          *
+                                                          *
+                                                          *
+                                                          *
+                                                          *
+                                                          *
+                                                          *
+                                                          *
+                                                          *
+                                                          *
+                                                          *
+                                                          *
+                                                          *
+                                                          *
+                                                          *
+                                                          *
+                                                          *
+                                                          *
+                                                          *
+                                                          *
+                                                          *
+                                                          *
+                                                          *
+                                                          *
+                                                          *
+                                                          *
+                                                          *
+                                                          *
+                                                          *
+                                                          *
+                                                          * TESTED 2022-03-24
+                                                          */
+
+
+/*UNCRUSTIFY-OFF*/
 /*
 
    https://github.com/PaulStoffregen/cores/blob/master/teensy4/EventResponder.cpp
@@ -208,23 +253,25 @@ extern void yield(void);
    }
 
  */
+/*UNCRUSTIFY-ON*/
+    extern uint32_t systick_millis_count;
 
-extern uint32_t systick_millis_count;
+    #define DISABLE_INTERRUPTS() __asm volatile ("cpsid i")
 
-#define DISABLE_INTERRUPTS() __asm volatile ("cpsid i")
+    #define ENABLE_INTERRUPTS() __asm volatile ("cpsie i")
 
-#define ENABLE_INTERRUPTS() __asm volatile ("cpsie i")
+  #elif defined(ESP32) /* The ESP32 Arduino core is not supported as it is
+                        * bundled with FreeRTOS. */
 
-#elif defined(ESP32)
+    #pragma \
+  message("WARNING: The ESP32 Arduino core uses FreeRTOS. HeliOS and FreeRTOS cannot coexist in the same application. If your application requires an embedded operating system, use the built-in FreeRTOS included with the ESP32 Arduino core.")
 
-#pragma message("WARNING: The ESP32 Arduino core uses FreeRTOS. HeliOS and FreeRTOS cannot coexist in the same application. If your application requires an embedded operating system, use the built-in FreeRTOS included with the ESP32 Arduino core.")
+    #define DISABLE_INTERRUPTS()
 
-#define DISABLE_INTERRUPTS()
+    #define ENABLE_INTERRUPTS()
 
-#define ENABLE_INTERRUPTS()
-
-#elif defined(CMSIS_ARCH_CORTEXM) /* TESTED 2022-03-24 */
-
+  #elif defined(CMSIS_ARCH_CORTEXM) /* TESTED 2022-03-24 */
+/*UNCRUSTIFY-OFF*/
 /* ld linker script section
 
    .kernel_mem_region (NOLOAD):
@@ -238,7 +285,8 @@ extern uint32_t systick_millis_count;
    } > RAM
 
  */
-
+/*UNCRUSTIFY-ON*/
+/*UNCRUSTIFY-OFF*/
 /*
  *** START SECTION: ADD VENDOR HEADER HERE ***
 
@@ -247,47 +295,51 @@ extern uint32_t systick_millis_count;
 
  #include "stm32f429xx.h"
  */
-#include "stm32f429xx.h"
+/*UNCRUSTIFY-ON*/
+    #include "stm32f429xx.h"
+
+
+/*UNCRUSTIFY-OFF*/
 /*
  *** END SECTION: ADD VENDOR HEADER HERE ***
  */
+/*UNCRUSTIFY-ON*/
+
+    #define DISABLE_INTERRUPTS() __disable_irq()
+
+    #define ENABLE_INTERRUPTS() __enable_irq()
+
+    #define SYSTEM_CORE_CLOCK_FREQUENCY 0xF42400u /* 16000000u */
+
+    #define SYSTEM_CORE_CLOCK_PRESCALER 0x3E8u /* 1000u */
+
+  #elif defined(POSIX_ARCH_OTHER) /* TESTED 2022-03-24 */
+
+    #include "posix.h"
+
+    #include <stdio.h>
+    #include <sys/time.h>
+
+    #define DISABLE_INTERRUPTS()
+
+    #define ENABLE_INTERRUPTS()
+    #if defined(UNIT_TEST_COLORIZE)
+      #define CONFIG_SYSTEM_ASSERT_BEHAVIOR(f, l) printf("\033[95mkernel:\033[93m assert at %s:%d\n\033[39m", f, l)
+    #else  /* if defined(UNIT_TEST_COLORIZE) */
+      #define CONFIG_SYSTEM_ASSERT_BEHAVIOR(f, l) printf("kernel: assert at %s:%d\n", f, l)
+    #endif /* if defined(UNIT_TEST_COLORIZE) */
+
+  #endif /* if defined(ARDUINO_ARCH_AVR) */
 
 
+  #ifdef __cplusplus
+    extern "C" {
+  #endif /* ifdef __cplusplus */
+  Ticks_t __PortGetSysTicks__(void);
+  Return_t __PortInit__(void);
 
-#define DISABLE_INTERRUPTS() __disable_irq()
+  #ifdef __cplusplus
+    }
+  #endif /* ifdef __cplusplus */
 
-#define ENABLE_INTERRUPTS() __enable_irq()
-
-#define SYSTEM_CORE_CLOCK_FREQUENCY 0xF42400u /* 16000000u */
-
-#define SYSTEM_CORE_CLOCK_PRESCALER 0x3E8u /* 1000u */
-
-#elif defined(POSIX_ARCH_OTHER) /* TESTED 2022-03-24 */
-
-#include "posix.h"
-
-#include <stdio.h>
-#include <sys/time.h>
-
-#define DISABLE_INTERRUPTS()
-
-#define ENABLE_INTERRUPTS()
-
-#define CONFIG_SYSTEM_ASSERT_BEHAVIOR(f, l) printf("kernel: assert at %s:%d\n", f, l )
-
-#endif
-
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-Ticks_t __SysGetSysTicks__(void);
-void __SysInit__(void);
-
-#ifdef __cplusplus
-}
-#endif
-
-#endif
+#endif /* ifndef PORT_H_ */

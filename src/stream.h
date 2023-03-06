@@ -1,8 +1,9 @@
+/*UNCRUSTIFY-OFF*/
 /**
  * @file stream.h
  * @author Manny Peterson (mannymsp@gmail.com)
  * @brief Kernel sources for stream buffers
- * @version 0.3.6
+ * @version 0.4.0
  * @date 2022-08-30
  *
  * @copyright
@@ -23,34 +24,34 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
+/*UNCRUSTIFY-ON*/
 #ifndef STREAM_H_
-#define STREAM_H_
+  #define STREAM_H_
 
-#include "config.h"
-#include "defines.h"
-#include "types.h"
-#include "port.h"
-#include "device.h"
-#include "mem.h"
-#include "queue.h"
-#include "sys.h"
-#include "task.h"
-#include "timer.h"
+  #include "config.h"
+  #include "defines.h"
+  #include "types.h"
+  #include "port.h"
+  #include "device.h"
+  #include "mem.h"
+  #include "queue.h"
+  #include "sys.h"
+  #include "task.h"
+  #include "timer.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+  #ifdef __cplusplus
+    extern "C" {
+  #endif /* ifdef __cplusplus */
+  Return_t xStreamCreate(StreamBuffer_t **stream_);
+  Return_t xStreamDelete(const StreamBuffer_t *stream_);
+  Return_t xStreamSend(StreamBuffer_t *stream_, const Byte_t byte_);
+  Return_t xStreamReceive(const StreamBuffer_t *stream_, HalfWord_t *bytes_, Byte_t **data_);
+  Return_t xStreamBytesAvailable(const StreamBuffer_t *stream_, HalfWord_t *bytes_);
+  Return_t xStreamReset(const StreamBuffer_t *stream_);
+  Return_t xStreamIsEmpty(const StreamBuffer_t *stream_, Base_t *res_);
+  Return_t xStreamIsFull(const StreamBuffer_t *stream_, Base_t *res_);
 
-StreamBuffer_t *xStreamCreate(void);
-void xStreamDelete(const StreamBuffer_t *stream_);
-Base_t xStreamSend(StreamBuffer_t *stream_, const Byte_t byte_);
-Byte_t *xStreamReceive(const StreamBuffer_t *stream_, HalfWord_t *bytes_);
-HalfWord_t xStreamBytesAvailable(const StreamBuffer_t *stream_);
-void xStreamReset(const StreamBuffer_t *stream_);
-Base_t xStreamIsEmpty(const StreamBuffer_t *stream_);
-Base_t xStreamIsFull(const StreamBuffer_t *stream_);
-
-#ifdef __cplusplus
-}
-#endif
-#endif
+  #ifdef __cplusplus
+    }
+  #endif /* ifdef __cplusplus */
+#endif /* ifndef STREAM_H_ */
