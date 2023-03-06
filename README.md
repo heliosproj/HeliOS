@@ -90,7 +90,10 @@ void loop() {
 ## HeliOS "Blink" Example
 Below is the Arduino "Blink" example code implemented using HeliOS. In this example, a HeliOS task, which alternates the microcontroller's GPIO pin state between high and low, is added in a "wait" state and a timer is set instructing HeliOS's scheduler to execute the task every 1,000 ticks (milliseconds on many MCUs).
 ```C
-//* Include the HeliOS header. Do not include any other HeliOS headers. */
+#include <Arduino.h>
+
+
+/* Include the HeliOS header. Do not include any other HeliOS headers. */
 #include <HeliOS.h>
 
 
@@ -162,13 +165,15 @@ void setup() {
    * (*callback_)(xTask task_, xTaskParm parm_), xTaskParm taskParameter_)
    *
    * task_ A pointer to the task object (a.k.a., task handle). To pass a pointer
-   * to the task objects the address-of ("&") operator must be used (e.g.,
+   * to the task object, the address-of ("&") operator must be used (e.g.,
    * &blink).
    *
    * name_ A pointer to a byte array containing the ASCII name of the task which
    * can be used later to obtain the task handle by using the xTaskGetName()
    * syscall. The length of the name cannot exceed CONFIG_TASK_NAME_BYTES
-   * (default is 8 bytes).
+   * (default is 8 bytes). While not required (compiler with just throw a
+   * warning), when using a string literal (e.g., "BLINK"), the argument must be
+   * cast to (const xByte *) to avoid a warning from the compiler.
    *
    * callBack_ A pointer to the task's main function. The task's main function's
    * prototype must be as follows.
@@ -176,7 +181,7 @@ void setup() {
    *    void <taskname>(xTask task_, xTaskParm parm_)
    *
    * If the syscall fails, call xSystemHalt(). */
-  if(ERROR(xTaskCreate(&blink, "BLINK", blinkTask_main, &ledState))) {
+  if(ERROR(xTaskCreate(&blink, (const xByte *) "BLINK", blinkTask_main, &ledState))) {
     xSystemHalt();
   }
 
