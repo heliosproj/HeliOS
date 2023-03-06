@@ -162,6 +162,12 @@
   #define OK(expr_) ((ReturnOK) == (expr_))
 
 
+  #if defined(ERROR)
+    #undef ERROR
+  #endif /* if defined(ERROR) */
+  #define ERROR(expr_) ((ReturnError) == (expr_))
+
+
   #if defined(ASSERT)
     #undef ASSERT
   #endif /* if defined(ASSERT) */

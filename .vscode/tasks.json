@@ -42,7 +42,7 @@
         {
             "type": "shell",
             "label": "HeliOS Uncrustify",
-            "command": "find . \\( -name \"*.c\" -o -name \"*.h\" \\) -exec uncrustify -c extras/uncrustify/helios.cfg -lC --no-backup {} +",
+            "command": "find . \\( -name \"*.c\" -o -name \"*.h\" -o -name \"*.ino\" \\) -exec uncrustify -c extras/uncrustify/helios.cfg -lC --no-backup {} +",
             "options": {
                 "cwd": "${workspaceFolder}"
             },
