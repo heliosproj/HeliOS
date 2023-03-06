@@ -36,7 +36,7 @@
  * task's main function by using the DEREF_TASKPARM() C macro. */
 void blinkTask_main(xTask task_, xTaskParm parm_) {
   /* Dereference the task parameter and store its value in the local integer
-   * "ledState". This integer contains the state of the LED (i.e., 1 (on) or 2
+   * "ledState". This integer contains the state of the LED (i.e., 1 (on) or 0
    * (off)). This method is recommended over using variables with a global
    * scope.*/
   int ledState = DEREF_TASKPARM(int, parm_);
