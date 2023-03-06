@@ -90,9 +90,6 @@ void loop() {
 ## HeliOS "Blink" Example
 Below is the Arduino "Blink" example code implemented using HeliOS. In this example, a HeliOS task, which alternates the microcontroller's GPIO pin state between high and low, is added in a "wait" state and a timer is set instructing HeliOS's scheduler to execute the task every 1,000 ticks (milliseconds on many MCUs).
 ```C
-#include <Arduino.h>
-
-
 /* Include the HeliOS header. Do not include any other HeliOS headers. */
 #include <HeliOS.h>
 

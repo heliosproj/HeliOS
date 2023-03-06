@@ -25,9 +25,6 @@
  *
  */
 /*UNCRUSTIFY-ON*/
-#include <Arduino.h>
-
-
 /* Include the HeliOS header. Do not include any other HeliOS headers. */
 #include <HeliOS.h>
 
