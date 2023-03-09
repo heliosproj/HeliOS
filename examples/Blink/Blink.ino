@@ -157,6 +157,6 @@ void setup() {
 
 
 void loop() {
-  /* The Arduino loop() function is not used in a HeliOS application and must remain
-   * empty. */
+  /* The Arduino loop() function is not used in a HeliOS application and must
+   * remain empty. */
 }

@@ -58,10 +58,9 @@ void taskLong_main(xTask task_, xTaskParm parm_) {
 void setup() {
   Serial.begin(9600);
 
-
- if(ERROR( xSystemInit())) {
-  xSystemHalt();
- }
+  if(ERROR(xSystemInit())) {
+    xSystemHalt();
+  }
 
 
   /* Declare the task object (a.k.a., task handle) which will be used inside of

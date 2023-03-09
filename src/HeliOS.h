@@ -407,9 +407,119 @@
    *                 (e.g., if(OK(xMemGetUsed(&size))) {} ).
    */
   xReturn xDeviceConfigDevice(const xHalfWord uid_, xSize *size_, xAddr config_);
+
+
+  /**
+   * @brief Syscall to request memory from the heap
+   *
+   * The xMemAlloc() syscall allocates heap memory for user's application. The
+   * amount of available heap memory is dependent on the
+   * CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS and CONFIG_MEMORY_REGION_BLOCK_SIZE
+   * settings. Similar to calloc(), xMemAlloc() clears (i.e., zeros out) the
+   * allocated memory. Because the address of the newly allocated heap memory is
+   * returned through the "addr_" argument, the argument must be cast to
+   * "volatile xAddr *" to avoid compiler warnings.
+   *
+   * @param  addr_ A pointer to the pointer that will be updated to point to the
+   *               newly allocated memory. For example, if heap memory for a
+   *               structure called mystruct (MyStruct *) needs to be allocated,
+   *               the call to xMemAlloc() would be written as follows
+   *               if(OK(xMemAlloc((volatile xAddr *) &mystruct,
+   *               sizeof(MyStruct)))) {}.
+   * @param  size_ The amount of heap memory, in bytes, being requested.
+   * @return       xReturn On success, the syscall returns ReturnOK. On failure,
+   *               the syscall returns ReturnError. A failure is any condition
+   *               in which the syscall was unable to achieve its intended
+   *               objective. For example, if xTaskGetId() was unable to locate
+   *               the task by the task handle (i.e., xTask) passed to the
+   *               syscall, because either the handle was null or invalid (e.g.,
+   *               points to a deleted task), xTaskGetId() would return
+   *               ReturnError. All HeliOS syscalls return the xReturn (a.k.a.,
+   *               Return_t) type which can either be ReturnOK or ReturnError.
+   *               The C macro OK() can be used as a more concise way of
+   *               checking the return value of a syscall (e.g.,
+   *               if(OK(xMemGetUsed(&size))) {} ).
+   */
   xReturn xMemAlloc(volatile xAddr *addr_, const xSize size_);
+
+
+  /**
+   * @brief Syscall to free heap memory allocated by xMemAlloc()
+   *
+   * The xMemFree() syscall frees (i.e., de-allocates) heap memory allocated by
+   * xMemAlloc(). xMemFree() is also used to free heap memory allocated by many
+   * syscalls including xTaskGetAllRunTimeStats().
+   *
+   * @param  addr_ A pointer to the memory allocated by xMemAlloc() to be freed.
+   * @return       xReturn On success, the syscall returns ReturnOK. On failure,
+   *               the syscall returns ReturnError. A failure is any condition
+   *               in which the syscall was unable to achieve its intended
+   *               objective. For example, if xTaskGetId() was unable to locate
+   *               the task by the task handle (i.e., xTask) passed to the
+   *               syscall, because either the handle was null or invalid (e.g.,
+   *               points to a deleted task), xTaskGetId() would return
+   *               ReturnError. All HeliOS syscalls return the xReturn (a.k.a.,
+   *               Return_t) type which can either be ReturnOK or ReturnError.
+   *               The C macro OK() can be used as a more concise way of
+   *               checking the return value of a syscall (e.g.,
+   *               if(OK(xMemGetUsed(&size))) {} ).
+   */
   xReturn xMemFree(const volatile xAddr addr_);
+
+
+  /**
+   * @brief Syscall to obtain the amount of in-use heap memory
+   *
+   * The xMemGetUsed() syscall will update the "size_" argument with the amount,
+   * in bytes, of in-use heap memory. If more memory statistics are needed,
+   * xMemGetHeapStats() provides a more complete picture of the heap memory
+   * region.
+   *
+   * @param  size_ A variable of type xSize that will be updated by
+   *               xMemGetUsed() to contain the amount, in bytes, of in-use heap
+   *               memory.
+   * @return       xReturn On success, the syscall returns ReturnOK. On failure,
+   *               the syscall returns ReturnError. A failure is any condition
+   *               in which the syscall was unable to achieve its intended
+   *               objective. For example, if xTaskGetId() was unable to locate
+   *               the task by the task handle (i.e., xTask) passed to the
+   *               syscall, because either the handle was null or invalid (e.g.,
+   *               points to a deleted task), xTaskGetId() would return
+   *               ReturnError. All HeliOS syscalls return the xReturn (a.k.a.,
+   *               Return_t) type which can either be ReturnOK or ReturnError.
+   *               The C macro OK() can be used as a more concise way of
+   *               checking the return value of a syscall (e.g.,
+   *               if(OK(xMemGetUsed(&size))) {} ).
+   */
   xReturn xMemGetUsed(xSize *size_);
+
+
+  /**
+   * @brief Syscall to obtain the amount of heap memory allocated at a specific
+   * address
+   *
+   * The xMemGetSize() syscall can be used to obtain the amount, in bytes, of
+   * heap memory allocated at a specific address. The address must be the same
+   * address obtained from xMemAlloc().
+   *
+   * @param  addr_ A pointer to the heap memory that the amount, in bytes,
+   *               allocated is being sought.
+   * @param  size_ A variable of type xSize that will be updated by
+   *               xMemGetSize() to contain the amount, in bytes, of heap memory
+   *               in-use at an address pointer to by "addr_".
+   * @return       xReturn On success, the syscall returns ReturnOK. On failure,
+   *               the syscall returns ReturnError. A failure is any condition
+   *               in which the syscall was unable to achieve its intended
+   *               objective. For example, if xTaskGetId() was unable to locate
+   *               the task by the task handle (i.e., xTask) passed to the
+   *               syscall, because either the handle was null or invalid (e.g.,
+   *               points to a deleted task), xTaskGetId() would return
+   *               ReturnError. All HeliOS syscalls return the xReturn (a.k.a.,
+   *               Return_t) type which can either be ReturnOK or ReturnError.
+   *               The C macro OK() can be used as a more concise way of
+   *               checking the return value of a syscall (e.g.,
+   *               if(OK(xMemGetUsed(&size))) {} ).
+   */
   xReturn xMemGetSize(const volatile xAddr addr_, xSize *size_);
   xReturn xMemGetHeapStats(xMemoryRegionStats *stats_);
   xReturn xMemGetKernelStats(xMemoryRegionStats *stats_);
