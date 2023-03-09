@@ -21,8 +21,10 @@ HeliOS is built to be robust. HeliOS (0.3.0 and later) has undergone static anal
 
 Lastly, for PlatformIO and Arduino users, HeliOS is easily added to their embedded application. The current release of HeliOS is available directly through the [PlatformIO Registry](https://registry.platformio.org/libraries/mannypeterson/HeliOS) and the [Arduino Library Manager](https://www.arduino.cc/reference/en/libraries/helios/). For users of other embedded platforms and/or tool-chains, simply download the current [release](https://github.com/MannyPeterson/HeliOS/releases) of HeliOS from GitHub and add the sources to your project.
 ***
-# What's Happening
-The HeliOS 0.4.x series kernel was recently released which supersedes all prior kernel versions. The syscall API and internals have undergone significant development rendering applications built on earlier kernels incompatible with 0.4.x. The key change that will impact compatibility is the introduction of a consistent return type for all syscalls. This allows errors or exceptions that occur deep within the kernel to propagate upwards through the kernel to the user's application.
+# What's New
+The HeliOS 0.4.x series kernel was recently released which supersedes all prior kernel versions. The syscall API and internals have undergone significant development rendering applications built on earlier kernels incompatible with 0.4.x. The key change that will impact compatibility is the introduction of a consistent return type for all syscalls. This provides a better mechanism for error propagation and a consistent interface handling errors.
+
+This provides the user a consistent interface for error errors or exceptions that occur deep within the kernel to propagate upwards through the kernel to the user's application.
 
 For example, prior to kernel 0.4.0, a task would be created as follows.
 
