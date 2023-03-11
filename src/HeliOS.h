@@ -488,8 +488,8 @@
    * heap memory allocated at a specific address. The address must be the
    * address obtained from xMemAlloc().
    *
-   * @param  addr_ The address of the heap memory that the size (i.e., amount),
-   *               in bytes, allocated is being sought.
+   * @param  addr_ The address of the heap memory for which the size (i.e.,
+   *               amount) allocated, in bytes, is being sought.
    * @param  size_ The size (i.e., amount), in bytes, of heap memory allocated
    *               to the address.
    * @return       xReturn On success, the syscall returns ReturnOK. On failure,
@@ -510,7 +510,7 @@
 
 
   /**
-   * @brief Get memory statistics on the heap memory region
+   * @brief Syscall to get memory statistics on the heap memory region
    *
    * The xMemGetHeapStats() syscall is used to obtain detailed statistics about
    * the heap memory region which can be used by the application to monitor
@@ -536,7 +536,7 @@
 
 
   /**
-   * @brief Get memory statistics on the kernel memory region
+   * @brief Syscall to get memory statistics on the kernel memory region
    *
    * The xMemGetKernelStats() syscall is used to obtain detailed statistics
    * about the kernel memory region which can be used by the application to
@@ -559,8 +559,83 @@
    *                if(ERROR(xMemGetUsed(&size))) {}).
    */
   xReturn xMemGetKernelStats(xMemoryRegionStats *stats_);
+
+
+  /**
+   * @brief Syscall to create a message queue
+   *
+   * The xQueueCreate() syscall will create a new message queue for inter-task
+   * communication.
+   *
+   * @param  queue_ The message queue to be operated on.
+   * @param  limit_ The message limit for the queue. When this value is reached,
+   *                the message queue is considered to be full. The minimume
+   *                message limit is configured using the
+   *                CONFIG_QUEUE_MINIMUM_LIMIT (default is 5) setting.
+   * @return        xReturn On success, the syscall returns ReturnOK. On
+   *                failure, the syscall returns ReturnError. A failure is any
+   *                condition in which the syscall was unable to achieve its
+   *                intended objective. For example, if xTaskGetId() was unable
+   *                to locate the task by the task object (i.e., xTask) passed
+   *                to the syscall, because either the object was null or
+   *                invalid (e.g., a deleted task), xTaskGetId() would return
+   *                ReturnError. All HeliOS syscalls return the xReturn (a.k.a.,
+   *                Return_t) type which can either be ReturnOK or ReturnError.
+   *                The C macros OK() and ERROR() can be used as a more concise
+   *                way of checking the return value of a syscall (e.g.,
+   *                if(OK(xMemGetUsed(&size))) {} or
+   *                if(ERROR(xMemGetUsed(&size))) {}).
+   */
   xReturn xQueueCreate(xQueue *queue_, const xBase limit_);
+
+
+  /**
+   * @brief Syscall to delete a message queue
+   *
+   * The xQueueDelete() syscall will delete a message queue used for inter-task
+   * communication.
+   *
+   * @param  queue_ The message queue to be operated on.
+   * @return        xReturn On success, the syscall returns ReturnOK. On
+   *                failure, the syscall returns ReturnError. A failure is any
+   *                condition in which the syscall was unable to achieve its
+   *                intended objective. For example, if xTaskGetId() was unable
+   *                to locate the task by the task object (i.e., xTask) passed
+   *                to the syscall, because either the object was null or
+   *                invalid (e.g., a deleted task), xTaskGetId() would return
+   *                ReturnError. All HeliOS syscalls return the xReturn (a.k.a.,
+   *                Return_t) type which can either be ReturnOK or ReturnError.
+   *                The C macros OK() and ERROR() can be used as a more concise
+   *                way of checking the return value of a syscall (e.g.,
+   *                if(OK(xMemGetUsed(&size))) {} or
+   *                if(ERROR(xMemGetUsed(&size))) {}).
+   */
   xReturn xQueueDelete(xQueue queue_);
+
+
+  /**
+   * @brief Syscall to get the length of a message queue
+   *
+   * The xQueueGetLength() syscall is used to inquire about the length (i.e.,
+   * the number of messages) of a message queue.
+   *
+   * @param  queue_ The message queue to be operated on.
+   * @param  res_   The result of the inquiry; taken here to mean the number of
+   *                messages a message queue contains.
+   * @return        xReturn On success, the syscall returns ReturnOK. On
+   *                failure, the syscall returns ReturnError. A failure is any
+   *                condition in which the syscall was unable to achieve its
+   *                intended objective. For example, if xTaskGetId() was unable
+   *                to locate the task by the task object (i.e., xTask) passed
+   *                to the syscall, because either the object was null or
+   *                invalid (e.g., a deleted task), xTaskGetId() would return
+   *                ReturnError. All HeliOS syscalls return the xReturn (a.k.a.,
+   *                Return_t) type which can either be ReturnOK or ReturnError.
+   *                The C macros OK() and ERROR() can be used as a more concise
+   *                way of checking the return value of a syscall (e.g.,
+   *                if(OK(xMemGetUsed(&size))) {} or
+   *                if(ERROR(xMemGetUsed(&size))) {}).
+   */
   xReturn xQueueGetLength(const xQueue queue_, xBase *res_);
   xReturn xQueueIsQueueEmpty(const xQueue queue_, xBase *res_);
   xReturn xQueueIsQueueFull(const xQueue queue_, xBase *res_);
