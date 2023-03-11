@@ -637,8 +637,88 @@
    *                if(ERROR(xMemGetUsed(&size))) {}).
    */
   xReturn xQueueGetLength(const xQueue queue_, xBase *res_);
+
+
+  /**
+   * @brief Syscall to inquire as to whether a message queue is empty
+   *
+   * The xQueueIsQueueEmpty() syscall is used to inquire as to whether a message
+   * queue is empty. A message queue is considered empty if the length (i.e.,
+   * number of messages) of a queue is zero.
+   *
+   * @param  queue_ The message queue to be operated on.
+   * @param  res_   The result of the inquiry; taken here to mean "true" if the
+   *                queue is empty, "false" if it contains one or more messages.
+   * @return        xReturn On success, the syscall returns ReturnOK. On
+   *                failure, the syscall returns ReturnError. A failure is any
+   *                condition in which the syscall was unable to achieve its
+   *                intended objective. For example, if xTaskGetId() was unable
+   *                to locate the task by the task object (i.e., xTask) passed
+   *                to the syscall, because either the object was null or
+   *                invalid (e.g., a deleted task), xTaskGetId() would return
+   *                ReturnError. All HeliOS syscalls return the xReturn (a.k.a.,
+   *                Return_t) type which can either be ReturnOK or ReturnError.
+   *                The C macros OK() and ERROR() can be used as a more concise
+   *                way of checking the return value of a syscall (e.g.,
+   *                if(OK(xMemGetUsed(&size))) {} or
+   *                if(ERROR(xMemGetUsed(&size))) {}).
+   */
   xReturn xQueueIsQueueEmpty(const xQueue queue_, xBase *res_);
+
+
+  /**
+   * @brief Syscall to inquire as to whether a message queue is full
+   *
+   * The xQueueIsQueueFull() syscall is used to inquire as to whether a message
+   * queue is full. A message queue is considered full if the length (i.e.,
+   * number of messages) of a queue has reached its message limit which is
+   * configured using the CONFIG_QUEUE_MINIMUM_LIMIT (default is 5) setting.
+   *
+   * @param  queue_ The message queue to be operated on.
+   * @param  res_   The result of the inquiry; taken here to mean "true" if the
+   *                queue is full, "false" if it contains less than "limit"
+   *                messages.
+   * @return        xReturn On success, the syscall returns ReturnOK. On
+   *                failure, the syscall returns ReturnError. A failure is any
+   *                condition in which the syscall was unable to achieve its
+   *                intended objective. For example, if xTaskGetId() was unable
+   *                to locate the task by the task object (i.e., xTask) passed
+   *                to the syscall, because either the object was null or
+   *                invalid (e.g., a deleted task), xTaskGetId() would return
+   *                ReturnError. All HeliOS syscalls return the xReturn (a.k.a.,
+   *                Return_t) type which can either be ReturnOK or ReturnError.
+   *                The C macros OK() and ERROR() can be used as a more concise
+   *                way of checking the return value of a syscall (e.g.,
+   *                if(OK(xMemGetUsed(&size))) {} or
+   *                if(ERROR(xMemGetUsed(&size))) {}).
+   */
   xReturn xQueueIsQueueFull(const xQueue queue_, xBase *res_);
+
+
+  /**
+   * @brief Syscall to inquire as to whether a message queue has one or more
+   * messages waiting
+   *
+   * The xQueueMessagesWaiting() syscall is used to inquire as to whether a
+   * message queue has one or more messages waiting.
+   *
+   * @param  queue_ The message queue to be operated on.
+   * @param  res_   The result of the inquiry; taken here to mean "true" if
+   *                there is one or more messages waiting.
+   * @return        xReturn On success, the syscall returns ReturnOK. On
+   *                failure, the syscall returns ReturnError. A failure is any
+   *                condition in which the syscall was unable to achieve its
+   *                intended objective. For example, if xTaskGetId() was unable
+   *                to locate the task by the task object (i.e., xTask) passed
+   *                to the syscall, because either the object was null or
+   *                invalid (e.g., a deleted task), xTaskGetId() would return
+   *                ReturnError. All HeliOS syscalls return the xReturn (a.k.a.,
+   *                Return_t) type which can either be ReturnOK or ReturnError.
+   *                The C macros OK() and ERROR() can be used as a more concise
+   *                way of checking the return value of a syscall (e.g.,
+   *                if(OK(xMemGetUsed(&size))) {} or
+   *                if(ERROR(xMemGetUsed(&size))) {}).
+   */
   xReturn xQueueMessagesWaiting(const xQueue queue_, xBase *res_);
   xReturn xQueueSend(xQueue queue_, const xBase bytes_, const xByte *value_);
   xReturn xQueuePeek(const xQueue queue_, xQueueMessage *message_);
