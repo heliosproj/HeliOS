@@ -765,7 +765,7 @@ Return_t xTaskStartScheduler(void) {
 
 
   /* Intentionally underflow to get the maximum value of Ticks_t. */
-  Ticks_t leastRunTime = -1;
+  Ticks_t least = -1;
 
 
   if((false == FLAG_RUNNING) && (NOTNULLPTR(tlist))) {
@@ -797,8 +797,8 @@ Return_t xTaskStartScheduler(void) {
            * than the least runtime of the tasks thus far, then update lest
            * runtime and remember the task because it will get ran later if it
            * is in fact the task with the least runtime. */
-        } else if((TaskStateRunning == cursor->state) && (leastRunTime > cursor->totalRunTime)) {
-          leastRunTime = cursor->totalRunTime;
+        } else if((TaskStateRunning == cursor->state) && (least > cursor->totalRunTime)) {
+          least = cursor->totalRunTime;
           runTask = cursor;
         }
 
@@ -813,7 +813,7 @@ Return_t xTaskStartScheduler(void) {
       }
 
       /* Intentionally underflow to get the maximum value of Ticks_t. */
-      leastRunTime = -1;
+      least = -1;
     }
 
     FLAG_RUNNING = false;
@@ -846,16 +846,16 @@ static void __RunTimeReset__(void) {
 
 
 static void __TaskRun__(Task_t *task_) {
-  Ticks_t taskStartTime = zero;
-  Ticks_t prevTotalRunTime = zero;
+  Ticks_t start = zero;
+  Ticks_t prev = zero;
 
 
   /* Store the previous total runtime to detect for overflow later. */
-  prevTotalRunTime = task_->totalRunTime;
+  prev = task_->totalRunTime;
 
 
   /* Capture the start time of the task in ticks. */
-  taskStartTime = __PortGetSysTicks__();
+  start = __PortGetSysTicks__();
 
 
   /* Call the task main function through it's callback. */
@@ -864,7 +864,7 @@ static void __TaskRun__(Task_t *task_) {
 
   /* Capture the task runtime by subtracting the start time from the end time.
    */
-  task_->lastRunTime = __PortGetSysTicks__() - taskStartTime;
+  task_->lastRunTime = __PortGetSysTicks__() - start;
 
 
   /* Add the last runtime to the total runtime. */
@@ -883,7 +883,7 @@ static void __TaskRun__(Task_t *task_) {
 
   /* Detect overflow of total runtime. If an overflow occurs, then set the
    * overflow flag to true. */
-  if(task_->totalRunTime < prevTotalRunTime) {
+  if(task_->totalRunTime < prev) {
     FLAG_OVERFLOW = true;
   }
 

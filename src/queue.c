@@ -141,8 +141,7 @@ Return_t xQueueIsQueueEmpty(const Queue_t *queue_, Base_t *res_) {
 
 
       /* Confirm the length of the queue matches the number of the messages we
-       * counted while traversing the queue. If they match, then set res_ to the
-       * number of messages.
+       * counted while traversing the queue.
        *
        * If the number of messages is zero, then set res_ to true because the
        * queue is empty. Otherwise set res_ to false because the queue is *NOT*
@@ -186,8 +185,7 @@ Return_t xQueueIsQueueFull(const Queue_t *queue_, Base_t *res_) {
 
 
       /* Confirm the length of the queue matches the number of the messages we
-       * counted while traversing the queue. If they match, then set res_ to the
-       * number of messages.
+       * counted while traversing the queue.
        *
        * If the number of messages greater than or equal to the queue length
        * limit, then set res_ to true because the queue is full. If the number
@@ -232,8 +230,7 @@ Return_t xQueueMessagesWaiting(const Queue_t *queue_, Base_t *res_) {
 
 
       /* Confirm the length of the queue matches the number of the messages we
-       * counted while traversing the queue. If they match, then set res_ to the
-       * number of messages.
+       * counted while traversing the queue.
        *
        * If the number of messages greater than zero, then set res_ to true
        * because there is at least one message waiting - possibly more.
