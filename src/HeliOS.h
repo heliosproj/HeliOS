@@ -979,14 +979,244 @@
    *                 if(ERROR(xMemGetUsed(&size))) {}).
    */
   xReturn xStreamReceive(const xStreamBuffer stream_, xHalfWord *bytes_, xByte **data_);
+
+
+  /**
+   * @brief Syscall to inquire about the number of bytes waiting in a stream
+   * buffer
+   *
+   * The xStreamBytesAvailable() syscall is used to obtain the number of waiting
+   * (i.e., available) bytes in a stream buffer.
+   *
+   * @param  stream_ The stream buffer to be operated on.
+   * @param  bytes_  The number of available bytes in the stream buffer.
+   * @return         xReturn On success, the syscall returns ReturnOK. On
+   *                 failure, the syscall returns ReturnError. A failure is any
+   *                 condition in which the syscall was unable to achieve its
+   *                 intended objective. For example, if xTaskGetId() was unable
+   *                 to locate the task by the task object (i.e., xTask) passed
+   *                 to the syscall, because either the object was null or
+   *                 invalid (e.g., a deleted task), xTaskGetId() would return
+   *                 ReturnError. All HeliOS syscalls return the xReturn
+   *                 (a.k.a., Return_t) type which can either be ReturnOK or
+   *                 ReturnError. The C macros OK() and ERROR() can be used as a
+   *                 more concise way of checking the return value of a syscall
+   *                 (e.g., if(OK(xMemGetUsed(&size))) {} or
+   *                 if(ERROR(xMemGetUsed(&size))) {}).
+   */
   xReturn xStreamBytesAvailable(const xStreamBuffer stream_, xHalfWord *bytes_);
+
+
+  /**
+   * @brief Syscall to reset a stream buffer
+   *
+   * The xStreamReset() syscall is used to reset a stream buffer. Resetting a
+   * stream buffer has the effect of clearing the stream buffer such that
+   * xStreamBytesAvailable() would return zero bytes available.
+   *
+   * @param  stream_ The stream buffer to be operated on.
+   * @return         xReturn On success, the syscall returns ReturnOK. On
+   *                 failure, the syscall returns ReturnError. A failure is any
+   *                 condition in which the syscall was unable to achieve its
+   *                 intended objective. For example, if xTaskGetId() was unable
+   *                 to locate the task by the task object (i.e., xTask) passed
+   *                 to the syscall, because either the object was null or
+   *                 invalid (e.g., a deleted task), xTaskGetId() would return
+   *                 ReturnError. All HeliOS syscalls return the xReturn
+   *                 (a.k.a., Return_t) type which can either be ReturnOK or
+   *                 ReturnError. The C macros OK() and ERROR() can be used as a
+   *                 more concise way of checking the return value of a syscall
+   *                 (e.g., if(OK(xMemGetUsed(&size))) {} or
+   *                 if(ERROR(xMemGetUsed(&size))) {}).
+   */
   xReturn xStreamReset(const xStreamBuffer stream_);
+
+
+  /**
+   * @brief Syscall to inquire as to whether a stream buffer is empty
+   *
+   * The xStreamIsEmpty() syscall is used to inquire as to whether a stream
+   * buffer is empty. An empty stream buffer has zero waiting (i.e.,available)
+   * bytes.
+   *
+   * @param  stream_ The stream buffer to be operated on.
+   * @param  res_    The result of the inquiry; taken here to mean "true" if the
+   *                 length (i.e., number of waiting bytes) is zero.
+   * @return         xReturn On success, the syscall returns ReturnOK. On
+   *                 failure, the syscall returns ReturnError. A failure is any
+   *                 condition in which the syscall was unable to achieve its
+   *                 intended objective. For example, if xTaskGetId() was unable
+   *                 to locate the task by the task object (i.e., xTask) passed
+   *                 to the syscall, because either the object was null or
+   *                 invalid (e.g., a deleted task), xTaskGetId() would return
+   *                 ReturnError. All HeliOS syscalls return the xReturn
+   *                 (a.k.a., Return_t) type which can either be ReturnOK or
+   *                 ReturnError. The C macros OK() and ERROR() can be used as a
+   *                 more concise way of checking the return value of a syscall
+   *                 (e.g., if(OK(xMemGetUsed(&size))) {} or
+   *                 if(ERROR(xMemGetUsed(&size))) {}).
+   */
   xReturn xStreamIsEmpty(const xStreamBuffer stream_, xBase *res_);
+
+
+  /**
+   * @brief Syscall to inquire as to whether a stream buffer is full
+   *
+   * The xStreamIsFull() syscall is used to inquire as to whether a stream
+   * buffer is full. An full stream buffer has CONFIG_STREAM_BUFFER_BYTES
+   * (default is 32) bytes waiting.
+   *
+   * @param  stream_ The stream buffer to be operated on.
+   * @param  res_    The result of the inquiry; taken here to mean "true" if the
+   *                 length (i.e., number of waiting bytes) is
+   *                 CONFIG_STREAM_BUFFER_BYTES bytes.
+   * @return         xReturn On success, the syscall returns ReturnOK. On
+   *                 failure, the syscall returns ReturnError. A failure is any
+   *                 condition in which the syscall was unable to achieve its
+   *                 intended objective. For example, if xTaskGetId() was unable
+   *                 to locate the task by the task object (i.e., xTask) passed
+   *                 to the syscall, because either the object was null or
+   *                 invalid (e.g., a deleted task), xTaskGetId() would return
+   *                 ReturnError. All HeliOS syscalls return the xReturn
+   *                 (a.k.a., Return_t) type which can either be ReturnOK or
+   *                 ReturnError. The C macros OK() and ERROR() can be used as a
+   *                 more concise way of checking the return value of a syscall
+   *                 (e.g., if(OK(xMemGetUsed(&size))) {} or
+   *                 if(ERROR(xMemGetUsed(&size))) {}).
+   */
   xReturn xStreamIsFull(const xStreamBuffer stream_, xBase *res_);
+
+
+  /**
+   * @brief Syscall to to raise a system assert
+   *
+   * The xSystemAssert() syscall is used to raise a system assert. In order fot
+   * xSystemAssert() to have an effect the configuration setting
+   * CONFIG_SYSTEM_ASSERT_BEHAVIOR must be defined. That said, it is recommended
+   * that the ASSERT C macro be used in place of xSystemAssert(). In order for
+   * the ASSERT C macro to have any effect, the configuration setting
+   * CONFIG_ENABLE_SYSTEM_ASSERT must be defined.
+   *
+   * @param  file_ The C file where the assert occurred. This will be set by the
+   *               ASSERT C macro.
+   * @param  line_ The C file line where the assert occurred. This will be set
+   *               by the ASSERT C macro.
+   * @return       xReturn On success, the syscall returns ReturnOK. On failure,
+   *               the syscall returns ReturnError. A failure is any condition
+   *               in which the syscall was unable to achieve its intended
+   *               objective. For example, if xTaskGetId() was unable to locate
+   *               the task by the task object (i.e., xTask) passed to the
+   *               syscall, because either the object was null or invalid (e.g.,
+   *               a deleted task), xTaskGetId() would return ReturnError. All
+   *               HeliOS syscalls return the xReturn (a.k.a., Return_t) type
+   *               which can either be ReturnOK or ReturnError. The C macros
+   *               OK() and ERROR() can be used as a more concise way of
+   *               checking the return value of a syscall (e.g.,
+   *               if(OK(xMemGetUsed(&size))) {} or
+   *               if(ERROR(xMemGetUsed(&size))) {}).
+   */
   xReturn xSystemAssert(const char *file_, const int line_);
+
+
+  /**
+   * @brief Syscall to bootstrap HeliOS
+   *
+   * The xSystemInit() syscall is used to bootstrap HeliOS and must be the first
+   * syscall made in the user's application. The xSystemInit() syscall
+   * initializes memory and calls initialization functions through the port
+   * layer.
+   *
+   * @return xReturn On success, the syscall returns ReturnOK. On failure, the
+   *         syscall returns ReturnError. A failure is any condition in which
+   *         the syscall was unable to achieve its intended objective. For
+   *         example, if xTaskGetId() was unable to locate the task by the task
+   *         object (i.e., xTask) passed to the syscall, because either the
+   *         object was null or invalid (e.g., a deleted task), xTaskGetId()
+   *         would return ReturnError. All HeliOS syscalls return the xReturn
+   *         (a.k.a., Return_t) type which can either be ReturnOK or
+   *         ReturnError. The C macros OK() and ERROR() can be used as a more
+   *         concise way of checking the return value of a syscall (e.g.,
+   *         if(OK(xMemGetUsed(&size))) {} or if(ERROR(xMemGetUsed(&size))) {}).
+   */
   xReturn xSystemInit(void);
+
+
+  /**
+   * @brief Syscall to halt HeliOS
+   *
+   * The xSystemHalt() syscall is used to halt HeliOS. Once called,
+   * xSystemHalt() will disable all interrupts and stops the execution of
+   * further statements. The system will have to be reset to recover.
+   *
+   * @return xReturn On success, the syscall returns ReturnOK. On failure, the
+   *         syscall returns ReturnError. A failure is any condition in which
+   *         the syscall was unable to achieve its intended objective. For
+   *         example, if xTaskGetId() was unable to locate the task by the task
+   *         object (i.e., xTask) passed to the syscall, because either the
+   *         object was null or invalid (e.g., a deleted task), xTaskGetId()
+   *         would return ReturnError. All HeliOS syscalls return the xReturn
+   *         (a.k.a., Return_t) type which can either be ReturnOK or
+   *         ReturnError. The C macros OK() and ERROR() can be used as a more
+   *         concise way of checking the return value of a syscall (e.g.,
+   *         if(OK(xMemGetUsed(&size))) {} or if(ERROR(xMemGetUsed(&size))) {}).
+   */
   xReturn xSystemHalt(void);
+
+
+  /**
+   * @brief Syscall to inquire about the system
+   *
+   * The xSystemGetSystemInfo() syscall is used to inquire about the system. The
+   * information bout the system that may be obtained is the product (i.e., OS)
+   * name, version and number of tasks.
+   *
+   * @param  info_ The system information. The system information must be freed
+   *               by xMemFree().
+   * @return       xReturn On success, the syscall returns ReturnOK. On failure,
+   *               the syscall returns ReturnError. A failure is any condition
+   *               in which the syscall was unable to achieve its intended
+   *               objective. For example, if xTaskGetId() was unable to locate
+   *               the task by the task object (i.e., xTask) passed to the
+   *               syscall, because either the object was null or invalid (e.g.,
+   *               a deleted task), xTaskGetId() would return ReturnError. All
+   *               HeliOS syscalls return the xReturn (a.k.a., Return_t) type
+   *               which can either be ReturnOK or ReturnError. The C macros
+   *               OK() and ERROR() can be used as a more concise way of
+   *               checking the return value of a syscall (e.g.,
+   *               if(OK(xMemGetUsed(&size))) {} or
+   *               if(ERROR(xMemGetUsed(&size))) {}).
+   */
   xReturn xSystemGetSystemInfo(xSystemInfo *info_);
+
+
+  /**
+   * @brief Syscall to create a new task
+   *
+   * The xTaskCreate() syscall is used to create a new task
+   *
+   * @param  task_          The task to be operated on.
+   * @param  name_          The name of the task which must be exactly
+   *                        CONFIG_TASK_NAME_BYTES (default is 8) bytes in
+   *                        length. Shorter task names must be padded.
+   * @param  callback_      The task's main (i.e., entry point) function.
+   * @param  taskParameter_ A parameter which is accessible from the task's main
+   *                        function. If a task parameter is not needed, this
+   *                        parameter may be set to null.
+   * @return                xReturn On success, the syscall returns ReturnOK. On
+   *                        failure, the syscall returns ReturnError. A failure
+   *                        is any condition in which the syscall was unable to
+   *                        achieve its intended objective. For example, if
+   *                        xTaskGetId() was unable to locate the task by the
+   *                        task object (i.e., xTask) passed to the syscall,
+   *                        because either the object was null or invalid (e.g.,
+   *                        a deleted task), xTaskGetId() would return
+   *                        ReturnError. All HeliOS syscalls return the xReturn
+   *                        (a.k.a., Return_t) type which can either be ReturnOK
+   *                        or ReturnError. The C macros OK() and ERROR() can be
+   *                        used as a more concise way of checking the return
+   *                        value of a syscall (e.g., if(OK(xMemGetUsed(&size)))
+   *                        {} or if(ERROR(xMemGetUsed(&size))) {}).
+   */
   xReturn xTaskCreate(xTask *task_, const xByte *name_, void (*callback_)(xTask task_, xTaskParm parm_), xTaskParm taskParameter_);
   xReturn xTaskDelete(const xTask task_);
   xReturn xTaskGetHandleByName(xTask *task_, const xByte *name_);
