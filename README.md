@@ -32,7 +32,7 @@ For example, prior to kernel 0.4.0, a task would be created as follows.
 xTask task = xTaskCreate("TASK", task_main, NULL);
 
 if(task) {
-  /* Use the task object here. */
+  /* Use the task here. */
 }
 ```
 In this example, the user application would only know if an error or exception occurred by checking if "task" was null. In kernel 0.4.0 all syscalls have a standard return type (xReturn) that can either be ReturnOK or ReturnError. See the [HeliOS Developer's Guide](/doc/HeliOS_Developers_Guide.pdf) for more information about xReturn. Thus, in kernel 0.4.0 the same process of creating a task is done as follows.
@@ -44,9 +44,9 @@ if(ERROR(xTaskCreate(&task, (const xByte *) "TASK", task_main, null))) {
   xSystemHalt();
 }
 
-/* Use the task object here. */
+/* Use the task here. */
 ```
-In this manner, the application can check all syscalls for success or failure even when a syscall does not modify or set arguments it is passed. For the very latest on what development is occurring, please check out the [HeliOS Trello board](https://trello.com/b/XNKDpuGR/helios). Anyone wishing to contribute to HeliOS should refer to the “Contributing” section.
+In this manner, the application can check all syscalls for success or failure even when a syscall does not modify or set arguments it is passed. For the very latest on what development is occurring, please check out the [HeliOS Trello board](https://trello.com/b/XNKDpuGR/helios). Anyone wanting to contribute to HeliOS should refer to the “Contributing” section.
 ***
 # HeliOS Around The Web
 
