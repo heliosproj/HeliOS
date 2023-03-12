@@ -30,6 +30,9 @@
 
 /*UNCRUSTIFY-OFF*/
 /*
+ * WARNING: THIS DIAGRAM IS CONCEPTUAL ONLY AS IT DOES *NOT* CORRECTLY DEPICT
+ *          MEMORY-ACCESS OPTIMIZATION BY ALIGNMENT CARRIED OUT BY THE COMPILER!
+ * 
  *  BYTE   STRUCTURE OF A MEMORY ENTRY AND BLOCKS
  * +----+ +--------------------------------------+
  * | 01 | |                                      | <-- START OF MEMORY ENTRY
