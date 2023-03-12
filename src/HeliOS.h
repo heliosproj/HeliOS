@@ -720,15 +720,264 @@
    *                if(ERROR(xMemGetUsed(&size))) {}).
    */
   xReturn xQueueMessagesWaiting(const xQueue queue_, xBase *res_);
+
+
+  /**
+   * @brief Syscall to send a message to a message queue.
+   *
+   * The xQueueSend() syscall is used to send a message to a message queue. The
+   * message value is an array of bytes (i.e., xByte) and cannot exceed
+   * CONFIG_MESSAGE_VALUE_BYTES (default is 8) bytes in size.
+   *
+   * @param  queue_ The message queue to be operated on.
+   * @param  bytes_ The size, in bytes, of the message to send to the message
+   *                queue. The size of the message cannot exceed the
+   *                CONFIG_MESSAGE_VALUE_BYTES (default is 8) setting.
+   * @param  value_ The message to be sent to the queue.
+   * @return        xReturn On success, the syscall returns ReturnOK. On
+   *                failure, the syscall returns ReturnError. A failure is any
+   *                condition in which the syscall was unable to achieve its
+   *                intended objective. For example, if xTaskGetId() was unable
+   *                to locate the task by the task object (i.e., xTask) passed
+   *                to the syscall, because either the object was null or
+   *                invalid (e.g., a deleted task), xTaskGetId() would return
+   *                ReturnError. All HeliOS syscalls return the xReturn (a.k.a.,
+   *                Return_t) type which can either be ReturnOK or ReturnError.
+   *                The C macros OK() and ERROR() can be used as a more concise
+   *                way of checking the return value of a syscall (e.g.,
+   *                if(OK(xMemGetUsed(&size))) {} or
+   *                if(ERROR(xMemGetUsed(&size))) {}).
+   */
   xReturn xQueueSend(xQueue queue_, const xBase bytes_, const xByte *value_);
+
+
+  /**
+   * @brief Syscall to retrieve a message from a message queue without dropping
+   * the message
+   *
+   * The xQueuePeek() syscall is used to retrieve the next message from a
+   * message queue without dropping the message (i.e., peek at the message).
+   *
+   * @param  queue_   The message queue to be operated on.
+   * @param  message_ The message retrieved from the message queue. The message
+   *                  must be freed by xMemFree().
+   * @return          xReturn On success, the syscall returns ReturnOK. On
+   *                  failure, the syscall returns ReturnError. A failure is any
+   *                  condition in which the syscall was unable to achieve its
+   *                  intended objective. For example, if xTaskGetId() was
+   *                  unable to locate the task by the task object (i.e., xTask)
+   *                  passed to the syscall, because either the object was null
+   *                  or invalid (e.g., a deleted task), xTaskGetId() would
+   *                  return ReturnError. All HeliOS syscalls return the xReturn
+   *                  (a.k.a., Return_t) type which can either be ReturnOK or
+   *                  ReturnError. The C macros OK() and ERROR() can be used as
+   *                  a more concise way of checking the return value of a
+   *                  syscall (e.g., if(OK(xMemGetUsed(&size))) {} or
+   *                  if(ERROR(xMemGetUsed(&size))) {}).
+   */
   xReturn xQueuePeek(const xQueue queue_, xQueueMessage *message_);
+
+
+  /**
+   * @brief Syscall to drop a message from a message queue without retrieving
+   * the message
+   *
+   * The xQueueDropMessage() syscall is used to drop the next message from a
+   * message queue without retrieving the message.
+   *
+   * @param  queue_ The message queue to be operated on.
+   * @return        xReturn On success, the syscall returns ReturnOK. On
+   *                failure, the syscall returns ReturnError. A failure is any
+   *                condition in which the syscall was unable to achieve its
+   *                intended objective. For example, if xTaskGetId() was unable
+   *                to locate the task by the task object (i.e., xTask) passed
+   *                to the syscall, because either the object was null or
+   *                invalid (e.g., a deleted task), xTaskGetId() would return
+   *                ReturnError. All HeliOS syscalls return the xReturn (a.k.a.,
+   *                Return_t) type which can either be ReturnOK or ReturnError.
+   *                The C macros OK() and ERROR() can be used as a more concise
+   *                way of checking the return value of a syscall (e.g.,
+   *                if(OK(xMemGetUsed(&size))) {} or
+   *                if(ERROR(xMemGetUsed(&size))) {}).
+   */
   xReturn xQueueDropMessage(xQueue queue_);
+
+
+  /**
+   * @brief Syscall to retrieve and drop the next message from a message queue
+   *
+   * The xQueueReceive() syscall has the effect of calling xQueuePeek() followed
+   * by xQueueDropMessage(). The syscall will receive the next message from the
+   * message queue if there is a waiting message.
+   *
+   * @param  queue_   The message queue to be operated on.
+   * @param  message_ The message retrieved from the message queue. The message
+   *                  must be freed by xMemFree().
+   * @return          xReturn On success, the syscall returns ReturnOK. On
+   *                  failure, the syscall returns ReturnError. A failure is any
+   *                  condition in which the syscall was unable to achieve its
+   *                  intended objective. For example, if xTaskGetId() was
+   *                  unable to locate the task by the task object (i.e., xTask)
+   *                  passed to the syscall, because either the object was null
+   *                  or invalid (e.g., a deleted task), xTaskGetId() would
+   *                  return ReturnError. All HeliOS syscalls return the xReturn
+   *                  (a.k.a., Return_t) type which can either be ReturnOK or
+   *                  ReturnError. The C macros OK() and ERROR() can be used as
+   *                  a more concise way of checking the return value of a
+   *                  syscall (e.g., if(OK(xMemGetUsed(&size))) {} or
+   *                  if(ERROR(xMemGetUsed(&size))) {}).
+   */
   xReturn xQueueReceive(xQueue queue_, xQueueMessage *message_);
+
+
+  /**
+   * @brief Syscall to lock a message queue
+   *
+   * The xQueueLockQueue() syscall is used to lock a message queue. Locking a
+   * message queue prevents tasks from sending messages to the queue but does
+   * not prevent tasks from peeking, receiving or dropping messages from a
+   * message queue.
+   *
+   * @param  queue_ The message queue to be operated on.
+   * @return        xReturn On success, the syscall returns ReturnOK. On
+   *                failure, the syscall returns ReturnError. A failure is any
+   *                condition in which the syscall was unable to achieve its
+   *                intended objective. For example, if xTaskGetId() was unable
+   *                to locate the task by the task object (i.e., xTask) passed
+   *                to the syscall, because either the object was null or
+   *                invalid (e.g., a deleted task), xTaskGetId() would return
+   *                ReturnError. All HeliOS syscalls return the xReturn (a.k.a.,
+   *                Return_t) type which can either be ReturnOK or ReturnError.
+   *                The C macros OK() and ERROR() can be used as a more concise
+   *                way of checking the return value of a syscall (e.g.,
+   *                if(OK(xMemGetUsed(&size))) {} or
+   *                if(ERROR(xMemGetUsed(&size))) {}).
+   */
   xReturn xQueueLockQueue(xQueue queue_);
+
+
+  /**
+   * @brief Syscall to unlock a message queue
+   *
+   * The xQueueUnLockQueue() syscall is used to unlock a message queue that was
+   * previously locked by xQueueLockQueue(). Once a message queue is unlocked,
+   * tasks may resume sending messages to the message queue.
+   *
+   * @param  queue_ The message queue to be operated on.
+   * @return        xReturn On success, the syscall returns ReturnOK. On
+   *                failure, the syscall returns ReturnError. A failure is any
+   *                condition in which the syscall was unable to achieve its
+   *                intended objective. For example, if xTaskGetId() was unable
+   *                to locate the task by the task object (i.e., xTask) passed
+   *                to the syscall, because either the object was null or
+   *                invalid (e.g., a deleted task), xTaskGetId() would return
+   *                ReturnError. All HeliOS syscalls return the xReturn (a.k.a.,
+   *                Return_t) type which can either be ReturnOK or ReturnError.
+   *                The C macros OK() and ERROR() can be used as a more concise
+   *                way of checking the return value of a syscall (e.g.,
+   *                if(OK(xMemGetUsed(&size))) {} or
+   *                if(ERROR(xMemGetUsed(&size))) {}).
+   */
   xReturn xQueueUnLockQueue(xQueue queue_);
+
+
+  /**
+   * @brief Syscall to create a stream buffer
+   *
+   * The xStreamCreate() syscall is used to create a stream buffer which is used
+   * for inter-task communications. A stream buffer is similar to a message
+   * queue, however, it operates only on one byte at a time.
+   *
+   * @param  stream_ The stream buffer to be operated on.
+   * @return         xReturn On success, the syscall returns ReturnOK. On
+   *                 failure, the syscall returns ReturnError. A failure is any
+   *                 condition in which the syscall was unable to achieve its
+   *                 intended objective. For example, if xTaskGetId() was unable
+   *                 to locate the task by the task object (i.e., xTask) passed
+   *                 to the syscall, because either the object was null or
+   *                 invalid (e.g., a deleted task), xTaskGetId() would return
+   *                 ReturnError. All HeliOS syscalls return the xReturn
+   *                 (a.k.a., Return_t) type which can either be ReturnOK or
+   *                 ReturnError. The C macros OK() and ERROR() can be used as a
+   *                 more concise way of checking the return value of a syscall
+   *                 (e.g., if(OK(xMemGetUsed(&size))) {} or
+   *                 if(ERROR(xMemGetUsed(&size))) {}).
+   */
   xReturn xStreamCreate(xStreamBuffer *stream_);
+
+
+  /**
+   * @brief Syscall to delete a stream buffer
+   *
+   * The xStreamDelete() syscall is used to delete a stream buffer created by
+   * xStreamCreate().
+   *
+   * @param  stream_ The stream buffer to be operated on.
+   * @return         xReturn On success, the syscall returns ReturnOK. On
+   *                 failure, the syscall returns ReturnError. A failure is any
+   *                 condition in which the syscall was unable to achieve its
+   *                 intended objective. For example, if xTaskGetId() was unable
+   *                 to locate the task by the task object (i.e., xTask) passed
+   *                 to the syscall, because either the object was null or
+   *                 invalid (e.g., a deleted task), xTaskGetId() would return
+   *                 ReturnError. All HeliOS syscalls return the xReturn
+   *                 (a.k.a., Return_t) type which can either be ReturnOK or
+   *                 ReturnError. The C macros OK() and ERROR() can be used as a
+   *                 more concise way of checking the return value of a syscall
+   *                 (e.g., if(OK(xMemGetUsed(&size))) {} or
+   *                 if(ERROR(xMemGetUsed(&size))) {}).
+   */
   xReturn xStreamDelete(const xStreamBuffer stream_);
+
+
+  /**
+   * @brief Syscall to send a byte to a stream buffer
+   *
+   * The xStreamSend() syscall is used to send one byte to a stream buffer.
+   *
+   * @param  stream_ The stream buffer to be operated on.
+   * @param  byte_   The byte to send to the stream buffer.
+   * @return         xReturn On success, the syscall returns ReturnOK. On
+   *                 failure, the syscall returns ReturnError. A failure is any
+   *                 condition in which the syscall was unable to achieve its
+   *                 intended objective. For example, if xTaskGetId() was unable
+   *                 to locate the task by the task object (i.e., xTask) passed
+   *                 to the syscall, because either the object was null or
+   *                 invalid (e.g., a deleted task), xTaskGetId() would return
+   *                 ReturnError. All HeliOS syscalls return the xReturn
+   *                 (a.k.a., Return_t) type which can either be ReturnOK or
+   *                 ReturnError. The C macros OK() and ERROR() can be used as a
+   *                 more concise way of checking the return value of a syscall
+   *                 (e.g., if(OK(xMemGetUsed(&size))) {} or
+   *                 if(ERROR(xMemGetUsed(&size))) {}).
+   */
   xReturn xStreamSend(xStreamBuffer stream_, const xByte byte_);
+
+
+  /**
+   * @brief Syscall to retrieve all waiting bytes from a stream buffer
+   *
+   * The xStreamReceive() syscall is used to retrieve all waiting bytes from a
+   * stream buffer.
+   *
+   * @param  stream_ The stream buffer to be operated on.
+   * @param  bytes_  The number of bytes retrieved from the stream buffer.
+   * @param  data_   The bytes retrieved from the stream buffer. The data must
+   *                 be freed by xMemFree().
+   * @return         xReturn On success, the syscall returns ReturnOK. On
+   *                 failure, the syscall returns ReturnError. A failure is any
+   *                 condition in which the syscall was unable to achieve its
+   *                 intended objective. For example, if xTaskGetId() was unable
+   *                 to locate the task by the task object (i.e., xTask) passed
+   *                 to the syscall, because either the object was null or
+   *                 invalid (e.g., a deleted task), xTaskGetId() would return
+   *                 ReturnError. All HeliOS syscalls return the xReturn
+   *                 (a.k.a., Return_t) type which can either be ReturnOK or
+   *                 ReturnError. The C macros OK() and ERROR() can be used as a
+   *                 more concise way of checking the return value of a syscall
+   *                 (e.g., if(OK(xMemGetUsed(&size))) {} or
+   *                 if(ERROR(xMemGetUsed(&size))) {}).
+   */
   xReturn xStreamReceive(const xStreamBuffer stream_, xHalfWord *bytes_, xByte **data_);
   xReturn xStreamBytesAvailable(const xStreamBuffer stream_, xHalfWord *bytes_);
   xReturn xStreamReset(const xStreamBuffer stream_);
