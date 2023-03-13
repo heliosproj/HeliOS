@@ -101,12 +101,12 @@ Below is the Arduino "Blink" example sketch implemented using HeliOS. In this ex
 
 /* Define the task's main function. This function is the entry point for the
  * task when executed by the scheduler. The "task_" parameter contains the task
- * itself and maybe used to perform operations against the task such as
+ * itself and may be used to perform operations against the task such as
  * suspending it with xTaskSuspend(task_). The "parm_" parameter points to
  * memory containing the task parameter(s). This memory can be allocated by
  * xMemAlloc() if needed. The task parameter must be dereferenced inside the
  * task's main function. A convenient C macro, DEREF_TASKPARM(), is available to
- * simplify dereferencing of the task parameter. */
+ * simplify the task of dereferencing the task parameter. */
 void blinkTask_main(xTask task_, xTaskParm parm_) {
   /* Dereference the task parameter and store its value in the local integer
    * "ledState". This integer contains the state of the LED (i.e., 1 (on) or 0
@@ -147,11 +147,11 @@ void setup() {
 
 
   /* Call xSystemInit() to initialize memory and call initialization functions
-   * through the port layer. The xSystemInit() syscall must be made prior to
-   * making any other syscall. The ERROR() and OK() C macros are a concise
-   * method for checking the return value of the xSystemInit() syscall. A
-   * consistent return type (xReturn) was introduced in kernel 0.4.0.  If the
-   * syscall fails, xSystemHalt() will be called to halt the system.*/
+   * in the port layer. The xSystemInit() syscall must be made prior to making
+   * any other syscall. The ERROR() and OK() C macros are a concise method for
+   * checking the return value of the xSystemInit() syscall. A consistent return
+   * type (xReturn) was introduced in kernel 0.4.0.  If the syscall fails,
+   * xSystemHalt() will be called to halt the system.*/
   if(ERROR(xSystemInit())) {
     xSystemHalt();
   }
@@ -178,8 +178,8 @@ void setup() {
    *   task_     A reference to the task. To pass the task by reference, the
    *             address-of ("&") operator must be used (e.g., &blink).
    *
-   *   name_     A reference to the first byte of a byte array containing the ASCII
-   *             name of the task. The task name is not a null terminated C char array
+   *   name_     A reference to the first byte of a byte array containing the
+   *             ASCII name of the task. The task name is not a null terminated C char array
    *             (sometimes called a "string"). The length of the byte array must be
    *             precisely CONFIG_TASK_NAME_BYTES (default is 8) bytes. If the task name is
    *             shorter, then it must be padded to meet the precise length requirement. To
@@ -191,7 +191,7 @@ void setup() {
    *             function does *NOT* need to match the name given to the task through the
    *             "name_" parameter.
    *
-   *                 void <taskname>(xTask task_, xTaskParm parm_)
+   *               void <taskname>(xTask task_, xTaskParm parm_)
    *
    * If the syscall fails, xSystemHalt() will be called to halt the system.*/
   if(ERROR(xTaskCreate(&blink, (const xByte *) "BLINKTSK", blinkTask_main, &ledState))) {
@@ -210,7 +210,7 @@ void setup() {
   }
 
 
-  /* In order to use the task timer, the task time period must be set to a
+  /* In order to use the task timer, the task timer period must be set to a
    * positive non-zero value. In this example we are setting the task timer to
    * 1,000 ticks. This way the HeliOS scheduler will schedule the blink task for
    * execution every 1,000 ticks. The length of a tick is platform and/or
