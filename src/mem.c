@@ -182,6 +182,7 @@ Return_t __MemoryInit__(void) {
   /* Initialize the heap and kernel memory regions. */
   if(OK(__MemoryRegionInit__(&heap))) {
     if(OK(__MemoryRegionInit__(&kernel))) {
+      FLAG_MEMFAULT = false;
       RET_OK;
     } else {
       ASSERT;
