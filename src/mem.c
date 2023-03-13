@@ -322,79 +322,193 @@ static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, co
   MemoryEntry_t *cursor = region_->start;
 
 
+  /* Check to see if we can proceed with checking the memory region without
+   * looking for an address.*/
   if(MEMORY_REGION_CHECK_OPTION_WO_ADDR == option_) {
+    /* Traverse the memory entries in the memory region while cursor is null. */
     while(NOTNULLPTR(cursor)) {
+      /* OKADDR() is a C macro that simply checks that the address, in this case
+       * "cursor", falls within the bounds of the memory region. */
       if(OKADDR(region_, cursor)) {
+        /* OKMAGIC() compares the memory entry's magic value (i.e., the magic
+         * member of the memory entry structure) to the magic value calculated
+         * by XOR'ing the address of the memory entry with the MAGIC_CONST. This
+         * operation helps ensure we are accessing a valid memory entry in the
+         * memory region being checked. */
         if(OKMAGIC(cursor)) {
+          /* Check to make sure the memory entry's free value is either FREE or
+           * INUSE.*/
           if((FREE == cursor->free) || (INUSE == cursor->free)) {
+            /* Add up the blocks as we go. We will check to make sure the total
+             * number of blocks in the memory region is correct later. */
             blocks += cursor->blocks;
           } else {
-            FLAG_MEMFAULT = true;
             ASSERT;
+
+
+            /* "Houston, we've had a problem." ~ Jim Lovell
+             *
+             *
+             * Set the memfault flag to true because the address we just checked
+             * does *NOT* have the correct value for free. Something is very
+             * wrong! */
+            FLAG_MEMFAULT = true;
             break;
           }
         } else {
-          FLAG_MEMFAULT = true;
           ASSERT;
+
+
+          /* "Houston, we've had a problem." ~ Jim Lovell
+           *
+           *
+           * Set the memfault flag to true because the address we just checked
+           * does *NOT* have the correct magic value. Something is very wrong!
+           */
+          FLAG_MEMFAULT = true;
           break;
         }
 
         cursor = cursor->next;
       } else {
-        FLAG_MEMFAULT = true;
         ASSERT;
+
+
+        /* "Houston, we've had a problem." ~ Jim Lovell
+         *
+         *
+         * Set the memfault flag to true because the address we just checked is
+         * NOT* inside the memory region. Something is very wrong!
+         */
+        FLAG_MEMFAULT = true;
         break;
       }
     }
 
+
+    /* Check that the number of blocks we visited matches what we expect to see
+     */
     if(CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS == blocks) {
       RET_OK;
     } else {
-      FLAG_MEMFAULT = true;
       ASSERT;
+
+
+      /* "Houston, we've had a problem." ~ Jim Lovell
+       *
+       *
+       * Set the memfault flag to true because the number of blocks visited does
+       * not match the number of blocks the memory region *SHOULD*
+       * have. Something is very wrong!
+       */
+      FLAG_MEMFAULT = true;
     }
+
+
+    /* Check to see if we need to look for an address while we check the
+     * consistency of the memory region. */
   } else if(MEMORY_REGION_CHECK_OPTION_W_ADDR == option_) {
+    /* ADDR2ENTRY() calculates the location of the memory entry for the
+     * allocated memory pointed to by the address pointer. This is the memory
+     * entry we need to find as we traverse the memory entries in the memory
+     * region. */
     find = ADDR2ENTRY(addr_, region_);
 
+
+    /* Traverse the memory entries in the memory region while cursor is null. */
     while(NOTNULLPTR(cursor)) {
+      /* OKADDR() is a C macro that simply checks that the address, in this case
+       * "cursor", falls within the bounds of the memory region. */
       if(OKADDR(region_, cursor)) {
+        /* OKMAGIC() compares the memory entry's magic value (i.e., the magic
+         * member of the memory entry structure) to the magic value calculated
+         * by XOR'ing the address of the memory entry with the MAGIC_CONST. This
+         * operation helps ensure we are accessing a valid memory entry in the
+         * memory region being checked. */
         if(OKMAGIC(cursor)) {
+          /* Check to make sure the memory entry's free value is either FREE or
+           * INUSE.*/
           if((FREE == cursor->free) || (INUSE == cursor->free)) {
+            /* Add up the blocks as we go. We will check to make sure the total
+             * number of blocks in the memory region is correct later. */
             blocks += cursor->blocks;
 
+
+            /* If the cursor points to the memory entry we are looking for *AND*
+             * the memory entry is marked as in-use, then set "found" to true
+             * because we found the memory entry we are looking for. */
             if((find == cursor) && (INUSE == cursor->free)) {
               found = true;
             }
           } else {
-            FLAG_MEMFAULT = true;
             ASSERT;
+
+
+            /* "Houston, we've had a problem." ~ Jim Lovell
+             *
+             *
+             * Set the memfault flag to true because the address we just checked
+             * does *NOT* have the correct value for free. Something is very
+             * wrong! */
+            FLAG_MEMFAULT = true;
             break;
           }
         } else {
-          FLAG_MEMFAULT = true;
           ASSERT;
+
+
+          /* "Houston, we've had a problem." ~ Jim Lovell
+           *
+           *
+           * Set the memfault flag to true because the address we just checked
+           * does *NOT* have the correct magic value. Something is very wrong!
+           */
+          FLAG_MEMFAULT = true;
           break;
         }
 
         cursor = cursor->next;
       } else {
-        FLAG_MEMFAULT = true;
         ASSERT;
+
+
+        /* "Houston, we've had a problem." ~ Jim Lovell
+         *
+         *
+         * Set the memfault flag to true because the address we just checked is
+         * NOT* inside the memory region. Something is very wrong!
+         */
+        FLAG_MEMFAULT = true;
         break;
       }
     }
 
+
+    /* Check that the number of blocks we visited matches what we expect to see
+     */
     if(CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS == blocks) {
+      /* Before we can RET_OK, we just need to check to make sure we found the
+       * address we were looking for as we traversed the memory region. */
       if(true == found) {
         RET_OK;
       } else {
         ASSERT;
       }
     } else {
-      FLAG_MEMFAULT = true;
       ASSERT;
+
+
+      /* "Houston, we've had a problem." ~ Jim Lovell
+       *
+       *
+       * Set the memfault flag to true because the number of blocks visited does
+       * not match the number of blocks the memory region *SHOULD*
+       * have. Something is very wrong!
+       */
+      FLAG_MEMFAULT = true;
     }
   } else {
+    /* If we made it here, "option_" did not contain a valid argument. */
     ASSERT;
   }
 

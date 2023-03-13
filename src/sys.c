@@ -65,9 +65,9 @@ Return_t xSystemInit(void) {
 
   if(OK(__MemoryInit__())) {
     if(OK(__PortInit__())) {
-      flags.memfault = false;
-      flags.overflow = false;
-      flags.running = false;
+      FLAG_MEMFAULT = false;
+      FLAG_OVERFLOW = false;
+      FLAG_RUNNING = false;
       RET_OK;
     } else {
       ASSERT;
