@@ -520,15 +520,34 @@ static Return_t __MemoryRegionInit__(volatile MemoryRegion_t *region_) {
   RET_DEFINE;
 
   if(NOTNULLPTR(region_)) {
+    /* Set the start of the region. */
     region_->start = (MemoryEntry_t *) region_->mem;
-    region_->minAvailableEver = CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS * CONFIG_MEMORY_REGION_BLOCK_SIZE;
+
+
+    /* Set the starting value of minimum available ever to the size, in bytes,
+     * of the memory region. */
+    region_->minAvailableEver = MEMORY_REGION_SIZE_IN_BYTES;
+
+
+    /* Calculate the size of a memory entry in blocks. */
     region_->entrySize = ((HalfWord_t) (sizeof(MemoryEntry_t) / CONFIG_MEMORY_REGION_BLOCK_SIZE));
 
+
+    /* If there is any remainder from the division, add another block to the
+     * memory entry size. */
     if(zero < ((HalfWord_t) (sizeof(MemoryEntry_t) % CONFIG_MEMORY_REGION_BLOCK_SIZE))) {
       region_->entrySize++;
     }
 
+
+    /* Zero out the memory region and create the first memory entry and give it
+     * all of the blocks.*/
     if(OK(__memset__(region_->mem, zero, MEMORY_REGION_SIZE_IN_BYTES))) {
+      /* CALCMAGIC() calculates the memory entry's magic value (i.e. the magic
+       * member of the memory entry structure) by XOR'ing the address of the
+       * memory entry with the MAGIC_CONST. The magic value is used by
+       * __MemoryRegionCheck__() to check the consistency of the memory region.
+       */
       region_->start->magic = CALCMAGIC(region_->start);
       region_->start->free = FREE;
       region_->start->blocks = CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS;

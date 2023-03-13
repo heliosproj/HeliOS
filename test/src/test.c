@@ -54,7 +54,6 @@ void reset(void) {
   __MemoryClear__();
   __SysStateClear__();
   __TaskStateClear__();
-  __TimerStateClear__();
   __DeviceStateClear__();
 
   return;

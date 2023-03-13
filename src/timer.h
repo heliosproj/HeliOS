@@ -53,10 +53,6 @@
   Return_t xTimerStop(Timer_t *timer_);
 
 
-  #if defined(POSIX_ARCH_OTHER)
-    void __TimerStateClear__(void);
-  #endif /* if defined(POSIX_ARCH_OTHER) */
-
   #ifdef __cplusplus
     }
   #endif /* ifdef __cplusplus */

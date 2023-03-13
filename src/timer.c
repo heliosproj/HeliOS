@@ -207,16 +207,3 @@ Return_t xTimerStop(Timer_t *timer_) {
 
   RET_RETURN;
 }
-
-
-#if defined(POSIX_ARCH_OTHER)
-
-
-  /* For unit testing only! */
-  void __TimerStateClear__(void) {
-
-
-  }
-
-
-#endif /* if defined(POSIX_ARCH_OTHER) */
