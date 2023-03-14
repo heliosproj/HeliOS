@@ -1874,7 +1874,56 @@
    *         if(OK(xMemGetUsed(&size))) {} or if(ERROR(xMemGetUsed(&size))) {}).
    */
   xReturn xTaskSuspendAll(void);
+
+
+  /**
+   * @brief Syscall to get the scheduler state
+   *
+   * The xTaskGetSchedulerState() is used to get the state of the scheduler.
+   *
+   * @param  state_ The state of the scheduler.
+   * @return        xReturn On success, the syscall returns ReturnOK. On
+   *                failure, the syscall returns ReturnError. A failure is any
+   *                condition in which the syscall was unable to achieve its
+   *                intended objective. For example, if xTaskGetId() was unable
+   *                to locate the task by the task object (i.e., xTask) passed
+   *                to the syscall, because either the object was null or
+   *                invalid (e.g., a deleted task), xTaskGetId() would return
+   *                ReturnError. All HeliOS syscalls return the xReturn (a.k.a.,
+   *                Return_t) type which can either be ReturnOK or ReturnError.
+   *                The C macros OK() and ERROR() can be used as a more concise
+   *                way of checking the return value of a syscall (e.g.,
+   *                if(OK(xMemGetUsed(&size))) {} or
+   *                if(ERROR(xMemGetUsed(&size))) {}).
+   */
   xReturn xTaskGetSchedulerState(xSchedulerState *state_);
+
+
+  /**
+   * @brief Syscall to get the task watchdog timer period
+   *
+   * The xTaskGetWDPeriod() syscall is used to obtain the task watchdog timer
+   * period.
+   *
+   * @param  task_   The task to be operated on.
+   * @param  period_ The task watchdog timer period, measured in ticks. Ticks
+   *                 are platform and/or architecture dependent. However, on
+   *                 must platforms and/or architectures the tick represents one
+   *                 millisecond.
+   * @return         xReturn On success, the syscall returns ReturnOK. On
+   *                 failure, the syscall returns ReturnError. A failure is any
+   *                 condition in which the syscall was unable to achieve its
+   *                 intended objective. For example, if xTaskGetId() was unable
+   *                 to locate the task by the task object (i.e., xTask) passed
+   *                 to the syscall, because either the object was null or
+   *                 invalid (e.g., a deleted task), xTaskGetId() would return
+   *                 ReturnError. All HeliOS syscalls return the xReturn
+   *                 (a.k.a., Return_t) type which can either be ReturnOK or
+   *                 ReturnError. The C macros OK() and ERROR() can be used as a
+   *                 more concise way of checking the return value of a syscall
+   *                 (e.g., if(OK(xMemGetUsed(&size))) {} or
+   *                 if(ERROR(xMemGetUsed(&size))) {}).
+   */
   xReturn xTaskGetWDPeriod(const xTask task_, xTicks *period_);
   xReturn xTimerCreate(xTimer *timer_, const xTicks period_);
   xReturn xTimerDelete(const xTimer timer_);
