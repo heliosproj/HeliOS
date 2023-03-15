@@ -160,23 +160,22 @@
    *
    * @param  device_self_register_ The device driver's self registration
    *                               function, DRIVERNAME_self_register().
-   * @return                       xReturn On success, the syscall returns
-   *                               ReturnOK. On failure, the syscall returns
-   *                               ReturnError. A failure is any condition in
-   *                               which the syscall was unable to achieve its
-   *                               intended objective. For example, if
-   *                               xTaskGetId() was unable to locate the task by
-   *                               the task object (i.e., xTask) passed to the
-   *                               syscall, because either the object was null
-   *                               or invalid (e.g., a deleted task),
-   *                               xTaskGetId() would return ReturnError. All
-   *                               HeliOS syscalls return the xReturn (a.k.a.,
-   *                               Return_t) type which can either be ReturnOK
-   *                               or ReturnError. The C macros OK() and ERROR()
-   *                               can be used as a more concise way of checking
-   *                               the return value of a syscall (e.g.,
-   *                               if(OK(xMemGetUsed(&size))) {} or
-   *                               if(ERROR(xMemGetUsed(&size))) {}).
+   * @return                       On success, the syscall returns ReturnOK. On
+   *                               failure, the syscall returns ReturnError. A
+   *                               failure is any condition in which the syscall
+   *                               was unable to achieve its intended objective.
+   *                               For example, if xTaskGetId() was unable to
+   *                               locate the task by the task object (i.e.,
+   *                               xTask) passed to the syscall, because either
+   *                               the object was null or invalid (e.g., a
+   *                               deleted task), xTaskGetId() would return
+   *                               ReturnError. All HeliOS syscalls return the
+   *                               xReturn (a.k.a., Return_t) type which can
+   *                               either be ReturnOK or ReturnError. The C
+   *                               macros OK() and ERROR() can be used as a more
+   *                               concise way of checking the return value of a
+   *                               syscall (e.g., if(OK(xMemGetUsed(&size))) {}
+   *                               or if(ERROR(xMemGetUsed(&size))) {}).
    */
   xReturn xDeviceRegisterDevice(xReturn (*device_self_register_)());
 
@@ -194,8 +193,8 @@
    *              operated on.
    * @param  res_ The result of the inquiry; here, taken to mean the
    *              availability of the device.
-   * @return      xReturn On success, the syscall returns ReturnOK. On failure,
-   *              the syscall returns ReturnError. A failure is any condition in
+   * @return      On success, the syscall returns ReturnOK. On failure, the
+   *              syscall returns ReturnError. A failure is any condition in
    *              which the syscall was unable to achieve its intended
    *              objective. For example, if xTaskGetId() was unable to locate
    *              the task by the task object (i.e., xTask) passed to the
@@ -222,9 +221,9 @@
    *               operated on.
    * @param  data_ A word of data to be written to the device. The word of data
    *               must have been allocated by xMemAlloc().
-   * @return       xReturn On success, the syscall returns ReturnOK. On failure,
-   *               the syscall returns ReturnError. A failure is any condition
-   *               in which the syscall was unable to achieve its intended
+   * @return       On success, the syscall returns ReturnOK. On failure, the
+   *               syscall returns ReturnError. A failure is any condition in
+   *               which the syscall was unable to achieve its intended
    *               objective. For example, if xTaskGetId() was unable to locate
    *               the task by the task object (i.e., xTask) passed to the
    *               syscall, because either the object was null or invalid (e.g.,
@@ -254,9 +253,9 @@
    * @param  data_ The data buffer containing the data to be written to the
    *               device. The data buffer must have been allocated by
    *               xMemAlloc().
-   * @return       xReturn On success, the syscall returns ReturnOK. On failure,
-   *               the syscall returns ReturnError. A failure is any condition
-   *               in which the syscall was unable to achieve its intended
+   * @return       On success, the syscall returns ReturnOK. On failure, the
+   *               syscall returns ReturnError. A failure is any condition in
+   *               which the syscall was unable to achieve its intended
    *               objective. For example, if xTaskGetId() was unable to locate
    *               the task by the task object (i.e., xTask) passed to the
    *               syscall, because either the object was null or invalid (e.g.,
@@ -283,9 +282,9 @@
    *               operated on.
    * @param  data_ The word of data read from the device which must be fred by
    *               xMemFree().
-   * @return       xReturn On success, the syscall returns ReturnOK. On failure,
-   *               the syscall returns ReturnError. A failure is any condition
-   *               in which the syscall was unable to achieve its intended
+   * @return       On success, the syscall returns ReturnOK. On failure, the
+   *               syscall returns ReturnError. A failure is any condition in
+   *               which the syscall was unable to achieve its intended
    *               objective. For example, if xTaskGetId() was unable to locate
    *               the task by the task object (i.e., xTask) passed to the
    *               syscall, because either the object was null or invalid (e.g.,
@@ -314,9 +313,9 @@
    *               data buffer.
    * @param  data_ The data buffer containing the data read from the device
    *               which must be freed by xMemFree().
-   * @return       xReturn On success, the syscall returns ReturnOK. On failure,
-   *               the syscall returns ReturnError. A failure is any condition
-   *               in which the syscall was unable to achieve its intended
+   * @return       On success, the syscall returns ReturnOK. On failure, the
+   *               syscall returns ReturnError. A failure is any condition in
+   *               which the syscall was unable to achieve its intended
    *               objective. For example, if xTaskGetId() was unable to locate
    *               the task by the task object (i.e., xTask) passed to the
    *               syscall, because either the object was null or invalid (e.g.,
@@ -342,8 +341,8 @@
    *
    * @param  uid_ The unique identifier ("UID") of the device driver to be
    *              operated on.
-   * @return      xReturn On success, the syscall returns ReturnOK. On failure,
-   *              the syscall returns ReturnError. A failure is any condition in
+   * @return      On success, the syscall returns ReturnOK. On failure, the
+   *              syscall returns ReturnError. A failure is any condition in
    *              which the syscall was unable to achieve its intended
    *              objective. For example, if xTaskGetId() was unable to locate
    *              the task by the task object (i.e., xTask) passed to the
@@ -378,13 +377,13 @@
    *                 and read to and from the device, in bytes.
    * @param  config_ The configuration data. The configuration data must have
    *                 been allocated by xMemAlloc().
-   * @return         xReturn On success, the syscall returns ReturnOK. On
-   *                 failure, the syscall returns ReturnError. A failure is any
-   *                 condition in which the syscall was unable to achieve its
-   *                 intended objective. For example, if xTaskGetId() was unable
-   *                 to locate the task by the task object (i.e., xTask) passed
-   *                 to the syscall, because either the object was null or
-   *                 invalid (e.g., a deleted task), xTaskGetId() would return
+   * @return         On success, the syscall returns ReturnOK. On failure, the
+   *                 syscall returns ReturnError. A failure is any condition in
+   *                 which the syscall was unable to achieve its intended
+   *                 objective. For example, if xTaskGetId() was unable to
+   *                 locate the task by the task object (i.e., xTask) passed to
+   *                 the syscall, because either the object was null or invalid
+   *                 (e.g., a deleted task), xTaskGetId() would return
    *                 ReturnError. All HeliOS syscalls return the xReturn
    *                 (a.k.a., Return_t) type which can either be ReturnOK or
    *                 ReturnError. The C macros OK() and ERROR() can be used as a
@@ -412,9 +411,9 @@
    *               follows if(OK(xMemAlloc((volatile xAddr *) &mystruct,
    *               sizeof(MyStruct)))) {}.
    * @param  size_ The amount of heap memory, in bytes, being requested.
-   * @return       xReturn On success, the syscall returns ReturnOK. On failure,
-   *               the syscall returns ReturnError. A failure is any condition
-   *               in which the syscall was unable to achieve its intended
+   * @return       On success, the syscall returns ReturnOK. On failure, the
+   *               syscall returns ReturnError. A failure is any condition in
+   *               which the syscall was unable to achieve its intended
    *               objective. For example, if xTaskGetId() was unable to locate
    *               the task by the task object (i.e., xTask) passed to the
    *               syscall, because either the object was null or invalid (e.g.,
@@ -437,9 +436,9 @@
    * syscalls including xTaskGetAllRunTimeStats().
    *
    * @param  addr_ The address of the allocated memory to be freed.
-   * @return       xReturn On success, the syscall returns ReturnOK. On failure,
-   *               the syscall returns ReturnError. A failure is any condition
-   *               in which the syscall was unable to achieve its intended
+   * @return       On success, the syscall returns ReturnOK. On failure, the
+   *               syscall returns ReturnError. A failure is any condition in
+   *               which the syscall was unable to achieve its intended
    *               objective. For example, if xTaskGetId() was unable to locate
    *               the task by the task object (i.e., xTask) passed to the
    *               syscall, because either the object was null or invalid (e.g.,
@@ -463,9 +462,9 @@
    * region.
    *
    * @param  size_ The size (i.e., amount), in bytes, of in-use heap memory.
-   * @return       xReturn On success, the syscall returns ReturnOK. On failure,
-   *               the syscall returns ReturnError. A failure is any condition
-   *               in which the syscall was unable to achieve its intended
+   * @return       On success, the syscall returns ReturnOK. On failure, the
+   *               syscall returns ReturnError. A failure is any condition in
+   *               which the syscall was unable to achieve its intended
    *               objective. For example, if xTaskGetId() was unable to locate
    *               the task by the task object (i.e., xTask) passed to the
    *               syscall, because either the object was null or invalid (e.g.,
@@ -492,9 +491,9 @@
    *               amount) allocated, in bytes, is being sought.
    * @param  size_ The size (i.e., amount), in bytes, of heap memory allocated
    *               to the address.
-   * @return       xReturn On success, the syscall returns ReturnOK. On failure,
-   *               the syscall returns ReturnError. A failure is any condition
-   *               in which the syscall was unable to achieve its intended
+   * @return       On success, the syscall returns ReturnOK. On failure, the
+   *               syscall returns ReturnError. A failure is any condition in
+   *               which the syscall was unable to achieve its intended
    *               objective. For example, if xTaskGetId() was unable to locate
    *               the task by the task object (i.e., xTask) passed to the
    *               syscall, because either the object was null or invalid (e.g.,
@@ -518,13 +517,13 @@
    *
    * @param  stats_ The memory region statistics. The memory region statistics
    *                must be freed by xMemFree().
-   * @return        xReturn On success, the syscall returns ReturnOK. On
-   *                failure, the syscall returns ReturnError. A failure is any
-   *                condition in which the syscall was unable to achieve its
-   *                intended objective. For example, if xTaskGetId() was unable
-   *                to locate the task by the task object (i.e., xTask) passed
-   *                to the syscall, because either the object was null or
-   *                invalid (e.g., a deleted task), xTaskGetId() would return
+   * @return        On success, the syscall returns ReturnOK. On failure, the
+   *                syscall returns ReturnError. A failure is any condition in
+   *                which the syscall was unable to achieve its intended
+   *                objective. For example, if xTaskGetId() was unable to locate
+   *                the task by the task object (i.e., xTask) passed to the
+   *                syscall, because either the object was null or invalid
+   *                (e.g., a deleted task), xTaskGetId() would return
    *                ReturnError. All HeliOS syscalls return the xReturn (a.k.a.,
    *                Return_t) type which can either be ReturnOK or ReturnError.
    *                The C macros OK() and ERROR() can be used as a more concise
@@ -544,13 +543,13 @@
    *
    * @param  stats_ The memory region statistics. The memory region statistics
    *                must be freed by xMemFree().
-   * @return        xReturn On success, the syscall returns ReturnOK. On
-   *                failure, the syscall returns ReturnError. A failure is any
-   *                condition in which the syscall was unable to achieve its
-   *                intended objective. For example, if xTaskGetId() was unable
-   *                to locate the task by the task object (i.e., xTask) passed
-   *                to the syscall, because either the object was null or
-   *                invalid (e.g., a deleted task), xTaskGetId() would return
+   * @return        On success, the syscall returns ReturnOK. On failure, the
+   *                syscall returns ReturnError. A failure is any condition in
+   *                which the syscall was unable to achieve its intended
+   *                objective. For example, if xTaskGetId() was unable to locate
+   *                the task by the task object (i.e., xTask) passed to the
+   *                syscall, because either the object was null or invalid
+   *                (e.g., a deleted task), xTaskGetId() would return
    *                ReturnError. All HeliOS syscalls return the xReturn (a.k.a.,
    *                Return_t) type which can either be ReturnOK or ReturnError.
    *                The C macros OK() and ERROR() can be used as a more concise
@@ -572,13 +571,13 @@
    *                the message queue is considered to be full. The minimume
    *                message limit is configured using the
    *                CONFIG_QUEUE_MINIMUM_LIMIT (default is 5) setting.
-   * @return        xReturn On success, the syscall returns ReturnOK. On
-   *                failure, the syscall returns ReturnError. A failure is any
-   *                condition in which the syscall was unable to achieve its
-   *                intended objective. For example, if xTaskGetId() was unable
-   *                to locate the task by the task object (i.e., xTask) passed
-   *                to the syscall, because either the object was null or
-   *                invalid (e.g., a deleted task), xTaskGetId() would return
+   * @return        On success, the syscall returns ReturnOK. On failure, the
+   *                syscall returns ReturnError. A failure is any condition in
+   *                which the syscall was unable to achieve its intended
+   *                objective. For example, if xTaskGetId() was unable to locate
+   *                the task by the task object (i.e., xTask) passed to the
+   *                syscall, because either the object was null or invalid
+   *                (e.g., a deleted task), xTaskGetId() would return
    *                ReturnError. All HeliOS syscalls return the xReturn (a.k.a.,
    *                Return_t) type which can either be ReturnOK or ReturnError.
    *                The C macros OK() and ERROR() can be used as a more concise
@@ -596,13 +595,13 @@
    * communication.
    *
    * @param  queue_ The message queue to be operated on.
-   * @return        xReturn On success, the syscall returns ReturnOK. On
-   *                failure, the syscall returns ReturnError. A failure is any
-   *                condition in which the syscall was unable to achieve its
-   *                intended objective. For example, if xTaskGetId() was unable
-   *                to locate the task by the task object (i.e., xTask) passed
-   *                to the syscall, because either the object was null or
-   *                invalid (e.g., a deleted task), xTaskGetId() would return
+   * @return        On success, the syscall returns ReturnOK. On failure, the
+   *                syscall returns ReturnError. A failure is any condition in
+   *                which the syscall was unable to achieve its intended
+   *                objective. For example, if xTaskGetId() was unable to locate
+   *                the task by the task object (i.e., xTask) passed to the
+   *                syscall, because either the object was null or invalid
+   *                (e.g., a deleted task), xTaskGetId() would return
    *                ReturnError. All HeliOS syscalls return the xReturn (a.k.a.,
    *                Return_t) type which can either be ReturnOK or ReturnError.
    *                The C macros OK() and ERROR() can be used as a more concise
@@ -622,13 +621,13 @@
    * @param  queue_ The message queue to be operated on.
    * @param  res_   The result of the inquiry; taken here to mean the number of
    *                messages a message queue contains.
-   * @return        xReturn On success, the syscall returns ReturnOK. On
-   *                failure, the syscall returns ReturnError. A failure is any
-   *                condition in which the syscall was unable to achieve its
-   *                intended objective. For example, if xTaskGetId() was unable
-   *                to locate the task by the task object (i.e., xTask) passed
-   *                to the syscall, because either the object was null or
-   *                invalid (e.g., a deleted task), xTaskGetId() would return
+   * @return        On success, the syscall returns ReturnOK. On failure, the
+   *                syscall returns ReturnError. A failure is any condition in
+   *                which the syscall was unable to achieve its intended
+   *                objective. For example, if xTaskGetId() was unable to locate
+   *                the task by the task object (i.e., xTask) passed to the
+   *                syscall, because either the object was null or invalid
+   *                (e.g., a deleted task), xTaskGetId() would return
    *                ReturnError. All HeliOS syscalls return the xReturn (a.k.a.,
    *                Return_t) type which can either be ReturnOK or ReturnError.
    *                The C macros OK() and ERROR() can be used as a more concise
@@ -649,13 +648,13 @@
    * @param  queue_ The message queue to be operated on.
    * @param  res_   The result of the inquiry; taken here to mean "true" if the
    *                queue is empty, "false" if it contains one or more messages.
-   * @return        xReturn On success, the syscall returns ReturnOK. On
-   *                failure, the syscall returns ReturnError. A failure is any
-   *                condition in which the syscall was unable to achieve its
-   *                intended objective. For example, if xTaskGetId() was unable
-   *                to locate the task by the task object (i.e., xTask) passed
-   *                to the syscall, because either the object was null or
-   *                invalid (e.g., a deleted task), xTaskGetId() would return
+   * @return        On success, the syscall returns ReturnOK. On failure, the
+   *                syscall returns ReturnError. A failure is any condition in
+   *                which the syscall was unable to achieve its intended
+   *                objective. For example, if xTaskGetId() was unable to locate
+   *                the task by the task object (i.e., xTask) passed to the
+   *                syscall, because either the object was null or invalid
+   *                (e.g., a deleted task), xTaskGetId() would return
    *                ReturnError. All HeliOS syscalls return the xReturn (a.k.a.,
    *                Return_t) type which can either be ReturnOK or ReturnError.
    *                The C macros OK() and ERROR() can be used as a more concise
@@ -678,13 +677,13 @@
    * @param  res_   The result of the inquiry; taken here to mean "true" if the
    *                queue is full, "false" if it contains less than "limit"
    *                messages.
-   * @return        xReturn On success, the syscall returns ReturnOK. On
-   *                failure, the syscall returns ReturnError. A failure is any
-   *                condition in which the syscall was unable to achieve its
-   *                intended objective. For example, if xTaskGetId() was unable
-   *                to locate the task by the task object (i.e., xTask) passed
-   *                to the syscall, because either the object was null or
-   *                invalid (e.g., a deleted task), xTaskGetId() would return
+   * @return        On success, the syscall returns ReturnOK. On failure, the
+   *                syscall returns ReturnError. A failure is any condition in
+   *                which the syscall was unable to achieve its intended
+   *                objective. For example, if xTaskGetId() was unable to locate
+   *                the task by the task object (i.e., xTask) passed to the
+   *                syscall, because either the object was null or invalid
+   *                (e.g., a deleted task), xTaskGetId() would return
    *                ReturnError. All HeliOS syscalls return the xReturn (a.k.a.,
    *                Return_t) type which can either be ReturnOK or ReturnError.
    *                The C macros OK() and ERROR() can be used as a more concise
@@ -705,13 +704,13 @@
    * @param  queue_ The message queue to be operated on.
    * @param  res_   The result of the inquiry; taken here to mean "true" if
    *                there is one or more messages waiting.
-   * @return        xReturn On success, the syscall returns ReturnOK. On
-   *                failure, the syscall returns ReturnError. A failure is any
-   *                condition in which the syscall was unable to achieve its
-   *                intended objective. For example, if xTaskGetId() was unable
-   *                to locate the task by the task object (i.e., xTask) passed
-   *                to the syscall, because either the object was null or
-   *                invalid (e.g., a deleted task), xTaskGetId() would return
+   * @return        On success, the syscall returns ReturnOK. On failure, the
+   *                syscall returns ReturnError. A failure is any condition in
+   *                which the syscall was unable to achieve its intended
+   *                objective. For example, if xTaskGetId() was unable to locate
+   *                the task by the task object (i.e., xTask) passed to the
+   *                syscall, because either the object was null or invalid
+   *                (e.g., a deleted task), xTaskGetId() would return
    *                ReturnError. All HeliOS syscalls return the xReturn (a.k.a.,
    *                Return_t) type which can either be ReturnOK or ReturnError.
    *                The C macros OK() and ERROR() can be used as a more concise
@@ -734,13 +733,13 @@
    *                queue. The size of the message cannot exceed the
    *                CONFIG_MESSAGE_VALUE_BYTES (default is 8) setting.
    * @param  value_ The message to be sent to the queue.
-   * @return        xReturn On success, the syscall returns ReturnOK. On
-   *                failure, the syscall returns ReturnError. A failure is any
-   *                condition in which the syscall was unable to achieve its
-   *                intended objective. For example, if xTaskGetId() was unable
-   *                to locate the task by the task object (i.e., xTask) passed
-   *                to the syscall, because either the object was null or
-   *                invalid (e.g., a deleted task), xTaskGetId() would return
+   * @return        On success, the syscall returns ReturnOK. On failure, the
+   *                syscall returns ReturnError. A failure is any condition in
+   *                which the syscall was unable to achieve its intended
+   *                objective. For example, if xTaskGetId() was unable to locate
+   *                the task by the task object (i.e., xTask) passed to the
+   *                syscall, because either the object was null or invalid
+   *                (e.g., a deleted task), xTaskGetId() would return
    *                ReturnError. All HeliOS syscalls return the xReturn (a.k.a.,
    *                Return_t) type which can either be ReturnOK or ReturnError.
    *                The C macros OK() and ERROR() can be used as a more concise
@@ -761,14 +760,14 @@
    * @param  queue_   The message queue to be operated on.
    * @param  message_ The message retrieved from the message queue. The message
    *                  must be freed by xMemFree().
-   * @return          xReturn On success, the syscall returns ReturnOK. On
-   *                  failure, the syscall returns ReturnError. A failure is any
-   *                  condition in which the syscall was unable to achieve its
-   *                  intended objective. For example, if xTaskGetId() was
-   *                  unable to locate the task by the task object (i.e., xTask)
-   *                  passed to the syscall, because either the object was null
-   *                  or invalid (e.g., a deleted task), xTaskGetId() would
-   *                  return ReturnError. All HeliOS syscalls return the xReturn
+   * @return          On success, the syscall returns ReturnOK. On failure, the
+   *                  syscall returns ReturnError. A failure is any condition in
+   *                  which the syscall was unable to achieve its intended
+   *                  objective. For example, if xTaskGetId() was unable to
+   *                  locate the task by the task object (i.e., xTask) passed to
+   *                  the syscall, because either the object was null or invalid
+   *                  (e.g., a deleted task), xTaskGetId() would return
+   *                  ReturnError. All HeliOS syscalls return the xReturn
    *                  (a.k.a., Return_t) type which can either be ReturnOK or
    *                  ReturnError. The C macros OK() and ERROR() can be used as
    *                  a more concise way of checking the return value of a
@@ -786,13 +785,13 @@
    * message queue without retrieving the message.
    *
    * @param  queue_ The message queue to be operated on.
-   * @return        xReturn On success, the syscall returns ReturnOK. On
-   *                failure, the syscall returns ReturnError. A failure is any
-   *                condition in which the syscall was unable to achieve its
-   *                intended objective. For example, if xTaskGetId() was unable
-   *                to locate the task by the task object (i.e., xTask) passed
-   *                to the syscall, because either the object was null or
-   *                invalid (e.g., a deleted task), xTaskGetId() would return
+   * @return        On success, the syscall returns ReturnOK. On failure, the
+   *                syscall returns ReturnError. A failure is any condition in
+   *                which the syscall was unable to achieve its intended
+   *                objective. For example, if xTaskGetId() was unable to locate
+   *                the task by the task object (i.e., xTask) passed to the
+   *                syscall, because either the object was null or invalid
+   *                (e.g., a deleted task), xTaskGetId() would return
    *                ReturnError. All HeliOS syscalls return the xReturn (a.k.a.,
    *                Return_t) type which can either be ReturnOK or ReturnError.
    *                The C macros OK() and ERROR() can be used as a more concise
@@ -813,14 +812,14 @@
    * @param  queue_   The message queue to be operated on.
    * @param  message_ The message retrieved from the message queue. The message
    *                  must be freed by xMemFree().
-   * @return          xReturn On success, the syscall returns ReturnOK. On
-   *                  failure, the syscall returns ReturnError. A failure is any
-   *                  condition in which the syscall was unable to achieve its
-   *                  intended objective. For example, if xTaskGetId() was
-   *                  unable to locate the task by the task object (i.e., xTask)
-   *                  passed to the syscall, because either the object was null
-   *                  or invalid (e.g., a deleted task), xTaskGetId() would
-   *                  return ReturnError. All HeliOS syscalls return the xReturn
+   * @return          On success, the syscall returns ReturnOK. On failure, the
+   *                  syscall returns ReturnError. A failure is any condition in
+   *                  which the syscall was unable to achieve its intended
+   *                  objective. For example, if xTaskGetId() was unable to
+   *                  locate the task by the task object (i.e., xTask) passed to
+   *                  the syscall, because either the object was null or invalid
+   *                  (e.g., a deleted task), xTaskGetId() would return
+   *                  ReturnError. All HeliOS syscalls return the xReturn
    *                  (a.k.a., Return_t) type which can either be ReturnOK or
    *                  ReturnError. The C macros OK() and ERROR() can be used as
    *                  a more concise way of checking the return value of a
@@ -839,13 +838,13 @@
    * message queue.
    *
    * @param  queue_ The message queue to be operated on.
-   * @return        xReturn On success, the syscall returns ReturnOK. On
-   *                failure, the syscall returns ReturnError. A failure is any
-   *                condition in which the syscall was unable to achieve its
-   *                intended objective. For example, if xTaskGetId() was unable
-   *                to locate the task by the task object (i.e., xTask) passed
-   *                to the syscall, because either the object was null or
-   *                invalid (e.g., a deleted task), xTaskGetId() would return
+   * @return        On success, the syscall returns ReturnOK. On failure, the
+   *                syscall returns ReturnError. A failure is any condition in
+   *                which the syscall was unable to achieve its intended
+   *                objective. For example, if xTaskGetId() was unable to locate
+   *                the task by the task object (i.e., xTask) passed to the
+   *                syscall, because either the object was null or invalid
+   *                (e.g., a deleted task), xTaskGetId() would return
    *                ReturnError. All HeliOS syscalls return the xReturn (a.k.a.,
    *                Return_t) type which can either be ReturnOK or ReturnError.
    *                The C macros OK() and ERROR() can be used as a more concise
@@ -864,13 +863,13 @@
    * tasks may resume sending messages to the message queue.
    *
    * @param  queue_ The message queue to be operated on.
-   * @return        xReturn On success, the syscall returns ReturnOK. On
-   *                failure, the syscall returns ReturnError. A failure is any
-   *                condition in which the syscall was unable to achieve its
-   *                intended objective. For example, if xTaskGetId() was unable
-   *                to locate the task by the task object (i.e., xTask) passed
-   *                to the syscall, because either the object was null or
-   *                invalid (e.g., a deleted task), xTaskGetId() would return
+   * @return        On success, the syscall returns ReturnOK. On failure, the
+   *                syscall returns ReturnError. A failure is any condition in
+   *                which the syscall was unable to achieve its intended
+   *                objective. For example, if xTaskGetId() was unable to locate
+   *                the task by the task object (i.e., xTask) passed to the
+   *                syscall, because either the object was null or invalid
+   *                (e.g., a deleted task), xTaskGetId() would return
    *                ReturnError. All HeliOS syscalls return the xReturn (a.k.a.,
    *                Return_t) type which can either be ReturnOK or ReturnError.
    *                The C macros OK() and ERROR() can be used as a more concise
@@ -889,13 +888,13 @@
    * queue, however, it operates only on one byte at a time.
    *
    * @param  stream_ The stream buffer to be operated on.
-   * @return         xReturn On success, the syscall returns ReturnOK. On
-   *                 failure, the syscall returns ReturnError. A failure is any
-   *                 condition in which the syscall was unable to achieve its
-   *                 intended objective. For example, if xTaskGetId() was unable
-   *                 to locate the task by the task object (i.e., xTask) passed
-   *                 to the syscall, because either the object was null or
-   *                 invalid (e.g., a deleted task), xTaskGetId() would return
+   * @return         On success, the syscall returns ReturnOK. On failure, the
+   *                 syscall returns ReturnError. A failure is any condition in
+   *                 which the syscall was unable to achieve its intended
+   *                 objective. For example, if xTaskGetId() was unable to
+   *                 locate the task by the task object (i.e., xTask) passed to
+   *                 the syscall, because either the object was null or invalid
+   *                 (e.g., a deleted task), xTaskGetId() would return
    *                 ReturnError. All HeliOS syscalls return the xReturn
    *                 (a.k.a., Return_t) type which can either be ReturnOK or
    *                 ReturnError. The C macros OK() and ERROR() can be used as a
@@ -913,13 +912,13 @@
    * xStreamCreate().
    *
    * @param  stream_ The stream buffer to be operated on.
-   * @return         xReturn On success, the syscall returns ReturnOK. On
-   *                 failure, the syscall returns ReturnError. A failure is any
-   *                 condition in which the syscall was unable to achieve its
-   *                 intended objective. For example, if xTaskGetId() was unable
-   *                 to locate the task by the task object (i.e., xTask) passed
-   *                 to the syscall, because either the object was null or
-   *                 invalid (e.g., a deleted task), xTaskGetId() would return
+   * @return         On success, the syscall returns ReturnOK. On failure, the
+   *                 syscall returns ReturnError. A failure is any condition in
+   *                 which the syscall was unable to achieve its intended
+   *                 objective. For example, if xTaskGetId() was unable to
+   *                 locate the task by the task object (i.e., xTask) passed to
+   *                 the syscall, because either the object was null or invalid
+   *                 (e.g., a deleted task), xTaskGetId() would return
    *                 ReturnError. All HeliOS syscalls return the xReturn
    *                 (a.k.a., Return_t) type which can either be ReturnOK or
    *                 ReturnError. The C macros OK() and ERROR() can be used as a
@@ -937,13 +936,13 @@
    *
    * @param  stream_ The stream buffer to be operated on.
    * @param  byte_   The byte to send to the stream buffer.
-   * @return         xReturn On success, the syscall returns ReturnOK. On
-   *                 failure, the syscall returns ReturnError. A failure is any
-   *                 condition in which the syscall was unable to achieve its
-   *                 intended objective. For example, if xTaskGetId() was unable
-   *                 to locate the task by the task object (i.e., xTask) passed
-   *                 to the syscall, because either the object was null or
-   *                 invalid (e.g., a deleted task), xTaskGetId() would return
+   * @return         On success, the syscall returns ReturnOK. On failure, the
+   *                 syscall returns ReturnError. A failure is any condition in
+   *                 which the syscall was unable to achieve its intended
+   *                 objective. For example, if xTaskGetId() was unable to
+   *                 locate the task by the task object (i.e., xTask) passed to
+   *                 the syscall, because either the object was null or invalid
+   *                 (e.g., a deleted task), xTaskGetId() would return
    *                 ReturnError. All HeliOS syscalls return the xReturn
    *                 (a.k.a., Return_t) type which can either be ReturnOK or
    *                 ReturnError. The C macros OK() and ERROR() can be used as a
@@ -964,13 +963,13 @@
    * @param  bytes_  The number of bytes retrieved from the stream buffer.
    * @param  data_   The bytes retrieved from the stream buffer. The data must
    *                 be freed by xMemFree().
-   * @return         xReturn On success, the syscall returns ReturnOK. On
-   *                 failure, the syscall returns ReturnError. A failure is any
-   *                 condition in which the syscall was unable to achieve its
-   *                 intended objective. For example, if xTaskGetId() was unable
-   *                 to locate the task by the task object (i.e., xTask) passed
-   *                 to the syscall, because either the object was null or
-   *                 invalid (e.g., a deleted task), xTaskGetId() would return
+   * @return         On success, the syscall returns ReturnOK. On failure, the
+   *                 syscall returns ReturnError. A failure is any condition in
+   *                 which the syscall was unable to achieve its intended
+   *                 objective. For example, if xTaskGetId() was unable to
+   *                 locate the task by the task object (i.e., xTask) passed to
+   *                 the syscall, because either the object was null or invalid
+   *                 (e.g., a deleted task), xTaskGetId() would return
    *                 ReturnError. All HeliOS syscalls return the xReturn
    *                 (a.k.a., Return_t) type which can either be ReturnOK or
    *                 ReturnError. The C macros OK() and ERROR() can be used as a
@@ -990,13 +989,13 @@
    *
    * @param  stream_ The stream buffer to be operated on.
    * @param  bytes_  The number of available bytes in the stream buffer.
-   * @return         xReturn On success, the syscall returns ReturnOK. On
-   *                 failure, the syscall returns ReturnError. A failure is any
-   *                 condition in which the syscall was unable to achieve its
-   *                 intended objective. For example, if xTaskGetId() was unable
-   *                 to locate the task by the task object (i.e., xTask) passed
-   *                 to the syscall, because either the object was null or
-   *                 invalid (e.g., a deleted task), xTaskGetId() would return
+   * @return         On success, the syscall returns ReturnOK. On failure, the
+   *                 syscall returns ReturnError. A failure is any condition in
+   *                 which the syscall was unable to achieve its intended
+   *                 objective. For example, if xTaskGetId() was unable to
+   *                 locate the task by the task object (i.e., xTask) passed to
+   *                 the syscall, because either the object was null or invalid
+   *                 (e.g., a deleted task), xTaskGetId() would return
    *                 ReturnError. All HeliOS syscalls return the xReturn
    *                 (a.k.a., Return_t) type which can either be ReturnOK or
    *                 ReturnError. The C macros OK() and ERROR() can be used as a
@@ -1015,13 +1014,13 @@
    * xStreamBytesAvailable() would return zero bytes available.
    *
    * @param  stream_ The stream buffer to be operated on.
-   * @return         xReturn On success, the syscall returns ReturnOK. On
-   *                 failure, the syscall returns ReturnError. A failure is any
-   *                 condition in which the syscall was unable to achieve its
-   *                 intended objective. For example, if xTaskGetId() was unable
-   *                 to locate the task by the task object (i.e., xTask) passed
-   *                 to the syscall, because either the object was null or
-   *                 invalid (e.g., a deleted task), xTaskGetId() would return
+   * @return         On success, the syscall returns ReturnOK. On failure, the
+   *                 syscall returns ReturnError. A failure is any condition in
+   *                 which the syscall was unable to achieve its intended
+   *                 objective. For example, if xTaskGetId() was unable to
+   *                 locate the task by the task object (i.e., xTask) passed to
+   *                 the syscall, because either the object was null or invalid
+   *                 (e.g., a deleted task), xTaskGetId() would return
    *                 ReturnError. All HeliOS syscalls return the xReturn
    *                 (a.k.a., Return_t) type which can either be ReturnOK or
    *                 ReturnError. The C macros OK() and ERROR() can be used as a
@@ -1042,13 +1041,13 @@
    * @param  stream_ The stream buffer to be operated on.
    * @param  res_    The result of the inquiry; taken here to mean "true" if the
    *                 length (i.e., number of waiting bytes) is zero.
-   * @return         xReturn On success, the syscall returns ReturnOK. On
-   *                 failure, the syscall returns ReturnError. A failure is any
-   *                 condition in which the syscall was unable to achieve its
-   *                 intended objective. For example, if xTaskGetId() was unable
-   *                 to locate the task by the task object (i.e., xTask) passed
-   *                 to the syscall, because either the object was null or
-   *                 invalid (e.g., a deleted task), xTaskGetId() would return
+   * @return         On success, the syscall returns ReturnOK. On failure, the
+   *                 syscall returns ReturnError. A failure is any condition in
+   *                 which the syscall was unable to achieve its intended
+   *                 objective. For example, if xTaskGetId() was unable to
+   *                 locate the task by the task object (i.e., xTask) passed to
+   *                 the syscall, because either the object was null or invalid
+   *                 (e.g., a deleted task), xTaskGetId() would return
    *                 ReturnError. All HeliOS syscalls return the xReturn
    *                 (a.k.a., Return_t) type which can either be ReturnOK or
    *                 ReturnError. The C macros OK() and ERROR() can be used as a
@@ -1070,13 +1069,13 @@
    * @param  res_    The result of the inquiry; taken here to mean "true" if the
    *                 length (i.e., number of waiting bytes) is
    *                 CONFIG_STREAM_BUFFER_BYTES bytes.
-   * @return         xReturn On success, the syscall returns ReturnOK. On
-   *                 failure, the syscall returns ReturnError. A failure is any
-   *                 condition in which the syscall was unable to achieve its
-   *                 intended objective. For example, if xTaskGetId() was unable
-   *                 to locate the task by the task object (i.e., xTask) passed
-   *                 to the syscall, because either the object was null or
-   *                 invalid (e.g., a deleted task), xTaskGetId() would return
+   * @return         On success, the syscall returns ReturnOK. On failure, the
+   *                 syscall returns ReturnError. A failure is any condition in
+   *                 which the syscall was unable to achieve its intended
+   *                 objective. For example, if xTaskGetId() was unable to
+   *                 locate the task by the task object (i.e., xTask) passed to
+   *                 the syscall, because either the object was null or invalid
+   *                 (e.g., a deleted task), xTaskGetId() would return
    *                 ReturnError. All HeliOS syscalls return the xReturn
    *                 (a.k.a., Return_t) type which can either be ReturnOK or
    *                 ReturnError. The C macros OK() and ERROR() can be used as a
@@ -1101,9 +1100,9 @@
    *               ASSERT C macro.
    * @param  line_ The C file line where the assert occurred. This will be set
    *               by the ASSERT C macro.
-   * @return       xReturn On success, the syscall returns ReturnOK. On failure,
-   *               the syscall returns ReturnError. A failure is any condition
-   *               in which the syscall was unable to achieve its intended
+   * @return       On success, the syscall returns ReturnOK. On failure, the
+   *               syscall returns ReturnError. A failure is any condition in
+   *               which the syscall was unable to achieve its intended
    *               objective. For example, if xTaskGetId() was unable to locate
    *               the task by the task object (i.e., xTask) passed to the
    *               syscall, because either the object was null or invalid (e.g.,
@@ -1126,16 +1125,16 @@
    * initializes memory and calls initialization functions through the port
    * layer.
    *
-   * @return xReturn On success, the syscall returns ReturnOK. On failure, the
-   *         syscall returns ReturnError. A failure is any condition in which
-   *         the syscall was unable to achieve its intended objective. For
-   *         example, if xTaskGetId() was unable to locate the task by the task
-   *         object (i.e., xTask) passed to the syscall, because either the
-   *         object was null or invalid (e.g., a deleted task), xTaskGetId()
-   *         would return ReturnError. All HeliOS syscalls return the xReturn
-   *         (a.k.a., Return_t) type which can either be ReturnOK or
-   *         ReturnError. The C macros OK() and ERROR() can be used as a more
-   *         concise way of checking the return value of a syscall (e.g.,
+   * @return On success, the syscall returns ReturnOK. On failure, the syscall
+   *         returns ReturnError. A failure is any condition in which the
+   *         syscall was unable to achieve its intended objective. For example,
+   *         if xTaskGetId() was unable to locate the task by the task object
+   *         (i.e., xTask) passed to the syscall, because either the object was
+   *         null or invalid (e.g., a deleted task), xTaskGetId() would return
+   *         ReturnError. All HeliOS syscalls return the xReturn (a.k.a.,
+   *         Return_t) type which can either be ReturnOK or ReturnError. The C
+   *         macros OK() and ERROR() can be used as a more concise way of
+   *         checking the return value of a syscall (e.g.,
    *         if(OK(xMemGetUsed(&size))) {} or if(ERROR(xMemGetUsed(&size))) {}).
    */
   xReturn xSystemInit(void);
@@ -1148,16 +1147,16 @@
    * xSystemHalt() will disable all interrupts and stops the execution of
    * further statements. The system will have to be reset to recover.
    *
-   * @return xReturn On success, the syscall returns ReturnOK. On failure, the
-   *         syscall returns ReturnError. A failure is any condition in which
-   *         the syscall was unable to achieve its intended objective. For
-   *         example, if xTaskGetId() was unable to locate the task by the task
-   *         object (i.e., xTask) passed to the syscall, because either the
-   *         object was null or invalid (e.g., a deleted task), xTaskGetId()
-   *         would return ReturnError. All HeliOS syscalls return the xReturn
-   *         (a.k.a., Return_t) type which can either be ReturnOK or
-   *         ReturnError. The C macros OK() and ERROR() can be used as a more
-   *         concise way of checking the return value of a syscall (e.g.,
+   * @return On success, the syscall returns ReturnOK. On failure, the syscall
+   *         returns ReturnError. A failure is any condition in which the
+   *         syscall was unable to achieve its intended objective. For example,
+   *         if xTaskGetId() was unable to locate the task by the task object
+   *         (i.e., xTask) passed to the syscall, because either the object was
+   *         null or invalid (e.g., a deleted task), xTaskGetId() would return
+   *         ReturnError. All HeliOS syscalls return the xReturn (a.k.a.,
+   *         Return_t) type which can either be ReturnOK or ReturnError. The C
+   *         macros OK() and ERROR() can be used as a more concise way of
+   *         checking the return value of a syscall (e.g.,
    *         if(OK(xMemGetUsed(&size))) {} or if(ERROR(xMemGetUsed(&size))) {}).
    */
   xReturn xSystemHalt(void);
@@ -1172,9 +1171,9 @@
    *
    * @param  info_ The system information. The system information must be freed
    *               by xMemFree().
-   * @return       xReturn On success, the syscall returns ReturnOK. On failure,
-   *               the syscall returns ReturnError. A failure is any condition
-   *               in which the syscall was unable to achieve its intended
+   * @return       On success, the syscall returns ReturnOK. On failure, the
+   *               syscall returns ReturnError. A failure is any condition in
+   *               which the syscall was unable to achieve its intended
    *               objective. For example, if xTaskGetId() was unable to locate
    *               the task by the task object (i.e., xTask) passed to the
    *               syscall, because either the object was null or invalid (e.g.,
@@ -1204,7 +1203,7 @@
    * @param  taskParameter_ A parameter which is accessible from the task's main
    *                        function. If a task parameter is not needed, this
    *                        parameter may be set to null.
-   * @return                xReturn On success, the syscall returns ReturnOK. On
+   * @return                On success, the syscall returns ReturnOK. On
    *                        failure, the syscall returns ReturnError. A failure
    *                        is any condition in which the syscall was unable to
    *                        achieve its intended objective. For example, if
@@ -1230,9 +1229,9 @@
    * (i.e., while the scheduler is running).
    *
    * @param  task_ The task to be operated on.
-   * @return       xReturn On success, the syscall returns ReturnOK. On failure,
-   *               the syscall returns ReturnError. A failure is any condition
-   *               in which the syscall was unable to achieve its intended
+   * @return       On success, the syscall returns ReturnOK. On failure, the
+   *               syscall returns ReturnError. A failure is any condition in
+   *               which the syscall was unable to achieve its intended
    *               objective. For example, if xTaskGetId() was unable to locate
    *               the task by the task object (i.e., xTask) passed to the
    *               syscall, because either the object was null or invalid (e.g.,
@@ -1257,9 +1256,9 @@
    * @param  name_ The name of the task which must be exactly
    *               CONFIG_TASK_NAME_BYTES (default is 8) bytes in length.
    *               Shorter task names must be padded.
-   * @return       xReturn On success, the syscall returns ReturnOK. On failure,
-   *               the syscall returns ReturnError. A failure is any condition
-   *               in which the syscall was unable to achieve its intended
+   * @return       On success, the syscall returns ReturnOK. On failure, the
+   *               syscall returns ReturnError. A failure is any condition in
+   *               which the syscall was unable to achieve its intended
    *               objective. For example, if xTaskGetId() was unable to locate
    *               the task by the task object (i.e., xTask) passed to the
    *               syscall, because either the object was null or invalid (e.g.,
@@ -1282,9 +1281,9 @@
    *
    * @param  task_ The task to be operated on.
    * @param  id_   The task id.
-   * @return       xReturn On success, the syscall returns ReturnOK. On failure,
-   *               the syscall returns ReturnError. A failure is any condition
-   *               in which the syscall was unable to achieve its intended
+   * @return       On success, the syscall returns ReturnOK. On failure, the
+   *               syscall returns ReturnError. A failure is any condition in
+   *               which the syscall was unable to achieve its intended
    *               objective. For example, if xTaskGetId() was unable to locate
    *               the task by the task object (i.e., xTask) passed to the
    *               syscall, because either the object was null or invalid (e.g.,
@@ -1308,13 +1307,13 @@
    * @param  stats_ The runtime statistics. The runtime statics must be freed by
    *                xMemFree().
    * @param  tasks_ The number of tasks in the runtime statistics.
-   * @return        xReturn On success, the syscall returns ReturnOK. On
-   *                failure, the syscall returns ReturnError. A failure is any
-   *                condition in which the syscall was unable to achieve its
-   *                intended objective. For example, if xTaskGetId() was unable
-   *                to locate the task by the task object (i.e., xTask) passed
-   *                to the syscall, because either the object was null or
-   *                invalid (e.g., a deleted task), xTaskGetId() would return
+   * @return        On success, the syscall returns ReturnOK. On failure, the
+   *                syscall returns ReturnError. A failure is any condition in
+   *                which the syscall was unable to achieve its intended
+   *                objective. For example, if xTaskGetId() was unable to locate
+   *                the task by the task object (i.e., xTask) passed to the
+   *                syscall, because either the object was null or invalid
+   *                (e.g., a deleted task), xTaskGetId() would return
    *                ReturnError. All HeliOS syscalls return the xReturn (a.k.a.,
    *                Return_t) type which can either be ReturnOK or ReturnError.
    *                The C macros OK() and ERROR() can be used as a more concise
@@ -1331,13 +1330,13 @@
    * @param  task_  The task to be operated on.
    * @param  stats_ The runtime statistics. The runtime statistics must be freed
    *                by xMemFree().
-   * @return        xReturn On success, the syscall returns ReturnOK. On
-   *                failure, the syscall returns ReturnError. A failure is any
-   *                condition in which the syscall was unable to achieve its
-   *                intended objective. For example, if xTaskGetId() was unable
-   *                to locate the task by the task object (i.e., xTask) passed
-   *                to the syscall, because either the object was null or
-   *                invalid (e.g., a deleted task), xTaskGetId() would return
+   * @return        On success, the syscall returns ReturnOK. On failure, the
+   *                syscall returns ReturnError. A failure is any condition in
+   *                which the syscall was unable to achieve its intended
+   *                objective. For example, if xTaskGetId() was unable to locate
+   *                the task by the task object (i.e., xTask) passed to the
+   *                syscall, because either the object was null or invalid
+   *                (e.g., a deleted task), xTaskGetId() would return
    *                ReturnError. All HeliOS syscalls return the xReturn (a.k.a.,
    *                Return_t) type which can either be ReturnOK or ReturnError.
    *                The C macros OK() and ERROR() can be used as a more concise
@@ -1355,13 +1354,13 @@
    * regardless of their state (i.e., suspended, running or waiting).
    *
    * @param  tasks_ The number of tasks.
-   * @return        xReturn On success, the syscall returns ReturnOK. On
-   *                failure, the syscall returns ReturnError. A failure is any
-   *                condition in which the syscall was unable to achieve its
-   *                intended objective. For example, if xTaskGetId() was unable
-   *                to locate the task by the task object (i.e., xTask) passed
-   *                to the syscall, because either the object was null or
-   *                invalid (e.g., a deleted task), xTaskGetId() would return
+   * @return        On success, the syscall returns ReturnOK. On failure, the
+   *                syscall returns ReturnError. A failure is any condition in
+   *                which the syscall was unable to achieve its intended
+   *                objective. For example, if xTaskGetId() was unable to locate
+   *                the task by the task object (i.e., xTask) passed to the
+   *                syscall, because either the object was null or invalid
+   *                (e.g., a deleted task), xTaskGetId() would return
    *                ReturnError. All HeliOS syscalls return the xReturn (a.k.a.,
    *                Return_t) type which can either be ReturnOK or ReturnError.
    *                The C macros OK() and ERROR() can be used as a more concise
@@ -1383,9 +1382,9 @@
    * @param  task_ The task to be operated on.
    * @param  info_ Information about the task. The task information must be
    *               freed by xMemFree().
-   * @return       xReturn On success, the syscall returns ReturnOK. On failure,
-   *               the syscall returns ReturnError. A failure is any condition
-   *               in which the syscall was unable to achieve its intended
+   * @return       On success, the syscall returns ReturnOK. On failure, the
+   *               syscall returns ReturnError. A failure is any condition in
+   *               which the syscall was unable to achieve its intended
    *               objective. For example, if xTaskGetId() was unable to locate
    *               the task by the task object (i.e., xTask) passed to the
    *               syscall, because either the object was null or invalid (e.g.,
@@ -1411,13 +1410,13 @@
    * @param  info_  Information about the tasks. The task information must be
    *                freed by xMemFree().
    * @param  tasks_ The number of tasks.
-   * @return        xReturn On success, the syscall returns ReturnOK. On
-   *                failure, the syscall returns ReturnError. A failure is any
-   *                condition in which the syscall was unable to achieve its
-   *                intended objective. For example, if xTaskGetId() was unable
-   *                to locate the task by the task object (i.e., xTask) passed
-   *                to the syscall, because either the object was null or
-   *                invalid (e.g., a deleted task), xTaskGetId() would return
+   * @return        On success, the syscall returns ReturnOK. On failure, the
+   *                syscall returns ReturnError. A failure is any condition in
+   *                which the syscall was unable to achieve its intended
+   *                objective. For example, if xTaskGetId() was unable to locate
+   *                the task by the task object (i.e., xTask) passed to the
+   *                syscall, because either the object was null or invalid
+   *                (e.g., a deleted task), xTaskGetId() would return
    *                ReturnError. All HeliOS syscalls return the xReturn (a.k.a.,
    *                Return_t) type which can either be ReturnOK or ReturnError.
    *                The C macros OK() and ERROR() can be used as a more concise
@@ -1436,13 +1435,13 @@
    *
    * @param  task_  The task to be operated on.
    * @param  state_ The state of the task.
-   * @return        xReturn On success, the syscall returns ReturnOK. On
-   *                failure, the syscall returns ReturnError. A failure is any
-   *                condition in which the syscall was unable to achieve its
-   *                intended objective. For example, if xTaskGetId() was unable
-   *                to locate the task by the task object (i.e., xTask) passed
-   *                to the syscall, because either the object was null or
-   *                invalid (e.g., a deleted task), xTaskGetId() would return
+   * @return        On success, the syscall returns ReturnOK. On failure, the
+   *                syscall returns ReturnError. A failure is any condition in
+   *                which the syscall was unable to achieve its intended
+   *                objective. For example, if xTaskGetId() was unable to locate
+   *                the task by the task object (i.e., xTask) passed to the
+   *                syscall, because either the object was null or invalid
+   *                (e.g., a deleted task), xTaskGetId() would return
    *                ReturnError. All HeliOS syscalls return the xReturn (a.k.a.,
    *                Return_t) type which can either be ReturnOK or ReturnError.
    *                The C macros OK() and ERROR() can be used as a more concise
@@ -1464,9 +1463,9 @@
    * @param  name_ The task name which must be precisely CONFIG_TASK_NAME_BYTES
    *               (default is 8) bytes in length. The task name must be freed
    *               by xMemFree().
-   * @return       xReturn On success, the syscall returns ReturnOK. On failure,
-   *               the syscall returns ReturnError. A failure is any condition
-   *               in which the syscall was unable to achieve its intended
+   * @return       On success, the syscall returns ReturnOK. On failure, the
+   *               syscall returns ReturnError. A failure is any condition in
+   *               which the syscall was unable to achieve its intended
    *               objective. For example, if xTaskGetId() was unable to locate
    *               the task by the task object (i.e., xTask) passed to the
    *               syscall, because either the object was null or invalid (e.g.,
@@ -1488,9 +1487,9 @@
    *
    * @param  task_ The task to be operated on.
    * @param  id_   The id of the task.
-   * @return       xReturn On success, the syscall returns ReturnOK. On failure,
-   *               the syscall returns ReturnError. A failure is any condition
-   *               in which the syscall was unable to achieve its intended
+   * @return       On success, the syscall returns ReturnOK. On failure, the
+   *               syscall returns ReturnError. A failure is any condition in
+   *               which the syscall was unable to achieve its intended
    *               objective. For example, if xTaskGetId() was unable to locate
    *               the task by the task object (i.e., xTask) passed to the
    *               syscall, because either the object was null or invalid (e.g.,
@@ -1512,9 +1511,9 @@
    * direct-to-task notification for the given task.
    *
    * @param  task_ The task to be operated on.
-   * @return       xReturn On success, the syscall returns ReturnOK. On failure,
-   *               the syscall returns ReturnError. A failure is any condition
-   *               in which the syscall was unable to achieve its intended
+   * @return       On success, the syscall returns ReturnOK. On failure, the
+   *               syscall returns ReturnError. A failure is any condition in
+   *               which the syscall was unable to achieve its intended
    *               objective. For example, if xTaskGetId() was unable to locate
    *               the task by the task object (i.e., xTask) passed to the
    *               syscall, because either the object was null or invalid (e.g.,
@@ -1540,9 +1539,9 @@
    * @param  res_  The result of the inquiry; taken here to mean "true" if there
    *               is a waiting direct-to-task notification. Otherwise "false",
    *               if there is not a waiting direct-to-notification.
-   * @return       xReturn On success, the syscall returns ReturnOK. On failure,
-   *               the syscall returns ReturnError. A failure is any condition
-   *               in which the syscall was unable to achieve its intended
+   * @return       On success, the syscall returns ReturnOK. On failure, the
+   *               syscall returns ReturnError. A failure is any condition in
+   *               which the syscall was unable to achieve its intended
    *               objective. For example, if xTaskGetId() was unable to locate
    *               the task by the task object (i.e., xTask) passed to the
    *               syscall, because either the object was null or invalid (e.g.,
@@ -1569,13 +1568,13 @@
    *                CONFIG_NOTIFICATION_VALUE_BYTES (default is 8) bytes.
    * @param  value_ The notification value which is a byte array whose length is
    *                defined by "bytes_".
-   * @return        xReturn On success, the syscall returns ReturnOK. On
-   *                failure, the syscall returns ReturnError. A failure is any
-   *                condition in which the syscall was unable to achieve its
-   *                intended objective. For example, if xTaskGetId() was unable
-   *                to locate the task by the task object (i.e., xTask) passed
-   *                to the syscall, because either the object was null or
-   *                invalid (e.g., a deleted task), xTaskGetId() would return
+   * @return        On success, the syscall returns ReturnOK. On failure, the
+   *                syscall returns ReturnError. A failure is any condition in
+   *                which the syscall was unable to achieve its intended
+   *                objective. For example, if xTaskGetId() was unable to locate
+   *                the task by the task object (i.e., xTask) passed to the
+   *                syscall, because either the object was null or invalid
+   *                (e.g., a deleted task), xTaskGetId() would return
    *                ReturnError. All HeliOS syscalls return the xReturn (a.k.a.,
    *                Return_t) type which can either be ReturnOK or ReturnError.
    *                The C macros OK() and ERROR() can be used as a more concise
@@ -1594,19 +1593,19 @@
    *
    * @param  task_         The task to be operated on.
    * @param  notification_ The direct-to-task notification.
-   * @return               xReturn On success, the syscall returns ReturnOK. On
-   *                       failure, the syscall returns ReturnError. A failure
-   *                       is any condition in which the syscall was unable to
-   *                       achieve its intended objective. For example, if
-   *                       xTaskGetId() was unable to locate the task by the
-   *                       task object (i.e., xTask) passed to the syscall,
-   *                       because either the object was null or invalid (e.g.,
-   *                       a deleted task), xTaskGetId() would return
-   *                       ReturnError. All HeliOS syscalls return the xReturn
-   *                       (a.k.a., Return_t) type which can either be ReturnOK
-   *                       or ReturnError. The C macros OK() and ERROR() can be
-   *                       used as a more concise way of checking the return
-   *                       value of a syscall (e.g., if(OK(xMemGetUsed(&size)))
+   * @return               On success, the syscall returns ReturnOK. On failure,
+   *                       the syscall returns ReturnError. A failure is any
+   *                       condition in which the syscall was unable to achieve
+   *                       its intended objective. For example, if xTaskGetId()
+   *                       was unable to locate the task by the task object
+   *                       (i.e., xTask) passed to the syscall, because either
+   *                       the object was null or invalid (e.g., a deleted
+   *                       task), xTaskGetId() would return ReturnError. All
+   *                       HeliOS syscalls return the xReturn (a.k.a., Return_t)
+   *                       type which can either be ReturnOK or ReturnError. The
+   *                       C macros OK() and ERROR() can be used as a more
+   *                       concise way of checking the return value of a syscall
+   *                       (e.g., if(OK(xMemGetUsed(&size)))
    *                       {} or if(ERROR(xMemGetUsed(&size))) {}).
    */
   xReturn xTaskNotifyTake(xTask task_, xTaskNotification *notification_);
@@ -1620,9 +1619,9 @@
    * cooperatively by the HeliOS scheduler.
    *
    * @param  task_ The task to be operated on.
-   * @return       xReturn On success, the syscall returns ReturnOK. On failure,
-   *               the syscall returns ReturnError. A failure is any condition
-   *               in which the syscall was unable to achieve its intended
+   * @return       On success, the syscall returns ReturnOK. On failure, the
+   *               syscall returns ReturnError. A failure is any condition in
+   *               which the syscall was unable to achieve its intended
    *               objective. For example, if xTaskGetId() was unable to locate
    *               the task by the task object (i.e., xTask) passed to the
    *               syscall, because either the object was null or invalid (e.g.,
@@ -1645,9 +1644,9 @@
    * not run.
    *
    * @param  task_ The task to be operated on.
-   * @return       xReturn On success, the syscall returns ReturnOK. On failure,
-   *               the syscall returns ReturnError. A failure is any condition
-   *               in which the syscall was unable to achieve its intended
+   * @return       On success, the syscall returns ReturnOK. On failure, the
+   *               syscall returns ReturnError. A failure is any condition in
+   *               which the syscall was unable to achieve its intended
    *               objective. For example, if xTaskGetId() was unable to locate
    *               the task by the task object (i.e., xTask) passed to the
    *               syscall, because either the object was null or invalid (e.g.,
@@ -1674,9 +1673,9 @@
    * task timers and direct-to-task notifications.
    *
    * @param  task_ The task to be operated on.
-   * @return       xReturn On success, the syscall returns ReturnOK. On failure,
-   *               the syscall returns ReturnError. A failure is any condition
-   *               in which the syscall was unable to achieve its intended
+   * @return       On success, the syscall returns ReturnOK. On failure, the
+   *               syscall returns ReturnError. A failure is any condition in
+   *               which the syscall was unable to achieve its intended
    *               objective. For example, if xTaskGetId() was unable to locate
    *               the task by the task object (i.e., xTask) passed to the
    *               syscall, because either the object was null or invalid (e.g.,
@@ -1702,13 +1701,13 @@
    *
    * @param  task_   The task to be operated on.
    * @param  period_ The interval period in ticks.
-   * @return         xReturn On success, the syscall returns ReturnOK. On
-   *                 failure, the syscall returns ReturnError. A failure is any
-   *                 condition in which the syscall was unable to achieve its
-   *                 intended objective. For example, if xTaskGetId() was unable
-   *                 to locate the task by the task object (i.e., xTask) passed
-   *                 to the syscall, because either the object was null or
-   *                 invalid (e.g., a deleted task), xTaskGetId() would return
+   * @return         On success, the syscall returns ReturnOK. On failure, the
+   *                 syscall returns ReturnError. A failure is any condition in
+   *                 which the syscall was unable to achieve its intended
+   *                 objective. For example, if xTaskGetId() was unable to
+   *                 locate the task by the task object (i.e., xTask) passed to
+   *                 the syscall, because either the object was null or invalid
+   *                 (e.g., a deleted task), xTaskGetId() would return
    *                 ReturnError. All HeliOS syscalls return the xReturn
    *                 (a.k.a., Return_t) type which can either be ReturnOK or
    *                 ReturnError. The C macros OK() and ERROR() can be used as a
@@ -1734,13 +1733,13 @@
    *                 platform and/or architecture dependent. However, most
    *                 platforms and/or architectures have a one millisecond tick
    *                 duration.
-   * @return         xReturn On success, the syscall returns ReturnOK. On
-   *                 failure, the syscall returns ReturnError. A failure is any
-   *                 condition in which the syscall was unable to achieve its
-   *                 intended objective. For example, if xTaskGetId() was unable
-   *                 to locate the task by the task object (i.e., xTask) passed
-   *                 to the syscall, because either the object was null or
-   *                 invalid (e.g., a deleted task), xTaskGetId() would return
+   * @return         On success, the syscall returns ReturnOK. On failure, the
+   *                 syscall returns ReturnError. A failure is any condition in
+   *                 which the syscall was unable to achieve its intended
+   *                 objective. For example, if xTaskGetId() was unable to
+   *                 locate the task by the task object (i.e., xTask) passed to
+   *                 the syscall, because either the object was null or invalid
+   *                 (e.g., a deleted task), xTaskGetId() would return
    *                 ReturnError. All HeliOS syscalls return the xReturn
    *                 (a.k.a., Return_t) type which can either be ReturnOK or
    *                 ReturnError. The C macros OK() and ERROR() can be used as a
@@ -1761,13 +1760,13 @@
    * @param  period_ The task timer period in ticks. Ticks is platform and/or
    *                 architecture dependent. However, most platforms and/or
    *                 architect
-   * @return         xReturn On success, the syscall returns ReturnOK. On
-   *                 failure, the syscall returns ReturnError. A failure is any
-   *                 condition in which the syscall was unable to achieve its
-   *                 intended objective. For example, if xTaskGetId() was unable
-   *                 to locate the task by the task object (i.e., xTask) passed
-   *                 to the syscall, because either the object was null or
-   *                 invalid (e.g., a deleted task), xTaskGetId() would return
+   * @return         On success, the syscall returns ReturnOK. On failure, the
+   *                 syscall returns ReturnError. A failure is any condition in
+   *                 which the syscall was unable to achieve its intended
+   *                 objective. For example, if xTaskGetId() was unable to
+   *                 locate the task by the task object (i.e., xTask) passed to
+   *                 the syscall, because either the object was null or invalid
+   *                 (e.g., a deleted task), xTaskGetId() would return
    *                 ReturnError. All HeliOS syscalls return the xReturn
    *                 (a.k.a., Return_t) type which can either be ReturnOK or
    *                 ReturnError. The C macros OK() and ERROR() can be used as a
@@ -1785,9 +1784,9 @@
    * this sets the elapsed time, measured in ticks, back to zero.
    *
    * @param  task_ The task to be operated on.
-   * @return       xReturn On success, the syscall returns ReturnOK. On failure,
-   *               the syscall returns ReturnError. A failure is any condition
-   *               in which the syscall was unable to achieve its intended
+   * @return       On success, the syscall returns ReturnOK. On failure, the
+   *               syscall returns ReturnError. A failure is any condition in
+   *               which the syscall was unable to achieve its intended
    *               objective. For example, if xTaskGetId() was unable to locate
    *               the task by the task object (i.e., xTask) passed to the
    *               syscall, because either the object was null or invalid (e.g.,
@@ -1814,16 +1813,16 @@
    * scheduler is in a suspended state, xTaskStartScheduler() will immediately
    * return.
    *
-   * @return xReturn On success, the syscall returns ReturnOK. On failure, the
-   *         syscall returns ReturnError. A failure is any condition in which
-   *         the syscall was unable to achieve its intended objective. For
-   *         example, if xTaskGetId() was unable to locate the task by the task
-   *         object (i.e., xTask) passed to the syscall, because either the
-   *         object was null or invalid (e.g., a deleted task), xTaskGetId()
-   *         would return ReturnError. All HeliOS syscalls return the xReturn
-   *         (a.k.a., Return_t) type which can either be ReturnOK or
-   *         ReturnError. The C macros OK() and ERROR() can be used as a more
-   *         concise way of checking the return value of a syscall (e.g.,
+   * @return On success, the syscall returns ReturnOK. On failure, the syscall
+   *         returns ReturnError. A failure is any condition in which the
+   *         syscall was unable to achieve its intended objective. For example,
+   *         if xTaskGetId() was unable to locate the task by the task object
+   *         (i.e., xTask) passed to the syscall, because either the object was
+   *         null or invalid (e.g., a deleted task), xTaskGetId() would return
+   *         ReturnError. All HeliOS syscalls return the xReturn (a.k.a.,
+   *         Return_t) type which can either be ReturnOK or ReturnError. The C
+   *         macros OK() and ERROR() can be used as a more concise way of
+   *         checking the return value of a syscall (e.g.,
    *         if(OK(xMemGetUsed(&size))) {} or if(ERROR(xMemGetUsed(&size))) {}).
    */
   xReturn xTaskStartScheduler(void);
@@ -1837,16 +1836,16 @@
    * scheduler. If the scheduler state is not running, then
    * xTaskStartScheduler() will simply return to the caller when called.
    *
-   * @return xReturn On success, the syscall returns ReturnOK. On failure, the
-   *         syscall returns ReturnError. A failure is any condition in which
-   *         the syscall was unable to achieve its intended objective. For
-   *         example, if xTaskGetId() was unable to locate the task by the task
-   *         object (i.e., xTask) passed to the syscall, because either the
-   *         object was null or invalid (e.g., a deleted task), xTaskGetId()
-   *         would return ReturnError. All HeliOS syscalls return the xReturn
-   *         (a.k.a., Return_t) type which can either be ReturnOK or
-   *         ReturnError. The C macros OK() and ERROR() can be used as a more
-   *         concise way of checking the return value of a syscall (e.g.,
+   * @return On success, the syscall returns ReturnOK. On failure, the syscall
+   *         returns ReturnError. A failure is any condition in which the
+   *         syscall was unable to achieve its intended objective. For example,
+   *         if xTaskGetId() was unable to locate the task by the task object
+   *         (i.e., xTask) passed to the syscall, because either the object was
+   *         null or invalid (e.g., a deleted task), xTaskGetId() would return
+   *         ReturnError. All HeliOS syscalls return the xReturn (a.k.a.,
+   *         Return_t) type which can either be ReturnOK or ReturnError. The C
+   *         macros OK() and ERROR() can be used as a more concise way of
+   *         checking the return value of a syscall (e.g.,
    *         if(OK(xMemGetUsed(&size))) {} or if(ERROR(xMemGetUsed(&size))) {}).
    */
   xReturn xTaskResumeAll(void);
@@ -1861,16 +1860,16 @@
    * running, xTaskResumeAll() must be called followed by a call to
    * xTaskStartScheduler().
    *
-   * @return xReturn On success, the syscall returns ReturnOK. On failure, the
-   *         syscall returns ReturnError. A failure is any condition in which
-   *         the syscall was unable to achieve its intended objective. For
-   *         example, if xTaskGetId() was unable to locate the task by the task
-   *         object (i.e., xTask) passed to the syscall, because either the
-   *         object was null or invalid (e.g., a deleted task), xTaskGetId()
-   *         would return ReturnError. All HeliOS syscalls return the xReturn
-   *         (a.k.a., Return_t) type which can either be ReturnOK or
-   *         ReturnError. The C macros OK() and ERROR() can be used as a more
-   *         concise way of checking the return value of a syscall (e.g.,
+   * @return On success, the syscall returns ReturnOK. On failure, the syscall
+   *         returns ReturnError. A failure is any condition in which the
+   *         syscall was unable to achieve its intended objective. For example,
+   *         if xTaskGetId() was unable to locate the task by the task object
+   *         (i.e., xTask) passed to the syscall, because either the object was
+   *         null or invalid (e.g., a deleted task), xTaskGetId() would return
+   *         ReturnError. All HeliOS syscalls return the xReturn (a.k.a.,
+   *         Return_t) type which can either be ReturnOK or ReturnError. The C
+   *         macros OK() and ERROR() can be used as a more concise way of
+   *         checking the return value of a syscall (e.g.,
    *         if(OK(xMemGetUsed(&size))) {} or if(ERROR(xMemGetUsed(&size))) {}).
    */
   xReturn xTaskSuspendAll(void);
@@ -1882,13 +1881,13 @@
    * The xTaskGetSchedulerState() is used to get the state of the scheduler.
    *
    * @param  state_ The state of the scheduler.
-   * @return        xReturn On success, the syscall returns ReturnOK. On
-   *                failure, the syscall returns ReturnError. A failure is any
-   *                condition in which the syscall was unable to achieve its
-   *                intended objective. For example, if xTaskGetId() was unable
-   *                to locate the task by the task object (i.e., xTask) passed
-   *                to the syscall, because either the object was null or
-   *                invalid (e.g., a deleted task), xTaskGetId() would return
+   * @return        On success, the syscall returns ReturnOK. On failure, the
+   *                syscall returns ReturnError. A failure is any condition in
+   *                which the syscall was unable to achieve its intended
+   *                objective. For example, if xTaskGetId() was unable to locate
+   *                the task by the task object (i.e., xTask) passed to the
+   *                syscall, because either the object was null or invalid
+   *                (e.g., a deleted task), xTaskGetId() would return
    *                ReturnError. All HeliOS syscalls return the xReturn (a.k.a.,
    *                Return_t) type which can either be ReturnOK or ReturnError.
    *                The C macros OK() and ERROR() can be used as a more concise
@@ -1910,13 +1909,13 @@
    *                 are platform and/or architecture dependent. However, on
    *                 must platforms and/or architectures the tick represents one
    *                 millisecond.
-   * @return         xReturn On success, the syscall returns ReturnOK. On
-   *                 failure, the syscall returns ReturnError. A failure is any
-   *                 condition in which the syscall was unable to achieve its
-   *                 intended objective. For example, if xTaskGetId() was unable
-   *                 to locate the task by the task object (i.e., xTask) passed
-   *                 to the syscall, because either the object was null or
-   *                 invalid (e.g., a deleted task), xTaskGetId() would return
+   * @return         On success, the syscall returns ReturnOK. On failure, the
+   *                 syscall returns ReturnError. A failure is any condition in
+   *                 which the syscall was unable to achieve its intended
+   *                 objective. For example, if xTaskGetId() was unable to
+   *                 locate the task by the task object (i.e., xTask) passed to
+   *                 the syscall, because either the object was null or invalid
+   *                 (e.g., a deleted task), xTaskGetId() would return
    *                 ReturnError. All HeliOS syscalls return the xReturn
    *                 (a.k.a., Return_t) type which can either be ReturnOK or
    *                 ReturnError. The C macros OK() and ERROR() can be used as a
@@ -1939,13 +1938,13 @@
    *
    * @param  timer_  The application timer to be operated on.
    * @param  period_ The application timer period, measured in ticks.
-   * @return         xReturn On success, the syscall returns ReturnOK. On
-   *                 failure, the syscall returns ReturnError. A failure is any
-   *                 condition in which the syscall was unable to achieve its
-   *                 intended objective. For example, if xTaskGetId() was unable
-   *                 to locate the task by the task object (i.e., xTask) passed
-   *                 to the syscall, because either the object was null or
-   *                 invalid (e.g., a deleted task), xTaskGetId() would return
+   * @return         On success, the syscall returns ReturnOK. On failure, the
+   *                 syscall returns ReturnError. A failure is any condition in
+   *                 which the syscall was unable to achieve its intended
+   *                 objective. For example, if xTaskGetId() was unable to
+   *                 locate the task by the task object (i.e., xTask) passed to
+   *                 the syscall, because either the object was null or invalid
+   *                 (e.g., a deleted task), xTaskGetId() would return
    *                 ReturnError. All HeliOS syscalls return the xReturn
    *                 (a.k.a., Return_t) type which can either be ReturnOK or
    *                 ReturnError. The C macros OK() and ERROR() can be used as a
@@ -1963,13 +1962,13 @@
    * with xTimerCreate().
    *
    * @param  timer_ The application timer to be operated on.
-   * @return        xReturn On success, the syscall returns ReturnOK. On
-   *                failure, the syscall returns ReturnError. A failure is any
-   *                condition in which the syscall was unable to achieve its
-   *                intended objective. For example, if xTaskGetId() was unable
-   *                to locate the task by the task object (i.e., xTask) passed
-   *                to the syscall, because either the object was null or
-   *                invalid (e.g., a deleted task), xTaskGetId() would return
+   * @return        On success, the syscall returns ReturnOK. On failure, the
+   *                syscall returns ReturnError. A failure is any condition in
+   *                which the syscall was unable to achieve its intended
+   *                objective. For example, if xTaskGetId() was unable to locate
+   *                the task by the task object (i.e., xTask) passed to the
+   *                syscall, because either the object was null or invalid
+   *                (e.g., a deleted task), xTaskGetId() would return
    *                ReturnError. All HeliOS syscalls return the xReturn (a.k.a.,
    *                Return_t) type which can either be ReturnOK or ReturnError.
    *                The C macros OK() and ERROR() can be used as a more concise
@@ -1989,13 +1988,13 @@
    *
    * @param  timer_  The application timer to be operated on.
    * @param  period_ The application timer period, measured in ticks.
-   * @return         xReturn On success, the syscall returns ReturnOK. On
-   *                 failure, the syscall returns ReturnError. A failure is any
-   *                 condition in which the syscall was unable to achieve its
-   *                 intended objective. For example, if xTaskGetId() was unable
-   *                 to locate the task by the task object (i.e., xTask) passed
-   *                 to the syscall, because either the object was null or
-   *                 invalid (e.g., a deleted task), xTaskGetId() would return
+   * @return         On success, the syscall returns ReturnOK. On failure, the
+   *                 syscall returns ReturnError. A failure is any condition in
+   *                 which the syscall was unable to achieve its intended
+   *                 objective. For example, if xTaskGetId() was unable to
+   *                 locate the task by the task object (i.e., xTask) passed to
+   *                 the syscall, because either the object was null or invalid
+   *                 (e.g., a deleted task), xTaskGetId() would return
    *                 ReturnError. All HeliOS syscalls return the xReturn
    *                 (a.k.a., Return_t) type which can either be ReturnOK or
    *                 ReturnError. The C macros OK() and ERROR() can be used as a
@@ -2014,13 +2013,13 @@
    *
    * @param  timer_  The application timer to be operate don.
    * @param  period_ The application timer period, measured in ticks.
-   * @return         xReturn On success, the syscall returns ReturnOK. On
-   *                 failure, the syscall returns ReturnError. A failure is any
-   *                 condition in which the syscall was unable to achieve its
-   *                 intended objective. For example, if xTaskGetId() was unable
-   *                 to locate the task by the task object (i.e., xTask) passed
-   *                 to the syscall, because either the object was null or
-   *                 invalid (e.g., a deleted task), xTaskGetId() would return
+   * @return         On success, the syscall returns ReturnOK. On failure, the
+   *                 syscall returns ReturnError. A failure is any condition in
+   *                 which the syscall was unable to achieve its intended
+   *                 objective. For example, if xTaskGetId() was unable to
+   *                 locate the task by the task object (i.e., xTask) passed to
+   *                 the syscall, because either the object was null or invalid
+   *                 (e.g., a deleted task), xTaskGetId() would return
    *                 ReturnError. All HeliOS syscalls return the xReturn
    *                 (a.k.a., Return_t) type which can either be ReturnOK or
    *                 ReturnError. The C macros OK() and ERROR() can be used as a
@@ -2042,13 +2041,13 @@
    * @param  res_   The result of the inquiry; taken here to mean "true" if the
    *                application timer is running. "False" if the application
    *                timer is not running.
-   * @return        xReturn On success, the syscall returns ReturnOK. On
-   *                failure, the syscall returns ReturnError. A failure is any
-   *                condition in which the syscall was unable to achieve its
-   *                intended objective. For example, if xTaskGetId() was unable
-   *                to locate the task by the task object (i.e., xTask) passed
-   *                to the syscall, because either the object was null or
-   *                invalid (e.g., a deleted task), xTaskGetId() would return
+   * @return        On success, the syscall returns ReturnOK. On failure, the
+   *                syscall returns ReturnError. A failure is any condition in
+   *                which the syscall was unable to achieve its intended
+   *                objective. For example, if xTaskGetId() was unable to locate
+   *                the task by the task object (i.e., xTask) passed to the
+   *                syscall, because either the object was null or invalid
+   *                (e.g., a deleted task), xTaskGetId() would return
    *                ReturnError. All HeliOS syscalls return the xReturn (a.k.a.,
    *                Return_t) type which can either be ReturnOK or ReturnError.
    *                The C macros OK() and ERROR() can be used as a more concise
@@ -2071,13 +2070,13 @@
    * @param  res_   The result of the inquiry; taken here to mean "true" if the
    *                application timer has elapsed (i.e., expired). "False" if
    *                the application timer has not expired
-   * @return        xReturn On success, the syscall returns ReturnOK. On
-   *                failure, the syscall returns ReturnError. A failure is any
-   *                condition in which the syscall was unable to achieve its
-   *                intended objective. For example, if xTaskGetId() was unable
-   *                to locate the task by the task object (i.e., xTask) passed
-   *                to the syscall, because either the object was null or
-   *                invalid (e.g., a deleted task), xTaskGetId() would return
+   * @return        On success, the syscall returns ReturnOK. On failure, the
+   *                syscall returns ReturnError. A failure is any condition in
+   *                which the syscall was unable to achieve its intended
+   *                objective. For example, if xTaskGetId() was unable to locate
+   *                the task by the task object (i.e., xTask) passed to the
+   *                syscall, because either the object was null or invalid
+   *                (e.g., a deleted task), xTaskGetId() would return
    *                ReturnError. All HeliOS syscalls return the xReturn (a.k.a.,
    *                Return_t) type which can either be ReturnOK or ReturnError.
    *                The C macros OK() and ERROR() can be used as a more concise
@@ -2095,13 +2094,13 @@
    * has the effect of setting the application timer's elapsed time to zero.
    *
    * @param  timer_ The application timer to be operated on.
-   * @return        xReturn On success, the syscall returns ReturnOK. On
-   *                failure, the syscall returns ReturnError. A failure is any
-   *                condition in which the syscall was unable to achieve its
-   *                intended objective. For example, if xTaskGetId() was unable
-   *                to locate the task by the task object (i.e., xTask) passed
-   *                to the syscall, because either the object was null or
-   *                invalid (e.g., a deleted task), xTaskGetId() would return
+   * @return        On success, the syscall returns ReturnOK. On failure, the
+   *                syscall returns ReturnError. A failure is any condition in
+   *                which the syscall was unable to achieve its intended
+   *                objective. For example, if xTaskGetId() was unable to locate
+   *                the task by the task object (i.e., xTask) passed to the
+   *                syscall, because either the object was null or invalid
+   *                (e.g., a deleted task), xTaskGetId() would return
    *                ReturnError. All HeliOS syscalls return the xReturn (a.k.a.,
    *                Return_t) type which can either be ReturnOK or ReturnError.
    *                The C macros OK() and ERROR() can be used as a more concise
@@ -2119,13 +2118,13 @@
    * running state.
    *
    * @param  timer_ The application timer to be operated on.
-   * @return        xReturn On success, the syscall returns ReturnOK. On
-   *                failure, the syscall returns ReturnError. A failure is any
-   *                condition in which the syscall was unable to achieve its
-   *                intended objective. For example, if xTaskGetId() was unable
-   *                to locate the task by the task object (i.e., xTask) passed
-   *                to the syscall, because either the object was null or
-   *                invalid (e.g., a deleted task), xTaskGetId() would return
+   * @return        On success, the syscall returns ReturnOK. On failure, the
+   *                syscall returns ReturnError. A failure is any condition in
+   *                which the syscall was unable to achieve its intended
+   *                objective. For example, if xTaskGetId() was unable to locate
+   *                the task by the task object (i.e., xTask) passed to the
+   *                syscall, because either the object was null or invalid
+   *                (e.g., a deleted task), xTaskGetId() would return
    *                ReturnError. All HeliOS syscalls return the xReturn (a.k.a.,
    *                Return_t) type which can either be ReturnOK or ReturnError.
    *                The C macros OK() and ERROR() can be used as a more concise
@@ -2143,13 +2142,13 @@
    * suspended state.
    *
    * @param  timer_ The application timer to be operated on.
-   * @return        xReturn On success, the syscall returns ReturnOK. On
-   *                failure, the syscall returns ReturnError. A failure is any
-   *                condition in which the syscall was unable to achieve its
-   *                intended objective. For example, if xTaskGetId() was unable
-   *                to locate the task by the task object (i.e., xTask) passed
-   *                to the syscall, because either the object was null or
-   *                invalid (e.g., a deleted task), xTaskGetId() would return
+   * @return        On success, the syscall returns ReturnOK. On failure, the
+   *                syscall returns ReturnError. A failure is any condition in
+   *                which the syscall was unable to achieve its intended
+   *                objective. For example, if xTaskGetId() was unable to locate
+   *                the task by the task object (i.e., xTask) passed to the
+   *                syscall, because either the object was null or invalid
+   *                (e.g., a deleted task), xTaskGetId() would return
    *                ReturnError. All HeliOS syscalls return the xReturn (a.k.a.,
    *                Return_t) type which can either be ReturnOK or ReturnError.
    *                The C macros OK() and ERROR() can be used as a more concise
