@@ -137,12 +137,16 @@ Return_t xTimerHasTimerExpired(const Timer_t *timer_, Base_t *res_) {
 
   if(NOTNULLPTR(timer_) && NOTNULLPTR(res_)) {
     if(OK(__MemoryRegionCheckKernel__(timer_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
-      if((zero < timer_->timerPeriod) && ((__PortGetSysTicks__() - timer_->timerStartTime) > timer_->timerPeriod)) {
-        *res_ = true;
-        RET_OK;
+      if(TimerStateRunning == timer_->state) {
+        if((zero < timer_->timerPeriod) && ((__PortGetSysTicks__() - timer_->timerStartTime) > timer_->timerPeriod)) {
+          *res_ = true;
+          RET_OK;
+        } else {
+          *res_ = false;
+          RET_OK;
+        }
       } else {
-        *res_ = false;
-        RET_OK;
+        ASSERT;
       }
     } else {
       ASSERT;
@@ -178,8 +182,13 @@ Return_t xTimerStart(Timer_t *timer_) {
 
   if(NOTNULLPTR(timer_)) {
     if(OK(__MemoryRegionCheckKernel__(timer_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
-      timer_->state = TimerStateRunning;
-      RET_OK;
+      if(TimerStateSuspended == timer_->state) {
+        timer_->state = TimerStateRunning;
+        timer_->timerStartTime = __PortGetSysTicks__();
+        RET_OK;
+      } else {
+        ASSERT;
+      }
     } else {
       ASSERT;
     }
@@ -196,8 +205,13 @@ Return_t xTimerStop(Timer_t *timer_) {
 
   if(NOTNULLPTR(timer_)) {
     if(OK(__MemoryRegionCheckKernel__(timer_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
-      timer_->state = TimerStateSuspended;
-      RET_OK;
+      if(TimerStateRunning == timer_->state) {
+        timer_->state = TimerStateSuspended;
+        timer_->timerStartTime = __PortGetSysTicks__();
+        RET_OK;
+      } else {
+        ASSERT;
+      }
     } else {
       ASSERT;
     }

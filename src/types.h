@@ -175,7 +175,6 @@
     TimerState_t state;
     Ticks_t timerPeriod;
     Ticks_t timerStartTime;
-    struct Timer_s *next;
   } Timer_t;
   typedef struct TimerList_s {
     Base_t length;

@@ -1925,14 +1925,238 @@
    *                 if(ERROR(xMemGetUsed(&size))) {}).
    */
   xReturn xTaskGetWDPeriod(const xTask task_, xTicks *period_);
+
+
+  /**
+   * @brief Syscall to create an application timer
+   *
+   * The xTimerCreate() syscall is used to create a new application timer.
+   * Application timers are not the same as task timers. Application timers are
+   * not part of HeliOS's event-driven multitasking. Application timers are just
+   * that, timers for use by the user's application for general purpose
+   * timekeeping. Application timers can be started, stopped, reset and have
+   * time period, measured in ticks, that elapses.
+   *
+   * @param  timer_  The application timer to be operated on.
+   * @param  period_ The application timer period, measured in ticks.
+   * @return         xReturn On success, the syscall returns ReturnOK. On
+   *                 failure, the syscall returns ReturnError. A failure is any
+   *                 condition in which the syscall was unable to achieve its
+   *                 intended objective. For example, if xTaskGetId() was unable
+   *                 to locate the task by the task object (i.e., xTask) passed
+   *                 to the syscall, because either the object was null or
+   *                 invalid (e.g., a deleted task), xTaskGetId() would return
+   *                 ReturnError. All HeliOS syscalls return the xReturn
+   *                 (a.k.a., Return_t) type which can either be ReturnOK or
+   *                 ReturnError. The C macros OK() and ERROR() can be used as a
+   *                 more concise way of checking the return value of a syscall
+   *                 (e.g., if(OK(xMemGetUsed(&size))) {} or
+   *                 if(ERROR(xMemGetUsed(&size))) {}).
+   */
   xReturn xTimerCreate(xTimer *timer_, const xTicks period_);
+
+
+  /**
+   * @brief Syscall to delete an application timer
+   *
+   * The xTimerDelete() syscall is used to delete an application timer created
+   * with xTimerCreate().
+   *
+   * @param  timer_ The application timer to be operated on.
+   * @return        xReturn On success, the syscall returns ReturnOK. On
+   *                failure, the syscall returns ReturnError. A failure is any
+   *                condition in which the syscall was unable to achieve its
+   *                intended objective. For example, if xTaskGetId() was unable
+   *                to locate the task by the task object (i.e., xTask) passed
+   *                to the syscall, because either the object was null or
+   *                invalid (e.g., a deleted task), xTaskGetId() would return
+   *                ReturnError. All HeliOS syscalls return the xReturn (a.k.a.,
+   *                Return_t) type which can either be ReturnOK or ReturnError.
+   *                The C macros OK() and ERROR() can be used as a more concise
+   *                way of checking the return value of a syscall (e.g.,
+   *                if(OK(xMemGetUsed(&size))) {} or
+   *                if(ERROR(xMemGetUsed(&size))) {}).
+   */
   xReturn xTimerDelete(const xTimer timer_);
+
+
+  /**
+   * @brief Syscall to change the period on an application timer
+   *
+   * The xTimerChangePeriod() syscall is used to change the time period on an
+   * application timer. Once the period has elapsed, the application timer is
+   * considered expired.
+   *
+   * @param  timer_  The application timer to be operated on.
+   * @param  period_ The application timer period, measured in ticks.
+   * @return         xReturn On success, the syscall returns ReturnOK. On
+   *                 failure, the syscall returns ReturnError. A failure is any
+   *                 condition in which the syscall was unable to achieve its
+   *                 intended objective. For example, if xTaskGetId() was unable
+   *                 to locate the task by the task object (i.e., xTask) passed
+   *                 to the syscall, because either the object was null or
+   *                 invalid (e.g., a deleted task), xTaskGetId() would return
+   *                 ReturnError. All HeliOS syscalls return the xReturn
+   *                 (a.k.a., Return_t) type which can either be ReturnOK or
+   *                 ReturnError. The C macros OK() and ERROR() can be used as a
+   *                 more concise way of checking the return value of a syscall
+   *                 (e.g., if(OK(xMemGetUsed(&size))) {} or
+   *                 if(ERROR(xMemGetUsed(&size))) {}).
+   */
   xReturn xTimerChangePeriod(xTimer timer_, const xTicks period_);
+
+
+  /**
+   * @brief Syscall to get the current period for an application timer
+   *
+   * The xTimerGetPeriod() syscall is used to obtain the current period for an
+   * application timer.
+   *
+   * @param  timer_  The application timer to be operate don.
+   * @param  period_ The application timer period, measured in ticks.
+   * @return         xReturn On success, the syscall returns ReturnOK. On
+   *                 failure, the syscall returns ReturnError. A failure is any
+   *                 condition in which the syscall was unable to achieve its
+   *                 intended objective. For example, if xTaskGetId() was unable
+   *                 to locate the task by the task object (i.e., xTask) passed
+   *                 to the syscall, because either the object was null or
+   *                 invalid (e.g., a deleted task), xTaskGetId() would return
+   *                 ReturnError. All HeliOS syscalls return the xReturn
+   *                 (a.k.a., Return_t) type which can either be ReturnOK or
+   *                 ReturnError. The C macros OK() and ERROR() can be used as a
+   *                 more concise way of checking the return value of a syscall
+   *                 (e.g., if(OK(xMemGetUsed(&size))) {} or
+   *                 if(ERROR(xMemGetUsed(&size))) {}).
+   */
   xReturn xTimerGetPeriod(const xTimer timer_, xTicks *period_);
+
+
+  /**
+   * @brief Syscall to inquire as to whether an application timer is active
+   *
+   * The xTimerIsTimerActive() syscall is used to inquire as to whether an
+   * application timer is active. An application timer is considered to be
+   * active if the application timer has been started by xTimerStare().
+   *
+   * @param  timer_ The application timer to be operated on.
+   * @param  res_   The result of the inquiry; taken here to mean "true" if the
+   *                application timer is running. "False" if the application
+   *                timer is not running.
+   * @return        xReturn On success, the syscall returns ReturnOK. On
+   *                failure, the syscall returns ReturnError. A failure is any
+   *                condition in which the syscall was unable to achieve its
+   *                intended objective. For example, if xTaskGetId() was unable
+   *                to locate the task by the task object (i.e., xTask) passed
+   *                to the syscall, because either the object was null or
+   *                invalid (e.g., a deleted task), xTaskGetId() would return
+   *                ReturnError. All HeliOS syscalls return the xReturn (a.k.a.,
+   *                Return_t) type which can either be ReturnOK or ReturnError.
+   *                The C macros OK() and ERROR() can be used as a more concise
+   *                way of checking the return value of a syscall (e.g.,
+   *                if(OK(xMemGetUsed(&size))) {} or
+   *                if(ERROR(xMemGetUsed(&size))) {}).
+   */
   xReturn xTimerIsTimerActive(const xTimer timer_, xBase *res_);
+
+
+  /**
+   * @brief Syscall to inquire as to whether an application timer has expired
+   *
+   * The xTimerHasTimerExpired() syscall is used to inquire as to whether an
+   * application timer has expired. If the application timer has expired, it
+   * must be reset with xTimerReset(). If a timer is not active (i.e., started),
+   * it cannot expire even if the timer period has elapsed.
+   *
+   * @param  timer_ The application timer to be operated on.
+   * @param  res_   The result of the inquiry; taken here to mean "true" if the
+   *                application timer has elapsed (i.e., expired). "False" if
+   *                the application timer has not expired
+   * @return        xReturn On success, the syscall returns ReturnOK. On
+   *                failure, the syscall returns ReturnError. A failure is any
+   *                condition in which the syscall was unable to achieve its
+   *                intended objective. For example, if xTaskGetId() was unable
+   *                to locate the task by the task object (i.e., xTask) passed
+   *                to the syscall, because either the object was null or
+   *                invalid (e.g., a deleted task), xTaskGetId() would return
+   *                ReturnError. All HeliOS syscalls return the xReturn (a.k.a.,
+   *                Return_t) type which can either be ReturnOK or ReturnError.
+   *                The C macros OK() and ERROR() can be used as a more concise
+   *                way of checking the return value of a syscall (e.g.,
+   *                if(OK(xMemGetUsed(&size))) {} or
+   *                if(ERROR(xMemGetUsed(&size))) {}).
+   */
   xReturn xTimerHasTimerExpired(const xTimer timer_, xBase *res_);
+
+
+  /**
+   * @brief Syscall to reset an application timer
+   *
+   * The xTimerReset() syscall is used to reset an application timer. Resetting
+   * has the effect of setting the application timer's elapsed time to zero.
+   *
+   * @param  timer_ The application timer to be operated on.
+   * @return        xReturn On success, the syscall returns ReturnOK. On
+   *                failure, the syscall returns ReturnError. A failure is any
+   *                condition in which the syscall was unable to achieve its
+   *                intended objective. For example, if xTaskGetId() was unable
+   *                to locate the task by the task object (i.e., xTask) passed
+   *                to the syscall, because either the object was null or
+   *                invalid (e.g., a deleted task), xTaskGetId() would return
+   *                ReturnError. All HeliOS syscalls return the xReturn (a.k.a.,
+   *                Return_t) type which can either be ReturnOK or ReturnError.
+   *                The C macros OK() and ERROR() can be used as a more concise
+   *                way of checking the return value of a syscall (e.g.,
+   *                if(OK(xMemGetUsed(&size))) {} or
+   *                if(ERROR(xMemGetUsed(&size))) {}).
+   */
   xReturn xTimerReset(xTimer timer_);
+
+
+  /**
+   * @brief Syscall to place an application timer in the running state
+   *
+   * The xTimerStart() syscall is used to place an application timer in the
+   * running state.
+   *
+   * @param  timer_ The application timer to be operated on.
+   * @return        xReturn On success, the syscall returns ReturnOK. On
+   *                failure, the syscall returns ReturnError. A failure is any
+   *                condition in which the syscall was unable to achieve its
+   *                intended objective. For example, if xTaskGetId() was unable
+   *                to locate the task by the task object (i.e., xTask) passed
+   *                to the syscall, because either the object was null or
+   *                invalid (e.g., a deleted task), xTaskGetId() would return
+   *                ReturnError. All HeliOS syscalls return the xReturn (a.k.a.,
+   *                Return_t) type which can either be ReturnOK or ReturnError.
+   *                The C macros OK() and ERROR() can be used as a more concise
+   *                way of checking the return value of a syscall (e.g.,
+   *                if(OK(xMemGetUsed(&size))) {} or
+   *                if(ERROR(xMemGetUsed(&size))) {}).
+   */
   xReturn xTimerStart(xTimer timer_);
+
+
+  /**
+   * @brief Syscall to place an application timer in the suspended state
+   *
+   * The xTimerStop() syscall is used to place an application timer in the
+   * suspended state.
+   *
+   * @param  timer_ The application timer to be operated on.
+   * @return        xReturn On success, the syscall returns ReturnOK. On
+   *                failure, the syscall returns ReturnError. A failure is any
+   *                condition in which the syscall was unable to achieve its
+   *                intended objective. For example, if xTaskGetId() was unable
+   *                to locate the task by the task object (i.e., xTask) passed
+   *                to the syscall, because either the object was null or
+   *                invalid (e.g., a deleted task), xTaskGetId() would return
+   *                ReturnError. All HeliOS syscalls return the xReturn (a.k.a.,
+   *                Return_t) type which can either be ReturnOK or ReturnError.
+   *                The C macros OK() and ERROR() can be used as a more concise
+   *                way of checking the return value of a syscall (e.g.,
+   *                if(OK(xMemGetUsed(&size))) {} or
+   *                if(ERROR(xMemGetUsed(&size))) {}).
+   */
   xReturn xTimerStop(xTimer timer_);
 
   #ifdef __cplusplus
