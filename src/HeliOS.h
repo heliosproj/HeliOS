@@ -158,6 +158,9 @@
    * drivers. A device driver template and device drivers can be found in
    * /drivers.
    *
+   * @sa CONFIG_DEVICE_NAME_BYTES
+   * @sa xReturn
+   *
    * @param  device_self_register_ The device driver's self registration
    *                               function, DRIVERNAME_self_register().
    * @return                       On success, the syscall returns ReturnOK. On
@@ -189,6 +192,8 @@
    * is available for read and/or write operations though the meaning is
    * implementation specific and left up to the device driver's author.
    *
+   * @sa xReturn
+   *
    * @param  uid_ The unique identifier ("UID") of the device driver to be
    *              operated on.
    * @param  res_ The result of the inquiry; here, taken to mean the
@@ -216,6 +221,10 @@
    * a device. The word of data must have been allocated by xMemAlloc(). Whether
    * the data is written to the device is dependent on the device driver mode,
    * state and implementation of these features by the device driver's author.
+   *
+   * @sa xReturn
+   * @sa xMemAlloc()
+   * @sa xMemFree()
    *
    * @param  uid_  The unique identifier ("UID") of the device driver to be
    *               operated on.
@@ -246,6 +255,10 @@
    * xMemAlloc(). Whether the data is written to the device is dependent on the
    * device driver mode, state and implementation of these features by the
    * device driver's author.
+   *
+   * @sa xReturn
+   * @sa xMemAlloc()
+   * @sa xMemFree()
    *
    * @param  uid_  The unique identifier ("UID") of the device driver to be
    *               operated on.
@@ -278,6 +291,9 @@
    * device is dependent on the device driver mode, state and implementation of
    * these features by the device driver's author.
    *
+   * @sa xReturn
+   * @sa xMemFree()
+   *
    * @param  uid_  The unique identifier ("UID") of the device driver to be
    *               operated on.
    * @param  data_ The word of data read from the device which must be fred by
@@ -306,6 +322,9 @@
    * into a data buffer. The data buffer must be freed by xMemFree(). Whether
    * the data is read from the device is dependent on the device driver mode,
    * state and implementation of these features by the device driver's author.
+   *
+   * @sa xReturn
+   * @sa xMemFree()
    *
    * @param  uid_  The unique identifier ("UID") of the device driver to be
    *               operated on.
@@ -339,6 +358,8 @@
    * state and mode. This syscall is optional and is dependent on the specifics
    * of the device driver's implementation by its author.
    *
+   * @sa xReturn
+   *
    * @param  uid_ The unique identifier ("UID") of the device driver to be
    *              operated on.
    * @return      On success, the syscall returns ReturnOK. On failure, the
@@ -370,6 +391,10 @@
    * allocated using xMemAlloc() and that the "size_" parameter is set to the
    * size (i.e., amount) of the configuration data (e.g.,
    * sizeof(MyDeviceDriverConfig)) in bytes.
+   *
+   * @sa xReturn
+   * @sa xMemAlloc()
+   * @sa xMemFree()
    *
    * @param  uid_    The unique identifier ("UID") of the device driver to be
    *                 operated on.
@@ -405,6 +430,11 @@
    * allocated heap memory is handed back through the "addr_" argument, the
    * argument must be cast to "volatile xAddr *" to avoid compiler warnings.
    *
+   * @sa xReturn
+   * @sa CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS
+   * @sa CONFIG_MEMORY_REGION_BLOCK_SIZE
+   * @sa xMemFree()
+   *
    * @param  addr_ The address of the allocated memory. For example, if heap
    *               memory for a structure called mystruct (MyStruct *) needs to
    *               be allocated, the call to xMemAlloc() would be written as
@@ -435,6 +465,9 @@
    * xMemAlloc(). xMemFree() is also used to free heap memory allocated by
    * syscalls including xTaskGetAllRunTimeStats().
    *
+   * @sa xReturn
+   * @sa xMemAlloc()
+   *
    * @param  addr_ The address of the allocated memory to be freed.
    * @return       On success, the syscall returns ReturnOK. On failure, the
    *               syscall returns ReturnError. A failure is any condition in
@@ -461,6 +494,9 @@
    * xMemGetHeapStats() provides a more complete picture of the heap memory
    * region.
    *
+   * @sa xReturn
+   * @sa xMemGetHeapStats()
+   *
    * @param  size_ The size (i.e., amount), in bytes, of in-use heap memory.
    * @return       On success, the syscall returns ReturnOK. On failure, the
    *               syscall returns ReturnError. A failure is any condition in
@@ -486,6 +522,8 @@
    * The xMemGetSize() syscall can be used to obtain the amount, in bytes, of
    * heap memory allocated at a specific address. The address must be the
    * address obtained from xMemAlloc().
+   *
+   * @sa xReturn
    *
    * @param  addr_ The address of the heap memory for which the size (i.e.,
    *               amount) allocated, in bytes, is being sought.
@@ -515,6 +553,10 @@
    * the heap memory region which can be used by the application to monitor
    * memory utilization.
    *
+   * @sa xReturn
+   * @sa xMemoryRegionStats
+   * @sa xMemFree()
+   *
    * @param  stats_ The memory region statistics. The memory region statistics
    *                must be freed by xMemFree().
    * @return        On success, the syscall returns ReturnOK. On failure, the
@@ -541,6 +583,10 @@
    * about the kernel memory region which can be used by the application to
    * monitor memory utilization.
    *
+   * @sa xReturn
+   * @sa xMemoryRegionStats
+   * @sa xMemFree()
+   *
    * @param  stats_ The memory region statistics. The memory region statistics
    *                must be freed by xMemFree().
    * @return        On success, the syscall returns ReturnOK. On failure, the
@@ -565,6 +611,11 @@
    *
    * The xQueueCreate() syscall will create a new message queue for inter-task
    * communication.
+   *
+   * @sa xReturn
+   * @sa xQueue
+   * @sa CONFIG_QUEUE_MINIMUM_LIMIT
+   * @sa xQueueDelete()
    *
    * @param  queue_ The message queue to be operated on.
    * @param  limit_ The message limit for the queue. When this value is reached,
@@ -594,6 +645,10 @@
    * The xQueueDelete() syscall will delete a message queue used for inter-task
    * communication.
    *
+   * @sa xReturn
+   * @sa xQueue
+   * @sa xQueueCreate()
+   *
    * @param  queue_ The message queue to be operated on.
    * @return        On success, the syscall returns ReturnOK. On failure, the
    *                syscall returns ReturnError. A failure is any condition in
@@ -617,6 +672,9 @@
    *
    * The xQueueGetLength() syscall is used to inquire about the length (i.e.,
    * the number of messages) of a message queue.
+   *
+   * @sa xReturn
+   * @sa xQueue
    *
    * @param  queue_ The message queue to be operated on.
    * @param  res_   The result of the inquiry; taken here to mean the number of
@@ -644,6 +702,9 @@
    * The xQueueIsQueueEmpty() syscall is used to inquire as to whether a message
    * queue is empty. A message queue is considered empty if the length (i.e.,
    * number of messages) of a queue is zero.
+   *
+   * @sa xReturn
+   * @sa xQueue
    *
    * @param  queue_ The message queue to be operated on.
    * @param  res_   The result of the inquiry; taken here to mean "true" if the
@@ -673,6 +734,10 @@
    * number of messages) of a queue has reached its message limit which is
    * configured using the CONFIG_QUEUE_MINIMUM_LIMIT (default is 5) setting.
    *
+   * @sa xReturn
+   * @sa xQueue
+   * @sa CONFIG_QUEUE_MINIMUM_LIMIT
+   *
    * @param  queue_ The message queue to be operated on.
    * @param  res_   The result of the inquiry; taken here to mean "true" if the
    *                queue is full, "false" if it contains less than "limit"
@@ -701,6 +766,9 @@
    * The xQueueMessagesWaiting() syscall is used to inquire as to whether a
    * message queue has one or more messages waiting.
    *
+   * @sa xReturn
+   * @sa xQueue
+   *
    * @param  queue_ The message queue to be operated on.
    * @param  res_   The result of the inquiry; taken here to mean "true" if
    *                there is one or more messages waiting.
@@ -727,6 +795,11 @@
    * The xQueueSend() syscall is used to send a message to a message queue. The
    * message value is an array of bytes (i.e., xByte) and cannot exceed
    * CONFIG_MESSAGE_VALUE_BYTES (default is 8) bytes in size.
+   *
+   * @sa xReturn
+   * @sa xQueue
+   * @sa xByte
+   * @sa CONFIG_MESSAGE_VALUE_BYTES
    *
    * @param  queue_ The message queue to be operated on.
    * @param  bytes_ The size, in bytes, of the message to send to the message
@@ -757,6 +830,11 @@
    * The xQueuePeek() syscall is used to retrieve the next message from a
    * message queue without dropping the message (i.e., peek at the message).
    *
+   * @sa xReturn
+   * @sa xQueue
+   * @sa xQueueMessage
+   * @sa xMemFree()
+   *
    * @param  queue_   The message queue to be operated on.
    * @param  message_ The message retrieved from the message queue. The message
    *                  must be freed by xMemFree().
@@ -784,6 +862,9 @@
    * The xQueueDropMessage() syscall is used to drop the next message from a
    * message queue without retrieving the message.
    *
+   * @sa xReturn
+   * @sa xQueue
+   *
    * @param  queue_ The message queue to be operated on.
    * @return        On success, the syscall returns ReturnOK. On failure, the
    *                syscall returns ReturnError. A failure is any condition in
@@ -808,6 +889,11 @@
    * The xQueueReceive() syscall has the effect of calling xQueuePeek() followed
    * by xQueueDropMessage(). The syscall will receive the next message from the
    * message queue if there is a waiting message.
+   *
+   * @sa xReturn
+   * @sa xQueue
+   * @sa xQueueMessage
+   * @sa xMemFree()
    *
    * @param  queue_   The message queue to be operated on.
    * @param  message_ The message retrieved from the message queue. The message
@@ -837,6 +923,10 @@
    * not prevent tasks from peeking, receiving or dropping messages from a
    * message queue.
    *
+   * @sa xReturn
+   * @sa xQueue
+   * @sa xQueueUnLockQueue()
+   *
    * @param  queue_ The message queue to be operated on.
    * @return        On success, the syscall returns ReturnOK. On failure, the
    *                syscall returns ReturnError. A failure is any condition in
@@ -861,6 +951,10 @@
    * The xQueueUnLockQueue() syscall is used to unlock a message queue that was
    * previously locked by xQueueLockQueue(). Once a message queue is unlocked,
    * tasks may resume sending messages to the message queue.
+   *
+   * @sa xReturn
+   * @sa xQueue
+   * @sa xQueueLockQueue()
    *
    * @param  queue_ The message queue to be operated on.
    * @return        On success, the syscall returns ReturnOK. On failure, the
@@ -887,6 +981,10 @@
    * for inter-task communications. A stream buffer is similar to a message
    * queue, however, it operates only on one byte at a time.
    *
+   * @sa xReturn
+   * @sa xStreamBuffer
+   * @sa xStreamDelete()
+   *
    * @param  stream_ The stream buffer to be operated on.
    * @return         On success, the syscall returns ReturnOK. On failure, the
    *                 syscall returns ReturnError. A failure is any condition in
@@ -911,6 +1009,10 @@
    * The xStreamDelete() syscall is used to delete a stream buffer created by
    * xStreamCreate().
    *
+   * @sa xReturn
+   * @sa xStreamBuffer
+   * @sa xStreamCreate()
+   *
    * @param  stream_ The stream buffer to be operated on.
    * @return         On success, the syscall returns ReturnOK. On failure, the
    *                 syscall returns ReturnError. A failure is any condition in
@@ -933,6 +1035,10 @@
    * @brief Syscall to send a byte to a stream buffer
    *
    * The xStreamSend() syscall is used to send one byte to a stream buffer.
+   *
+   * @sa xReturn
+   * @sa xByte
+   * @sa xStreamBuffer
    *
    * @param  stream_ The stream buffer to be operated on.
    * @param  byte_   The byte to send to the stream buffer.
@@ -958,6 +1064,11 @@
    *
    * The xStreamReceive() syscall is used to retrieve all waiting bytes from a
    * stream buffer.
+   *
+   * @sa xReturn
+   * @sa xByte
+   * @sa xStreamBuffer
+   * @sa xMemFree()
    *
    * @param  stream_ The stream buffer to be operated on.
    * @param  bytes_  The number of bytes retrieved from the stream buffer.
@@ -987,6 +1098,9 @@
    * The xStreamBytesAvailable() syscall is used to obtain the number of waiting
    * (i.e., available) bytes in a stream buffer.
    *
+   * @sa xReturn
+   * @sa xStreamBuffer
+   *
    * @param  stream_ The stream buffer to be operated on.
    * @param  bytes_  The number of available bytes in the stream buffer.
    * @return         On success, the syscall returns ReturnOK. On failure, the
@@ -1013,6 +1127,9 @@
    * stream buffer has the effect of clearing the stream buffer such that
    * xStreamBytesAvailable() would return zero bytes available.
    *
+   * @sa xReturn
+   * @sa xStreamBuffer
+   *
    * @param  stream_ The stream buffer to be operated on.
    * @return         On success, the syscall returns ReturnOK. On failure, the
    *                 syscall returns ReturnError. A failure is any condition in
@@ -1037,6 +1154,9 @@
    * The xStreamIsEmpty() syscall is used to inquire as to whether a stream
    * buffer is empty. An empty stream buffer has zero waiting (i.e.,available)
    * bytes.
+   *
+   * @sa xReturn
+   * @sa xStreamBuffer
    *
    * @param  stream_ The stream buffer to be operated on.
    * @param  res_    The result of the inquiry; taken here to mean "true" if the
@@ -1064,6 +1184,10 @@
    * The xStreamIsFull() syscall is used to inquire as to whether a stream
    * buffer is full. An full stream buffer has CONFIG_STREAM_BUFFER_BYTES
    * (default is 32) bytes waiting.
+   *
+   * @sa xReturn
+   * @sa xStreamBuffer
+   * @sa CONFIG_STREAM_BUFFER_BYTES
    *
    * @param  stream_ The stream buffer to be operated on.
    * @param  res_    The result of the inquiry; taken here to mean "true" if the
@@ -1096,6 +1220,11 @@
    * the ASSERT C macro to have any effect, the configuration setting
    * CONFIG_ENABLE_SYSTEM_ASSERT must be defined.
    *
+   * @sa xReturn
+   * @sa CONFIG_SYSTEM_ASSERT_BEHAVIOR
+   * @sa CONFIG_ENABLE_SYSTEM_ASSERT
+   * @sa ASSERT
+   *
    * @param  file_ The C file where the assert occurred. This will be set by the
    *               ASSERT C macro.
    * @param  line_ The C file line where the assert occurred. This will be set
@@ -1125,6 +1254,8 @@
    * initializes memory and calls initialization functions through the port
    * layer.
    *
+   * @sa xReturn
+   *
    * @return On success, the syscall returns ReturnOK. On failure, the syscall
    *         returns ReturnError. A failure is any condition in which the
    *         syscall was unable to achieve its intended objective. For example,
@@ -1147,6 +1278,8 @@
    * xSystemHalt() will disable all interrupts and stops the execution of
    * further statements. The system will have to be reset to recover.
    *
+   * @sa xReturn
+   *
    * @return On success, the syscall returns ReturnOK. On failure, the syscall
    *         returns ReturnError. A failure is any condition in which the
    *         syscall was unable to achieve its intended objective. For example,
@@ -1168,6 +1301,10 @@
    * The xSystemGetSystemInfo() syscall is used to inquire about the system. The
    * information bout the system that may be obtained is the product (i.e., OS)
    * name, version and number of tasks.
+   *
+   * @sa xReturn
+   * @sa xSystemInfo
+   * @sa xMemFree()
    *
    * @param  info_ The system information. The system information must be freed
    *               by xMemFree().
@@ -1194,6 +1331,12 @@
    * The xTaskCreate() syscall is used to create a new task. Neither the
    * xTaskCreate() or xTaskDelete() syscalls can be called from within a task
    * (i.e., while the scheduler is running).
+   *
+   * @sa xReturn
+   * @sa xTaskDelete()
+   * @sa xTask
+   * @sa xTaskParm
+   * @sa CONFIG_TASK_NAME_BYTES
    *
    * @param  task_          The task to be operated on.
    * @param  name_          The name of the task which must be exactly
@@ -1228,6 +1371,9 @@
    * xTaskCreate() or xTaskDelete() syscalls can be called from within a task
    * (i.e., while the scheduler is running).
    *
+   * @sa xReturn
+   * @sa xTask
+   *
    * @param  task_ The task to be operated on.
    * @return       On success, the syscall returns ReturnOK. On failure, the
    *               syscall returns ReturnError. A failure is any condition in
@@ -1251,6 +1397,10 @@
    *
    * The xTaskGetHandleByName() syscall will get the task handle using the task
    * name.
+   *
+   * @sa xReturn
+   * @sa xTask
+   * @sa CONFIG_TASK_NAME_BYTES
    *
    * @param  task_ The task to be operated on.
    * @param  name_ The name of the task which must be exactly
@@ -1279,6 +1429,9 @@
    * The xTaskGetHandleById() syscall will get the task handle using the task
    * id.
    *
+   * @sa xReturn
+   * @sa xTask
+   *
    * @param  task_ The task to be operated on.
    * @param  id_   The task id.
    * @return       On success, the syscall returns ReturnOK. On failure, the
@@ -1304,6 +1457,11 @@
    * The xTaskGetAllRunTimeStats() syscall is used to obtain the runtime
    * statistics of all tasks.
    *
+   * @sa xReturn
+   * @sa xTask
+   * @sa xTaskRunTimeStats
+   * @sa xMemFree()
+   *
    * @param  stats_ The runtime statistics. The runtime statics must be freed by
    *                xMemFree().
    * @param  tasks_ The number of tasks in the runtime statistics.
@@ -1326,6 +1484,14 @@
 
   /**
    * @brief Syscall to get the runtime statistics for a single task.
+   *
+   * The xTaskGetTaskRunTimeStats() syscall is used to get the runtime
+   * statistics for a single task.
+   *
+   * @sa xReturn
+   * @sa xTask
+   * @sa xTaskRunTimeStats
+   * @sa xMemFree()
    *
    * @param  task_  The task to be operated on.
    * @param  stats_ The runtime statistics. The runtime statistics must be freed
@@ -1353,6 +1519,8 @@
    * The xTaskGetNumberOfTasks() syscall is used to obtain the number of tasks
    * regardless of their state (i.e., suspended, running or waiting).
    *
+   * @sa xReturn
+   *
    * @param  tasks_ The number of tasks.
    * @return        On success, the syscall returns ReturnOK. On failure, the
    *                syscall returns ReturnError. A failure is any condition in
@@ -1378,6 +1546,11 @@
    * xTaskGetTaskInfo() is similar to xTaskGetTaskRunTimeStats() with one
    * difference, xTaskGetTaskInfo() provides the state and name of the task
    * along with the task's runtime statistics.
+   *
+   * @sa xReturn
+   * @sa xMemFree()
+   * @sa xTask
+   * @sa xTaskInfo
    *
    * @param  task_ The task to be operated on.
    * @param  info_ Information about the task. The task information must be
