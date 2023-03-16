@@ -145,22 +145,6 @@
    *
    */
   typedef Return_t xReturn;
-  typedef enum TimerState_e {
-    TimerStateSuspended,
-    TimerStateRunning
-  } TimerState_t;
-  typedef TimerState_t xTimerState;
-  typedef enum DeviceState_e {
-    DeviceStateSuspended,
-    DeviceStateRunning
-  } DeviceState_t;
-  typedef DeviceState_t xDeviceState;
-  typedef enum DeviceMode_e {
-    DeviceModeReadOnly,
-    DeviceModeWriteOnly,
-    DeviceModeReadWrite
-  } DeviceMode_t;
-  typedef DeviceMode_t xDeviceMode;
   typedef VOID_TYPE TaskParm_t;
   typedef TaskParm_t *xTaskParm;
   typedef UINT8_TYPE Base_t;
