@@ -53,9 +53,17 @@
  *
  */
   typedef enum TaskState_e {
-    TaskStateSuspended,
-    TaskStateRunning,
-    TaskStateWaiting
+    TaskStateSuspended, /**< State a task is in after it is created OR after
+                         * calling xTaskSuspend(). Tasks in the
+                         * TaskStateSuspended state will not be scheduled for
+                         * execution by the scheduler.  */
+    TaskStateRunning, /**< State a task is in after calling xTaskStart(). Tasks
+                       * in the TaskStateRunning state will be scheduled for
+                       * execution by the scheduler. */
+    TaskStateWaiting /**< State a task is in after calling xTaskWait(). Tasks in
+                      * the TaskStateWaiting state will be scheduled for
+                      * execution by the scheduler only when a task event has
+                      * occurred. */
   } TaskState_t;
 
 
