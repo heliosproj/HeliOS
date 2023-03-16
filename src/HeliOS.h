@@ -37,7 +37,7 @@
 
 
 /**
- * @brief Enumerated data type for task states
+ * @brief Enumerated type for task states
  *
  * A task can be in one of four possible states as defined by the TaskState_t
  * enumerated data type. The state a task is in is changed by calling
@@ -53,13 +53,18 @@
  *
  */
   typedef enum TaskState_e {
-    TaskStateSuspended, /**< State a task is in after it is created OR after
-                         * calling xTaskSuspend(). Tasks in the
-                         * TaskStateSuspended state will not be scheduled for
-                         * execution by the scheduler.  */
-    TaskStateRunning, /**< State a task is in after calling xTaskStart(). Tasks
-                       * in the TaskStateRunning state will be scheduled for
-                       * execution by the scheduler. */
+    TaskStateSuspended,
+
+
+    /**< State a task is in after it is created OR after calling xTaskSuspend().
+     * Tasks in the TaskStateSuspended state will not be scheduled for execution
+     * by the scheduler.  */
+    TaskStateRunning,
+
+
+    /**< State a task is in after calling xTaskResume(). Tasks in the
+     * TaskStateRunning state will be scheduled for execution by the scheduler.
+     */
     TaskStateWaiting /**< State a task is in after calling xTaskWait(). Tasks in
                       * the TaskStateWaiting state will be scheduled for
                       * execution by the scheduler only when a task event has
@@ -68,21 +73,77 @@
 
 
   /**
-   * @brief Enumerated data type for task states
+   * @brief Enumerated type for task states
    *
    * @sa TaskState_t
    *
    */
   typedef TaskState_t xTaskState;
+
+
+  /**
+   * @brief Enumerated type for scheduler state
+   *
+   * The scheduler can be in one of three possible states as defined by the
+   * SchedulerState_t enumerated data type. The state the scheduler is in is
+   * changed by calling xTaskSuspendAll() and xTaskResumeAll(). The state the
+   * scheduler is in can be obtained by calling xTaskGetSchedulerState().
+   *
+   * @sa xSchedulerState
+   * @sa xTaskSuspendAll()
+   * @sa xTaskResumeAll()
+   * @sa xTaskGetSchedulerState()
+   * @sa xTaskStartScheduler()
+   *
+   */
   typedef enum SchedulerState_e {
     SchedulerStateSuspended,
-    SchedulerStateRunning
+
+
+    /**< State the scheduler is in after calling xTaskSuspendAll().
+     * TaskStartScheduler() will stop scheduling tasks for execution and
+     * relinquish control when xTaskSuspendAll() is called. */
+    SchedulerStateRunning /**< State the scheduler is in after calling
+                           * xTaskResumeAll(). xTaskStartScheduler() will
+                           * continue to schedule tasks for execution until
+                           * xTaskSuspendAll() is called. */
   } SchedulerState_t;
+
+
+  /**
+   * @brief Enumerated type for scheduler state
+   *
+   * @sa SchedulerState_t
+   *
+   */
   typedef SchedulerState_t xSchedulerState;
+
+
+  /**
+   * @brief Enumerated type for syscall return type
+   *
+   *  All HeliOS syscalls return the xReturn (a.k.a., Return_t) type which can
+   * either be ReturnOK or ReturnError. The C macros OK() and ERROR() can be
+   * used as a more concise way of checking the return value of a syscall (e.g.,
+   * if(OK(xMemGetUsed(&size))) {} or if(ERROR(xMemGetUsed(&size))) {}).
+   *
+   * @sa OK()
+   * @sa ERROR()
+   * @sa xReturn
+   *
+   */
   typedef enum Return_e {
-    ReturnOK,
-    ReturnError
+    ReturnOK, /**< Return value if the syscall was successful. */
+    ReturnError /**< Return value if the syscall failed. */
   } Return_t;
+
+
+  /**
+   * @brief Enumerated type for syscall return type
+   *
+   * @sa Return_t
+   *
+   */
   typedef Return_t xReturn;
   typedef enum TimerState_e {
     TimerStateSuspended,
