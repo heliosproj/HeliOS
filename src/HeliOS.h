@@ -144,6 +144,9 @@
    * @sa Return_t
    *
    */
+  /**
+   * @cond DOXYGEN_SKIP_THIS
+   */
   typedef Return_t xReturn;
   typedef VOID_TYPE TaskParm_t;
   typedef TaskParm_t *xTaskParm;
@@ -169,6 +172,12 @@
   typedef Queue_t *xQueue;
   typedef VOID_TYPE StreamBuffer_t;
   typedef StreamBuffer_t *xStreamBuffer;
+
+
+  /**
+   * @endcond
+   *
+   */
   typedef struct TaskNotification_s {
     Base_t notificationBytes;
     Byte_t notificationValue[CONFIG_NOTIFICATION_VALUE_BYTES];
