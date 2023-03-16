@@ -35,11 +35,36 @@
   #include "config.h"
   #include "defines.h"
 
+
+/**
+ * @brief Enumerated data type for task states
+ *
+ * A task can be in one of four possible states as defined by the TaskState_t
+ * enumerated data type. The state a task is in is changed by calling
+ * xTaskResume(), xTaskSuspend() or xTaskWait(). The HeliOS scheduler will only
+ * schedule, for execution, tasks in either the TaskStateRunning or
+ * TaskStateWaiting state.
+ *
+ * @sa xTaskState
+ * @sa xTaskResume()
+ * @sa xTaskSuspend()
+ * @sa xTaskWait()
+ * @sa xTaskGetTaskState()
+ *
+ */
   typedef enum TaskState_e {
     TaskStateSuspended,
     TaskStateRunning,
     TaskStateWaiting
   } TaskState_t;
+
+
+  /**
+   * @brief Enumerated data type for task states
+   *
+   * @sa TaskState_t
+   *
+   */
   typedef TaskState_t xTaskState;
   typedef enum SchedulerState_e {
     SchedulerStateSuspended,
