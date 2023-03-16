@@ -1580,6 +1580,10 @@
    * difference, xTaskGetAllTaskInfo() provides the state and name of the task
    * along with the task's runtime statistics.
    *
+   * @sa xReturn
+   * @sa xTaskInfo
+   * @sa xMemFree()
+   *
    * @param  info_  Information about the tasks. The task information must be
    *                freed by xMemFree().
    * @param  tasks_ The number of tasks.
@@ -1605,6 +1609,10 @@
    *
    * The xTaskGetTaskState() syscall is used to obtain the state of a task
    * (i.e., suspended, running or waiting).
+   *
+   * @sa xReturn
+   * @sa xTask
+   * @sa xTaskState
    *
    * @param  task_  The task to be operated on.
    * @param  state_ The state of the task.
@@ -1632,6 +1640,10 @@
    * size of the task name is CONFIG_TASK_NAME_BYTES (default is 8) bytes in
    * length.
    *
+   * @sa xReturn
+   * @sa xTask
+   * @sa xMemFree()
+   *
    * @param  task_ The task to be operated on.
    * @param  name_ The task name which must be precisely CONFIG_TASK_NAME_BYTES
    *               (default is 8) bytes in length. The task name must be freed
@@ -1658,6 +1670,9 @@
    *
    * The xTaskGetId() syscall is used to obtain the id of a task.
    *
+   * @sa xReturn
+   * @sa xTask
+   *
    * @param  task_ The task to be operated on.
    * @param  id_   The id of the task.
    * @return       On success, the syscall returns ReturnOK. On failure, the
@@ -1683,6 +1698,9 @@
    * The xTaskNotifyStateClear() syscall is used to clear a waiting
    * direct-to-task notification for the given task.
    *
+   * @sa xReturn
+   * @sa xTask
+   *
    * @param  task_ The task to be operated on.
    * @return       On success, the syscall returns ReturnOK. On failure, the
    *               syscall returns ReturnError. A failure is any condition in
@@ -1707,6 +1725,9 @@
    *
    * The xTaskNotificationIsWaiting() syscall is used to inquire as to whether a
    * direct-to-task notification is waiting for the given task.
+   *
+   * @sa xReturn
+   * @sa xTask
    *
    * @param  task_ Task to be operated on.
    * @param  res_  The result of the inquiry; taken here to mean "true" if there
@@ -1734,6 +1755,10 @@
    *
    * The xTaskNotifyGive() syscall is used to give (i.e., send) a direct-to-task
    * notification to the given task.
+   *
+   * @sa xReturn
+   * @sa xTask
+   * @sa CONFIG_NOTIFICATION_VALUE_BYTES
    *
    * @param  task_  The task to be operated on.
    * @param  bytes_ The number of bytes contained in the notification value. The
@@ -1764,6 +1789,11 @@
    * The xTaskNotifyTake() syscall is used to take (i.e., receive) a waiting
    * direct-to-task notification.
    *
+   * @sa xReturn
+   * @sa xTask
+   * @sa CONFIG_NOTIFICATION_VALUE_BYTES
+   * @sa xTaskNotification
+   *
    * @param  task_         The task to be operated on.
    * @param  notification_ The direct-to-task notification.
    * @return               On success, the syscall returns ReturnOK. On failure,
@@ -1791,6 +1821,12 @@
    * in this state will run continuously until suspended and is scheduled to run
    * cooperatively by the HeliOS scheduler.
    *
+   * @sa xReturn
+   * @sa xTask
+   * @sa xTaskResume()
+   * @sa xTaskSuspend()
+   * @sa xTaskWait()
+   *
    * @param  task_ The task to be operated on.
    * @return       On success, the syscall returns ReturnOK. On failure, the
    *               syscall returns ReturnError. A failure is any condition in
@@ -1815,6 +1851,12 @@
    * The xTaskSuspend() syscall will place a task in the "suspended" state. A
    * task in this state is not scheduled to run by the HeliOS scheduler and will
    * not run.
+   *
+   * @sa xReturn
+   * @sa xTask
+   * @sa xTaskResume()
+   * @sa xTaskSuspend()
+   * @sa xTaskWait()
    *
    * @param  task_ The task to be operated on.
    * @return       On success, the syscall returns ReturnOK. On failure, the
@@ -1845,6 +1887,12 @@
    * are using event-driven multitasking. HeliOS supports two types of events:
    * task timers and direct-to-task notifications.
    *
+   * @sa xReturn
+   * @sa xTask
+   * @sa xTaskResume()
+   * @sa xTaskSuspend()
+   * @sa xTaskWait()
+   *
    * @param  task_ The task to be operated on.
    * @return       On success, the syscall returns ReturnOK. On failure, the
    *               syscall returns ReturnError. A failure is any condition in
@@ -1871,6 +1919,11 @@
    * dependent, a tick is often one millisecond. In order for the task timer to
    * have an effect, the task must be in the "waiting" state which can be set
    * using xTaskWait().
+   *
+   * @sa xReturn
+   * @sa xTask
+   * @sa xTicks
+   * @sa xTaskWait()
    *
    * @param  task_   The task to be operated on.
    * @param  period_ The interval period in ticks.
@@ -1901,6 +1954,12 @@
    * watchdog timer period. The task watchdog timer period is set on a per task
    * basis.
    *
+   * @sa xReturn
+   * @sa xTask
+   * @sa xTicks
+   * @sa CONFIG_TASK_WD_TIMER_ENABLE
+   *
+   *
    * @param  task_   The task to be operated on.
    * @param  period_ The task watchdog timer period measured in ticks. Ticks is
    *                 platform and/or architecture dependent. However, most
@@ -1929,6 +1988,10 @@
    * The xTaskGetPeriod() syscall is used to obtain the current task timer
    * period.
    *
+   * @sa xReturn
+   * @sa xTask
+   * @sa xTicks
+   *
    * @param  task_   The task to be operated on.
    * @param  period_ The task timer period in ticks. Ticks is platform and/or
    *                 architecture dependent. However, most platforms and/or
@@ -1955,6 +2018,10 @@
    *
    * The xTaskResetTimer() syscall is used to reset the task timer. In effect,
    * this sets the elapsed time, measured in ticks, back to zero.
+   *
+   * @sa xReturn
+   * @sa xTask
+   * @sa xTicks
    *
    * @param  task_ The task to be operated on.
    * @return       On success, the syscall returns ReturnOK. On failure, the
@@ -1986,6 +2053,11 @@
    * scheduler is in a suspended state, xTaskStartScheduler() will immediately
    * return.
    *
+   * @sa xReturn
+   * @sa xTaskResumeAll()
+   * @sa xTaskSuspendAll()
+   *
+   *
    * @return On success, the syscall returns ReturnOK. On failure, the syscall
    *         returns ReturnError. A failure is any condition in which the
    *         syscall was unable to achieve its intended objective. For example,
@@ -2008,6 +2080,11 @@
    * xTaskStartScheduler() must still be called to pass control to the
    * scheduler. If the scheduler state is not running, then
    * xTaskStartScheduler() will simply return to the caller when called.
+   *
+   * @sa xReturn
+   * @sa xTaskStartScheduler()
+   * @sa xTaskResumeAll()
+   * @sa xTaskSuspendAll()
    *
    * @return On success, the syscall returns ReturnOK. On failure, the syscall
    *         returns ReturnError. A failure is any condition in which the
@@ -2033,6 +2110,11 @@
    * running, xTaskResumeAll() must be called followed by a call to
    * xTaskStartScheduler().
    *
+   * @sa xReturn
+   * @sa xTaskStartScheduler()
+   * @sa xTaskResumeAll()
+   * @sa xTaskSuspendAll()
+   *
    * @return On success, the syscall returns ReturnOK. On failure, the syscall
    *         returns ReturnError. A failure is any condition in which the
    *         syscall was unable to achieve its intended objective. For example,
@@ -2052,6 +2134,9 @@
    * @brief Syscall to get the scheduler state
    *
    * The xTaskGetSchedulerState() is used to get the state of the scheduler.
+   *
+   * @sa xReturn
+   * @sa xSchedulerState
    *
    * @param  state_ The state of the scheduler.
    * @return        On success, the syscall returns ReturnOK. On failure, the
@@ -2076,6 +2161,11 @@
    *
    * The xTaskGetWDPeriod() syscall is used to obtain the task watchdog timer
    * period.
+   *
+   * @sa xReturn
+   * @sa xTask
+   * @sa xTicks
+   * @sa CONFIG_TASK_WD_TIMER_ENABLE
    *
    * @param  task_   The task to be operated on.
    * @param  period_ The task watchdog timer period, measured in ticks. Ticks
@@ -2109,6 +2199,11 @@
    * timekeeping. Application timers can be started, stopped, reset and have
    * time period, measured in ticks, that elapses.
    *
+   * @sa xReturn
+   * @sa xTimer
+   * @sa xTicks
+   * @sa xTimerDelete()
+   *
    * @param  timer_  The application timer to be operated on.
    * @param  period_ The application timer period, measured in ticks.
    * @return         On success, the syscall returns ReturnOK. On failure, the
@@ -2133,6 +2228,11 @@
    *
    * The xTimerDelete() syscall is used to delete an application timer created
    * with xTimerCreate().
+   *
+   * @sa xReturn
+   * @sa xTimer
+   * @sa xTicks
+   * @sa xTimerCreate()
    *
    * @param  timer_ The application timer to be operated on.
    * @return        On success, the syscall returns ReturnOK. On failure, the
@@ -2159,6 +2259,10 @@
    * application timer. Once the period has elapsed, the application timer is
    * considered expired.
    *
+   * @sa xReturn
+   * @sa xTimer
+   * @sa xTicks
+   *
    * @param  timer_  The application timer to be operated on.
    * @param  period_ The application timer period, measured in ticks.
    * @return         On success, the syscall returns ReturnOK. On failure, the
@@ -2183,6 +2287,10 @@
    *
    * The xTimerGetPeriod() syscall is used to obtain the current period for an
    * application timer.
+   *
+   * @sa xReturn
+   * @sa xTimer
+   * @sa xTicks
    *
    * @param  timer_  The application timer to be operate don.
    * @param  period_ The application timer period, measured in ticks.
@@ -2209,6 +2317,11 @@
    * The xTimerIsTimerActive() syscall is used to inquire as to whether an
    * application timer is active. An application timer is considered to be
    * active if the application timer has been started by xTimerStare().
+   *
+   * @sa xReturn
+   * @sa xTimer
+   * @sa xTimerStart()
+   * @sa xTimerStop()
    *
    * @param  timer_ The application timer to be operated on.
    * @param  res_   The result of the inquiry; taken here to mean "true" if the
@@ -2239,6 +2352,10 @@
    * must be reset with xTimerReset(). If a timer is not active (i.e., started),
    * it cannot expire even if the timer period has elapsed.
    *
+   * @sa xReturn
+   * @sa xTimer
+   * @sa xTimerReset()
+   *
    * @param  timer_ The application timer to be operated on.
    * @param  res_   The result of the inquiry; taken here to mean "true" if the
    *                application timer has elapsed (i.e., expired). "False" if
@@ -2266,6 +2383,12 @@
    * The xTimerReset() syscall is used to reset an application timer. Resetting
    * has the effect of setting the application timer's elapsed time to zero.
    *
+   * @sa xReturn
+   * @sa xTimer
+   * @sa xTimerReset()
+   * @sa xTimerStart()
+   * @sa xTimerStop()
+   *
    * @param  timer_ The application timer to be operated on.
    * @return        On success, the syscall returns ReturnOK. On failure, the
    *                syscall returns ReturnError. A failure is any condition in
@@ -2290,6 +2413,12 @@
    * The xTimerStart() syscall is used to place an application timer in the
    * running state.
    *
+   * @sa xReturn
+   * @sa xTimer
+   * @sa xTimerReset()
+   * @sa xTimerStart()
+   * @sa xTimerStop()
+   *
    * @param  timer_ The application timer to be operated on.
    * @return        On success, the syscall returns ReturnOK. On failure, the
    *                syscall returns ReturnError. A failure is any condition in
@@ -2313,6 +2442,12 @@
    *
    * The xTimerStop() syscall is used to place an application timer in the
    * suspended state.
+   *
+   * @sa xReturn
+   * @sa xTimer
+   * @sa xTimerReset()
+   * @sa xTimerStart()
+   * @sa xTimerStop()
    *
    * @param  timer_ The application timer to be operated on.
    * @return        On success, the syscall returns ReturnOK. On failure, the
