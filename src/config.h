@@ -43,9 +43,13 @@
    * /extras directory. It must be copied into the /src directory to be built.
    *
    */
-  /*
-   * #define CONFIG_ENABLE_ARDUINO_CPP_INTERFACE
-   */
+  #if defined(DOXYGEN)
+    #if !defined(CONFIG_ENABLE_ARDUINO_CPP_INTERFACE)
+      #define CONFIG_ENABLE_ARDUINO_CPP_INTERFACE
+    #endif /* if !defined(CONFIG_ENABLE_ARDUINO_CPP_INTERFACE) */
+  #endif /* if defined(DOXYGEN) */
+
+
   /**
    * @brief Define to enable system assertions
    *
@@ -57,9 +61,13 @@
    * @sa CONFIG_SYSTEM_ASSERT_BEHAVIOR
    *
    */
-  /*
-   * #define CONFIG_ENABLE_SYSTEM_ASSERT
-   */
+  #if defined(DOXYGEN)
+    #if !defined(CONFIG_ENABLE_SYSTEM_ASSERT)
+      #define CONFIG_ENABLE_SYSTEM_ASSERT
+    #endif /* if !defined(CONFIG_ENABLE_SYSTEM_ASSERT) */
+  #endif /* if defined(DOXYGEN) */
+
+
   /**
    * @brief Define the system assertion behavior
    *
