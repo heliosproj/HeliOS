@@ -713,21 +713,18 @@
 
 
   /**
-   * @brief Syscall to write a word of data to the device
+   * @brief Syscall to write a byte of data to the device
    *
-   * The xDeviceSimpleWrite() syscall will write a word (i.e., xWord) of data to
-   * a device. The word of data must have been allocated by xMemAlloc(). Whether
-   * the data is written to the device is dependent on the device driver mode,
-   * state and implementation of these features by the device driver's author.
+   * The xDeviceSimpleWrite() syscall will write a byte of data to a device.
+   * Whether the data is written to the device is dependent on the device driver
+   * mode, state and implementation of these features by the device driver's
+   * author.
    *
    * @sa xReturn
-   * @sa xMemAlloc()
-   * @sa xMemFree()
    *
    * @param  uid_  The unique identifier ("UID") of the device driver to be
    *               operated on.
-   * @param  data_ A word of data to be written to the device. The word of data
-   *               must have been allocated by xMemAlloc().
+   * @param  data_ A byte of data to be written to the device.
    * @return       On success, the syscall returns ReturnOK. On failure, the
    *               syscall returns ReturnError. A failure is any condition in
    *               which the syscall was unable to achieve its intended
@@ -742,7 +739,7 @@
    *               if(OK(xMemGetUsed(&size))) {} or
    *               if(ERROR(xMemGetUsed(&size))) {}).
    */
-  xReturn xDeviceSimpleWrite(const xHalfWord uid_, xWord *data_);
+  xReturn xDeviceSimpleWrite(const xHalfWord uid_, xByte data_);
 
 
   /**
@@ -782,20 +779,18 @@
 
 
   /**
-   * @brief Syscall to read a word of data from the device
+   * @brief Syscall to read a byte of data from the device
    *
-   * The xDeviceSimpleRead() syscall will read a word of data from a device. The
-   * word of data must be freed by xMemFree(). Whether the data is read from the
-   * device is dependent on the device driver mode, state and implementation of
-   * these features by the device driver's author.
+   * The xDeviceSimpleRead() syscall will read a byte of data from a device.
+   * Whether the data is read from the device is dependent on the device driver
+   * mode, state and implementation of these features by the device driver's
+   * author.
    *
    * @sa xReturn
-   * @sa xMemFree()
    *
    * @param  uid_  The unique identifier ("UID") of the device driver to be
    *               operated on.
-   * @param  data_ The word of data read from the device which must be fred by
-   *               xMemFree().
+   * @param  data_ The byte of data read from the device.
    * @return       On success, the syscall returns ReturnOK. On failure, the
    *               syscall returns ReturnError. A failure is any condition in
    *               which the syscall was unable to achieve its intended
@@ -810,7 +805,7 @@
    *               if(OK(xMemGetUsed(&size))) {} or
    *               if(ERROR(xMemGetUsed(&size))) {}).
    */
-  xReturn xDeviceSimpleRead(const xHalfWord uid_, xWord *data_);
+  xReturn xDeviceSimpleRead(const xHalfWord uid_, xByte *data_);
 
 
   /**
