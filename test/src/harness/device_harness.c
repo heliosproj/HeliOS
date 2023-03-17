@@ -33,8 +33,8 @@ void device_harness(void) {
   Addr_t *data1;
   Size_t bytes2;
   Addr_t *data2;
-  Word_t *data3;
-  Word_t *data4;
+  Byte_t data3;
+  Byte_t data4;
   Base_t res;
 
 
@@ -62,16 +62,13 @@ void device_harness(void) {
   unit_try(OK(xMemFree(data2)));
   unit_end();
   unit_begin("xDeviceSimpleWrite()");
-  unit_try(OK(xMemAlloc((volatile Addr_t **) &data3, sizeof(Word_t))));
-  *data3 = 0xFAFAu;
+  data3 = 0xFAu;
   unit_try(OK(xDeviceSimpleWrite(0xFFu, data3)));
-  unit_try(OK(xMemFree(data3)));
   unit_end();
   unit_begin("xDeviceSimpleRead()");
-  *data4 = zero;
+  data4 = zero;
   unit_try(OK(xDeviceSimpleRead(0xFFu, &data4)));
-  unit_try(0xFAFAu == *data4);
-  unit_try(OK(xMemFree(data4)));
+  unit_try(0xFAu == data4);
   unit_end();
 
   return;

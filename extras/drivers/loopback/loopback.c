@@ -107,13 +107,11 @@ Return_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t * device_, Size_t *size_, Add
 }
 
 
-Return_t TO_FUNCTION(DEVICE_NAME, _simple_read)(Device_t * device_, Word_t **data_) {
+Return_t TO_FUNCTION(DEVICE_NAME, _simple_read)(Device_t * device_, Byte_t *data_) {
   RET_DEFINE;
 
 
-  __KernelAllocateMemory__((volatile Addr_t **) data_, sizeof(Word_t));
-
-  __memcpy__(*data_, loopback_buffer, sizeof(Word_t));
+  *data_ = loopback_buffer[0];
 
   device_->available = false;
   RET_OK;
@@ -122,15 +120,11 @@ Return_t TO_FUNCTION(DEVICE_NAME, _simple_read)(Device_t * device_, Word_t **dat
 }
 
 
-Return_t TO_FUNCTION(DEVICE_NAME, _simple_write)(Device_t * device_, Word_t *data_) {
+Return_t TO_FUNCTION(DEVICE_NAME, _simple_write)(Device_t * device_, Byte_t data_) {
   RET_DEFINE;
 
-  if(OK(__memcpy__(loopback_buffer, data_, sizeof(Word_t)))) {
-    device_->available = true;
-    RET_OK;
-  } else {
-    ASSERT;
-  }
+  loopback_buffer[0] = data_;
+  RET_OK;
 
   RET_RETURN;
 }

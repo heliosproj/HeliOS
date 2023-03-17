@@ -86,7 +86,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t * device_, Size_t *size_, Add
 }
 
 
-Return_t TO_FUNCTION(DEVICE_NAME, _simple_read)(Device_t * device_, Word_t **data_) {
+Return_t TO_FUNCTION(DEVICE_NAME, _simple_read)(Device_t * device_, Byte_t *data_) {
   RET_DEFINE;
 
   /* INSERT DEVICE DRIVER CODE HERE CALL RET_OK IF SYSCALL WAS
@@ -96,7 +96,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _simple_read)(Device_t * device_, Word_t **dat
 }
 
 
-Return_t TO_FUNCTION(DEVICE_NAME, _simple_write)(Device_t * device_, Word_t *data_) {
+Return_t TO_FUNCTION(DEVICE_NAME, _simple_write)(Device_t * device_, Byte_t data_) {
   RET_DEFINE;
 
   /* INSERT DEVICE DRIVER CODE HERE CALL RET_OK IF SYSCALL WAS
