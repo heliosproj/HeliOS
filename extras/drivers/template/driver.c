@@ -25,12 +25,12 @@
  *
  */
 /*UNCRUSTIFY-ON*/
-#include "driver.h"
+#include "loopback.h"
 
 
 /*UNCRUSTIFY-OFF*/
 Return_t TO_FUNCTION(DEVICE_NAME, _self_register)(void) {
-  /* DO NOT MODIFY THIS SYSCALL */
+  /* DO NOT MODIFY THIS FUNCTION */
   RET_DEFINE;
 
   if(OK(__RegisterDevice__(DEVICE_UID, (Byte_t *) TO_LITERAL(DEVICE_NAME), DEVICE_STATE, DEVICE_MODE, TO_FUNCTION(DEVICE_NAME, _init), TO_FUNCTION(
@@ -42,11 +42,11 @@ Return_t TO_FUNCTION(DEVICE_NAME, _self_register)(void) {
   }
 
   RET_RETURN;
-  /* DO NOT MODIFY THIS SYSCALL */
+  /* DO NOT MODIFY THIS FUNCTION */
 }
 
 
-Return_t TO_FUNCTION(DEVICE_NAME, _init)(Device_t * device_) {
+Return_t TO_FUNCTION(DEVICE_NAME, _init)(Device_t *device_) {
   RET_DEFINE;
 
   /* INSERT DEVICE DRIVER CODE HERE CALL RET_OK IF SYSCALL WAS
@@ -56,7 +56,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _init)(Device_t * device_) {
 }
 
 
-Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t * device_, Size_t *size_, Addr_t *config_) {
+Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Addr_t *config_) {
   RET_DEFINE;
 
   /* INSERT DEVICE DRIVER CODE HERE CALL RET_OK IF SYSCALL WAS
@@ -66,7 +66,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t * device_, Size_t *size_, Ad
 }
 
 
-Return_t TO_FUNCTION(DEVICE_NAME, _read)(Device_t * device_, Size_t *size_, Addr_t **data_) {
+  Return_t TO_FUNCTION(DEVICE_NAME, _read)(Device_t *device_, Size_t *size_, Addr_t **data_) {
   RET_DEFINE;
 
   /* INSERT DEVICE DRIVER CODE HERE CALL RET_OK IF SYSCALL WAS
@@ -76,7 +76,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _read)(Device_t * device_, Size_t *size_, Addr
 }
 
 
-Return_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t * device_, Size_t *size_, Addr_t *data_) {
+Return_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t *device_, Size_t *size_, Addr_t *data_) {
   RET_DEFINE;
 
   /* INSERT DEVICE DRIVER CODE HERE CALL RET_OK IF SYSCALL WAS
@@ -86,7 +86,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t * device_, Size_t *size_, Add
 }
 
 
-Return_t TO_FUNCTION(DEVICE_NAME, _simple_read)(Device_t * device_, Byte_t *data_) {
+Return_t TO_FUNCTION(DEVICE_NAME, _simple_read)(Device_t *device_, Byte_t *data_) {
   RET_DEFINE;
 
   /* INSERT DEVICE DRIVER CODE HERE CALL RET_OK IF SYSCALL WAS
@@ -96,7 +96,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _simple_read)(Device_t * device_, Byte_t *data
 }
 
 
-Return_t TO_FUNCTION(DEVICE_NAME, _simple_write)(Device_t * device_, Byte_t data_) {
+Return_t TO_FUNCTION(DEVICE_NAME, _simple_write)(Device_t *device_, Byte_t data_) {
   RET_DEFINE;
 
   /* INSERT DEVICE DRIVER CODE HERE CALL RET_OK IF SYSCALL WAS
