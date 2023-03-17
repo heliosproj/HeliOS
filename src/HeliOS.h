@@ -169,7 +169,7 @@
   /**
    * @brief Data type for the task paramater
    *
-   * @sa TaskPartm_t
+   * @sa TaskParm_t
    *
    */
   typedef TaskParm_t *xTaskParm;
