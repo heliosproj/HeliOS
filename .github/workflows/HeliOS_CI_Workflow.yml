@@ -109,6 +109,10 @@ jobs:
           echo 'DEFINED = DOXYGEN_SHOULD_SKIP_THIS' >> ${{github.workspace}}/temp/HeliOS.conf
           sed -i '/^ABBREVIATE_BRIEF .*/d' ${{github.workspace}}/temp/HeliOS.conf
           echo 'ABBREVIATE_BRIEF = ' >> ${{github.workspace}}/temp/HeliOS.conf
+          sed -i '/^MACRO_EXPANSION .*/d' ${{github.workspace}}/temp/HeliOS.conf
+          echo 'MACRO_EXPANSION = YES' >> ${{github.workspace}}/temp/HeliOS.conf
+          sed -i '/^PREDEFINED .*/d' ${{github.workspace}}/temp/HeliOS.conf
+          echo 'PREDEFINED = \"DOXYGEN=1\"' >> ${{github.workspace}}/temp/HeliOS.conf
           sort -o ${{github.workspace}}/temp/HeliOS.conf ${{github.workspace}}/temp/HeliOS.conf
           cat ${{github.workspace}}/temp/HeliOS.conf
 

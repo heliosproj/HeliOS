@@ -27,7 +27,6 @@
 /*UNCRUSTIFY-ON*/
 #ifndef CONFIG_H_
   #define CONFIG_H_
-/*UNCRUSTIFY-OFF*/
 
 
   /* The following configurable settings may be changed by the end-user to
@@ -47,8 +46,6 @@
   /*
    * #define CONFIG_ENABLE_ARDUINO_CPP_INTERFACE
    */
-
-
   /**
    * @brief Define to enable system assertions
    *
@@ -63,8 +60,6 @@
   /*
    * #define CONFIG_ENABLE_SYSTEM_ASSERT
    */
-
-
   /**
    * @brief Define the system assertion behavior
    *
@@ -85,12 +80,13 @@
    * @endcode
    *
    */
-  /*
-   * #define CONFIG_SYSTEM_ASSERT_BEHAVIOR(f, l) __ArduinoAssert__( f , l )
-   */
+  #if defined(DOXYGEN)
+    #if !defined(CONFIG_SYSTEM_ASSERT_BEHAVIOR)
+      #define CONFIG_SYSTEM_ASSERT_BEHAVIOR(f, l) __ArduinoAssert__(f, l)
+    #endif /* if !defined(CONFIG_SYSTEM_ASSERT_BEHAVIOR) */
+  #endif /* if defined(DOXYGEN) */
 
 
-/*UNCRUSTIFY-ON*/
   /**
    * @brief Define the size in bytes of the message queue message value
    *
