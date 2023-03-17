@@ -145,51 +145,307 @@
    *
    */
   typedef Return_t xReturn;
+
+
+  /**
+   * @brief Data type for the task paramater
+   *
+   * The TaskParm_t type is used to pass a paramater to a task at the time of
+   * task creation using xTaskCreate(). A task paramater is a pointer of type
+   * void and can point to any number of types, arrays and/or data structures
+   * that will be passed to the task. It is up to the end-user to manage,
+   * allocate and free the memory related to these objects using xMemAlloc() and
+   * xMemFree().
+   *
+   * @sa xTaskParm
+   * @sa xTaskCreate()
+   * @sa xMemAlloc()
+   * @sa xMemFree()
+   *
+   */
   typedef VOID_TYPE TaskParm_t;
+
+
+  /**
+   * @brief Data type for the task paramater
+   *
+   * @sa TaskPartm_t
+   *
+   */
   typedef TaskParm_t *xTaskParm;
+
+
+  /**
+   * @brief Data type for the base type
+   *
+   * The Base_t type is a simple data type often used as an argument or result
+   * type for syscalls when the value is known not to exceed its 8-bit width and
+   * no data structure requirements exist. There are no guarantees the Base_t
+   * will always be 8-bits wide. If an 8-bit data type is needed that is
+   * guaranteed to remain 8-bits wide, the Byte_t data type should be used.
+   *
+   * @sa xBase
+   * @sa Byte_t
+   *
+   */
   typedef UINT8_TYPE Base_t;
+
+
+  /**
+   * @brief Data type for the base type
+   *
+   * @sa Base_t
+   *
+   */
   typedef Base_t xBase;
+
+
+  /**
+   * @brief Data type for an 8-bit wide byte
+   *
+   * The Byte_t type is an 8-bit wide data type and is guaranteed to always be
+   * 8-bits wide.
+   *
+   * @sa xByte
+   *
+   */
   typedef UINT8_TYPE Byte_t;
+
+
+  /**
+   * @brief Data type for an 8-bit wide byte
+   *
+   * @sa Byte_t
+   *
+   */
   typedef Byte_t xByte;
+
+
+  /**
+   * @brief Data type for a pointer to a memory address
+   *
+   * The Addr_t type is a pointer of type void and is used to pass addresses
+   * between the end-user application and syscalls. It is not necessary to use
+   * the Addr_t type within the end-user application as long as the type is not
+   * used to interact with the kernel through syscalls
+   *
+   * @sa xAddr
+   *
+   */
   typedef VOID_TYPE Addr_t;
+
+
+  /**
+   * @brief Data type for a pointer to a memory address
+   *
+   * @sa Addr_t
+   *
+   */
   typedef Addr_t *xAddr;
+
+
+  /**
+   * @brief Data type for the storage requirements of an object in memory
+   *
+   * The Size_t type is used for the storage requirements of an object in memory
+   * and is always represented in bytes.
+   *
+   * @sa xSize
+   *
+   */
   typedef SIZE_TYPE Size_t;
+
+
+  /**
+   * @brief Data type for the storage requirements of an object in memory
+   *
+   * @sa Size_t
+   *
+   */
   typedef Size_t xSize;
+
+
+  /**
+   * @brief Data type for a 16-bit half word
+   *
+   * The HalfWord_t type is a 16-bit wide data type and is guaranteed to always
+   * be 16-bits wide.
+   *
+   * @sa xHalfWord
+   *
+   */
   typedef UINT16_TYPE HalfWord_t;
+
+
+  /**
+   * @brief Data type for a 16-bit half word
+   *
+   * @sa HalfWord_t
+   *
+   */
   typedef HalfWord_t xHalfWord;
+
+
+  /**
+   * @brief Data type for a 32-bit word
+   *
+   * The Word_t type is a 32-bit wide data type and is guaranteed to always be
+   * 32-bits wide.
+   *
+   * @sa xWord
+   *
+   */
   typedef UINT32_TYPE Word_t;
+
+
+  /**
+   * @brief Data type for a 32-bit word
+   *
+   * @sa Word_t
+   *
+   */
   typedef Word_t xWord;
+
+
+  /**
+   * @brief Data type for system ticks
+   *
+   * The Ticks_t type is used to store ticks from the system clock. Ticks is not
+   * bound to any one unit of measure for time though most systems are
+   * configured for millisecond resolution, milliseconds is not guaranteed and
+   * is dependent on the system clock frequency and prescaler.
+   *
+   * @sa xTicks
+   *
+   */
   typedef UINT32_TYPE Ticks_t;
+
+
+  /**
+   * @brief Data type for system ticks
+   *
+   * @sa Ticks_t
+   *
+   */
   typedef Ticks_t xTicks;
+
+
+  /**
+   * @brief Data type for a task
+   *
+   * The Task_t data type is used as a task. The task is created when
+   * xTaskCreate() is called. For more information about tasks, see
+   * xTaskCreate().
+   *
+   * @sa xTask
+   * @sa xTaskCreate()
+   * @sa xTaskDelete()
+   *
+   */
   typedef VOID_TYPE Task_t;
+
+
+  /**
+   * @brief Data type for a task
+   *
+   * @sa Task_t
+   *
+   */
   typedef Task_t *xTask;
+
+
+  /**
+   * @brief Data type for a timer
+   *
+   * The Timer_t data type is used as a timer. The timer is created when
+   * xTimerCreate() is called. For more information about timers, see
+   * xTimerCreate().
+   *
+   * @sa xTimer
+   * @sa xTimerCreate()
+   * @sa xTimerDelete()
+   *
+   */
   typedef VOID_TYPE Timer_t;
+
+
+  /**
+   * @brief Data type for a timer
+   *
+   * @sa Timer_t
+   *
+   */
   typedef Timer_t *xTimer;
+
+
+  /**
+   * @brief Data type for a queue
+   *
+   * The Queue_t data type is used as a queue The queue is created when
+   * xQueueCreate() is called. For more information about queues, see
+   * xQueueCreate().
+   *
+   * @sa xQueue
+   * @sa xQueueCreate()
+   * @sa xQueueDelete()
+   *
+   */
   typedef VOID_TYPE Queue_t;
+
+
+  /**
+   * @brief Data type for a queue
+   *
+   * @sa Queue_t
+   *
+   */
   typedef Queue_t *xQueue;
+
+
+  /**
+   * @brief Data type for a stream buffer
+   *
+   * The StreamBuffer_t data type is used as a stream buffer. The stream buffer
+   * is created when xStreamCreate() is called. For more information about
+   * stream buffers, see xStreamCreate(). Stream_t should be declared as
+   * xStream.
+   *
+   * @sa xStream
+   * @sa xStreamCreate()
+   * @sa xStreamDelete()
+   *
+   */
   typedef VOID_TYPE StreamBuffer_t;
+
+
+  /**
+   * @brief Data type for a stream buffer
+   *
+   * @sa StreamBuffer_t
+   *
+   */
   typedef StreamBuffer_t *xStreamBuffer;
 
 
-/**
- * @brief Data structure for a direct to task notification
- *
- * The TaskNotification_t data structure is used by xTaskNotifyGive() and
- * xTaskNotifyTake() to send and receive direct to task notifications. Direct to
- * task notifications are part of the event-driven multitasking model. A direct
- * to task notification may be received by event-driven and co-operative tasks
- * alike. However, the benefit of direct to task notifications may only be
- * realized by tasks scheduled as event-driven. In order to wait for a direct to
- * task notification, the task must be in a "waiting" state which is set by
- * xTaskWait().
- *
- * @sa xTaskNotification
- * @sa xMemFree()
- * @sa xTaskNotifyGive()
- * @sa xTaskNotifyTake()
- * @sa xTaskWait()
- *
- */
+  /**
+   * @brief Data structure for a direct to task notification
+   *
+   * The TaskNotification_t data structure is used by xTaskNotifyGive() and
+   * xTaskNotifyTake() to send and receive direct to task notifications. Direct
+   * to task notifications are part of the event-driven multitasking model. A
+   * direct to task notification may be received by event-driven and
+   * co-operative tasks alike. However, the benefit of direct to task
+   * notifications may only be realized by tasks scheduled as event-driven. In
+   * order to wait for a direct to task notification, the task must be in a
+   * "waiting" state which is set by xTaskWait().
+   *
+   * @sa xTaskNotification
+   * @sa xMemFree()
+   * @sa xTaskNotifyGive()
+   * @sa xTaskNotifyTake()
+   * @sa xTaskWait()
+   *
+   */
   typedef struct TaskNotification_s {
     Base_t notificationBytes; /**< The length in bytes of the notification value
                                * which cannot exceed
