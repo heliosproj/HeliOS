@@ -40,228 +40,49 @@
   #include "timer.h"
 
 
-  #if defined(ARDUINO_ARCH_AVR) /* TESTED 2022-03-24 */
-/*UNCRUSTIFY-OFF*/
-/*
+  #if defined(ARDUINO_ARCH_AVR)
 
-   https://github.com/arduino/ArduinoCore-avr/blob/master/cores/arduino/wiring.c
+    #include <Arduino.h>
 
-   Copyright (c) 2005-2006 David A. Mellis
+    #define DISABLE_INTERRUPTS() interrupts()
 
-   volatile unsigned long timer0_overflow_count = 0;
-   volatile unsigned long timer0_millis = 0;
-   static unsigned char timer0_fract = 0;
-
- #if defined(TIM0_OVF_vect)
-   ISR(TIM0_OVF_vect)
- #else
-   ISR(TIMER0_OVF_vect)
- #endif
-   {
-    // copy these to local variables so they can be stored in registers
-    // (volatile variables must be read from memory on every access)
-    unsigned long m = timer0_millis;
-    unsigned char f = timer0_fract;
-
-    m += MILLIS_INC;
-    f += FRACT_INC;
-    if (f >= FRACT_MAX) {
-      f -= FRACT_MAX;
-      m += 1;
-    }
-
-    timer0_fract = f;
-    timer0_millis = m;
-    timer0_overflow_count++;
-   }
-
- */
-/*UNCRUSTIFY-ON*/
-    extern unsigned long timer0_overflow_count;
-
-    #define DISABLE_INTERRUPTS() __asm__ __volatile__ ("cli")
-
-    #define ENABLE_INTERRUPTS() __asm__ __volatile__ ("sei")
+    #define ENABLE_INTERRUPTS() noInterrupts()
 
   #elif defined(ARDUINO_ARCH_SAM)
 
+    #include <Arduino.h>
 
-/*UNCRUSTIFY-OFF*/
-/*
+    #define DISABLE_INTERRUPTS() interrupts()
 
-   https://github.com/arduino/ArduinoCore-sam/blob/master/cores/arduino/cortex_handlers.c
+    #define ENABLE_INTERRUPTS() noInterrupts()
 
-   Copyright (c) 2012 Arduino.  All right reserved.
+  #elif defined(ARDUINO_ARCH_SAMD)
 
-   void SysTick_Handler(void)
-   {
-    if (sysTickHook())
-      return;
+    #include <Arduino.h>
 
-    tickReset();
+    #define DISABLE_INTERRUPTS() interrupts()
 
-    // Increment tick count each ms
-    TimeTick_Increment();
-   }
+    #define ENABLE_INTERRUPTS() noInterrupts()
 
-   https://github.com/arduino/ArduinoCore-sam/blob/master/system/libsam/source/timetick.c
+  #elif defined(ARDUINO_ARCH_ESP8266)
 
-   Copyright (c) 2011-2012, Atmel Corporation
+    #include <Arduino.h>
 
-   static volatile uint32_t _dwTickCount=0 ;
+    #define DISABLE_INTERRUPTS() interrupts()
 
-   extern void TimeTick_Increment( void )
-   {
-      _dwTickCount++ ;
-   }
-
-   extern uint32_t GetTickCount( void )
-   {
-      return _dwTickCount ;
-   }
-
- */
-/*UNCRUSTIFY-ON*/
-    extern uint32_t GetTickCount(void);
-
-
-
-    #define DISABLE_INTERRUPTS() __asm volatile ("cpsid i")
-
-    #define ENABLE_INTERRUPTS() __asm volatile ("cpsie i")
-
-  #elif defined(ARDUINO_ARCH_SAMD) /* TESTED 2022-03-24 */
-/*UNCRUSTIFY-OFF*/
-/*
-
-   https://github.com/arduino/ArduinoCore-samd/blob/master/cores/arduino/delay.c
-
-   Copyright (c) 2015 Arduino LLC.  All right reserved.
-
-   static volatile uint32_t _ulTickCount=0 ;
-
-   unsigned long millis( void )
-   {
-   // todo: ensure no interrupts
-    return _ulTickCount ;
-   }
-
-   void SysTick_DefaultHandler(void)
-   {
-    // Increment tick count each ms
-    _ulTickCount++;
-    tickReset();
-   }
-
- */
-/*UNCRUSTIFY-ON*/
-    extern unsigned long millis(void);
-
-    #define DISABLE_INTERRUPTS() __asm volatile ("cpsid i")
-
-    #define ENABLE_INTERRUPTS() __asm volatile ("cpsie i")
-
-  #elif defined(ARDUINO_ARCH_ESP8266) /* TESTED 2022-08-22 */
-/*UNCRUSTIFY-OFF*/
-/*
-
-   https://github.com/esp8266/Arduino/blob/master/cores/esp8266/core_esp8266_wiring.cpp
-
-   Copyright (c) 2014 Ivan Grokhotkov. All rights reserved.
-
-   unsigned long IRAM_ATTR micros() {
-    return system_get_time();
-   }
-
- */
-/*UNCRUSTIFY-ON*/
-    #include "core_esp8266_features.h"
-
-    typedef uint32_t uint32;
-    extern uint32 system_get_time(void);
-    extern void yield(void);
-
-
-
-    #define DISABLE_INTERRUPTS() xt_rsil(15)
-
-    #define ENABLE_INTERRUPTS() xt_rsil(0)
+    #define ENABLE_INTERRUPTS() noInterrupts()
 
   #elif defined(ARDUINO_TEENSY_MICROMOD) || defined(ARDUINO_TEENSY40) || defined(ARDUINO_TEENSY41) || \
   defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY35) || defined(ARDUINO_TEENSY31) || defined(ARDUINO_TEENSY32) || \
-  defined(ARDUINO_TEENSY30) || defined(ARDUINO_TEENSYLC) /*
-                                                          *
-                                                          *
-                                                          *
-                                                          *
-                                                          *
-                                                          *
-                                                          *
-                                                          *
-                                                          *
-                                                          *
-                                                          *
-                                                          *
-                                                          *
-                                                          *
-                                                          *
-                                                          *
-                                                          *
-                                                          *
-                                                          *
-                                                          *
-                                                          *
-                                                          *
-                                                          *
-                                                          *
-                                                          *
-                                                          *
-                                                          *
-                                                          *
-                                                          *
-                                                          *
-                                                          *
-                                                          * TESTED 2022-03-24
-                                                          */
+  defined(ARDUINO_TEENSY30) || defined(ARDUINO_TEENSYLC)
 
+    #include <Arduino.h>
 
-/*UNCRUSTIFY-OFF*/
-/*
+    #define DISABLE_INTERRUPTS() interrupts()
 
-   https://github.com/PaulStoffregen/cores/blob/master/teensy4/EventResponder.cpp
+    #define ENABLE_INTERRUPTS() noInterrupts()
 
-   Copyright 2017 Paul Stoffregen
-
-   extern "C" volatile uint32_t systick_millis_count;
-   extern "C" volatile uint32_t systick_cycle_count;
-   extern "C" uint32_t systick_safe_read; // micros() synchronization
-   extern "C" void systick_isr(void)
-   {
-    systick_cycle_count = ARM_DWT_CYCCNT;
-    systick_millis_count++;
-   }
-
-   https://github.com/PaulStoffregen/cores/blob/master/teensy3/EventResponder.cpp
-
-   Copyright 2017 Paul Stoffregen
-
-   extern "C" volatile uint32_t systick_millis_count;
-
-   void systick_isr(void)
-   {
-    systick_millis_count++;
-   }
-
- */
-/*UNCRUSTIFY-ON*/
-    extern uint32_t systick_millis_count;
-
-    #define DISABLE_INTERRUPTS() __asm volatile ("cpsid i")
-
-    #define ENABLE_INTERRUPTS() __asm volatile ("cpsie i")
-
-  #elif defined(ESP32) /* The ESP32 Arduino core is not supported as it is
-                        * bundled with FreeRTOS. */
+  #elif defined(ESP32)
 
     #pragma \
   message("WARNING: The ESP32 Arduino core uses FreeRTOS. HeliOS and FreeRTOS cannot coexist in the same application. If your application requires an embedded operating system, use the built-in FreeRTOS included with the ESP32 Arduino core.")
@@ -270,40 +91,9 @@
 
     #define ENABLE_INTERRUPTS()
 
-  #elif defined(CMSIS_ARCH_CORTEXM) /* TESTED 2022-03-24 */
-/*UNCRUSTIFY-OFF*/
-/* ld linker script section
+  #elif defined(CMSIS_ARCH_CORTEXM)
 
-   .kernel_mem_region (NOLOAD):
-   {
-    . = ALIGN(0x8000);
-    _start_kernel_mem_region = .;
- *(.kernel_mem_region*);
-    . = ALIGN(0x8000);
-    _end_kernel_mem_region = .;
-    _size_kernel_mem_region = _end_kernel_mem_region - _start_kernel_mem_region;
-   } > RAM
-
- */
-/*UNCRUSTIFY-ON*/
-/*UNCRUSTIFY-OFF*/
-/*
- *** START SECTION: ADD VENDOR HEADER HERE ***
-
-   Example: For the STM32 F4292ZI MCU, the following
-   include line would have to be added.
-
- #include "stm32f429xx.h"
- */
-/*UNCRUSTIFY-ON*/
     #include "stm32f429xx.h"
-
-
-/*UNCRUSTIFY-OFF*/
-/*
- *** END SECTION: ADD VENDOR HEADER HERE ***
- */
-/*UNCRUSTIFY-ON*/
 
     #define DISABLE_INTERRUPTS() __disable_irq()
 
@@ -313,7 +103,7 @@
 
     #define SYSTEM_CORE_CLOCK_PRESCALER 0x3E8u /* 1000u */
 
-  #elif defined(POSIX_ARCH_OTHER) /* TESTED 2022-03-24 */
+  #elif defined(POSIX_ARCH_OTHER)
 
     #include "posix.h"
 
@@ -328,6 +118,14 @@
     #else  /* if defined(UNIT_TEST_COLORIZE) */
       #define CONFIG_SYSTEM_ASSERT_BEHAVIOR(f, l) printf("kernel: assert at %s:%d\n", f, l)
     #endif /* if defined(UNIT_TEST_COLORIZE) */
+
+  #elif defined(ARDUINO_ARCH_STM32)
+
+    #include <Arduino.h>
+
+    #define DISABLE_INTERRUPTS() interrupts()
+
+    #define ENABLE_INTERRUPTS() noInterrupts()
 
   #endif /* if defined(ARDUINO_ARCH_AVR) */
 

@@ -49,12 +49,12 @@ Ticks_t __PortGetSysTicks__(void) {
 
 #if defined(ARDUINO_ARCH_AVR)
 
-    return(timer0_overflow_count);
+    return(millis());
 
 
 #elif defined(ARDUINO_ARCH_SAM)
 
-    return(GetTickCount());
+    return(millis());
 
 
 #elif defined(ARDUINO_ARCH_SAMD)
@@ -63,16 +63,15 @@ Ticks_t __PortGetSysTicks__(void) {
 
 
 #elif defined(ARDUINO_ARCH_ESP8266)
-    yield();
 
-    return((Ticks_t) (system_get_time() / 1000ULL));
+    return(millis());
 
 
 #elif defined(ARDUINO_TEENSY_MICROMOD) || defined(ARDUINO_TEENSY40) || defined(ARDUINO_TEENSY41) || \
   defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY35) || defined(ARDUINO_TEENSY31) || defined(ARDUINO_TEENSY32) || \
   defined(ARDUINO_TEENSY30) || defined(ARDUINO_TEENSYLC)
 
-    return(systick_millis_count);
+    return(millis());
 
 
 #elif defined(ESP32)
@@ -80,7 +79,6 @@ Ticks_t __PortGetSysTicks__(void) {
     return;
 
 
-/* Not supported. */
 #elif defined(CMSIS_ARCH_CORTEXM)
 
     return (sysTicks);
@@ -96,6 +94,9 @@ Ticks_t __PortGetSysTicks__(void) {
 
     return((t.tv_sec) * 1000 + (t.tv_usec) / 1000);
 
+#elif defined(ARDUINO_ARCH_STM32)
+
+    return(millis());
 
 #endif /* if defined(ARDUINO_ARCH_AVR) */
 }
@@ -126,8 +127,8 @@ Return_t __PortInit__(void) {
 
     RET_OK;
 
-#elif defined(ESP32) /* The ESP32 Arduino core is not supported as it is bundled
-                      * with FreeRTOS. */
+#elif defined(ESP32)
+
     RET_OK;
 
 
@@ -136,6 +137,10 @@ Return_t __PortInit__(void) {
     RET_OK;
 
 #elif defined(POSIX_ARCH_OTHER)
+
+    RET_OK;
+
+#elif defined(ARDUINO_ARCH_STM32)
 
     RET_OK;
 
