@@ -52,8 +52,7 @@
 
   #elif defined(ARDUINO_ARCH_ESP32) || defined(ESP32)
 
-    #pragma \
-  message("WARNING: The ESP32 Arduino core uses FreeRTOS. HeliOS and FreeRTOS cannot coexist in the same application. If your application requires an embedded operating system, use the built-in FreeRTOS included with the ESP32 Arduino core.")
+    #pragma message("WARNING: The ESP32 Arduino core uses FreeRTOS. HeliOS and FreeRTOS cannot coexist in the same application.")
 
     #define DISABLE_INTERRUPTS()
 
