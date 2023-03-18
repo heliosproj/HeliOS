@@ -40,7 +40,9 @@
   #include "timer.h"
 
 
-  #if defined(ARDUINO_ARCH_AVR)
+  #if defined(ARDUINO_ARCH_AVR) || defined(ARDUINO_ARCH_SAM) || defined(ARDUINO_ARCH_SAMD) || defined(ARDUINO_ARCH_ESP8266) || defined(ARDUINO_ARCH_STM32) || \
+  defined(ARDUINO_TEENSY_MICROMOD) || defined(ARDUINO_TEENSY40) || defined(ARDUINO_TEENSY41) || defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY35) || \
+  defined(ARDUINO_TEENSY31) || defined(ARDUINO_TEENSY32) || defined(ARDUINO_TEENSY30) || defined(ARDUINO_TEENSYLC)
 
     #include <Arduino.h>
 
@@ -48,41 +50,7 @@
 
     #define ENABLE_INTERRUPTS() noInterrupts()
 
-  #elif defined(ARDUINO_ARCH_SAM)
-
-    #include <Arduino.h>
-
-    #define DISABLE_INTERRUPTS() interrupts()
-
-    #define ENABLE_INTERRUPTS() noInterrupts()
-
-  #elif defined(ARDUINO_ARCH_SAMD)
-
-    #include <Arduino.h>
-
-    #define DISABLE_INTERRUPTS() interrupts()
-
-    #define ENABLE_INTERRUPTS() noInterrupts()
-
-  #elif defined(ARDUINO_ARCH_ESP8266)
-
-    #include <Arduino.h>
-
-    #define DISABLE_INTERRUPTS() interrupts()
-
-    #define ENABLE_INTERRUPTS() noInterrupts()
-
-  #elif defined(ARDUINO_TEENSY_MICROMOD) || defined(ARDUINO_TEENSY40) || defined(ARDUINO_TEENSY41) || \
-  defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY35) || defined(ARDUINO_TEENSY31) || defined(ARDUINO_TEENSY32) || \
-  defined(ARDUINO_TEENSY30) || defined(ARDUINO_TEENSYLC)
-
-    #include <Arduino.h>
-
-    #define DISABLE_INTERRUPTS() interrupts()
-
-    #define ENABLE_INTERRUPTS() noInterrupts()
-
-  #elif defined(ESP32)
+  #elif defined(ARDUINO_ARCH_ESP32) || defined(ESP32)
 
     #pragma \
   message("WARNING: The ESP32 Arduino core uses FreeRTOS. HeliOS and FreeRTOS cannot coexist in the same application. If your application requires an embedded operating system, use the built-in FreeRTOS included with the ESP32 Arduino core.")
@@ -119,15 +87,13 @@
       #define CONFIG_SYSTEM_ASSERT_BEHAVIOR(f, l) printf("kernel: assert at %s:%d\n", f, l)
     #endif /* if defined(UNIT_TEST_COLORIZE) */
 
-  #elif defined(ARDUINO_ARCH_STM32)
-
-    #include <Arduino.h>
-
-    #define DISABLE_INTERRUPTS() interrupts()
-
-    #define ENABLE_INTERRUPTS() noInterrupts()
-
-  #endif /* if defined(ARDUINO_ARCH_AVR) */
+  #endif /* if defined(ARDUINO_ARCH_AVR) || defined(ARDUINO_ARCH_SAM) ||
+          * defined(ARDUINO_ARCH_SAMD) || defined(ARDUINO_ARCH_ESP8266) ||
+          * defined(ARDUINO_ARCH_STM32) || defined(ARDUINO_TEENSY_MICROMOD) ||
+          * defined(ARDUINO_TEENSY40) || defined(ARDUINO_TEENSY41) ||
+          * defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY35) ||
+          * defined(ARDUINO_TEENSY31) || defined(ARDUINO_TEENSY32) ||
+          * defined(ARDUINO_TEENSY30) || defined(ARDUINO_TEENSYLC) */
 
 
   #ifdef __cplusplus
