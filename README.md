@@ -24,8 +24,6 @@ Lastly, for PlatformIO and Arduino users, HeliOS is easily added to their embedd
 # What's New
 The HeliOS 0.4.x series kernel was recently released which supersedes all prior kernel versions. The syscall API and internals have undergone significant development rendering applications built on earlier kernels incompatible with 0.4.x. The key change that will impact compatibility is the introduction of a consistent return type for all syscalls. This provides a better mechanism for error propagation and a consistent interface handling errors.
 
-This provides the user a consistent interface for error errors or exceptions that occur deep within the kernel to propagate upwards through the kernel to the user's application.
-
 For example, prior to kernel 0.4.0, a task would be created as follows.
 
 ```C
