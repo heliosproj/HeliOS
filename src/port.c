@@ -81,7 +81,7 @@ Ticks_t __PortGetSysTicks__(void) {
 
 #elif defined(CMSIS_ARCH_CORTEXM)
 
-    return (sysTicks);
+    return(sysTicks);
 
 
 #elif defined(POSIX_ARCH_OTHER)
