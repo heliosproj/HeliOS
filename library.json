@@ -15,7 +15,7 @@
       "maintainer":true
     }
   ],
-  "license":"GPL-2.0-only",
+  "license":"GPL-2.0-or-later",
   "homepage":"https://www.heliosproj.org/",
   "frameworks":"*",
   "platforms":"*"
