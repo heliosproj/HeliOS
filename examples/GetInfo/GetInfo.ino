@@ -28,11 +28,7 @@ void taskPrint_main(xTask task_, xTaskParm parm_) {
     str = "taskPrint_main(): id = ";
     str += tinfo->id;
     str += ", name = ";
-    str += (char *) tinfo->name; /* Technically this is not a good practice as
-                                  * tinfo->name is not a null terminated char
-                                  * array so the String "+" operated may read
-                                  * past the eight byte foundry of tinfo->name.
-                                  */
+    str += xByte2String(CONFIG_TASK_NAME_BYTES, tinfo->name);
     str += ", state = ";
     str += tinfo->state;
     str += ", ltime = ";
@@ -48,12 +44,7 @@ void taskPrint_main(xTask task_, xTaskParm parm_) {
 
   if(OK(xSystemGetSystemInfo(&sinfo))) {
     str = "taskPrint_main(): ";
-    str += (char *) sinfo->productName; /* Technically this is not a good
-                                         * practice as sinfo->productName is not
-                                         * a null terminated char array so the
-                                         * String "+" operated may read past the
-                                         * eight byte boundary of
-                                         * sinfo->productName. */
+    str += xByte2String(OS_PRODUCT_NAME_SIZE, sinfo->productName);
     str += " ";
     str += sinfo->majorVersion;
     str += ".";
