@@ -561,7 +561,7 @@
    * @brief Data structure for information about a task
    *
    */
-  typedef TaskInfo_t xTaskInfo;
+  typedef TaskInfo_t *xTaskInfo;
 
 
   /**

@@ -17,11 +17,6 @@
 #include <HeliOS.h>
 
 
-/* Define the task's main function. This is the function that will be called by
- * the scheduler to run the task. The "task_" parameter contains the task object
- * for the task itself. The "parm_" parameter points to the memory containing
- * the task parameter(s). The task parameter must be dereferenced inside the
- * task's main function by using the DEREF_TASKPARM() C macro. */
 void taskShort_main(xTask task_, xTaskParm parm_) {
   /* Arduino's delay() is only used here to demonstrate HeliOS functionality and
    * must not be used in a real application built on HeliOS. */
@@ -30,11 +25,6 @@ void taskShort_main(xTask task_, xTaskParm parm_) {
 }
 
 
-/* Define the task's main function. This is the function that will be called by
- * the scheduler to run the task. The "task_" parameter contains the task object
- * for the task itself. The "parm_" parameter points to the memory containing
- * the task parameter(s). The task parameter must be dereferenced inside the
- * task's main function by using the DEREF_TASKPARM() C macro. */
 void taskLong_main(xTask task_, xTaskParm parm_) {
   /* Arduino's delay() is only used here to demonstrate HeliOS functionality and
    * must not be used in a real application built on HeliOS. */
@@ -44,55 +34,41 @@ void taskLong_main(xTask task_, xTaskParm parm_) {
 
 
 void setup() {
+  xTask shortTask;
+  xTask longTask;
+
+
   Serial.begin(9600);
 
   if(ERROR(xSystemInit())) {
     xSystemHalt();
   }
 
-
-  /* Declare the task object (a.k.a., task handle) which will be used inside of
-   * the Arduino setup() function to configure the task prior to handing over
-   * control to the HeliOS scheduler. */
-  xTask shortTask;
-  xTask longTask;
-
-
-  /* Call the xTaskCreate() syscall to create the task and update the task
-   * object. The OK() C macro is a concise method for checking the return value
-   * of the xTaskCreate() syscall. A consistent return type (xReturn) was
-   * introduced in kernel 0.4.0. In this example the syscalls are heavily nested
-   * for a single return point. If multiple return points are acceptable (e.g.,
-   * not having to conform to MISRA C:2012) in your application, the syscalls
-   * can be un-nested and paired with a return statement. */
-  if(OK(xTaskCreate(&shortTask, "SHORT", taskShort_main, null))) {
-    if(OK(xTaskCreate(&longTask, "LONG", taskLong_main, null))) {
-      /* Because the tasks will be an cooperatively scheduled (i.e., scheduled
-       * to always run), the task must be placed in the
-       * "running" state by xTaskResume(). */
-      if(OK(xTaskResume(shortTask))) {
-        if(OK(xTaskResetTimer(longTask))) {
-          /* Now that our task(s) are created and configured they way we want,
-           * control must be passed to the HeliOS scheduler. Once this is done,
-           * the only way to return control back to the Arduino setup() function
-           * is by calling xTaskSuspendAll() which will cause the scheduler to
-           * quit. */
-          xTaskStartScheduler();
-        }
-      }
-    }
+  if(ERROR(xTaskCreate(&shortTask, "SHORTTSK", taskShort_main, null))) {
+    xSystemHalt();
   }
 
+  if(ERROR(xTaskCreate(&longTask, "LONGTSK ", taskLong_main, null))) {
+    xSystemHalt();
+  }
 
-  /* While not required, it is advised to call xSystemHalt() at the end of the
-   * Arduino setup() function. In this way, if there are errors that occur or if
-   * the scheduler is forced to quick, the application will halt the execution
-   * of further application code. */
+  if(ERROR(xTaskResume(shortTask))) {
+    xSystemHalt();
+  }
+
+  if(ERROR(xTaskResetTimer(longTask))) {
+    xSystemHalt();
+  }
+
+  if(ERROR(xTaskStartScheduler())) {
+    xSystemHalt()
+  }
+
   xSystemHalt();
 }
 
 
 void loop() {
-  /* The Arduino loop() is not used in a HeliOS application and must remain
-   * empty. */
+
+
 }
