@@ -33,7 +33,7 @@
   "doxdocgen.file.versionTag": "@version 0.4.0",
   "doxdocgen.generic.authorEmail": "manny@heliosproj.org",
   "doxdocgen.generic.authorName": "Manny Peterson",
-  "doxdocgen.generic.authorTag": "@author {author} ({email})",
+  "doxdocgen.generic.authorTag": "@author {author} <{email}>",
   "doxdocgen.generic.boolReturnsTrueFalse": true,
   "doxdocgen.generic.briefTemplate": "@brief {text}",
   "doxdocgen.generic.dateFormat": "YYYY-MM-DD",

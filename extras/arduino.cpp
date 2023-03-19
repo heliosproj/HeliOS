@@ -1,27 +1,16 @@
 /*UNCRUSTIFY-OFF*/
 /**
  * @file arduino.cpp
- * @author Manny Peterson (mannymsp@gmail.com)
- * @brief Source code to allow the HeliOS kernel to interface with the C++ Arduino API.
+ * @author Manny Peterson <manny@heliosproj.org>
+ * @brief Kernel source to allow kernel to interface with Arduino C++ API
  * @version 0.4.0
- * @date 2022-02-25
+ * @date 2023-03-19
  * 
  * @copyright
- * HeliOS Embedded Operating System
- * Copyright (C) 2020-2023 Manny Peterson <mannymsp@gmail.com>
+ * HeliOS Embedded Operating System Copyright (C) 2020-2023 HeliOS Project <license@heliosproj.org>
  *  
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ *  SPDX-License-Identifier: GPL-2.0-or-later
  *  
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *  
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  * 
  */
 /*UNCRUSTIFY-ON*/

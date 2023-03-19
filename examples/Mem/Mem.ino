@@ -1,31 +1,19 @@
 /*UNCRUSTIFY-OFF*/
 /**
  * @file Mem.ino
- * @author Manny Peterson (mannymsp@gmail.com)
- * @brief Example code to demonstrate how heap memory is managed in HeliOS
+ * @author Manny Peterson <manny@heliosproj.org>
+ * @brief An example Arduino sketch
  * @version 0.4.0
- * @date 2022-02-14
- *
+ * @date 2023-03-19
+ * 
  * @copyright
- * HeliOS Embedded Operating System
- * Copyright (C) 2020-2023 Manny Peterson <mannymsp@gmail.com>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *
+ * HeliOS Embedded Operating System Copyright (C) 2020-2023 HeliOS Project <license@heliosproj.org>
+ *  
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  
+ * 
  */
 /*UNCRUSTIFY-ON*/
-
 #include <HeliOS.h>
 
 
