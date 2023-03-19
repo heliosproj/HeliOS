@@ -14,6 +14,7 @@
  * 
  */
 /*UNCRUSTIFY-ON*/
+#include <Arduino.h>
 #include <HeliOS.h>
 
 
@@ -27,7 +28,11 @@ void taskPrint_main(xTask task_, xTaskParm parm_) {
     str = "taskPrint_main(): id = ";
     str += tinfo->id;
     str += ", name = ";
-    str += tinfo->name;
+    str += (char *) tinfo->name; /* Technically this is not a good practice as
+                                  * tinfo->name is not a null terminated char
+                                  * array so the String "+" operated may read
+                                  * past the eight byte foundry of tinfo->name.
+                                  */
     str += ", state = ";
     str += tinfo->state;
     str += ", ltime = ";
@@ -43,7 +48,12 @@ void taskPrint_main(xTask task_, xTaskParm parm_) {
 
   if(OK(xSystemGetSystemInfo(&sinfo))) {
     str = "taskPrint_main(): ";
-    str += sinfo->productName;
+    str += (char *) sinfo->productName; /* Technically this is not a good
+                                         * practice as sinfo->productName is not
+                                         * a null terminated char array so the
+                                         * String "+" operated may read past the
+                                         * eight byte boundary of
+                                         * sinfo->productName. */
     str += " ";
     str += sinfo->majorVersion;
     str += ".";
@@ -72,7 +82,7 @@ void setup() {
     xSystemHalt();
   }
 
-  if(ERROR(xTaskCreate(&task, "PRINTTSK", taskPrint_main, null))) {
+  if(ERROR(xTaskCreate(&task, (const xByte *) "PRINTTSK", taskPrint_main, null))) {
     xSystemHalt();
   }
 

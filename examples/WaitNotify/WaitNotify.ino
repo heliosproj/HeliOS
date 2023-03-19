@@ -14,6 +14,7 @@
  * 
  */
 /*UNCRUSTIFY-ON*/
+#include <Arduino.h>
 #include <HeliOS.h>
 
 
@@ -21,8 +22,8 @@ void taskSender_main(xTask task_, xTaskParm parm_) {
   xTask receiver;
 
 
-  if(OK(xTaskGetHandleByName(&receiver, "RECEIVER"))) {
-    xTaskNotifyGive(receiver, 5, "HELLO");
+  if(OK(xTaskGetHandleByName(&receiver, (const xByte *) "RECEIVER"))) {
+    xTaskNotifyGive(receiver, 5, (const xByte *) "HELLO");
   }
 }
 
@@ -33,7 +34,13 @@ void taskReceiver_main(xTask task_, xTaskParm parm_) {
 
 
   if(OK(xTaskNotifyTake(task_, &notif))) {
-    str += notif->notificationValue;
+    str = (char *) notif->notificationValue; /* Technically this is not a good
+                                              * practice as
+                                              * notif->notificationValue is not
+                                              * a null terminated char array so
+                                              * the String "+" operated may read
+                                              * past the eight byte boundary of
+                                              * notif->notificationValue. */
     Serial.println(str);
 
     if(ERROR(xMemFree(notif))) {
@@ -54,11 +61,11 @@ void setup() {
     xSystemHalt();
   }
 
-  if(ERROR(xTaskCreate(&sender, "SENDER__", taskSender_main, null))) {
+  if(ERROR(xTaskCreate(&sender, (const xByte *) "SENDER__", taskSender_main, null))) {
     xSystemHalt();
   }
 
-  if(ERROR(xTaskCreate(&receiver, "RECEIVER", taskReceiver_main, null))) {
+  if(ERROR(xTaskCreate(&receiver, (const xByte *) "RECEIVER", taskReceiver_main, null))) {
     xSystemHalt();
   }
 

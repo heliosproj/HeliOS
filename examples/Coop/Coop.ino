@@ -14,6 +14,7 @@
  * 
  */
 /*UNCRUSTIFY-ON*/
+#include <Arduino.h>
 #include <HeliOS.h>
 
 
@@ -44,11 +45,11 @@ void setup() {
     xSystemHalt();
   }
 
-  if(ERROR(xTaskCreate(&shortTask, "SHORTTSK", taskShort_main, null))) {
+  if(ERROR(xTaskCreate(&shortTask, (const xByte *) "SHORTTSK", taskShort_main, null))) {
     xSystemHalt();
   }
 
-  if(ERROR(xTaskCreate(&longTask, "LONGTSK ", taskLong_main, null))) {
+  if(ERROR(xTaskCreate(&longTask, (const xByte *) "LONGTSK ", taskLong_main, null))) {
     xSystemHalt();
   }
 
@@ -61,7 +62,7 @@ void setup() {
   }
 
   if(ERROR(xTaskStartScheduler())) {
-    xSystemHalt()
+    xSystemHalt();
   }
 
   xSystemHalt();

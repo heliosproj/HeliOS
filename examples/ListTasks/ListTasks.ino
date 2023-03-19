@@ -14,6 +14,7 @@
  * 
  */
 /*UNCRUSTIFY-ON*/
+#include <Arduino.h>
 #include <HeliOS.h>
 
 
@@ -49,7 +50,7 @@ void setup() {
     xSystemHalt();
   }
 
-  if(ERROR(xTaskCreate(&task, "PRINTTSK", taskPrint_main, null))) {
+  if(ERROR(xTaskCreate(&task, (const xByte *) "PRINTTSK", taskPrint_main, null))) {
     xSystemHalt();
   }
 

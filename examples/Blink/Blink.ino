@@ -14,6 +14,7 @@
  * 
  */
 /*UNCRUSTIFY-ON*/
+#include <Arduino.h>
 #include <HeliOS.h>
 
 
