@@ -28,7 +28,7 @@ First and foremost, it will take several days before your pull request is merged
 2. If you have added a new feature, you **must** add unit tests for the new feature. Pull requests for new features not accompanied by unit tests will be rejected.
 3. Your code changes must include code comments (where appropriate) and be accompanied by documentation updates (again, where appropriate).
 4. Ensure all unit tests pass.
-5. Format your code using Uncrustify. The HeliOS Uncrustify config is available [here](/extras/uncrustify/config.sh).
+5. Format your code using Uncrustify. The HeliOS Uncrustify config is available [here](/extras/uncrustify/helios.cfg).
 6. Issue that pull request and hang tight! :)
 
 ## Copyright & License
