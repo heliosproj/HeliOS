@@ -2959,12 +2959,13 @@
     #if defined(ARDUINO_ARCH_AVR) || defined(ARDUINO_ARCH_SAM) || defined(ARDUINO_ARCH_SAMD) || defined(ARDUINO_ARCH_ESP8266) || defined(ARDUINO_ARCH_STM32) || \
     defined(ARDUINO_TEENSY_MICROMOD) || defined(ARDUINO_TEENSY40) || defined(ARDUINO_TEENSY41) || defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY35) || \
     defined(ARDUINO_TEENSY31) || defined(ARDUINO_TEENSY32) || defined(ARDUINO_TEENSY30) || defined(ARDUINO_TEENSYLC)
+      String xByte2String(xSize size_, xByte *bytes_);
 
 
       /* This is here to give Arduino users a simple way to convert from the
        * HeliOS byte (xByte) array which is NOT null terminated to an Arduino
        * String. */
-      String xByte2String(size_t size_, unsigned char *bytes_) {
+      String xByte2String(xSize size_, xByte *bytes_) {
         String str = "";
         int i = 0;
         int size = (int) size_;
@@ -2972,7 +2973,7 @@
 
 
         for(i = 0; i < size; i++) {
-          cstr[i] = bytes_[i];
+          cstr[i] = (char) bytes_[i];
         }
 
         cstr[size_] = '\0';
