@@ -35,9 +35,9 @@
 
     #include <Arduino.h>
 
-    #define DISABLE_INTERRUPTS() interrupts()
+    #define DISABLE_INTERRUPTS() noInterrupts()
 
-    #define ENABLE_INTERRUPTS() noInterrupts()
+    #define ENABLE_INTERRUPTS() interrupts()
 
   #elif defined(ARDUINO_ARCH_ESP32) || defined(ESP32)
 
