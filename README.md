@@ -261,7 +261,7 @@ All releases, including the current release, can be found [here](https://github.
 * 0.2.1 - The first official release
 ***
 # Contributing
-To contribute, create a pull request with your changes. Please fork from the **develop** branch only, as **master** is kept even with the current release. If you would like to make a recommendation or are in need of support, please open an issue. If you are seeking support, please include your source code, details about your particular platform and/or tool-chain and a detailed description of the issue you are facing. All pull requests and issues are responded to as quickly as possible.
+See the [contributing](/CONTRIBUTING.md) guidelines on how to contribute to HeliOS.
 ***
 # Copyright & License
 HeliOS Embedded Operating System Copyright (C) 2020-2023 HeliOS Project <license@heliosproj.org>
