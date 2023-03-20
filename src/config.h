@@ -140,11 +140,11 @@
  * kernel memory regions. The size of a memory block is defined by the
  * CONFIG_MEMORY_REGION_BLOCK_SIZE setting. The size of all memory regions needs
  * to be adjusted to fit the memory requirements of the end-user's application.
- * The default value is 24 blocks.
+ * The default value is 16 blocks.
  *
  */
   #if !defined(CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS)
-    #define CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS 0x18u /* 24 */
+    #define CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS 0x10u /* 16 */
   #endif /* if !defined(CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS) */
 
 
