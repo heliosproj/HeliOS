@@ -57,7 +57,7 @@ void setup() {
     xSystemHalt();
   }
 
-  if(ERROR(xTaskResetTimer(longTask))) {
+  if(ERROR(xTaskResume(longTask))) {
     xSystemHalt();
   }
 

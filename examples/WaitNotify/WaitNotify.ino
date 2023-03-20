@@ -34,7 +34,7 @@ void taskReceiver_main(xTask task_, xTaskParm parm_) {
 
 
   if(OK(xTaskNotifyTake(task_, &notif))) {
-    str = xByte2String(CONFIG_NOTIFICATION_VALUE_BYTES, notif->notificationValue);
+    str = xByte2String(notif->notificationBytes, notif->notificationValue);
     Serial.println(str);
 
     if(ERROR(xMemFree(notif))) {
