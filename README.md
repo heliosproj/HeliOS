@@ -27,7 +27,7 @@ The HeliOS 0.4.x series kernel was recently released which supersedes all prior 
 For example, prior to kernel 0.4.0, a task would be created as follows.
 
 ```C
-xTask task = xTaskCreate("TASK", task_main, NULL);
+xTask task = xTaskCreate("TASKMAIN", task_main, NULL);
 
 if(task) {
   /* Use the task here. */
@@ -38,7 +38,7 @@ In this example, the user application would only know if an error or exception o
 ```C
 xTask task;
 
-if(ERROR(xTaskCreate(&task, (const xByte *) "TASK", task_main, null))) {
+if(ERROR(xTaskCreate(&task, (const xByte *) "TASKMAIN", task_main, null))) {
   xSystemHalt();
 }
 
