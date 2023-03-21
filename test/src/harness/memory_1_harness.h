@@ -1,6 +1,6 @@
 /*UNCRUSTIFY-OFF*/
 /**
- * @file queue_harness.h
+ * @file memory_1_harness.h
  * @author Manny Peterson <manny@heliosproj.org>
  * @brief Unit testing sources
  * @version 0.4.0
@@ -14,8 +14,8 @@
  * 
  */
 /*UNCRUSTIFY-ON*/
-#ifndef QUEUE_HARNESS_H_
-  #define QUEUE_HARNESS_H_
+#ifndef MEMORY_1_HARNESS_H_
+  #define MEMORY_1_HARNESS_H_
 
   #include "config.h"
   #include "defines.h"
@@ -31,12 +31,19 @@
 
   #include "unit.h"
 
+  typedef struct MemoryTest_s {
+    Size_t size;
+    Size_t blocks;
+    void *ptr;
+  } MemoryTest_t;
+
   #ifdef __cplusplus
     extern "C" {
   #endif /* ifdef __cplusplus */
-  void queue_harness(void);
+  void memory_1_harness(void);
+  void memory_1_harness_task(Task_t *task_, TaskParm_t *parm_);
 
   #ifdef __cplusplus
     }
   #endif /* ifdef __cplusplus */
-#endif /* ifndef QUEUE_HARNESS_H_ */
+#endif /* ifndef MEMORY_1_HARNESS_H_ */

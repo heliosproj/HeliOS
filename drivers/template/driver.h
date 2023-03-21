@@ -1,8 +1,8 @@
 /*UNCRUSTIFY-OFF*/
 /**
- * @file loopback.h
+ * @file driver.h
  * @author Manny Peterson <manny@heliosproj.org>
- * @brief Unit testing sources
+ * @brief A template for kernel mode device drivers
  * @version 0.4.0
  * @date 2023-03-19
  * 
@@ -32,11 +32,11 @@
 
 /* START: DEVICE DRIVER PARAMATER BLOCK
  *
- *  IMPORTANT: THE DEVICE NAME MUST BE SUPPLIED HERE AND MUST BE EXACTLY
+ * IMPORTANT: THE DEVICE NAME MUST BE SUPPLIED HERE AND MUST BE EXACTLY
  * CONFIG_DEVICE_NAME_BYTES (DEFAULT IS 8) IN LENGTH, IT MAY BE NECESSARY TO PAD
  * SHORTER DEVICE NAMES. */
-  #define DEVICE_NAME LOOPBACK
-  #define DEVICE_UID 0xFFu
+  #define DEVICE_NAME DEVICENA
+  #define DEVICE_UID 0x00u
   #define DEVICE_MODE DeviceModeReadWrite
   #define DEVICE_STATE DeviceStateRunning
 

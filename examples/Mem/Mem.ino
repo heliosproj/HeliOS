@@ -1,123 +1,98 @@
+/*UNCRUSTIFY-OFF*/
 /**
  * @file Mem.ino
- * @author Manny Peterson (mannymsp@gmail.com)
- * @brief Example code to demonstrate how heap memory is managed in HeliOS
- * @version 0.3.5
- * @date 2022-02-14
- *
+ * @author Manny Peterson <manny@heliosproj.org>
+ * @brief An example Arduino sketch
+ * @version 0.4.0
+ * @date 2023-03-19
+ * 
  * @copyright
- * HeliOS Embedded Operating System
- * Copyright (C) 2020-2023 Manny Peterson <mannymsp@gmail.com>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *
+ * HeliOS Embedded Operating System Copyright (C) 2020-2023 HeliOS Project <license@heliosproj.org>
+ *  
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  
+ * 
  */
-
-
+/*UNCRUSTIFY-ON*/
+#include <Arduino.h>
 #include <HeliOS.h>
 
 
 void taskPrint_main(xTask task_, xTaskParm parm_) {
-
-  String str = "";
-
-
-  /* Get how much heap memory is being used to start with. */
-  str += "taskPrint_main(): ";
-  str += xMemGetUsed();
-  str += " bytes of heap memory in use.";
-  Serial.println(str);
+  String str;
+  xSize size;
+  xTaskInfo tinfo1;
+  xTaskInfo tinfo2;
+  xTaskInfo tinfo3;
 
 
-  /* Call xTaskGetInfo() a few times to allocate some memory. */
-  xTaskInfo tinfo1 = xTaskGetTaskInfo(task_);
-  xTaskInfo tinfo2 = xTaskGetTaskInfo(task_);
-  xTaskInfo tinfo3 = xTaskGetTaskInfo(task_);
+  if(OK(xMemGetUsed(&size))) {
+    str = "taskPrint_main(): ";
+    str += size;
+    str += " bytes of heap memory in use.";
+    Serial.println(str);
+  }
 
+  if(OK(xTaskGetTaskInfo(task_, &tinfo1)) && OK(xTaskGetTaskInfo(task_, &tinfo2)) && OK(xTaskGetTaskInfo(task_, &tinfo3))) {
+    if(OK(xMemGetSize((const volatile xAddr) tinfo1, &size))) {
+      str = "taskPrint_main(): xTaskInfo is using ";
+      str += size;
+      str += " bytes of heap memory.";
+      Serial.println(str);
+    }
 
-  str = "";
+    if(OK(xMemGetUsed(&size))) {
+      str = "taskPrint_main(): ";
+      str += size;
+      str += " bytes of heap memory in use.";
+      Serial.println(str);
+    }
 
+    if(ERROR(xMemFree(tinfo1)) || ERROR(xMemFree(tinfo2)) || ERROR(xMemFree(tinfo3))) {
+      xSystemHalt();
+    }
 
-  /* Call xMemGetSize() to find out how much heap memory
-  is being used by xTaskInfo. */
-  str += "taskPrint_main(): xTaskInfo is using ";
-  str += xMemGetSize(tinfo1);
-  str += " bytes of heap memory.";
-  Serial.println(str);
-
-
-  str = "";
-
-  /* Now see how much heap memory is in use. */
-  str += "taskPrint_main(): ";
-  str += xMemGetUsed();
-  str += " bytes of heap memory in use.";
-  Serial.println(str);
-
-
-  /* Free all of the xTaskInfo memory. */
-  xMemFree(tinfo1);
-  xMemFree(tinfo2);
-  xMemFree(tinfo3);
-
-
-  str = "";
-
-  /* Check how much heap memory is in use one more time. It
-  should be the same as what we started with. */
-  str += "taskPrint_main(): ";
-  str += xMemGetUsed();
-  str += " bytes of heap memory in use.";
-  Serial.println(str);
+    if(OK(xMemGetUsed(&size))) {
+      str = "taskPrint_main(): ";
+      str += size;
+      str += " bytes of heap memory in use.";
+      Serial.println(str);
+    }
+  }
 }
 
+
 void setup() {
+  xTask task;
+
 
   Serial.begin(9600);
 
-  /* Call xSystemInit() to initialize any interrupt handlers and/or
-  memory required by HeliOS to execute on the target platform/architecture. */
-  xSystemInit();
-
-  /* Create a task to demonstrate how heap memory is managed
-  in HeliOS. */
-  xTask task = xTaskCreate("PRINT", taskPrint_main, NULL);
-
-  /* Check to make sure the task was created by xTaskCreate() before
-  attempting to use the task. */
-  if (task) {
-
-    /* Place the task in the waiting state. */
-    xTaskWait(task);
-
-    /* Set the task timer to one second. */
-    xTaskChangePeriod(task, 1000000);
-
-    /* Pass control to the HeliOS scheduler. The HeliOS scheduler will
-    not relinquish control unless xTaskSuspendAll() is called. */
-    xTaskStartScheduler();
-
-    /* If the scheduler relinquishes control, do some clean-up by
-    deleting the task. */
-    xTaskDelete(task);
+  if(ERROR(xSystemInit())) {
+    xSystemHalt();
   }
 
-  /* Halt the system. Once called, the system must be reset to
-  recover. */
+  if(ERROR(xTaskCreate(&task, (const xByte *) "PRINTTSK", taskPrint_main, null))) {
+    xSystemHalt();
+  }
+
+  if(ERROR(xTaskWait(task))) {
+    xSystemHalt();
+  }
+
+  if(ERROR(xTaskChangePeriod(task, 1000))) {
+    xSystemHalt();
+  }
+
+  if(ERROR(xTaskStartScheduler())) {
+    xSystemHalt();
+  }
+
   xSystemHalt();
 }
 
+
 void loop() {
-  /* The loop function is not used and should remain empty. */
+
+
 }

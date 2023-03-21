@@ -1,311 +1,223 @@
+/*UNCRUSTIFY-OFF*/
 /**
  * @file stream.c
- * @author Manny Peterson (mannymsp@gmail.com)
- * @brief Kernel sources for stream buffers
- * @version 0.3.5
- * @date 2022-08-30
- *
+ * @author Manny Peterson <manny@heliosproj.org>
+ * @brief Kernel source for stream buffers for inter-task communication
+ * @version 0.4.0
+ * @date 2023-03-19
+ * 
  * @copyright
- * HeliOS Embedded Operating System
- * Copyright (C) 2020-2023 Manny Peterson <mannymsp@gmail.com>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *
+ * HeliOS Embedded Operating System Copyright (C) 2020-2023 HeliOS Project <license@heliosproj.org>
+ *  
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  
+ * 
  */
+/*UNCRUSTIFY-ON*/
 #include "stream.h"
 
 
-
-/* The xStreamCreate() system call will create a new stream. Streams
-   are fast for sending streams of bytes between tasks. */
-StreamBuffer_t *xStreamCreate() {
-
-
-
-  StreamBuffer_t *ret = NULL;
-
-
-
-
-  ret = (StreamBuffer_t *)__KernelAllocateMemory__(sizeof(StreamBuffer_t));
-
-
-  /* Assert if xMemAlloc() didn't return our requested
-     kernel memory. */
-  SYSASSERT(ISNOTNULLPTR(ret));
-
-
-  /* Check if xMemAlloc() returned our requested
-     kernel memory. */
-  if (ISNOTNULLPTR(ret)) {
-
-
-    ret->length = zero;
-  }
-
-
-  return ret;
-}
-
-
-
-/* The xStreamDelete() system call will delete a stream. Streams
-   are fast for sending streams of bytes between tasks. */
-void xStreamDelete(const StreamBuffer_t *stream_) {
-
-
-  /* Assert if the heap fails its health check or if the stream pointer the end-user
-     passed is invalid. */
-  SYSASSERT(RETURN_SUCCESS == __MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
-
-
-
-  /* Check if the heap is health and the stream pointer the end-user passed is valid.
-     If so, continue. Otherwise, head toward the exit. */
-  if (RETURN_SUCCESS == __MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR)) {
-
-
-
-    __KernelFreeMemory__(stream_);
-  }
-
-
-  return;
-}
-
-
-
-/* The xStreamSend() system call will send one byte to
-   the designated stream. Sending to a stream must be done
-   one byte at a time. However, receiving from a stream
-   will return all available bytes in a stream. */
-Base_t xStreamSend(StreamBuffer_t *stream_, const Byte_t byte_) {
-
-  Base_t ret = RETURN_FAILURE;
-
-  /* Assert if the heap fails its health check or if the stream pointer the end-user
-     passed is invalid. */
-  SYSASSERT(RETURN_SUCCESS == __MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
-
-
-
-  /* Check if the heap is health and the stream pointer the end-user passed is valid.
-     If so, continue. Otherwise, head toward the exit. */
-  if (RETURN_SUCCESS == __MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR)) {
-
-
-    /* Check to make sure our stream buffer is less than
-       CONFIG_STREAM_BUFFER_BYTES in length before we attempt
-       to write a byte to it. */
-    if (CONFIG_STREAM_BUFFER_BYTES > stream_->length) {
-
-      stream_->length++;
-
-      /* Offset the stream buffer length by -1 because array
-         is base zero. */
-      stream_->buffer[stream_->length - 1] = byte_;
-
-      ret = RETURN_SUCCESS;
-    }
-  }
-
-
-  return ret;
-}
-
-
-
-/* The xStreamReceive() system call will receive all waiting bytes
-   in the stream. */
-Byte_t *xStreamReceive(const StreamBuffer_t *stream_, HalfWord_t *bytes_) {
-
-
-  Byte_t *ret = NULL;
-
-
-  /* Assert if the bytes paramater is null. It can't be
-     null because we need to return the number of bytes
-     received. */
-  SYSASSERT(ISNOTNULLPTR(bytes_));
-
-
-  /* Check if the bytes parameter is null. It can't be null
-     because we need to return the number of bytes received. */
-  if (ISNOTNULLPTR(bytes_)) {
-
-
-
-    /* Assert if the heap fails its health check or if the stream pointer the end-user
-       passed is invalid. */
-    SYSASSERT(RETURN_SUCCESS == __MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
-
-
-
-    /* Check if the heap is health and the stream pointer the end-user passed is valid.
-       If so, continue. Otherwise, head toward the exit. */
-    if (RETURN_SUCCESS == __MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR)) {
-
-
-      /* If there is nothing to receive then just head toward the exit. */
-      if (zero < stream_->length) {
-
-
-
-
-        ret = (Byte_t *)__HeapAllocateMemory__(stream_->length * sizeof(Byte_t));
-
-
-        /* Assert if we didn't get the memory we requested. */
-        SYSASSERT(ISNOTNULLPTR(ret));
-
-        /* Check to make sure we got the memory we requested. */
-        if (ISNOTNULLPTR(ret)) {
-
-          *bytes_ = stream_->length;
-
-          __memcpy__(ret, stream_->buffer, stream_->length * sizeof(Byte_t));
-
-          __memset__(stream_, zero, sizeof(StreamBuffer_t));
-        }
+Return_t xStreamCreate(StreamBuffer_t **stream_) {
+  RET_DEFINE;
+
+  if(NOTNULLPTR(stream_)) {
+    if(OK(__KernelAllocateMemory__((volatile Addr_t **) stream_, sizeof(StreamBuffer_t)))) {
+      if(NOTNULLPTR(*stream_)) {
+        (*stream_)->length = zero;
+        RET_OK;
+      } else {
+        ASSERT;
       }
+    } else {
+      ASSERT;
     }
+  } else {
+    ASSERT;
   }
 
-  return ret;
+  RET_RETURN;
 }
 
 
+Return_t xStreamDelete(const StreamBuffer_t *stream_) {
+  RET_DEFINE;
 
-/* The xStreamBytesAvailable() system call will return the number
-   of waiting bytes in the stream. */
-HalfWord_t xStreamBytesAvailable(const StreamBuffer_t *stream_) {
-
-
-  HalfWord_t ret = zero;
-
-  /* Assert if the heap fails its health check or if the stream pointer the end-user
-     passed is invalid. */
-  SYSASSERT(RETURN_SUCCESS == __MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
-
-
-
-  /* Check if the heap is health and the stream pointer the end-user passed is valid.
-     If so, continue. Otherwise, head toward the exit. */
-  if (RETURN_SUCCESS == __MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR)) {
-
-
-
-    if (zero < stream_->length) {
-
-      ret = stream_->length;
+  if(NOTNULLPTR(stream_)) {
+    if(OK(__MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
+      if(OK(__KernelFreeMemory__(stream_))) {
+        RET_OK;
+      } else {
+        ASSERT;
+      }
+    } else {
+      ASSERT;
     }
+  } else {
+    ASSERT;
   }
 
-
-  return ret;
+  RET_RETURN;
 }
 
 
+Return_t xStreamSend(StreamBuffer_t *stream_, const Byte_t byte_) {
+  RET_DEFINE;
 
-/* The xStreamReset() system call will reset the stream and clear
-   its buffer of all waiting bytes. */
-void xStreamReset(const StreamBuffer_t *stream_) {
-
-
-
-
-  /* Assert if the heap fails its health check or if the stream pointer the end-user
-     passed is invalid. */
-  SYSASSERT(RETURN_SUCCESS == __MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
-
-
-
-  /* Check if the heap is health and the stream pointer the end-user passed is valid.
-     If so, continue. Otherwise, head toward the exit. */
-  if (RETURN_SUCCESS == __MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR)) {
-
-
-    /* If there is nothing to receive then just head toward the exit. */
-    if (zero < stream_->length) {
-
-
-      __memset__(stream_, zero, sizeof(StreamBuffer_t));
+  if(NOTNULLPTR(stream_)) {
+    if(OK(__MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
+      if(CONFIG_STREAM_BUFFER_BYTES > stream_->length) {
+        stream_->buffer[stream_->length] = byte_;
+        stream_->length++;
+        RET_OK;
+      } else {
+        ASSERT;
+      }
+    } else {
+      ASSERT;
     }
+  } else {
+    ASSERT;
   }
 
-
-  return;
+  RET_RETURN;
 }
 
 
+Return_t xStreamReceive(const StreamBuffer_t *stream_, HalfWord_t *bytes_, Byte_t **data_) {
+  RET_DEFINE;
 
-/* The xStreamIsEmpty() system call will return true if the stream
-   buffer is empty (i.e., zero in size). */
-Base_t xStreamIsEmpty(const StreamBuffer_t *stream_) {
+  if(NOTNULLPTR(stream_) && NOTNULLPTR(bytes_) && NOTNULLPTR(data_)) {
+    if(OK(__MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
+      if(zero < stream_->length) {
+        if(OK(__HeapAllocateMemory__((volatile Addr_t **) data_, stream_->length * sizeof(Byte_t)))) {
+          if(NOTNULLPTR(*data_)) {
+            *bytes_ = stream_->length;
 
-  Base_t ret = true;
-
-  /* Assert if the heap fails its health check or if the stream pointer the end-user
-     passed is invalid. */
-  SYSASSERT(RETURN_SUCCESS == __MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
-
-
-
-  /* Check if the heap is health and the stream pointer the end-user passed is valid.
-     If so, continue. Otherwise, head toward the exit. */
-  if (RETURN_SUCCESS == __MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR)) {
-
-
-    /* If there is nothing to receive then just head toward the exit. */
-    if (zero < stream_->length) {
+            if(OK(__memcpy__(*data_, stream_->buffer, stream_->length * sizeof(Byte_t)))) {
+              if(OK(__memset__(stream_, zero, sizeof(StreamBuffer_t)))) {
+                RET_OK;
+              } else {
+                ASSERT;
 
 
-      ret = false;
+                /* Free heap memory because __memset__() failed. */
+                __HeapFreeMemory__(*data_);
+              }
+            } else {
+              ASSERT;
+
+
+              /* Free heap memory because __memcpy__() failed. */
+              __HeapFreeMemory__(*data_);
+            }
+          } else {
+            ASSERT;
+          }
+        } else {
+          ASSERT;
+        }
+      } else {
+        ASSERT;
+      }
+    } else {
+      ASSERT;
     }
+  } else {
+    ASSERT;
   }
 
-
-  return ret;
+  RET_RETURN;
 }
 
 
+Return_t xStreamBytesAvailable(const StreamBuffer_t *stream_, HalfWord_t *bytes_) {
+  RET_DEFINE;
 
-/* The xStreamIsFull() system call will return true if the stream
-   buffer is full (i.e., size is equal to CONFIG_STREAM_BUFFER_BYTES) */
-Base_t xStreamIsFull(const StreamBuffer_t *stream_) {
-
-  Base_t ret = false;
-
-  /* Assert if the heap fails its health check or if the stream pointer the end-user
-     passed is invalid. */
-  SYSASSERT(RETURN_SUCCESS == __MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR));
-
-
-
-  /* Check if the heap is health and the stream pointer the end-user passed is valid.
-     If so, continue. Otherwise, head toward the exit. */
-  if (RETURN_SUCCESS == __MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR)) {
-
-
-    /* If there is nothing to receive then just head toward the exit. */
-    if (CONFIG_STREAM_BUFFER_BYTES == stream_->length) {
-
-
-      ret = true;
+  if(NOTNULLPTR(stream_) && NOTNULLPTR(bytes_)) {
+    if(OK(__MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
+      if(zero < stream_->length) {
+        *bytes_ = stream_->length;
+        RET_OK;
+      } else {
+        ASSERT;
+      }
+    } else {
+      ASSERT;
     }
+  } else {
+    ASSERT;
   }
 
+  RET_RETURN;
+}
 
-  return ret;
+
+Return_t xStreamReset(const StreamBuffer_t *stream_) {
+  RET_DEFINE;
+
+  if(NOTNULLPTR(stream_)) {
+    if(OK(__MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
+      if(zero < stream_->length) {
+        if(OK(__memset__(stream_, zero, sizeof(StreamBuffer_t)))) {
+          RET_OK;
+        } else {
+          ASSERT;
+        }
+      } else {
+        ASSERT;
+      }
+    } else {
+      ASSERT;
+    }
+  } else {
+    ASSERT;
+  }
+
+  RET_RETURN;
+}
+
+
+Return_t xStreamIsEmpty(const StreamBuffer_t *stream_, Base_t *res_) {
+  RET_DEFINE;
+
+  if(NOTNULLPTR(stream_) && NOTNULLPTR(res_)) {
+    if(OK(__MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
+      if(zero < stream_->length) {
+        *res_ = false;
+        RET_OK;
+      } else {
+        *res_ = true;
+        RET_OK;
+      }
+    } else {
+      ASSERT;
+    }
+  } else {
+    ASSERT;
+  }
+
+  RET_RETURN;
+}
+
+
+Return_t xStreamIsFull(const StreamBuffer_t *stream_, Base_t *res_) {
+  RET_DEFINE;
+
+  if(NOTNULLPTR(stream_) && NOTNULLPTR(res_)) {
+    if(OK(__MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
+      if(CONFIG_STREAM_BUFFER_BYTES == stream_->length) {
+        *res_ = true;
+        RET_OK;
+      } else {
+        *res_ = false;
+        RET_OK;
+      }
+    } else {
+      ASSERT;
+    }
+  } else {
+    ASSERT;
+  }
+
+  RET_RETURN;
 }

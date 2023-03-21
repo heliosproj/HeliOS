@@ -1,6 +1,6 @@
 /*UNCRUSTIFY-OFF*/
 /**
- * @file queue_harness.h
+ * @file memory_2_harness.h
  * @author Manny Peterson <manny@heliosproj.org>
  * @brief Unit testing sources
  * @version 0.4.0
@@ -14,8 +14,8 @@
  * 
  */
 /*UNCRUSTIFY-ON*/
-#ifndef QUEUE_HARNESS_H_
-  #define QUEUE_HARNESS_H_
+#ifndef MEMORY_2_HARNESS_H_
+  #define MEMORY_2_HARNESS_H_
 
   #include "config.h"
   #include "defines.h"
@@ -31,12 +31,27 @@
 
   #include "unit.h"
 
+  #if defined(ENTRYSIZE)
+    #undef ENTRYSIZE
+  #endif /* if defined(ENTRYSIZE) */
+  #define ENTRYSIZE ((sizeof(MemoryEntry_t) / CONFIG_MEMORY_REGION_BLOCK_SIZE) + (zero < (sizeof(MemoryEntry_t) % CONFIG_MEMORY_REGION_BLOCK_SIZE) ? 1 : 0))
+
+  #if defined(ADDR2ENTRY)
+    #undef ADDR2ENTRY
+  #endif /* if defined(ADDR2ENTRY) */
+  #define ADDR2ENTRY(addr_) ((MemoryEntry_t *) ((Byte_t *) (addr_) - (ENTRYSIZE * CONFIG_MEMORY_REGION_BLOCK_SIZE)))
+
   #ifdef __cplusplus
     extern "C" {
   #endif /* ifdef __cplusplus */
-  void queue_harness(void);
+  void memory_2_harness(void);
+  void test_magic(void);
+  void test_free(void);
+  void test_blocks(void);
+  void test_next(void);
+
 
   #ifdef __cplusplus
     }
   #endif /* ifdef __cplusplus */
-#endif /* ifndef QUEUE_HARNESS_H_ */
+#endif /* ifndef MEMORY_2_HARNESS_H_ */
