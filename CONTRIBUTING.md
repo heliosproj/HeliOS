@@ -24,7 +24,7 @@ If you are reporting a bug then submit a **Bug Report** issue. If you are in nee
 
 First and foremost, it may take a week or more before your pull request is merged (if it is merged at all). All pull requests are reviewed multiple times and we may request you make changes before your pull request is merged. Once your pull request is merged, it will not appear in the mainline HeliOS source code until the next release which may be several months away. To submit a pull request, the following steps **must** be followed:
 
-1. Fork the repo and create your branch from ``develop``. **Pull requests forked from the ``master`` branch will be rejected.**
+1. Fork the repository (you must uncheck [x] Copy the ``main`` branch only. option before forking the repository).
 2. If you have added a new feature, you **must** add unit tests for the new feature. Pull requests for new features not accompanied by unit tests will be rejected.
 3. Your code changes must include code comments (where appropriate) and be accompanied by documentation updates (again, where appropriate). Most documentation changes are made to the doxygen documentation in HeliOS.h.
 4. Ensure all unit tests pass.
