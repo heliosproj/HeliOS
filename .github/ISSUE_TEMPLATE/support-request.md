@@ -1,6 +1,6 @@
 ---
 name: Support Request
-about: Request help with or support for HeliOS
+about: Request support for HeliOS
 title: "[SUPPORT] "
 labels: support
 assignees: MannyPeterson
