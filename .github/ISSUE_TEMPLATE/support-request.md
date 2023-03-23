@@ -30,10 +30,10 @@ Board/MCU Mfg [Arduino, PJRC, ST Micro]:
 
 Board/MCU Model [UNO, Teensy 4.1, NUCLEO-F429ZI]:
 
-### **5. Are you experiencing any compiler or linker errors? If so, copy and paste them here:**
+### **5. Are you experiencing any compiler or linker errors? If so, copy and paste them here (please do not provide screenshots):**
 
 
-### **6. If you have questions about a specific block of source code, copy and paste an excerpt of the source code here (IMPORTANT: USE A MARKDOWN CODE BLOCK):**
+### **6. If you have questions about a specific block of source code, copy and paste an excerpt of the source code here (use a markdown code block and please do not provide screenshots):**
 
 
 ### 7. **Attach a copy of your source code file(s) so we may compile them if needed.**
