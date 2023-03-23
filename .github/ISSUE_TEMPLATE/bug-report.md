@@ -7,7 +7,7 @@ assignees: MannyPeterson
 ---
 
 ## :dart: **Help us help you by filling out this issue completely. This issue is ONLY for bug reports. If you are seeking support, please submit a support request.**
-### **1. Describe, in detail, the bug you have encountered and how to reproduce it:**
+### **1. Describe, in detail, the bug you have encountered and how to reproduce it (if providing a source code excerpt, use a markdown code block and please do not provide screenshots of source code):**
 
 
 ### **2. What results, output, behavior are you expecting?**
