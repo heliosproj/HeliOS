@@ -27,11 +27,11 @@ First and foremost, it may take a week or more before your pull request is merge
 1. Fork the repository (you must uncheck **[x] Copy the ``main`` branch only.** option before forking the repository) into your personal GitHub account. If you do not perform this step, only the ``master`` branch will be forked.
 2. Create a new branch named ``develop-<account_name>`` from the ``develop``. **Do not make your changes to anything in the ``master`` branch which contains the latest release. If you do, your pull request will later be rejected.**
 3. Make your source code changes, create a commit and push to the remote (GitHub). 
-- [ ] If you have added a new feature, you **must** add unit tests for the new feature. **Pull requests for new features not accompanied by unit tests will be rejected.**
-3. Your code changes must include code comments (where appropriate) and be accompanied by documentation updates (again, where appropriate). Most documentation changes are made to the doxygen documentation in HeliOS.h.
-4. Ensure all unit tests pass.
-5. Format your code using Uncrustify. The HeliOS Uncrustify config is available [here](/extras/uncrustify/helios.cfg).
-6. Issue that pull request and hang tight! :)
+4. If you have added a new feature, you **must** add unit tests for the new feature. **Pull requests for new features not accompanied by unit tests will be rejected.**
+5. Your code changes must include code comments (where appropriate) and be accompanied by documentation updates (again, where appropriate). Most documentation changes are made to the doxygen documentation in ``/src/HeliOS.h`` which is used to generate the HeliOS Developer's Guide.
+6. Ensure your code compiles without warnings and the unit tests pass.
+5. Run Uncrustify against the source code files. The HeliOS Uncrustify config is available as ``/extras/uncrustify/helios.cfg``.
+8. Issue that pull request and hang tight! :)
 
 ## Copyright & License
 In short, when you contribute source code, documentation or other file changes to the HeliOS project, those contributions will become part of the HeliOS Project license and copyright.
