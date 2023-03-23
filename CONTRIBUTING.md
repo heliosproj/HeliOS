@@ -22,10 +22,12 @@ If you are reporting a bug then submit a **Bug Report** issue. If you are in nee
 
 ## Submitting a Pull Request
 
-First and foremost, it may take a week or more before your pull request is merged (if it is merged at all). All pull requests are reviewed multiple times and we may request you make changes before your pull request is merged. Once your pull request is merged, it will not appear in the mainline HeliOS source code until the next release which may be several months away. To submit a pull request, the following steps **must** be followed:
+First and foremost, it may take a week or more before your pull request is merged (if at all). All pull requests are reviewed multiple times and we may request you make changes before your pull request is merged. Once your pull request is merged, it will not appear in the mainline HeliOS source code until the next release which may be months away. To submit a pull request, the following steps **must** be followed:
 
-1. Fork the repository (you must uncheck [x] Copy the ``main`` branch only. option before forking the repository).
-2. If you have added a new feature, you **must** add unit tests for the new feature. Pull requests for new features not accompanied by unit tests will be rejected.
+1. Fork the repository (you must uncheck **[x] Copy the ``main`` branch only.** option before forking the repository) into your personal GitHub account. If you do not perform this step, only the ``master`` branch will be forked.
+2. Create a new branch named ``develop-<account_name>`` from the ``develop``. **Do not make your changes to anything in the ``master`` branch which contains the latest release. If you do, your pull request will later be rejected.**
+3. Make your source code changes, create a commit and push to the remote (GitHub). 
+- [ ] If you have added a new feature, you **must** add unit tests for the new feature. **Pull requests for new features not accompanied by unit tests will be rejected.**
 3. Your code changes must include code comments (where appropriate) and be accompanied by documentation updates (again, where appropriate). Most documentation changes are made to the doxygen documentation in HeliOS.h.
 4. Ensure all unit tests pass.
 5. Format your code using Uncrustify. The HeliOS Uncrustify config is available [here](/extras/uncrustify/helios.cfg).
