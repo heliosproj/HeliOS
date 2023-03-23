@@ -2,7 +2,7 @@
 name: Support Request
 about: Request help with or support for HeliOS
 title: "[SUPPORT] "
-labels: 'support'
+labels: support
 assignees: MannyPeterson
 ---
 
@@ -36,5 +36,5 @@ Board/MCU Model [UNO, Teensy 4.1, NUCLEO-F429ZI]:
 ### **6. If you have questions about a specific block of source code, copy and paste an excerpt of the source code here (use a markdown code block and please do not provide screenshots):**
 
 
-### 7. **Attach a copy of your source code file(s) so we may compile them if needed.**
+### 7. **Attach a copy of your source code file(s) so we may compile them if needed:**
 

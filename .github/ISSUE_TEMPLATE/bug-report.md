@@ -6,24 +6,31 @@ labels: bug
 assignees: MannyPeterson
 ---
 
-**PLEASE BE AWARE THAT THIS ISSUE IS FOR REPORTING BUGS ONLY**
-
-### Please describe, in detail, the bug you have encountered **and** how to reproduce it.
-
+## :dart: **Help us help you by filling out this issue completely. This issue is ONLY for bug reports. If you are seeking support, please submit a support request.**
+### **1. Describe, in detail, the bug you have encountered and how to reproduce it:**
 
 
-### Please provide a screenshot or text of compiler errors, if any.
+### **2. What results, output, behavior are you expecting?**
 
 
-
-### Please provide details about the MCU architecture, platform/tool-chain, development board, etc. you were using when you encountered the bug.
-
+### **3. What version of HeliOS are you using?**
 
 
-### What version of HeliOS are you running?
+### **4. Provide the following details about your development environment and development board/microcontroller:**
+
+OS [Windows, macOS, Linux]:
+
+OS Version [Windows 10, Ventura, Ubuntu 22.04]:
+
+IDE [Arduino IDE, PlatformIO, STM32CubeIDE, Keil]:
+
+IDE Version:
+
+Board/MCU Mfg [Arduino, PJRC, ST Micro]:
+
+Board/MCU Model [UNO, Teensy 4.1, NUCLEO-F429ZI]:
+
+### **5. Are you experiencing any compiler or linker errors? If so, copy and paste them here (please do not provide screenshots):**
 
 
-
-### Please attach the application source code file(s) needed to reproduce the bug.
-
-
+### 7. **Attach a copy of your source code file(s) so we may compile them if needed:**
