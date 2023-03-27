@@ -1,4 +1,8 @@
-![HeliOS](/extras/HeliOS_OG_Logo.png)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="/extras/HeliOS_OG_Logo.png">
+  <source media="(prefers-color-scheme: light)" srcset="/extras/HeliOS_OG_Logo.png">
+  <img alt="HeliOS Logo" src="/extras/HeliOS_OG_Logo.png">
+</picture>
 
 [![License: GPL Version 2](https://img.shields.io/badge/License-GPLv2-blue.svg)](https://github.com/heliosproj/HeliOS/blob/master/LICENSE.md) ![GitHub last commit](https://img.shields.io/github/last-commit/heliosproj/HeliOS) ![GitHub release (latest by date)](https://img.shields.io/github/v/release/heliosproj/HeliOS) [![PlatformIO Registry](https://badges.registry.platformio.org/packages/heliosproj/library/HeliOS.svg)](https://registry.platformio.org/libraries/heliosproj/HeliOS) [![arduino-library-badge](https://www.ardu-badge.com/badge/HeliOS.svg?)](https://www.ardu-badge.com/HeliOS) ![GitHub stars](https://img.shields.io/github/stars/heliosproj/HeliOS?style=social) ![GitHub watchers](https://img.shields.io/github/watchers/heliosproj/HeliOS?style=social)
 ***
