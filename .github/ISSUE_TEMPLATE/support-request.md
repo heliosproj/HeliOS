@@ -1,13 +1,13 @@
 ---
-name: Bug Report
-about: Report a bug in HeliOS
-title: "[BUG] "
-labels: bug
+name: Support Request
+about: Request support for HeliOS
+title: "[SUPPORT] "
+labels: support
 assignees: MannyPeterson
 ---
 
-## :dart: **Help us help you by filling out this issue completely. This issue is ONLY for bug reports. If you are seeking support, please submit a support request.**
-### **1. Describe, in detail, the bug you have encountered and how to reproduce it (if providing a source code excerpt, use a markdown code block and please do not provide screenshots of source code):**
+## :dart: **Help us help you by filling out this issue completely.**
+### **1. How can we help you (i.e., what is the issue you are facing)?**
 
 
 ### **2. What results, output, behavior are you expecting?**
@@ -33,4 +33,8 @@ Board/MCU Model [UNO, Teensy 4.1, NUCLEO-F429ZI]:
 ### **5. Are you experiencing any compiler or linker errors? If so, copy and paste them here (please do not provide screenshots):**
 
 
+### **6. If you have questions about a specific block of source code, copy and paste an excerpt of the source code here (use a markdown code block and please do not provide screenshots):**
+
+
 ### 7. **Attach a copy of your source code file(s) so we may compile them if needed:**
+

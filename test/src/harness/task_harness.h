@@ -3,7 +3,7 @@
  * @file task_harness.h
  * @author Manny Peterson <manny@heliosproj.org>
  * @brief Unit testing sources
- * @version 0.4.0
+ * @version 0.4.1
  * @date 2023-03-19
  * 
  * @copyright

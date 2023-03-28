@@ -3,7 +3,7 @@
  * @file task.h
  * @author Manny Peterson <manny@heliosproj.org>
  * @brief Kernel source for tasks and task management
- * @version 0.4.0
+ * @version 0.4.1
  * @date 2023-03-19
  * 
  * @copyright

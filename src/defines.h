@@ -3,7 +3,7 @@
  * @file defines.h
  * @author Manny Peterson <manny@heliosproj.org>
  * @brief Kernel source for macro definitions
- * @version 0.4.0
+ * @version 0.4.1
  * @date 2023-03-19
  * 
  * @copyright
@@ -88,7 +88,7 @@
   #if defined(OS_PATCH_VERSION_NO)
     #undef OS_PATCH_VERSION_NO
   #endif /* if defined(OS_PATCH_VERSION_NO) */
-  #define OS_PATCH_VERSION_NO 0x0u /* 0 */
+  #define OS_PATCH_VERSION_NO 0x1u /* 1 */
 
 
   #if defined(MEMORY_REGION_SIZE_IN_BYTES)
@@ -191,12 +191,6 @@
   #endif /* if defined(ENTRY2ADDR) */
   #define ENTRY2ADDR(addr_, region_) ((Addr_t *) (((Byte_t *) (addr_)) + ((region_)->entrySize * \
           CONFIG_MEMORY_REGION_BLOCK_SIZE)))
-
-
-  #if defined(UCHAR_TYPE)
-    #undef UCHAR_TYPE
-  #endif /* if defined(UCHAR_TYPE) */
-  #define UCHAR_TYPE unsigned char
 
 
   #if defined(UINT8_TYPE)

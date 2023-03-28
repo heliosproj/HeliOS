@@ -3,7 +3,7 @@
  * @file HeliOS.h
  * @author Manny Peterson <manny@heliosproj.org>
  * @brief Kernel source for user application header
- * @version 0.4.0
+ * @version 0.4.1
  * @date 2023-03-19
  * 
  * @copyright
