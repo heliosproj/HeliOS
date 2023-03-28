@@ -280,14 +280,14 @@ All releases, including the latest release, can be found [here](https://github.c
 # :construction: Contributing
 See the [contributing](/CONTRIBUTING.md) guidelines on how to contribute to HeliOS. **If you are going to make a source code or documentation contribution; please do not fork the ``master`` branch. Only pull requests forked from the ``develop`` branch will be accepted.**
 ***
-# :copyright: Copyright & License
+# :scroll: Copyright & License
 HeliOS Embedded Operating System Copyright (C) 2020-2023 HeliOS Project <license@heliosproj.org>
 
 HeliOS is copyrighted open source software licensed under the Free Software Foundation's GNU General Public License (GPL) Version 2. The full text of the license can be found [here](/LICENSE.md).
 ***
-# :warning: Important Notice
+# :skull_and_crossbones: Important Notice
 HeliOS is **not** certified for use in safety-critical applications. The HeliOS source code, whether in full or in part, must **never** be used in applications where a risk to life exists. In other words, do not use HeliOS in your project if there is even a remote chance someone might get hurt.
 ***
-# :information_source: Other Notice
+# :speech_balloon: Other Notice
 This project is not affiliated in any way, past or present, with the discontinued Unix-like operating system Helios developed by Dr. Tim King of Perihelion Software Ltd. or Axel Muhr's work on [Helios-NG](https://github.com/axelmuhr/Helios-NG). Any resemblance is purely coincidental.
 ***
