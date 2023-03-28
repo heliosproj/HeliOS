@@ -119,7 +119,7 @@ jobs:
       - name: Resize HeliOS logo...
         shell: bash
         run: |
-          convert -resize 1300 ${{github.workspace}}/extras/HeliOS_OG_Logo_Light.png ${{github.workspace}}/temp/HeliOS_OG_Logo_Light.png
+          convert -resize 1600 ${{github.workspace}}/extras/HeliOS_OG_Logo_Light.png ${{github.workspace}}/temp/HeliOS_OG_Logo_Light.png
 
       - name: Generate LaTeX...
         shell: bash
