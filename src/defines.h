@@ -193,12 +193,6 @@
           CONFIG_MEMORY_REGION_BLOCK_SIZE)))
 
 
-  #if defined(UCHAR_TYPE)
-    #undef UCHAR_TYPE
-  #endif /* if defined(UCHAR_TYPE) */
-  #define UCHAR_TYPE unsigned char
-
-
   #if defined(UINT8_TYPE)
     #undef UINT8_TYPE
   #endif /* if defined(UINT8_TYPE) */
