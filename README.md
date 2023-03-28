@@ -81,8 +81,8 @@ If more advanced features are desired, HeliOS also has built-in support for CMSI
 
 1. Downloading the current release [here](https://github.com/heliosproj/HeliOS/releases) and unpacking the ZIP file into your project’s source directory
 2. Downloading the CMSIS headers and vendor’s HAL/BSP headers and placing them into your project’s include directory
-3. Adding the vendor’s HAL/BSP header to the HeliOS [port.h](https://github.com/heliosproj/HeliOS/blob/master/src/port.h) header immediately following the ``#elif defined(CMSIS_ARCH_CORTEXM)`` statement (i.e., line 52)
-4. Setting ``SYSTEM_CORE_CLOCK_FREQUENCY`` and ``SYSTEM_CORE_CLOCK_PRESCALER`` in HeliOS’s [config.h](https://github.com/heliosproj/HeliOS/blob/master/src/config.h) header to match the Cortex-M’s core clock frequency and your desired prescaler
+3. Adding the vendor’s HAL/BSP header to the HeliOS ``/src/port.h`` ``#elif defined(CMSIS_ARCH_CORTEXM)`` statement (i.e., line 52)
+4. Setting ``SYSTEM_CORE_CLOCK_FREQUENCY`` and ``SYSTEM_CORE_CLOCK_PRESCALER`` in HeliOS’s ``/src/config.h`` header to match the Cortex-M’s core clock frequency and your desired prescaler
 5. Add the ``-DCMSIS_ARCH_CORTEXM`` compiler directive to your project’s build configuration
 
 ## Espressif ESP32
