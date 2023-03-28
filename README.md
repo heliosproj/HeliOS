@@ -50,7 +50,7 @@ if(ERROR(xTaskCreate(&task, (const xByte *) "TASKMAIN", task_main, null))) {
 ```
 In this manner, the application can check all syscalls for success or failure even when a syscall does not modify or set arguments it is passed. For the very latest on what development is occurring, please check out the [HeliOS Trello board](https://trello.com/b/XNKDpuGR/helios). Anyone wanting to contribute to HeliOS should refer to the “Contributing” section.
 ***
-# HeliOS Around The Web
+#:computer_mouse: HeliOS Around The Web
 
 * **[HeliOS is a Tiny Embedded OS Designed for Arduino Boards](https://www.cnx-software.com/2020/08/14/helios-is-a-tiny-embedded-os-designed-for-arduino-boards/)**
 
@@ -88,7 +88,7 @@ If more advanced features are desired, HeliOS also has built-in support for CMSI
 ## Espressif ESP32
 Please note that HeliOS is not supported on the Espressif ESP32 microcontroller when using the ESP32 Arduino core. This is because the ESP32 Arduino core is built on FreeRTOS and HeliOS and FreeRTOS cannot coexist in the same application. To target ESP32, HeliOS must be built using Espressif's SDK without the ESP32 Arduino core. The files ``/src/port.h`` and ``/src/port.c`` will also need to be updated with the necessary code to control interrupts and access the microcontroller's tick timer. Espressif's SDK can be found [here](https://idf.espressif.com/).
 ***
-# Example
+# :man_teacher: Example
 Many embedded applications implement what is called a "super loop". A super loop is a loop that never exits (i.e., ``while(1) {}``) and contains most of the code executed by the microcontroller. The problem with super loops is they can grow out of control and become difficult to manage. This becomes especially challenging given the relatively few options for controlling timing (e.g., ``delay()``). Unfortunately the use of ``delay()`` to control timing also means the microcontroller is unable to perform other operations (at least without the help of an ISR) until ``delay()`` returns. Below is an example of how easy it is to leverage the event-driven multitasking capabilities within HeliOS to implement the Arduino "Blink" example.
 ## Arduino "Blink" Example
 Below is the "Blink" example sketch included with the Arduino platform.
