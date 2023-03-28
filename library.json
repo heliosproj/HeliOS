@@ -7,6 +7,24 @@
     "type":"git",
     "url":"https://github.com/heliosproj/HeliOS.git"
   },
+  "export":{
+    "include":[
+      "doc/*",
+      "drivers/*",
+      "examples/*",
+      "extras/*",
+      "src/*",
+      "test/*",
+      "*.md",
+      "library.properties"
+    ],
+    "exclude":[
+      ".git/*",
+      ".vscode/*",
+      ".gitattributes",
+      ".gitignore"
+    ]
+  },
   "headers":"HeliOS.h",
   "build":{
     "flags":[
