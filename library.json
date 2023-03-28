@@ -1,29 +1,80 @@
 {
-  "name": "HeliOS",
-  "version": "0.4.1",
-  "description": "HeliOS is an embedded operating system that is free for everyone to use. While called an operating system, HeliOS is a multitasking kernel for use in embedded applications. Its rich, fully documented, API allows the user to control every aspect of the system and access kernel services for task (process) management, scheduler management, inter-process communication, memory management and more while maintaining a tiny footprint for a broad range of low-power embedded devices.",
-  "keywords": "rtos, os, real, time, operating, system, freertos, zephyr, arduino, multitasking, teensy, arm, avr, sam, embedded",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/heliosproj/HeliOS.git"
+  "name":"HeliOS",
+  "version":"0.4.1",
+  "description":"HeliOS is an embedded operating system that is free for everyone to use. While called an operating system, HeliOS is a multitasking kernel for use in embedded applications. Its rich, fully documented, API allows the user to control every aspect of the system and access kernel services for task (process) management, scheduler management, inter-process communication, memory management and more while maintaining a tiny footprint for a broad range of low-power embedded devices.",
+  "keywords":"rtos, os, real, time, operating, system, freertos, zephyr, arduino, multitasking, teensy, arm, avr, sam, embedded",
+  "repository":{
+    "type":"git",
+    "url":"https://github.com/heliosproj/HeliOS.git"
   },
-  "headers": "HeliOS.h",
-  "build": {
-    "flags": [
+  "headers":"HeliOS.h",
+  "build":{
+    "flags":[
       "-Wno-unused-parameter",
       "-Wno-pointer-to-int-cast"
     ]
   },
-  "authors": [
+  "authors":[
     {
-      "name": "Manny Peterson",
-      "email": "manny@heliosproj.org",
-      "url": "https://github.com/MannyPeterson",
-      "maintainer": true
+      "name":"Manny Peterson",
+      "email":"manny@heliosproj.org",
+      "url":"https://github.com/MannyPeterson",
+      "maintainer":true
     }
   ],
-  "license": "GPL-2.0-or-later",
-  "homepage": "https://www.heliosproj.org/",
-  "frameworks": "*",
-  "platforms": "*"
+  "license":"GPL-2.0-or-later",
+  "homepage":"https://www.heliosproj.org/",
+  "frameworks":"*",
+  "platforms":"*",
+  "examples":[
+    {
+      "name":"Blink",
+      "base":"examples/Blink",
+      "files":[
+        "Blink.ino"
+      ]
+    },
+    {
+      "name":"Coop",
+      "base":"examples/Coop",
+      "files":[
+        "Coop.ino"
+      ]
+    },
+    {
+      "name":"GetInfo",
+      "base":"examples/GetInfo",
+      "files":[
+        "GetInfo.ino"
+      ]
+    },
+    {
+      "name":"ListTasks",
+      "base":"examples/ListTask",
+      "files":[
+        "ListTasks.ino"
+      ]
+    },
+    {
+      "name":"Mem",
+      "base":"examples/Mem",
+      "files":[
+        "Mem.ino"
+      ]
+    },
+    {
+      "name":"Timer",
+      "base":"examples/Timer",
+      "files":[
+        "Timer.ino"
+      ]
+    },
+    {
+      "name":"WaitNotify",
+      "base":"examples/WaitNotify",
+      "files":[
+        "WaitNotify.ino"
+      ]
+    }
+  ]
 }
