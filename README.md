@@ -261,6 +261,7 @@ void loop() {
 ***
 # Releases
 All releases, including the latest release, can be found [here](https://github.com/heliosproj/HeliOS/releases).
+* 0.4.1 - Fixed PlatformIO library.json file and updated readme
 * 0.4.0 - Consistent return type for all syscalls, additional memory consistency checking, new HeliOS Developer's Guide, new code documentation and many more changes and improvements.
 * 0.3.5 - Several new features including device drivers, stream buffers, task watchdog timer, improved memory defragmentation and many more including improvements to source code and documentation.
 * 0.3.4 - Corrected "blink" example in readme and in examples, fixed ESP8266 support, added queue locking and other improvements
