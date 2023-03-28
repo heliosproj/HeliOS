@@ -71,7 +71,7 @@
       "name":"ListTasks",
       "base":"examples/ListTask",
       "files":[
-        "ListTasks.ino"
+        "ListTask.ino"
       ]
     },
     {
