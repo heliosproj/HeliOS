@@ -68,13 +68,25 @@ In this manner, the application can check all syscalls for success or failure ev
 ***
 # Getting Started
 ## Documentation
-The HeliOS syscall API is documented in the [HeliOS Developer's Guide](/doc/HeliOS_Developers_Guide.pdf), which is available in PDF as ``/doc/HeliOS_Developers_Guide.pdf``. If you are in need of support, please refer to the "Contributing" section on how to submit an issue.
-## Microcontroller Support
-If using the Arduino platform/tool-chain, HeliOS should work right out of the box for AVR, SAM, SAMD, ESP8266, and Teensy 3.x/4.x/MicroMod microcontrollers (though the latter is an ARM Cortex-M based development board) by adding HeliOS to the project from the [PlatformIO Registry](https://registry.platformio.org/libraries/heliosproj/HeliOS) or [Arduino Library Manager](https://www.arduino.cc/reference/en/libraries/helios/).
+The HeliOS syscall API is documented in the [HeliOS Developer's Guide](/doc/HeliOS_Developers_Guide.pdf). If you are in need of support, please refer to the "Contributing" section on how to submit an issue.
 
-If more advanced features are desired, HeliOS also has built-in support for CMSIS on ARM Cortex-M microcontrollers. To build HeliOS using CMSIS, the user must have the CMSIS core headers as well as the vendor HAL/BSP headers for the specific microcontroller. The CMSIS core headers, including the vendor HAL/BSP headers, are typically available for download from the vendor's website. Once the correct headers have been obtained, the headers must be placed in the project's include directory, the vendor's header file must be added to the file ``/src/port.h`` at life 52 and the project must be built with the ``-DCMSIS_ARCH_CORTEXM`` flag. Depending on the microcontroller, the ``SYSTEM_CORE_CLOCK_FREQUENCY`` and ``SYSTEM_CORE_CLOCK_PRESCALER`` definitions may need to be changed in ``/src/config.h`` if millisecond time resolution is desired. The default system core clock frequency is 16 Mhz with a prescaler of 1,000.
+## Arduino IDE
+Using the HeliOS embedded operating system in your Arduino sketch could not be easier. Open the Arduino IDE and use the Library Manager to search for and install HeliOS. The folks at Arduino have documented the steps to install a library [here](https://docs.arduino.cc/software/ide-v1/tutorials/installing-libraries). Once installed, you can experiment with the example sketches that are included with HeliOS and can be found under File -> Examples -> HeliOS in the Arduino IDE.
 
-Please note, HeliOS does not have built-in support for ESP32. This is because the ESP32 Arduino core is dependent on FreeRTOS. HeliOS and FreeRTOS cannot coexist in the same application. To target ESP32, HeliOS must be built using Espressif's SDK without the ESP32 Arduino core. The files ``/src/port.h`` and ``/src/port.c`` will also need to be updated with the necessary code to control interrupts and access the microcontroller's tick timer. Espressif's SDK can be found [here](https://idf.espressif.com/).
+## PlatformIO IDE
+HeliOS is also available directly through the PlatformIO registry and can be added to your project either from the PlatformIO GUI or CLI. The steps for which are described in the PlatformIO documentation [here](https://docs.platformio.org/en/latest/librarymanager/index.html). Like the Arduino IDE, several examples are included with HeliOS for you to experiment with.
+
+## ARM Cortex-M
+If more advanced features are desired, HeliOS also has built-in support for CMSIS on ARM Cortex-M microcontrollers and can be easily integrated into your Keil uVision or vendor IDE project by:
+
+1. Downloading the current release [here](https://github.com/heliosproj/HeliOS/releases) and unpacking the ZIP file into your project’s source directory
+2. Downloading the CMSIS headers and vendor’s HAL/BSP headers and placing them into your project’s include directory
+3. Adding the vendor’s HAL/BSP header to the HeliOS [port.h](https://github.com/heliosproj/HeliOS/blob/master/src/port.h) header immediately following the ``#elif defined(CMSIS_ARCH_CORTEXM)`` statement (i.e., line 52)
+4. Setting ``SYSTEM_CORE_CLOCK_FREQUENCY`` and ``SYSTEM_CORE_CLOCK_PRESCALER`` in HeliOS’s [config.h](https://github.com/heliosproj/HeliOS/blob/master/src/config.h) header to match the Cortex-M’s core clock frequency and your desired prescaler
+5. Add the ``-DCMSIS_ARCH_CORTEXM`` compiler directive to your project’s build configuration
+
+## Espressif ESP32
+Please note that HeliOS is not supported on the Espressif ESP32 microcontroller when using the ESP32 Arduino core. This is because the ESP32 Arduino core is built on FreeRTOS and HeliOS and FreeRTOS cannot coexist in the same application. To target ESP32, HeliOS must be built using Espressif's SDK without the ESP32 Arduino core. The files ``/src/port.h`` and ``/src/port.c`` will also need to be updated with the necessary code to control interrupts and access the microcontroller's tick timer. Espressif's SDK can be found [here](https://idf.espressif.com/).
 ***
 # Example
 Many embedded applications implement what is called a "super loop". A super loop is a loop that never exits (i.e., ``while(1) {}``) and contains most of the code executed by the microcontroller. The problem with super loops is they can grow out of control and become difficult to manage. This becomes especially challenging given the relatively few options for controlling timing (e.g., ``delay()``). Unfortunately the use of ``delay()`` to control timing also means the microcontroller is unable to perform other operations (at least without the help of an ISR) until ``delay()`` returns. Below is an example of how easy it is to leverage the event-driven multitasking capabilities within HeliOS to implement the Arduino "Blink" example.
