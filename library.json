@@ -21,6 +21,7 @@
     "exclude":[
       ".git/*",
       ".vscode/*",
+      "test/bin/test",
       ".gitattributes",
       ".gitignore"
     ]
