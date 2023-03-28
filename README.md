@@ -6,7 +6,7 @@
 
 [![License: GPL Version 2](https://img.shields.io/badge/License-GPLv2-blue.svg)](https://github.com/heliosproj/HeliOS/blob/master/LICENSE.md) ![GitHub last commit](https://img.shields.io/github/last-commit/heliosproj/HeliOS) ![GitHub release (latest by date)](https://img.shields.io/github/v/release/heliosproj/HeliOS) [![PlatformIO Registry](https://badges.registry.platformio.org/packages/heliosproj/library/HeliOS.svg)](https://registry.platformio.org/libraries/heliosproj/HeliOS) [![arduino-library-badge](https://www.ardu-badge.com/badge/HeliOS.svg?)](https://www.ardu-badge.com/HeliOS) ![GitHub stars](https://img.shields.io/github/stars/heliosproj/HeliOS?style=social) ![GitHub watchers](https://img.shields.io/github/watchers/heliosproj/HeliOS?style=social)
 ***
-# Overview
+# :rocket: Overview
 HeliOS is an open source embedded operating system that is free for everyone to use. While called an operating system, HeliOS is a multitasking kernel for use in embedded applications. Its rich, fully documented, API allows the user to control every aspect of the system and access kernel services (syscalls) for task (process) management, scheduler management, inter-process communication, memory management, device management (i.e., device drivers) and more while maintaining a tiny footprint for a broad range of low-power embedded devices. HeliOS is also easily customized to fit the user’s specific needs through a single header file ``/src/config.h``.
 
 HeliOS supports two multitasking models that can be leveraged concurrently within the same application. The first multitasking model is event-driven. When a task is placed in the "waiting" state, the task will only respond to task events. HeliOS supports two types of task events. The first is direct-to-task notifications, which allow one task to send a notification to another task. In this scenario, the HeliOS scheduler will wake the recipient task and schedule it for execution. After the recipient task clears the direct-to-task notification, the recipient task will returning to "waiting" until another notification is received. The second type of task event is timer based. Task timers can be configured to tell HeliOS to schedule the task to run every so many ticks (typically milliseconds), though task timers should not be confused with application timers (or simply timers) as HeliOS supports both.
@@ -25,7 +25,7 @@ HeliOS is built to be robust. HeliOS (0.3.0 and later) has undergone static anal
 
 Lastly, for PlatformIO and Arduino users, HeliOS is easily added to their embedded application. The latest release of HeliOS is available directly through the [PlatformIO Registry](https://registry.platformio.org/libraries/heliosproj/HeliOS) and the [Arduino Library Manager](https://www.arduino.cc/reference/en/libraries/helios/). For users of other embedded platforms and/or tool-chains, simply download the [latest release](https://github.com/heliosproj/HeliOS/releases) of HeliOS from GitHub and add the sources to your project.
 ***
-# What's New
+# :loudspeaker: What's New
 The HeliOS 0.4.x series kernel was recently released which supersedes all prior kernel versions. The syscall API and internals have undergone significant development rendering applications built on earlier kernels incompatible with 0.4.x. The key change that will impact compatibility is the introduction of a consistent return type for all syscalls. This provides a better mechanism for error propagation and a consistent interface handling errors.
 
 For example, prior to kernel 0.4.0, a task would be created as follows.
@@ -66,7 +66,7 @@ In this manner, the application can check all syscalls for success or failure ev
 
 * **[HeliOS is a Tiny Embedded OS Designed for Arduino Boards](https://news.knowledia.com/US/en/articles/helios-is-a-tiny-embedded-os-designed-for-arduino-boards-f35f44fe6c88759fa13d8781ce09ac985b2fdd3a)**
 ***
-# Getting Started
+# :dart: Getting Started
 ## Documentation
 The HeliOS syscall API is documented in the [HeliOS Developer's Guide](/doc/HeliOS_Developers_Guide.pdf). If you are in need of support, please refer to the "Contributing" section on how to submit an issue.
 
@@ -259,7 +259,7 @@ void loop() {
 }
 ```
 ***
-# Releases
+# :package: Releases
 All releases, including the latest release, can be found [here](https://github.com/heliosproj/HeliOS/releases).
 * 0.4.1 - Fixed PlatformIO library.json file and updated readme
 * 0.4.0 - Consistent return type for all syscalls, additional memory consistency checking, new HeliOS Developer's Guide, new code documentation and many more changes and improvements.
@@ -277,17 +277,17 @@ All releases, including the latest release, can be found [here](https://github.c
 * 0.2.2 - Additional function calls, minor fixes and documentation enhancements
 * 0.2.1 - The first official release
 ***
-# Contributing
+# :construction: Contributing
 See the [contributing](/CONTRIBUTING.md) guidelines on how to contribute to HeliOS. **If you are going to make a source code or documentation contribution; please do not fork the ``master`` branch. Only pull requests forked from the ``develop`` branch will be accepted.**
 ***
-# Copyright & License
+# :copyright: Copyright & License
 HeliOS Embedded Operating System Copyright (C) 2020-2023 HeliOS Project <license@heliosproj.org>
 
 HeliOS is copyrighted open source software licensed under the Free Software Foundation's GNU General Public License (GPL) Version 2. The full text of the license can be found [here](/LICENSE.md).
 ***
-# Important Notice
+# :warning: Important Notice
 HeliOS is **not** certified for use in safety-critical applications. The HeliOS source code, whether in full or in part, must **never** be used in applications where a risk to life exists. In other words, do not use HeliOS in your project if there is even a remote chance someone might get hurt.
 ***
-# Other Notice
+# :information_source: Other Notice
 This project is not affiliated in any way, past or present, with the discontinued Unix-like operating system Helios developed by Dr. Tim King of Perihelion Software Ltd. or Axel Muhr's work on [Helios-NG](https://github.com/axelmuhr/Helios-NG). Any resemblance is purely coincidental.
 ***
