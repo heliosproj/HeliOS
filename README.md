@@ -50,7 +50,7 @@ if(ERROR(xTaskCreate(&task, (const xByte *) "TASKMAIN", task_main, null))) {
 ```
 In this manner, the application can check all syscalls for success or failure even when a syscall does not modify or set arguments it is passed. For the very latest on what development is occurring, please check out the [HeliOS Trello board](https://trello.com/b/XNKDpuGR/helios). Anyone wanting to contribute to HeliOS should refer to the “Contributing” section.
 ***
-#:computer_mouse: HeliOS Around The Web
+# :computer_mouse: HeliOS Around The Web
 
 * **[HeliOS is a Tiny Embedded OS Designed for Arduino Boards](https://www.cnx-software.com/2020/08/14/helios-is-a-tiny-embedded-os-designed-for-arduino-boards/)**
 
