@@ -3,7 +3,7 @@
  * @file driver.h
  * @author Manny Peterson <manny@heliosproj.org>
  * @brief A template for kernel mode device drivers
- * @version 0.4.1
+ * @version 0.4.2
  * @date 2023-03-19
  * 
  * @copyright

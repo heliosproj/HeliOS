@@ -3,7 +3,7 @@
  * @file types.h
  * @author Manny Peterson <manny@heliosproj.org>
  * @brief Kernel source for enumerated, structured and data type definitions
- * @version 0.4.1
+ * @version 0.4.2
  * @date 2023-03-19
  * 
  * @copyright

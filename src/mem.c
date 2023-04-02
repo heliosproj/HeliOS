@@ -3,7 +3,7 @@
  * @file mem.c
  * @author Manny Peterson <manny@heliosproj.org>
  * @brief Kernel source for memory management
- * @version 0.4.1
+ * @version 0.4.2
  * @date 2023-03-19
  * 
  * @copyright

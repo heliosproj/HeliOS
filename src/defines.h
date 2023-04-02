@@ -3,7 +3,7 @@
  * @file defines.h
  * @author Manny Peterson <manny@heliosproj.org>
  * @brief Kernel source for macro definitions
- * @version 0.4.1
+ * @version 0.4.2
  * @date 2023-03-19
  * 
  * @copyright
@@ -88,7 +88,7 @@
   #if defined(OS_PATCH_VERSION_NO)
     #undef OS_PATCH_VERSION_NO
   #endif /* if defined(OS_PATCH_VERSION_NO) */
-  #define OS_PATCH_VERSION_NO 0x1u /* 1 */
+  #define OS_PATCH_VERSION_NO 0x2u /* 2 */
 
 
   #if defined(MEMORY_REGION_SIZE_IN_BYTES)
