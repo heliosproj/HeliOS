@@ -42,7 +42,7 @@
     }
   ],
   "license":"GPL-2.0-or-later",
-  "homepage":"https://www.heliosproj.org/",
+  "homepage":"http://www.heliosproj.org/",
   "frameworks":"*",
   "platforms":"*",
   "examples":[

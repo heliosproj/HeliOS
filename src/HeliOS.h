@@ -969,6 +969,28 @@
 
 
   /**
+   * @brief Syscall to free all heap memory allocated by xMemAlloc()
+   *
+   * The xMemFreeAll() syscall frees (i.e., de-allocates) all heap memory
+   * allocated by xMemAlloc(). Caution should be used when calling xMemFreeAll()
+   * as all references to the heap memory region will be made invalid.
+   *
+   * @return On success, the syscall returns ReturnOK. On failure, the syscall
+   *         returns ReturnError. A failure is any condition in which the
+   *         syscall was unable to achieve its intended objective. For example,
+   *         if xTaskGetId() was unable to locate the task by the task object
+   *         (i.e., xTask) passed to the syscall, because either the object was
+   *         null or invalid (e.g., a deleted task), xTaskGetId() would return
+   *         ReturnError. All HeliOS syscalls return the xReturn (a.k.a.,
+   *         Return_t) type which can either be ReturnOK or ReturnError. The C
+   *         macros OK() and ERROR() can be used as a more concise way of
+   *         checking the return value of a syscall (e.g.,
+   *         if(OK(xMemGetUsed(&size))) {} or if(ERROR(xMemGetUsed(&size))) {}).
+   */
+  xReturn xMemFreeAll(void);
+
+
+  /**
    * @brief Syscall to obtain the amount of in-use heap memory
    *
    * The xMemGetUsed() syscall will update the "size_" argument with the amount,

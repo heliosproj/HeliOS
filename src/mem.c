@@ -223,6 +223,19 @@ Return_t xMemFree(const volatile Addr_t *addr_) {
 }
 
 
+Return_t xMemFreeAll(void) {
+  RET_DEFINE;
+
+  if(OK(__MemoryRegionInit__(&heap))) {
+    RET_OK;
+  } else {
+    ASSERT;
+  }
+
+  RET_RETURN;
+}
+
+
 Return_t xMemGetUsed(Size_t *size_) {
   RET_DEFINE;
 

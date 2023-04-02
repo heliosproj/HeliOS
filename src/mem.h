@@ -33,6 +33,7 @@
   #endif /* ifdef __cplusplus */
   Return_t xMemAlloc(volatile Addr_t **addr_, const Size_t size_);
   Return_t xMemFree(const volatile Addr_t *addr_);
+  Return_t xMemFreeAll(void);
   Return_t xMemGetUsed(Size_t *size_);
   Return_t xMemGetSize(const volatile Addr_t *addr_, Size_t *size_);
   Return_t __KernelAllocateMemory__(volatile Addr_t **addr_, const Size_t size_);
