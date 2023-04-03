@@ -177,7 +177,6 @@
     Base_t running;
     Base_t overflow;
     Base_t memfault;
-    Base_t reserved;
     Base_t littleend;
   } Flags_t;
   typedef struct QueueMessage_s {

@@ -121,6 +121,24 @@
   #define FLAG_LITTLEEND flags.littleend
 
 
+  #if defined(SETFLAG)
+    #undef SETFLAG
+  #endif /* if defined(SETFLAG) */
+  #define SETFLAG(flag_) (flag_ = 0xFFu)
+
+
+  #if defined(UNSETFLAG)
+    #undef UNSETFLAG
+  #endif /* if defined(UNSETFLAG) */
+  #define UNSETFLAG(flag_) (flag_ = 0x00u)
+
+
+  #if defined(FLAGSET)
+    #undef FLAGSET
+  #endif /* if defined(FLAGSET) */
+  #define FLAGSET(flag_) (0xFFu == flag_)
+
+
   #if defined(NOTNULLPTR)
     #undef NOTNULLPTR
   #endif /* if defined(NOTNULLPTR) */
