@@ -35,7 +35,7 @@
  *
  */
 /*UNCRUSTIFY-ON*/
-Flags_t flags;
+Flags_t flag;
 
 
 Return_t xSystemAssert(const char *file_, const int line_) {
@@ -54,8 +54,8 @@ Return_t xSystemInit(void) {
 
   if(OK(__MemoryInit__())) {
     if(OK(__PortInit__())) {
-      FLAG_OVERFLOW = false;
-      FLAG_RUNNING = false;
+      UNSETFLAG(OVERFLOW);
+      UNSETFLAG(RUNNING);
       RET_OK;
     } else {
       ASSERT;
@@ -90,7 +90,12 @@ Return_t xSystemGetSystemInfo(SystemInfo_t **info_) {
           (*info_)->majorVersion = OS_MAJOR_VERSION_NO;
           (*info_)->minorVersion = OS_MINOR_VERSION_NO;
           (*info_)->patchVersion = OS_PATCH_VERSION_NO;
-          (*info_)->littleEndian = FLAG_LITTLEEND;
+
+          if(FLAGSET(LITTLEEND)) {
+            (*info_)->littleEndian = true;
+          } else {
+            (*info_)->littleEndian = false;
+          }
 
           if(OK(xTaskGetNumberOfTasks(&(*info_)->numberOfTasks))) {
             RET_OK;
@@ -127,7 +132,7 @@ Return_t xSystemGetSystemInfo(SystemInfo_t **info_) {
 
   /* For unit testing only! */
   void __SysStateClear__(void) {
-    __memset__(&flags, 0x0, sizeof(Flags_t));
+    __memset__(&flag, 0x0, sizeof(Flags_t));
 
     return;
   }

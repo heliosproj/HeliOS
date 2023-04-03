@@ -28,7 +28,7 @@
   #include "task.h"
   #include "timer.h"
 
-  extern Flags_t flags;
+  extern Flags_t flag;
 
   #ifdef __cplusplus
     extern "C" {

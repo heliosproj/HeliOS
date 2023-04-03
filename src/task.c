@@ -35,7 +35,7 @@ Return_t xTaskCreate(Task_t **task_, const Byte_t *name_, void (*callback_)(Task
   Task_t *cursor = null;
 
 
-  if(NOTNULLPTR(task_) && (NOTNULLPTR(name_)) && (NOTNULLPTR(callback_)) && (false == FLAG_RUNNING)) {
+  if(NOTNULLPTR(task_) && (NOTNULLPTR(name_)) && (NOTNULLPTR(callback_)) && (FLAGNOTSET(RUNNING))) {
     /* NOTE: There is a __KernelAllocateMemory__() syscall buried in this if()
      * statement. */
     if(NOTNULLPTR(tlist) || (NULLPTR(tlist) && OK(__KernelAllocateMemory__((volatile Addr_t **) &tlist, sizeof(TaskList_t))))) {
@@ -94,7 +94,7 @@ Return_t xTaskDelete(const Task_t *task_) {
   Task_t *previous = null;
 
 
-  if(NOTNULLPTR(task_) && NOTNULLPTR(tlist) && (false == FLAG_RUNNING)) {
+  if(NOTNULLPTR(task_) && NOTNULLPTR(tlist) && (FLAGNOTSET(RUNNING))) {
     if(OK(__TaskListFindTask__(task_))) {
       cursor = tlist->head;
 
@@ -757,11 +757,11 @@ Return_t xTaskStartScheduler(void) {
   Ticks_t least = -1;
 
 
-  if((false == FLAG_RUNNING) && (NOTNULLPTR(tlist))) {
+  if((FLAGNOTSET(RUNNING)) && (NOTNULLPTR(tlist))) {
     while(SchedulerStateRunning == schedulerState) {
       /* If the total runtime on a task has overflowed, reset the total runtime
        * for all tasks to their last runtime. */
-      if(true == FLAG_OVERFLOW) {
+      if(FLAGSET(OVERFLOW)) {
         __RunTimeReset__();
       }
 
@@ -805,7 +805,7 @@ Return_t xTaskStartScheduler(void) {
       least = -1;
     }
 
-    FLAG_RUNNING = false;
+    UNSETFLAG(RUNNING);
     RET_OK;
   } else {
     ASSERT;
@@ -828,7 +828,7 @@ static void __RunTimeReset__(void) {
     cursor = cursor->next;
   }
 
-  FLAG_OVERFLOW = false;
+  UNSETFLAG(OVERFLOW);
 
   return;
 }
@@ -873,7 +873,7 @@ static void __TaskRun__(Task_t *task_) {
   /* Detect overflow of total runtime. If an overflow occurs, then set the
    * overflow flag to true. */
   if(task_->totalRunTime < prev) {
-    FLAG_OVERFLOW = true;
+    SETFLAG(OVERFLOW);
   }
 
   return;

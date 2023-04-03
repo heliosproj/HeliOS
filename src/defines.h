@@ -97,28 +97,28 @@
   #define MEMORY_REGION_SIZE_IN_BYTES CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS *CONFIG_MEMORY_REGION_BLOCK_SIZE
 
 
-  #if defined(FLAG_RUNNING)
-    #undef FLAG_RUNNING
-  #endif /* if defined(FLAG_RUNNING) */
-  #define FLAG_RUNNING flags.running
+  #if defined(RUNNING)
+    #undef RUNNING
+  #endif /* if defined(RUNNING) */
+  #define RUNNING flag.running
 
 
-  #if defined(FLAG_OVERFLOW)
-    #undef FLAG_OVERFLOW
-  #endif /* if defined(FLAG_OVERFLOW) */
-  #define FLAG_OVERFLOW flags.overflow
+  #if defined(OVERFLOW)
+    #undef OVERFLOW
+  #endif /* if defined(OVERFLOW) */
+  #define OVERFLOW flag.overflow
 
 
-  #if defined(FLAG_MEMFAULT)
-    #undef FLAG_MEMFAULT
-  #endif /* if defined(FLAG_MEMFAULT) */
-  #define FLAG_MEMFAULT flags.memfault
+  #if defined(MEMFAULT)
+    #undef MEMFAULT
+  #endif /* if defined(MEMFAULT) */
+  #define MEMFAULT flag.memfault
 
 
-  #if defined(FLAG_LITTLEEND)
-    #undef FLAG_LITTLEEND
-  #endif /* if defined(FLAG_LITTLEEND) */
-  #define FLAG_LITTLEEND flags.littleend
+  #if defined(LITTLEEND)
+    #undef LITTLEEND
+  #endif /* if defined(LITTLEEND) */
+  #define LITTLEEND flag.littleend
 
 
   #if defined(SETFLAG)
@@ -137,6 +137,12 @@
     #undef FLAGSET
   #endif /* if defined(FLAGSET) */
   #define FLAGSET(flag_) (0xFFu == flag_)
+
+
+  #if defined(FLAGNOTSET)
+    #undef FLAGNOTSET
+  #endif /* if defined(FLAGNOTSET) */
+  #define FLAGNOTSET(flag_) (0x00u == flag_)
 
 
   #if defined(NOTNULLPTR)
