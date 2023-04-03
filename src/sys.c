@@ -54,7 +54,6 @@ Return_t xSystemInit(void) {
 
   if(OK(__MemoryInit__())) {
     if(OK(__PortInit__())) {
-      FLAG_MEMFAULT = false;
       FLAG_OVERFLOW = false;
       FLAG_RUNNING = false;
       RET_OK;
@@ -91,6 +90,7 @@ Return_t xSystemGetSystemInfo(SystemInfo_t **info_) {
           (*info_)->majorVersion = OS_MAJOR_VERSION_NO;
           (*info_)->minorVersion = OS_MINOR_VERSION_NO;
           (*info_)->patchVersion = OS_PATCH_VERSION_NO;
+          (*info_)->littleEndian = FLAG_LITTLEEND;
 
           if(OK(xTaskGetNumberOfTasks(&(*info_)->numberOfTasks))) {
             RET_OK;

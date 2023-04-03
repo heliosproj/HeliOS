@@ -53,6 +53,10 @@
     DeviceModeWriteOnly,
     DeviceModeReadWrite
   } DeviceMode_t;
+  typedef enum ByteOrder_e {
+    ByteOrderLittleEndian,
+    ByteOrderBigEndian
+  } ByteOrder_t;
   typedef VOID_TYPE TaskParm_t;
   typedef UINT8_TYPE Base_t;
   typedef UINT8_TYPE Byte_t;
@@ -174,6 +178,7 @@
     Base_t overflow;
     Base_t memfault;
     Base_t reserved;
+    Base_t littleend;
   } Flags_t;
   typedef struct QueueMessage_s {
     Base_t messageBytes;
@@ -197,6 +202,7 @@
     Base_t minorVersion;
     Base_t patchVersion;
     Base_t numberOfTasks;
+    Base_t littleEndian;
   } SystemInfo_t;
   typedef struct StreamBuffer_s {
     Byte_t buffer[CONFIG_STREAM_BUFFER_BYTES];

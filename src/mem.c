@@ -162,17 +162,31 @@ static Return_t __free__(volatile MemoryRegion_t *region_, const volatile Addr_t
 static Return_t __MemGetRegionStats__(const volatile MemoryRegion_t *region_, MemoryRegionStats_t **stats_);
 static Return_t __DefragMemoryRegion__(const volatile MemoryRegion_t *region_);
 static Return_t __MemoryRegionInit__(volatile MemoryRegion_t *region_);
+static Return_t __DetectByteOrder__(ByteOrder_t *order_);
 
 
 Return_t __MemoryInit__(void) {
   RET_DEFINE;
 
 
+  ByteOrder_t order;
+
+
   /* Initialize the heap and kernel memory regions. */
   if(OK(__MemoryRegionInit__(&heap))) {
     if(OK(__MemoryRegionInit__(&kernel))) {
-      FLAG_MEMFAULT = false;
-      RET_OK;
+      if(OK(__DetectByteOrder__(&order))) {
+        if(ByteOrderLittleEndian == order) {
+          FLAG_LITTLEEND = true;
+        } else {
+          FLAG_LITTLEEND = false;
+        }
+
+        FLAG_MEMFAULT = false;
+        RET_OK;
+      } else {
+        ASSERT;
+      }
     } else {
       ASSERT;
     }
@@ -1130,13 +1144,31 @@ static Return_t __DefragMemoryRegion__(const volatile MemoryRegion_t *region_) {
 }
 
 
+static Return_t __DetectByteOrder__(ByteOrder_t *order_) {
+  RET_DEFINE;
+
+  if(NOTNULLPTR(order_)) {
+    if((*(uint16_t *) "\xFF\x00") < 0x100) {
+      *order_ = ByteOrderLittleEndian;
+      RET_OK;
+    } else {
+      *order_ = ByteOrderBigEndian;
+      RET_OK;
+    }
+  } else {
+    ASSERT;
+  }
+
+  RET_RETURN;
+}
+
+
 #if defined(POSIX_ARCH_OTHER)
 
 
   /* For unit testing only! */
   void __MemoryClear__(void) {
-    __MemoryRegionInit__(&heap);
-    __MemoryRegionInit__(&kernel);
+    __MemoryInit__();
 
     return;
   }

@@ -115,6 +115,12 @@
   #define FLAG_MEMFAULT flags.memfault
 
 
+  #if defined(FLAG_LITTLEEND)
+    #undef FLAG_LITTLEEND
+  #endif /* if defined(FLAG_LITTLEEND) */
+  #define FLAG_LITTLEEND flags.littleend
+
+
   #if defined(NOTNULLPTR)
     #undef NOTNULLPTR
   #endif /* if defined(NOTNULLPTR) */

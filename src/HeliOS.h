@@ -612,6 +612,7 @@
     Base_t minorVersion; /**< The SemVer minor version number of HeliOS. */
     Base_t patchVersion; /**< The SemVer patch version number of HeliOS. */
     Base_t numberOfTasks; /**< The number of tasks regardless of their state. */
+    Base_t littleEndian; /**< True if the system byte order is little endian. */
   } SystemInfo_t;
 
 
