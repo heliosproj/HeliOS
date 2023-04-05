@@ -19,6 +19,29 @@ static Return_t __QueueDropmessage__(Queue_t *queue_);
 static Return_t __QueuePeek__(const Queue_t *queue_, QueueMessage_t **message_);
 
 
+#define __GetQueueLength__() \
+        cursor = queue_->head; \
+        while(NOTNULLPTR(cursor)) { \
+          messages++; \
+          cursor = cursor->next; \
+        }
+
+
+#define __QueueLengthCorrect__() (messages == queue_->length)
+
+
+#define __QueueLengthZero__() (zero == messages)
+
+
+#define __QueueLengthNonZero__() (zero < messages)
+
+
+#define __QueueLengthAtLimit__() (messages >= queue_->limit)
+
+
+#define __QueueLengthNotAtLimit__() (messages < queue_->limit)
+
+
 Return_t xQueueCreate(Queue_t **queue_, Base_t limit_) {
   RET_DEFINE;
 
@@ -83,18 +106,13 @@ Return_t xQueueGetLength(const Queue_t *queue_, Base_t *res_) {
 
   if(NOTNULLPTR(queue_) && NOTNULLPTR(res_)) {
     if(OK(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
-      cursor = queue_->head;
-
-      while(NOTNULLPTR(cursor)) {
-        messages++;
-        cursor = cursor->next;
-      }
+      __GetQueueLength__();
 
 
       /* Confirm the length of the queue matches the number of the messages we
        * counted while traversing the queue. If they match, then set res_ to the
        * number of messages. */
-      if(messages == queue_->length) {
+      if(__QueueLengthCorrect__()) {
         *res_ = messages;
         RET_OK;
       } else {
@@ -121,12 +139,7 @@ Return_t xQueueIsQueueEmpty(const Queue_t *queue_, Base_t *res_) {
 
   if(NOTNULLPTR(queue_) && NOTNULLPTR(res_)) {
     if(OK(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
-      cursor = queue_->head;
-
-      while(NOTNULLPTR(cursor)) {
-        messages++;
-        cursor = cursor->next;
-      }
+      __GetQueueLength__();
 
 
       /* Confirm the length of the queue matches the number of the messages we
@@ -135,10 +148,10 @@ Return_t xQueueIsQueueEmpty(const Queue_t *queue_, Base_t *res_) {
        * If the number of messages is zero, then set res_ to true because the
        * queue is empty. Otherwise set res_ to false because the queue is *NOT*
        * empty. */
-      if((zero == messages) && (messages == queue_->length)) {
+      if(__QueueLengthZero__() && __QueueLengthCorrect__()) {
         *res_ = true;
         RET_OK;
-      } else if((zero != messages) && (messages == queue_->length)) {
+      } else if(__QueueLengthNonZero__() && __QueueLengthCorrect__()) {
         *res_ = false;
         RET_OK;
       } else {
@@ -165,12 +178,7 @@ Return_t xQueueIsQueueFull(const Queue_t *queue_, Base_t *res_) {
 
   if(NOTNULLPTR(queue_) && NOTNULLPTR(res_)) {
     if(OK(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
-      cursor = queue_->head;
-
-      while(NOTNULLPTR(cursor)) {
-        messages++;
-        cursor = cursor->next;
-      }
+      __GetQueueLength__();
 
 
       /* Confirm the length of the queue matches the number of the messages we
@@ -180,10 +188,10 @@ Return_t xQueueIsQueueFull(const Queue_t *queue_, Base_t *res_) {
        * limit, then set res_ to true because the queue is full. If the number
        * of messages is less than the queue length limit, then set res_ to false
        * because the queue is *NOT* full. */
-      if((messages >= queue_->limit) && (messages == queue_->length)) {
+      if(__QueueLengthAtLimit__() && __QueueLengthCorrect__()) {
         *res_ = true;
         RET_OK;
-      } else if((messages < queue_->limit) && (messages == queue_->length)) {
+      } else if(__QueueLengthNotAtLimit__() && __QueueLengthCorrect__()) {
         *res_ = false;
         RET_OK;
       } else {
@@ -210,12 +218,7 @@ Return_t xQueueMessagesWaiting(const Queue_t *queue_, Base_t *res_) {
 
   if(NOTNULLPTR(queue_) && NOTNULLPTR(res_)) {
     if(OK(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
-      cursor = queue_->head;
-
-      while(NOTNULLPTR(cursor)) {
-        messages++;
-        cursor = cursor->next;
-      }
+      __GetQueueLength__();
 
 
       /* Confirm the length of the queue matches the number of the messages we
@@ -225,10 +228,10 @@ Return_t xQueueMessagesWaiting(const Queue_t *queue_, Base_t *res_) {
        * because there is at least one message waiting - possibly more.
        * Otherwise set res_ to false because there are no messages waiting in
        * the queue. */
-      if((zero < messages) && (messages == queue_->length)) {
+      if(__QueueLengthNonZero__() && __QueueLengthCorrect__()) {
         *res_ = true;
         RET_OK;
-      } else if((zero == messages) && (messages == queue_->length)) {
+      } else if(__QueueLengthZero__() && __QueueLengthCorrect__()) {
         *res_ = false;
         RET_OK;
       } else {
@@ -254,17 +257,12 @@ Return_t xQueueSend(Queue_t *queue_, const Base_t bytes_, const Byte_t *value_) 
   Message_t *cursor = null;
 
 
-  if(NOTNULLPTR(queue_) && (zero < bytes_) && (CONFIG_MESSAGE_VALUE_BYTES >= bytes_) && (NOTNULLPTR(value_))) {
+  if(NOTNULLPTR(queue_) && (zero < bytes_) && (CONFIG_MESSAGE_VALUE_BYTES >= bytes_) && NOTNULLPTR(value_)) {
     if(OK(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
       if(false == queue_->locked) {
-        cursor = queue_->head;
+        __GetQueueLength__();
 
-        while(NOTNULLPTR(cursor)) {
-          messages++;
-          cursor = cursor->next;
-        }
-
-        if((queue_->limit > queue_->length) && (messages == queue_->length)) {
+        if((queue_->limit > queue_->length) && __QueueLengthCorrect__()) {
           if(OK(__KernelAllocateMemory__((volatile Addr_t **) &message, sizeof(Message_t)))) {
             if(NOTNULLPTR(message)) {
               if(OK(__memcpy__(message->messageValue, value_, CONFIG_MESSAGE_VALUE_BYTES))) {
