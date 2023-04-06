@@ -106,31 +106,31 @@
   #if defined(UNSETFLAG)
     #undef UNSETFLAG
   #endif /* if defined(UNSETFLAG) */
-  #define UNSETFLAG(flag_) (flag_ = 0x00u)
+  #define UNSETFLAG(flag_) (flag_ = 0x0u)
 
 
   #if defined(FLAGSET)
     #undef FLAGSET
   #endif /* if defined(FLAGSET) */
-  #define FLAGSET(flag_) (0xFFu == flag_)
+  #define FLAGSET(flag_) (0xFFu == (flag_))
 
 
   #if defined(FLAGNOTSET)
     #undef FLAGNOTSET
   #endif /* if defined(FLAGNOTSET) */
-  #define FLAGNOTSET(flag_) (0x00u == flag_)
+  #define FLAGNOTSET(flag_) (0x0u == (flag_))
 
 
   #if defined(NOTNULLPTR)
     #undef NOTNULLPTR
   #endif /* if defined(NOTNULLPTR) */
-  #define NOTNULLPTR(addr_) ((null) != (addr_))
+  #define NOTNULLPTR(addr_) (null != (addr_))
 
 
   #if defined(NULLPTR)
     #undef NULLPTR
   #endif /* if defined(NULLPTR) */
-  #define NULLPTR(addr_) ((null) == (addr_))
+  #define NULLPTR(addr_) (null == (addr_))
 
 
   #if defined(RET_DEFINE)
@@ -154,13 +154,13 @@
   #if defined(OK)
     #undef OK
   #endif /* if defined(OK) */
-  #define OK(expr_) ((ReturnOK) == (expr_))
+  #define OK(expr_) (ReturnOK == (expr_))
 
 
   #if defined(ERROR)
     #undef ERROR
   #endif /* if defined(ERROR) */
-  #define ERROR(expr_) ((ReturnError) == (expr_))
+  #define ERROR(expr_) (ReturnError == (expr_))
 
 
   #if defined(ASSERT)

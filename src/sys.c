@@ -132,7 +132,7 @@ Return_t xSystemGetSystemInfo(SystemInfo_t **info_) {
 
   /* For unit testing only! */
   void __SysStateClear__(void) {
-    __memset__(&flag, 0x0, sizeof(Flags_t));
+    __memset__(&flag, zero, sizeof(Flags_t));
 
     return;
   }

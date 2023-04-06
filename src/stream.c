@@ -19,6 +19,9 @@
 #define __StreamLengthNonZero__() (zero < stream_->length)
 
 
+#define __StreamLengthAtLimit__() (CONFIG_STREAM_BUFFER_BYTES == stream_->length)
+
+
 Return_t xStreamCreate(StreamBuffer_t **stream_) {
   RET_DEFINE;
 
@@ -207,7 +210,7 @@ Return_t xStreamIsFull(const StreamBuffer_t *stream_, Base_t *res_) {
 
   if(NOTNULLPTR(stream_) && NOTNULLPTR(res_)) {
     if(OK(__MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
-      if(CONFIG_STREAM_BUFFER_BYTES == stream_->length) {
+      if(__StreamLengthAtLimit__()) {
         *res_ = true;
         RET_OK;
       } else {
