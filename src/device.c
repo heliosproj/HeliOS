@@ -20,6 +20,9 @@ static DeviceList_t *dlist = null;
 static Return_t __DeviceListFind__(const HalfWord_t uid_, Device_t **device_);
 
 
+#define __DeviceUidNonZero__() (zero < uid_)
+
+
 Return_t xDeviceRegisterDevice(Return_t (*device_self_register_)()) {
   RET_DEFINE;
 
@@ -52,10 +55,10 @@ Return_t __RegisterDevice__(const HalfWord_t uid_, const Byte_t *name_, const De
 
   /* NOTE: There is a __KernelAllocateMemory__() syscall buried in this if()
    * statement. */
-  if(((zero < uid_) && (NOTNULLPTR(name_)) && (NOTNULLPTR(init_)) && (NOTNULLPTR(config_)) && (NOTNULLPTR(read_)) && (NOTNULLPTR(write_)) && (NOTNULLPTR(
-      simple_read_)) && (NOTNULLPTR(simple_write_)) && (NOTNULLPTR(dlist))) || ((zero < uid_) && (NOTNULLPTR(name_)) && (NOTNULLPTR(init_)) && (NOTNULLPTR(
-      config_)) && (NOTNULLPTR(read_)) && (NOTNULLPTR(write_)) && (NOTNULLPTR(simple_read_)) && (NOTNULLPTR(simple_write_)) && (NULLPTR(dlist)) && (OK(
-      __KernelAllocateMemory__((volatile Addr_t **) &dlist, sizeof(DeviceList_t)))))) {
+  if((__DeviceUidNonZero__() && NOTNULLPTR(name_) && NOTNULLPTR(init_) && NOTNULLPTR(config_) && NOTNULLPTR(read_) && NOTNULLPTR(write_) && NOTNULLPTR(
+      simple_read_) && NOTNULLPTR(simple_write_) && NOTNULLPTR(dlist)) || (__DeviceUidNonZero__() && NOTNULLPTR(name_) && NOTNULLPTR(init_) && NOTNULLPTR(
+      config_) && NOTNULLPTR(read_) && NOTNULLPTR(write_) && NOTNULLPTR(simple_read_) && NOTNULLPTR(simple_write_) && NULLPTR(dlist) && OK(
+      __KernelAllocateMemory__((volatile Addr_t **) &dlist, sizeof(DeviceList_t))))) {
     if(NOTNULLPTR(dlist)) {
       /* We are expecting *NOT* to find the device unique identifier in the
        * device list. This is to confirm there isn't already a device with the
@@ -137,7 +140,7 @@ Return_t xDeviceIsAvailable(const HalfWord_t uid_, Base_t *res_) {
   Device_t *device = null;
 
 
-  if((zero < uid_) && NOTNULLPTR(res_) && (NOTNULLPTR(dlist))) {
+  if(__DeviceUidNonZero__() && NOTNULLPTR(res_) && NOTNULLPTR(dlist)) {
     /* Look-up the device by its unique identifier in the device list.
      */
     if(OK(__DeviceListFind__(uid_, &device))) {
@@ -170,7 +173,7 @@ Return_t xDeviceSimpleWrite(const HalfWord_t uid_, Byte_t data_) {
   Device_t *device = null;
 
 
-  if((zero < uid_) && (NOTNULLPTR(dlist))) {
+  if(__DeviceUidNonZero__() && NOTNULLPTR(dlist)) {
     /* Look-up the device by its unique identifier in the device list.
      */
     if(OK(__DeviceListFind__(uid_, &device))) {
@@ -209,7 +212,7 @@ Return_t xDeviceWrite(const HalfWord_t uid_, Size_t *size_, Addr_t *data_) {
   Byte_t *data = null;
 
 
-  if((zero < uid_) && (NOTNULLPTR(size_)) && (zero < *size_) && (NOTNULLPTR(data_)) && NOTNULLPTR(dlist)) {
+  if(__DeviceUidNonZero__() && NOTNULLPTR(size_) && (zero < *size_) && NOTNULLPTR(data_) && NOTNULLPTR(dlist)) {
     /* Confirm the data to be written to the device is waiting for us in heap
      * memory. */
     if(OK(__MemoryRegionCheckHeap__(data_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
@@ -288,7 +291,7 @@ Return_t xDeviceSimpleRead(const HalfWord_t uid_, Byte_t *data_) {
   Byte_t data = zero;
 
 
-  if((zero < uid_) && NOTNULLPTR(data_) && NOTNULLPTR(dlist)) {
+  if(__DeviceUidNonZero__() && NOTNULLPTR(data_) && NOTNULLPTR(dlist)) {
     /* Look-up the device by its unique identifier in the device list.
      */
     if(OK(__DeviceListFind__(uid_, &device))) {
@@ -331,7 +334,7 @@ Return_t xDeviceRead(const HalfWord_t uid_, Size_t *size_, Addr_t **data_) {
   Addr_t *data = null;
 
 
-  if((zero < uid_) && NOTNULLPTR(size_) && NOTNULLPTR(data_) && NOTNULLPTR(dlist)) {
+  if(__DeviceUidNonZero__() && NOTNULLPTR(size_) && NOTNULLPTR(data_) && NOTNULLPTR(dlist)) {
     /* Look-up the device by its unique identifier in the device list.
      */
     if(OK(__DeviceListFind__(uid_, &device))) {
@@ -421,13 +424,13 @@ static Return_t __DeviceListFind__(const HalfWord_t uid_, Device_t **device_) {
   Device_t *cursor = null;
 
 
-  if((zero < uid_) && (NOTNULLPTR(device_)) && (NOTNULLPTR(dlist))) {
+  if(__DeviceUidNonZero__() && NOTNULLPTR(device_) && NOTNULLPTR(dlist)) {
     cursor = dlist->head;
 
     /* Traverse the device list while the cursor is not null and the unique
      * identifier passed to __DeviceListFind__() doesn't match the device
      * pointed to by the cursor. */
-    while((NOTNULLPTR(cursor)) && (cursor->uid != uid_)) {
+    while(NOTNULLPTR(cursor) && (cursor->uid != uid_)) {
       cursor = cursor->next;
     }
 
@@ -452,7 +455,7 @@ Return_t xDeviceInitDevice(const HalfWord_t uid_) {
   Device_t *device = null;
 
 
-  if((zero < uid_) && (NOTNULLPTR(dlist))) {
+  if(__DeviceUidNonZero__() && NOTNULLPTR(dlist)) {
     /* Look-up the device by its unique identifier in the device list.
      */
     if(OK(__DeviceListFind__(uid_, &device))) {
@@ -489,7 +492,7 @@ Return_t xDeviceConfigDevice(const HalfWord_t uid_, Size_t *size_, Addr_t *confi
   Addr_t *config = null;
 
 
-  if((zero < uid_) && (zero < *size_) && (NOTNULLPTR(config_)) && (NOTNULLPTR(dlist))) {
+  if(__DeviceUidNonZero__() && (zero < *size_) && NOTNULLPTR(config_) && NOTNULLPTR(dlist)) {
     /* Confirm the data to be written to the device is waiting for us in heap
      * memory. */
     if(OK(__MemoryRegionCheckHeap__(config_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
