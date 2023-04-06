@@ -741,7 +741,7 @@ static Return_t __free__(volatile MemoryRegion_t *region_, const volatile Addr_t
   FUNCTION_ENTER;
 
 
-  MemoryEntry_t *free = null;
+  MemoryEntry_t *entry = null;
 
 
   /* Because we are modifying memory entries, we need to disable interrupts
@@ -754,8 +754,8 @@ static Return_t __free__(volatile MemoryRegion_t *region_, const volatile Addr_t
     if(OK(__MemoryRegionCheck__(region_, addr_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
       /* __OffsetPointerToMemEntry__() calculates the location of the memory
       * entry for the allocated memory pointed to by the address pointer. */
-      free = __OffsetPointerToMemEntry__(addr_, region_);
-      free->free = FREE;
+      entry = __OffsetPointerToMemEntry__(addr_, region_);
+      entry->free = FREE;
       region_->frees++;
 
       /* After freeing memory, call __DefragMemoryRegion__() to consolidate any
@@ -1100,7 +1100,7 @@ static Return_t __DefragMemoryRegion__(const volatile MemoryRegion_t *region_) {
 
 
   MemoryEntry_t *cursor = null;
-  MemoryEntry_t *merge = null;
+  MemoryEntry_t *entry = null;
 
 
   if(__PointerIsNotNull__(region_)) {
@@ -1116,7 +1116,7 @@ static Return_t __DefragMemoryRegion__(const volatile MemoryRegion_t *region_) {
          *  3. The entry pointed to be the cursor is free.
          *  4. The entry pointed to be "next" is free. */
         if(__PointerIsNotNull__(cursor) && __PointerIsNotNull__(cursor->next) && __MemEntryIsFree__(cursor) && __MemEntryIsFree__(cursor->next)) {
-          merge = cursor->next;
+          entry = cursor->next;
 
 
           /* __CalculateMemEntryMagic__() calculates the memory entry's magic
@@ -1126,12 +1126,12 @@ static Return_t __DefragMemoryRegion__(const volatile MemoryRegion_t *region_) {
            * consistency of the memory region. */
           cursor->magic = __CalculateMemEntryMagic__(cursor);
           cursor->free = FREE;
-          cursor->blocks += merge->blocks;
-          cursor->next = merge->next;
+          cursor->blocks += entry->blocks;
+          cursor->next = entry->next;
 
           /* Zero out the block formerly occupied by the memory entry that was
            * merged. */
-          if(OK(__memset__(merge, nil, sizeof(MemoryEntry_t)))) {
+          if(OK(__memset__(entry, nil, sizeof(MemoryEntry_t)))) {
             /* Do nothing - literally. */
           } else {
             __AssertOnElse__();
