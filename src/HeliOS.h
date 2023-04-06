@@ -2997,7 +2997,7 @@
         char buf[size_ + 1];
 
 
-        if(NOTNULLPTR(bytes_) && (nil < size_)) {
+        if(__PointerIsNotNull__(bytes_) && (nil < size_)) {
           for(i = 0; i < size_; i++) {
             buf[i] = (char) bytes_[i];
           }

@@ -26,7 +26,7 @@ static Return_t __DeviceListFind__(const HalfWord_t uid_, Device_t **device_);
 Return_t xDeviceRegisterDevice(Return_t (*device_self_register_)()) {
   RET_DEFINE;
 
-  if(NOTNULLPTR(device_self_register_)) {
+  if(__PointerIsNotNull__(device_self_register_)) {
     /* Call the device driver's DEVICENAME_self_register() function which will
      * in turn call __RegisterDevice__() in this file. */
     if(OK((*device_self_register_)())) {
@@ -55,11 +55,12 @@ Return_t __RegisterDevice__(const HalfWord_t uid_, const Byte_t *name_, const De
 
   /* NOTE: There is a __KernelAllocateMemory__() syscall buried in this if()
    * statement. */
-  if((__DeviceUidNonZero__() && NOTNULLPTR(name_) && NOTNULLPTR(init_) && NOTNULLPTR(config_) && NOTNULLPTR(read_) && NOTNULLPTR(write_) && NOTNULLPTR(
-      simple_read_) && NOTNULLPTR(simple_write_) && NOTNULLPTR(dlist)) || (__DeviceUidNonZero__() && NOTNULLPTR(name_) && NOTNULLPTR(init_) && NOTNULLPTR(
-      config_) && NOTNULLPTR(read_) && NOTNULLPTR(write_) && NOTNULLPTR(simple_read_) && NOTNULLPTR(simple_write_) && NULLPTR(dlist) && OK(
+  if((__DeviceUidNonZero__() && __PointerIsNotNull__(name_) && __PointerIsNotNull__(init_) && __PointerIsNotNull__(config_) && __PointerIsNotNull__(read_) &&
+    __PointerIsNotNull__(write_) && __PointerIsNotNull__(simple_read_) && __PointerIsNotNull__(simple_write_) && __PointerIsNotNull__(dlist)) ||
+    (__DeviceUidNonZero__() && __PointerIsNotNull__(name_) && __PointerIsNotNull__(init_) && __PointerIsNotNull__(config_) && __PointerIsNotNull__(read_) &&
+    __PointerIsNotNull__(write_) && __PointerIsNotNull__(simple_read_) && __PointerIsNotNull__(simple_write_) && __PointerIsNull__(dlist) && OK(
       __KernelAllocateMemory__((volatile Addr_t **) &dlist, sizeof(DeviceList_t))))) {
-    if(NOTNULLPTR(dlist)) {
+    if(__PointerIsNotNull__(dlist)) {
       /* We are expecting *NOT* to find the device unique identifier in the
        * device list. This is to confirm there isn't already a device with the
        * same unique identifier already registered. */
@@ -67,11 +68,11 @@ Return_t __RegisterDevice__(const HalfWord_t uid_, const Byte_t *name_, const De
         /* Likewise this should be null since we are expecting
          * __DeviceListFind__() will *NOT* find a device by that unique
          * identifier. */
-        if(NULLPTR(device)) {
+        if(__PointerIsNull__(device)) {
           /* Allocate kernel memory for the device structure; then, if all goes
            * well, populate the structure with all of the device details. */
           if(OK(__KernelAllocateMemory__((volatile Addr_t **) &device, sizeof(Device_t)))) {
-            if(NOTNULLPTR(device)) {
+            if(__PointerIsNotNull__(device)) {
               if(OK(__memcpy__(device->name, name_, CONFIG_DEVICE_NAME_BYTES))) {
                 device->uid = uid_;
                 device->state = state_;
@@ -90,8 +91,8 @@ Return_t __RegisterDevice__(const HalfWord_t uid_, const Byte_t *name_, const De
                 /* If this is the first device added to the device list, then go
                  * ahead and set the device list head to the device. Otherwise
                  * we need to traverse the list until we reach the end. */
-                if(NOTNULLPTR(dlist->head)) {
-                  while(NOTNULLPTR(cursor->next)) {
+                if(__PointerIsNotNull__(dlist->head)) {
+                  while(__PointerIsNotNull__(cursor->next)) {
                     cursor = cursor->next;
                   }
 
@@ -140,11 +141,11 @@ Return_t xDeviceIsAvailable(const HalfWord_t uid_, Base_t *res_) {
   Device_t *device = null;
 
 
-  if(__DeviceUidNonZero__() && NOTNULLPTR(res_) && NOTNULLPTR(dlist)) {
+  if(__DeviceUidNonZero__() && __PointerIsNotNull__(res_) && __PointerIsNotNull__(dlist)) {
     /* Look-up the device by its unique identifier in the device list.
      */
     if(OK(__DeviceListFind__(uid_, &device))) {
-      if(NOTNULLPTR(device)) {
+      if(__PointerIsNotNull__(device)) {
         /* Set the result paramater of xDeviceIsAvailable() to the value of the
          * device structure available member.
          *
@@ -173,11 +174,11 @@ Return_t xDeviceSimpleWrite(const HalfWord_t uid_, Byte_t data_) {
   Device_t *device = null;
 
 
-  if(__DeviceUidNonZero__() && NOTNULLPTR(dlist)) {
+  if(__DeviceUidNonZero__() && __PointerIsNotNull__(dlist)) {
     /* Look-up the device by its unique identifier in the device list.
      */
     if(OK(__DeviceListFind__(uid_, &device))) {
-      if(NOTNULLPTR(device)) {
+      if(__PointerIsNotNull__(device)) {
         /* Check to make sure the device is running *AND*
          * writable. */
         if(((DeviceModeReadWrite == device->mode) || (DeviceModeWriteOnly == device->mode)) && (DeviceStateRunning == device->state)) {
@@ -212,21 +213,21 @@ Return_t xDeviceWrite(const HalfWord_t uid_, Size_t *size_, Addr_t *data_) {
   Byte_t *data = null;
 
 
-  if(__DeviceUidNonZero__() && NOTNULLPTR(size_) && (nil < *size_) && NOTNULLPTR(data_) && NOTNULLPTR(dlist)) {
+  if(__DeviceUidNonZero__() && __PointerIsNotNull__(size_) && (nil < *size_) && __PointerIsNotNull__(data_) && __PointerIsNotNull__(dlist)) {
     /* Confirm the data to be written to the device is waiting for us in heap
      * memory. */
     if(OK(__MemoryRegionCheckHeap__(data_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
       /* Look-up the device by its unique identifier in the device list.
        */
       if(OK(__DeviceListFind__(uid_, &device))) {
-        if(NOTNULLPTR(device)) {
+        if(__PointerIsNotNull__(device)) {
           /* Check to make sure the device is running *AND*
            * writable. */
           if(((DeviceModeReadWrite == device->mode) || (DeviceModeWriteOnly == device->mode)) && (DeviceStateRunning == device->state)) {
             /* Allocate some kernel memory we will copy the data to be written
              * to the device from the heap into. */
             if(OK(__KernelAllocateMemory__((volatile Addr_t **) &data, *size_))) {
-              if(NOTNULLPTR(data)) {
+              if(__PointerIsNotNull__(data)) {
                 /* Copy the data to be written to the device from the heap into
                  * the kernel memory then call the device driver's
                  * DEVICENAME_write() function. */
@@ -291,11 +292,11 @@ Return_t xDeviceSimpleRead(const HalfWord_t uid_, Byte_t *data_) {
   Byte_t data = nil;
 
 
-  if(__DeviceUidNonZero__() && NOTNULLPTR(data_) && NOTNULLPTR(dlist)) {
+  if(__DeviceUidNonZero__() && __PointerIsNotNull__(data_) && __PointerIsNotNull__(dlist)) {
     /* Look-up the device by its unique identifier in the device list.
      */
     if(OK(__DeviceListFind__(uid_, &device))) {
-      if(NOTNULLPTR(device)) {
+      if(__PointerIsNotNull__(device)) {
         /* Check to make sure the device is running *AND*
          * readable. */
         if(((DeviceModeReadWrite == device->mode) || (DeviceModeReadOnly == device->mode)) && (DeviceStateRunning == device->state)) {
@@ -334,11 +335,11 @@ Return_t xDeviceRead(const HalfWord_t uid_, Size_t *size_, Addr_t **data_) {
   Addr_t *data = null;
 
 
-  if(__DeviceUidNonZero__() && NOTNULLPTR(size_) && NOTNULLPTR(data_) && NOTNULLPTR(dlist)) {
+  if(__DeviceUidNonZero__() && __PointerIsNotNull__(size_) && __PointerIsNotNull__(data_) && __PointerIsNotNull__(dlist)) {
     /* Look-up the device by its unique identifier in the device list.
      */
     if(OK(__DeviceListFind__(uid_, &device))) {
-      if(NOTNULLPTR(device)) {
+      if(__PointerIsNotNull__(device)) {
         /* Check to make sure the device is running *AND*
          * readable. */
         if(((DeviceModeReadWrite == device->mode) || (DeviceModeReadOnly == device->mode)) && (DeviceStateRunning == device->state)) {
@@ -346,12 +347,12 @@ Return_t xDeviceRead(const HalfWord_t uid_, Size_t *size_, Addr_t **data_) {
            * the data returned by the device driver is waiting for us in kernel
            * memory. */
           if(OK((*device->read)(device, size_, &data))) {
-            if((nil < *size_) && NOTNULLPTR(data)) {
+            if((nil < *size_) && __PointerIsNotNull__(data)) {
               if(OK(__MemoryRegionCheckKernel__(data, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
                 /* Allocate "size_" of heap memory to copy the data read from
                  * the device in kernel memory into. */
                 if(OK(__HeapAllocateMemory__((volatile Addr_t **) data_, *size_))) {
-                  if(NOTNULLPTR(*data_)) {
+                  if(__PointerIsNotNull__(*data_)) {
                     /* Perform the copy from kernel memory to heap memory. */
                     if(OK(__memcpy__(*data_, data, *size_))) {
                       /* Free the kernel memory now that we are done. It is up
@@ -424,17 +425,17 @@ static Return_t __DeviceListFind__(const HalfWord_t uid_, Device_t **device_) {
   Device_t *cursor = null;
 
 
-  if(__DeviceUidNonZero__() && NOTNULLPTR(device_) && NOTNULLPTR(dlist)) {
+  if(__DeviceUidNonZero__() && __PointerIsNotNull__(device_) && __PointerIsNotNull__(dlist)) {
     cursor = dlist->head;
 
     /* Traverse the device list while the cursor is not null and the unique
      * identifier passed to __DeviceListFind__() doesn't match the device
      * pointed to by the cursor. */
-    while(NOTNULLPTR(cursor) && (cursor->uid != uid_)) {
+    while(__PointerIsNotNull__(cursor) && (cursor->uid != uid_)) {
       cursor = cursor->next;
     }
 
-    if(NOTNULLPTR(cursor)) {
+    if(__PointerIsNotNull__(cursor)) {
       *device_ = cursor;
       RET_OK;
     } else {
@@ -455,11 +456,11 @@ Return_t xDeviceInitDevice(const HalfWord_t uid_) {
   Device_t *device = null;
 
 
-  if(__DeviceUidNonZero__() && NOTNULLPTR(dlist)) {
+  if(__DeviceUidNonZero__() && __PointerIsNotNull__(dlist)) {
     /* Look-up the device by its unique identifier in the device list.
      */
     if(OK(__DeviceListFind__(uid_, &device))) {
-      if(NOTNULLPTR(device)) {
+      if(__PointerIsNotNull__(device)) {
         /* Call the device drivers DEVICENAME_init() function to initialize the
          * device.
          *
@@ -492,18 +493,18 @@ Return_t xDeviceConfigDevice(const HalfWord_t uid_, Size_t *size_, Addr_t *confi
   Addr_t *config = null;
 
 
-  if(__DeviceUidNonZero__() && (nil < *size_) && NOTNULLPTR(config_) && NOTNULLPTR(dlist)) {
+  if(__DeviceUidNonZero__() && (nil < *size_) && __PointerIsNotNull__(config_) && __PointerIsNotNull__(dlist)) {
     /* Confirm the data to be written to the device is waiting for us in heap
      * memory. */
     if(OK(__MemoryRegionCheckHeap__(config_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
       /* Look-up the device by its unique identifier in the device list.
        */
       if(OK(__DeviceListFind__(uid_, &device))) {
-        if(NOTNULLPTR(device)) {
+        if(__PointerIsNotNull__(device)) {
           /* Allocate some kernel memory we will copy the configuration data to
            * be written to the device from the heap into. */
           if(OK(__KernelAllocateMemory__((volatile Addr_t **) &config, *size_))) {
-            if(NOTNULLPTR(config)) {
+            if(__PointerIsNotNull__(config)) {
               /* Copy the configuration data to be written to the device from
                * the heap into the kernel memory then call the device driver's
                * DEVICENAME_config() function.

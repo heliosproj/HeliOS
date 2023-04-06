@@ -121,16 +121,16 @@
   #define FLAGNOTSET(flag_) (0x0u == (flag_))
 
 
-  #if defined(NOTNULLPTR)
-    #undef NOTNULLPTR
-  #endif /* if defined(NOTNULLPTR) */
-  #define NOTNULLPTR(addr_) (null != (addr_))
+  #if defined(__PointerIsNotNull__)
+    #undef __PointerIsNotNull__
+  #endif /* if defined(__PointerIsNotNull__) */
+  #define __PointerIsNotNull__(addr_) (null != (addr_))
 
 
-  #if defined(NULLPTR)
-    #undef NULLPTR
-  #endif /* if defined(NULLPTR) */
-  #define NULLPTR(addr_) (null == (addr_))
+  #if defined(__PointerIsNull__)
+    #undef __PointerIsNull__
+  #endif /* if defined(__PointerIsNull__) */
+  #define __PointerIsNull__(addr_) (null == (addr_))
 
 
   #if defined(RET_DEFINE)

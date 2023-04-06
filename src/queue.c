@@ -21,7 +21,7 @@ static Return_t __QueuePeek__(const Queue_t *queue_, QueueMessage_t **message_);
 
 #define __GetQueueLength__() \
         cursor = queue_->head; \
-        while(NOTNULLPTR(cursor)) { \
+        while(__PointerIsNotNull__(cursor)) { \
           messages++; \
           cursor = cursor->next; \
         }
@@ -45,9 +45,9 @@ static Return_t __QueuePeek__(const Queue_t *queue_, QueueMessage_t **message_);
 Return_t xQueueCreate(Queue_t **queue_, Base_t limit_) {
   RET_DEFINE;
 
-  if(NOTNULLPTR(queue_) && (CONFIG_QUEUE_MINIMUM_LIMIT <= limit_)) {
+  if(__PointerIsNotNull__(queue_) && (CONFIG_QUEUE_MINIMUM_LIMIT <= limit_)) {
     if(OK(__KernelAllocateMemory__((volatile Addr_t **) queue_, sizeof(Queue_t)))) {
-      if(NOTNULLPTR(*queue_)) {
+      if(__PointerIsNotNull__(*queue_)) {
         (*queue_)->length = nil;
         (*queue_)->limit = limit_;
         (*queue_)->locked = false;
@@ -74,7 +74,7 @@ Return_t xQueueDelete(Queue_t *queue_) {
   if(OK(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
     /* Loop through the queue while it contains messages and drop each message
      * until there are no more messages. */
-    while(NOTNULLPTR(queue_->head)) {
+    while(__PointerIsNotNull__(queue_->head)) {
       if(OK(__QueueDropmessage__(queue_))) {
         /* Do nothing - literally. */
       } else {
@@ -104,7 +104,7 @@ Return_t xQueueGetLength(const Queue_t *queue_, Base_t *res_) {
   Message_t *cursor = null;
 
 
-  if(NOTNULLPTR(queue_) && NOTNULLPTR(res_)) {
+  if(__PointerIsNotNull__(queue_) && __PointerIsNotNull__(res_)) {
     if(OK(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
       __GetQueueLength__();
 
@@ -137,7 +137,7 @@ Return_t xQueueIsQueueEmpty(const Queue_t *queue_, Base_t *res_) {
   Message_t *cursor = null;
 
 
-  if(NOTNULLPTR(queue_) && NOTNULLPTR(res_)) {
+  if(__PointerIsNotNull__(queue_) && __PointerIsNotNull__(res_)) {
     if(OK(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
       __GetQueueLength__();
 
@@ -176,7 +176,7 @@ Return_t xQueueIsQueueFull(const Queue_t *queue_, Base_t *res_) {
   Message_t *cursor = null;
 
 
-  if(NOTNULLPTR(queue_) && NOTNULLPTR(res_)) {
+  if(__PointerIsNotNull__(queue_) && __PointerIsNotNull__(res_)) {
     if(OK(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
       __GetQueueLength__();
 
@@ -216,7 +216,7 @@ Return_t xQueueMessagesWaiting(const Queue_t *queue_, Base_t *res_) {
   Message_t *cursor = null;
 
 
-  if(NOTNULLPTR(queue_) && NOTNULLPTR(res_)) {
+  if(__PointerIsNotNull__(queue_) && __PointerIsNotNull__(res_)) {
     if(OK(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
       __GetQueueLength__();
 
@@ -257,14 +257,14 @@ Return_t xQueueSend(Queue_t *queue_, const Base_t bytes_, const Byte_t *value_) 
   Message_t *cursor = null;
 
 
-  if(NOTNULLPTR(queue_) && (nil < bytes_) && (CONFIG_MESSAGE_VALUE_BYTES >= bytes_) && NOTNULLPTR(value_)) {
+  if(__PointerIsNotNull__(queue_) && (nil < bytes_) && (CONFIG_MESSAGE_VALUE_BYTES >= bytes_) && __PointerIsNotNull__(value_)) {
     if(OK(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
       if(false == queue_->locked) {
         __GetQueueLength__();
 
         if((queue_->limit > queue_->length) && __QueueLengthCorrect__()) {
           if(OK(__KernelAllocateMemory__((volatile Addr_t **) &message, sizeof(Message_t)))) {
-            if(NOTNULLPTR(message)) {
+            if(__PointerIsNotNull__(message)) {
               if(OK(__memcpy__(message->messageValue, value_, CONFIG_MESSAGE_VALUE_BYTES))) {
                 message->messageBytes = bytes_;
                 message->next = null;
@@ -273,7 +273,7 @@ Return_t xQueueSend(Queue_t *queue_, const Base_t bytes_, const Byte_t *value_) 
                 /* If the queue tail is not null then it already contains
                  * messages and append the new message, otherwise set the head
                  * and tail to the new message. */
-                if(NOTNULLPTR(queue_->tail)) {
+                if(__PointerIsNotNull__(queue_->tail)) {
                   queue_->tail->next = message;
                   queue_->tail = message;
                 } else {
@@ -316,7 +316,7 @@ Return_t xQueueSend(Queue_t *queue_, const Base_t bytes_, const Byte_t *value_) 
 Return_t xQueuePeek(const Queue_t *queue_, QueueMessage_t **message_) {
   RET_DEFINE;
 
-  if(NOTNULLPTR(queue_) && NOTNULLPTR(message_)) {
+  if(__PointerIsNotNull__(queue_) && __PointerIsNotNull__(message_)) {
     if(OK(__QueuePeek__(queue_, message_))) {
       RET_OK;
     } else {
@@ -333,11 +333,11 @@ Return_t xQueuePeek(const Queue_t *queue_, QueueMessage_t **message_) {
 static Return_t __QueuePeek__(const Queue_t *queue_, QueueMessage_t **message_) {
   RET_DEFINE;
 
-  if(NOTNULLPTR(queue_) && NOTNULLPTR(message_)) {
+  if(__PointerIsNotNull__(queue_) && __PointerIsNotNull__(message_)) {
     if(OK(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
-      if(NOTNULLPTR(queue_->head)) {
+      if(__PointerIsNotNull__(queue_->head)) {
         if(OK(__HeapAllocateMemory__((volatile Addr_t **) message_, sizeof(QueueMessage_t)))) {
-          if(NOTNULLPTR(*message_)) {
+          if(__PointerIsNotNull__(*message_)) {
             (*message_)->messageBytes = queue_->head->messageBytes;
 
             if(OK(__memcpy__((*message_)->messageValue, queue_->head->messageValue, CONFIG_MESSAGE_VALUE_BYTES))) {
@@ -372,7 +372,7 @@ static Return_t __QueuePeek__(const Queue_t *queue_, QueueMessage_t **message_) 
 Return_t xQueueDropMessage(Queue_t *queue_) {
   RET_DEFINE;
 
-  if(NOTNULLPTR(queue_)) {
+  if(__PointerIsNotNull__(queue_)) {
     if(OK(__QueueDropmessage__(queue_))) {
       RET_OK;
     } else {
@@ -393,13 +393,13 @@ static Return_t __QueueDropmessage__(Queue_t *queue_) {
   Message_t *message = null;
 
 
-  if(NOTNULLPTR(queue_)) {
+  if(__PointerIsNotNull__(queue_)) {
     if(OK(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
-      if(NOTNULLPTR(queue_->head)) {
+      if(__PointerIsNotNull__(queue_->head)) {
         message = queue_->head;
         queue_->head = queue_->head->next;
 
-        if(NULLPTR(queue_->head)) {
+        if(__PointerIsNull__(queue_->head)) {
           queue_->tail = null;
         }
 
@@ -426,10 +426,10 @@ static Return_t __QueueDropmessage__(Queue_t *queue_) {
 Return_t xQueueReceive(Queue_t *queue_, QueueMessage_t **message_) {
   RET_DEFINE;
 
-  if(NOTNULLPTR(queue_) && NOTNULLPTR(message_)) {
+  if(__PointerIsNotNull__(queue_) && __PointerIsNotNull__(message_)) {
     if(OK(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
       if(OK(__QueuePeek__(queue_, message_))) {
-        if(NOTNULLPTR(*message_)) {
+        if(__PointerIsNotNull__(*message_)) {
           if(OK(__QueueDropmessage__(queue_))) {
             RET_OK;
           } else {
@@ -455,7 +455,7 @@ Return_t xQueueReceive(Queue_t *queue_, QueueMessage_t **message_) {
 Return_t xQueueLockQueue(Queue_t *queue_) {
   RET_DEFINE;
 
-  if(NOTNULLPTR(queue_)) {
+  if(__PointerIsNotNull__(queue_)) {
     if(OK(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
       if(false == queue_->locked) {
         queue_->locked = true;
@@ -477,7 +477,7 @@ Return_t xQueueLockQueue(Queue_t *queue_) {
 Return_t xQueueUnLockQueue(Queue_t *queue_) {
   RET_DEFINE;
 
-  if(NOTNULLPTR(queue_)) {
+  if(__PointerIsNotNull__(queue_)) {
     if(OK(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
       if(true == queue_->locked) {
         queue_->locked = false;

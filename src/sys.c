@@ -83,9 +83,9 @@ Return_t xSystemHalt(void) {
 Return_t xSystemGetSystemInfo(SystemInfo_t **info_) {
   RET_DEFINE;
 
-  if(NOTNULLPTR(info_)) {
+  if(__PointerIsNotNull__(info_)) {
     if(OK(__HeapAllocateMemory__((volatile Addr_t **) info_, sizeof(SystemInfo_t)))) {
-      if(NOTNULLPTR(*info_)) {
+      if(__PointerIsNotNull__(*info_)) {
         if(OK(__memcpy__((*info_)->productName, OS_PRODUCT_NAME, OS_PRODUCT_NAME_SIZE))) {
           (*info_)->majorVersion = OS_MAJOR_VERSION_NO;
           (*info_)->minorVersion = OS_MINOR_VERSION_NO;
