@@ -35,25 +35,25 @@
 
     #include <Arduino.h>
 
-    #define DISABLE_INTERRUPTS() noInterrupts()
+    #define __DisableInterrupts__() noInterrupts()
 
-    #define ENABLE_INTERRUPTS() interrupts()
+    #define __EnableInterrupts__() interrupts()
 
   #elif defined(ARDUINO_ARCH_ESP32) || defined(ESP32)
 
     #pragma message("WARNING: The ESP32 Arduino core uses FreeRTOS. HeliOS and FreeRTOS cannot coexist in the same application.")
 
-    #define DISABLE_INTERRUPTS()
+    #define __DisableInterrupts__()
 
-    #define ENABLE_INTERRUPTS()
+    #define __EnableInterrupts__()
 
   #elif defined(CMSIS_ARCH_CORTEXM)
 
     #include "stm32f429xx.h"
 
-    #define DISABLE_INTERRUPTS() __disable_irq()
+    #define __DisableInterrupts__() __disable_irq()
 
-    #define ENABLE_INTERRUPTS() __enable_irq()
+    #define __EnableInterrupts__() __enable_irq()
 
     #define SYSTEM_CORE_CLOCK_FREQUENCY 0xF42400u /* 16000000u */
 
@@ -66,9 +66,9 @@
     #include <stdio.h>
     #include <sys/time.h>
 
-    #define DISABLE_INTERRUPTS()
+    #define __DisableInterrupts__()
 
-    #define ENABLE_INTERRUPTS()
+    #define __EnableInterrupts__()
     #if defined(UNIT_TEST_COLORIZE)
       #define CONFIG_SYSTEM_ASSERT_BEHAVIOR(f, l) printf("\033[95mkernel:\033[93m assert at %s:%d\n\033[39m", f, l)
     #else  /* if defined(UNIT_TEST_COLORIZE) */

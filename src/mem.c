@@ -607,7 +607,7 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
 
   /* Because we are modifying memory entries, we need to disable interrupts
    * until __calloc__() is done. */
-  DISABLE_INTERRUPTS();
+  __DisableInterrupts__();
 
   if(__PointerIsNotNull__(region_) && __PointerIsNotNull__(addr_) && (nil < size_)) {
     /* Check the consistency of the memory region before we modify anything. */
@@ -723,7 +723,7 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
   }
 
   /* __calloc__() is done so re-enable interrupts. */
-  ENABLE_INTERRUPTS();
+  __EnableInterrupts__();
   RET_RETURN;
 }
 
@@ -737,7 +737,7 @@ static Return_t __free__(volatile MemoryRegion_t *region_, const volatile Addr_t
 
   /* Because we are modifying memory entries, we need to disable interrupts
    * until __free__() is done. */
-  DISABLE_INTERRUPTS();
+  __DisableInterrupts__();
 
   if(__PointerIsNotNull__(region_) && __PointerIsNotNull__(addr_)) {
     /* Check the consistency of the heap memory region *AND* check the address
@@ -764,7 +764,7 @@ static Return_t __free__(volatile MemoryRegion_t *region_, const volatile Addr_t
   }
 
   /* __free__() is done so re-enable interrupts. */
-  ENABLE_INTERRUPTS();
+  __EnableInterrupts__();
   RET_RETURN;
 }
 

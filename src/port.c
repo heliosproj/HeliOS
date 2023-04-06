@@ -22,9 +22,9 @@
 
 
   void SysTick_Handler(void) {
-    DISABLE_INTERRUPTS();
+    __DisableInterrupts__();
     sysTicks++;
-    ENABLE_INTERRUPTS();
+    __EnableInterrupts__();
 
     return;
   }

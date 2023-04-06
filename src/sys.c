@@ -70,7 +70,7 @@ Return_t xSystemInit(void) {
 
 Return_t xSystemHalt(void) {
   RET_DEFINE;
-  DISABLE_INTERRUPTS();
+  __DisableInterrupts__();
 
   for(;;) {
     /* Do nothing - literally. */
