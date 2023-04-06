@@ -165,10 +165,10 @@ static Return_t __MemoryRegionInit__(volatile MemoryRegion_t *region_);
 static Return_t __DetectByteOrder__(ByteOrder_t *order_);
 
 
-#define __OffsetAddrToMemEntry__(addr_, region_) ((MemoryEntry_t *) (((Byte_t *) (addr_)) - ((region_)->entrySize * CONFIG_MEMORY_REGION_BLOCK_SIZE)))
+#define __OffsetPointerToMemEntry__(ptr_, region_) ((MemoryEntry_t *) (((Byte_t *) (ptr_)) - ((region_)->entrySize * CONFIG_MEMORY_REGION_BLOCK_SIZE)))
 
 
-#define __OffsetMemEntryToAddr__(addr_, region_) ((Addr_t *) (((Byte_t *) (addr_)) + ((region_)->entrySize * CONFIG_MEMORY_REGION_BLOCK_SIZE)))
+#define __OffsetMemEntryToPointer__(ptr_, region_) ((Addr_t *) (((Byte_t *) (ptr_)) + ((region_)->entrySize * CONFIG_MEMORY_REGION_BLOCK_SIZE)))
 
 
 #define __CalculateMemEntryMagic__(ptr_) (((Word_t) (ptr_)) ^ MAGIC_CONST)
@@ -177,7 +177,7 @@ static Return_t __DetectByteOrder__(ByteOrder_t *order_);
 #define __MemEntryMagicOk__(ptr_) (__CalculateMemEntryMagic__(ptr_) == (ptr_)->magic)
 
 
-#define __AddrInRegionBounds__(region_, addr_) (((const volatile Addr_t *) (addr_) >= (Addr_t *) ((region_)->mem)) && ((const volatile Addr_t *) (addr_) < \
+#define __PointerInRegionBounds__(region_, ptr_) (((const volatile Addr_t *) (ptr_) >= (Addr_t *) ((region_)->mem)) && ((const volatile Addr_t *) (ptr_) < \
         (Addr_t *) ((region_)->mem + MEMORY_REGION_SIZE_IN_BYTES)))
 
 
@@ -323,9 +323,9 @@ Return_t xMemGetSize(const volatile Addr_t *addr_, Size_t *size_) {
     /* Check the consistency of the heap memory region *AND* check the address
      * pointer to ensure it is pointing to a valid block of heap memory. */
     if(OK(__MemoryRegionCheck__(&heap, addr_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
-      /* __OffsetAddrToMemEntry__() calculates the location of the memory entry
-       * for the allocated memory pointed to by the address pointer. */
-      tosize = __OffsetAddrToMemEntry__(addr_, &heap);
+      /* __OffsetPointerToMemEntry__() calculates the location of the memory
+       * entry for the allocated memory pointed to by the address pointer. */
+      tosize = __OffsetPointerToMemEntry__(addr_, &heap);
 
       /* If the memory entry pointed to by tosize is *NOT* free, then give the
        * user back the number of bytes in-use by multiply the blocks contained
@@ -362,10 +362,10 @@ static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, co
   if(MEMORY_REGION_CHECK_OPTION_WO_ADDR == option_) {
     /* Traverse the memory entries in the memory region while cursor is null. */
     while(__PointerIsNotNull__(cursor)) {
-      /* __AddrInRegionBounds__() is a C macro that simply checks that the
+      /* __PointerInRegionBounds__() is a C macro that simply checks that the
        * address, in this case
        * "cursor", falls within the bounds of the memory region. */
-      if(__AddrInRegionBounds__(region_, cursor)) {
+      if(__PointerInRegionBounds__(region_, cursor)) {
         /* __MemEntryMagicOk__() compares the memory entry's magic value (i.e.,
          * the magic member of the memory entry structure) to the magic value
          * calculated by XOR'ing the address of the memory entry with the
@@ -442,18 +442,18 @@ static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, co
     /* Check to see if we need to look for an address while we check the
      * consistency of the memory region. */
   } else if(MEMORY_REGION_CHECK_OPTION_W_ADDR == option_) {
-    /* __OffsetAddrToMemEntry__() calculates the location of the memory entry
+    /* __OffsetPointerToMemEntry__() calculates the location of the memory entry
      * for the allocated memory pointed to by the address pointer. This is the
      * memory entry we need to find as we traverse the memory entries in the
      * memory region. */
-    find = __OffsetAddrToMemEntry__(addr_, region_);
+    find = __OffsetPointerToMemEntry__(addr_, region_);
 
     /* Traverse the memory entries in the memory region while cursor is null. */
     while(__PointerIsNotNull__(cursor)) {
-      /* __AddrInRegionBounds__() is a C macro that simply checks that the
+      /* __PointerInRegionBounds__() is a C macro that simply checks that the
        * address, in this case
        * "cursor", falls within the bounds of the memory region. */
-      if(__AddrInRegionBounds__(region_, cursor)) {
+      if(__PointerInRegionBounds__(region_, cursor)) {
         /* __MemEntryMagicOk__() compares the memory entry's magic value (i.e.,
          * the magic member of the memory entry structure) to the magic value
          * calculated by XOR'ing the address of the memory entry with the
@@ -685,11 +685,12 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
 
           /* Zero out all of the requested blocks (excluding the memory entry).
            */
-          if(OK(__memset__(__OffsetMemEntryToAddr__(candidate, region_), nil, (requested - region_->entrySize) * CONFIG_MEMORY_REGION_BLOCK_SIZE))) {
-            /* __OffsetMemEntryToAddr__() does the opposite of
-             * __OffsetAddrToMemEntry__(), it converts the memory entry address
-             * to the address of the first block after the memory entry. */
-            *addr_ = __OffsetMemEntryToAddr__(candidate, region_);
+          if(OK(__memset__(__OffsetMemEntryToPointer__(candidate, region_), nil, (requested - region_->entrySize) * CONFIG_MEMORY_REGION_BLOCK_SIZE))) {
+            /* __OffsetMemEntryToPointer__() does the opposite of
+             * __OffsetPointerToMemEntry__(), it converts the memory entry
+             * address to the address of the first block after the memory entry.
+             */
+            *addr_ = __OffsetMemEntryToPointer__(candidate, region_);
             __ReturnOk__();
           } else {
             __AssertOnElse__();
@@ -701,11 +702,12 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
 
           /* Zero out all of the requested blocks (excluding the memory
            * entry).*/
-          if(OK(__memset__(__OffsetMemEntryToAddr__(candidate, region_), nil, (requested - region_->entrySize) * CONFIG_MEMORY_REGION_BLOCK_SIZE))) {
-            /* __OffsetMemEntryToAddr__() does the opposite of
-             * __OffsetAddrToMemEntry__(), it converts the memory entry address
-             * to the address of the first block after the memory entry. */
-            *addr_ = __OffsetMemEntryToAddr__(candidate, region_);
+          if(OK(__memset__(__OffsetMemEntryToPointer__(candidate, region_), nil, (requested - region_->entrySize) * CONFIG_MEMORY_REGION_BLOCK_SIZE))) {
+            /* __OffsetMemEntryToPointer__() does the opposite of
+             * __OffsetPointerToMemEntry__(), it converts the memory entry
+             * address to the address of the first block after the memory entry.
+             */
+            *addr_ = __OffsetMemEntryToPointer__(candidate, region_);
             __ReturnOk__();
           } else {
             __AssertOnElse__();
@@ -750,9 +752,9 @@ static Return_t __free__(volatile MemoryRegion_t *region_, const volatile Addr_t
     /* Check the consistency of the heap memory region *AND* check the address
      * pointer to ensure it is pointing to a valid block of heap memory. */
     if(OK(__MemoryRegionCheck__(region_, addr_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
-      /* __OffsetAddrToMemEntry__() calculates the location of the memory entry
-       * for the allocated memory pointed to by the address pointer. */
-      free = __OffsetAddrToMemEntry__(addr_, region_);
+      /* __OffsetPointerToMemEntry__() calculates the location of the memory
+       * entry for the allocated memory pointed to by the address pointer. */
+      free = __OffsetPointerToMemEntry__(addr_, region_);
       free->free = FREE;
       region_->frees++;
 
