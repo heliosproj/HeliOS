@@ -3,7 +3,7 @@
  * @file sys.h
  * @author Manny Peterson <manny@heliosproj.org>
  * @brief Kernel source for system control
- * @version 0.4.2
+ * @version 0.5.0
  * @date 2023-03-19
  * 
  * @copyright
@@ -44,13 +44,13 @@
   #if defined(OS_MINOR_VERSION_NO)
     #undef OS_MINOR_VERSION_NO
   #endif /* if defined(OS_MINOR_VERSION_NO) */
-  #define OS_MINOR_VERSION_NO 0x4u /* 4 */
+  #define OS_MINOR_VERSION_NO 0x5u /* 5 */
 
 
   #if defined(OS_PATCH_VERSION_NO)
     #undef OS_PATCH_VERSION_NO
   #endif /* if defined(OS_PATCH_VERSION_NO) */
-  #define OS_PATCH_VERSION_NO 0x2u /* 2 */
+  #define OS_PATCH_VERSION_NO 0x0u /* 0 */
   extern Flags_t flag;
 
   #ifdef __cplusplus

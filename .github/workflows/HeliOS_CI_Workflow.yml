@@ -54,7 +54,7 @@ jobs:
           sed -i '/^PROJECT_NAME .*/d' ${{github.workspace}}/temp/HeliOS.conf
           echo 'PROJECT_NAME = HeliOS' >> ${{github.workspace}}/temp/HeliOS.conf
           sed -i '/^PROJECT_NUMBER .*/d' ${{github.workspace}}/temp/HeliOS.conf
-          echo 'PROJECT_NUMBER = Kernel 0.4.2' >> ${{github.workspace}}/temp/HeliOS.conf
+          echo 'PROJECT_NUMBER = Kernel 0.5.0' >> ${{github.workspace}}/temp/HeliOS.conf
           sed -i '/^PROJECT_LOGO .*/d' ${{github.workspace}}/temp/HeliOS.conf
           echo 'PROJECT_LOGO = ${{github.workspace}}/temp/HeliOS_OG_Logo_Light.png' >> ${{github.workspace}}/temp/HeliOS.conf
           sed -i '/^OUTPUT_DIRECTORY .*/d' ${{github.workspace}}/temp/HeliOS.conf

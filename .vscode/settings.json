@@ -30,7 +30,7 @@
     "custom"
   ],
   "doxdocgen.file.fileTemplate": "@file {name}",
-  "doxdocgen.file.versionTag": "@version 0.4.2",
+  "doxdocgen.file.versionTag": "@version 0.5.0",
   "doxdocgen.generic.authorEmail": "manny@heliosproj.org",
   "doxdocgen.generic.authorName": "Manny Peterson",
   "doxdocgen.generic.authorTag": "@author {author} <{email}>",

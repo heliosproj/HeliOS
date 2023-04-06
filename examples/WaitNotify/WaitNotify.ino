@@ -3,7 +3,7 @@
  * @file WaitNotify.ino
  * @author Manny Peterson <manny@heliosproj.org>
  * @brief An example Arduino sketch
- * @version 0.4.2
+ * @version 0.5.0
  * @date 2023-03-19
  * 
  * @copyright

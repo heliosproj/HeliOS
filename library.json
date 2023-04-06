@@ -1,6 +1,6 @@
 {
   "name":"HeliOS",
-  "version":"0.4.2",
+  "version":"0.5.0",
   "description":"HeliOS is an embedded operating system that is free for everyone to use. While called an operating system, HeliOS is a multitasking kernel for use in embedded applications. Its rich, fully documented, API allows the user to control every aspect of the system and access kernel services for task (process) management, scheduler management, inter-process communication, memory management and more while maintaining a tiny footprint for a broad range of low-power embedded devices.",
   "keywords":"rtos, os, real, time, operating, system, freertos, zephyr, arduino, multitasking, teensy, arm, avr, sam, embedded",
   "repository":{
