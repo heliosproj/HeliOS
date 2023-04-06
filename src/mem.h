@@ -47,6 +47,18 @@
   #define FREE 0xD5u /* 213 */
 
 
+  #if defined(MEMORY_REGION_CHECK_OPTION_WO_ADDR)
+    #undef MEMORY_REGION_CHECK_OPTION_WO_ADDR
+  #endif /* if defined(MEMORY_REGION_CHECK_OPTION_WO_ADDR) */
+  #define MEMORY_REGION_CHECK_OPTION_WO_ADDR 0x1u /* 1 */
+
+
+  #if defined(MEMORY_REGION_CHECK_OPTION_W_ADDR)
+    #undef MEMORY_REGION_CHECK_OPTION_W_ADDR
+  #endif /* if defined(MEMORY_REGION_CHECK_OPTION_W_ADDR) */
+  #define MEMORY_REGION_CHECK_OPTION_W_ADDR 0x2u /* 2 */
+
+
   #ifdef __cplusplus
     extern "C" {
   #endif /* ifdef __cplusplus */

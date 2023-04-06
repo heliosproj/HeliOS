@@ -51,6 +51,55 @@
     #undef OS_PATCH_VERSION_NO
   #endif /* if defined(OS_PATCH_VERSION_NO) */
   #define OS_PATCH_VERSION_NO 0x0u /* 0 */
+
+
+  #if defined(RUNNING)
+    #undef RUNNING
+  #endif /* if defined(RUNNING) */
+  #define RUNNING flag.running
+
+
+  #if defined(OVERFLOW)
+    #undef OVERFLOW
+  #endif /* if defined(OVERFLOW) */
+  #define OVERFLOW flag.overflow
+
+
+  #if defined(MEMFAULT)
+    #undef MEMFAULT
+  #endif /* if defined(MEMFAULT) */
+  #define MEMFAULT flag.memfault
+
+
+  #if defined(LITTLEEND)
+    #undef LITTLEEND
+  #endif /* if defined(LITTLEEND) */
+  #define LITTLEEND flag.littleend
+
+
+  #if defined(__SetFlag__)
+    #undef __SetFlag__
+  #endif /* if defined(__SetFlag__) */
+  #define __SetFlag__(flag_) (flag_ = 0xFFu)
+
+
+  #if defined(__UnsetFlag__)
+    #undef __UnsetFlag__
+  #endif /* if defined(__UnsetFlag__) */
+  #define __UnsetFlag__(flag_) (flag_ = 0x0u)
+
+
+  #if defined(__FlagIsSet__)
+    #undef __FlagIsSet__
+  #endif /* if defined(__FlagIsSet__) */
+  #define __FlagIsSet__(flag_) (0xFFu == (flag_))
+
+
+  #if defined(__FlagIsNotSet__)
+    #undef __FlagIsNotSet__
+  #endif /* if defined(__FlagIsNotSet__) */
+  #define __FlagIsNotSet__(flag_) (0x0u == (flag_))
+
   extern Flags_t flag;
 
   #ifdef __cplusplus
