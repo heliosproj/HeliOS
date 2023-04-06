@@ -181,6 +181,12 @@ static Return_t __DetectByteOrder__(ByteOrder_t *order_);
         (Addr_t *) ((region_)->mem + MEMORY_REGION_SIZE_IN_BYTES)))
 
 
+#define __EntryIsInUse__(entry_) (INUSE == (entry_)->free)
+
+
+#define __EntryIsFree__(entry_) (FREE == (entry_)->free)
+
+
 Return_t __MemoryInit__(void) {
   RET_DEFINE;
 
@@ -284,7 +290,7 @@ Return_t xMemGetUsed(Size_t *size_) {
       while(__PointerIsNotNull__(cursor)) {
         /* If the memory entry is *NOT* free, then add the number of blocks it
          * contains to the in-use count. */
-        if(INUSE == cursor->free) {
+        if(__EntryIsInUse__(cursor)) {
           used += cursor->blocks;
         }
 
@@ -324,7 +330,7 @@ Return_t xMemGetSize(const volatile Addr_t *addr_, Size_t *size_) {
       /* If the memory entry pointed to by tosize is *NOT* free, then give the
        * user back the number of bytes in-use by multiply the blocks contained
        * in the entry by the block size in bytes. */
-      if(INUSE == tosize->free) {
+      if(__EntryIsInUse__(tosize)) {
         *size_ = tosize->blocks * CONFIG_MEMORY_REGION_BLOCK_SIZE;
         RET_OK;
       } else {
@@ -368,7 +374,7 @@ static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, co
         if(__MemEntryMagicOk__(cursor)) {
           /* Check to make sure the memory entry's free value is either FREE or
            * INUSE.*/
-          if((FREE == cursor->free) || (INUSE == cursor->free)) {
+          if(__EntryIsFree__(cursor) || __EntryIsInUse__(cursor)) {
             /* Add up the blocks as we go. We will check to make sure the total
              * number of blocks in the memory region is correct later. */
             blocks += cursor->blocks;
@@ -456,7 +462,7 @@ static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, co
         if(__MemEntryMagicOk__(cursor)) {
           /* Check to make sure the memory entry's free value is either FREE or
            * INUSE.*/
-          if((FREE == cursor->free) || (INUSE == cursor->free)) {
+          if(__EntryIsFree__(cursor) || __EntryIsInUse__(cursor)) {
             /* Add up the blocks as we go. We will check to make sure the total
              * number of blocks in the memory region is correct later. */
             blocks += cursor->blocks;
@@ -464,7 +470,7 @@ static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, co
             /* If the cursor points to the memory entry we are looking for *AND*
              * the memory entry is marked as in-use, then set "found" to true
              * because we found the memory entry we are looking for. */
-            if((find == cursor) && (INUSE == cursor->free)) {
+            if((find == cursor) && __EntryIsInUse__(cursor)) {
               found = true;
             }
           } else {
@@ -633,14 +639,14 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
          *  2. Must contain enough blocks to cover the request.
          *  3. Must be an entry with the fewest blocks (this is to reduce
          * fragmentation). */
-        if((FREE == cursor->free) && (requested <= cursor->blocks) && (fewest > cursor->blocks)) {
+        if(__EntryIsFree__(cursor) && (requested <= cursor->blocks) && (fewest > cursor->blocks)) {
           fewest = cursor->blocks;
           candidate = cursor;
         }
 
         /* Keep track of how many free blocks remain as we need to update the
          * statistics for the memory region later. */
-        if(FREE == cursor->free) {
+        if(__EntryIsFree__(cursor)) {
           free += cursor->blocks;
         }
 
@@ -1048,7 +1054,7 @@ static Return_t __MemGetRegionStats__(const volatile MemoryRegion_t *region_, Me
           /* Traverse the memory region to calculate the remaining statistics.
            */
           while(__PointerIsNotNull__(cursor)) {
-            if(FREE == cursor->free) {
+            if(__EntryIsFree__(cursor)) {
               if((*stats_)->largestFreeEntryInBytes < (cursor->blocks * CONFIG_MEMORY_REGION_BLOCK_SIZE)) {
                 (*stats_)->largestFreeEntryInBytes = cursor->blocks * CONFIG_MEMORY_REGION_BLOCK_SIZE;
               }
@@ -1106,7 +1112,7 @@ static Return_t __DefragMemoryRegion__(const volatile MemoryRegion_t *region_) {
          *  2. "next" points to an entry.
          *  3. The entry pointed to be the cursor is free.
          *  4. The entry pointed to be "next" is free. */
-        if(__PointerIsNotNull__(cursor) && __PointerIsNotNull__(cursor->next) && (FREE == cursor->free) && (FREE == cursor->next->free)) {
+        if(__PointerIsNotNull__(cursor) && __PointerIsNotNull__(cursor->next) && __EntryIsFree__(cursor) && __EntryIsFree__(cursor->next)) {
           merge = cursor->next;
 
 
