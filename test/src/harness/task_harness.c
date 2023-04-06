@@ -31,21 +31,21 @@ void task_harness(void) {
   Task_t *task11 = null;
   Task_t *task12 = null;
   TaskState_t task13;
-  Base_t task14 = zero;
-  Base_t task15 = zero;
-  Base_t task16 = zero;
+  Base_t task14 = nil;
+  Base_t task15 = nil;
+  Base_t task16 = nil;
   TaskState_t task17;
   TaskState_t task18;
   TaskState_t task19;
-  Ticks_t task20 = zero;
-  Ticks_t task21 = zero;
+  Ticks_t task20 = nil;
+  Ticks_t task21 = nil;
   SchedulerState_t task22;
   SchedulerState_t task23;
-  Base_t task24 = zero;
-  Base_t task25 = zero;
+  Base_t task24 = nil;
+  Base_t task25 = nil;
   TaskState_t task26;
   TaskState_t task27;
-  Ticks_t task28 = zero;
+  Ticks_t task28 = nil;
 
 
   unit_begin("xTaskCreate()");

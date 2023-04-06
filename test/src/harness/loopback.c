@@ -22,7 +22,7 @@
 
 #define BUFFER_LENGTH 0xFFu
 static Byte_t loopback_buffer[BUFFER_LENGTH];
-static HalfWord_t loopback_buffer_size = zero;
+static HalfWord_t loopback_buffer_size = nil;
 
 
 Return_t TO_FUNCTION(DEVICE_NAME, _self_register)(void) {
@@ -44,7 +44,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _self_register)(void) {
 Return_t TO_FUNCTION(DEVICE_NAME, _init)(Device_t * device_) {
   RET_DEFINE;
 
-  if(OK(__memset__(loopback_buffer, zero, BUFFER_LENGTH))) {
+  if(OK(__memset__(loopback_buffer, nil, BUFFER_LENGTH))) {
     device_->available = false;
     RET_OK;
   } else {

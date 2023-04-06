@@ -19,10 +19,10 @@
 
 void stream_harness(void) {
   StreamBuffer_t *stream01 = null;
-  HalfWord_t i = zero;
-  HalfWord_t stream02 = zero;
+  HalfWord_t i = nil;
+  HalfWord_t stream02 = nil;
   Byte_t *stream03 = null;
-  HalfWord_t stream04 = zero;
+  HalfWord_t stream04 = nil;
   Base_t res;
 
 
@@ -36,7 +36,7 @@ void stream_harness(void) {
     unit_try(OK(xStreamSend(stream01, i)));
   }
 
-  unit_try(!OK(xStreamSend(stream01, zero)));
+  unit_try(!OK(xStreamSend(stream01, nil)));
   unit_end();
   unit_begin("xStreamIsFull()");
   unit_try(OK(xStreamIsFull(stream01, &res)));
@@ -62,7 +62,7 @@ void stream_harness(void) {
     unit_try(OK(xStreamSend(stream01, i)));
   }
 
-  unit_try(!OK(xStreamSend(stream01, zero)));
+  unit_try(!OK(xStreamSend(stream01, nil)));
   unit_try(OK(xStreamIsFull(stream01, &res)));
   unit_try(true == res);
   unit_try(OK(xStreamReset(stream01)));
@@ -72,7 +72,7 @@ void stream_harness(void) {
   unit_begin("xStreamDelete()");
   unit_try(!OK(xStreamReset(stream01)));
   unit_try(OK(xStreamDelete(stream01)));
-  unit_try(!OK(xStreamSend(stream01, zero)));
+  unit_try(!OK(xStreamSend(stream01, nil)));
   unit_end();
 
   return;

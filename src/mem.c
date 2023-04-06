@@ -217,7 +217,7 @@ Return_t __MemoryInit__(void) {
 Return_t xMemAlloc(volatile Addr_t **addr_, const Size_t size_) {
   RET_DEFINE;
 
-  if(NOTNULLPTR(addr_) && (zero < size_)) {
+  if(NOTNULLPTR(addr_) && (nil < size_)) {
     /* Simply passthrough the address pointer and size parameters to
      * __calloc__() for the heap memory region since xMemAlloc() can only
      * allocate heap memory. */
@@ -271,7 +271,7 @@ Return_t xMemGetUsed(Size_t *size_) {
 
 
   MemoryEntry_t *cursor = null;
-  HalfWord_t used = zero;
+  HalfWord_t used = nil;
 
 
   if(NOTNULLPTR(size_)) {
@@ -349,7 +349,7 @@ static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, co
 
 
   Base_t found = false;
-  HalfWord_t blocks = zero;
+  HalfWord_t blocks = nil;
   MemoryEntry_t *find = null;
   MemoryEntry_t *cursor = region_->start;
 
@@ -569,14 +569,14 @@ static Return_t __MemoryRegionInit__(volatile MemoryRegion_t *region_) {
 
     /* If there is any remainder from the division, add another block to the
      * memory entry size. */
-    if(zero < ((HalfWord_t) (sizeof(MemoryEntry_t) % CONFIG_MEMORY_REGION_BLOCK_SIZE))) {
+    if(nil < ((HalfWord_t) (sizeof(MemoryEntry_t) % CONFIG_MEMORY_REGION_BLOCK_SIZE))) {
       region_->entrySize++;
     }
 
 
     /* Zero out the memory region and create the first memory entry and give it
      * all of the blocks.*/
-    if(OK(__memset__(region_->mem, zero, MEMORY_REGION_SIZE_IN_BYTES))) {
+    if(OK(__memset__(region_->mem, nil, MEMORY_REGION_SIZE_IN_BYTES))) {
       /* __CalculateMemEntryMagic__() calculates the memory entry's magic value
        * (i.e. the magic member of the memory entry structure) by XOR'ing the
        * address of the memory entry with the MAGIC_CONST. The magic value is
@@ -603,8 +603,8 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
   RET_DEFINE;
 
 
-  HalfWord_t requested = zero;
-  HalfWord_t free = zero;
+  HalfWord_t requested = nil;
+  HalfWord_t free = nil;
 
 
   /* Intentionally underflow the unsigned type so we get the max value of a
@@ -619,14 +619,14 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
    * until __calloc__() is done. */
   DISABLE_INTERRUPTS();
 
-  if(NOTNULLPTR(region_) && NOTNULLPTR(addr_) && (zero < size_)) {
+  if(NOTNULLPTR(region_) && NOTNULLPTR(addr_) && (nil < size_)) {
     /* Check the consistency of the memory region before we modify anything. */
     if(OK(__MemoryRegionCheck__(region_, null, MEMORY_REGION_CHECK_OPTION_WO_ADDR))) {
       /* Because the user supplied requested memory in bytes, calculate how many
        * blocks have been requested. */
       requested = ((HalfWord_t) (size_ / CONFIG_MEMORY_REGION_BLOCK_SIZE));
 
-      if(zero < ((HalfWord_t) (size_ % CONFIG_MEMORY_REGION_BLOCK_SIZE))) {
+      if(nil < ((HalfWord_t) (size_ % CONFIG_MEMORY_REGION_BLOCK_SIZE))) {
         requested++;
       }
 
@@ -691,7 +691,7 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
 
           /* Zero out all of the requested blocks (excluding the memory entry).
            */
-          if(OK(__memset__(__OffsetMemEntryToAddr__(candidate, region_), zero, (requested - region_->entrySize) * CONFIG_MEMORY_REGION_BLOCK_SIZE))) {
+          if(OK(__memset__(__OffsetMemEntryToAddr__(candidate, region_), nil, (requested - region_->entrySize) * CONFIG_MEMORY_REGION_BLOCK_SIZE))) {
             /* __OffsetMemEntryToAddr__() does the opposite of
              * __OffsetAddrToMemEntry__(), it converts the memory entry address
              * to the address of the first block after the memory entry. */
@@ -708,7 +708,7 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
 
           /* Zero out all of the requested blocks (excluding the memory
            * entry).*/
-          if(OK(__memset__(__OffsetMemEntryToAddr__(candidate, region_), zero, (requested - region_->entrySize) * CONFIG_MEMORY_REGION_BLOCK_SIZE))) {
+          if(OK(__memset__(__OffsetMemEntryToAddr__(candidate, region_), nil, (requested - region_->entrySize) * CONFIG_MEMORY_REGION_BLOCK_SIZE))) {
             /* __OffsetMemEntryToAddr__() does the opposite of
              * __OffsetAddrToMemEntry__(), it converts the memory entry address
              * to the address of the first block after the memory entry. */
@@ -790,7 +790,7 @@ static Return_t __free__(volatile MemoryRegion_t *region_, const volatile Addr_t
 Return_t __KernelAllocateMemory__(volatile Addr_t **addr_, const Size_t size_) {
   RET_DEFINE;
 
-  if(NOTNULLPTR(addr_) && (zero < size_)) {
+  if(NOTNULLPTR(addr_) && (nil < size_)) {
     /* Simply passthrough the address pointer to __calloc__() for the kernel
      * memory region and the size of the requested memory. */
     if(OK(__calloc__(&kernel, addr_, size_))) {
@@ -851,7 +851,7 @@ Return_t __MemoryRegionCheckKernel__(const volatile Addr_t *addr_, const Base_t 
 Return_t __HeapAllocateMemory__(volatile Addr_t **addr_, const Size_t size_) {
   RET_DEFINE;
 
-  if(NOTNULLPTR(addr_) && (zero < size_)) {
+  if(NOTNULLPTR(addr_) && (nil < size_)) {
     /* Simply passthrough the address pointer to __calloc__() for the heap
      * memory region and the size of the requested memory. */
     if(OK(__calloc__(&heap, addr_, size_))) {
@@ -913,16 +913,16 @@ Return_t __memcpy__(const volatile Addr_t *dest_, const volatile Addr_t *src_, c
   RET_DEFINE;
 
 
-  Size_t i = zero;
+  Size_t i = nil;
   volatile Byte_t *src = null;
   volatile Byte_t *dest = null;
 
 
-  if(NOTNULLPTR(dest_) && NOTNULLPTR(src_) && (zero < size_)) {
+  if(NOTNULLPTR(dest_) && NOTNULLPTR(src_) && (nil < size_)) {
     src = (Byte_t *) src_;
     dest = (Byte_t *) dest_;
 
-    for(i = zero; i < size_; i++) {
+    for(i = nil; i < size_; i++) {
       dest[i] = src[i];
     }
 
@@ -939,14 +939,14 @@ Return_t __memset__(const volatile Addr_t *dest_, const Byte_t val_, const Size_
   RET_DEFINE;
 
 
-  Size_t i = zero;
+  Size_t i = nil;
   volatile Byte_t *dest = null;
 
 
-  if(NOTNULLPTR(dest_) && (zero < size_)) {
+  if(NOTNULLPTR(dest_) && (nil < size_)) {
     dest = (Byte_t *) dest_;
 
-    for(i = zero; i < size_; i++) {
+    for(i = nil; i < size_; i++) {
       dest[i] = (Byte_t) val_;
     }
 
@@ -963,12 +963,12 @@ Return_t __memcmp__(const volatile Addr_t *s1_, const volatile Addr_t *s2_, cons
   RET_DEFINE;
 
 
-  Size_t i = zero;
+  Size_t i = nil;
   volatile Byte_t *s1 = null;
   volatile Byte_t *s2 = null;
 
 
-  if(NOTNULLPTR(s1_) && NOTNULLPTR(s2_) && (zero < size_) && NOTNULLPTR(res_)) {
+  if(NOTNULLPTR(s1_) && NOTNULLPTR(s2_) && (nil < size_) && NOTNULLPTR(res_)) {
     /* Set res_ to true by default which indicates the memory is comparable. If
      * we later discover the memory is *NOT* comparable, we will set res_ to
      * false. */
@@ -976,7 +976,7 @@ Return_t __memcmp__(const volatile Addr_t *s1_, const volatile Addr_t *s2_, cons
     s1 = (Byte_t *) s1_;
     s2 = (Byte_t *) s2_;
 
-    for(i = zero; i < size_; i++) {
+    for(i = nil; i < size_; i++) {
       if(*s1 != *s2) {
         /* The memory is *NOT* comparable so set res_ to false. */
         *res_ = false;
@@ -1050,7 +1050,7 @@ static Return_t __MemGetRegionStats__(const volatile MemoryRegion_t *region_, Me
       if(OK(__HeapAllocateMemory__((volatile Addr_t **) stats_, sizeof(MemoryRegionStats_t)))) {
         cursor = region_->start;
 
-        if(OK(__memset__(*stats_, zero, sizeof(MemoryRegionStats_t)))) {
+        if(OK(__memset__(*stats_, nil, sizeof(MemoryRegionStats_t)))) {
           /* We intentionally underflow a word (an unsigned type) to get its
            * maximum value. */
           (*stats_)->smallestFreeEntryInBytes = -1;
@@ -1140,7 +1140,7 @@ static Return_t __DefragMemoryRegion__(const volatile MemoryRegion_t *region_) {
 
           /* Zero out the block formerly occupied by the memory entry that was
            * merged. */
-          if(OK(__memset__(merge, zero, sizeof(MemoryEntry_t)))) {
+          if(OK(__memset__(merge, nil, sizeof(MemoryEntry_t)))) {
             /* Do nothing - literally. */
           } else {
             ASSERT;

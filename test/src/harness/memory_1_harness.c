@@ -39,15 +39,15 @@ void memory_1_harness(void) {
 
 
   unit_begin("Unit test for memory region defragmentation routine");
-  i = zero;
-  used = zero;
-  actual = zero;
+  i = nil;
+  used = nil;
+  actual = nil;
 
   for(i = 0; i < 0x20u; i++) {
     tests[i].size = sizes[i];
     tests[i].blocks = (sizes[i] / CONFIG_MEMORY_REGION_BLOCK_SIZE) + 1;
 
-    if(zero < ((Size_t) (sizes[i] % CONFIG_MEMORY_REGION_BLOCK_SIZE))) {
+    if(nil < ((Size_t) (sizes[i] % CONFIG_MEMORY_REGION_BLOCK_SIZE))) {
       tests[i].blocks += 1;
     }
 
@@ -69,7 +69,7 @@ void memory_1_harness(void) {
   unit_try(OK(xMemGetUsed(&actual)));
   unit_try(0x0u == actual);
   unit_try(OK(xMemAlloc((volatile Addr_t **) &mem05, (CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS - 1) * CONFIG_MEMORY_REGION_BLOCK_SIZE)));
-  actual = zero;
+  actual = nil;
   unit_try(OK(xMemGetUsed(&actual)));
   unit_try((CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS * CONFIG_MEMORY_REGION_BLOCK_SIZE) == actual);
   unit_try(OK(xMemFree(mem05)));

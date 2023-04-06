@@ -34,7 +34,7 @@
   #if defined(ENTRYSIZE)
     #undef ENTRYSIZE
   #endif /* if defined(ENTRYSIZE) */
-  #define ENTRYSIZE ((sizeof(MemoryEntry_t) / CONFIG_MEMORY_REGION_BLOCK_SIZE) + (zero < (sizeof(MemoryEntry_t) % CONFIG_MEMORY_REGION_BLOCK_SIZE) ? 1 : 0))
+  #define ENTRYSIZE ((sizeof(MemoryEntry_t) / CONFIG_MEMORY_REGION_BLOCK_SIZE) + (nil < (sizeof(MemoryEntry_t) % CONFIG_MEMORY_REGION_BLOCK_SIZE) ? 1 : 0))
 
   #if defined(ADDR2ENTRY)
     #undef ADDR2ENTRY

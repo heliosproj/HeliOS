@@ -1211,7 +1211,7 @@
    *
    * The xQueueIsQueueEmpty() syscall is used to inquire as to whether a message
    * queue is empty. A message queue is considered empty if the length (i.e.,
-   * number of messages) of a queue is zero.
+   * number of messages) of a queue is nil.
    *
    * @sa xReturn
    * @sa xQueue
@@ -1635,7 +1635,7 @@
    *
    * The xStreamReset() syscall is used to reset a stream buffer. Resetting a
    * stream buffer has the effect of clearing the stream buffer such that
-   * xStreamBytesAvailable() would return zero bytes available.
+   * xStreamBytesAvailable() would return nil bytes available.
    *
    * @sa xReturn
    * @sa xStreamBuffer
@@ -1662,7 +1662,7 @@
    * @brief Syscall to inquire as to whether a stream buffer is empty
    *
    * The xStreamIsEmpty() syscall is used to inquire as to whether a stream
-   * buffer is empty. An empty stream buffer has zero waiting (i.e.,available)
+   * buffer is empty. An empty stream buffer has nil waiting (i.e.,available)
    * bytes.
    *
    * @sa xReturn
@@ -1670,7 +1670,7 @@
    *
    * @param  stream_ The stream buffer to be operated on.
    * @param  res_    The result of the inquiry; taken here to mean "true" if the
-   *                 length (i.e., number of waiting bytes) is zero.
+   *                 length (i.e., number of waiting bytes) is nil.
    * @return         On success, the syscall returns ReturnOK. On failure, the
    *                 syscall returns ReturnError. A failure is any condition in
    *                 which the syscall was unable to achieve its intended
@@ -2459,7 +2459,7 @@
    *
    * The xTaskChangeWDPeriod() syscall is used to change the task watchdog timer
    * period. This has no effect unless CONFIG_TASK_WD_TIMER_ENABLE is defined
-   * and the watchdog timer period is greater than zero. The task watchdog timer
+   * and the watchdog timer period is greater than nil. The task watchdog timer
    * will place a task in a suspended state if a task's runtime exceeds the
    * watchdog timer period. The task watchdog timer period is set on a per task
    * basis.
@@ -2524,10 +2524,10 @@
 
 
   /**
-   * @brief Syscall to set the task timer elapsed time to zero
+   * @brief Syscall to set the task timer elapsed time to nil
    *
    * The xTaskResetTimer() syscall is used to reset the task timer. In effect,
-   * this sets the elapsed time, measured in ticks, back to zero.
+   * this sets the elapsed time, measured in ticks, back to nil.
    *
    * @sa xReturn
    * @sa xTask
@@ -2891,7 +2891,7 @@
    * @brief Syscall to reset an application timer
    *
    * The xTimerReset() syscall is used to reset an application timer. Resetting
-   * has the effect of setting the application timer's elapsed time to zero.
+   * has the effect of setting the application timer's elapsed time to nil.
    *
    * @sa xReturn
    * @sa xTimer
@@ -2997,7 +2997,7 @@
         char buf[size_ + 1];
 
 
-        if(NOTNULLPTR(bytes_) && (zero < size_)) {
+        if(NOTNULLPTR(bytes_) && (nil < size_)) {
           for(i = 0; i < size_; i++) {
             buf[i] = (char) bytes_[i];
           }

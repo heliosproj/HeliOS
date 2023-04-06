@@ -179,7 +179,7 @@ Return_t xTaskGetHandleById(Task_t **task_, const Base_t id_) {
   Task_t *cursor = null;
 
 
-  if(NOTNULLPTR(task_) && (zero < id_) && NOTNULLPTR(tlist)) {
+  if(NOTNULLPTR(task_) && (nil < id_) && NOTNULLPTR(tlist)) {
     cursor = tlist->head;
 
     while(NOTNULLPTR(cursor)) {
@@ -203,8 +203,8 @@ Return_t xTaskGetAllRunTimeStats(TaskRunTimeStats_t **stats_, Base_t *tasks_) {
   RET_DEFINE;
 
 
-  Base_t task = zero;
-  Base_t tasks = zero;
+  Base_t task = nil;
+  Base_t tasks = nil;
   Task_t *cursor = null;
 
 
@@ -216,7 +216,7 @@ Return_t xTaskGetAllRunTimeStats(TaskRunTimeStats_t **stats_, Base_t *tasks_) {
       cursor = cursor->next;
     }
 
-    if((zero < tasks) && (tasks == tlist->length)) {
+    if((nil < tasks) && (tasks == tlist->length)) {
       if(OK(__HeapAllocateMemory__((volatile Addr_t **) stats_, tasks * sizeof(TaskRunTimeStats_t)))) {
         if(NOTNULLPTR(*stats_)) {
           cursor = tlist->head;
@@ -280,7 +280,7 @@ Return_t xTaskGetNumberOfTasks(Base_t *tasks_) {
   RET_DEFINE;
 
 
-  Base_t tasks = zero;
+  Base_t tasks = nil;
   Task_t *cursor = null;
 
 
@@ -347,8 +347,8 @@ Return_t xTaskGetAllTaskInfo(TaskInfo_t **info_, Base_t *tasks_) {
   RET_DEFINE;
 
 
-  Base_t task = zero;
-  Base_t tasks = zero;
+  Base_t task = nil;
+  Base_t tasks = nil;
   Task_t *cursor = null;
 
 
@@ -360,7 +360,7 @@ Return_t xTaskGetAllTaskInfo(TaskInfo_t **info_, Base_t *tasks_) {
       cursor = cursor->next;
     }
 
-    if((zero < tasks) && (tasks == tlist->length)) {
+    if((nil < tasks) && (tasks == tlist->length)) {
       if(OK(__HeapAllocateMemory__((volatile Addr_t **) info_, tasks * sizeof(TaskInfo_t)))) {
         if(NOTNULLPTR(*info_)) {
           cursor = tlist->head;
@@ -469,9 +469,9 @@ Return_t xTaskNotifyStateClear(Task_t *task_) {
 
   if(NOTNULLPTR(task_) && NOTNULLPTR(tlist)) {
     if(OK(__TaskListFindTask__(task_))) {
-      if(zero < task_->notificationBytes) {
-        if(OK(__memset__(task_->notificationValue, zero, CONFIG_NOTIFICATION_VALUE_BYTES))) {
-          task_->notificationBytes = zero;
+      if(nil < task_->notificationBytes) {
+        if(OK(__memset__(task_->notificationValue, nil, CONFIG_NOTIFICATION_VALUE_BYTES))) {
+          task_->notificationBytes = nil;
           RET_OK;
         } else {
           ASSERT;
@@ -495,7 +495,7 @@ Return_t xTaskNotificationIsWaiting(const Task_t *task_, Base_t *res_) {
 
   if(NOTNULLPTR(task_) && NOTNULLPTR(res_) && NOTNULLPTR(tlist)) {
     if(OK(__TaskListFindTask__(task_))) {
-      if(zero < task_->notificationBytes) {
+      if(nil < task_->notificationBytes) {
         *res_ = true;
         RET_OK;
       } else {
@@ -516,9 +516,9 @@ Return_t xTaskNotificationIsWaiting(const Task_t *task_, Base_t *res_) {
 Return_t xTaskNotifyGive(Task_t *task_, const Base_t bytes_, const Byte_t *value_) {
   RET_DEFINE;
 
-  if(NOTNULLPTR(task_) && (zero < bytes_) && (CONFIG_NOTIFICATION_VALUE_BYTES >= bytes_) && NOTNULLPTR(value_) && NOTNULLPTR(tlist)) {
+  if(NOTNULLPTR(task_) && (nil < bytes_) && (CONFIG_NOTIFICATION_VALUE_BYTES >= bytes_) && NOTNULLPTR(value_) && NOTNULLPTR(tlist)) {
     if(OK(__TaskListFindTask__(task_))) {
-      if(zero == task_->notificationBytes) {
+      if(nil == task_->notificationBytes) {
         if(OK(__memcpy__(task_->notificationValue, value_, CONFIG_NOTIFICATION_VALUE_BYTES))) {
           task_->notificationBytes = bytes_;
           RET_OK;
@@ -544,13 +544,13 @@ Return_t xTaskNotifyTake(Task_t *task_, TaskNotification_t **notification_) {
 
   if(NOTNULLPTR(task_) && NOTNULLPTR(notification_) && NOTNULLPTR(tlist)) {
     if(OK(__TaskListFindTask__(task_))) {
-      if(zero < task_->notificationBytes) {
+      if(nil < task_->notificationBytes) {
         if(OK(__HeapAllocateMemory__((volatile Addr_t **) notification_, sizeof(TaskNotification_t)))) {
           if(NOTNULLPTR(*notification_)) {
             if(OK(__memcpy__((*notification_)->notificationValue, task_->notificationValue, CONFIG_NOTIFICATION_VALUE_BYTES))) {
-              if(OK(__memset__(task_->notificationValue, zero, CONFIG_NOTIFICATION_VALUE_BYTES))) {
+              if(OK(__memset__(task_->notificationValue, nil, CONFIG_NOTIFICATION_VALUE_BYTES))) {
                 (*notification_)->notificationBytes = task_->notificationBytes;
-                task_->notificationBytes = zero;
+                task_->notificationBytes = nil;
                 RET_OK;
               } else {
                 ASSERT;
@@ -770,13 +770,13 @@ Return_t xTaskStartScheduler(void) {
       while(NOTNULLPTR(cursor)) {
         /* If the task is in a waiting state *AND* has a waiting notification,
          * then run the task. */
-        if((TaskStateWaiting == cursor->state) && (zero < cursor->notificationBytes)) {
+        if((TaskStateWaiting == cursor->state) && (nil < cursor->notificationBytes)) {
           __TaskRun__(cursor);
 
 
           /* If the task is in a waiting state *AND* the task timer has elapsed,
            * then run the task. */
-        } else if((TaskStateWaiting == cursor->state) && (zero < cursor->timerPeriod) && ((__PortGetSysTicks__() - cursor->timerStartTime) >
+        } else if((TaskStateWaiting == cursor->state) && (nil < cursor->timerPeriod) && ((__PortGetSysTicks__() - cursor->timerStartTime) >
           cursor->timerPeriod)) {
           __TaskRun__(cursor);
           cursor->timerStartTime = __PortGetSysTicks__();
@@ -835,8 +835,8 @@ static void __RunTimeReset__(void) {
 
 
 static void __TaskRun__(Task_t *task_) {
-  Ticks_t start = zero;
-  Ticks_t prev = zero;
+  Ticks_t start = nil;
+  Ticks_t prev = nil;
 
 
   /* Store the previous total runtime to detect for overflow later. */
@@ -862,9 +862,9 @@ static void __TaskRun__(Task_t *task_) {
 #if defined(CONFIG_TASK_WD_TIMER_ENABLE)
 
     /* If the task WD timer feature is enabled, if the WD timer period is
-     * greater than zero *AND*
+     * greater than nil *AND*
      *  the last runtime exceeded the WD timer period, then suspend the task. */
-    if((zero < task_->wdTimerPeriod) && (task_->lastRunTime > task_->wdTimerPeriod)) {
+    if((nil < task_->wdTimerPeriod) && (task_->lastRunTime > task_->wdTimerPeriod)) {
       task_->state = TaskStateSuspended;
     }
 

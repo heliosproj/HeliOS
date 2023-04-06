@@ -18,7 +18,7 @@
 
 
 #if defined(CMSIS_ARCH_CORTEXM)
-  static volatile Ticks_t sysTicks = zero;
+  static volatile Ticks_t sysTicks = nil;
 
 
   void SysTick_Handler(void) {

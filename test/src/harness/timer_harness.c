@@ -19,15 +19,15 @@
 
 void timer_harness(void) {
   Timer_t *timer01 = null;
-  Ticks_t timer02 = zero;
-  Ticks_t timer03 = zero;
-  Base_t timer04 = zero;
-  Base_t timer05 = zero;
-  Base_t timer06 = zero;
-  Base_t timer07 = zero;
-  Base_t timer08 = zero;
-  Base_t timer09 = zero;
-  Ticks_t timer10 = zero;
+  Ticks_t timer02 = nil;
+  Ticks_t timer03 = nil;
+  Base_t timer04 = nil;
+  Base_t timer05 = nil;
+  Base_t timer06 = nil;
+  Base_t timer07 = nil;
+  Base_t timer08 = nil;
+  Base_t timer09 = nil;
+  Ticks_t timer10 = nil;
 
 
   unit_begin("xTimerCreate()");

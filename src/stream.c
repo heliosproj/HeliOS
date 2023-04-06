@@ -16,7 +16,7 @@
 /*UNCRUSTIFY-ON*/
 #include "stream.h"
 
-#define __StreamLengthNonZero__() (zero < stream_->length)
+#define __StreamLengthNonZero__() (nil < stream_->length)
 
 
 #define __StreamLengthAtLimit__() (CONFIG_STREAM_BUFFER_BYTES == stream_->length)
@@ -28,7 +28,7 @@ Return_t xStreamCreate(StreamBuffer_t **stream_) {
   if(NOTNULLPTR(stream_)) {
     if(OK(__KernelAllocateMemory__((volatile Addr_t **) stream_, sizeof(StreamBuffer_t)))) {
       if(NOTNULLPTR(*stream_)) {
-        (*stream_)->length = zero;
+        (*stream_)->length = nil;
         RET_OK;
       } else {
         ASSERT;
@@ -99,7 +99,7 @@ Return_t xStreamReceive(const StreamBuffer_t *stream_, HalfWord_t *bytes_, Byte_
             *bytes_ = stream_->length;
 
             if(OK(__memcpy__(*data_, stream_->buffer, stream_->length * sizeof(Byte_t)))) {
-              if(OK(__memset__(stream_, zero, sizeof(StreamBuffer_t)))) {
+              if(OK(__memset__(stream_, nil, sizeof(StreamBuffer_t)))) {
                 RET_OK;
               } else {
                 ASSERT;
@@ -163,7 +163,7 @@ Return_t xStreamReset(const StreamBuffer_t *stream_) {
   if(NOTNULLPTR(stream_)) {
     if(OK(__MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
       if(__StreamLengthNonZero__()) {
-        if(OK(__memset__(stream_, zero, sizeof(StreamBuffer_t)))) {
+        if(OK(__memset__(stream_, nil, sizeof(StreamBuffer_t)))) {
           RET_OK;
         } else {
           ASSERT;

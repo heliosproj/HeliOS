@@ -127,7 +127,7 @@ Return_t xTimerHasTimerExpired(const Timer_t *timer_, Base_t *res_) {
   if(NOTNULLPTR(timer_) && NOTNULLPTR(res_)) {
     if(OK(__MemoryRegionCheckKernel__(timer_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
       if(TimerStateRunning == timer_->state) {
-        if((zero < timer_->timerPeriod) && ((__PortGetSysTicks__() - timer_->timerStartTime) > timer_->timerPeriod)) {
+        if((nil < timer_->timerPeriod) && ((__PortGetSysTicks__() - timer_->timerStartTime) > timer_->timerPeriod)) {
           *res_ = true;
           RET_OK;
         } else {

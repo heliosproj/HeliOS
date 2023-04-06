@@ -55,10 +55,10 @@
   #endif /* if defined(__cplusplus) */
 
 
-  #if defined(zero)
-    #undef zero
-  #endif /* if defined(zero) */
-  #define zero 0x0u /* 0 */
+  #if defined(nil)
+    #undef nil
+  #endif /* if defined(nil) */
+  #define nil 0x0u /* 0 */
 
 
   #if defined(OS_PRODUCT_NAME_SIZE)

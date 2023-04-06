@@ -20,7 +20,7 @@ static DeviceList_t *dlist = null;
 static Return_t __DeviceListFind__(const HalfWord_t uid_, Device_t **device_);
 
 
-#define __DeviceUidNonZero__() (zero < uid_)
+#define __DeviceUidNonZero__() (nil < uid_)
 
 
 Return_t xDeviceRegisterDevice(Return_t (*device_self_register_)()) {
@@ -76,9 +76,9 @@ Return_t __RegisterDevice__(const HalfWord_t uid_, const Byte_t *name_, const De
                 device->uid = uid_;
                 device->state = state_;
                 device->mode = mode_;
-                device->bytesWritten = zero;
-                device->bytesRead = zero;
-                device->available = zero;
+                device->bytesWritten = nil;
+                device->bytesRead = nil;
+                device->available = nil;
                 device->init = init_;
                 device->config = config_;
                 device->read = read_;
@@ -212,7 +212,7 @@ Return_t xDeviceWrite(const HalfWord_t uid_, Size_t *size_, Addr_t *data_) {
   Byte_t *data = null;
 
 
-  if(__DeviceUidNonZero__() && NOTNULLPTR(size_) && (zero < *size_) && NOTNULLPTR(data_) && NOTNULLPTR(dlist)) {
+  if(__DeviceUidNonZero__() && NOTNULLPTR(size_) && (nil < *size_) && NOTNULLPTR(data_) && NOTNULLPTR(dlist)) {
     /* Confirm the data to be written to the device is waiting for us in heap
      * memory. */
     if(OK(__MemoryRegionCheckHeap__(data_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
@@ -288,7 +288,7 @@ Return_t xDeviceSimpleRead(const HalfWord_t uid_, Byte_t *data_) {
 
 
   Device_t *device = null;
-  Byte_t data = zero;
+  Byte_t data = nil;
 
 
   if(__DeviceUidNonZero__() && NOTNULLPTR(data_) && NOTNULLPTR(dlist)) {
@@ -346,7 +346,7 @@ Return_t xDeviceRead(const HalfWord_t uid_, Size_t *size_, Addr_t **data_) {
            * the data returned by the device driver is waiting for us in kernel
            * memory. */
           if(OK((*device->read)(device, size_, &data))) {
-            if((zero < *size_) && NOTNULLPTR(data)) {
+            if((nil < *size_) && NOTNULLPTR(data)) {
               if(OK(__MemoryRegionCheckKernel__(data, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
                 /* Allocate "size_" of heap memory to copy the data read from
                  * the device in kernel memory into. */
@@ -492,7 +492,7 @@ Return_t xDeviceConfigDevice(const HalfWord_t uid_, Size_t *size_, Addr_t *confi
   Addr_t *config = null;
 
 
-  if(__DeviceUidNonZero__() && (zero < *size_) && NOTNULLPTR(config_) && NOTNULLPTR(dlist)) {
+  if(__DeviceUidNonZero__() && (nil < *size_) && NOTNULLPTR(config_) && NOTNULLPTR(dlist)) {
     /* Confirm the data to be written to the device is waiting for us in heap
      * memory. */
     if(OK(__MemoryRegionCheckHeap__(config_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {

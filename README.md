@@ -225,7 +225,7 @@ void setup() {
 
 
   /* In order to use the task timer, the task timer period must be set to a
-   * positive non-zero value. In this example we are setting the task timer to
+   * positive non-nil value. In this example we are setting the task timer to
    * 1,000 ticks. This way the HeliOS scheduler will schedule the blink task for
    * execution every 1,000 ticks. The length of a tick is platform and/or
    * architecture dependent though on most platforms a tick will occur every one

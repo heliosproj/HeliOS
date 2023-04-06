@@ -49,7 +49,7 @@ void memory_2_harness(void) {
 void test_magic(void) {
   volatile Addr_t *ptr = null;
   MemoryEntry_t *entry = null;
-  Size_t size = zero;
+  Size_t size = nil;
 
 
   /* 1) Create something in the heap*/
@@ -90,7 +90,7 @@ void test_magic(void) {
 void test_free(void) {
   volatile Addr_t *ptr = null;
   MemoryEntry_t *entry = null;
-  Size_t size = zero;
+  Size_t size = nil;
 
 
   /* 1) Create something in the heap*/
@@ -130,7 +130,7 @@ void test_free(void) {
 void test_blocks(void) {
   volatile Addr_t *ptr = null;
   MemoryEntry_t *entry = null;
-  Size_t size = zero;
+  Size_t size = nil;
 
 
   /* 1) Create something in the heap*/
@@ -170,7 +170,7 @@ void test_blocks(void) {
 void test_next(void) {
   volatile Addr_t *ptr = null;
   MemoryEntry_t *entry = null;
-  Size_t size = zero;
+  Size_t size = nil;
 
 
   /* 1) Create something in the heap*/
