@@ -17,15 +17,39 @@
 #include "task.h"
 
 
-
 static TaskList_t *tlist = null;
 static void __RunTimeReset__(void);
-static void __TaskRun__(Task_t *task_);
 static Return_t __TaskListFindTask__(const Task_t *task_);
 
 
 
 static SchedulerState_t scheduler = SchedulerStateRunning;
+
+
+#if defined(CONFIG_TASK_WD_TIMER_ENABLE)
+  #define __TaskRun__(task_) \
+          prev = task_->totalRunTime; \
+          start = __PortGetSysTicks__(); \
+          (*task_->callback)(task_, task_->taskParameter); \
+          task_->lastRunTime = __PortGetSysTicks__() - start; \
+          task_->totalRunTime += task_->lastRunTime; \
+          if((nil < task_->wdTimerPeriod) && (task_->lastRunTime > task_->wdTimerPeriod)) { \
+            task_->state = TaskStateSuspended; \
+          } \
+          if(task_->totalRunTime < prev) { \
+            SETFLAG(OVERFLOW); \
+          }
+#elif  /* if defined(CONFIG_TASK_WD_TIMER_ENABLE) */
+  #define __TaskRun__(task_) \
+          prev = task_->totalRunTime; \
+          start = __PortGetSysTicks__(); \
+          (*task_->callback)(task_, task_->taskParameter); \
+          task_->lastRunTime = __PortGetSysTicks__() - start; \
+          task_->totalRunTime += task_->lastRunTime; \
+          if(task_->totalRunTime < prev) { \
+            SETFLAG(OVERFLOW); \
+          }
+#endif /* if defined(CONFIG_TASK_WD_TIMER_ENABLE) */
 
 
 Return_t xTaskCreate(Task_t **task_, const Byte_t *name_, void (*callback_)(Task_t *task_, TaskParm_t *parm_), TaskParm_t *taskParameter_) {
@@ -751,6 +775,8 @@ Return_t xTaskStartScheduler(void) {
 
   Task_t *runTask = null;
   Task_t *cursor = null;
+  Ticks_t start = nil;
+  Ticks_t prev = nil;
 
 
   /* Intentionally underflow to get the maximum value of Ticks_t. */
@@ -829,52 +855,6 @@ static void __RunTimeReset__(void) {
   }
 
   UNSETFLAG(OVERFLOW);
-
-  return;
-}
-
-
-static void __TaskRun__(Task_t *task_) {
-  Ticks_t start = nil;
-  Ticks_t prev = nil;
-
-
-  /* Store the previous total runtime to detect for overflow later. */
-  prev = task_->totalRunTime;
-
-
-  /* Capture the start time of the task in ticks. */
-  start = __PortGetSysTicks__();
-
-
-  /* Call the task main function through it's callback. */
-  (*task_->callback)(task_, task_->taskParameter);
-
-
-  /* Capture the task runtime by subtracting the start time from the end time.
-   */
-  task_->lastRunTime = __PortGetSysTicks__() - start;
-
-
-  /* Add the last runtime to the total runtime. */
-  task_->totalRunTime += task_->lastRunTime;
-
-#if defined(CONFIG_TASK_WD_TIMER_ENABLE)
-
-    /* If the task WD timer feature is enabled, if the WD timer period is
-     * greater than nil *AND*
-     *  the last runtime exceeded the WD timer period, then suspend the task. */
-    if((nil < task_->wdTimerPeriod) && (task_->lastRunTime > task_->wdTimerPeriod)) {
-      task_->state = TaskStateSuspended;
-    }
-
-#endif /* if defined(CONFIG_TASK_WD_TIMER_ENABLE) */
-
-  /* Detect overflow of total runtime. If an overflow occurs, then set the
-   * overflow flag to true. */
-  if(task_->totalRunTime < prev) {
-    SETFLAG(OVERFLOW);
-  }
 
   return;
 }
