@@ -39,18 +39,18 @@ Flags_t flag;
 
 
 Return_t xSystemAssert(const char *file_, const int line_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
 #if defined(CONFIG_SYSTEM_ASSERT_BEHAVIOR)
     CONFIG_SYSTEM_ASSERT_BEHAVIOR(file_, line_);
     RET_OK;
 #endif /* if defined(CONFIG_SYSTEM_ASSERT_BEHAVIOR) */
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t xSystemInit(void) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
   if(OK(__MemoryInit__())) {
     if(OK(__PortInit__())) {
@@ -64,24 +64,24 @@ Return_t xSystemInit(void) {
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t xSystemHalt(void) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
   __DisableInterrupts__();
 
   for(;;) {
     /* Do nothing - literally. */
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t xSystemGetSystemInfo(SystemInfo_t **info_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
   if(__PointerIsNotNull__(info_)) {
     if(OK(__HeapAllocateMemory__((volatile Addr_t **) info_, sizeof(SystemInfo_t)))) {
@@ -123,7 +123,7 @@ Return_t xSystemGetSystemInfo(SystemInfo_t **info_) {
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 

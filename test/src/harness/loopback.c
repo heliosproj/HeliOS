@@ -27,7 +27,7 @@ static HalfWord_t loopback_buffer_size = nil;
 
 Return_t TO_FUNCTION(DEVICE_NAME, _self_register)(void) {
   /* DO NOT MODIFY THIS FUNCTION */
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
   if(OK(__RegisterDevice__(DEVICE_UID, (Byte_t *) TO_LITERAL(DEVICE_NAME), DEVICE_STATE, DEVICE_MODE, TO_FUNCTION(DEVICE_NAME, _init), TO_FUNCTION(
       DEVICE_NAME, _config), TO_FUNCTION(DEVICE_NAME, _read), TO_FUNCTION(DEVICE_NAME, _write), TO_FUNCTION(DEVICE_NAME, _simple_read), TO_FUNCTION(DEVICE_NAME,
@@ -37,12 +37,12 @@ Return_t TO_FUNCTION(DEVICE_NAME, _self_register)(void) {
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t TO_FUNCTION(DEVICE_NAME, _init)(Device_t * device_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
   if(OK(__memset__(loopback_buffer, nil, BUFFER_LENGTH))) {
     device_->available = false;
@@ -51,22 +51,22 @@ Return_t TO_FUNCTION(DEVICE_NAME, _init)(Device_t * device_) {
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t * device_, Size_t *size_, Addr_t *config_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
 
   /* INSERT DEVICE DRIVER CODE HERE CALL RET_OK IF SYSTEM CALL WAS
    * SUCCESSFUL BEFORE RETURNING. */
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
   Return_t TO_FUNCTION(DEVICE_NAME, _read)(Device_t * device_, Size_t *size_, Addr_t **data_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
   __KernelAllocateMemory__((volatile Addr_t **) data_, loopback_buffer_size);
 
@@ -77,12 +77,12 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t * device_, Size_t *size_, Ad
   RET_OK;
 
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t * device_, Size_t *size_, Addr_t *data_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
   if(OK(__memcpy__(loopback_buffer, data_, *size_))) {
     loopback_buffer_size = *size_;
@@ -92,12 +92,12 @@ Return_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t * device_, Size_t *size_, Add
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t TO_FUNCTION(DEVICE_NAME, _simple_read)(Device_t * device_, Byte_t *data_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
 
   *data_ = loopback_buffer[0];
@@ -105,16 +105,16 @@ Return_t TO_FUNCTION(DEVICE_NAME, _simple_read)(Device_t * device_, Byte_t *data
   device_->available = false;
   RET_OK;
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t TO_FUNCTION(DEVICE_NAME, _simple_write)(Device_t * device_, Byte_t data_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
   loopback_buffer[0] = data_;
   RET_OK;
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 /*UNCRUSTIFY-ON*/

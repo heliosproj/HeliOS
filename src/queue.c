@@ -43,7 +43,7 @@ static Return_t __QueuePeek__(const Queue_t *queue_, QueueMessage_t **message_);
 
 
 Return_t xQueueCreate(Queue_t **queue_, Base_t limit_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
   if(__PointerIsNotNull__(queue_) && (CONFIG_QUEUE_MINIMUM_LIMIT <= limit_)) {
     if(OK(__KernelAllocateMemory__((volatile Addr_t **) queue_, sizeof(Queue_t)))) {
@@ -64,12 +64,12 @@ Return_t xQueueCreate(Queue_t **queue_, Base_t limit_) {
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t xQueueDelete(Queue_t *queue_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
   if(OK(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
     /* Loop through the queue while it contains messages and drop each message
@@ -92,12 +92,12 @@ Return_t xQueueDelete(Queue_t *queue_) {
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t xQueueGetLength(const Queue_t *queue_, Base_t *res_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
 
   Base_t messages = nil;
@@ -125,12 +125,12 @@ Return_t xQueueGetLength(const Queue_t *queue_, Base_t *res_) {
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t xQueueIsQueueEmpty(const Queue_t *queue_, Base_t *res_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
 
   Base_t messages = nil;
@@ -164,12 +164,12 @@ Return_t xQueueIsQueueEmpty(const Queue_t *queue_, Base_t *res_) {
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t xQueueIsQueueFull(const Queue_t *queue_, Base_t *res_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
 
   Base_t messages = nil;
@@ -204,12 +204,12 @@ Return_t xQueueIsQueueFull(const Queue_t *queue_, Base_t *res_) {
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t xQueueMessagesWaiting(const Queue_t *queue_, Base_t *res_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
 
   Base_t messages = nil;
@@ -244,12 +244,12 @@ Return_t xQueueMessagesWaiting(const Queue_t *queue_, Base_t *res_) {
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t xQueueSend(Queue_t *queue_, const Base_t bytes_, const Byte_t *value_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
 
   Message_t *message = null;
@@ -309,12 +309,12 @@ Return_t xQueueSend(Queue_t *queue_, const Base_t bytes_, const Byte_t *value_) 
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t xQueuePeek(const Queue_t *queue_, QueueMessage_t **message_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
   if(__PointerIsNotNull__(queue_) && __PointerIsNotNull__(message_)) {
     if(OK(__QueuePeek__(queue_, message_))) {
@@ -326,12 +326,12 @@ Return_t xQueuePeek(const Queue_t *queue_, QueueMessage_t **message_) {
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 static Return_t __QueuePeek__(const Queue_t *queue_, QueueMessage_t **message_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
   if(__PointerIsNotNull__(queue_) && __PointerIsNotNull__(message_)) {
     if(OK(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
@@ -365,12 +365,12 @@ static Return_t __QueuePeek__(const Queue_t *queue_, QueueMessage_t **message_) 
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t xQueueDropMessage(Queue_t *queue_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
   if(__PointerIsNotNull__(queue_)) {
     if(OK(__QueueDropmessage__(queue_))) {
@@ -382,12 +382,12 @@ Return_t xQueueDropMessage(Queue_t *queue_) {
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 static Return_t __QueueDropmessage__(Queue_t *queue_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
 
   Message_t *message = null;
@@ -419,12 +419,12 @@ static Return_t __QueueDropmessage__(Queue_t *queue_) {
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t xQueueReceive(Queue_t *queue_, QueueMessage_t **message_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
   if(__PointerIsNotNull__(queue_) && __PointerIsNotNull__(message_)) {
     if(OK(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
@@ -448,12 +448,12 @@ Return_t xQueueReceive(Queue_t *queue_, QueueMessage_t **message_) {
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t xQueueLockQueue(Queue_t *queue_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
   if(__PointerIsNotNull__(queue_)) {
     if(OK(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
@@ -470,12 +470,12 @@ Return_t xQueueLockQueue(Queue_t *queue_) {
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t xQueueUnLockQueue(Queue_t *queue_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
   if(__PointerIsNotNull__(queue_)) {
     if(OK(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
@@ -492,5 +492,5 @@ Return_t xQueueUnLockQueue(Queue_t *queue_) {
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }

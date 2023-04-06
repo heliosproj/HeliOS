@@ -24,7 +24,7 @@ static Return_t __DeviceListFind__(const HalfWord_t uid_, Device_t **device_);
 
 
 Return_t xDeviceRegisterDevice(Return_t (*device_self_register_)()) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
   if(__PointerIsNotNull__(device_self_register_)) {
     /* Call the device driver's DEVICENAME_self_register() function which will
@@ -38,7 +38,7 @@ Return_t xDeviceRegisterDevice(Return_t (*device_self_register_)()) {
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
@@ -46,7 +46,7 @@ Return_t __RegisterDevice__(const HalfWord_t uid_, const Byte_t *name_, const De
     Device_t *device_), Return_t (*config_)(Device_t *device_, Size_t *size_, Addr_t *config_), Return_t (*read_)(Device_t *device_, Size_t *size_,
   Addr_t **data_), Return_t (*write_)(Device_t *device_, Size_t *size_, Addr_t *data_), Return_t (*simple_read_)(Device_t *device_, Byte_t *data_),
   Return_t (*simple_write_)(Device_t *device_, Byte_t data_)) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
 
   Device_t *device = null;
@@ -130,12 +130,12 @@ Return_t __RegisterDevice__(const HalfWord_t uid_, const Byte_t *name_, const De
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t xDeviceIsAvailable(const HalfWord_t uid_, Base_t *res_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
 
   Device_t *device = null;
@@ -163,12 +163,12 @@ Return_t xDeviceIsAvailable(const HalfWord_t uid_, Base_t *res_) {
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t xDeviceSimpleWrite(const HalfWord_t uid_, Byte_t data_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
 
   Device_t *device = null;
@@ -201,12 +201,12 @@ Return_t xDeviceSimpleWrite(const HalfWord_t uid_, Byte_t data_) {
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t xDeviceWrite(const HalfWord_t uid_, Size_t *size_, Addr_t *data_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
 
   Device_t *device = null;
@@ -280,12 +280,12 @@ Return_t xDeviceWrite(const HalfWord_t uid_, Size_t *size_, Addr_t *data_) {
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t xDeviceSimpleRead(const HalfWord_t uid_, Byte_t *data_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
 
   Device_t *device = null;
@@ -323,12 +323,12 @@ Return_t xDeviceSimpleRead(const HalfWord_t uid_, Byte_t *data_) {
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t xDeviceRead(const HalfWord_t uid_, Size_t *size_, Addr_t **data_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
 
   Device_t *device = null;
@@ -414,12 +414,12 @@ Return_t xDeviceRead(const HalfWord_t uid_, Size_t *size_, Addr_t **data_) {
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 static Return_t __DeviceListFind__(const HalfWord_t uid_, Device_t **device_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
 
   Device_t *cursor = null;
@@ -445,12 +445,12 @@ static Return_t __DeviceListFind__(const HalfWord_t uid_, Device_t **device_) {
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t xDeviceInitDevice(const HalfWord_t uid_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
 
   Device_t *device = null;
@@ -481,12 +481,12 @@ Return_t xDeviceInitDevice(const HalfWord_t uid_) {
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t xDeviceConfigDevice(const HalfWord_t uid_, Size_t *size_, Addr_t *config_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
 
   Device_t *device = null;
@@ -568,7 +568,7 @@ Return_t xDeviceConfigDevice(const HalfWord_t uid_, Size_t *size_, Addr_t *confi
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 

@@ -18,7 +18,7 @@
 
 
 Return_t xTimerCreate(Timer_t **timer_, const Ticks_t period_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
   if(__PointerIsNotNull__(timer_)) {
     if(OK(__KernelAllocateMemory__((volatile Addr_t **) timer_, sizeof(Task_t)))) {
@@ -37,12 +37,12 @@ Return_t xTimerCreate(Timer_t **timer_, const Ticks_t period_) {
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t xTimerDelete(const Timer_t *timer_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
   if(__PointerIsNotNull__(timer_)) {
     if(OK(__MemoryRegionCheckKernel__(timer_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
@@ -58,12 +58,12 @@ Return_t xTimerDelete(const Timer_t *timer_) {
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t xTimerChangePeriod(Timer_t *timer_, const Ticks_t period_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
   if(__PointerIsNotNull__(timer_)) {
     if(OK(__MemoryRegionCheckKernel__(timer_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
@@ -76,12 +76,12 @@ Return_t xTimerChangePeriod(Timer_t *timer_, const Ticks_t period_) {
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t xTimerGetPeriod(const Timer_t *timer_, Ticks_t *period_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
   if(__PointerIsNotNull__(timer_) && __PointerIsNotNull__(period_)) {
     if(OK(__MemoryRegionCheckKernel__(timer_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
@@ -94,12 +94,12 @@ Return_t xTimerGetPeriod(const Timer_t *timer_, Ticks_t *period_) {
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t xTimerIsTimerActive(const Timer_t *timer_, Base_t *res_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
   if(__PointerIsNotNull__(timer_) && __PointerIsNotNull__(res_)) {
     if(OK(__MemoryRegionCheckKernel__(timer_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
@@ -117,12 +117,12 @@ Return_t xTimerIsTimerActive(const Timer_t *timer_, Base_t *res_) {
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t xTimerHasTimerExpired(const Timer_t *timer_, Base_t *res_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
   if(__PointerIsNotNull__(timer_) && __PointerIsNotNull__(res_)) {
     if(OK(__MemoryRegionCheckKernel__(timer_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
@@ -144,12 +144,12 @@ Return_t xTimerHasTimerExpired(const Timer_t *timer_, Base_t *res_) {
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t xTimerReset(Timer_t *timer_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
   if(__PointerIsNotNull__(timer_)) {
     if(OK(__MemoryRegionCheckKernel__(timer_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
@@ -162,12 +162,12 @@ Return_t xTimerReset(Timer_t *timer_) {
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t xTimerStart(Timer_t *timer_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
   if(__PointerIsNotNull__(timer_)) {
     if(OK(__MemoryRegionCheckKernel__(timer_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
@@ -185,12 +185,12 @@ Return_t xTimerStart(Timer_t *timer_) {
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t xTimerStop(Timer_t *timer_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
   if(__PointerIsNotNull__(timer_)) {
     if(OK(__MemoryRegionCheckKernel__(timer_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
@@ -208,5 +208,5 @@ Return_t xTimerStop(Timer_t *timer_) {
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }

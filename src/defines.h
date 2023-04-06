@@ -85,16 +85,16 @@
   #define __PointerIsNull__(addr_) (null == (addr_))
 
 
-  #if defined(RET_DEFINE)
-    #undef RET_DEFINE
-  #endif /* if defined(RET_DEFINE) */
-  #define RET_DEFINE Return_t ret = ReturnError
+  #if defined(FUNCTION_ENTER)
+    #undef FUNCTION_ENTER
+  #endif /* if defined(FUNCTION_ENTER) */
+  #define FUNCTION_ENTER Return_t ret = ReturnError
 
 
-  #if defined(RET_RETURN)
-    #undef RET_RETURN
-  #endif /* if defined(RET_RETURN) */
-  #define RET_RETURN return(ret)
+  #if defined(FUNCTION_EXIT)
+    #undef FUNCTION_EXIT
+  #endif /* if defined(FUNCTION_EXIT) */
+  #define FUNCTION_EXIT return(ret)
 
 
   #if defined(RET_OK)

@@ -53,7 +53,7 @@ static SchedulerState_t scheduler = SchedulerStateRunning;
 
 
 Return_t xTaskCreate(Task_t **task_, const Byte_t *name_, void (*callback_)(Task_t *task_, TaskParm_t *parm_), TaskParm_t *taskParameter_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
 
   Task_t *cursor = null;
@@ -106,12 +106,12 @@ Return_t xTaskCreate(Task_t **task_, const Byte_t *name_, void (*callback_)(Task
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t xTaskDelete(const Task_t *task_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
 
   Task_t *cursor = null;
@@ -159,12 +159,12 @@ Return_t xTaskDelete(const Task_t *task_) {
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t xTaskGetHandleByName(Task_t **task_, const Byte_t *name_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
 
   Task_t *cursor = null;
@@ -192,12 +192,12 @@ Return_t xTaskGetHandleByName(Task_t **task_, const Byte_t *name_) {
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t xTaskGetHandleById(Task_t **task_, const Base_t id_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
 
   Task_t *cursor = null;
@@ -219,12 +219,12 @@ Return_t xTaskGetHandleById(Task_t **task_, const Base_t id_) {
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t xTaskGetAllRunTimeStats(TaskRunTimeStats_t **stats_, Base_t *tasks_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
 
   Base_t task = nil;
@@ -268,12 +268,12 @@ Return_t xTaskGetAllRunTimeStats(TaskRunTimeStats_t **stats_, Base_t *tasks_) {
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t xTaskGetTaskRunTimeStats(const Task_t *task_, TaskRunTimeStats_t **stats_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
   if(__PointerIsNotNull__(task_) && __PointerIsNotNull__(stats_) && __PointerIsNotNull__(tlist)) {
     if(OK(__TaskListFindTask__(task_))) {
@@ -296,12 +296,12 @@ Return_t xTaskGetTaskRunTimeStats(const Task_t *task_, TaskRunTimeStats_t **stat
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t xTaskGetNumberOfTasks(Base_t *tasks_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
 
   Base_t tasks = nil;
@@ -326,12 +326,12 @@ Return_t xTaskGetNumberOfTasks(Base_t *tasks_) {
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t xTaskGetTaskInfo(const Task_t *task_, TaskInfo_t **info_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
   if(__PointerIsNotNull__(task_) && __PointerIsNotNull__(info_) && __PointerIsNotNull__(tlist)) {
     if(OK(__TaskListFindTask__(task_))) {
@@ -363,12 +363,12 @@ Return_t xTaskGetTaskInfo(const Task_t *task_, TaskInfo_t **info_) {
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t xTaskGetAllTaskInfo(TaskInfo_t **info_, Base_t *tasks_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
 
   Base_t task = nil;
@@ -415,12 +415,12 @@ Return_t xTaskGetAllTaskInfo(TaskInfo_t **info_, Base_t *tasks_) {
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t xTaskGetTaskState(const Task_t *task_, TaskState_t *state_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
   if(__PointerIsNotNull__(task_) && __PointerIsNotNull__(state_) && __PointerIsNotNull__(tlist)) {
     if(OK(__TaskListFindTask__(task_))) {
@@ -433,12 +433,12 @@ Return_t xTaskGetTaskState(const Task_t *task_, TaskState_t *state_) {
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t xTaskGetName(const Task_t *task_, Byte_t **name_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
   if(__PointerIsNotNull__(task_) && __PointerIsNotNull__(name_) && __PointerIsNotNull__(tlist)) {
     if(OK(__TaskListFindTask__(task_))) {
@@ -466,12 +466,12 @@ Return_t xTaskGetName(const Task_t *task_, Byte_t **name_) {
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t xTaskGetId(const Task_t *task_, Base_t *id_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
   if(__PointerIsNotNull__(task_) && __PointerIsNotNull__(id_) && __PointerIsNotNull__(tlist)) {
     if(OK(__TaskListFindTask__(task_))) {
@@ -484,12 +484,12 @@ Return_t xTaskGetId(const Task_t *task_, Base_t *id_) {
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t xTaskNotifyStateClear(Task_t *task_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
   if(__PointerIsNotNull__(task_) && __PointerIsNotNull__(tlist)) {
     if(OK(__TaskListFindTask__(task_))) {
@@ -510,12 +510,12 @@ Return_t xTaskNotifyStateClear(Task_t *task_) {
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t xTaskNotificationIsWaiting(const Task_t *task_, Base_t *res_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
   if(__PointerIsNotNull__(task_) && __PointerIsNotNull__(res_) && __PointerIsNotNull__(tlist)) {
     if(OK(__TaskListFindTask__(task_))) {
@@ -533,12 +533,12 @@ Return_t xTaskNotificationIsWaiting(const Task_t *task_, Base_t *res_) {
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t xTaskNotifyGive(Task_t *task_, const Base_t bytes_, const Byte_t *value_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
   if(__PointerIsNotNull__(task_) && (nil < bytes_) && (CONFIG_NOTIFICATION_VALUE_BYTES >= bytes_) && __PointerIsNotNull__(value_) && __PointerIsNotNull__(
       tlist)) {
@@ -560,12 +560,12 @@ Return_t xTaskNotifyGive(Task_t *task_, const Base_t bytes_, const Byte_t *value
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t xTaskNotifyTake(Task_t *task_, TaskNotification_t **notification_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
   if(__PointerIsNotNull__(task_) && __PointerIsNotNull__(notification_) && __PointerIsNotNull__(tlist)) {
     if(OK(__TaskListFindTask__(task_))) {
@@ -607,12 +607,12 @@ Return_t xTaskNotifyTake(Task_t *task_, TaskNotification_t **notification_) {
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t xTaskResume(Task_t *task_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
   if(__PointerIsNotNull__(task_) && __PointerIsNotNull__(tlist)) {
     if(OK(__TaskListFindTask__(task_))) {
@@ -625,12 +625,12 @@ Return_t xTaskResume(Task_t *task_) {
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t xTaskSuspend(Task_t *task_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
   if(__PointerIsNotNull__(task_) && __PointerIsNotNull__(tlist)) {
     if(OK(__TaskListFindTask__(task_))) {
@@ -643,12 +643,12 @@ Return_t xTaskSuspend(Task_t *task_) {
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t xTaskWait(Task_t *task_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
   if(__PointerIsNotNull__(task_) && __PointerIsNotNull__(tlist)) {
     if(OK(__TaskListFindTask__(task_))) {
@@ -661,12 +661,12 @@ Return_t xTaskWait(Task_t *task_) {
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t xTaskChangePeriod(Task_t *task_, const Ticks_t period_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
   if(__PointerIsNotNull__(task_) && __PointerIsNotNull__(tlist)) {
     if(OK(__TaskListFindTask__(task_))) {
@@ -679,12 +679,12 @@ Return_t xTaskChangePeriod(Task_t *task_, const Ticks_t period_) {
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t xTaskChangeWDPeriod(Task_t *task_, const Ticks_t period_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 #if defined(CONFIG_TASK_WD_TIMER_ENABLE)
 
     if(__PointerIsNotNull__(task_) && __PointerIsNotNull__(tlist)) {
@@ -699,12 +699,12 @@ Return_t xTaskChangeWDPeriod(Task_t *task_, const Ticks_t period_) {
     }
 
 #endif /* if defined(CONFIG_TASK_WD_TIMER_ENABLE) */
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t xTaskGetPeriod(const Task_t *task_, Ticks_t *period_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
   if(__PointerIsNotNull__(task_) && __PointerIsNotNull__(period_) && __PointerIsNotNull__(tlist)) {
     if(OK(__TaskListFindTask__(task_))) {
@@ -717,12 +717,12 @@ Return_t xTaskGetPeriod(const Task_t *task_, Ticks_t *period_) {
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 static Return_t __TaskListFindTask__(const Task_t *task_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
 
   Task_t *cursor = null;
@@ -748,12 +748,12 @@ static Return_t __TaskListFindTask__(const Task_t *task_) {
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t xTaskResetTimer(Task_t *task_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
   if(__PointerIsNotNull__(task_) && __PointerIsNotNull__(tlist)) {
     if(OK(__TaskListFindTask__(task_))) {
@@ -766,12 +766,12 @@ Return_t xTaskResetTimer(Task_t *task_) {
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t xTaskStartScheduler(void) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
 
   Task_t *task = null;
@@ -838,7 +838,7 @@ Return_t xTaskStartScheduler(void) {
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
@@ -862,7 +862,7 @@ static void __RunTimeReset__(void) {
 
 
 Return_t xTaskResumeAll(void) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
   if(__PointerIsNotNull__(tlist)) {
     scheduler = SchedulerStateRunning;
@@ -871,12 +871,12 @@ Return_t xTaskResumeAll(void) {
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t xTaskSuspendAll(void) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
   if(__PointerIsNotNull__(tlist)) {
     scheduler = SchedulerStateSuspended;
@@ -885,12 +885,12 @@ Return_t xTaskSuspendAll(void) {
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t xTaskGetSchedulerState(SchedulerState_t *state_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
   if(__PointerIsNotNull__(tlist)) {
     *state_ = scheduler;
@@ -899,12 +899,12 @@ Return_t xTaskGetSchedulerState(SchedulerState_t *state_) {
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t xTaskGetWDPeriod(const Task_t *task_, Ticks_t *period_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 #if defined(CONFIG_TASK_WD_TIMER_ENABLE)
 
     if(__PointerIsNotNull__(task_) && __PointerIsNotNull__(period_) && __PointerIsNotNull__(tlist)) {
@@ -919,7 +919,7 @@ Return_t xTaskGetWDPeriod(const Task_t *task_, Ticks_t *period_) {
     }
 
 #endif /* if defined(CONFIG_TASK_WD_TIMER_ENABLE) */
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 

@@ -188,7 +188,7 @@ static Return_t __DetectByteOrder__(ByteOrder_t *order_);
 
 
 Return_t __MemoryInit__(void) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
 
   ByteOrder_t order;
@@ -216,12 +216,12 @@ Return_t __MemoryInit__(void) {
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t xMemAlloc(volatile Addr_t **addr_, const Size_t size_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
   if(__PointerIsNotNull__(addr_) && (nil < size_)) {
     /* Simply passthrough the address pointer and size parameters to
@@ -236,12 +236,12 @@ Return_t xMemAlloc(volatile Addr_t **addr_, const Size_t size_) {
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t xMemFree(const volatile Addr_t *addr_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
   if(__PointerIsNotNull__(addr_)) {
     /* Simply passthrough the address pointer to __free__() for the heap memory
@@ -255,12 +255,12 @@ Return_t xMemFree(const volatile Addr_t *addr_) {
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t xMemFreeAll(void) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
   if(OK(__MemoryRegionInit__(&heap))) {
     RET_OK;
@@ -268,12 +268,12 @@ Return_t xMemFreeAll(void) {
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t xMemGetUsed(Size_t *size_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
 
   MemoryEntry_t *cursor = null;
@@ -308,12 +308,12 @@ Return_t xMemGetUsed(Size_t *size_) {
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t xMemGetSize(const volatile Addr_t *addr_, Size_t *size_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
 
   MemoryEntry_t *tosize = null;
@@ -343,12 +343,12 @@ Return_t xMemGetSize(const volatile Addr_t *addr_, Size_t *size_) {
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, const volatile Addr_t *addr_, const Base_t option_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
 
   Base_t found = false;
@@ -544,12 +544,12 @@ static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, co
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 static Return_t __MemoryRegionInit__(volatile MemoryRegion_t *region_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
   if(__PointerIsNotNull__(region_)) {
     /* Set the start of the region. */
@@ -591,12 +591,12 @@ static Return_t __MemoryRegionInit__(volatile MemoryRegion_t *region_) {
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **addr_, const Size_t size_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
 
   HalfWord_t requested = nil;
@@ -730,12 +730,12 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
 
   /* __calloc__() is done so re-enable interrupts. */
   __EnableInterrupts__();
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 static Return_t __free__(volatile MemoryRegion_t *region_, const volatile Addr_t *addr_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
 
   MemoryEntry_t *free = null;
@@ -771,12 +771,12 @@ static Return_t __free__(volatile MemoryRegion_t *region_, const volatile Addr_t
 
   /* __free__() is done so re-enable interrupts. */
   __EnableInterrupts__();
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t __KernelAllocateMemory__(volatile Addr_t **addr_, const Size_t size_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
   if(__PointerIsNotNull__(addr_) && (nil < size_)) {
     /* Simply passthrough the address pointer to __calloc__() for the kernel
@@ -794,12 +794,12 @@ Return_t __KernelAllocateMemory__(volatile Addr_t **addr_, const Size_t size_) {
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t __KernelFreeMemory__(const volatile Addr_t *addr_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
   if(__PointerIsNotNull__(addr_)) {
     /* Simply passthrough the address pointer to __free__() for the kernel
@@ -813,12 +813,12 @@ Return_t __KernelFreeMemory__(const volatile Addr_t *addr_) {
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t __MemoryRegionCheckKernel__(const volatile Addr_t *addr_, const Base_t option_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
   if((__PointerIsNull__(addr_) && (MEMORY_REGION_CHECK_OPTION_WO_ADDR == option_)) || (__PointerIsNotNull__(addr_) && (MEMORY_REGION_CHECK_OPTION_W_ADDR ==
     option_))) {
@@ -833,12 +833,12 @@ Return_t __MemoryRegionCheckKernel__(const volatile Addr_t *addr_, const Base_t 
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t __HeapAllocateMemory__(volatile Addr_t **addr_, const Size_t size_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
   if(__PointerIsNotNull__(addr_) && (nil < size_)) {
     /* Simply passthrough the address pointer to __calloc__() for the heap
@@ -856,12 +856,12 @@ Return_t __HeapAllocateMemory__(volatile Addr_t **addr_, const Size_t size_) {
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t __HeapFreeMemory__(const volatile Addr_t *addr_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
   if(__PointerIsNotNull__(addr_)) {
     /* Simply passthrough the address pointer to __free__() for the heap memory
@@ -875,12 +875,12 @@ Return_t __HeapFreeMemory__(const volatile Addr_t *addr_) {
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t __MemoryRegionCheckHeap__(const volatile Addr_t *addr_, const Base_t option_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
   if((__PointerIsNull__(addr_) && (MEMORY_REGION_CHECK_OPTION_WO_ADDR == option_)) || (__PointerIsNotNull__(addr_) && (MEMORY_REGION_CHECK_OPTION_W_ADDR ==
     option_))) {
@@ -895,12 +895,12 @@ Return_t __MemoryRegionCheckHeap__(const volatile Addr_t *addr_, const Base_t op
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t __memcpy__(const volatile Addr_t *dest_, const volatile Addr_t *src_, const Size_t size_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
 
   Size_t i = nil;
@@ -921,12 +921,12 @@ Return_t __memcpy__(const volatile Addr_t *dest_, const volatile Addr_t *src_, c
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t __memset__(const volatile Addr_t *dest_, const Byte_t val_, const Size_t size_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
 
   Size_t i = nil;
@@ -945,12 +945,12 @@ Return_t __memset__(const volatile Addr_t *dest_, const Byte_t val_, const Size_
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t __memcmp__(const volatile Addr_t *s1_, const volatile Addr_t *s2_, const Size_t size_, Base_t *res_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
 
   Size_t i = nil;
@@ -982,12 +982,12 @@ Return_t __memcmp__(const volatile Addr_t *s1_, const volatile Addr_t *s2_, cons
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t xMemGetHeapStats(MemoryRegionStats_t **stats_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
   if(__PointerIsNotNull__(stats_)) {
     /* Simply passthrough the address pointer to __MemGetRegionStats__() for the
@@ -1001,12 +1001,12 @@ Return_t xMemGetHeapStats(MemoryRegionStats_t **stats_) {
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 Return_t xMemGetKernelStats(MemoryRegionStats_t **stats_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
   if(__PointerIsNotNull__(stats_)) {
     /* Simply passthrough the address pointer to __MemGetRegionStats__() for the
@@ -1020,12 +1020,12 @@ Return_t xMemGetKernelStats(MemoryRegionStats_t **stats_) {
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 static Return_t __MemGetRegionStats__(const volatile MemoryRegion_t *region_, MemoryRegionStats_t **stats_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
 
   MemoryEntry_t *cursor = null;
@@ -1088,12 +1088,12 @@ static Return_t __MemGetRegionStats__(const volatile MemoryRegion_t *region_, Me
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 static Return_t __DefragMemoryRegion__(const volatile MemoryRegion_t *region_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
 
   MemoryEntry_t *cursor = null;
@@ -1147,12 +1147,12 @@ static Return_t __DefragMemoryRegion__(const volatile MemoryRegion_t *region_) {
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
 static Return_t __DetectByteOrder__(ByteOrder_t *order_) {
-  RET_DEFINE;
+  FUNCTION_ENTER;
 
   if(__PointerIsNotNull__(order_)) {
     if(0x100 > (*(uint16_t *) "\xFF\x00")) {
@@ -1166,7 +1166,7 @@ static Return_t __DetectByteOrder__(ByteOrder_t *order_) {
     ASSERT;
   }
 
-  RET_RETURN;
+  FUNCTION_EXIT;
 }
 
 
