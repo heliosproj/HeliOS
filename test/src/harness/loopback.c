@@ -32,9 +32,9 @@ Return_t TO_FUNCTION(DEVICE_NAME, _self_register)(void) {
   if(OK(__RegisterDevice__(DEVICE_UID, (Byte_t *) TO_LITERAL(DEVICE_NAME), DEVICE_STATE, DEVICE_MODE, TO_FUNCTION(DEVICE_NAME, _init), TO_FUNCTION(
       DEVICE_NAME, _config), TO_FUNCTION(DEVICE_NAME, _read), TO_FUNCTION(DEVICE_NAME, _write), TO_FUNCTION(DEVICE_NAME, _simple_read), TO_FUNCTION(DEVICE_NAME,
     _simple_write)))) {
-    RET_OK;
+    __ReturnOk__();
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -46,9 +46,9 @@ Return_t TO_FUNCTION(DEVICE_NAME, _init)(Device_t * device_) {
 
   if(OK(__memset__(loopback_buffer, nil, BUFFER_LENGTH))) {
     device_->available = false;
-    RET_OK;
+    __ReturnOk__();
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -59,7 +59,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t * device_, Size_t *size_, Ad
   FUNCTION_ENTER;
 
 
-  /* INSERT DEVICE DRIVER CODE HERE CALL RET_OK IF SYSTEM CALL WAS
+  /* INSERT DEVICE DRIVER CODE HERE CALL __ReturnOk__() IF SYSTEM CALL WAS
    * SUCCESSFUL BEFORE RETURNING. */
   FUNCTION_EXIT;
 }
@@ -74,7 +74,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t * device_, Size_t *size_, Ad
 
   *size_ = loopback_buffer_size;
   device_->available = false;
-  RET_OK;
+  __ReturnOk__();
 
 
   FUNCTION_EXIT;
@@ -87,9 +87,9 @@ Return_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t * device_, Size_t *size_, Add
   if(OK(__memcpy__(loopback_buffer, data_, *size_))) {
     loopback_buffer_size = *size_;
     device_->available = true;
-    RET_OK;
+    __ReturnOk__();
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -103,7 +103,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _simple_read)(Device_t * device_, Byte_t *data
   *data_ = loopback_buffer[0];
 
   device_->available = false;
-  RET_OK;
+  __ReturnOk__();
 
   FUNCTION_EXIT;
 }
@@ -113,7 +113,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _simple_write)(Device_t * device_, Byte_t data
   FUNCTION_ENTER;
 
   loopback_buffer[0] = data_;
-  RET_OK;
+  __ReturnOk__();
 
   FUNCTION_EXIT;
 }

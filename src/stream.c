@@ -29,15 +29,15 @@ Return_t xStreamCreate(StreamBuffer_t **stream_) {
     if(OK(__KernelAllocateMemory__((volatile Addr_t **) stream_, sizeof(StreamBuffer_t)))) {
       if(__PointerIsNotNull__(*stream_)) {
         (*stream_)->length = nil;
-        RET_OK;
+        __ReturnOk__();
       } else {
-        ASSERT;
+        __AssertOnElse__();
       }
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -50,15 +50,15 @@ Return_t xStreamDelete(const StreamBuffer_t *stream_) {
   if(__PointerIsNotNull__(stream_)) {
     if(OK(__MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
       if(OK(__KernelFreeMemory__(stream_))) {
-        RET_OK;
+        __ReturnOk__();
       } else {
-        ASSERT;
+        __AssertOnElse__();
       }
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -73,15 +73,15 @@ Return_t xStreamSend(StreamBuffer_t *stream_, const Byte_t byte_) {
       if(CONFIG_STREAM_BUFFER_BYTES > stream_->length) {
         stream_->buffer[stream_->length] = byte_;
         stream_->length++;
-        RET_OK;
+        __ReturnOk__();
       } else {
-        ASSERT;
+        __AssertOnElse__();
       }
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -100,35 +100,35 @@ Return_t xStreamReceive(const StreamBuffer_t *stream_, HalfWord_t *bytes_, Byte_
 
             if(OK(__memcpy__(*data_, stream_->buffer, stream_->length * sizeof(Byte_t)))) {
               if(OK(__memset__(stream_, nil, sizeof(StreamBuffer_t)))) {
-                RET_OK;
+                __ReturnOk__();
               } else {
-                ASSERT;
+                __AssertOnElse__();
 
 
                 /* Free heap memory because __memset__() failed. */
                 __HeapFreeMemory__(*data_);
               }
             } else {
-              ASSERT;
+              __AssertOnElse__();
 
 
               /* Free heap memory because __memcpy__() failed. */
               __HeapFreeMemory__(*data_);
             }
           } else {
-            ASSERT;
+            __AssertOnElse__();
           }
         } else {
-          ASSERT;
+          __AssertOnElse__();
         }
       } else {
-        ASSERT;
+        __AssertOnElse__();
       }
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -142,15 +142,15 @@ Return_t xStreamBytesAvailable(const StreamBuffer_t *stream_, HalfWord_t *bytes_
     if(OK(__MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
       if(__StreamLengthNonZero__()) {
         *bytes_ = stream_->length;
-        RET_OK;
+        __ReturnOk__();
       } else {
-        ASSERT;
+        __AssertOnElse__();
       }
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -164,18 +164,18 @@ Return_t xStreamReset(const StreamBuffer_t *stream_) {
     if(OK(__MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
       if(__StreamLengthNonZero__()) {
         if(OK(__memset__(stream_, nil, sizeof(StreamBuffer_t)))) {
-          RET_OK;
+          __ReturnOk__();
         } else {
-          ASSERT;
+          __AssertOnElse__();
         }
       } else {
-        ASSERT;
+        __AssertOnElse__();
       }
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -189,16 +189,16 @@ Return_t xStreamIsEmpty(const StreamBuffer_t *stream_, Base_t *res_) {
     if(OK(__MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
       if(__StreamLengthNonZero__()) {
         *res_ = false;
-        RET_OK;
+        __ReturnOk__();
       } else {
         *res_ = true;
-        RET_OK;
+        __ReturnOk__();
       }
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -212,16 +212,16 @@ Return_t xStreamIsFull(const StreamBuffer_t *stream_, Base_t *res_) {
     if(OK(__MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
       if(__StreamLengthAtLimit__()) {
         *res_ = true;
-        RET_OK;
+        __ReturnOk__();
       } else {
         *res_ = false;
-        RET_OK;
+        __ReturnOk__();
       }
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;

@@ -85,25 +85,25 @@ Return_t xTaskCreate(Task_t **task_, const Byte_t *name_, void (*callback_)(Task
             }
 
             tlist->length++;
-            RET_OK;
+            __ReturnOk__();
           } else {
-            ASSERT;
+            __AssertOnElse__();
 
 
             /* Free kernel memory because __memcpy__() failed.*/
             __KernelFreeMemory__(*task_);
           }
         } else {
-          ASSERT;
+          __AssertOnElse__();
         }
       } else {
-        ASSERT;
+        __AssertOnElse__();
       }
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -127,9 +127,9 @@ Return_t xTaskDelete(const Task_t *task_) {
 
         if(OK(__KernelFreeMemory__(cursor))) {
           tlist->length--;
-          RET_OK;
+          __ReturnOk__();
         } else {
-          ASSERT;
+          __AssertOnElse__();
         }
       } else if(__PointerIsNotNull__(cursor) && (cursor != task_)) {
         while(__PointerIsNotNull__(cursor) && (cursor != task_)) {
@@ -142,21 +142,21 @@ Return_t xTaskDelete(const Task_t *task_) {
 
           if(OK(__KernelFreeMemory__(cursor))) {
             tlist->length--;
-            RET_OK;
+            __ReturnOk__();
           } else {
-            ASSERT;
+            __AssertOnElse__();
           }
         } else {
-          ASSERT;
+          __AssertOnElse__();
         }
       } else {
-        ASSERT;
+        __AssertOnElse__();
       }
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -178,18 +178,18 @@ Return_t xTaskGetHandleByName(Task_t **task_, const Byte_t *name_) {
       if(OK(__memcmp__(cursor->name, name_, CONFIG_TASK_NAME_BYTES, &res))) {
         if(true == res) {
           *task_ = cursor;
-          RET_OK;
+          __ReturnOk__();
           break;
         }
       } else {
-        ASSERT;
+        __AssertOnElse__();
         break;
       }
 
       cursor = cursor->next;
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -209,14 +209,14 @@ Return_t xTaskGetHandleById(Task_t **task_, const Base_t id_) {
     while(__PointerIsNotNull__(cursor)) {
       if(id_ == cursor->id) {
         *task_ = cursor;
-        RET_OK;
+        __ReturnOk__();
         break;
       }
 
       cursor = cursor->next;
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -254,18 +254,18 @@ Return_t xTaskGetAllRunTimeStats(TaskRunTimeStats_t **stats_, Base_t *tasks_) {
           }
 
           *tasks_ = tasks;
-          RET_OK;
+          __ReturnOk__();
         } else {
-          ASSERT;
+          __AssertOnElse__();
         }
       } else {
-        ASSERT;
+        __AssertOnElse__();
       }
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -282,18 +282,18 @@ Return_t xTaskGetTaskRunTimeStats(const Task_t *task_, TaskRunTimeStats_t **stat
           (*stats_)->id = task_->id;
           (*stats_)->lastRunTime = task_->lastRunTime;
           (*stats_)->totalRunTime = task_->totalRunTime;
-          RET_OK;
+          __ReturnOk__();
         } else {
-          ASSERT;
+          __AssertOnElse__();
         }
       } else {
-        ASSERT;
+        __AssertOnElse__();
       }
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -318,12 +318,12 @@ Return_t xTaskGetNumberOfTasks(Base_t *tasks_) {
 
     if(tasks == tlist->length) {
       *tasks_ = tasks;
-      RET_OK;
+      __ReturnOk__();
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -342,25 +342,25 @@ Return_t xTaskGetTaskInfo(const Task_t *task_, TaskInfo_t **info_) {
             (*info_)->state = task_->state;
             (*info_)->lastRunTime = task_->lastRunTime;
             (*info_)->totalRunTime = task_->totalRunTime;
-            RET_OK;
+            __ReturnOk__();
           } else {
-            ASSERT;
+            __AssertOnElse__();
 
 
             /* Free heap memory because __memcpy__() failed. */
             __HeapFreeMemory__(*info_);
           }
         } else {
-          ASSERT;
+          __AssertOnElse__();
         }
       } else {
-        ASSERT;
+        __AssertOnElse__();
       }
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -401,18 +401,18 @@ Return_t xTaskGetAllTaskInfo(TaskInfo_t **info_, Base_t *tasks_) {
           }
 
           *tasks_ = tasks;
-          RET_OK;
+          __ReturnOk__();
         } else {
-          ASSERT;
+          __AssertOnElse__();
         }
       } else {
-        ASSERT;
+        __AssertOnElse__();
       }
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -425,12 +425,12 @@ Return_t xTaskGetTaskState(const Task_t *task_, TaskState_t *state_) {
   if(__PointerIsNotNull__(task_) && __PointerIsNotNull__(state_) && __PointerIsNotNull__(tlist)) {
     if(OK(__TaskListFindTask__(task_))) {
       *state_ = task_->state;
-      RET_OK;
+      __ReturnOk__();
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -445,25 +445,25 @@ Return_t xTaskGetName(const Task_t *task_, Byte_t **name_) {
       if(OK(__HeapAllocateMemory__((volatile Addr_t **) name_, CONFIG_TASK_NAME_BYTES))) {
         if(__PointerIsNotNull__(*name_)) {
           if(OK(__memcpy__(*name_, task_->name, CONFIG_TASK_NAME_BYTES))) {
-            RET_OK;
+            __ReturnOk__();
           } else {
-            ASSERT;
+            __AssertOnElse__();
 
 
             /* Free heap memory because __memcpy__() failed. */
             __HeapFreeMemory__(*name_);
           }
         } else {
-          ASSERT;
+          __AssertOnElse__();
         }
       } else {
-        ASSERT;
+        __AssertOnElse__();
       }
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -476,12 +476,12 @@ Return_t xTaskGetId(const Task_t *task_, Base_t *id_) {
   if(__PointerIsNotNull__(task_) && __PointerIsNotNull__(id_) && __PointerIsNotNull__(tlist)) {
     if(OK(__TaskListFindTask__(task_))) {
       *id_ = task_->id;
-      RET_OK;
+      __ReturnOk__();
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -496,18 +496,18 @@ Return_t xTaskNotifyStateClear(Task_t *task_) {
       if(nil < task_->notificationBytes) {
         if(OK(__memset__(task_->notificationValue, nil, CONFIG_NOTIFICATION_VALUE_BYTES))) {
           task_->notificationBytes = nil;
-          RET_OK;
+          __ReturnOk__();
         } else {
-          ASSERT;
+          __AssertOnElse__();
         }
       } else {
-        ASSERT;
+        __AssertOnElse__();
       }
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -521,16 +521,16 @@ Return_t xTaskNotificationIsWaiting(const Task_t *task_, Base_t *res_) {
     if(OK(__TaskListFindTask__(task_))) {
       if(nil < task_->notificationBytes) {
         *res_ = true;
-        RET_OK;
+        __ReturnOk__();
       } else {
         *res_ = false;
-        RET_OK;
+        __ReturnOk__();
       }
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -546,18 +546,18 @@ Return_t xTaskNotifyGive(Task_t *task_, const Base_t bytes_, const Byte_t *value
       if(nil == task_->notificationBytes) {
         if(OK(__memcpy__(task_->notificationValue, value_, CONFIG_NOTIFICATION_VALUE_BYTES))) {
           task_->notificationBytes = bytes_;
-          RET_OK;
+          __ReturnOk__();
         } else {
-          ASSERT;
+          __AssertOnElse__();
         }
       } else {
-        ASSERT;
+        __AssertOnElse__();
       }
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -576,35 +576,35 @@ Return_t xTaskNotifyTake(Task_t *task_, TaskNotification_t **notification_) {
               if(OK(__memset__(task_->notificationValue, nil, CONFIG_NOTIFICATION_VALUE_BYTES))) {
                 (*notification_)->notificationBytes = task_->notificationBytes;
                 task_->notificationBytes = nil;
-                RET_OK;
+                __ReturnOk__();
               } else {
-                ASSERT;
+                __AssertOnElse__();
 
 
                 /* Free heap memory because __memset__() failed. */
                 __HeapFreeMemory__(*notification_);
               }
             } else {
-              ASSERT;
+              __AssertOnElse__();
 
 
               /* Free heap memory because __memcpy__() failed. */
               __HeapFreeMemory__(*notification_);
             }
           } else {
-            ASSERT;
+            __AssertOnElse__();
           }
         } else {
-          ASSERT;
+          __AssertOnElse__();
         }
       } else {
-        ASSERT;
+        __AssertOnElse__();
       }
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -617,12 +617,12 @@ Return_t xTaskResume(Task_t *task_) {
   if(__PointerIsNotNull__(task_) && __PointerIsNotNull__(tlist)) {
     if(OK(__TaskListFindTask__(task_))) {
       task_->state = TaskStateRunning;
-      RET_OK;
+      __ReturnOk__();
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -635,12 +635,12 @@ Return_t xTaskSuspend(Task_t *task_) {
   if(__PointerIsNotNull__(task_) && __PointerIsNotNull__(tlist)) {
     if(OK(__TaskListFindTask__(task_))) {
       task_->state = TaskStateSuspended;
-      RET_OK;
+      __ReturnOk__();
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -653,12 +653,12 @@ Return_t xTaskWait(Task_t *task_) {
   if(__PointerIsNotNull__(task_) && __PointerIsNotNull__(tlist)) {
     if(OK(__TaskListFindTask__(task_))) {
       task_->state = TaskStateWaiting;
-      RET_OK;
+      __ReturnOk__();
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -671,12 +671,12 @@ Return_t xTaskChangePeriod(Task_t *task_, const Ticks_t period_) {
   if(__PointerIsNotNull__(task_) && __PointerIsNotNull__(tlist)) {
     if(OK(__TaskListFindTask__(task_))) {
       task_->timerPeriod = period_;
-      RET_OK;
+      __ReturnOk__();
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -690,12 +690,12 @@ Return_t xTaskChangeWDPeriod(Task_t *task_, const Ticks_t period_) {
     if(__PointerIsNotNull__(task_) && __PointerIsNotNull__(tlist)) {
       if(OK(__TaskListFindTask__(task_))) {
         task_->wdTimerPeriod = period_;
-        RET_OK;
+        __ReturnOk__();
       } else {
-        ASSERT;
+        __AssertOnElse__();
       }
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
 
 #endif /* if defined(CONFIG_TASK_WD_TIMER_ENABLE) */
@@ -709,12 +709,12 @@ Return_t xTaskGetPeriod(const Task_t *task_, Ticks_t *period_) {
   if(__PointerIsNotNull__(task_) && __PointerIsNotNull__(period_) && __PointerIsNotNull__(tlist)) {
     if(OK(__TaskListFindTask__(task_))) {
       *period_ = task_->timerPeriod;
-      RET_OK;
+      __ReturnOk__();
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -737,15 +737,15 @@ static Return_t __TaskListFindTask__(const Task_t *task_) {
       }
 
       if(__PointerIsNotNull__(cursor)) {
-        RET_OK;
+        __ReturnOk__();
       } else {
-        ASSERT;
+        __AssertOnElse__();
       }
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -758,12 +758,12 @@ Return_t xTaskResetTimer(Task_t *task_) {
   if(__PointerIsNotNull__(task_) && __PointerIsNotNull__(tlist)) {
     if(OK(__TaskListFindTask__(task_))) {
       task_->timerStartTime = __PortGetSysTicks__();
-      RET_OK;
+      __ReturnOk__();
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -833,9 +833,9 @@ Return_t xTaskStartScheduler(void) {
     }
 
     __UnsetFlag__(RUNNING);
-    RET_OK;
+    __ReturnOk__();
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -866,9 +866,9 @@ Return_t xTaskResumeAll(void) {
 
   if(__PointerIsNotNull__(tlist)) {
     scheduler = SchedulerStateRunning;
-    RET_OK;
+    __ReturnOk__();
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -880,9 +880,9 @@ Return_t xTaskSuspendAll(void) {
 
   if(__PointerIsNotNull__(tlist)) {
     scheduler = SchedulerStateSuspended;
-    RET_OK;
+    __ReturnOk__();
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -894,9 +894,9 @@ Return_t xTaskGetSchedulerState(SchedulerState_t *state_) {
 
   if(__PointerIsNotNull__(tlist)) {
     *state_ = scheduler;
-    RET_OK;
+    __ReturnOk__();
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -910,12 +910,12 @@ Return_t xTaskGetWDPeriod(const Task_t *task_, Ticks_t *period_) {
     if(__PointerIsNotNull__(task_) && __PointerIsNotNull__(period_) && __PointerIsNotNull__(tlist)) {
       if(OK(__TaskListFindTask__(task_))) {
         *period_ = task_->wdTimerPeriod;
-        RET_OK;
+        __ReturnOk__();
       } else {
-        ASSERT;
+        __AssertOnElse__();
       }
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
 
 #endif /* if defined(CONFIG_TASK_WD_TIMER_ENABLE) */

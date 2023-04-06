@@ -43,7 +43,7 @@ Return_t xSystemAssert(const char *file_, const int line_) {
 
 #if defined(CONFIG_SYSTEM_ASSERT_BEHAVIOR)
     CONFIG_SYSTEM_ASSERT_BEHAVIOR(file_, line_);
-    RET_OK;
+    __ReturnOk__();
 #endif /* if defined(CONFIG_SYSTEM_ASSERT_BEHAVIOR) */
   FUNCTION_EXIT;
 }
@@ -56,12 +56,12 @@ Return_t xSystemInit(void) {
     if(OK(__PortInit__())) {
       __UnsetFlag__(OVERFLOW);
       __UnsetFlag__(RUNNING);
-      RET_OK;
+      __ReturnOk__();
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -98,29 +98,29 @@ Return_t xSystemGetSystemInfo(SystemInfo_t **info_) {
           }
 
           if(OK(xTaskGetNumberOfTasks(&(*info_)->numberOfTasks))) {
-            RET_OK;
+            __ReturnOk__();
           } else {
-            ASSERT;
+            __AssertOnElse__();
 
 
             /* Free heap memory because xTaskGetNumberOfTasks() failed. */
             __HeapFreeMemory__(*info_);
           }
         } else {
-          ASSERT;
+          __AssertOnElse__();
 
 
           /* Free heap memory because __memcpy__() failed. */
           __HeapFreeMemory__(*info_);
         }
       } else {
-        ASSERT;
+        __AssertOnElse__();
       }
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;

@@ -1726,19 +1726,19 @@
    * The xSystemAssert() syscall is used to raise a system assert. In order fot
    * xSystemAssert() to have an effect the configuration setting
    * CONFIG_SYSTEM_ASSERT_BEHAVIOR must be defined. That said, it is recommended
-   * that the ASSERT C macro be used in place of xSystemAssert(). In order for
-   * the ASSERT C macro to have any effect, the configuration setting
-   * CONFIG_ENABLE_SYSTEM_ASSERT must be defined.
+   * that the __AssertOnElse__() C macro be used in place of xSystemAssert(). In
+   * order for the __AssertOnElse__() C macro to have any effect, the
+   * configuration setting CONFIG_ENABLE_SYSTEM_ASSERT must be defined.
    *
    * @sa xReturn
    * @sa CONFIG_SYSTEM_ASSERT_BEHAVIOR
    * @sa CONFIG_ENABLE_SYSTEM_ASSERT
-   * @sa ASSERT
+   * @sa __AssertOnElse__()
    *
    * @param  file_ The C file where the assert occurred. This will be set by the
-   *               ASSERT C macro.
+   *               __AssertOnElse__() C macro.
    * @param  line_ The C file line where the assert occurred. This will be set
-   *               by the ASSERT C macro.
+   *               by the __AssertOnElse__() C macro.
    * @return       On success, the syscall returns ReturnOK. On failure, the
    *               syscall returns ReturnError. A failure is any condition in
    *               which the syscall was unable to achieve its intended

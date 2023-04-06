@@ -205,15 +205,15 @@ Return_t __MemoryInit__(void) {
         }
 
         __UnsetFlag__(MEMFAULT);
-        RET_OK;
+        __ReturnOk__();
       } else {
-        ASSERT;
+        __AssertOnElse__();
       }
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -228,12 +228,12 @@ Return_t xMemAlloc(volatile Addr_t **addr_, const Size_t size_) {
      * __calloc__() for the heap memory region since xMemAlloc() can only
      * allocate heap memory. */
     if(OK(__calloc__(&heap, addr_, size_))) {
-      RET_OK;
+      __ReturnOk__();
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -247,12 +247,12 @@ Return_t xMemFree(const volatile Addr_t *addr_) {
     /* Simply passthrough the address pointer to __free__() for the heap memory
      * region since xMemFree() can only free heap memory. */
     if(OK(__free__(&heap, addr_))) {
-      RET_OK;
+      __ReturnOk__();
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -263,9 +263,9 @@ Return_t xMemFreeAll(void) {
   FUNCTION_ENTER;
 
   if(OK(__MemoryRegionInit__(&heap))) {
-    RET_OK;
+    __ReturnOk__();
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -300,12 +300,12 @@ Return_t xMemGetUsed(Size_t *size_) {
       /* We need to give the user back bytes, not blocks, so multiply the in-use
        * blocks by the block size in bytes. */
       *size_ = used * CONFIG_MEMORY_REGION_BLOCK_SIZE;
-      RET_OK;
+      __ReturnOk__();
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -332,15 +332,15 @@ Return_t xMemGetSize(const volatile Addr_t *addr_, Size_t *size_) {
        * in the entry by the block size in bytes. */
       if(__EntryIsInUse__(tosize)) {
         *size_ = tosize->blocks * CONFIG_MEMORY_REGION_BLOCK_SIZE;
-        RET_OK;
+        __ReturnOk__();
       } else {
-        ASSERT;
+        __AssertOnElse__();
       }
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -379,7 +379,7 @@ static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, co
              * number of blocks in the memory region is correct later. */
             blocks += cursor->blocks;
           } else {
-            ASSERT;
+            __AssertOnElse__();
 
 
             /* "Houston, we've had a problem." ~ Jim Lovell
@@ -392,7 +392,7 @@ static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, co
             break;
           }
         } else {
-          ASSERT;
+          __AssertOnElse__();
 
 
           /* "Houston, we've had a problem." ~ Jim Lovell
@@ -407,7 +407,7 @@ static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, co
 
         cursor = cursor->next;
       } else {
-        ASSERT;
+        __AssertOnElse__();
 
 
         /* "Houston, we've had a problem." ~ Jim Lovell
@@ -424,9 +424,9 @@ static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, co
     /* Check that the number of blocks we visited matches what we expect to see
      */
     if(CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS == blocks) {
-      RET_OK;
+      __ReturnOk__();
     } else {
-      ASSERT;
+      __AssertOnElse__();
 
 
       /* "Houston, we've had a problem." ~ Jim Lovell
@@ -474,7 +474,7 @@ static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, co
               found = true;
             }
           } else {
-            ASSERT;
+            __AssertOnElse__();
 
 
             /* "Houston, we've had a problem." ~ Jim Lovell
@@ -487,7 +487,7 @@ static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, co
             break;
           }
         } else {
-          ASSERT;
+          __AssertOnElse__();
 
 
           /* "Houston, we've had a problem." ~ Jim Lovell
@@ -502,7 +502,7 @@ static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, co
 
         cursor = cursor->next;
       } else {
-        ASSERT;
+        __AssertOnElse__();
 
 
         /* "Houston, we've had a problem." ~ Jim Lovell
@@ -519,15 +519,16 @@ static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, co
     /* Check that the number of blocks we visited matches what we expect to see
      */
     if(CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS == blocks) {
-      /* Before we can RET_OK, we just need to check to make sure we found the
-       * address we were looking for as we traversed the memory region. */
+      /* Before we can __ReturnOk__(), we just need to check to make sure we
+       * found the address we were looking for as we traversed the memory
+       * region. */
       if(true == found) {
-        RET_OK;
+        __ReturnOk__();
       } else {
-        ASSERT;
+        __AssertOnElse__();
       }
     } else {
-      ASSERT;
+      __AssertOnElse__();
 
 
       /* "Houston, we've had a problem." ~ Jim Lovell
@@ -541,7 +542,7 @@ static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, co
     }
   } else {
     /* If we made it here, "option_" did not contain a valid argument. */
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -583,12 +584,12 @@ static Return_t __MemoryRegionInit__(volatile MemoryRegion_t *region_) {
       region_->start->free = FREE;
       region_->start->blocks = CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS;
       region_->start->next = null;
-      RET_OK;
+      __ReturnOk__();
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -689,9 +690,9 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
              * __OffsetAddrToMemEntry__(), it converts the memory entry address
              * to the address of the first block after the memory entry. */
             *addr_ = __OffsetMemEntryToAddr__(candidate, region_);
-            RET_OK;
+            __ReturnOk__();
           } else {
-            ASSERT;
+            __AssertOnElse__();
           }
         } else {
           /* Because we didn't need to split an entry into two, we just need to
@@ -705,9 +706,9 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
              * __OffsetAddrToMemEntry__(), it converts the memory entry address
              * to the address of the first block after the memory entry. */
             *addr_ = __OffsetMemEntryToAddr__(candidate, region_);
-            RET_OK;
+            __ReturnOk__();
           } else {
-            ASSERT;
+            __AssertOnElse__();
           }
         }
 
@@ -719,13 +720,13 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
           region_->minAvailableEver = (free * CONFIG_MEMORY_REGION_BLOCK_SIZE);
         }
       } else {
-        ASSERT;
+        __AssertOnElse__();
       }
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   /* __calloc__() is done so re-enable interrupts. */
@@ -758,15 +759,15 @@ static Return_t __free__(volatile MemoryRegion_t *region_, const volatile Addr_t
       /* After freeing memory, call __DefragMemoryRegion__() to consolidate any
        * adjacent free blocks. */
       if(OK(__DefragMemoryRegion__(region_))) {
-        RET_OK;
+        __ReturnOk__();
       } else {
-        ASSERT;
+        __AssertOnElse__();
       }
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   /* __free__() is done so re-enable interrupts. */
@@ -783,15 +784,15 @@ Return_t __KernelAllocateMemory__(volatile Addr_t **addr_, const Size_t size_) {
      * memory region and the size of the requested memory. */
     if(OK(__calloc__(&kernel, addr_, size_))) {
       if(__PointerIsNotNull__(*addr_)) {
-        RET_OK;
+        __ReturnOk__();
       } else {
-        ASSERT;
+        __AssertOnElse__();
       }
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -805,12 +806,12 @@ Return_t __KernelFreeMemory__(const volatile Addr_t *addr_) {
     /* Simply passthrough the address pointer to __free__() for the kernel
      * memory region. */
     if(OK(__free__(&kernel, addr_))) {
-      RET_OK;
+      __ReturnOk__();
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -825,12 +826,12 @@ Return_t __MemoryRegionCheckKernel__(const volatile Addr_t *addr_, const Base_t 
     /* Simply passthrough the address pointer to __MemoryRegionCheck__() for the
      * kernel memory region and the region check option. */
     if(OK(__MemoryRegionCheck__(&kernel, addr_, option_))) {
-      RET_OK;
+      __ReturnOk__();
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -845,15 +846,15 @@ Return_t __HeapAllocateMemory__(volatile Addr_t **addr_, const Size_t size_) {
      * memory region and the size of the requested memory. */
     if(OK(__calloc__(&heap, addr_, size_))) {
       if(__PointerIsNotNull__(*addr_)) {
-        RET_OK;
+        __ReturnOk__();
       } else {
-        ASSERT;
+        __AssertOnElse__();
       }
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -867,12 +868,12 @@ Return_t __HeapFreeMemory__(const volatile Addr_t *addr_) {
     /* Simply passthrough the address pointer to __free__() for the heap memory
      * region. */
     if(OK(__free__(&heap, addr_))) {
-      RET_OK;
+      __ReturnOk__();
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -887,12 +888,12 @@ Return_t __MemoryRegionCheckHeap__(const volatile Addr_t *addr_, const Base_t op
     /* Simply passthrough the address pointer to __MemoryRegionCheck__() for the
      * heap memory region and the region check option. */
     if(OK(__MemoryRegionCheck__(&heap, addr_, option_))) {
-      RET_OK;
+      __ReturnOk__();
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -916,9 +917,9 @@ Return_t __memcpy__(const volatile Addr_t *dest_, const volatile Addr_t *src_, c
       dest[i] = src[i];
     }
 
-    RET_OK;
+    __ReturnOk__();
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -940,9 +941,9 @@ Return_t __memset__(const volatile Addr_t *dest_, const Byte_t val_, const Size_
       dest[i] = (Byte_t) val_;
     }
 
-    RET_OK;
+    __ReturnOk__();
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -977,9 +978,9 @@ Return_t __memcmp__(const volatile Addr_t *s1_, const volatile Addr_t *s2_, cons
       s2++;
     }
 
-    RET_OK;
+    __ReturnOk__();
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -993,12 +994,12 @@ Return_t xMemGetHeapStats(MemoryRegionStats_t **stats_) {
     /* Simply passthrough the address pointer to __MemGetRegionStats__() for the
      * heap memory region and a pointer to the stats structure. */
     if(OK(__MemGetRegionStats__(&heap, stats_))) {
-      RET_OK;
+      __ReturnOk__();
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -1012,12 +1013,12 @@ Return_t xMemGetKernelStats(MemoryRegionStats_t **stats_) {
     /* Simply passthrough the address pointer to __MemGetRegionStats__() for the
      * kernel memory region and a pointer to the stats structure. */
     if(OK(__MemGetRegionStats__(&kernel, stats_))) {
-      RET_OK;
+      __ReturnOk__();
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -1070,22 +1071,22 @@ static Return_t __MemGetRegionStats__(const volatile MemoryRegion_t *region_, Me
             cursor = cursor->next;
           }
 
-          RET_OK;
+          __ReturnOk__();
         } else {
-          ASSERT;
+          __AssertOnElse__();
 
 
           /* Free the heap memory because the call to __memset__() failed. */
           __HeapFreeMemory__(stats_);
         }
       } else {
-        ASSERT;
+        __AssertOnElse__();
       }
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -1131,7 +1132,7 @@ static Return_t __DefragMemoryRegion__(const volatile MemoryRegion_t *region_) {
           if(OK(__memset__(merge, nil, sizeof(MemoryEntry_t)))) {
             /* Do nothing - literally. */
           } else {
-            ASSERT;
+            __AssertOnElse__();
             break;
           }
         } else {
@@ -1139,12 +1140,12 @@ static Return_t __DefragMemoryRegion__(const volatile MemoryRegion_t *region_) {
         }
       }
 
-      RET_OK;
+      __ReturnOk__();
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -1157,13 +1158,13 @@ static Return_t __DetectByteOrder__(ByteOrder_t *order_) {
   if(__PointerIsNotNull__(order_)) {
     if(0x100 > (*(uint16_t *) "\xFF\x00")) {
       *order_ = ByteOrderLittleEndian;
-      RET_OK;
+      __ReturnOk__();
     } else {
       *order_ = ByteOrderBigEndian;
-      RET_OK;
+      __ReturnOk__();
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;

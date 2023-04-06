@@ -53,15 +53,15 @@ Return_t xQueueCreate(Queue_t **queue_, Base_t limit_) {
         (*queue_)->locked = false;
         (*queue_)->head = null;
         (*queue_)->tail = null;
-        RET_OK;
+        __ReturnOk__();
       } else {
-        ASSERT;
+        __AssertOnElse__();
       }
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -78,18 +78,18 @@ Return_t xQueueDelete(Queue_t *queue_) {
       if(OK(__QueueDropmessage__(queue_))) {
         /* Do nothing - literally. */
       } else {
-        ASSERT;
+        __AssertOnElse__();
         break;
       }
     }
 
     if(OK(__KernelFreeMemory__(queue_))) {
-      RET_OK;
+      __ReturnOk__();
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -114,15 +114,15 @@ Return_t xQueueGetLength(const Queue_t *queue_, Base_t *res_) {
        * number of messages. */
       if(__QueueLengthCorrect__()) {
         *res_ = messages;
-        RET_OK;
+        __ReturnOk__();
       } else {
-        ASSERT;
+        __AssertOnElse__();
       }
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -150,18 +150,18 @@ Return_t xQueueIsQueueEmpty(const Queue_t *queue_, Base_t *res_) {
        * empty. */
       if(__QueueLengthZero__() && __QueueLengthCorrect__()) {
         *res_ = true;
-        RET_OK;
+        __ReturnOk__();
       } else if(__QueueLengthNonZero__() && __QueueLengthCorrect__()) {
         *res_ = false;
-        RET_OK;
+        __ReturnOk__();
       } else {
-        ASSERT;
+        __AssertOnElse__();
       }
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -190,18 +190,18 @@ Return_t xQueueIsQueueFull(const Queue_t *queue_, Base_t *res_) {
        * because the queue is *NOT* full. */
       if(__QueueLengthAtLimit__() && __QueueLengthCorrect__()) {
         *res_ = true;
-        RET_OK;
+        __ReturnOk__();
       } else if(__QueueLengthNotAtLimit__() && __QueueLengthCorrect__()) {
         *res_ = false;
-        RET_OK;
+        __ReturnOk__();
       } else {
-        ASSERT;
+        __AssertOnElse__();
       }
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -230,18 +230,18 @@ Return_t xQueueMessagesWaiting(const Queue_t *queue_, Base_t *res_) {
        * the queue. */
       if(__QueueLengthNonZero__() && __QueueLengthCorrect__()) {
         *res_ = true;
-        RET_OK;
+        __ReturnOk__();
       } else if(__QueueLengthZero__() && __QueueLengthCorrect__()) {
         *res_ = false;
-        RET_OK;
+        __ReturnOk__();
       } else {
-        ASSERT;
+        __AssertOnElse__();
       }
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -282,31 +282,31 @@ Return_t xQueueSend(Queue_t *queue_, const Base_t bytes_, const Byte_t *value_) 
                 }
 
                 queue_->length++;
-                RET_OK;
+                __ReturnOk__();
               } else {
-                ASSERT;
+                __AssertOnElse__();
 
 
                 /* Free the kernel memory because __memcpy__() failed. */
                 __KernelFreeMemory__(message);
               }
             } else {
-              ASSERT;
+              __AssertOnElse__();
             }
           } else {
-            ASSERT;
+            __AssertOnElse__();
           }
         } else {
-          ASSERT;
+          __AssertOnElse__();
         }
       } else {
-        ASSERT;
+        __AssertOnElse__();
       }
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -318,12 +318,12 @@ Return_t xQueuePeek(const Queue_t *queue_, QueueMessage_t **message_) {
 
   if(__PointerIsNotNull__(queue_) && __PointerIsNotNull__(message_)) {
     if(OK(__QueuePeek__(queue_, message_))) {
-      RET_OK;
+      __ReturnOk__();
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -341,28 +341,28 @@ static Return_t __QueuePeek__(const Queue_t *queue_, QueueMessage_t **message_) 
             (*message_)->messageBytes = queue_->head->messageBytes;
 
             if(OK(__memcpy__((*message_)->messageValue, queue_->head->messageValue, CONFIG_MESSAGE_VALUE_BYTES))) {
-              RET_OK;
+              __ReturnOk__();
             } else {
-              ASSERT;
+              __AssertOnElse__();
 
 
               /* Free the heap memory because __memcpy__() failed. */
               __HeapFreeMemory__(*message_);
             }
           } else {
-            ASSERT;
+            __AssertOnElse__();
           }
         } else {
-          ASSERT;
+          __AssertOnElse__();
         }
       } else {
-        ASSERT;
+        __AssertOnElse__();
       }
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -374,12 +374,12 @@ Return_t xQueueDropMessage(Queue_t *queue_) {
 
   if(__PointerIsNotNull__(queue_)) {
     if(OK(__QueueDropmessage__(queue_))) {
-      RET_OK;
+      __ReturnOk__();
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -405,18 +405,18 @@ static Return_t __QueueDropmessage__(Queue_t *queue_) {
 
         if(OK(__KernelFreeMemory__(message))) {
           queue_->length--;
-          RET_OK;
+          __ReturnOk__();
         } else {
-          ASSERT;
+          __AssertOnElse__();
         }
       } else {
-        ASSERT;
+        __AssertOnElse__();
       }
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -431,21 +431,21 @@ Return_t xQueueReceive(Queue_t *queue_, QueueMessage_t **message_) {
       if(OK(__QueuePeek__(queue_, message_))) {
         if(__PointerIsNotNull__(*message_)) {
           if(OK(__QueueDropmessage__(queue_))) {
-            RET_OK;
+            __ReturnOk__();
           } else {
-            ASSERT;
+            __AssertOnElse__();
           }
         } else {
-          ASSERT;
+          __AssertOnElse__();
         }
       } else {
-        ASSERT;
+        __AssertOnElse__();
       }
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -459,15 +459,15 @@ Return_t xQueueLockQueue(Queue_t *queue_) {
     if(OK(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
       if(false == queue_->locked) {
         queue_->locked = true;
-        RET_OK;
+        __ReturnOk__();
       } else {
-        ASSERT;
+        __AssertOnElse__();
       }
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -481,15 +481,15 @@ Return_t xQueueUnLockQueue(Queue_t *queue_) {
     if(OK(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
       if(true == queue_->locked) {
         queue_->locked = false;
-        RET_OK;
+        __ReturnOk__();
       } else {
-        ASSERT;
+        __AssertOnElse__();
       }
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;

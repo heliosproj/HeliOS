@@ -30,12 +30,12 @@ Return_t xDeviceRegisterDevice(Return_t (*device_self_register_)()) {
     /* Call the device driver's DEVICENAME_self_register() function which will
      * in turn call __RegisterDevice__() in this file. */
     if(OK((*device_self_register_)())) {
-      RET_OK;
+      __ReturnOk__();
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -102,9 +102,9 @@ Return_t __RegisterDevice__(const HalfWord_t uid_, const Byte_t *name_, const De
                 }
 
                 dlist->length++;
-                RET_OK;
+                __ReturnOk__();
               } else {
-                ASSERT;
+                __AssertOnElse__();
 
 
                 /* Because the __memcpy__() failed, we need to free the kernel
@@ -112,22 +112,22 @@ Return_t __RegisterDevice__(const HalfWord_t uid_, const Byte_t *name_, const De
                 __KernelFreeMemory__(device);
               }
             } else {
-              ASSERT;
+              __AssertOnElse__();
             }
           } else {
-            ASSERT;
+            __AssertOnElse__();
           }
         } else {
-          ASSERT;
+          __AssertOnElse__();
         }
       } else {
-        ASSERT;
+        __AssertOnElse__();
       }
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -152,15 +152,15 @@ Return_t xDeviceIsAvailable(const HalfWord_t uid_, Base_t *res_) {
          * NOTE: There is *NO* particular meaning to the device's available
          * value, this is defined by the device driver's author. */
         *res_ = device->available;
-        RET_OK;
+        __ReturnOk__();
       } else {
-        ASSERT;
+        __AssertOnElse__();
       }
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -184,21 +184,21 @@ Return_t xDeviceSimpleWrite(const HalfWord_t uid_, Byte_t data_) {
         if(((DeviceModeReadWrite == device->mode) || (DeviceModeWriteOnly == device->mode)) && (DeviceStateRunning == device->state)) {
           if(OK((*device->simple_write)(device, data_))) {
             device->bytesWritten += sizeof(Byte_t);
-            RET_OK;
+            __ReturnOk__();
           } else {
-            ASSERT;
+            __AssertOnElse__();
           }
         } else {
-          ASSERT;
+          __AssertOnElse__();
         }
       } else {
-        ASSERT;
+        __AssertOnElse__();
       }
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -238,12 +238,12 @@ Return_t xDeviceWrite(const HalfWord_t uid_, Size_t *size_, Addr_t *data_) {
                      */
                     if(OK(__KernelFreeMemory__(data))) {
                       device->bytesWritten += *size_;
-                      RET_OK;
+                      __ReturnOk__();
                     } else {
-                      ASSERT;
+                      __AssertOnElse__();
                     }
                   } else {
-                    ASSERT;
+                    __AssertOnElse__();
 
 
                     /* Because DEVICENAME_write() returned an error, we need to
@@ -251,7 +251,7 @@ Return_t xDeviceWrite(const HalfWord_t uid_, Size_t *size_, Addr_t *data_) {
                     __KernelFreeMemory__(data);
                   }
                 } else {
-                  ASSERT;
+                  __AssertOnElse__();
 
 
                   /* Because __memcpy__() returned an error, we need to free the
@@ -259,25 +259,25 @@ Return_t xDeviceWrite(const HalfWord_t uid_, Size_t *size_, Addr_t *data_) {
                   __KernelFreeMemory__(data);
                 }
               } else {
-                ASSERT;
+                __AssertOnElse__();
               }
             } else {
-              ASSERT;
+              __AssertOnElse__();
             }
           } else {
-            ASSERT;
+            __AssertOnElse__();
           }
         } else {
-          ASSERT;
+          __AssertOnElse__();
         }
       } else {
-        ASSERT;
+        __AssertOnElse__();
       }
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -306,21 +306,21 @@ Return_t xDeviceSimpleRead(const HalfWord_t uid_, Byte_t *data_) {
           if(OK((*device->simple_read)(device, &data))) {
             *data_ = data;
             device->bytesWritten += sizeof(Byte_t);
-            RET_OK;
+            __ReturnOk__();
           } else {
-            ASSERT;
+            __AssertOnElse__();
           }
         } else {
-          ASSERT;
+          __AssertOnElse__();
         }
       } else {
-        ASSERT;
+        __AssertOnElse__();
       }
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -361,10 +361,10 @@ Return_t xDeviceRead(const HalfWord_t uid_, Size_t *size_, Addr_t **data_) {
                        */
                       if(OK(__KernelFreeMemory__(data))) {
                         device->bytesRead += *size_;
-                        RET_OK;
+                        __ReturnOk__();
                       }
                     } else {
-                      ASSERT;
+                      __AssertOnElse__();
 
 
                       /* Because __memcpy__() returned an error, we need to free
@@ -377,7 +377,7 @@ Return_t xDeviceRead(const HalfWord_t uid_, Size_t *size_, Addr_t **data_) {
                       __HeapFreeMemory__(*data_);
                     }
                   } else {
-                    ASSERT;
+                    __AssertOnElse__();
 
 
                     /* Because __HeapAllocateMemory__() returned a null pointer,
@@ -385,7 +385,7 @@ Return_t xDeviceRead(const HalfWord_t uid_, Size_t *size_, Addr_t **data_) {
                     __KernelFreeMemory__(data);
                   }
                 } else {
-                  ASSERT;
+                  __AssertOnElse__();
 
 
                   /* Because __HeapAllocateMemory__() returned an error, we need
@@ -393,25 +393,25 @@ Return_t xDeviceRead(const HalfWord_t uid_, Size_t *size_, Addr_t **data_) {
                   __KernelFreeMemory__(data);
                 }
               } else {
-                ASSERT;
+                __AssertOnElse__();
               }
             } else {
-              ASSERT;
+              __AssertOnElse__();
             }
           } else {
-            ASSERT;
+            __AssertOnElse__();
           }
         } else {
-          ASSERT;
+          __AssertOnElse__();
         }
       } else {
-        ASSERT;
+        __AssertOnElse__();
       }
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -437,12 +437,12 @@ static Return_t __DeviceListFind__(const HalfWord_t uid_, Device_t **device_) {
 
     if(__PointerIsNotNull__(cursor)) {
       *device_ = cursor;
-      RET_OK;
+      __ReturnOk__();
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -467,18 +467,18 @@ Return_t xDeviceInitDevice(const HalfWord_t uid_) {
          * NOTE: the behavior of the init function is defined by the device
          * driver's author. */
         if(OK((*device->init)(device))) {
-          RET_OK;
+          __ReturnOk__();
         } else {
-          ASSERT;
+          __AssertOnElse__();
         }
       } else {
-        ASSERT;
+        __AssertOnElse__();
       }
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -521,12 +521,12 @@ Return_t xDeviceConfigDevice(const HalfWord_t uid_, Size_t *size_, Addr_t *confi
                      * the end-user to free the heap memory the data occupies.
                      */
                     if(OK(__KernelFreeMemory__(config))) {
-                      RET_OK;
+                      __ReturnOk__();
                     } else {
-                      ASSERT;
+                      __AssertOnElse__();
                     }
                   } else {
-                    ASSERT;
+                    __AssertOnElse__();
 
 
                     /* Because __memcpy__() returned an error, we need to free
@@ -534,7 +534,7 @@ Return_t xDeviceConfigDevice(const HalfWord_t uid_, Size_t *size_, Addr_t *confi
                     __KernelFreeMemory__(config);
                   }
                 } else {
-                  ASSERT;
+                  __AssertOnElse__();
 
 
                   /* Because DEVICENAME_config() returned an error, we need to
@@ -542,7 +542,7 @@ Return_t xDeviceConfigDevice(const HalfWord_t uid_, Size_t *size_, Addr_t *confi
                   __KernelFreeMemory__(config);
                 }
               } else {
-                ASSERT;
+                __AssertOnElse__();
 
 
                 /* Because __memcpy__() returned an error, we need to free the
@@ -550,22 +550,22 @@ Return_t xDeviceConfigDevice(const HalfWord_t uid_, Size_t *size_, Addr_t *confi
                 __KernelFreeMemory__(config);
               }
             } else {
-              ASSERT;
+              __AssertOnElse__();
             }
           } else {
-            ASSERT;
+            __AssertOnElse__();
           }
         } else {
-          ASSERT;
+          __AssertOnElse__();
         }
       } else {
-        ASSERT;
+        __AssertOnElse__();
       }
     } else {
-      ASSERT;
+      __AssertOnElse__();
     }
   } else {
-    ASSERT;
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;

@@ -61,70 +61,6 @@
   #define nil 0x0u /* 0 */
 
 
-  #if defined(OS_PRODUCT_NAME_SIZE)
-    #undef OS_PRODUCT_NAME_SIZE
-  #endif /* if defined(OS_PRODUCT_NAME_SIZE) */
-  #define OS_PRODUCT_NAME_SIZE 0x6u /* 6 */
-
-
-  #if defined(MEMORY_REGION_SIZE_IN_BYTES)
-    #undef MEMORY_REGION_SIZE_IN_BYTES
-  #endif /* if defined(MEMORY_REGION_SIZE_IN_BYTES) */
-  #define MEMORY_REGION_SIZE_IN_BYTES CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS *CONFIG_MEMORY_REGION_BLOCK_SIZE
-
-
-  #if defined(__PointerIsNotNull__)
-    #undef __PointerIsNotNull__
-  #endif /* if defined(__PointerIsNotNull__) */
-  #define __PointerIsNotNull__(addr_) (null != (addr_))
-
-
-  #if defined(__PointerIsNull__)
-    #undef __PointerIsNull__
-  #endif /* if defined(__PointerIsNull__) */
-  #define __PointerIsNull__(addr_) (null == (addr_))
-
-
-  #if defined(FUNCTION_ENTER)
-    #undef FUNCTION_ENTER
-  #endif /* if defined(FUNCTION_ENTER) */
-  #define FUNCTION_ENTER Return_t ret = ReturnError
-
-
-  #if defined(FUNCTION_EXIT)
-    #undef FUNCTION_EXIT
-  #endif /* if defined(FUNCTION_EXIT) */
-  #define FUNCTION_EXIT return(ret)
-
-
-  #if defined(RET_OK)
-    #undef RET_OK
-  #endif /* if defined(RET_OK) */
-  #define RET_OK ret = ReturnOK
-
-
-  #if defined(OK)
-    #undef OK
-  #endif /* if defined(OK) */
-  #define OK(expr_) (ReturnOK == (expr_))
-
-
-  #if defined(ERROR)
-    #undef ERROR
-  #endif /* if defined(ERROR) */
-  #define ERROR(expr_) (ReturnError == (expr_))
-
-
-  #if defined(ASSERT)
-    #undef ASSERT
-  #endif /* if defined(ASSERT) */
-  #if defined(CONFIG_ENABLE_SYSTEM_ASSERT)
-    #define ASSERT xSystemAssert(__FILE__, __LINE__)
-  #else  /* if defined(CONFIG_ENABLE_SYSTEM_ASSERT) */
-    #define ASSERT
-  #endif /* if defined(CONFIG_ENABLE_SYSTEM_ASSERT) */
-
-
   #if defined(UINT8_TYPE)
     #undef UINT8_TYPE
   #endif /* if defined(UINT8_TYPE) */
@@ -153,6 +89,70 @@
     #undef VOID_TYPE
   #endif /* if defined(VOID_TYPE) */
   #define VOID_TYPE void
+
+
+  #if defined(OS_PRODUCT_NAME_SIZE)
+    #undef OS_PRODUCT_NAME_SIZE
+  #endif /* if defined(OS_PRODUCT_NAME_SIZE) */
+  #define OS_PRODUCT_NAME_SIZE 0x6u /* 6 */
+
+
+  #if defined(MEMORY_REGION_SIZE_IN_BYTES)
+    #undef MEMORY_REGION_SIZE_IN_BYTES
+  #endif /* if defined(MEMORY_REGION_SIZE_IN_BYTES) */
+  #define MEMORY_REGION_SIZE_IN_BYTES CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS *CONFIG_MEMORY_REGION_BLOCK_SIZE
+
+
+  #if defined(OK)
+    #undef OK
+  #endif /* if defined(OK) */
+  #define OK(expr_) (ReturnOK == (expr_))
+
+
+  #if defined(ERROR)
+    #undef ERROR
+  #endif /* if defined(ERROR) */
+  #define ERROR(expr_) (ReturnError == (expr_))
+
+
+  #if defined(FUNCTION_ENTER)
+    #undef FUNCTION_ENTER
+  #endif /* if defined(FUNCTION_ENTER) */
+  #define FUNCTION_ENTER Return_t ret = ReturnError
+
+
+  #if defined(FUNCTION_EXIT)
+    #undef FUNCTION_EXIT
+  #endif /* if defined(FUNCTION_EXIT) */
+  #define FUNCTION_EXIT return(ret)
+
+
+  #if defined(__PointerIsNotNull__)
+    #undef __PointerIsNotNull__
+  #endif /* if defined(__PointerIsNotNull__) */
+  #define __PointerIsNotNull__(addr_) (null != (addr_))
+
+
+  #if defined(__PointerIsNull__)
+    #undef __PointerIsNull__
+  #endif /* if defined(__PointerIsNull__) */
+  #define __PointerIsNull__(addr_) (null == (addr_))
+
+
+  #if defined(__ReturnOk__)
+    #undef __ReturnOk__
+  #endif /* if defined(__ReturnOk__) */
+  #define __ReturnOk__() ret = ReturnOK
+
+
+  #if defined(__AssertOnElse__)
+    #undef __AssertOnElse__
+  #endif /* if defined(__AssertOnElse__()) */
+  #if defined(CONFIG_ENABLE_SYSTEM_ASSERT)
+    #define __AssertOnElse__() xSystemAssert(__FILE__, __LINE__)
+  #else  /* if defined(CONFIG_ENABLE_SYSTEM_ASSERT) */
+    #define __AssertOnElse__()
+  #endif /* if defined(CONFIG_ENABLE_SYSTEM_ASSERT) */
 
 
 #endif /* ifndef DEFINES_H_ */
