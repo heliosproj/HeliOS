@@ -774,7 +774,7 @@ Return_t xTaskStartScheduler(void) {
   RET_DEFINE;
 
 
-  Task_t *runTask = null;
+  Task_t *task = null;
   Task_t *cursor = null;
   Ticks_t start = nil;
   Ticks_t prev = nil;
@@ -815,7 +815,7 @@ Return_t xTaskStartScheduler(void) {
            * is in fact the task with the least runtime. */
         } else if((TaskStateRunning == cursor->state) && (least > cursor->totalRunTime)) {
           least = cursor->totalRunTime;
-          runTask = cursor;
+          task = cursor;
         }
 
         cursor = cursor->next;
@@ -823,9 +823,9 @@ Return_t xTaskStartScheduler(void) {
 
       /* If a running task was found with the least runtime of all of the
        * running tasks then we run it here, otherwise we ignore this step. */
-      if(__PointerIsNotNull__(runTask)) {
-        __TaskRun__(runTask);
-        runTask = null;
+      if(__PointerIsNotNull__(task)) {
+        __TaskRun__(task);
+        task = null;
       }
 
       /* Intentionally underflow to get the maximum value of Ticks_t. */
