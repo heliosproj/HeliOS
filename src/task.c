@@ -37,7 +37,7 @@ static SchedulerState_t scheduler = SchedulerStateRunning;
             task_->state = TaskStateSuspended; \
           } \
           if(task_->totalRunTime < prev) { \
-            SETFLAG(OVERFLOW); \
+            __SetFlag__(OVERFLOW); \
           }
 #elif  /* if defined(CONFIG_TASK_WD_TIMER_ENABLE) */
   #define __TaskRun__(task_) \
@@ -47,7 +47,7 @@ static SchedulerState_t scheduler = SchedulerStateRunning;
           task_->lastRunTime = __PortGetSysTicks__() - start; \
           task_->totalRunTime += task_->lastRunTime; \
           if(task_->totalRunTime < prev) { \
-            SETFLAG(OVERFLOW); \
+            __SetFlag__(OVERFLOW); \
           }
 #endif /* if defined(CONFIG_TASK_WD_TIMER_ENABLE) */
 
@@ -59,7 +59,7 @@ Return_t xTaskCreate(Task_t **task_, const Byte_t *name_, void (*callback_)(Task
   Task_t *cursor = null;
 
 
-  if(__PointerIsNotNull__(task_) && __PointerIsNotNull__(name_) && __PointerIsNotNull__(callback_) && FLAGNOTSET(RUNNING)) {
+  if(__PointerIsNotNull__(task_) && __PointerIsNotNull__(name_) && __PointerIsNotNull__(callback_) && __FlagIsNotSet__(RUNNING)) {
     /* NOTE: There is a __KernelAllocateMemory__() syscall buried in this if()
      * statement. */
     if(__PointerIsNotNull__(tlist) || (__PointerIsNull__(tlist) && OK(__KernelAllocateMemory__((volatile Addr_t **) &tlist, sizeof(TaskList_t))))) {
@@ -118,7 +118,7 @@ Return_t xTaskDelete(const Task_t *task_) {
   Task_t *previous = null;
 
 
-  if(__PointerIsNotNull__(task_) && __PointerIsNotNull__(tlist) && FLAGNOTSET(RUNNING)) {
+  if(__PointerIsNotNull__(task_) && __PointerIsNotNull__(tlist) && __FlagIsNotSet__(RUNNING)) {
     if(OK(__TaskListFindTask__(task_))) {
       cursor = tlist->head;
 
@@ -784,11 +784,11 @@ Return_t xTaskStartScheduler(void) {
   Ticks_t least = -1;
 
 
-  if(FLAGNOTSET(RUNNING) && __PointerIsNotNull__(tlist)) {
+  if(__FlagIsNotSet__(RUNNING) && __PointerIsNotNull__(tlist)) {
     while(SchedulerStateRunning == scheduler) {
       /* If the total runtime on a task has overflowed, reset the total runtime
        * for all tasks to their last runtime. */
-      if(FLAGSET(OVERFLOW)) {
+      if(__FlagIsSet__(OVERFLOW)) {
         __RunTimeReset__();
       }
 
@@ -832,7 +832,7 @@ Return_t xTaskStartScheduler(void) {
       least = -1;
     }
 
-    UNSETFLAG(RUNNING);
+    __UnsetFlag__(RUNNING);
     RET_OK;
   } else {
     ASSERT;
@@ -855,7 +855,7 @@ static void __RunTimeReset__(void) {
     cursor = cursor->next;
   }
 
-  UNSETFLAG(OVERFLOW);
+  __UnsetFlag__(OVERFLOW);
 
   return;
 }

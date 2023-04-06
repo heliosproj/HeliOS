@@ -54,8 +54,8 @@ Return_t xSystemInit(void) {
 
   if(OK(__MemoryInit__())) {
     if(OK(__PortInit__())) {
-      UNSETFLAG(OVERFLOW);
-      UNSETFLAG(RUNNING);
+      __UnsetFlag__(OVERFLOW);
+      __UnsetFlag__(RUNNING);
       RET_OK;
     } else {
       ASSERT;
@@ -91,7 +91,7 @@ Return_t xSystemGetSystemInfo(SystemInfo_t **info_) {
           (*info_)->minorVersion = OS_MINOR_VERSION_NO;
           (*info_)->patchVersion = OS_PATCH_VERSION_NO;
 
-          if(FLAGSET(LITTLEEND)) {
+          if(__FlagIsSet__(LITTLEEND)) {
             (*info_)->littleEndian = true;
           } else {
             (*info_)->littleEndian = false;

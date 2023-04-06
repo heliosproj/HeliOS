@@ -62,7 +62,7 @@ void test_magic(void) {
 
 
   /* 3) Check the memfault flag (should be "false" at this point) */
-  unit_try(FLAGNOTSET(MEMFAULT));
+  unit_try(__FlagIsNotSet__(MEMFAULT));
 
 
   /* 4) Modify some part of the memory entry */
@@ -76,7 +76,7 @@ void test_magic(void) {
 
 
   /* 6) Check the memfault flag (should be "true" at this point) */
-  unit_try(FLAGSET(MEMFAULT));
+  unit_try(__FlagIsSet__(MEMFAULT));
 
 
   /* 7) Call __MemoryClear__() and __SysStateClear__() */
@@ -103,7 +103,7 @@ void test_free(void) {
 
 
   /* 3) Check the memfault flag (should be "false" at this point) */
-  unit_try(FLAGNOTSET(MEMFAULT));
+  unit_try(__FlagIsNotSet__(MEMFAULT));
 
 
   /* 4) Modify some part of the memory entry */
@@ -116,7 +116,7 @@ void test_free(void) {
 
 
   /* 6) Check the memfault flag (should be "true" at this point) */
-  unit_try(FLAGSET(MEMFAULT));
+  unit_try(__FlagIsSet__(MEMFAULT));
 
 
   /* 7) Call __MemoryClear__() and __SysStateClear__() */
@@ -143,7 +143,7 @@ void test_blocks(void) {
 
 
   /* 3) Check the memfault flag (should be "false" at this point) */
-  unit_try(FLAGNOTSET(MEMFAULT));
+  unit_try(__FlagIsNotSet__(MEMFAULT));
 
 
   /* 4) Modify some part of the memory entry */
@@ -156,7 +156,7 @@ void test_blocks(void) {
 
 
   /* 6) Check the memfault flag (should be "true" at this point) */
-  unit_try(FLAGSET(MEMFAULT));
+  unit_try(__FlagIsSet__(MEMFAULT));
 
 
   /* 7) Call __MemoryClear__() and __SysStateClear__() */
@@ -183,7 +183,7 @@ void test_next(void) {
 
 
   /* 3) Check the memfault flag (should be "false" at this point) */
-  unit_try(FLAGNOTSET(MEMFAULT));
+  unit_try(__FlagIsNotSet__(MEMFAULT));
 
 
   /* 4) Modify some part of the memory entry */
@@ -197,7 +197,7 @@ void test_next(void) {
 
 
   /* 6) Check the memfault flag (should be "true" at this point) */
-  unit_try(FLAGSET(MEMFAULT));
+  unit_try(__FlagIsSet__(MEMFAULT));
 
 
   /* 7) Call __MemoryClear__() and __SysStateClear__() */

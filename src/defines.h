@@ -97,28 +97,28 @@
   #define LITTLEEND flag.littleend
 
 
-  #if defined(SETFLAG)
-    #undef SETFLAG
-  #endif /* if defined(SETFLAG) */
-  #define SETFLAG(flag_) (flag_ = 0xFFu)
+  #if defined(__SetFlag__)
+    #undef __SetFlag__
+  #endif /* if defined(__SetFlag__) */
+  #define __SetFlag__(flag_) (flag_ = 0xFFu)
 
 
-  #if defined(UNSETFLAG)
-    #undef UNSETFLAG
-  #endif /* if defined(UNSETFLAG) */
-  #define UNSETFLAG(flag_) (flag_ = 0x0u)
+  #if defined(__UnsetFlag__)
+    #undef __UnsetFlag__
+  #endif /* if defined(__UnsetFlag__) */
+  #define __UnsetFlag__(flag_) (flag_ = 0x0u)
 
 
-  #if defined(FLAGSET)
-    #undef FLAGSET
-  #endif /* if defined(FLAGSET) */
-  #define FLAGSET(flag_) (0xFFu == (flag_))
+  #if defined(__FlagIsSet__)
+    #undef __FlagIsSet__
+  #endif /* if defined(__FlagIsSet__) */
+  #define __FlagIsSet__(flag_) (0xFFu == (flag_))
 
 
-  #if defined(FLAGNOTSET)
-    #undef FLAGNOTSET
-  #endif /* if defined(FLAGNOTSET) */
-  #define FLAGNOTSET(flag_) (0x0u == (flag_))
+  #if defined(__FlagIsNotSet__)
+    #undef __FlagIsNotSet__
+  #endif /* if defined(__FlagIsNotSet__) */
+  #define __FlagIsNotSet__(flag_) (0x0u == (flag_))
 
 
   #if defined(__PointerIsNotNull__)

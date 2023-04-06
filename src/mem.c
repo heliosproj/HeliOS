@@ -193,12 +193,12 @@ Return_t __MemoryInit__(void) {
     if(OK(__MemoryRegionInit__(&kernel))) {
       if(OK(__DetectByteOrder__(&order))) {
         if(ByteOrderLittleEndian == order) {
-          SETFLAG(LITTLEEND);
+          __SetFlag__(LITTLEEND);
         } else {
-          UNSETFLAG(LITTLEEND);
+          __UnsetFlag__(LITTLEEND);
         }
 
-        UNSETFLAG(MEMFAULT);
+        __UnsetFlag__(MEMFAULT);
         RET_OK;
       } else {
         ASSERT;
@@ -382,7 +382,7 @@ static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, co
              * Set the memfault flag to true because the address we just checked
              * does *NOT* have the correct value for free. Something is very
              * wrong! */
-            SETFLAG(MEMFAULT);
+            __SetFlag__(MEMFAULT);
             break;
           }
         } else {
@@ -395,7 +395,7 @@ static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, co
            * Set the memfault flag to true because the address we just checked
            * does *NOT* have the correct magic value. Something is very wrong!
            */
-          SETFLAG(MEMFAULT);
+          __SetFlag__(MEMFAULT);
           break;
         }
 
@@ -410,7 +410,7 @@ static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, co
          * Set the memfault flag to true because the address we just checked is
          * NOT* inside the memory region. Something is very wrong!
          */
-        SETFLAG(MEMFAULT);
+        __SetFlag__(MEMFAULT);
         break;
       }
     }
@@ -430,7 +430,7 @@ static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, co
        * not match the number of blocks the memory region *SHOULD*
        * have. Something is very wrong!
        */
-      SETFLAG(MEMFAULT);
+      __SetFlag__(MEMFAULT);
     }
 
     /* Check to see if we need to look for an address while we check the
@@ -477,7 +477,7 @@ static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, co
              * Set the memfault flag to true because the address we just checked
              * does *NOT* have the correct value for free. Something is very
              * wrong! */
-            SETFLAG(MEMFAULT);
+            __SetFlag__(MEMFAULT);
             break;
           }
         } else {
@@ -490,7 +490,7 @@ static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, co
            * Set the memfault flag to true because the address we just checked
            * does *NOT* have the correct magic value. Something is very wrong!
            */
-          SETFLAG(MEMFAULT);
+          __SetFlag__(MEMFAULT);
           break;
         }
 
@@ -505,7 +505,7 @@ static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, co
          * Set the memfault flag to true because the address we just checked is
          * NOT* inside the memory region. Something is very wrong!
          */
-        SETFLAG(MEMFAULT);
+        __SetFlag__(MEMFAULT);
         break;
       }
     }
@@ -531,7 +531,7 @@ static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, co
        * not match the number of blocks the memory region *SHOULD*
        * have. Something is very wrong!
        */
-      SETFLAG(MEMFAULT);
+      __SetFlag__(MEMFAULT);
     }
   } else {
     /* If we made it here, "option_" did not contain a valid argument. */
