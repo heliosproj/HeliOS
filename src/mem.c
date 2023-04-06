@@ -316,7 +316,7 @@ Return_t xMemGetSize(const volatile Addr_t *addr_, Size_t *size_) {
   FUNCTION_ENTER;
 
 
-  MemoryEntry_t *tosize = null;
+  MemoryEntry_t *entry = null;
 
 
   if(__PointerIsNotNull__(addr_) && __PointerIsNotNull__(size_)) {
@@ -325,13 +325,13 @@ Return_t xMemGetSize(const volatile Addr_t *addr_, Size_t *size_) {
     if(OK(__MemoryRegionCheck__(&heap, addr_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
       /* __OffsetPointerToMemEntry__() calculates the location of the memory
       * entry for the allocated memory pointed to by the address pointer. */
-      tosize = __OffsetPointerToMemEntry__(addr_, &heap);
+      entry = __OffsetPointerToMemEntry__(addr_, &heap);
 
       /* If the memory entry pointed to by tosize is *NOT* free, then give the
        * user back the number of bytes in-use by multiply the blocks contained
        * in the entry by the block size in bytes. */
-      if(__MemEntryIsInUse__(tosize)) {
-        *size_ = tosize->blocks * CONFIG_MEMORY_REGION_BLOCK_SIZE;
+      if(__MemEntryIsInUse__(entry)) {
+        *size_ = entry->blocks * CONFIG_MEMORY_REGION_BLOCK_SIZE;
         __ReturnOk__();
       } else {
         __AssertOnElse__();
@@ -353,7 +353,7 @@ static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, co
 
   Base_t found = false;
   HalfWord_t blocks = nil;
-  MemoryEntry_t *find = null;
+  MemoryEntry_t *entry = null;
   MemoryEntry_t *cursor = region_->start;
 
 
@@ -446,7 +446,7 @@ static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, co
      * for the allocated memory pointed to by the address pointer. This is the
      * memory entry we need to find as we traverse the memory entries in the
      * memory region. */
-    find = __OffsetPointerToMemEntry__(addr_, region_);
+    entry = __OffsetPointerToMemEntry__(addr_, region_);
 
     /* Traverse the memory entries in the memory region while cursor is null. */
     while(__PointerIsNotNull__(cursor)) {
@@ -470,7 +470,7 @@ static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, co
             /* If the cursor points to the memory entry we are looking for *AND*
              * the memory entry is marked as in-use, then set "found" to true
              * because we found the memory entry we are looking for. */
-            if((find == cursor) && __MemEntryIsInUse__(cursor)) {
+            if((entry == cursor) && __MemEntryIsInUse__(cursor)) {
               found = true;
             }
           } else {
