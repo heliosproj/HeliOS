@@ -67,30 +67,6 @@
   #define OS_PRODUCT_NAME_SIZE 0x6u /* 6 */
 
 
-  #if defined(OS_PRODUCT_NAME)
-    #undef OS_PRODUCT_NAME
-  #endif /* if defined(OS_PRODUCT_NAME) */
-  #define OS_PRODUCT_NAME "HeliOS"
-
-
-  #if defined(OS_MAJOR_VERSION_NO)
-    #undef OS_MAJOR_VERSION_NO
-  #endif /* if defined(OS_MAJOR_VERSION_NO) */
-  #define OS_MAJOR_VERSION_NO 0x0u /* 0 */
-
-
-  #if defined(OS_MINOR_VERSION_NO)
-    #undef OS_MINOR_VERSION_NO
-  #endif /* if defined(OS_MINOR_VERSION_NO) */
-  #define OS_MINOR_VERSION_NO 0x4u /* 4 */
-
-
-  #if defined(OS_PATCH_VERSION_NO)
-    #undef OS_PATCH_VERSION_NO
-  #endif /* if defined(OS_PATCH_VERSION_NO) */
-  #define OS_PATCH_VERSION_NO 0x2u /* 2 */
-
-
   #if defined(MEMORY_REGION_SIZE_IN_BYTES)
     #undef MEMORY_REGION_SIZE_IN_BYTES
   #endif /* if defined(MEMORY_REGION_SIZE_IN_BYTES) */
@@ -209,20 +185,6 @@
   #define MEMORY_REGION_CHECK_OPTION_W_ADDR 0x2u /* 2 */
 
 
-  #if defined(ADDR2ENTRY)
-    #undef ADDR2ENTRY
-  #endif /* if defined(ADDR2ENTRY) */
-  #define ADDR2ENTRY(addr_, region_) ((MemoryEntry_t *) (((Byte_t *) (addr_)) - ((region_)->entrySize * \
-          CONFIG_MEMORY_REGION_BLOCK_SIZE)))
-
-
-  #if defined(ENTRY2ADDR)
-    #undef ENTRY2ADDR
-  #endif /* if defined(ENTRY2ADDR) */
-  #define ENTRY2ADDR(addr_, region_) ((Addr_t *) (((Byte_t *) (addr_)) + ((region_)->entrySize * \
-          CONFIG_MEMORY_REGION_BLOCK_SIZE)))
-
-
   #if defined(UINT8_TYPE)
     #undef UINT8_TYPE
   #endif /* if defined(UINT8_TYPE) */
@@ -251,73 +213,6 @@
     #undef VOID_TYPE
   #endif /* if defined(VOID_TYPE) */
   #define VOID_TYPE void
-
-
-  #if defined(DEREF_TASKPARM)
-    #undef DEREF_TASKPARM
-  #endif /* if defined(DEREF_TASKPARM) */
-  #define DEREF_TASKPARM(type_, ptr_) (*((type_ *) (ptr_)))
-
-
-  #if defined(CONCAT)
-    #undef CONCAT
-  #endif /* if defined(CONCAT) */
-  #define CONCAT(a_, b_) a_ ## b_
-
-
-  #if defined(QUOTE)
-    #undef QUOTE
-  #endif /* if defined(QUOTE) */
-  #define QUOTE(a_) #a_
-
-
-  #if defined(TO_FUNCTION)
-    #undef TO_FUNCTION
-  #endif /* if defined(TO_FUNCTION) */
-  #define TO_FUNCTION(a_, b_) CONCAT(a_, b_)
-
-
-  #if defined(TO_LITERAL)
-    #undef TO_LITERAL
-  #endif /* if defined(TO_LITERAL) */
-  #define TO_LITERAL(a_) QUOTE(a_)
-
-
-  #if defined(MAGIC_CONST)
-    #undef MAGIC_CONST
-  #endif /* if defined(MAGIC_CONST) */
-  #define MAGIC_CONST 0xB16B00B5u /* https://en.wikipedia.org/wiki/Hexspeak */
-
-
-  #if defined(CALCMAGIC)
-    #undef CALCMAGIC
-  #endif /* if defined(CALCMAGIC) */
-  #define CALCMAGIC(ptr_) (((Word_t) (ptr_)) ^ MAGIC_CONST)
-
-
-  #if defined(OKMAGIC)
-    #undef OKMAGIC
-  #endif /* if defined(OKMAGIC) */
-  #define OKMAGIC(ptr_) (CALCMAGIC(ptr_) == (ptr_)->magic)
-
-
-  #if defined(OKADDR)
-    #undef OKADDR
-  #endif /* if defined(OKADDR) */
-  #define OKADDR(region_, addr_) (((const volatile Addr_t *) (addr_) >= (Addr_t *) ((region_)->mem)) && ((const volatile Addr_t *) (addr_) < \
-          (Addr_t *) ((region_)->mem + MEMORY_REGION_SIZE_IN_BYTES)))
-
-
-  #if defined(INUSE)
-    #undef INUSE
-  #endif /* if defined(INUSE) */
-  #define INUSE 0xAAu /* 170 */
-
-
-  #if defined(FREE)
-    #undef FREE
-  #endif /* if defined(FREE) */
-  #define FREE 0xD5u /* 213 */
 
 
 #endif /* ifndef DEFINES_H_ */

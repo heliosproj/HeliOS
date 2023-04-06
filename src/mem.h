@@ -28,6 +28,25 @@
   #include "task.h"
   #include "timer.h"
 
+
+  #if defined(MAGIC_CONST)
+    #undef MAGIC_CONST
+  #endif /* if defined(MAGIC_CONST) */
+  #define MAGIC_CONST 0xB16B00B5u /* https://en.wikipedia.org/wiki/Hexspeak */
+
+
+  #if defined(INUSE)
+    #undef INUSE
+  #endif /* if defined(INUSE) */
+  #define INUSE 0xAAu /* 170 */
+
+
+  #if defined(FREE)
+    #undef FREE
+  #endif /* if defined(FREE) */
+  #define FREE 0xD5u /* 213 */
+
+
   #ifdef __cplusplus
     extern "C" {
   #endif /* ifdef __cplusplus */

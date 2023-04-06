@@ -165,6 +165,22 @@ static Return_t __MemoryRegionInit__(volatile MemoryRegion_t *region_);
 static Return_t __DetectByteOrder__(ByteOrder_t *order_);
 
 
+#define __OffsetAddrToMemEntry__(addr_, region_) ((MemoryEntry_t *) (((Byte_t *) (addr_)) - ((region_)->entrySize * CONFIG_MEMORY_REGION_BLOCK_SIZE)))
+
+
+#define __OffsetMemEntryToAddr__(addr_, region_) ((Addr_t *) (((Byte_t *) (addr_)) + ((region_)->entrySize * CONFIG_MEMORY_REGION_BLOCK_SIZE)))
+
+
+#define __CalculateMemEntryMagic__(ptr_) (((Word_t) (ptr_)) ^ MAGIC_CONST)
+
+
+#define __MemEntryMagicOk__(ptr_) (__CalculateMemEntryMagic__(ptr_) == (ptr_)->magic)
+
+
+#define __AddrInRegionBounds__(region_, addr_) (((const volatile Addr_t *) (addr_) >= (Addr_t *) ((region_)->mem)) && ((const volatile Addr_t *) (addr_) < \
+        (Addr_t *) ((region_)->mem + MEMORY_REGION_SIZE_IN_BYTES)))
+
+
 Return_t __MemoryInit__(void) {
   RET_DEFINE;
 
@@ -303,9 +319,9 @@ Return_t xMemGetSize(const volatile Addr_t *addr_, Size_t *size_) {
     /* Check the consistency of the heap memory region *AND* check the address
      * pointer to ensure it is pointing to a valid block of heap memory. */
     if(OK(__MemoryRegionCheck__(&heap, addr_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
-      /* ADDR2ENTRY() calculates the location of the memory entry for the
-       * allocated memory pointed to by the address pointer. */
-      tosize = ADDR2ENTRY(addr_, &heap);
+      /* __OffsetAddrToMemEntry__() calculates the location of the memory entry
+       * for the allocated memory pointed to by the address pointer. */
+      tosize = __OffsetAddrToMemEntry__(addr_, &heap);
 
 
       /* If the memory entry pointed to by tosize is *NOT* free, then give the
@@ -343,15 +359,16 @@ static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, co
   if(MEMORY_REGION_CHECK_OPTION_WO_ADDR == option_) {
     /* Traverse the memory entries in the memory region while cursor is null. */
     while(NOTNULLPTR(cursor)) {
-      /* OKADDR() is a C macro that simply checks that the address, in this case
+      /* __AddrInRegionBounds__() is a C macro that simply checks that the
+       * address, in this case
        * "cursor", falls within the bounds of the memory region. */
-      if(OKADDR(region_, cursor)) {
-        /* OKMAGIC() compares the memory entry's magic value (i.e., the magic
-         * member of the memory entry structure) to the magic value calculated
-         * by XOR'ing the address of the memory entry with the MAGIC_CONST. This
-         * operation helps ensure we are accessing a valid memory entry in the
-         * memory region being checked. */
-        if(OKMAGIC(cursor)) {
+      if(__AddrInRegionBounds__(region_, cursor)) {
+        /* __MemEntryMagicOk__() compares the memory entry's magic value (i.e.,
+         * the magic member of the memory entry structure) to the magic value
+         * calculated by XOR'ing the address of the memory entry with the
+         * MAGIC_CONST. This operation helps ensure we are accessing a valid
+         * memory entry in the memory region being checked. */
+        if(__MemEntryMagicOk__(cursor)) {
           /* Check to make sure the memory entry's free value is either FREE or
            * INUSE.*/
           if((FREE == cursor->free) || (INUSE == cursor->free)) {
@@ -424,24 +441,25 @@ static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, co
     /* Check to see if we need to look for an address while we check the
      * consistency of the memory region. */
   } else if(MEMORY_REGION_CHECK_OPTION_W_ADDR == option_) {
-    /* ADDR2ENTRY() calculates the location of the memory entry for the
-     * allocated memory pointed to by the address pointer. This is the memory
-     * entry we need to find as we traverse the memory entries in the memory
-     * region. */
-    find = ADDR2ENTRY(addr_, region_);
+    /* __OffsetAddrToMemEntry__() calculates the location of the memory entry
+     * for the allocated memory pointed to by the address pointer. This is the
+     * memory entry we need to find as we traverse the memory entries in the
+     * memory region. */
+    find = __OffsetAddrToMemEntry__(addr_, region_);
 
 
     /* Traverse the memory entries in the memory region while cursor is null. */
     while(NOTNULLPTR(cursor)) {
-      /* OKADDR() is a C macro that simply checks that the address, in this case
+      /* __AddrInRegionBounds__() is a C macro that simply checks that the
+       * address, in this case
        * "cursor", falls within the bounds of the memory region. */
-      if(OKADDR(region_, cursor)) {
-        /* OKMAGIC() compares the memory entry's magic value (i.e., the magic
-         * member of the memory entry structure) to the magic value calculated
-         * by XOR'ing the address of the memory entry with the MAGIC_CONST. This
-         * operation helps ensure we are accessing a valid memory entry in the
-         * memory region being checked. */
-        if(OKMAGIC(cursor)) {
+      if(__AddrInRegionBounds__(region_, cursor)) {
+        /* __MemEntryMagicOk__() compares the memory entry's magic value (i.e.,
+         * the magic member of the memory entry structure) to the magic value
+         * calculated by XOR'ing the address of the memory entry with the
+         * MAGIC_CONST. This operation helps ensure we are accessing a valid
+         * memory entry in the memory region being checked. */
+        if(__MemEntryMagicOk__(cursor)) {
           /* Check to make sure the memory entry's free value is either FREE or
            * INUSE.*/
           if((FREE == cursor->free) || (INUSE == cursor->free)) {
@@ -559,12 +577,13 @@ static Return_t __MemoryRegionInit__(volatile MemoryRegion_t *region_) {
     /* Zero out the memory region and create the first memory entry and give it
      * all of the blocks.*/
     if(OK(__memset__(region_->mem, zero, MEMORY_REGION_SIZE_IN_BYTES))) {
-      /* CALCMAGIC() calculates the memory entry's magic value (i.e. the magic
-       * member of the memory entry structure) by XOR'ing the address of the
-       * memory entry with the MAGIC_CONST. The magic value is used by
-       * __MemoryRegionCheck__() to check the consistency of the memory region.
+      /* __CalculateMemEntryMagic__() calculates the memory entry's magic value
+       * (i.e. the magic member of the memory entry structure) by XOR'ing the
+       * address of the memory entry with the MAGIC_CONST. The magic value is
+       * used by __MemoryRegionCheck__() to check the consistency of the memory
+       * region.
        */
-      region_->start->magic = CALCMAGIC(region_->start);
+      region_->start->magic = __CalculateMemEntryMagic__(region_->start);
       region_->start->free = FREE;
       region_->start->blocks = CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS;
       region_->start->next = null;
@@ -652,12 +671,12 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
           candidate->next = (MemoryEntry_t *) ((Byte_t *) candidate + (requested * CONFIG_MEMORY_REGION_BLOCK_SIZE));
 
 
-          /* CALCMAGIC() calculates the memory entry's magic value (i.e. the
-           * magic member of the memory entry structure) by XOR'ing the address
-           * of the memory entry with the MAGIC_CONST. The magic value is used
-           * by __MemoryRegionCheck__() to check the consistency of the memory
-           * region. */
-          candidate->next->magic = CALCMAGIC(candidate->next);
+          /* __CalculateMemEntryMagic__() calculates the memory entry's magic
+           * value (i.e. the magic member of the memory entry structure) by
+           * XOR'ing the address of the memory entry with the MAGIC_CONST. The
+           * magic value is used by __MemoryRegionCheck__() to check the
+           * consistency of the memory region. */
+          candidate->next->magic = __CalculateMemEntryMagic__(candidate->next);
           candidate->next->free = FREE;
           candidate->next->blocks = candidate->blocks - requested;
           candidate->next->next = next;
@@ -665,18 +684,18 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
 
           /* We split the unneeded blocks off into a new entry, now let's mark
            * the entry containing the blocks in-use for the requested memory. */
-          candidate->magic = CALCMAGIC(candidate);
+          candidate->magic = __CalculateMemEntryMagic__(candidate);
           candidate->free = INUSE;
           candidate->blocks = requested;
 
 
           /* Zero out all of the requested blocks (excluding the memory entry).
            */
-          if(OK(__memset__(ENTRY2ADDR(candidate, region_), zero, (requested - region_->entrySize) * CONFIG_MEMORY_REGION_BLOCK_SIZE))) {
-            /* ENTRY2ADDR() does the opposite of ADDR2ENTRY(), it converts the
-             * memory entry address to the address of the first block after the
-             * memory entry. */
-            *addr_ = ENTRY2ADDR(candidate, region_);
+          if(OK(__memset__(__OffsetMemEntryToAddr__(candidate, region_), zero, (requested - region_->entrySize) * CONFIG_MEMORY_REGION_BLOCK_SIZE))) {
+            /* __OffsetMemEntryToAddr__() does the opposite of
+             * __OffsetAddrToMemEntry__(), it converts the memory entry address
+             * to the address of the first block after the memory entry. */
+            *addr_ = __OffsetMemEntryToAddr__(candidate, region_);
             RET_OK;
           } else {
             ASSERT;
@@ -689,11 +708,11 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
 
           /* Zero out all of the requested blocks (excluding the memory
            * entry).*/
-          if(OK(__memset__(ENTRY2ADDR(candidate, region_), zero, (requested - region_->entrySize) * CONFIG_MEMORY_REGION_BLOCK_SIZE))) {
-            /* ENTRY2ADDR() does the opposite of ADDR2ENTRY(), it converts the
-             * memory entry address to the address of the first block after the
-             * memory entry. */
-            *addr_ = ENTRY2ADDR(candidate, region_);
+          if(OK(__memset__(__OffsetMemEntryToAddr__(candidate, region_), zero, (requested - region_->entrySize) * CONFIG_MEMORY_REGION_BLOCK_SIZE))) {
+            /* __OffsetMemEntryToAddr__() does the opposite of
+             * __OffsetAddrToMemEntry__(), it converts the memory entry address
+             * to the address of the first block after the memory entry. */
+            *addr_ = __OffsetMemEntryToAddr__(candidate, region_);
             RET_OK;
           } else {
             ASSERT;
@@ -740,9 +759,9 @@ static Return_t __free__(volatile MemoryRegion_t *region_, const volatile Addr_t
     /* Check the consistency of the heap memory region *AND* check the address
      * pointer to ensure it is pointing to a valid block of heap memory. */
     if(OK(__MemoryRegionCheck__(region_, addr_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
-      /* ADDR2ENTRY() calculates the location of the memory entry for the
-       * allocated memory pointed to by the address pointer. */
-      free = ADDR2ENTRY(addr_, region_);
+      /* __OffsetAddrToMemEntry__() calculates the location of the memory entry
+       * for the allocated memory pointed to by the address pointer. */
+      free = __OffsetAddrToMemEntry__(addr_, region_);
       free->free = FREE;
       region_->frees++;
 
@@ -1108,12 +1127,12 @@ static Return_t __DefragMemoryRegion__(const volatile MemoryRegion_t *region_) {
           merge = cursor->next;
 
 
-          /* CALCMAGIC() calculates the memory entry's magic value (i.e. the
-           * magic member of the memory entry structure) by XOR'ing the address
-           * of the memory entry with the MAGIC_CONST. The magic value is used
-           * by __MemoryRegionCheck__() to check the consistency of the memory
-           * region. */
-          cursor->magic = CALCMAGIC(cursor);
+          /* __CalculateMemEntryMagic__() calculates the memory entry's magic
+           * value (i.e. the magic member of the memory entry structure) by
+           * XOR'ing the address of the memory entry with the MAGIC_CONST. The
+           * magic value is used by __MemoryRegionCheck__() to check the
+           * consistency of the memory region. */
+          cursor->magic = __CalculateMemEntryMagic__(cursor);
           cursor->free = FREE;
           cursor->blocks += merge->blocks;
           cursor->next = merge->next;
@@ -1148,7 +1167,7 @@ static Return_t __DetectByteOrder__(ByteOrder_t *order_) {
   RET_DEFINE;
 
   if(NOTNULLPTR(order_)) {
-    if((*(uint16_t *) "\xFF\x00") < 0x100) {
+    if(0x100 > (*(uint16_t *) "\xFF\x00")) {
       *order_ = ByteOrderLittleEndian;
       RET_OK;
     } else {

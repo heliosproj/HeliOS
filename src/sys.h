@@ -28,6 +28,29 @@
   #include "task.h"
   #include "timer.h"
 
+
+  #if defined(OS_PRODUCT_NAME)
+    #undef OS_PRODUCT_NAME
+  #endif /* if defined(OS_PRODUCT_NAME) */
+  #define OS_PRODUCT_NAME "HeliOS"
+
+
+  #if defined(OS_MAJOR_VERSION_NO)
+    #undef OS_MAJOR_VERSION_NO
+  #endif /* if defined(OS_MAJOR_VERSION_NO) */
+  #define OS_MAJOR_VERSION_NO 0x0u /* 0 */
+
+
+  #if defined(OS_MINOR_VERSION_NO)
+    #undef OS_MINOR_VERSION_NO
+  #endif /* if defined(OS_MINOR_VERSION_NO) */
+  #define OS_MINOR_VERSION_NO 0x4u /* 4 */
+
+
+  #if defined(OS_PATCH_VERSION_NO)
+    #undef OS_PATCH_VERSION_NO
+  #endif /* if defined(OS_PATCH_VERSION_NO) */
+  #define OS_PATCH_VERSION_NO 0x2u /* 2 */
   extern Flags_t flag;
 
   #ifdef __cplusplus

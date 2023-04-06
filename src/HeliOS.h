@@ -24,6 +24,11 @@
   #include "config.h"
   #include "defines.h"
 
+  #if defined(DEREF_TASKPARM)
+    #undef DEREF_TASKPARM
+  #endif /* if defined(DEREF_TASKPARM) */
+  #define DEREF_TASKPARM(type_, ptr_) (*((type_ *) (ptr_)))
+
 
 /**
  * @brief Enumerated type for task states
