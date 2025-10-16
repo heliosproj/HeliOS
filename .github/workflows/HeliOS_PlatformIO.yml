@@ -1,0 +1,45 @@
+name: PlatformIO CI
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    name: ${{ matrix.example }} (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        example:
+          - examples/Blink
+          - examples/Coop
+          - examples/GetInfo
+          - examples/ListTasks
+          - examples/Mem
+          - examples/Timer
+          - examples/WaitNotify
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Cache PlatformIO and pip
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pip
+            ~/.platformio/.cache
+          key: ${{ runner.os }}-pio
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Install PlatformIO Core
+        run: pip install --upgrade platformio
+
+      - name: Build example (${{ matrix.example }})
+        run: |
+          pio ci --lib="." --board=uno --board=megaatmega2560 --board=due
+        env:
+          PLATFORMIO_CI_SRC: ${{ matrix.example }}
