@@ -23,7 +23,7 @@
   #include "port.h"
   #include "device.h"
   #include "mem.h"
-  #include "stream_helios.h"
+  #include "streams.h"
   #include "sys.h"
   #include "task.h"
   #include "timer.h"
