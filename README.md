@@ -91,33 +91,19 @@ HeliOS uses cooperative multitasking without context switching. This design:
 - Long-running tasks can impact system responsiveness if not properly designed
 
 ### Configurable and Customizable
-All kernel parameters are easily configured through `/src/config.h`:
-- Task name length and maximum tasks
-- Memory region sizes and block sizes
-- Queue and stream buffer parameters
-- Scheduler tick rate and timer settings
-- Enable/disable features to minimize footprint
+Many kernel parameters are easily configured through `/src/config.h`:
 
 ***
 
 # :loudspeaker: What's New
 
-## Recent Improvements - Enhanced Unit Testing Framework
+## Version 0.5.0 - FAT32 Filesystem & Enhanced Testing
 
-The HeliOS unit testing framework has been significantly enhanced with modern development practices:
+The latest HeliOS 0.5.0 release brings major improvements to both functionality and quality assurance:
 
-- **Enhanced assertion macros** with detailed failure diagnostics (file, line, expected vs actual values)
-- **Descriptive test case names** that clearly explain what is being tested
-- **Named constants** replacing magic numbers throughout test code for better readability
-- **Color-coded output** for easy visual scanning of test results
-- **147 comprehensive test cases** covering all kernel subsystems including edge cases
-- **C90 compliance** with strict `-ansi -pedantic` compilation
+### FAT32 Filesystem Support
 
-These improvements make the codebase more maintainable and help developers quickly identify and diagnose issues.
-
-## Version 0.5.0 - FAT32 Filesystem Support
-
-The latest HeliOS 0.5.0 release introduces a complete FAT32 filesystem implementation:
+HeliOS now includes a complete FAT32 filesystem implementation:
 
 - **Complete filesystem stack**: boot sector, FAT tables, directory entries, cluster allocation
 - **Block device layer**: abstract interface for storage devices (RAM disk, SD card, flash)
@@ -149,30 +135,16 @@ xMemFree((xAddr)data);
 xFileClose(file);
 ```
 
-## Version 0.4.x - Consistent Return Types
+### Enhanced Unit Testing Framework
 
-The 0.4.x series introduced breaking changes for improved error handling:
+The testing framework has been significantly enhanced with modern development practices:
 
-**Before (0.3.x and earlier):**
-```c
-xTask task = xTaskCreate("TASKMAIN", task_main, NULL);
-if(task) {
-  /* Use the task here. */
-}
-```
-
-**After (0.4.x and later):**
-```c
-xTask task;
-if(ERROR(xTaskCreate(&task, (const xByte *) "TASKMAIN", task_main, null))) {
-  xSystemHalt();
-}
-/* Use the task here. */
-```
-
-All syscalls now return `xReturn` (either `ReturnOK` or `ReturnError`) for consistent error checking using the `OK()` and `ERROR()` macros.
-
-For the latest development updates, check the [HeliOS Trello board](https://trello.com/b/XNKDpuGR/helios).
+- **Enhanced assertion macros** with detailed failure diagnostics (file, line, expected vs actual values)
+- **Descriptive test case names** that clearly explain what is being tested
+- **Named constants** replacing magic numbers throughout test code for better readability
+- **Color-coded output** for easy visual scanning of test results
+- **147 comprehensive test cases** covering all kernel subsystems including edge cases
+- **C90 compliance** with strict `-ansi -pedantic` compilation
 
 ***
 
@@ -240,12 +212,7 @@ For ARM Cortex-M microcontrollers using CMSIS:
    - Set `SYSTEM_CORE_CLOCK_PRESCALER` to your desired prescaler value
 6. Add `-DCMSIS_ARCH_CORTEXM` to your compiler flags
 
-## Platform-Specific Notes
-
-### ESP8266
-HeliOS has built-in ESP8266 support and works with the ESP8266 Arduino core.
-
-### ESP32
+## ESP32
 **Important:** HeliOS is **not compatible** with the ESP32 Arduino core because it is built on FreeRTOS. HeliOS and FreeRTOS cannot coexist in the same application.
 
 To use HeliOS on ESP32, you must:
@@ -378,158 +345,6 @@ void setup() {
 ```
 
 Each task runs independently at its own rate without blocking others.
-
-***
-
-# :test_tube: Testing & Quality Assurance
-
-HeliOS includes a comprehensive unit testing framework with 147 test cases covering all kernel subsystems. The testing framework has been extensively refined with modern assertion macros, descriptive test names, and developer-friendly diagnostics.
-
-## Unit Testing Framework Features
-
-### Enhanced Assertion Macros
-HeliOS provides a complete set of assertion macros with detailed failure diagnostics:
-
-```c
-/* Equality and comparison assertions */
-unit_assert_equal(actual, expected)      // Tests if values are equal
-unit_assert_not_equal(actual, expected)  // Tests if values differ
-
-/* Pointer assertions */
-unit_assert_null(ptr)                    // Tests if pointer is NULL
-unit_assert_not_null(ptr)                // Tests if pointer is valid
-
-/* Boolean assertions */
-unit_assert_true(condition)              // Tests if condition is true
-unit_assert_false(condition)             // Tests if condition is false
-
-/* Convenience assertions */
-unit_assert_ok(result)                   // Tests if syscall returned ReturnOK
-unit_assert_not_ok(result)               // Tests if syscall returned ReturnError
-```
-
-**Diagnostic Output:**
-When assertions fail, the framework provides detailed information:
-```
-unit: FAILED at memory_1_harness.c:84
-unit:   Expected: actual == expected
-unit:   Actual:   0x32000 != 0x32020
-```
-
-### Test Organization
-
-The test suite is organized by kernel subsystem:
-
-- **System Tests** (`sys_harness.c`) - System initialization, information retrieval, halt/assert behavior
-- **Memory Tests** (`memory_1_harness.c`, `memory_2_harness.c`) - Allocation, deallocation, defragmentation, consistency checking, edge cases
-- **Task Tests** (`task_harness.c`) - Task creation, scheduling, notifications, timers, watchdog
-- **Queue Tests** (`queue_harness.c`) - Message queue operations, capacity management, locking
-- **Stream Tests** (`stream_harness.c`) - Stream buffer send/receive, flow control
-- **Timer Tests** (`timer_harness.c`) - Timer creation, start/stop, expiration checking
-- **Device Tests** (`device_harness.c`) - Device registration, read/write operations
-- **Filesystem Tests** (`fs_harness.c`) - FAT32 operations, file I/O, directory management
-
-### Descriptive Test Cases
-
-All test cases use descriptive names that explain what is being tested:
-
-**Before:**
-```c
-unit_begin("xMemAlloc()");
-```
-
-**After:**
-```c
-unit_begin("Memory allocation succeeds for large block");
-```
-
-This makes test output immediately understandable without consulting source code.
-
-### Named Constants for Magic Numbers
-
-Test code uses well-documented constants instead of magic numbers:
-
-```c
-/* Test constants */
-#define LARGE_BLOCK_SIZE        0x32000u    /* 204,800 bytes - large allocation test */
-#define LARGE_BLOCK_USED        0x32020u    /* Expected memory used after large alloc */
-#define HEAP_AVAILABLE_BYTES    0x63A0u     /* Expected heap available space */
-#define TASK_PERIOD_1_SECOND    0x3E8       /* 1000 milliseconds */
-#define LOOPBACK_DEVICE_ID      0xFFu       /* Loopback device identifier */
-```
-
-This improves test readability and maintainability while making expected values self-documenting.
-
-### Color-Coded Output
-
-The test framework provides color-coded console output for easy scanning:
-
-- **Pink/Magenta** - Test framework messages and labels
-- **Cyan** - Informational messages
-- **Green** - Test progress and success indicators
-- **Red** - Failure diagnostics and error messages
-
-Example output:
-```
-unit: initializing...
-unit: begin: System initialization succeeds when called multiple times
-unit: end: System initialization succeeds when called multiple times
-unit: failed: 0
-unit: passed: 147
-unit: total: 147
-```
-
-### Edge Case Coverage
-
-The test suite includes extensive edge case testing:
-
-- **NULL pointer handling** - Verifying proper error handling for invalid pointers
-- **Boundary conditions** - Testing minimum/maximum values, buffer overflows
-- **Resource exhaustion** - Testing behavior when memory or other resources are depleted
-- **Double-free detection** - Ensuring memory corruption protection works
-- **Consistency checking** - Validating internal data structure integrity
-
-### Running the Tests
-
-**POSIX Systems (Linux, macOS, WSL):**
-```bash
-# Compile with standard memory configuration
-/usr/bin/gcc -fdiagnostics-color=always -O0 -ggdb -ansi -pedantic \
-  -Wall -Wextra -Wno-unused-parameter -Wno-pointer-to-int-cast \
-  -I./src -I./drivers/ramdisk -I./drivers/block \
-  -I./test/src -I./test/src/harness -I./test/src/unit \
-  -DPOSIX_ARCH_OTHER \
-  -DCONFIG_MEMORY_REGION_SIZE_IN_BLOCKS=0x1C20u \
-  -DCONFIG_ENABLE_SYSTEM_ASSERT \
-  -DUNIT_TEST_COLORIZE \
-  -o./test/bin/test \
-  ./src/*.c ./drivers/ramdisk/*.c ./drivers/block/*.c \
-  ./test/src/*.c ./test/src/harness/*.c ./test/src/unit/*.c
-
-# Run tests
-./test/bin/test
-```
-
-The test suite typically completes in under 10 seconds and should show:
-```
-unit: failed: 0
-unit: passed: 147
-unit: total: 147
-```
-
-### Test Development Guide
-
-For guidance on writing new tests and using the assertion framework, see [`/test/ENHANCED_ASSERTIONS_GUIDE.md`](/test/ENHANCED_ASSERTIONS_GUIDE.md).
-
-## Static Analysis & Code Quality
-
-HeliOS has been tested with commercial static analysis tools and undergoes regular MISRA C:2012 compliance checking. The codebase follows strict coding standards:
-
-- **ANSI C (C90)** compatibility with `-ansi -pedantic` compilation
-- **Wall -Wextra** with minimal warnings suppression
-- **Consistent error handling** using `ReturnOK`/`ReturnError` pattern
-- **Comprehensive API documentation** in Doxygen format
-- **Defensive programming** with extensive parameter validation
 
 ***
 
