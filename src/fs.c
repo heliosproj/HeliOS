@@ -571,7 +571,6 @@ Return_t xFileClose(File_t *file_) {
   const Byte_t *lastSlash = null;
   const Byte_t *fileName = null;
   Byte_t name83[11];
-  Base_t fileExisted = false;
 
 
   if(__PointerIsNotNull__(file_)) {
@@ -595,8 +594,6 @@ Return_t xFileClose(File_t *file_) {
         /* Check if file entry already exists */
         if(OK(__FindFileByPath__(file_->volume, file_->path, &entry, null, &entryCluster, &entryOffset))) {
           /* Update existing directory entry */
-          fileExisted = true;
-
           if(OK(__ReadCluster__(file_->volume, entryCluster, &clusterData))) {
             FAT32DirEntry_t *fatEntry = (FAT32DirEntry_t *) (clusterData + entryOffset);
 
@@ -1265,7 +1262,7 @@ Return_t xDirMake(Volume_t *volume_, const Byte_t *path_) {
   Word_t i = 0;
   const Byte_t *lastSlash = null;
   const Byte_t *dirName = null;
-  Byte_t parentPath[256];
+  Byte_t parentPath[256] = {0};
   Word_t parentPathLen = 0;
 
 
