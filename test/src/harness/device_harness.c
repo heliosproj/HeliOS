@@ -27,10 +27,10 @@ void device_harness(void) {
   Base_t res;
 
 
-  unit_begin("xDeviceRegisterDevice()");
+  unit_begin("Loopback device registration succeeds");
   unit_try(OK(xDeviceRegisterDevice(LOOPBACK_self_register)));
   unit_end();
-  unit_begin("xDeviceWrite()");
+  unit_begin("Device write transmits test data successfully");
   bytes1 = 0x26u;
   data1 = null;
   unit_try(OK(xMemAlloc((volatile Addr_t **) &data1, bytes1)));
@@ -38,11 +38,11 @@ void device_harness(void) {
   unit_try(OK(xDeviceWrite(0xFFu, &bytes1, data1)));
   unit_try(OK(xMemFree(data1)));
   unit_end();
-  unit_begin("xDeviceIsAvailable()");
+  unit_begin("Device availability check returns true for active device");
   unit_try(OK(xDeviceIsAvailable(0xFFu, &res)));
   unit_try(true == res);
   unit_end();
-  unit_begin("xDeviceRead()");
+  unit_begin("Device read retrieves previously written data");
   bytes2 = nil;
   data2 = null;
   unit_try(OK(xDeviceRead(0xFFu, &bytes2, &data2)));
@@ -50,11 +50,11 @@ void device_harness(void) {
   unit_try(nil == strncmp((char *) data2, "THIS IS A TEST OF THE LOOPBACK DEVICE\0", bytes2));
   unit_try(OK(xMemFree(data2)));
   unit_end();
-  unit_begin("xDeviceSimpleWrite()");
+  unit_begin("Simple device write sends single byte");
   data3 = 0xFAu;
   unit_try(OK(xDeviceSimpleWrite(0xFFu, data3)));
   unit_end();
-  unit_begin("xDeviceSimpleRead()");
+  unit_begin("Simple device read retrieves single byte");
   data4 = nil;
   unit_try(OK(xDeviceSimpleRead(0xFFu, &data4)));
   unit_try(0xFAu == data4);

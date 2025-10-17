@@ -74,20 +74,20 @@ void memory_1_harness(void) {
   unit_try((CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS * CONFIG_MEMORY_REGION_BLOCK_SIZE) == actual);
   unit_try(OK(xMemFree(mem05)));
   unit_end();
-  unit_begin("xMemAlloc()");
+  unit_begin("Memory allocation succeeds for large block");
   mem01 = null;
   unit_try(OK(xMemAlloc((volatile Addr_t **) &mem01, 0x32000u)));
   unit_try(null != mem01);
   unit_end();
-  unit_begin("xMemGetUsed()");
+  unit_begin("Used memory tracking reflects allocations");
   unit_try(OK(xMemGetUsed(&actual)));
   unit_try(0x32020u == actual);
   unit_end();
-  unit_begin("xMemGetSize()");
+  unit_begin("Allocated block size retrieval is accurate");
   unit_try(OK(xMemGetSize(mem01, &actual)));
   unit_try(0x32020u == actual);
   unit_end();
-  unit_begin("xMemGetHeapStats()");
+  unit_begin("Heap statistics reflect current memory state");
   mem02 = null;
   unit_try(OK(xMemGetHeapStats(&mem02)));
   unit_try(null != mem02);
@@ -99,7 +99,7 @@ void memory_1_harness(void) {
   unit_try(0x24u == mem02->successfulAllocations); /* +1 from xSystemGetSystemInfo */
   unit_try(0x22u == mem02->successfulFrees); /* +1 from xSystemGetSystemInfo */
   unit_end();
-  unit_begin("xMemGetKernelStats()");
+  unit_begin("Kernel statistics track internal allocations");
   mem03 = null;
   mem04 = null;
   unit_try(OK(xTaskCreate(&mem04, (Byte_t *) "NONE", memory_1_harness_task, null)));

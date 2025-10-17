@@ -27,7 +27,7 @@ void sys_harness(void) {
 
 
 void test_system_init(void) {
-  unit_begin("xSystemInit()");
+  unit_begin("System initialization succeeds when called multiple times");
 
   /* System should already be initialized by the test harness,
    * calling it again should succeed (idempotent) */
@@ -40,7 +40,7 @@ void test_system_init(void) {
 void test_system_info(void) {
   SystemInfo_t *info = null;
 
-  unit_begin("xSystemGetSystemInfo()");
+  unit_begin("System information retrieval returns valid product data");
 
   /* Get system information */
   unit_try(OK(xSystemGetSystemInfo(&info)));
@@ -56,14 +56,14 @@ void test_system_info(void) {
   unit_end();
 
   /* Test NULL pointer handling */
-  unit_begin("xSystemGetSystemInfo() - NULL Pointer");
+  unit_begin("System info retrieval rejects NULL pointer");
   unit_try(!OK(xSystemGetSystemInfo(null)));
   unit_end();
 }
 
 
 void test_system_halt(void) {
-  unit_begin("xSystemHalt() - Functionality Test");
+  unit_begin("System halt function has correct signature");
 
   /* Note: We cannot actually test xSystemHalt() as it would stop execution.
    * We can only verify it exists and has the correct signature.
@@ -74,14 +74,14 @@ void test_system_halt(void) {
 
   /* This test is intentionally minimal as calling xSystemHalt()
    * would prevent the test suite from continuing. */
-  unit_print("xSystemHalt() exists and has correct signature");
+  unit_print("Verifying system halt function exists and has correct signature");
 
   unit_end();
 }
 
 
 void test_system_assert(void) {
-  unit_begin("xSystemAssert() - Functionality Test");
+  unit_begin("System assert function has correct signature");
 
   /* Note: xSystemAssert() is typically called when CONFIG_ENABLE_SYSTEM_ASSERT
    * is defined and an assertion fails. Calling it directly would trigger
@@ -90,7 +90,7 @@ void test_system_assert(void) {
   /* For testing purposes, we verify the function exists and has the
    * correct signature. In a real scenario, this would be called by
    * the ASSERT() macro when an assertion fails. */
-  unit_print("xSystemAssert() exists and has correct signature");
+  unit_print("Verifying system assert function exists and has correct signature");
 
   /* Test that system continues after initialization */
   unit_try(OK(xSystemInit()));

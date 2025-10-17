@@ -143,7 +143,7 @@ void test_mount_unmount(void) {
   Volume_t *vol = null;
   VolumeInfo_t *volInfo = null;
 
-  unit_begin("xFSMount() and xFSUnmount()");
+  unit_begin("Filesystem mount and unmount operations");
 
   /* Mount the filesystem */
   if(OK(xFSMount(&vol, 0x1000u)) && (null != vol)) {
@@ -159,7 +159,7 @@ void test_mount_unmount(void) {
     /* Unmount filesystem */
     unit_try(OK(xFSUnmount(vol)));
   } else {
-    unit_print("xFSMount() failed - filesystem may not be ready");
+    unit_print("Filesystem mount failed - may not be ready");
     unit_try(false);
   }
 
@@ -184,43 +184,43 @@ void test_file_operations(void) {
   }
 
   /* Test file open with create and write mode */
-  unit_begin("xFileOpen() - Create and Write");
+  unit_begin("File open with create and write mode succeeds");
   unit_try(OK(xFileOpen(&file, vol, (const Byte_t *) "/test.txt", FS_MODE_CREATE | FS_MODE_WRITE)));
   unit_try(null != file);
   unit_try(true == file->isOpen);
   unit_end();
 
   /* Test file write */
-  unit_begin("xFileWrite()");
+  unit_begin("File write operation stores data successfully");
   unit_try(OK(xFileWrite(file, testDataSize, testData)));
   unit_end();
 
   /* Test file tell */
-  unit_begin("xFileTell()");
+  unit_begin("File position retrieval returns correct offset");
   unit_try(OK(xFileTell(file, &position)));
   unit_try(testDataSize == position);
   unit_end();
 
   /* Test file sync */
-  unit_begin("xFileSync()");
+  unit_begin("File sync flushes data to storage");
   unit_try(OK(xFileSync(file)));
   unit_end();
 
   /* Test file get size */
-  unit_begin("xFileGetSize()");
+  unit_begin("File size retrieval returns correct size");
   unit_try(OK(xFileGetSize(file, &fileSize)));
   unit_try(testDataSize == fileSize);
   unit_end();
 
   /* Seek back to beginning for reading (xFileOpen doesn't support reopening existing files yet) */
-  unit_begin("xFileSeek() - Back to Start");
+  unit_begin("File seek to start positions at beginning");
   unit_try(OK(xFileSeek(file, 0, FS_SEEK_SET)));
   unit_try(OK(xFileTell(file, &position)));
   unit_try(0 == position);
   unit_end();
 
   /* Test file read */
-  unit_begin("xFileRead()");
+  unit_begin("File read retrieves previously written data");
   unit_try(OK(xFileRead(file, testDataSize, &readData)));
   unit_try(null != readData);
   unit_try(0 == strncmp((char *) testData, (char *) readData, testDataSize));
@@ -228,28 +228,28 @@ void test_file_operations(void) {
   unit_end();
 
   /* Test file seek - beginning */
-  unit_begin("xFileSeek() - FS_SEEK_SET");
+  unit_begin("File seek from beginning sets absolute position");
   unit_try(OK(xFileSeek(file, 0, FS_SEEK_SET)));
   unit_try(OK(xFileTell(file, &position)));
   unit_try(0 == position);
   unit_end();
 
   /* Test file seek - current */
-  unit_begin("xFileSeek() - FS_SEEK_CUR");
+  unit_begin("File seek from current advances position");
   unit_try(OK(xFileSeek(file, 7, FS_SEEK_CUR)));
   unit_try(OK(xFileTell(file, &position)));
   unit_try(7 == position);
   unit_end();
 
   /* Test file seek - end */
-  unit_begin("xFileSeek() - FS_SEEK_END");
+  unit_begin("File seek from end positions at file end");
   unit_try(OK(xFileSeek(file, 0, FS_SEEK_END)));
   unit_try(OK(xFileTell(file, &position)));
   unit_try(testDataSize == position);
   unit_end();
 
   /* Test EOF detection */
-  unit_begin("xFileEOF()");
+  unit_begin("File EOF detection identifies end of file");
   unit_try(OK(xFileEOF(file, &eof)));
   unit_try(true == eof);
   unit_end();
@@ -258,7 +258,7 @@ void test_file_operations(void) {
   xFileClose(file);
 
   /* Test file truncate */
-  unit_begin("xFileTruncate()");
+  unit_begin("File truncate reduces file size");
   file = null;
   unit_try(OK(xFileOpen(&file, vol, (const Byte_t *) "/test.txt", FS_MODE_WRITE)));
   unit_try(null != file);
@@ -269,7 +269,7 @@ void test_file_operations(void) {
   unit_end();
 
   /* Test file append mode */
-  unit_begin("xFileOpen() - Append Mode");
+  unit_begin("File open in append mode adds data at end");
   file = null;
   unit_try(OK(xFileOpen(&file, vol, (const Byte_t *) "/test.txt", FS_MODE_APPEND | FS_MODE_WRITE)));
   unit_try(null != file);
@@ -299,12 +299,12 @@ void test_directory_operations(void) {
   }
 
   /* Test directory creation */
-  unit_begin("xDirMake()");
+  unit_begin("Directory creation succeeds");
   unit_try(OK(xDirMake(vol, (const Byte_t *) "/testdir")));
   unit_end();
 
   /* Test directory exists via file exists */
-  unit_begin("xFileExists() - Directory");
+  unit_begin("Directory existence check confirms creation");
   unit_try(OK(xFileExists(vol, (const Byte_t *) "/testdir", &exists)));
   unit_try(true == exists);
   unit_end();
@@ -324,13 +324,13 @@ void test_directory_operations(void) {
   unit_end();
 
   /* Test directory open */
-  unit_begin("xDirOpen()");
+  unit_begin("Directory open for reading succeeds");
   unit_try(OK(xDirOpen(&dir, vol, (const Byte_t *) "/testdir")));
   unit_try(null != dir);
   unit_end();
 
   /* Test directory read */
-  unit_begin("xDirRead()");
+  unit_begin("Directory read returns all entries");
   entryCount = 0;
 
   /* Read all directory entries */
@@ -346,7 +346,7 @@ void test_directory_operations(void) {
   unit_end();
 
   /* Test directory rewind */
-  unit_begin("xDirRewind()");
+  unit_begin("Directory rewind resets read position to start");
   unit_try(OK(xDirRewind(dir)));
   entry = null;
   unit_try(OK(xDirRead(dir, &entry)));
@@ -355,12 +355,12 @@ void test_directory_operations(void) {
   unit_end();
 
   /* Test directory close */
-  unit_begin("xDirClose()");
+  unit_begin("Directory close releases resources");
   unit_try(OK(xDirClose(dir)));
   unit_end();
 
   /* Test opening root directory */
-  unit_begin("xDirOpen() - Root Directory");
+  unit_begin("Root directory open succeeds");
   dir = null;
   unit_try(OK(xDirOpen(&dir, vol, (const Byte_t *) "/")));
   unit_try(null != dir);
@@ -368,7 +368,7 @@ void test_directory_operations(void) {
   unit_end();
 
   /* Cleanup - remove directory (should fail as it's not empty) */
-  unit_begin("xDirRemove() - Non-empty Directory");
+  unit_begin("Directory removal fails for non-empty directory");
   unit_try(!OK(xDirRemove(vol, (const Byte_t *) "/testdir")));
   unit_end();
 
@@ -398,27 +398,27 @@ void test_file_management(void) {
   unit_end();
 
   /* Test file exists */
-  unit_begin("xFileExists() - Existing File");
+  unit_begin("File existence check confirms existing file");
   unit_try(OK(xFileExists(vol, (const Byte_t *) "/manage.txt", &exists)));
   unit_try(true == exists);
   unit_end();
 
   /* Test file exists - non-existing file */
-  unit_begin("xFileExists() - Non-existing File");
+  unit_begin("File existence check returns false for non-existing file");
   exists = nil;
   unit_try(OK(xFileExists(vol, (const Byte_t *) "/nonexist.txt", &exists)));
   unit_try(false == exists);
   unit_end();
 
   /* Test file get info */
-  unit_begin("xFileGetInfo()");
+  unit_begin("File information retrieval returns file details");
   unit_try(OK(xFileGetInfo(vol, (const Byte_t *) "/manage.txt", &info)));
   unit_try(null != info);
   unit_try(OK(xMemFree(info)));
   unit_end();
 
   /* Test file rename */
-  unit_begin("xFileRename()");
+  unit_begin("File rename updates filename successfully");
   unit_try(OK(xFileRename(vol, (const Byte_t *) "/manage.txt", (const Byte_t *) "/renamed.txt")));
 
   /* Verify old name doesn't exist */
@@ -433,7 +433,7 @@ void test_file_management(void) {
   unit_end();
 
   /* Test file unlink */
-  unit_begin("xFileUnlink()");
+  unit_begin("File unlink removes file from filesystem");
   unit_try(OK(xFileUnlink(vol, (const Byte_t *) "/renamed.txt")));
 
   /* Verify file no longer exists */
