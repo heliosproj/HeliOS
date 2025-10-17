@@ -53,11 +53,11 @@ void test_magic(void) {
 
 
   /* 1) Create something in the heap*/
-  unit_try(OK(xMemAlloc(&ptr, 128)));
+  unit_assert_ok(xMemAlloc(&ptr, 128));
 
 
   /* 2) Call a memory syscall like xMemGetUsed() which should return ReturnOK */
-  unit_try(OK(xMemGetUsed(&size)));
+  unit_assert_ok(xMemGetUsed(&size));
   unit_try(160 == size);
 
 
@@ -72,7 +72,7 @@ void test_magic(void) {
 
   /* 5) Call a memory syscall like xMemGetUsed() which should return ReturnError
    */
-  unit_try(!OK(xMemGetUsed(&size)));
+  unit_assert_not_ok(xMemGetUsed(&size));
 
 
   /* 6) Check the memfault flag (should be "true" at this point) */
@@ -94,11 +94,11 @@ void test_free(void) {
 
 
   /* 1) Create something in the heap*/
-  unit_try(OK(xMemAlloc(&ptr, 128)));
+  unit_assert_ok(xMemAlloc(&ptr, 128));
 
 
   /* 2) Call a memory syscall like xMemGetUsed() which should return ReturnOK */
-  unit_try(OK(xMemGetUsed(&size)));
+  unit_assert_ok(xMemGetUsed(&size));
   unit_try(160 == size);
 
 
@@ -112,7 +112,7 @@ void test_free(void) {
                       * number. */
   /* 5) Call a memory syscall like xMemGetUsed() which should return ReturnError
    */
-  unit_try(!OK(xMemGetUsed(&size)));
+  unit_assert_not_ok(xMemGetUsed(&size));
 
 
   /* 6) Check the memfault flag (should be "true" at this point) */
@@ -134,11 +134,11 @@ void test_blocks(void) {
 
 
   /* 1) Create something in the heap*/
-  unit_try(OK(xMemAlloc(&ptr, 128)));
+  unit_assert_ok(xMemAlloc(&ptr, 128));
 
 
   /* 2) Call a memory syscall like xMemGetUsed() which should return ReturnOK */
-  unit_try(OK(xMemGetUsed(&size)));
+  unit_assert_ok(xMemGetUsed(&size));
   unit_try(160 == size);
 
 
@@ -152,7 +152,7 @@ void test_blocks(void) {
                         * number. */
   /* 5) Call a memory syscall like xMemGetUsed() which should return ReturnError
    */
-  unit_try(!OK(xMemGetUsed(&size)));
+  unit_assert_not_ok(xMemGetUsed(&size));
 
 
   /* 6) Check the memfault flag (should be "true" at this point) */
@@ -174,11 +174,11 @@ void test_next(void) {
 
 
   /* 1) Create something in the heap*/
-  unit_try(OK(xMemAlloc(&ptr, 128)));
+  unit_assert_ok(xMemAlloc(&ptr, 128));
 
 
   /* 2) Call a memory syscall like xMemGetUsed() which should return ReturnOK */
-  unit_try(OK(xMemGetUsed(&size)));
+  unit_assert_ok(xMemGetUsed(&size));
   unit_try(160 == size);
 
 
@@ -193,7 +193,7 @@ void test_next(void) {
                                               * number. */
   /* 5) Call a memory syscall like xMemGetUsed() which should return ReturnError
    */
-  unit_try(!OK(xMemGetUsed(&size)));
+  unit_assert_not_ok(xMemGetUsed(&size));
 
 
   /* 6) Check the memfault flag (should be "true" at this point) */

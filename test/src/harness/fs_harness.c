@@ -48,16 +48,16 @@ void fs_harness(void) {
 
 
   /* RAM disk driver registration */
-  unit_try(OK(xDeviceRegisterDevice(RAMDISK0_self_register)));
+  unit_assert_ok(xDeviceRegisterDevice(RAMDISK0_self_register));
   unit_print("Initializing RAM disk...");
-  unit_try(OK(xDeviceInitDevice(0x0100u)));
+  unit_assert_ok(xDeviceInitDevice(0x0100u));
   unit_print("Registering block device driver...");
 
 
   /* Block device driver registration */
-  unit_try(OK(xDeviceRegisterDevice(BLOCKDEV_self_register)));
+  unit_assert_ok(xDeviceRegisterDevice(BLOCKDEV_self_register));
   unit_print("Initializing block device...");
-  unit_try(OK(xDeviceInitDevice(0x1000u)));
+  unit_assert_ok(xDeviceInitDevice(0x1000u));
   unit_print("Configuring block device...");
 
 
@@ -136,17 +136,17 @@ void test_mount_unmount(void) {
 
   /* Mount the filesystem */
   if(OK(xFSMount(&vol, 0x1000u)) && (null != vol)) {
-    unit_try(true == vol->mounted);
-    unit_try(0x1000u == vol->blockDeviceUID);
+    unit_assert_true(vol->mounted);
+    unit_assert_equal(vol->blockDeviceUID, 0x1000u);
 
     /* Get volume info */
     if(OK(xFSGetVolumeInfo(vol, &volInfo)) && (null != volInfo)) {
       /* Cleanup volume info */
-      unit_try(OK(xMemFree(volInfo)));
+      unit_assert_ok(xMemFree(volInfo));
     }
 
     /* Unmount filesystem */
-    unit_try(OK(xFSUnmount(vol)));
+    unit_assert_ok(xFSUnmount(vol));
   } else {
     unit_print("Filesystem mount failed - may not be ready");
     unit_try(false);
@@ -175,72 +175,72 @@ void test_file_operations(void) {
   /* Test file open with create and write mode */
   unit_begin("File open with create and write mode succeeds");
   unit_try(OK(xFileOpen(&file, vol, (const Byte_t *) "/test.txt", FS_MODE_CREATE | FS_MODE_WRITE)));
-  unit_try(null != file);
-  unit_try(true == file->isOpen);
+  unit_assert_not_null(file);
+  unit_assert_true(file->isOpen);
   unit_end();
 
   /* Test file write */
   unit_begin("File write operation stores data successfully");
-  unit_try(OK(xFileWrite(file, testDataSize, testData)));
+  unit_assert_ok(xFileWrite(file, testDataSize, testData));
   unit_end();
 
   /* Test file tell */
   unit_begin("File position retrieval returns correct offset");
-  unit_try(OK(xFileTell(file, &position)));
-  unit_try(testDataSize == position);
+  unit_assert_ok(xFileTell(file, &position));
+  unit_assert_equal(testDataSize, position);
   unit_end();
 
   /* Test file sync */
   unit_begin("File sync flushes data to storage");
-  unit_try(OK(xFileSync(file)));
+  unit_assert_ok(xFileSync(file));
   unit_end();
 
   /* Test file get size */
   unit_begin("File size retrieval returns correct size");
-  unit_try(OK(xFileGetSize(file, &fileSize)));
-  unit_try(testDataSize == fileSize);
+  unit_assert_ok(xFileGetSize(file, &fileSize));
+  unit_assert_equal(testDataSize, fileSize);
   unit_end();
 
   /* Seek back to beginning for reading (xFileOpen doesn't support reopening existing files yet) */
   unit_begin("File seek to start positions at beginning");
-  unit_try(OK(xFileSeek(file, 0, FS_SEEK_SET)));
-  unit_try(OK(xFileTell(file, &position)));
+  unit_assert_ok(xFileSeek(file, 0, FS_SEEK_SET));
+  unit_assert_ok(xFileTell(file, &position));
   unit_try(0 == position);
   unit_end();
 
   /* Test file read */
   unit_begin("File read retrieves previously written data");
-  unit_try(OK(xFileRead(file, testDataSize, &readData)));
-  unit_try(null != readData);
+  unit_assert_ok(xFileRead(file, testDataSize, &readData));
+  unit_assert_not_null(readData);
   unit_try(0 == strncmp((char *) testData, (char *) readData, testDataSize));
-  unit_try(OK(xMemFree(readData)));
+  unit_assert_ok(xMemFree(readData));
   unit_end();
 
   /* Test file seek - beginning */
   unit_begin("File seek from beginning sets absolute position");
-  unit_try(OK(xFileSeek(file, 0, FS_SEEK_SET)));
-  unit_try(OK(xFileTell(file, &position)));
+  unit_assert_ok(xFileSeek(file, 0, FS_SEEK_SET));
+  unit_assert_ok(xFileTell(file, &position));
   unit_try(0 == position);
   unit_end();
 
   /* Test file seek - current */
   unit_begin("File seek from current advances position");
-  unit_try(OK(xFileSeek(file, 7, FS_SEEK_CUR)));
-  unit_try(OK(xFileTell(file, &position)));
+  unit_assert_ok(xFileSeek(file, 7, FS_SEEK_CUR));
+  unit_assert_ok(xFileTell(file, &position));
   unit_try(7 == position);
   unit_end();
 
   /* Test file seek - end */
   unit_begin("File seek from end positions at file end");
-  unit_try(OK(xFileSeek(file, 0, FS_SEEK_END)));
-  unit_try(OK(xFileTell(file, &position)));
-  unit_try(testDataSize == position);
+  unit_assert_ok(xFileSeek(file, 0, FS_SEEK_END));
+  unit_assert_ok(xFileTell(file, &position));
+  unit_assert_equal(testDataSize, position);
   unit_end();
 
   /* Test EOF detection */
   unit_begin("File EOF detection identifies end of file");
-  unit_try(OK(xFileEOF(file, &eof)));
-  unit_try(true == eof);
+  unit_assert_ok(xFileEOF(file, &eof));
+  unit_assert_true(eof);
   unit_end();
 
   /* Close file */
@@ -250,22 +250,22 @@ void test_file_operations(void) {
   unit_begin("File truncate reduces file size");
   file = null;
   unit_try(OK(xFileOpen(&file, vol, (const Byte_t *) "/test.txt", FS_MODE_WRITE)));
-  unit_try(null != file);
-  unit_try(OK(xFileTruncate(file, 10)));
-  unit_try(OK(xFileGetSize(file, &fileSize)));
+  unit_assert_not_null(file);
+  unit_assert_ok(xFileTruncate(file, 10));
+  unit_assert_ok(xFileGetSize(file, &fileSize));
   unit_try(10 == fileSize);
-  unit_try(OK(xFileClose(file)));
+  unit_assert_ok(xFileClose(file));
   unit_end();
 
   /* Test file append mode */
   unit_begin("File open in append mode adds data at end");
   file = null;
   unit_try(OK(xFileOpen(&file, vol, (const Byte_t *) "/test.txt", FS_MODE_APPEND | FS_MODE_WRITE)));
-  unit_try(null != file);
+  unit_assert_not_null(file);
   unit_try(OK(xFileWrite(file, 6, (const Byte_t *) "MORE!!")));
-  unit_try(OK(xFileGetSize(file, &fileSize)));
+  unit_assert_ok(xFileGetSize(file, &fileSize));
   unit_try(16 == fileSize); /* 10 + 6 */
-  unit_try(OK(xFileClose(file)));
+  unit_assert_ok(xFileClose(file));
   unit_end();
 
   /* Unmount filesystem */
@@ -295,27 +295,27 @@ void test_directory_operations(void) {
   /* Test directory exists via file exists */
   unit_begin("Directory existence check confirms creation");
   unit_try(OK(xFileExists(vol, (const Byte_t *) "/testdir", &exists)));
-  unit_try(true == exists);
+  unit_assert_true(exists);
   unit_end();
 
   /* Create files in the directory for testing */
   unit_begin("Setup - Create Files in Directory");
   unit_try(OK(xFileOpen(&file, vol, (const Byte_t *) "/testdir/file1.txt", FS_MODE_CREATE | FS_MODE_WRITE)));
-  unit_try(null != file);
+  unit_assert_not_null(file);
   unit_try(OK(xFileWrite(file, 12, (const Byte_t *) "Test File 1\0")));
-  unit_try(OK(xFileClose(file)));
+  unit_assert_ok(xFileClose(file));
 
   file = null;
   unit_try(OK(xFileOpen(&file, vol, (const Byte_t *) "/testdir/file2.txt", FS_MODE_CREATE | FS_MODE_WRITE)));
-  unit_try(null != file);
+  unit_assert_not_null(file);
   unit_try(OK(xFileWrite(file, 12, (const Byte_t *) "Test File 2\0")));
-  unit_try(OK(xFileClose(file)));
+  unit_assert_ok(xFileClose(file));
   unit_end();
 
   /* Test directory open */
   unit_begin("Directory open for reading succeeds");
   unit_try(OK(xDirOpen(&dir, vol, (const Byte_t *) "/testdir")));
-  unit_try(null != dir);
+  unit_assert_not_null(dir);
   unit_end();
 
   /* Test directory read */
@@ -324,9 +324,9 @@ void test_directory_operations(void) {
 
   /* Read all directory entries */
   while(OK(xDirRead(dir, &entry))) {
-    unit_try(null != entry);
+    unit_assert_not_null(entry);
     entryCount++;
-    unit_try(OK(xMemFree(entry)));
+    unit_assert_ok(xMemFree(entry));
     entry = null;
   }
 
@@ -336,24 +336,24 @@ void test_directory_operations(void) {
 
   /* Test directory rewind */
   unit_begin("Directory rewind resets read position to start");
-  unit_try(OK(xDirRewind(dir)));
+  unit_assert_ok(xDirRewind(dir));
   entry = null;
-  unit_try(OK(xDirRead(dir, &entry)));
-  unit_try(null != entry);
-  unit_try(OK(xMemFree(entry)));
+  unit_assert_ok(xDirRead(dir, &entry));
+  unit_assert_not_null(entry);
+  unit_assert_ok(xMemFree(entry));
   unit_end();
 
   /* Test directory close */
   unit_begin("Directory close releases resources");
-  unit_try(OK(xDirClose(dir)));
+  unit_assert_ok(xDirClose(dir));
   unit_end();
 
   /* Test opening root directory */
   unit_begin("Root directory open succeeds");
   dir = null;
   unit_try(OK(xDirOpen(&dir, vol, (const Byte_t *) "/")));
-  unit_try(null != dir);
-  unit_try(OK(xDirClose(dir)));
+  unit_assert_not_null(dir);
+  unit_assert_ok(xDirClose(dir));
   unit_end();
 
   /* Cleanup - remove directory (should fail as it's not empty) */
@@ -381,29 +381,29 @@ void test_file_management(void) {
   /* Create a test file */
   unit_begin("Setup - Create Test File");
   unit_try(OK(xFileOpen(&file, vol, (const Byte_t *) "/manage.txt", FS_MODE_CREATE | FS_MODE_WRITE)));
-  unit_try(null != file);
+  unit_assert_not_null(file);
   unit_try(OK(xFileWrite(file, 13, (const Byte_t *) "Management!!\0")));
-  unit_try(OK(xFileClose(file)));
+  unit_assert_ok(xFileClose(file));
   unit_end();
 
   /* Test file exists */
   unit_begin("File existence check confirms existing file");
   unit_try(OK(xFileExists(vol, (const Byte_t *) "/manage.txt", &exists)));
-  unit_try(true == exists);
+  unit_assert_true(exists);
   unit_end();
 
   /* Test file exists - non-existing file */
   unit_begin("File existence check returns false for non-existing file");
   exists = nil;
   unit_try(OK(xFileExists(vol, (const Byte_t *) "/nonexist.txt", &exists)));
-  unit_try(false == exists);
+  unit_assert_false(exists);
   unit_end();
 
   /* Test file get info */
   unit_begin("File information retrieval returns file details");
   unit_try(OK(xFileGetInfo(vol, (const Byte_t *) "/manage.txt", &info)));
-  unit_try(null != info);
-  unit_try(OK(xMemFree(info)));
+  unit_assert_not_null(info);
+  unit_assert_ok(xMemFree(info));
   unit_end();
 
   /* Test file rename */
@@ -413,12 +413,12 @@ void test_file_management(void) {
   /* Verify old name doesn't exist */
   exists = nil;
   unit_try(OK(xFileExists(vol, (const Byte_t *) "/manage.txt", &exists)));
-  unit_try(false == exists);
+  unit_assert_false(exists);
 
   /* Verify new name exists */
   exists = nil;
   unit_try(OK(xFileExists(vol, (const Byte_t *) "/renamed.txt", &exists)));
-  unit_try(true == exists);
+  unit_assert_true(exists);
   unit_end();
 
   /* Test file unlink */
@@ -428,7 +428,7 @@ void test_file_management(void) {
   /* Verify file no longer exists */
   exists = nil;
   unit_try(OK(xFileExists(vol, (const Byte_t *) "/renamed.txt", &exists)));
-  unit_try(false == exists);
+  unit_assert_false(exists);
   unit_end();
 
   /* Unmount filesystem */
@@ -458,10 +458,10 @@ void test_fs_edge_cases(void) {
   unit_try(!OK(xFileOpen(&file, null, (const Byte_t *) "/test.txt", FS_MODE_READ)));
 
   /* xFileOpen with NULL path */
-  unit_try(!OK(xFileOpen(&file, vol, null, FS_MODE_READ)));
+  unit_assert_not_ok(xFileOpen(&file, vol, null, FS_MODE_READ));
 
   /* xFileClose with NULL file */
-  unit_try(!OK(xFileClose(null)));
+  unit_assert_not_ok(xFileClose(null));
 
   /* xDirOpen with NULL directory pointer */
   unit_try(!OK(xDirOpen(null, vol, (const Byte_t *) "/")));
@@ -470,7 +470,7 @@ void test_fs_edge_cases(void) {
   unit_try(!OK(xDirOpen(&dir, null, (const Byte_t *) "/")));
 
   /* xDirOpen with NULL path */
-  unit_try(!OK(xDirOpen(&dir, vol, null)));
+  unit_assert_not_ok(xDirOpen(&dir, vol, null));
 
   unit_end();
 
@@ -480,14 +480,14 @@ void test_fs_edge_cases(void) {
   /* Try to open non-existent file in read mode (should fail without CREATE) */
   file = null;
   unit_try(!OK(xFileOpen(&file, vol, (const Byte_t *) "/nonexist.txt", FS_MODE_READ)));
-  unit_try(null == file);
+  unit_assert_null(file);
 
   /* Try to read from a file opened in write-only mode */
   file = null;
   unit_try(OK(xFileOpen(&file, vol, (const Byte_t *) "/writeonly.txt", FS_MODE_CREATE | FS_MODE_WRITE)));
-  unit_try(null != file);
+  unit_assert_not_null(file);
   /* Note: Actual behavior depends on implementation - may or may not allow read */
-  unit_try(OK(xFileClose(file)));
+  unit_assert_ok(xFileClose(file));
 
   unit_end();
 
@@ -513,7 +513,7 @@ void test_fs_edge_cases(void) {
   unit_begin("Edge Case - Double Mount");
   {
     Volume_t *vol2 = null;
-    unit_try(!OK(xFSMount(&vol2, 0x1000u)));
+    unit_assert_not_ok(xFSMount(&vol2, 0x1000u));
   }
   unit_end();
 
@@ -555,7 +555,7 @@ void test_large_file_operations(void) {
 
   /* Allocate large buffer with pattern data */
   unit_try(OK(xMemAlloc((volatile Addr_t **) &writeData, largeSize)));
-  unit_try(null != writeData);
+  unit_assert_not_null(writeData);
 
   /* Fill with pattern (repeating 0-255) */
   for(i = 0; i < largeSize; i++) {
@@ -564,27 +564,27 @@ void test_large_file_operations(void) {
 
   /* Create and write large file */
   unit_try(OK(xFileOpen(&file, vol, (const Byte_t *) "/largefile.dat", FS_MODE_CREATE | FS_MODE_WRITE)));
-  unit_try(null != file);
-  unit_try(OK(xFileWrite(file, largeSize, writeData)));
+  unit_assert_not_null(file);
+  unit_assert_ok(xFileWrite(file, largeSize, writeData));
 
   /* Verify file size */
-  unit_try(OK(xFileGetSize(file, &fileSize)));
-  unit_try(largeSize == fileSize);
+  unit_assert_ok(xFileGetSize(file, &fileSize));
+  unit_assert_equal(largeSize, fileSize);
 
   /* Verify position */
-  unit_try(OK(xFileTell(file, &position)));
-  unit_try(largeSize == position);
+  unit_assert_ok(xFileTell(file, &position));
+  unit_assert_equal(largeSize, position);
 
   unit_end();
 
   unit_begin("Large File Operations - Multi-cluster Read");
 
   /* Seek back to start */
-  unit_try(OK(xFileSeek(file, 0, FS_SEEK_SET)));
+  unit_assert_ok(xFileSeek(file, 0, FS_SEEK_SET));
 
   /* Read entire file */
-  unit_try(OK(xFileRead(file, largeSize, &readData)));
-  unit_try(null != readData);
+  unit_assert_ok(xFileRead(file, largeSize, &readData));
+  unit_assert_not_null(readData);
 
   /* Verify data matches */
   for(i = 0; i < largeSize; i++) {
@@ -595,9 +595,9 @@ void test_large_file_operations(void) {
     }
   }
 
-  unit_try(OK(xMemFree(readData)));
-  unit_try(OK(xMemFree(writeData)));
-  unit_try(OK(xFileClose(file)));
+  unit_assert_ok(xMemFree(readData));
+  unit_assert_ok(xMemFree(writeData));
+  unit_assert_ok(xFileClose(file));
 
   unit_end();
 
@@ -626,7 +626,7 @@ void test_cluster_boundary_operations(void) {
 
   /* Allocate buffer */
   unit_try(OK(xMemAlloc((volatile Addr_t **) &writeData, clusterSize + 200)));
-  unit_try(null != writeData);
+  unit_assert_not_null(writeData);
 
   /* Fill with pattern */
   for(i = 0; i < clusterSize + 200; i++) {
@@ -635,24 +635,24 @@ void test_cluster_boundary_operations(void) {
 
   /* Create file and write up to near cluster boundary */
   unit_try(OK(xFileOpen(&file, vol, (const Byte_t *) "/boundary.dat", FS_MODE_CREATE | FS_MODE_WRITE)));
-  unit_try(null != file);
-  unit_try(OK(xFileWrite(file, testSize, writeData)));
+  unit_assert_not_null(file);
+  unit_assert_ok(xFileWrite(file, testSize, writeData));
 
   /* Write more data to cross cluster boundary */
-  unit_try(OK(xFileWrite(file, 200, writeData + testSize)));
+  unit_assert_ok(xFileWrite(file, 200, writeData + testSize));
 
   unit_end();
 
   unit_begin("Cluster Boundary - Read Across Boundary");
 
   /* Seek to position near cluster boundary */
-  unit_try(OK(xFileSeek(file, clusterSize - 50, FS_SEEK_SET)));
-  unit_try(OK(xFileTell(file, &position)));
+  unit_assert_ok(xFileSeek(file, clusterSize - 50, FS_SEEK_SET));
+  unit_assert_ok(xFileTell(file, &position));
   unit_try((clusterSize - 50) == position);
 
   /* Read data that spans cluster boundary */
-  unit_try(OK(xFileRead(file, 100, &readData)));
-  unit_try(null != readData);
+  unit_assert_ok(xFileRead(file, 100, &readData));
+  unit_assert_not_null(readData);
 
   /* Verify data */
   for(i = 0; i < 100; i++) {
@@ -663,9 +663,9 @@ void test_cluster_boundary_operations(void) {
     }
   }
 
-  unit_try(OK(xMemFree(readData)));
-  unit_try(OK(xMemFree(writeData)));
-  unit_try(OK(xFileClose(file)));
+  unit_assert_ok(xMemFree(readData));
+  unit_assert_ok(xMemFree(writeData));
+  unit_assert_ok(xFileClose(file));
 
   unit_end();
 
@@ -692,21 +692,21 @@ void test_partial_io_operations(void) {
 
   /* Create file with test data */
   unit_try(OK(xFileOpen(&file, vol, (const Byte_t *) "/partial.txt", FS_MODE_CREATE | FS_MODE_WRITE)));
-  unit_try(null != file);
-  unit_try(OK(xFileWrite(file, testDataSize, testData)));
-  unit_try(OK(xFileSeek(file, 0, FS_SEEK_SET)));
+  unit_assert_not_null(file);
+  unit_assert_ok(xFileWrite(file, testDataSize, testData));
+  unit_assert_ok(xFileSeek(file, 0, FS_SEEK_SET));
 
   unit_end();
 
   unit_begin("Partial I/O - Read First 10 Bytes");
 
   /* Read first 10 bytes */
-  unit_try(OK(xFileRead(file, 10, &readData)));
-  unit_try(null != readData);
+  unit_assert_ok(xFileRead(file, 10, &readData));
+  unit_assert_not_null(readData);
   unit_try(0 == strncmp((char *) testData, (char *) readData, 10));
-  unit_try(OK(xFileTell(file, &position)));
+  unit_assert_ok(xFileTell(file, &position));
   unit_try(10 == position);
-  unit_try(OK(xMemFree(readData)));
+  unit_assert_ok(xMemFree(readData));
 
   unit_end();
 
@@ -714,39 +714,39 @@ void test_partial_io_operations(void) {
 
   /* Read next 10 bytes */
   readData = null;
-  unit_try(OK(xFileRead(file, 10, &readData)));
-  unit_try(null != readData);
+  unit_assert_ok(xFileRead(file, 10, &readData));
+  unit_assert_not_null(readData);
   unit_try(0 == strncmp((char *) (testData + 10), (char *) readData, 10));
-  unit_try(OK(xFileTell(file, &position)));
+  unit_assert_ok(xFileTell(file, &position));
   unit_try(20 == position);
-  unit_try(OK(xMemFree(readData)));
+  unit_assert_ok(xMemFree(readData));
 
   unit_end();
 
   unit_begin("Partial I/O - Seek and Read from Middle");
 
   /* Seek to middle and read */
-  unit_try(OK(xFileSeek(file, 15, FS_SEEK_SET)));
+  unit_assert_ok(xFileSeek(file, 15, FS_SEEK_SET));
   readData = null;
-  unit_try(OK(xFileRead(file, 5, &readData)));
-  unit_try(null != readData);
+  unit_assert_ok(xFileRead(file, 5, &readData));
+  unit_assert_not_null(readData);
   unit_try(0 == strncmp((char *) (testData + 15), (char *) readData, 5));
-  unit_try(OK(xMemFree(readData)));
+  unit_assert_ok(xMemFree(readData));
 
   unit_end();
 
   unit_begin("Partial I/O - Read at EOF");
 
   /* Seek to end and try to read (should fail gracefully) */
-  unit_try(OK(xFileSeek(file, 0, FS_SEEK_END)));
-  unit_try(OK(xFileTell(file, &position)));
-  unit_try(testDataSize == position);
+  unit_assert_ok(xFileSeek(file, 0, FS_SEEK_END));
+  unit_assert_ok(xFileTell(file, &position));
+  unit_assert_equal(testDataSize, position);
 
   /* Try to read at EOF - should fail */
   readData = null;
-  unit_try(!OK(xFileRead(file, 10, &readData)));
+  unit_assert_not_ok(xFileRead(file, 10, &readData));
 
-  unit_try(OK(xFileClose(file)));
+  unit_assert_ok(xFileClose(file));
 
   unit_end();
 
@@ -768,25 +768,25 @@ void test_volume_info_validation(void) {
   unit_begin("Volume Info - Get and Validate");
 
   /* Get volume information */
-  unit_try(OK(xFSGetVolumeInfo(vol, &volInfo)));
-  unit_try(null != volInfo);
+  unit_assert_ok(xFSGetVolumeInfo(vol, &volInfo));
+  unit_assert_not_null(volInfo);
 
   /* Validate volume parameters */
   unit_try(512 == volInfo->bytesPerSector);
   unit_try(8 == volInfo->sectorsPerCluster);
   unit_try(4096 == volInfo->bytesPerCluster); /* 512 * 8 */
 
-  unit_try(OK(xMemFree(volInfo)));
+  unit_assert_ok(xMemFree(volInfo));
 
   unit_end();
 
   unit_begin("Volume Info - NULL Pointer Handling");
 
   /* Test NULL pointer for volume */
-  unit_try(!OK(xFSGetVolumeInfo(null, &volInfo)));
+  unit_assert_not_ok(xFSGetVolumeInfo(null, &volInfo));
 
   /* Test NULL pointer for info output */
-  unit_try(!OK(xFSGetVolumeInfo(vol, null)));
+  unit_assert_not_ok(xFSGetVolumeInfo(vol, null));
 
   unit_end();
 
@@ -812,12 +812,12 @@ void test_file_mode_validation(void) {
 
   /* Try to create file with only CREATE mode (should work as stub implementation ignores mode) */
   unit_try(OK(xFileOpen(&file1, vol, (const Byte_t *) "/modetest1.txt", FS_MODE_CREATE)));
-  unit_try(null != file1);
+  unit_assert_not_null(file1);
 
   /* Write should fail without WRITE or APPEND mode */
   unit_try(!OK(xFileWrite(file1, 10, (const Byte_t *) "test data\0")));
 
-  unit_try(OK(xFileClose(file1)));
+  unit_assert_ok(xFileClose(file1));
 
   unit_end();
 
@@ -826,9 +826,9 @@ void test_file_mode_validation(void) {
   /* Create file with WRITE mode */
   file1 = null;
   unit_try(OK(xFileOpen(&file1, vol, (const Byte_t *) "/modetest2.txt", FS_MODE_CREATE | FS_MODE_WRITE)));
-  unit_try(null != file1);
+  unit_assert_not_null(file1);
   unit_try(OK(xFileWrite(file1, 10, (const Byte_t *) "writemode\0")));
-  unit_try(OK(xFileClose(file1)));
+  unit_assert_ok(xFileClose(file1));
 
   unit_end();
 
@@ -837,16 +837,16 @@ void test_file_mode_validation(void) {
   /* Open file in append mode */
   file1 = null;
   unit_try(OK(xFileOpen(&file1, vol, (const Byte_t *) "/modetest2.txt", FS_MODE_APPEND | FS_MODE_WRITE)));
-  unit_try(null != file1);
+  unit_assert_not_null(file1);
   unit_try(OK(xFileWrite(file1, 7, (const Byte_t *) "append\0")));
 
   /* Verify position at end after append */
   position = nil;
 
-  unit_try(OK(xFileTell(file1, &position)));
+  unit_assert_ok(xFileTell(file1, &position));
   unit_try(17 == position); /* 10 + 7 */
 
-  unit_try(OK(xFileClose(file1)));
+  unit_assert_ok(xFileClose(file1));
 
   unit_end();
 
@@ -855,14 +855,14 @@ void test_file_mode_validation(void) {
   /* Open existing file in read mode */
   file2 = null;
   unit_try(OK(xFileOpen(&file2, vol, (const Byte_t *) "/modetest2.txt", FS_MODE_READ)));
-  unit_try(null != file2);
+  unit_assert_not_null(file2);
 
   /* Read should work */
-  unit_try(OK(xFileRead(file2, 9, &readData)));
-  unit_try(null != readData);
-  unit_try(OK(xMemFree(readData)));
+  unit_assert_ok(xFileRead(file2, 9, &readData));
+  unit_assert_not_null(readData);
+  unit_assert_ok(xMemFree(readData));
 
-  unit_try(OK(xFileClose(file2)));
+  unit_assert_ok(xFileClose(file2));
 
   unit_end();
 
@@ -885,9 +885,9 @@ void test_closed_file_operations(void) {
 
   /* Create a file and immediately close it */
   unit_try(OK(xFileOpen(&file, vol, (const Byte_t *) "/closedtest.txt", FS_MODE_CREATE | FS_MODE_WRITE)));
-  unit_try(null != file);
+  unit_assert_not_null(file);
   unit_try(OK(xFileWrite(file, 12, (const Byte_t *) "test data!!\0")));
-  unit_try(OK(xFileClose(file)));
+  unit_assert_ok(xFileClose(file));
 
   unit_end();
 
@@ -905,8 +905,8 @@ void test_closed_file_operations(void) {
   /* Create another file */
   file = null;
   unit_try(OK(xFileOpen(&file, vol, (const Byte_t *) "/doubleclose.txt", FS_MODE_CREATE | FS_MODE_WRITE)));
-  unit_try(null != file);
-  unit_try(OK(xFileClose(file)));
+  unit_assert_not_null(file);
+  unit_assert_ok(xFileClose(file));
 
   /* Try to close again - should fail as memory is freed */
   /* Cannot test this safely as file pointer is invalid */
@@ -941,61 +941,61 @@ void test_multiple_file_operations(void) {
 
   /* Create three files simultaneously */
   unit_try(OK(xFileOpen(&file1, vol, (const Byte_t *) "/multi1.txt", FS_MODE_CREATE | FS_MODE_WRITE)));
-  unit_try(null != file1);
+  unit_assert_not_null(file1);
 
   unit_try(OK(xFileOpen(&file2, vol, (const Byte_t *) "/multi2.txt", FS_MODE_CREATE | FS_MODE_WRITE)));
-  unit_try(null != file2);
+  unit_assert_not_null(file2);
 
   unit_try(OK(xFileOpen(&file3, vol, (const Byte_t *) "/multi3.txt", FS_MODE_CREATE | FS_MODE_WRITE)));
-  unit_try(null != file3);
+  unit_assert_not_null(file3);
 
   unit_end();
 
   unit_begin("Multiple Files - Write to All Files");
 
   /* Write different data to each file */
-  unit_try(OK(xFileWrite(file1, 14, data1)));
-  unit_try(OK(xFileWrite(file2, 14, data2)));
-  unit_try(OK(xFileWrite(file3, 16, data3)));
+  unit_assert_ok(xFileWrite(file1, 14, data1));
+  unit_assert_ok(xFileWrite(file2, 14, data2));
+  unit_assert_ok(xFileWrite(file3, 16, data3));
 
   unit_end();
 
   unit_begin("Multiple Files - Seek All Files");
 
   /* Seek all files back to start */
-  unit_try(OK(xFileSeek(file1, 0, FS_SEEK_SET)));
-  unit_try(OK(xFileSeek(file2, 0, FS_SEEK_SET)));
-  unit_try(OK(xFileSeek(file3, 0, FS_SEEK_SET)));
+  unit_assert_ok(xFileSeek(file1, 0, FS_SEEK_SET));
+  unit_assert_ok(xFileSeek(file2, 0, FS_SEEK_SET));
+  unit_assert_ok(xFileSeek(file3, 0, FS_SEEK_SET));
 
   unit_end();
 
   unit_begin("Multiple Files - Read and Verify All Files");
 
   /* Read from all files and verify data */
-  unit_try(OK(xFileRead(file1, 14, &readData1)));
-  unit_try(null != readData1);
+  unit_assert_ok(xFileRead(file1, 14, &readData1));
+  unit_assert_not_null(readData1);
   unit_try(0 == strncmp((char *) data1, (char *) readData1, 14));
 
-  unit_try(OK(xFileRead(file2, 14, &readData2)));
-  unit_try(null != readData2);
+  unit_assert_ok(xFileRead(file2, 14, &readData2));
+  unit_assert_not_null(readData2);
   unit_try(0 == strncmp((char *) data2, (char *) readData2, 14));
 
-  unit_try(OK(xFileRead(file3, 16, &readData3)));
-  unit_try(null != readData3);
+  unit_assert_ok(xFileRead(file3, 16, &readData3));
+  unit_assert_not_null(readData3);
   unit_try(0 == strncmp((char *) data3, (char *) readData3, 16));
 
-  unit_try(OK(xMemFree(readData1)));
-  unit_try(OK(xMemFree(readData2)));
-  unit_try(OK(xMemFree(readData3)));
+  unit_assert_ok(xMemFree(readData1));
+  unit_assert_ok(xMemFree(readData2));
+  unit_assert_ok(xMemFree(readData3));
 
   unit_end();
 
   unit_begin("Multiple Files - Close All Files");
 
   /* Close all files */
-  unit_try(OK(xFileClose(file1)));
-  unit_try(OK(xFileClose(file2)));
-  unit_try(OK(xFileClose(file3)));
+  unit_assert_ok(xFileClose(file1));
+  unit_assert_ok(xFileClose(file2));
+  unit_assert_ok(xFileClose(file3));
 
   unit_end();
 
