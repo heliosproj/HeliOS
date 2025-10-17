@@ -41,14 +41,8 @@ int main(int argc, char **argv) {
   stream_harness();
   reset();
   device_harness();
-  printf("=== DEVICE HARNESS COMPLETED ===\n");
-  fflush(stdout);
   reset();
-  printf("=== RESET COMPLETED, STARTING FS HARNESS ===\n");
-  fflush(stdout);
   fs_harness();
-  printf("=== FS HARNESS COMPLETED ===\n");
-  fflush(stdout);
   unit_exit();
 
   return(0);

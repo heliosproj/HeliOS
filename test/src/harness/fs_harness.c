@@ -42,10 +42,6 @@ void fs_harness(void) {
   Size_t configSize = 0;
 
 
-  printf("=== FS HARNESS STARTED ===\n");
-  fflush(stdout);
-
-
   /* Driver registration tests */
   unit_begin("Driver Registration and FS Mount Tests");
   unit_print("Registering RAM disk driver...");
@@ -124,9 +120,6 @@ void fs_harness(void) {
 
   /* Test multiple concurrent file operations */
   test_multiple_file_operations();
-
-  printf("=== FS HARNESS COMPLETED ===\n");
-  fflush(stdout);
 
   /* Cleanup */
   __FSStateClear__();
