@@ -8830,7 +8830,7 @@
    *
    * **Period semantics:**
    * - **Period = 0**: Task runs every scheduler cycle (maximum frequency)
-   * - **Period > 0**: Task runs when elapsed ticks ≥ period
+   * - **Period > 0**: Task runs when elapsed ticks >= period
    *
    * The period is measured in system ticks, which are platform-dependent but
    * typically represent 1 millisecond. A task with period 100 executes approximately
@@ -8918,7 +8918,7 @@
    *
    * **Period values:**
    * - **0**: Task runs every scheduler cycle (maximum frequency)
-   * - **>0**: Task runs when elapsed time ≥ period (in ticks)
+   * - **>0**: Task runs when elapsed time >= period (in ticks)
    *
    * @param[in]  task_   Task handle. Must be valid.
    * @param[out] period_ Receives current period in ticks.
