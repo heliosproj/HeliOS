@@ -73,16 +73,16 @@ void memory_1_harness(void) {
       tests[i].blocks += 1;
     }
 
-    unit_try(OK(xMemAlloc((volatile Addr_t **) &tests[i].ptr, sizes[i])));
+    unit_assert_ok(xMemAlloc((volatile Addr_t **) &tests[i].ptr, sizes[i]));
     unit_assert_not_null(tests[i].ptr);
     used += tests[i].blocks * CONFIG_MEMORY_REGION_BLOCK_SIZE;
     unit_assert_ok(xMemGetUsed(&actual));
     unit_assert_equal(used, actual);
     unit_assert_ok(xMemGetSize(tests[i].ptr, &actual));
-    unit_try((tests[i].blocks * CONFIG_MEMORY_REGION_BLOCK_SIZE) == actual);
+    unit_assert_equal(tests[i].blocks * CONFIG_MEMORY_REGION_BLOCK_SIZE, actual);
   }
 
-  unit_try(!OK(xMemAlloc((volatile Addr_t **) &mem05, OVERSIZED_ALLOC)));
+  unit_assert_not_ok(xMemAlloc((volatile Addr_t **) &mem05, OVERSIZED_ALLOC));
 
   for(i = 0; i < NUM_TEST_ALLOCS; i++) {
     unit_assert_ok(xMemFree(tests[order[i]].ptr));
@@ -90,15 +90,15 @@ void memory_1_harness(void) {
 
   unit_assert_ok(xMemGetUsed(&actual));
   unit_assert_equal(actual, 0x0u);
-  unit_try(OK(xMemAlloc((volatile Addr_t **) &mem05, (CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS - 1) * CONFIG_MEMORY_REGION_BLOCK_SIZE)));
+  unit_assert_ok(xMemAlloc((volatile Addr_t **) &mem05, (CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS - 1) * CONFIG_MEMORY_REGION_BLOCK_SIZE));
   actual = nil;
   unit_assert_ok(xMemGetUsed(&actual));
-  unit_try((CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS * CONFIG_MEMORY_REGION_BLOCK_SIZE) == actual);
+  unit_assert_equal(CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS * CONFIG_MEMORY_REGION_BLOCK_SIZE, actual);
   unit_assert_ok(xMemFree(mem05));
   unit_end();
   unit_begin("Memory allocation succeeds for large block");
   mem01 = null;
-  unit_try(OK(xMemAlloc((volatile Addr_t **) &mem01, LARGE_BLOCK_SIZE)));
+  unit_assert_ok(xMemAlloc((volatile Addr_t **) &mem01, LARGE_BLOCK_SIZE));
   unit_assert_not_null(mem01);
   unit_end();
   unit_begin("Used memory tracking reflects allocations");
@@ -124,7 +124,7 @@ void memory_1_harness(void) {
   unit_begin("Kernel statistics track internal allocations");
   mem03 = null;
   mem04 = null;
-  unit_try(OK(xTaskCreate(&mem04, (Byte_t *) "NONE", memory_1_harness_task, null)));
+  unit_assert_ok(xTaskCreate(&mem04, (Byte_t *) "NONE", memory_1_harness_task, null));
   unit_assert_not_null(mem04);
   unit_assert_ok(xTaskDelete(mem04));
   unit_assert_ok(xMemGetKernelStats(&mem03));

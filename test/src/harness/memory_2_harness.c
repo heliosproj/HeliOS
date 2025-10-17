@@ -64,11 +64,11 @@ void test_magic(void) {
 
   /* 2) Call a memory syscall like xMemGetUsed() which should return ReturnOK */
   unit_assert_ok(xMemGetUsed(&size));
-  unit_try(EXPECTED_USED_SIZE == size);
+  unit_assert_equal(EXPECTED_USED_SIZE, size);
 
 
   /* 3) Check the memfault flag (should be "false" at this point) */
-  unit_try(__FlagIsNotSet__(MEMFAULT));
+  unit_assert_true(__FlagIsNotSet__(MEMFAULT));
 
 
   /* 4) Modify some part of the memory entry */
@@ -82,7 +82,7 @@ void test_magic(void) {
 
 
   /* 6) Check the memfault flag (should be "true" at this point) */
-  unit_try(__FlagIsSet__(MEMFAULT));
+  unit_assert_true(__FlagIsSet__(MEMFAULT));
 
 
   /* 7) Call __MemoryClear__() and __SysStateClear__() */
@@ -105,11 +105,11 @@ void test_free(void) {
 
   /* 2) Call a memory syscall like xMemGetUsed() which should return ReturnOK */
   unit_assert_ok(xMemGetUsed(&size));
-  unit_try(EXPECTED_USED_SIZE == size);
+  unit_assert_equal(EXPECTED_USED_SIZE, size);
 
 
   /* 3) Check the memfault flag (should be "false" at this point) */
-  unit_try(__FlagIsNotSet__(MEMFAULT));
+  unit_assert_true(__FlagIsNotSet__(MEMFAULT));
 
 
   /* 4) Modify some part of the memory entry */
@@ -121,7 +121,7 @@ void test_free(void) {
 
 
   /* 6) Check the memfault flag (should be "true" at this point) */
-  unit_try(__FlagIsSet__(MEMFAULT));
+  unit_assert_true(__FlagIsSet__(MEMFAULT));
 
 
   /* 7) Call __MemoryClear__() and __SysStateClear__() */
@@ -144,11 +144,11 @@ void test_blocks(void) {
 
   /* 2) Call a memory syscall like xMemGetUsed() which should return ReturnOK */
   unit_assert_ok(xMemGetUsed(&size));
-  unit_try(EXPECTED_USED_SIZE == size);
+  unit_assert_equal(EXPECTED_USED_SIZE, size);
 
 
   /* 3) Check the memfault flag (should be "false" at this point) */
-  unit_try(__FlagIsNotSet__(MEMFAULT));
+  unit_assert_true(__FlagIsNotSet__(MEMFAULT));
 
 
   /* 4) Modify some part of the memory entry */
@@ -160,7 +160,7 @@ void test_blocks(void) {
 
 
   /* 6) Check the memfault flag (should be "true" at this point) */
-  unit_try(__FlagIsSet__(MEMFAULT));
+  unit_assert_true(__FlagIsSet__(MEMFAULT));
 
 
   /* 7) Call __MemoryClear__() and __SysStateClear__() */
@@ -183,11 +183,11 @@ void test_next(void) {
 
   /* 2) Call a memory syscall like xMemGetUsed() which should return ReturnOK */
   unit_assert_ok(xMemGetUsed(&size));
-  unit_try(EXPECTED_USED_SIZE == size);
+  unit_assert_equal(EXPECTED_USED_SIZE, size);
 
 
   /* 3) Check the memfault flag (should be "false" at this point) */
-  unit_try(__FlagIsNotSet__(MEMFAULT));
+  unit_assert_true(__FlagIsNotSet__(MEMFAULT));
 
 
   /* 4) Modify some part of the memory entry */
@@ -199,7 +199,7 @@ void test_next(void) {
 
 
   /* 6) Check the memfault flag (should be "true" at this point) */
-  unit_try(__FlagIsSet__(MEMFAULT));
+  unit_assert_true(__FlagIsSet__(MEMFAULT));
 
 
   /* 7) Call __MemoryClear__() and __SysStateClear__() */
