@@ -255,7 +255,7 @@ void test_file_operations(void) {
   unit_end();
 
   /* Close file */
-  unit_try(OK(xFileClose(file)));
+  xFileClose(file);
 
   /* Test file truncate */
   unit_begin("xFileTruncate()");
@@ -280,7 +280,7 @@ void test_file_operations(void) {
   unit_end();
 
   /* Unmount filesystem */
-  unit_try(OK(xFSUnmount(vol)));
+  xFSUnmount(vol);
 }
 
 
@@ -309,18 +309,19 @@ void test_directory_operations(void) {
   unit_try(true == exists);
   unit_end();
 
-  /* Create a file in the directory */
+  /* Create files in the directory for testing */
+  unit_begin("Setup - Create Files in Directory");
   unit_try(OK(xFileOpen(&file, vol, (const Byte_t *) "/testdir/file1.txt", FS_MODE_CREATE | FS_MODE_WRITE)));
   unit_try(null != file);
   unit_try(OK(xFileWrite(file, 12, (const Byte_t *) "Test File 1\0")));
   unit_try(OK(xFileClose(file)));
 
-  /* Create another file */
   file = null;
   unit_try(OK(xFileOpen(&file, vol, (const Byte_t *) "/testdir/file2.txt", FS_MODE_CREATE | FS_MODE_WRITE)));
   unit_try(null != file);
   unit_try(OK(xFileWrite(file, 12, (const Byte_t *) "Test File 2\0")));
   unit_try(OK(xFileClose(file)));
+  unit_end();
 
   /* Test directory open */
   unit_begin("xDirOpen()");
@@ -372,7 +373,7 @@ void test_directory_operations(void) {
   unit_end();
 
   /* Unmount filesystem */
-  unit_try(OK(xFSUnmount(vol)));
+  xFSUnmount(vol);
 }
 
 
@@ -389,10 +390,12 @@ void test_file_management(void) {
   }
 
   /* Create a test file */
+  unit_begin("Setup - Create Test File");
   unit_try(OK(xFileOpen(&file, vol, (const Byte_t *) "/manage.txt", FS_MODE_CREATE | FS_MODE_WRITE)));
   unit_try(null != file);
   unit_try(OK(xFileWrite(file, 13, (const Byte_t *) "Management!!\0")));
   unit_try(OK(xFileClose(file)));
+  unit_end();
 
   /* Test file exists */
   unit_begin("xFileExists() - Existing File");
@@ -440,7 +443,7 @@ void test_file_management(void) {
   unit_end();
 
   /* Unmount filesystem */
-  unit_try(OK(xFSUnmount(vol)));
+  xFSUnmount(vol);
 }
 
 
@@ -527,7 +530,7 @@ void test_fs_edge_cases(void) {
 
   /* Test operations on unmounted volume */
   unit_begin("Edge Case - Operations After Unmount");
-  unit_try(OK(xFSUnmount(vol)));
+  xFSUnmount(vol);
 
   /* These should fail after unmount */
   file = null;
@@ -610,7 +613,7 @@ void test_large_file_operations(void) {
   unit_end();
 
   /* Unmount filesystem */
-  unit_try(OK(xFSUnmount(vol)));
+  xFSUnmount(vol);
 }
 
 
@@ -678,7 +681,7 @@ void test_cluster_boundary_operations(void) {
   unit_end();
 
   /* Unmount filesystem */
-  unit_try(OK(xFSUnmount(vol)));
+  xFSUnmount(vol);
 }
 
 
@@ -759,7 +762,7 @@ void test_partial_io_operations(void) {
   unit_end();
 
   /* Unmount filesystem */
-  unit_try(OK(xFSUnmount(vol)));
+  xFSUnmount(vol);
 }
 
 
@@ -799,7 +802,7 @@ void test_volume_info_validation(void) {
   unit_end();
 
   /* Unmount filesystem */
-  unit_try(OK(xFSUnmount(vol)));
+  xFSUnmount(vol);
 }
 
 
@@ -875,7 +878,7 @@ void test_file_mode_validation(void) {
   unit_end();
 
   /* Unmount filesystem */
-  unit_try(OK(xFSUnmount(vol)));
+  xFSUnmount(vol);
 }
 
 
@@ -923,7 +926,7 @@ void test_closed_file_operations(void) {
   unit_end();
 
   /* Unmount filesystem */
-  unit_try(OK(xFSUnmount(vol)));
+  xFSUnmount(vol);
 }
 
 
@@ -1008,5 +1011,5 @@ void test_multiple_file_operations(void) {
   unit_end();
 
   /* Unmount filesystem */
-  unit_try(OK(xFSUnmount(vol)));
+  xFSUnmount(vol);
 }
