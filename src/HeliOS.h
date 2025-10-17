@@ -931,31 +931,122 @@
 
 
   /**
-   * @brief Syscall to write a byte of data to the device
+   * @brief Write a single byte to a device
    *
-   * The xDeviceSimpleWrite() syscall will write a byte of data to a device.
-   * Whether the data is written to the device is dependent on the device driver
-   * mode, state and implementation of these features by the device driver's
-   * author.
+   * Writes a single byte of data to the specified device through its registered
+   * driver. This is a simplified write operation for single-byte transfers,
+   * ideal for character output, simple control commands, or low-throughput data
+   * transmission where heap allocation overhead is unnecessary.
    *
-   * @sa xReturn
+   * Unlike xDeviceWrite() which requires heap-allocated buffers for bulk data,
+   * xDeviceSimpleWrite() accepts a single byte value directly. This makes it
+   * more efficient for single-character operations and simpler to use when you
+   * only need to send one byte at a time.
    *
-   * @param  uid_  The unique identifier ("UID") of the device driver to be
-   *               operated on.
-   * @param  data_ A byte of data to be written to the device.
-   * @return       On success, the syscall returns ReturnOK. On failure, the
-   *               syscall returns ReturnError. A failure is any condition in
-   *               which the syscall was unable to achieve its intended
-   *               objective. For example, if xTaskGetId() was unable to locate
-   *               the task by the task object (i.e., xTask) passed to the
-   *               syscall, because either the object was null or invalid (e.g.,
-   *               a deleted task), xTaskGetId() would return ReturnError. All
-   *               HeliOS syscalls return the xReturn (a.k.a., Return_t) type
-   *               which can either be ReturnOK or ReturnError. The C macros
-   *               OK() and ERROR() can be used as a more concise way of
-   *               checking the return value of a syscall (e.g.,
-   *               if(OK(xMemGetUsed(&size))) {} or
-   *               if(ERROR(xMemGetUsed(&size))) {}).
+   * Common use cases:
+   * - **Character output**: Sending individual characters to a UART or terminal
+   * - **Control commands**: Sending single-byte commands to peripherals
+   * - **Status updates**: Writing status bytes to LED controllers or displays
+   * - **Protocol framing**: Sending header bytes, delimiters, or checksums
+   * - **Low-rate data**: Simple sensors or actuators requiring occasional updates
+   *
+   * Operational behavior:
+   * - The byte is passed directly to the device driver's write callback
+   * - No heap allocation or memory validation is required
+   * - Operation is synchronous (returns after driver completes the write)
+   * - Device must be in writable state (DeviceModeWriteOnly or DeviceModeReadWrite)
+   * - Device must be running (DeviceStateRunning)
+   *
+   * Example 1: Send character to UART
+   * @code
+   * #define UART0_UID 0x0100
+   *
+   * void sendChar(char c) {
+   *   if (OK(xDeviceSimpleWrite(UART0_UID, (xByte)c))) {
+   *     // Character sent successfully
+   *   } else {
+   *     // Write failed - check device state
+   *   }
+   * }
+   *
+   * // Send a string character-by-character
+   * void sendString(const char *str) {
+   *   while (*str) {
+   *     xDeviceSimpleWrite(UART0_UID, (xByte)*str);
+   *     str++;
+   *   }
+   * }
+   * @endcode
+   *
+   * Example 2: Control LED via byte commands
+   * @code
+   * #define LED_CTRL_UID 0x0200
+   * #define LED_ON  0x01
+   * #define LED_OFF 0x00
+   *
+   * void setLED(xBase state) {
+   *   xByte command = state ? LED_ON : LED_OFF;
+   *   if (ERROR(xDeviceSimpleWrite(LED_CTRL_UID, command))) {
+   *     logError("Failed to control LED");
+   *   }
+   * }
+   * @endcode
+   *
+   * Example 3: Send protocol framing bytes
+   * @code
+   * #define START_BYTE 0xAA
+   * #define END_BYTE   0x55
+   *
+   * xReturn sendFrame(xHalfWord deviceUID, xByte *payload, xSize len) {
+   *   // Send start byte
+   *   if (ERROR(xDeviceSimpleWrite(deviceUID, START_BYTE))) {
+   *     return ReturnError;
+   *   }
+   *
+   *   // Send payload (using bulk write)
+   *   if (ERROR(xDeviceWrite(deviceUID, &len, (xAddr)payload))) {
+   *     return ReturnError;
+   *   }
+   *
+   *   // Send end byte
+   *   if (ERROR(xDeviceSimpleWrite(deviceUID, END_BYTE))) {
+   *     return ReturnError;
+   *   }
+   *
+   *   return ReturnOK;
+   * }
+   * @endcode
+   *
+   * @param[in] uid_  Unique identifier of the target device. Must match a UID
+   *                  previously registered via xDeviceRegisterDevice().
+   * @param[in] data_ Single byte value to write to the device. Accepts any
+   *                  value from 0x00 to 0xFF.
+   *
+   * @return          ReturnOK if byte was written successfully, ReturnError if
+   *                  the write failed (invalid UID, device not found, device in
+   *                  wrong state/mode, or driver write operation failed).
+   *
+   * @warning The device must be in a writable state (DeviceModeWriteOnly or
+   * DeviceModeReadWrite) for the write to succeed. Use xDeviceConfigDevice() to
+   * check or change device mode if writes are failing.
+   *
+   * @warning The device must be in running state (DeviceStateRunning). Devices
+   * in stopped or error states will reject write operations.
+   *
+   * @note Unlike xDeviceWrite(), this function does not require heap-allocated
+   * memory, making it more efficient for single-byte operations.
+   *
+   * @note For writing multiple bytes, consider using xDeviceWrite() instead as
+   * it's more efficient for bulk transfers and reduces driver overhead.
+   *
+   * @note Write behavior depends on the device driver implementation. Some
+   * drivers may buffer writes, while others perform immediate hardware I/O.
+   *
+   * @sa xDeviceWrite() - Write multiple bytes to a device (requires heap buffer)
+   * @sa xDeviceSimpleRead() - Read a single byte from a device
+   * @sa xDeviceRegisterDevice() - Register a device driver
+   * @sa xDeviceInitDevice() - Initialize a device
+   * @sa xDeviceConfigDevice() - Configure device state or mode
    */
   xReturn xDeviceSimpleWrite(const xHalfWord uid_, xByte data_);
 
@@ -1061,31 +1152,140 @@
 
 
   /**
-   * @brief Syscall to read a byte of data from the device
+   * @brief Read a single byte from a device
    *
-   * The xDeviceSimpleRead() syscall will read a byte of data from a device.
-   * Whether the data is read from the device is dependent on the device driver
-   * mode, state and implementation of these features by the device driver's
-   * author.
+   * Reads a single byte of data from the specified device through its registered
+   * driver. This is a simplified read operation for single-byte transfers, ideal
+   * for character input, polling device status, or reading simple sensor values
+   * where the overhead of buffer management is unnecessary.
    *
-   * @sa xReturn
+   * Unlike xDeviceRead() which allocates heap memory and returns variable-length
+   * data, xDeviceSimpleRead() reads exactly one byte directly into the provided
+   * variable. This makes it more efficient and simpler to use when you only need
+   * to read one byte at a time.
    *
-   * @param  uid_  The unique identifier ("UID") of the device driver to be
-   *               operated on.
-   * @param  data_ The byte of data read from the device.
-   * @return       On success, the syscall returns ReturnOK. On failure, the
-   *               syscall returns ReturnError. A failure is any condition in
-   *               which the syscall was unable to achieve its intended
-   *               objective. For example, if xTaskGetId() was unable to locate
-   *               the task by the task object (i.e., xTask) passed to the
-   *               syscall, because either the object was null or invalid (e.g.,
-   *               a deleted task), xTaskGetId() would return ReturnError. All
-   *               HeliOS syscalls return the xReturn (a.k.a., Return_t) type
-   *               which can either be ReturnOK or ReturnError. The C macros
-   *               OK() and ERROR() can be used as a more concise way of
-   *               checking the return value of a syscall (e.g.,
-   *               if(OK(xMemGetUsed(&size))) {} or
-   *               if(ERROR(xMemGetUsed(&size))) {}).
+   * Common use cases:
+   * - **Character input**: Reading individual characters from a UART or keyboard
+   * - **Status polling**: Reading device status registers or flags
+   * - **Simple sensors**: Reading 8-bit sensor values (temperature, light level)
+   * - **Protocol parsing**: Reading header bytes, delimiters, or checksums
+   * - **Command acknowledgment**: Reading single-byte responses from peripherals
+   *
+   * Operational behavior:
+   * - The byte is retrieved directly from the device driver's read callback
+   * - No heap allocation or memory management is required
+   * - Operation is synchronous (returns after driver completes the read)
+   * - Device must be in readable state (DeviceModeReadOnly or DeviceModeReadWrite)
+   * - Device must be running (DeviceStateRunning)
+   * - If no data is available, behavior depends on driver implementation (may
+   * return error or block)
+   *
+   * Example 1: Read character from UART
+   * @code
+   * #define UART0_UID 0x0100
+   *
+   * char getChar(void) {
+   *   xByte data;
+   *   if (OK(xDeviceSimpleRead(UART0_UID, &data))) {
+   *     return (char)data;
+   *   } else {
+   *     return '\0';  // No data available or error
+   *   }
+   * }
+   *
+   * // Read a line of text character-by-character
+   * xReturn readLine(char *buffer, xSize maxLen) {
+   *   xSize idx = 0;
+   *   xByte c;
+   *
+   *   while (idx < maxLen - 1) {
+   *     if (OK(xDeviceSimpleRead(UART0_UID, &c))) {
+   *       if (c == '\n' || c == '\r') {
+   *         break;
+   *       }
+   *       buffer[idx++] = (char)c;
+   *     }
+   *   }
+   *   buffer[idx] = '\0';
+   *   return ReturnOK;
+   * }
+   * @endcode
+   *
+   * Example 2: Poll device status register
+   * @code
+   * #define SENSOR_UID 0x0300
+   * #define STATUS_READY  0x01
+   * #define STATUS_ERROR  0x80
+   *
+   * xBase isSensorReady(void) {
+   *   xByte status;
+   *   if (OK(xDeviceSimpleRead(SENSOR_UID, &status))) {
+   *     return (status & STATUS_READY) != 0;
+   *   }
+   *   return 0;
+   * }
+   *
+   * xBase checkSensorError(void) {
+   *   xByte status;
+   *   if (OK(xDeviceSimpleRead(SENSOR_UID, &status))) {
+   *     return (status & STATUS_ERROR) != 0;
+   *   }
+   *   return 1;  // Assume error if can't read
+   * }
+   * @endcode
+   *
+   * Example 3: Read simple sensor value
+   * @code
+   * #define TEMP_SENSOR_UID 0x0400
+   *
+   * // Read temperature sensor (returns 0-255 representing 0-100°C)
+   * xBase readTemperature(xByte *tempOut) {
+   *   if (OK(xDeviceSimpleRead(TEMP_SENSOR_UID, tempOut))) {
+   *     // Convert to actual temperature (0-255 maps to 0-100°C)
+   *     // Caller can do: actualTemp = (*tempOut * 100) / 255
+   *     return 1;  // Success
+   *   }
+   *   return 0;  // Failed to read
+   * }
+   * @endcode
+   *
+   * @param[in]  uid_  Unique identifier of the target device. Must match a UID
+   *                   previously registered via xDeviceRegisterDevice().
+   * @param[out] data_ Pointer to byte variable to receive the read data. On
+   *                   success, this variable is updated with the byte value read
+   *                   from the device.
+   *
+   * @return           ReturnOK if byte was read successfully, ReturnError if the
+   *                   read failed (invalid UID, device not found, device in wrong
+   *                   state/mode, no data available, or driver read operation
+   *                   failed).
+   *
+   * @warning The device must be in a readable state (DeviceModeReadOnly or
+   * DeviceModeReadWrite) for the read to succeed. Use xDeviceConfigDevice() to
+   * check or change device mode if reads are failing.
+   *
+   * @warning The device must be in running state (DeviceStateRunning). Devices
+   * in stopped or error states will reject read operations.
+   *
+   * @warning If no data is available to read, driver behavior varies. Some
+   * drivers return ReturnError immediately, while others may block waiting for
+   * data. Check your device driver documentation for specific behavior.
+   *
+   * @note Unlike xDeviceRead(), this function does not allocate heap memory,
+   * making it more efficient for single-byte operations.
+   *
+   * @note For reading multiple bytes, consider using xDeviceRead() instead as
+   * it's more efficient for bulk transfers and reduces driver overhead.
+   *
+   * @note Read behavior depends on the device driver implementation. Some drivers
+   * read from hardware registers directly, while others may maintain receive
+   * buffers.
+   *
+   * @sa xDeviceRead() - Read multiple bytes from a device (allocates heap buffer)
+   * @sa xDeviceSimpleWrite() - Write a single byte to a device
+   * @sa xDeviceRegisterDevice() - Register a device driver
+   * @sa xDeviceInitDevice() - Initialize a device
+   * @sa xDeviceConfigDevice() - Configure device state or mode
    */
   xReturn xDeviceSimpleRead(const xHalfWord uid_, xByte *data_);
 
@@ -1202,71 +1402,304 @@
 
 
   /**
-   * @brief Syscall to initialize a device
+   * @brief Initialize a device driver
    *
-   * The xDeviceInitDevice() syscall will call the device driver's
-   * DRIVERNAME_init() function to bootstrap the device. For example, setting
-   * memory mapped registers to starting values or setting the device driver's
-   * state and mode. This syscall is optional and is dependent on the specifics
-   * of the device driver's implementation by its author.
+   * Initializes the specified device by invoking its driver's initialization
+   * callback function. This performs hardware and software setup required
+   * before the device can be used for I/O operations. Initialization typically
+   * configures hardware registers, sets initial device state and mode, allocates
+   * driver-specific resources, and prepares the device for operation.
    *
-   * @sa xReturn
+   * Device initialization is a critical first step after registering a device
+   * driver with xDeviceRegisterDevice(). Without proper initialization, devices
+   * may not respond to I/O requests or may behave unpredictably. The specific
+   * initialization actions depend entirely on the device driver implementation.
    *
-   * @param  uid_ The unique identifier ("UID") of the device driver to be
-   *              operated on.
-   * @return      On success, the syscall returns ReturnOK. On failure, the
-   *              syscall returns ReturnError. A failure is any condition in
-   *              which the syscall was unable to achieve its intended
-   *              objective. For example, if xTaskGetId() was unable to locate
-   *              the task by the task object (i.e., xTask) passed to the
-   *              syscall, because either the object was null or invalid (e.g.,
-   *              a deleted task), xTaskGetId() would return ReturnError. All
-   *              HeliOS syscalls return the xReturn (a.k.a., Return_t) type
-   *              which can either be ReturnOK or ReturnError. The C macros OK()
-   *              and ERROR() can be used as a more concise way of checking the
-   *              return value of a syscall (e.g., if(OK(xMemGetUsed(&size))) {}
-   *              or if(ERROR(xMemGetUsed(&size))) {}).
+   * Common initialization tasks performed by drivers:
+   * - **Hardware configuration**: Setting memory-mapped registers, clock speeds,
+   * baud rates
+   * - **State initialization**: Setting device to DeviceStateRunning or initial
+   * state
+   * - **Mode configuration**: Configuring read/write mode, interrupts, DMA
+   * - **Buffer allocation**: Creating internal receive/transmit buffers if needed
+   * - **Self-test**: Performing device self-checks or calibration
+   * - **Feature enabling**: Activating device-specific features (e.g., UART
+   * flow control)
+   *
+   * Typical device initialization sequence:
+   * 1. Register device driver with xDeviceRegisterDevice() 2. Initialize device
+   * with xDeviceInitDevice() 3. Optionally configure device with
+   * xDeviceConfigDevice() 4. Begin I/O operations with xDeviceRead() /
+   * xDeviceWrite()
+   *
+   * Example 1: Initialize UART device
+   * @code
+   * #define UART0_UID 0x0100
+   *
+   * // Register UART driver (done during system startup) extern DeviceDriver_t
+   * uart0Driver;
+   * if (OK(xDeviceRegisterDevice(UART0_UID, &uart0Driver))) {
+   *   // Initialize the UART hardware if (OK(xDeviceInitDevice(UART0_UID))) {
+   *     // UART ready for use
+   *   } else {
+   *     logError("UART0 initialization failed");
+   *   }
+   * }
+   * @endcode
+   *
+   * Example 2: Initialize multiple devices in sequence
+   * @code
+   * #define UART0_UID  0x0100
+   * #define SPI0_UID   0x0200
+   * #define I2C0_UID   0x0300
+   *
+   * xReturn initPeripherals(void) {
+   *   // Initialize UART if (ERROR(xDeviceInitDevice(UART0_UID))) {
+   *     return ReturnError;
+   *   }
+   *
+   *   // Initialize SPI if (ERROR(xDeviceInitDevice(SPI0_UID))) {
+   *     return ReturnError;
+   *   }
+   *
+   *   // Initialize I2C if (ERROR(xDeviceInitDevice(I2C0_UID))) {
+   *     return ReturnError;
+   *   }
+   *
+   *   return ReturnOK;  // All devices initialized
+   * }
+   * @endcode
+   *
+   * Example 3: Initialize with error recovery
+   * @code
+   * #define MAX_INIT_RETRIES 3
+   *
+   * xReturn initDeviceWithRetry(xHalfWord deviceUID) {
+   *   xBase retries = 0;
+   *
+   *   while (retries < MAX_INIT_RETRIES) {
+   *     if (OK(xDeviceInitDevice(deviceUID))) {
+   *       logInfo("Device 0x%04X initialized", deviceUID);
+   *       return ReturnOK;
+   *     }
+   *
+   *     retries++;
+   *     if (retries < MAX_INIT_RETRIES) {
+   *       logWarning("Device init failed, retrying %u/%u", retries,
+   * MAX_INIT_RETRIES);
+   *       delayMs(100);  // Brief delay before retry
+   *     }
+   *   }
+   *
+   *   logError("Device 0x%04X failed to initialize after %u attempts",
+   * deviceUID, MAX_INIT_RETRIES);
+   *   return ReturnError;
+   * }
+   * @endcode
+   *
+   * @param[in] uid_ Unique identifier of the device to initialize. Must match a
+   *                 UID previously registered via xDeviceRegisterDevice().
+   *
+   * @return         ReturnOK if device initialized successfully, ReturnError if
+   *                 initialization failed (invalid UID, device not registered,
+   *                 driver init callback failed, or hardware initialization
+   *                 error).
+   *
+   * @warning Always check the return value. A failed initialization means the
+   * device is not ready for use, and subsequent I/O operations will likely fail.
+   *
+   * @warning Do not call xDeviceInitDevice() on an already-initialized device
+   * unless the driver explicitly supports re-initialization. Some drivers may
+   * leak resources or behave unpredictably if initialized multiple times.
+   *
+   * @note Not all device drivers require initialization. Some simple drivers may
+   * be ready immediately after registration. However, calling xDeviceInitDevice()
+   * on such devices is safe and recommended for consistency.
+   *
+   * @note Initialization is typically performed during system startup, before
+   * the scheduler starts. However, it can be called at any time (e.g., for
+   * runtime device hotplug or power management).
+   *
+   * @note If initialization fails, check hardware connections, power supply,
+   * clock configuration, and driver implementation for issues.
+   *
+   * @sa xDeviceRegisterDevice() - Register device driver before initialization
+   * @sa xDeviceConfigDevice() - Configure device after initialization
+   * @sa xDeviceRead() - Read from initialized device
+   * @sa xDeviceWrite() - Write to initialized device
+   * @sa xDeviceIsAvailable() - Check if device is ready for use
    */
   xReturn xDeviceInitDevice(const xHalfWord uid_);
 
 
   /**
-   * @brief Syscall to configure a device
+   * @brief Configure a device and retrieve its current configuration
    *
-   * The xDeviceConfigDevice() will call the device driver's DEVICENAME_config()
-   * function to configure the device. The syscall is bi-directional (i.e., it
-   * will write configuration data to the device and read the same from the
-   * device before returning). The purpose of the bi-directional functionality
-   * is to allow the device's configuration to be set and queried using one
-   * syscall. The structure of the configuration data is left to the device
-   * driver's author. What is required is that the configuration data memory is
-   * allocated using xMemAlloc() and that the "size_" parameter is set to the
-   * size (i.e., amount) of the configuration data (e.g.,
-   * sizeof(MyDeviceDriverConfig)) in bytes.
+   * Configures the specified device and retrieves its current configuration in
+   * a single bidirectional operation. This function writes configuration
+   * parameters to the device driver and reads back the effective configuration,
+   * allowing applications to both set and verify device settings atomically.
    *
-   * @sa xReturn
-   * @sa xMemAlloc()
-   * @sa xMemFree()
+   * The bidirectional nature serves two purposes: writing configuration to apply
+   * new settings, and reading back the actual configuration to verify successful
+   * application or to query current device state. This is particularly useful
+   * for devices where the effective configuration may differ from requested
+   * settings (due to hardware limitations or automatic adjustments).
    *
-   * @param  uid_    The unique identifier ("UID") of the device driver to be
-   *                 operated on.
-   * @param  size_   The size (i.e., amount) of configuration data to bw written
-   *                 and read to and from the device, in bytes.
-   * @param  config_ The configuration data. The configuration data must have
-   *                 been allocated by xMemAlloc().
-   * @return         On success, the syscall returns ReturnOK. On failure, the
-   *                 syscall returns ReturnError. A failure is any condition in
-   *                 which the syscall was unable to achieve its intended
-   *                 objective. For example, if xTaskGetId() was unable to
-   *                 locate the task by the task object (i.e., xTask) passed to
-   *                 the syscall, because either the object was null or invalid
-   *                 (e.g., a deleted task), xTaskGetId() would return
-   *                 ReturnError. All HeliOS syscalls return the xReturn
-   *                 (a.k.a., Return_t) type which can either be ReturnOK or
-   *                 ReturnError. The C macros OK() and ERROR() can be used as a
-   *                 more concise way of checking the return value of a syscall
-   *                 (e.g., if(OK(xMemGetUsed(&size))) {} or
-   *                 if(ERROR(xMemGetUsed(&size))) {}).
+   * Configuration structure and content are driver-specific. Each device driver
+   * defines its own configuration data structure containing parameters like:
+   * - Device operating mode (DeviceMode, DeviceState)
+   * - Hardware settings (baud rate, clock speed, resolution)
+   * - Feature enables (interrupts, DMA, flow control)
+   * - Operational parameters (timeouts, buffer sizes, thresholds)
+   *
+   * Typical configuration workflow:
+   * 1. Allocate configuration structure with xMemAlloc() 2. Populate structure
+   * with desired settings 3. Call xDeviceConfigDevice() to apply and read back
+   * 4. Verify returned configuration matches expectations 5. Free configuration
+   * structure with xMemFree()
+   *
+   * @warning Configuration data MUST be allocated from user heap via
+   * xMemAlloc(). Stack-allocated or static configuration structures will cause
+   * memory validation errors. HeliOS enforces this to maintain memory safety.
+   *
+   * Example 1: Configure UART baud rate
+   * @code
+   * #define UART0_UID 0x0100
+   *
+   * typedef struct {
+   *   xWord baudRate;
+   *   xByte dataBits;
+   *   xByte stopBits;
+   *   xByte parity;
+   *   DeviceMode mode;
+   * } UARTConfig_t;
+   *
+   * xReturn configureUART(xWord baud) {
+   *   UARTConfig_t *config = NULL;
+   *   xSize configSize = sizeof(UARTConfig_t);
+   *
+   *   // Allocate config from heap if (OK(xMemAlloc((volatile xAddr *)&config,
+   * configSize))) {
+   *     // Set desired configuration config->baudRate = baud;
+   *     config->dataBits = 8;
+   *     config->stopBits = 1;
+   *     config->parity = 0;  // No parity config->mode =
+   * DeviceModeReadWrite;
+   *
+   *     // Apply configuration and read back if (OK(xDeviceConfigDevice(UART0_UID,
+   * &configSize, (xAddr)config))) {
+   *       // Verify effective baud rate if (config->baudRate != baud) {
+   *         logWarning("UART baud rate adjusted to %lu", config->baudRate);
+   *       }
+   *     }
+   *
+   *     xMemFree((xAddr)config);
+   *     return ReturnOK;
+   *   }
+   *   return ReturnError;
+   * }
+   * @endcode
+   *
+   * Example 2: Query current device configuration
+   * @code
+   * #define SENSOR_UID 0x0400
+   *
+   * typedef struct {
+   *   xHalfWord sampleRate;
+   *   xByte resolution;
+   *   xByte powerMode;
+   *   DeviceState state;
+   * } SensorConfig_t;
+   *
+   * xReturn querySensorConfig(SensorConfig_t *outConfig) {
+   *   SensorConfig_t *config = NULL;
+   *   xSize configSize = sizeof(SensorConfig_t);
+   *
+   *   if (OK(xMemAlloc((volatile xAddr *)&config, configSize))) {
+   *     // Don't set any fields - just query current settings if
+   * (OK(xDeviceConfigDevice(SENSOR_UID, &configSize, (xAddr)config))) {
+   *       // Copy config to output parameter *outConfig = *config;
+   *       xMemFree((xAddr)config);
+   *       return ReturnOK;
+   *     }
+   *     xMemFree((xAddr)config);
+   *   }
+   *   return ReturnError;
+   * }
+   * @endcode
+   *
+   * Example 3: Change device mode dynamically
+   * @code
+   * typedef struct {
+   *   DeviceMode mode;
+   *   DeviceState state;
+   * } GenericDeviceConfig_t;
+   *
+   * xReturn setDeviceMode(xHalfWord deviceUID, DeviceMode newMode) {
+   *   GenericDeviceConfig_t *config = NULL;
+   *   xSize configSize = sizeof(GenericDeviceConfig_t);
+   *
+   *   if (OK(xMemAlloc((volatile xAddr *)&config, configSize))) {
+   *     // First query current config if (OK(xDeviceConfigDevice(deviceUID,
+   * &configSize, (xAddr)config))) {
+   *       // Change only the mode config->mode = newMode;
+   *
+   *       // Apply updated config if (OK(xDeviceConfigDevice(deviceUID,
+   * &configSize, (xAddr)config))) {
+   *         // Verify mode change if (config->mode == newMode) {
+   *           xMemFree((xAddr)config);
+   *           return ReturnOK;
+   *         }
+   *       }
+   *     }
+   *     xMemFree((xAddr)config);
+   *   }
+   *   return ReturnError;
+   * }
+   * @endcode
+   *
+   * @param[in]     uid_    Unique identifier of the device to configure. Must
+   *                        match a UID previously registered via
+   *                        xDeviceRegisterDevice().
+   * @param[in,out] size_   Pointer to size variable. On input: size in bytes of
+   *                        the configuration structure. On output: may be
+   *                        updated by driver to reflect actual configuration size
+   *                        returned.
+   * @param[in,out] config_ Pointer to heap-allocated configuration structure. On
+   *                        input: contains desired configuration parameters. On
+   *                        output: contains actual effective configuration as
+   *                        reported by driver. Must be allocated via xMemAlloc().
+   *
+   * @return                ReturnOK if configuration successful, ReturnError if
+   *                        operation failed (invalid UID, device not found,
+   *                        config not from heap, invalid configuration
+   *                        parameters, or driver config callback failed).
+   *
+   * @warning The config_ buffer MUST be allocated from user heap using
+   * xMemAlloc(). Stack or static allocation will cause validation failure.
+   *
+   * @warning After successful return, always check the returned configuration
+   * to verify the driver accepted your requested settings. Some devices may
+   * adjust parameters to supported values.
+   *
+   * @warning Configuration structures are driver-specific. Ensure you're using
+   * the correct structure type for the target device driver.
+   *
+   * @note The size_ parameter should initially contain the size of your
+   * configuration structure (e.g., sizeof(MyConfigStruct)).
+   *
+   * @note This function is bidirectional: it both writes and reads configuration
+   * in a single call. To query configuration without changing it, simply pass
+   * an uninitialized structure.
+   *
+   * @note Not all device drivers support configuration. Drivers for simple
+   * devices may implement a no-op configuration callback that always succeeds.
+   *
+   * @sa xDeviceInitDevice() - Initialize device before configuration
+   * @sa xDeviceRegisterDevice() - Register device driver
+   * @sa xMemAlloc() - Allocate configuration structure
+   * @sa xMemFree() - Free configuration structure after use
    */
   xReturn xDeviceConfigDevice(const xHalfWord uid_, xSize *size_, xAddr config_);
 
@@ -1428,83 +1861,440 @@
 
 
   /**
-   * @brief Syscall to free all heap memory allocated by xMemAlloc()
+   * @brief Free all allocated memory from the user heap at once
    *
-   * The xMemFreeAll() syscall frees (i.e., de-allocates) all heap memory
-   * allocated by xMemAlloc(). Caution should be used when calling xMemFreeAll()
-   * as all references to the heap memory region will be made invalid.
+   * Deallocates all memory blocks currently allocated from the user heap,
+   * effectively resetting the heap to its initial empty state. This is a
+   * nuclear option that invalidates ALL heap pointers in one operation,
+   * making it useful for complete system resets, test cleanup, or transitioning
+   * between major application modes.
    *
-   * @return On success, the syscall returns ReturnOK. On failure, the syscall
-   *         returns ReturnError. A failure is any condition in which the
-   *         syscall was unable to achieve its intended objective. For example,
-   *         if xTaskGetId() was unable to locate the task by the task object
-   *         (i.e., xTask) passed to the syscall, because either the object was
-   *         null or invalid (e.g., a deleted task), xTaskGetId() would return
-   *         ReturnError. All HeliOS syscalls return the xReturn (a.k.a.,
-   *         Return_t) type which can either be ReturnOK or ReturnError. The C
-   *         macros OK() and ERROR() can be used as a more concise way of
-   *         checking the return value of a syscall (e.g.,
-   *         if(OK(xMemGetUsed(&size))) {} or if(ERROR(xMemGetUsed(&size))) {}).
+   * After calling this function, every pointer previously returned by
+   * xMemAlloc() or HeliOS allocation functions becomes invalid. Accessing any
+   * of these pointers results in undefined behavior. This makes xMemFreeAll()
+   * powerful but dangerous—use it only when you're certain all heap references
+   * can be safely discarded.
+   *
+   * Common use cases:
+   * - **System reset**: Preparing for a complete application restart
+   * - **Mode transitions**: Switching between major operating modes that use
+   * different data structures
+   * - **Test cleanup**: Resetting memory state between unit tests
+   * - **Error recovery**: Clearing all allocations after detecting heap
+   * corruption
+   * - **Initialization**: Ensuring clean slate during system startup
+   *
+   * Typical scenarios:
+   * - Application has completed a major operation and needs to free all
+   * associated data
+   * - System is entering a low-power mode and needs to minimize memory usage
+   * - Test harness needs to reset state between test cases
+   * - Fatal error occurred and system is preparing to restart
+   *
+   * Example 1: Reset between application modes
+   * @code
+   * typedef enum {
+   *   MODE_INITIALIZATION,
+   *   MODE_NORMAL_OPERATION,
+   *   MODE_DIAGNOSTICS
+   * } AppMode_t;
+   *
+   * void transitionToMode(AppMode_t newMode) {
+   *   // Free all current mode's allocations
+   *   xMemFreeAll();
+   *
+   *   // Initialize new mode
+   *   switch (newMode) {
+   *     case MODE_INITIALIZATION:
+   *       initializeSystem();
+   *       break;
+   *     case MODE_NORMAL_OPERATION:
+   *       startNormalOperation();
+   *       break;
+   *     case MODE_DIAGNOSTICS:
+   *       startDiagnostics();
+   *       break;
+   *   }
+   * }
+   * @endcode
+   *
+   * Example 2: Unit test cleanup
+   * @code
+   * void setUp(void) {
+   *   // Start each test with clean heap
+   *   xMemFreeAll();
+   * }
+   *
+   * void tearDown(void) {
+   *   // Clean up after test
+   *   xMemFreeAll();
+   * }
+   *
+   * void testMemoryAllocation(void) {
+   *   xByte *buffer1 = NULL;
+   *   xByte *buffer2 = NULL;
+   *
+   *   // Allocate test data
+   *   xMemAlloc((volatile xAddr *)&buffer1, 128);
+   *   xMemAlloc((volatile xAddr *)&buffer2, 256);
+   *
+   *   // Perform test...
+   *
+   *   // Cleanup happens automatically in tearDown()
+   * }
+   * @endcode
+   *
+   * Example 3: Error recovery
+   * @code
+   * void handleFatalError(const char *errorMsg) {
+   *   // Log the error
+   *   logError("Fatal error: %s", errorMsg);
+   *
+   *   // Free all memory before restart
+   *   xMemFreeAll();
+   *
+   *   // Reset system state
+   *   resetSystemState();
+   *
+   *   // Restart application
+   *   restartApplication();
+   * }
+   * @endcode
+   *
+   * Example 4: Periodic memory defragmentation
+   * @code
+   * void performMaintenanceCycle(void) {
+   *   // Save critical state to non-volatile storage
+   *   saveCriticalState();
+   *
+   *   // Free all heap memory
+   *   xMemFreeAll();
+   *
+   *   // Restore state with fresh allocations (reduces fragmentation)
+   *   restoreCriticalState();
+   * }
+   * @endcode
+   *
+   * @return ReturnOK if all memory successfully freed, ReturnError if the
+   *         operation failed (rare, typically indicates heap corruption).
+   *
+   * @warning After calling xMemFreeAll(), ALL heap pointers become invalid.
+   * This includes pointers to task parameters, queue data, stream buffers,
+   * device configurations, and any application data structures. Accessing these
+   * pointers will cause undefined behavior.
+   *
+   * @warning Do not call xMemFreeAll() while tasks are running that depend on
+   * heap-allocated data. Suspend all tasks or ensure they can handle their data
+   * being freed unexpectedly.
+   *
+   * @warning This function does NOT affect kernel memory allocations. Only user
+   * heap allocations are freed. Kernel structures (tasks, timers, queues) are
+   * NOT affected.
+   *
+   * @warning Be aware that some HeliOS internal structures may hold pointers to
+   * heap memory (e.g., task parameters, queue messages). Freeing all heap
+   * memory may cause these structures to contain dangling pointers.
+   *
+   * @note This is the fastest way to free large numbers of allocations, as it
+   * doesn't need to process each allocation individually.
+   *
+   * @note After xMemFreeAll(), the heap is fully defragmented with no
+   * fragmentation overhead, making it ideal for periodic memory maintenance.
+   *
+   * @note Consider suspending the scheduler with xTaskSuspendAll() before
+   * calling xMemFreeAll() to prevent tasks from attempting to use freed memory.
+   *
+   * @sa xMemFree() - Free individual memory blocks
+   * @sa xMemAlloc() - Allocate memory from heap
+   * @sa xMemGetUsed() - Check memory usage before/after freeing
+   * @sa xMemGetHeapStats() - Get detailed heap statistics
+   * @sa xTaskSuspendAll() - Suspend scheduler during memory reset
    */
   xReturn xMemFreeAll(void);
 
 
   /**
-   * @brief Syscall to obtain the amount of in-use heap memory
+   * @brief Query the total amount of allocated heap memory
    *
-   * The xMemGetUsed() syscall will update the "size_" argument with the amount,
-   * in bytes, of in-use heap memory. If more memory statistics are needed,
-   * xMemGetHeapStats() provides a more complete picture of the heap memory
-   * region.
+   * Returns the total number of bytes currently allocated from the user heap
+   * across all active allocations. This provides a quick snapshot of heap
+   * utilization without the overhead of detailed statistics, making it ideal
+   * for runtime memory monitoring, leak detection, and capacity planning.
    *
-   * @sa xReturn
-   * @sa xMemGetHeapStats()
+   * The returned value represents the sum of all memory blocks allocated via
+   * xMemAlloc() or HeliOS functions that allocate memory, excluding any
+   * internal heap management overhead. This gives an accurate picture of actual
+   * application memory consumption.
    *
-   * @param  size_ The size (i.e., amount), in bytes, of in-use heap memory.
-   * @return       On success, the syscall returns ReturnOK. On failure, the
-   *               syscall returns ReturnError. A failure is any condition in
-   *               which the syscall was unable to achieve its intended
-   *               objective. For example, if xTaskGetId() was unable to locate
-   *               the task by the task object (i.e., xTask) passed to the
-   *               syscall, because either the object was null or invalid (e.g.,
-   *               a deleted task), xTaskGetId() would return ReturnError. All
-   *               HeliOS syscalls return the xReturn (a.k.a., Return_t) type
-   *               which can either be ReturnOK or ReturnError. The C macros
-   *               OK() and ERROR() can be used as a more concise way of
-   *               checking the return value of a syscall (e.g.,
-   *               if(OK(xMemGetUsed(&size))) {} or
-   *               if(ERROR(xMemGetUsed(&size))) {}).
+   * Common use cases:
+   * - **Memory monitoring**: Tracking heap usage over time to detect trends
+   * - **Leak detection**: Comparing usage before and after operations to find
+   * leaks
+   * - **Capacity planning**: Determining if more heap space is needed
+   * - **Threshold alerts**: Triggering warnings when usage exceeds limits
+   * - **Performance tuning**: Identifying memory-intensive operations
+   *
+   * Example 1: Monitor heap usage in diagnostic task
+   * @code
+   * void memoryMonitorTask(xTask task, xTaskParm parm) {
+   *   xSize usedBytes;
+   *   xSize totalHeap = CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS *
+   *                     CONFIG_MEMORY_REGION_BLOCK_SIZE;
+   *
+   *   if (OK(xMemGetUsed(&usedBytes))) {
+   *     xByte percentUsed = (xByte)((usedBytes * 100) / totalHeap);
+   *
+   *     if (percentUsed > 90) {
+   *       logWarning("Heap usage critical: %u%% (%lu / %lu bytes)",
+   *                  percentUsed, usedBytes, totalHeap);
+   *     } else if (percentUsed > 75) {
+   *       logInfo("Heap usage high: %u%%", percentUsed);
+   *     }
+   *   }
+   * }
+   * @endcode
+   *
+   * Example 2: Detect memory leaks
+   * @code
+   * xReturn checkForLeaks(void) {
+   *   xSize beforeSize, afterSize;
+   *
+   *   // Record usage before operation
+   *   if (ERROR(xMemGetUsed(&beforeSize))) {
+   *     return ReturnError;
+   *   }
+   *
+   *   // Perform operation that should clean up after itself
+   *   performOperation();
+   *
+   *   // Check usage after operation
+   *   if (OK(xMemGetUsed(&afterSize))) {
+   *     if (afterSize > beforeSize) {
+   *       xSize leaked = afterSize - beforeSize;
+   *       logError("Memory leak detected: %lu bytes not freed", leaked);
+   *       return ReturnError;
+   *     }
+   *   }
+   *
+   *   return ReturnOK;
+   * }
+   * @endcode
+   *
+   * Example 3: Pre-allocation size check
+   * @code
+   * xReturn allocateBuffer(xByte **buffer, xSize requestedSize) {
+   *   xSize currentUsage;
+   *   xSize totalHeap = CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS *
+   *                     CONFIG_MEMORY_REGION_BLOCK_SIZE;
+   *
+   *   // Check if allocation would exceed safe threshold
+   *   if (OK(xMemGetUsed(&currentUsage))) {
+   *     if (currentUsage + requestedSize > (totalHeap * 85 / 100)) {
+   *       logWarning("Allocation would exceed 85%% heap capacity");
+   *       return ReturnError;
+   *     }
+   *   }
+   *
+   *   // Proceed with allocation
+   *   return xMemAlloc((volatile xAddr *)buffer, requestedSize);
+   * }
+   * @endcode
+   *
+   * Example 4: Runtime memory statistics reporting
+   * @code
+   * void reportMemoryStatus(void) {
+   *   xSize usedBytes;
+   *   xSize totalBytes = CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS *
+   *                      CONFIG_MEMORY_REGION_BLOCK_SIZE;
+   *
+   *   if (OK(xMemGetUsed(&usedBytes))) {
+   *     xSize freeBytes = totalBytes - usedBytes;
+   *     xByte percentFree = (xByte)((freeBytes * 100) / totalBytes);
+   *
+   *     printf("Memory Status:\n");
+   *     printf("  Total:     %lu bytes\n", totalBytes);
+   *     printf("  Used:      %lu bytes\n", usedBytes);
+   *     printf("  Free:      %lu bytes (%u%%)\n", freeBytes, percentFree);
+   *   }
+   * }
+   * @endcode
+   *
+   * @param[out] size_ Pointer to variable that receives the total number of
+   *                   bytes currently allocated from the heap.
+   *
+   * @return           ReturnOK if usage query succeeded, ReturnError if the
+   *                   operation failed (invalid parameter or memory system
+   *                   error).
+   *
+   * @note The returned value represents allocated memory only. It does not
+   * include heap management overhead (block headers, alignment padding, etc.).
+   *
+   * @note This function is very fast as it simply returns a tracked counter.
+   * Call it frequently for monitoring without performance concerns.
+   *
+   * @note For more detailed information including fragmentation statistics,
+   * free space breakdown, and allocation counts, use xMemGetHeapStats() instead.
+   *
+   * @note The value returned is a snapshot at the moment of the call. Concurrent
+   * allocations or frees by other tasks may change the value immediately after
+   * this function returns.
+   *
+   * @sa xMemGetHeapStats() - Get comprehensive heap statistics
+   * @sa xMemGetSize() - Get size of a specific allocation
+   * @sa xMemAlloc() - Allocate memory (increases used bytes)
+   * @sa xMemFree() - Free memory (decreases used bytes)
+   * @sa xMemFreeAll() - Free all memory (resets used bytes to zero)
    */
   xReturn xMemGetUsed(xSize *size_);
 
 
   /**
-   * @brief Syscall to obtain the amount of heap memory allocated at a specific
-   * address
+   * @brief Query the size of a specific heap allocation
    *
-   * The xMemGetSize() syscall can be used to obtain the amount, in bytes, of
-   * heap memory allocated at a specific address. The address must be the
-   * address obtained from xMemAlloc().
+   * Returns the size in bytes of a memory block at the specified address. The
+   * address must be a valid pointer previously returned by xMemAlloc() or a
+   * HeliOS function that allocates memory. This allows applications to
+   * determine allocation sizes at runtime, useful for dynamic buffer management,
+   * serialization, and memory accounting.
    *
-   * @sa xReturn
+   * The returned size is the exact number of bytes originally requested during
+   * allocation, not including any internal heap management overhead. This
+   * matches the size parameter originally passed to xMemAlloc().
    *
-   * @param  addr_ The address of the heap memory for which the size (i.e.,
-   *               amount) allocated, in bytes, is being sought.
-   * @param  size_ The size (i.e., amount), in bytes, of heap memory allocated
-   *               to the address.
-   * @return       On success, the syscall returns ReturnOK. On failure, the
-   *               syscall returns ReturnError. A failure is any condition in
-   *               which the syscall was unable to achieve its intended
-   *               objective. For example, if xTaskGetId() was unable to locate
-   *               the task by the task object (i.e., xTask) passed to the
-   *               syscall, because either the object was null or invalid (e.g.,
-   *               a deleted task), xTaskGetId() would return ReturnError. All
-   *               HeliOS syscalls return the xReturn (a.k.a., Return_t) type
-   *               which can either be ReturnOK or ReturnError. The C macros
-   *               OK() and ERROR() can be used as a more concise way of
-   *               checking the return value of a syscall (e.g.,
-   *               if(OK(xMemGetUsed(&size))) {} or
-   *               if(ERROR(xMemGetUsed(&size))) {}).
+   * Common use cases:
+   * - **Dynamic buffer handling**: Determining buffer capacity without tracking
+   * size separately
+   * - **Serialization**: Knowing data structure size for network transmission
+   * or storage
+   * - **Memory accounting**: Calculating per-object memory usage
+   * - **Validation**: Verifying allocation size before operations
+   * - **Debugging**: Inspecting allocation sizes during development
+   *
+   * Example 1: Generic buffer processing without size tracking
+   * @code
+   * void processBuffer(xByte *buffer) {
+   *   xSize bufferSize;
+   *
+   *   // Discover buffer size dynamically
+   *   if (OK(xMemGetSize((xAddr)buffer, &bufferSize))) {
+   *     // Process up to bufferSize bytes
+   *     for (xSize i = 0; i < bufferSize; i++) {
+   *       processData(buffer[i]);
+   *     }
+   *   }
+   * }
+   * @endcode
+   *
+   * Example 2: Safe buffer copy with size verification
+   * @code
+   * xReturn safeCopy(xByte *dest, const xByte *src, xSize copySize) {
+   *   xSize destSize, srcSize;
+   *
+   *   // Verify destination has enough space
+   *   if (ERROR(xMemGetSize((xAddr)dest, &destSize))) {
+   *     return ReturnError;
+   *   }
+   *
+   *   // Verify source has enough data
+   *   if (ERROR(xMemGetSize((xAddr)src, &srcSize))) {
+   *     return ReturnError;
+   *   }
+   *
+   *   // Check bounds
+   *   if (copySize > destSize || copySize > srcSize) {
+   *     logError("Copy size exceeds buffer capacity");
+   *     return ReturnError;
+   *   }
+   *
+   *   // Safe to copy
+   *   memcpy(dest, src, copySize);
+   *   return ReturnOK;
+   * }
+   * @endcode
+   *
+   * Example 3: Serialization with automatic size detection
+   * @code
+   * xReturn serializeToStream(xByte *data, xStreamBuffer stream) {
+   *   xSize dataSize;
+   *
+   *   // Get actual data size
+   *   if (ERROR(xMemGetSize((xAddr)data, &dataSize))) {
+   *     return ReturnError;
+   *   }
+   *
+   *   // Send size header first
+   *   xStreamSend(stream, (xByte)(dataSize >> 8));   // High byte
+   *   xStreamSend(stream, (xByte)(dataSize & 0xFF)); // Low byte
+   *
+   *   // Send data
+   *   for (xSize i = 0; i < dataSize; i++) {
+   *     if (ERROR(xStreamSend(stream, data[i]))) {
+   *       return ReturnError;
+   *     }
+   *   }
+   *
+   *   return ReturnOK;
+   * }
+   * @endcode
+   *
+   * Example 4: Memory usage reporting for debug
+   * @code
+   * typedef struct {
+   *   xByte *rxBuffer;
+   *   xByte *txBuffer;
+   *   xByte *workBuffer;
+   * } CommBuffers_t;
+   *
+   * void reportBufferUsage(CommBuffers_t *buffers) {
+   *   xSize rxSize, txSize, workSize;
+   *
+   *   xMemGetSize((xAddr)buffers->rxBuffer, &rxSize);
+   *   xMemGetSize((xAddr)buffers->txBuffer, &txSize);
+   *   xMemGetSize((xAddr)buffers->workBuffer, &workSize);
+   *
+   *   xSize totalBufferMemory = rxSize + txSize + workSize;
+   *
+   *   printf("Communication Buffer Memory:\n");
+   *   printf("  RX Buffer:   %lu bytes\n", rxSize);
+   *   printf("  TX Buffer:   %lu bytes\n", txSize);
+   *   printf("  Work Buffer: %lu bytes\n", workSize);
+   *   printf("  Total:       %lu bytes\n", totalBufferMemory);
+   * }
+   * @endcode
+   *
+   * @param[in]  addr_ Pointer to the memory block. Must be a valid address
+   *                   previously returned by xMemAlloc() or a HeliOS allocation
+   *                   function.
+   * @param[out] size_ Pointer to variable that receives the size in bytes of
+   *                   the allocation at addr_.
+   *
+   * @return           ReturnOK if size query succeeded, ReturnError if the
+   *                   operation failed (invalid address, address not from heap,
+   *                   or memory system error).
+   *
+   * @warning The address must be a valid heap pointer returned by xMemAlloc()
+   * or a HeliOS allocation function. Passing stack addresses, static addresses,
+   * or already-freed addresses will result in ReturnError.
+   *
+   * @warning Do not call xMemGetSize() on addresses that have been freed with
+   * xMemFree() or invalidated by xMemFreeAll(). The result is undefined and
+   * will likely return ReturnError.
+   *
+   * @note The returned size is the user-requested allocation size, not the
+   * total memory consumed including heap overhead. Actual heap usage may be
+   * slightly larger due to alignment and metadata.
+   *
+   * @note Passing NULL for addr_ is safe and will return ReturnError with
+   * size_ unmodified.
+   *
+   * @note This function is useful when working with buffers returned by HeliOS
+   * functions (like xDeviceRead()) where you receive a pointer but need to know
+   * its size.
+   *
+   * @sa xMemAlloc() - Allocate memory with known size
+   * @sa xMemGetUsed() - Get total heap usage
+   * @sa xMemGetHeapStats() - Get comprehensive heap statistics
+   * @sa xMemFree() - Free memory block
    */
   xReturn xMemGetSize(const volatile xAddr addr_, xSize *size_);
 
@@ -4291,60 +5081,331 @@
 
 
   /**
-   * @brief Syscall to get the task handle by name
+   * @brief Retrieve a task handle by its name
    *
-   * The xTaskGetHandleByName() syscall will get the task handle using the task
-   * name.
+   * Searches for a task by its string name and returns the corresponding task
+   * handle. This enables runtime task lookup when you know the task name but
+   * don't have a direct reference to its handle, useful for inter-task
+   * communication, dynamic task management, and debugging scenarios.
    *
-   * @sa xReturn
-   * @sa xTask
-   * @sa CONFIG_TASK_NAME_BYTES
+   * Task names are assigned during task creation via xTaskCreate() and must be
+   * exactly CONFIG_TASK_NAME_BYTES (default 8) bytes in length. Names shorter
+   * than this must be null-padded. The search is case-sensitive and performs
+   * an exact byte-for-byte comparison.
    *
-   * @param  task_ The task to be operated on.
-   * @param  name_ The name of the task which must be exactly
-   *               CONFIG_TASK_NAME_BYTES (default is 8) bytes in length.
-   *               Shorter task names must be padded.
-   * @return       On success, the syscall returns ReturnOK. On failure, the
-   *               syscall returns ReturnError. A failure is any condition in
-   *               which the syscall was unable to achieve its intended
-   *               objective. For example, if xTaskGetId() was unable to locate
-   *               the task by the task object (i.e., xTask) passed to the
-   *               syscall, because either the object was null or invalid (e.g.,
-   *               a deleted task), xTaskGetId() would return ReturnError. All
-   *               HeliOS syscalls return the xReturn (a.k.a., Return_t) type
-   *               which can either be ReturnOK or ReturnError. The C macros
-   *               OK() and ERROR() can be used as a more concise way of
-   *               checking the return value of a syscall (e.g.,
-   *               if(OK(xMemGetUsed(&size))) {} or
-   *               if(ERROR(xMemGetUsed(&size))) {}).
+   * Common use cases:
+   * - **Inter-task communication**: Finding a target task to send notifications
+   * - **Dynamic task control**: Suspending/resuming tasks by name at runtime
+   * - **Debugging and diagnostics**: Inspecting task state by name
+   * - **Configuration-driven systems**: Task names from config files or commands
+   * - **Task coordination**: One task finding and controlling related tasks
+   *
+   * Example 1: Find and notify a task by name
+   * @code
+   * xReturn notifyTaskByName(const char *taskName) {
+   *   xTask targetTask;
+   *   xByte paddedName[CONFIG_TASK_NAME_BYTES];
+   *
+   *   // Prepare padded name (CONFIG_TASK_NAME_BYTES = 8)
+   *   memset(paddedName, 0, sizeof(paddedName));
+   *   strncpy((char*)paddedName, taskName, sizeof(paddedName));
+   *
+   *   // Find the task
+   *   if (OK(xTaskGetHandleByName(&targetTask, paddedName))) {
+   *     // Notify the task
+   *     if (OK(xTaskNotifyGive(targetTask))) {
+   *       return ReturnOK;
+   *     }
+   *   }
+   *
+   *   logError("Failed to find or notify task: %s", taskName);
+   *   return ReturnError;
+   * }
+   * @endcode
+   *
+   * Example 2: Suspend task by name from command handler
+   * @code
+   * void handleCommand(const char *cmd) {
+   *   if (strncmp(cmd, "suspend ", 8) == 0) {
+   *     xTask task;
+   *     xByte taskName[CONFIG_TASK_NAME_BYTES];
+   *
+   *     // Extract and pad task name
+   *     memset(taskName, 0, sizeof(taskName));
+   *     strncpy((char*)taskName, cmd + 8, sizeof(taskName));
+   *
+   *     // Find and suspend the task
+   *     if (OK(xTaskGetHandleByName(&task, taskName))) {
+   *       if (OK(xTaskSuspend(task))) {
+   *         printf("Task '%s' suspended\n", taskName);
+   *       }
+   *     } else {
+   *       printf("Task '%s' not found\n", taskName);
+   *     }
+   *   }
+   * }
+   * @endcode
+   *
+   * Example 3: Check if specific tasks are running
+   * @code
+   * xBase areSystemTasksRunning(void) {
+   *   const char *requiredTasks[] = {
+   *     "Monitor",
+   *     "Logger",
+   *     "Network",
+   *     "Storage"
+   *   };
+   *   xBase numTasks = 4;
+   *
+   *   for (xBase i = 0; i < numTasks; i++) {
+   *     xTask task;
+   *     xByte paddedName[CONFIG_TASK_NAME_BYTES];
+   *     xTaskState state;
+   *
+   *     // Prepare name
+   *     memset(paddedName, 0, sizeof(paddedName));
+   *     strncpy((char*)paddedName, requiredTasks[i], sizeof(paddedName));
+   *
+   *     // Check if task exists and is running
+   *     if (ERROR(xTaskGetHandleByName(&task, paddedName))) {
+   *       logError("Required task not found: %s", requiredTasks[i]);
+   *       return 0;
+   *     }
+   *
+   *     if (OK(xTaskGetTaskState(task, &state))) {
+   *       if (state != TaskStateRunning) {
+   *         logWarning("Task not running: %s", requiredTasks[i]);
+   *         return 0;
+   *       }
+   *     }
+   *   }
+   *
+   *   return 1;  // All required tasks running
+   * }
+   * @endcode
+   *
+   * Example 4: Build task name from pattern
+   * @code
+   * xReturn getSensorTask(xBase sensorId, xTask *task) {
+   *   xByte taskName[CONFIG_TASK_NAME_BYTES];
+   *
+   *   // Build task name: "Sensor0", "Sensor1", etc.
+   *   memset(taskName, 0, sizeof(taskName));
+   *   snprintf((char*)taskName, sizeof(taskName), "Sensor%u", sensorId);
+   *
+   *   // Find the sensor task
+   *   if (OK(xTaskGetHandleByName(task, taskName))) {
+   *     return ReturnOK;
+   *   }
+   *
+   *   logError("Sensor task %u not found", sensorId);
+   *   return ReturnError;
+   * }
+   * @endcode
+   *
+   * @param[out] task_ Pointer to xTask variable that will receive the task
+   *                   handle if found.
+   * @param[in]  name_ Pointer to task name buffer. Must be exactly
+   *                   CONFIG_TASK_NAME_BYTES bytes long (default 8). Names
+   *                   shorter than this must be null-padded to the full length.
+   *
+   * @return           ReturnOK if task found, ReturnError if task not found or
+   *                   invalid parameters.
+   *
+   * @warning Task names must be exactly CONFIG_TASK_NAME_BYTES bytes. Shorter
+   * names must be null-padded. Use memset() or strncpy() to ensure proper
+   * padding.
+   *
+   * @warning The search is case-sensitive. "MyTask" and "mytask" are different
+   * names.
+   *
+   * @warning If multiple tasks have identical names (which shouldn't happen but
+   * is technically possible), this function returns the first match found. Use
+   * unique task names to avoid ambiguity.
+   *
+   * @note Task names are assigned during xTaskCreate(). Ensure tasks are created
+   * with meaningful, unique names for reliable lookup.
+   *
+   * @note This function searches through all tasks, which may take time if many
+   * tasks exist. Consider caching task handles if lookups are frequent.
+   *
+   * @note Task names cannot be changed after creation. If you need dynamic task
+   * identification, consider using task IDs with xTaskGetHandleById() instead.
+   *
+   * @sa xTaskGetHandleById() - Get task handle by numeric ID
+   * @sa xTaskCreate() - Create task with name
+   * @sa xTaskGetTaskInfo() - Get task information including name
+   * @sa xTaskGetId() - Get numeric ID from task handle
+   * @sa CONFIG_TASK_NAME_BYTES - Task name length configuration
    */
   xReturn xTaskGetHandleByName(xTask *task_, const xByte *name_);
 
 
   /**
-   * @brief Syscall to get the task handle by task id
+   * @brief Retrieve a task handle by its numeric ID
    *
-   * The xTaskGetHandleById() syscall will get the task handle using the task
-   * id.
+   * Searches for a task by its unique numeric identifier and returns the
+   * corresponding task handle. Each task is automatically assigned a sequential
+   * ID starting from 0 when created, providing a lightweight alternative to
+   * name-based lookup. This is faster than xTaskGetHandleByName() and useful
+   * when working with task arrays or numeric references.
    *
-   * @sa xReturn
-   * @sa xTask
+   * Task IDs are assigned sequentially in the order tasks are created: the
+   * first task gets ID 0, the second gets ID 1, and so on. IDs are never reused
+   * even after a task is deleted, so they remain unique throughout system
+   * lifetime.
    *
-   * @param  task_ The task to be operated on.
-   * @param  id_   The task id.
-   * @return       On success, the syscall returns ReturnOK. On failure, the
-   *               syscall returns ReturnError. A failure is any condition in
-   *               which the syscall was unable to achieve its intended
-   *               objective. For example, if xTaskGetId() was unable to locate
-   *               the task by the task object (i.e., xTask) passed to the
-   *               syscall, because either the object was null or invalid (e.g.,
-   *               a deleted task), xTaskGetId() would return ReturnError. All
-   *               HeliOS syscalls return the xReturn (a.k.a., Return_t) type
-   *               which can either be ReturnOK or ReturnError. The C macros
-   *               OK() and ERROR() can be used as a more concise way of
-   *               checking the return value of a syscall (e.g.,
-   *               if(OK(xMemGetUsed(&size))) {} or
-   *               if(ERROR(xMemGetUsed(&size))) {}).
+   * Common use cases:
+   * - **Task arrays**: Managing tasks indexed by ID for efficient lookup
+   * - **Numeric configuration**: Task references stored as numbers in config
+   * - **Performance-critical code**: Faster lookup than string-based search
+   * - **Task iteration**: Enumerating all tasks by ID from 0 to N-1
+   * - **Compact references**: Storing task references as small integers
+   *
+   * Example 1: Iterate through all tasks
+   * @code
+   * void inspectAllTasks(void) {
+   *   xBase numTasks;
+   *   xTask task;
+   *
+   *   // Get total task count
+   *   if (ERROR(xTaskGetNumberOfTasks(&numTasks))) {
+   *     return;
+   *   }
+   *
+   *   printf("Inspecting %u tasks:\n", numTasks);
+   *
+   *   // Iterate through each task by ID
+   *   for (xBase id = 0; id < numTasks; id++) {
+   *     if (OK(xTaskGetHandleById(&task, id))) {
+   *       xTaskInfo *info = NULL;
+   *
+   *       if (OK(xTaskGetTaskInfo(task, &info))) {
+   *         printf("  Task %u: %s (state: %d)\n",
+   *                id, info->name, info->state);
+   *         xMemFree((xAddr)info);
+   *       }
+   *     }
+   *   }
+   * }
+   * @endcode
+   *
+   * Example 2: Task array management
+   * @code
+   * #define MAX_WORKER_TASKS 8
+   * xTask workerTasks[MAX_WORKER_TASKS];
+   * xBase workerTaskIds[MAX_WORKER_TASKS];
+   * xBase workerCount = 0;
+   *
+   * void createWorkerTask(const char *name) {
+   *   xTask newTask;
+   *   xBase taskId;
+   *
+   *   // Create the task
+   *   if (OK(xTaskCreate(&newTask, name, workerFunction, NULL))) {
+   *     // Get its ID
+   *     if (OK(xTaskGetId(newTask, &taskId))) {
+   *       workerTasks[workerCount] = newTask;
+   *       workerTaskIds[workerCount] = taskId;
+   *       workerCount++;
+   *     }
+   *   }
+   * }
+   *
+   * void notifyWorker(xBase workerIndex) {
+   *   xTask task;
+   *
+   *   // Look up task by stored ID
+   *   if (OK(xTaskGetHandleById(&task, workerTaskIds[workerIndex]))) {
+   *     xTaskNotifyGive(task);
+   *   }
+   * }
+   * @endcode
+   *
+   * Example 3: Configuration-driven task control
+   * @code
+   * // Configuration might specify task IDs to enable/disable
+   * typedef struct {
+   *   xBase taskId;
+   *   xBase enabled;
+   * } TaskConfig_t;
+   *
+   * void applyTaskConfiguration(TaskConfig_t *config, xBase count) {
+   *   for (xBase i = 0; i < count; i++) {
+   *     xTask task;
+   *
+   *     if (OK(xTaskGetHandleById(&task, config[i].taskId))) {
+   *       if (config[i].enabled) {
+   *         xTaskResume(task);
+   *         logInfo("Enabled task ID %u", config[i].taskId);
+   *       } else {
+   *         xTaskSuspend(task);
+   *         logInfo("Disabled task ID %u", config[i].taskId);
+   *       }
+   *     }
+   *   }
+   * }
+   * @endcode
+   *
+   * Example 4: Find task by ID with error handling
+   * @code
+   * xReturn processTaskById(xBase taskId) {
+   *   xTask task;
+   *   xTaskState state;
+   *
+   *   // Verify task exists
+   *   if (ERROR(xTaskGetHandleById(&task, taskId))) {
+   *     logError("Task ID %u not found or deleted", taskId);
+   *     return ReturnError;
+   *   }
+   *
+   *   // Check task is in valid state
+   *   if (OK(xTaskGetTaskState(task, &state))) {
+   *     if (state == TaskStateRunning) {
+   *       // Perform operation on running task
+   *       return performTaskOperation(task);
+   *     } else {
+   *       logWarning("Task ID %u not running (state: %d)", taskId, state);
+   *     }
+   *   }
+   *
+   *   return ReturnError;
+   * }
+   * @endcode
+   *
+   * @param[out] task_ Pointer to xTask variable that will receive the task
+   *                   handle if found.
+   * @param[in]  id_   Numeric task ID to search for. Valid IDs range from 0 to
+   *                   (number of tasks - 1).
+   *
+   * @return           ReturnOK if task found, ReturnError if task ID invalid,
+   *                   task deleted, or invalid parameters.
+   *
+   * @warning Task IDs are never reused after task deletion. If a task is
+   * deleted, its ID becomes permanently invalid even if new tasks are created.
+   *
+   * @warning Valid task IDs range from 0 to N-1 where N is the number of tasks
+   * ever created. However, some IDs in this range may be invalid if those tasks
+   * were deleted.
+   *
+   * @note This function is faster than xTaskGetHandleByName() because it uses
+   * direct numeric comparison instead of string comparison.
+   *
+   * @note Task IDs are assigned sequentially based on creation order, starting
+   * from 0. The first task created has ID 0, second has ID 1, etc.
+   *
+   * @note To enumerate all valid tasks, use xTaskGetNumberOfTasks() to get the
+   * count, then iterate through IDs checking for ReturnOK.
+   *
+   * @note Task IDs are stable for the lifetime of the task but become invalid
+   * permanently after xTaskDelete() is called on that task.
+   *
+   * @sa xTaskGetHandleByName() - Get task handle by name (slower but more
+   * readable)
+   * @sa xTaskGetId() - Get numeric ID from task handle
+   * @sa xTaskGetNumberOfTasks() - Get total task count for iteration
+   * @sa xTaskGetTaskInfo() - Get comprehensive task information
+   * @sa xTaskCreate() - Create task (assigns automatic ID)
    */
   xReturn xTaskGetHandleById(xTask *task_, const xBase id_);
 
@@ -4412,27 +5473,165 @@
 
 
   /**
-   * @brief Syscall to get the number of tasks
+   * @brief Query the total number of tasks in the system
    *
-   * The xTaskGetNumberOfTasks() syscall is used to obtain the number of tasks
-   * regardless of their state (i.e., suspended, running or waiting).
+   * Returns the total count of all tasks currently managed by HeliOS,
+   * regardless of their state (running, suspended, or waiting). This count
+   * includes tasks in all states and is useful for system monitoring, task
+   * enumeration, and diagnostic reporting.
    *
-   * @sa xReturn
+   * The returned count reflects the current number of active task control
+   * blocks in the system. This number changes dynamically as tasks are created
+   * with xTaskCreate() and deleted with xTaskDelete(). The count includes tasks
+   * in all states: running, waiting, and suspended.
    *
-   * @param  tasks_ The number of tasks.
-   * @return        On success, the syscall returns ReturnOK. On failure, the
-   *                syscall returns ReturnError. A failure is any condition in
-   *                which the syscall was unable to achieve its intended
-   *                objective. For example, if xTaskGetId() was unable to locate
-   *                the task by the task object (i.e., xTask) passed to the
-   *                syscall, because either the object was null or invalid
-   *                (e.g., a deleted task), xTaskGetId() would return
-   *                ReturnError. All HeliOS syscalls return the xReturn (a.k.a.,
-   *                Return_t) type which can either be ReturnOK or ReturnError.
-   *                The C macros OK() and ERROR() can be used as a more concise
-   *                way of checking the return value of a syscall (e.g.,
-   *                if(OK(xMemGetUsed(&size))) {} or
-   *                if(ERROR(xMemGetUsed(&size))) {}).
+   * Common use cases:
+   * - **Task iteration**: Determining loop bounds for enumerating all tasks
+   * - **System monitoring**: Tracking task count for capacity management
+   * - **Diagnostics**: Reporting system resource utilization
+   * - **Validation**: Verifying expected number of tasks are active
+   * - **Dynamic arrays**: Allocating arrays sized to hold all task data
+   *
+   * Example 1: Enumerate and display all tasks
+   * @code
+   * void listAllTasks(void) {
+   *   xBase taskCount;
+   *
+   *   if (OK(xTaskGetNumberOfTasks(&taskCount))) {
+   *     printf("System has %u tasks:\n", taskCount);
+   *
+   *     for (xBase id = 0; id < taskCount; id++) {
+   *       xTask task;
+   *       xTaskInfo *info = NULL;
+   *
+   *       if (OK(xTaskGetHandleById(&task, id))) {
+   *         if (OK(xTaskGetTaskInfo(task, &info))) {
+   *           printf("  %u: %s [%s]\n", id, info->name,
+   *                  info->state == TaskStateRunning ? "Running" :
+   *                  info->state == TaskStateSuspended ? "Suspended" :
+   "Waiting");
+   *           xMemFree((xAddr)info);
+   *         }
+   *       }
+   *     }
+   *   }
+   * }
+   * @endcode
+   *
+   * Example 2: Monitor task count for system health
+   * @code
+   * #define EXPECTED_TASK_COUNT 10
+   * #define MAX_TASK_COUNT 15
+   *
+   * void monitorSystemHealth(void) {
+   *   xBase taskCount;
+   *
+   *   if (OK(xTaskGetNumberOfTasks(&taskCount))) {
+   *     if (taskCount < EXPECTED_TASK_COUNT) {
+   *       logWarning("Task count below expected: %u (expected %u)",
+   *                  taskCount, EXPECTED_TASK_COUNT);
+   *     } else if (taskCount > MAX_TASK_COUNT) {
+   *       logError("Task count exceeds maximum: %u (max %u)",
+   *                taskCount, MAX_TASK_COUNT);
+   *     } else {
+   *       logInfo("Task count normal: %u tasks", taskCount);
+   *     }
+   *   }
+   * }
+   * @endcode
+   *
+   * Example 3: Allocate array for all task info
+   * @code
+   * xReturn analyzeAllTasks(void) {
+   *   xBase taskCount;
+   *   xTaskInfo *allInfo = NULL;
+   *
+   *   // Get task count
+   *   if (ERROR(xTaskGetNumberOfTasks(&taskCount))) {
+   *     return ReturnError;
+   *   }
+   *
+   *   // Allocate array to hold all task info
+   *   xSize arraySize = sizeof(xTaskInfo) * taskCount;
+   *   if (ERROR(xMemAlloc((volatile xAddr *)&allInfo, arraySize))) {
+   *     return ReturnError;
+   *   }
+   *
+   *   // Collect info for each task
+   *   for (xBase i = 0; i < taskCount; i++) {
+   *     xTask task;
+   *     xTaskInfo *info = NULL;
+   *
+   *     if (OK(xTaskGetHandleById(&task, i))) {
+   *       if (OK(xTaskGetTaskInfo(task, &info))) {
+   *         allInfo[i] = *info;  // Copy to array
+   *         xMemFree((xAddr)info);
+   *       }
+   *     }
+   *   }
+   *
+   *   // Analyze tasks... analyzeTaskArray(allInfo, taskCount);
+   *
+   *   xMemFree((xAddr)allInfo);
+   *   return ReturnOK;
+   * }
+   * @endcode
+   *
+   * Example 4: Wait for all worker tasks to be created
+   * @code
+   * #define EXPECTED_WORKERS 5
+   *
+   * xReturn waitForWorkersReady(void) {
+   *   xBase retries = 0;
+   *   xBase maxRetries = 100;
+   *
+   *   while (retries < maxRetries) {
+   *     xBase taskCount;
+   *
+   *     if (OK(xTaskGetNumberOfTasks(&taskCount))) {
+   *       // Assuming 1 main task + EXPECTED_WORKERS
+   *       if (taskCount >= (1 + EXPECTED_WORKERS)) {
+   *         logInfo("All worker tasks ready");
+   *         return ReturnOK;
+   *       }
+   *     }
+   *
+   *     // Wait a bit for tasks to be created
+   *     xTaskDelayUntil(10);  // 10 ticks
+   *     retries++;
+   *   }
+   *
+   *   logError("Timeout waiting for worker tasks");
+   *   return ReturnError;
+   * }
+   * @endcode
+   *
+   * @param[out] tasks_ Pointer to variable that receives the total number of
+   *                    tasks currently in the system.
+   *
+   * @return            ReturnOK if count retrieved successfully, ReturnError if
+   *                    operation failed (invalid parameter).
+   *
+   * @note The count includes ALL tasks regardless of state: running, suspended,
+   * and waiting. It does not distinguish between active and inactive tasks.
+   *
+   * @note The returned count is a snapshot at the time of the call. Other tasks
+   * may create or delete tasks immediately after this function returns, changing
+   * the count.
+   *
+   * @note This function is very lightweight and can be called frequently for
+   * monitoring without performance concerns.
+   *
+   * @note Task IDs range from 0 to N-1, but if tasks have been deleted, some
+   * IDs in this range may be invalid. Use xTaskGetHandleById() and check its
+   * return value when iterating.
+   *
+   * @sa xTaskGetHandleById() - Get task handle for iteration (use with task
+   * count)
+   * @sa xTaskGetAllTaskInfo() - Get comprehensive info for all tasks at once
+   * @sa xTaskCreate() - Create task (increases task count)
+   * @sa xTaskDelete() - Delete task (decreases task count)
+   * @sa xTaskGetTaskInfo() - Get info about individual task
    */
   xReturn xTaskGetNumberOfTasks(xBase *tasks_);
 
