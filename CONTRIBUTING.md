@@ -1,24 +1,34 @@
 # Contributing to HeliOS
+
 We love that you are interested in joining the HeliOS Project community as a contributor. We want to make contributing to the project as easy and seamless as possible, whether it is:
 
 - Reporting a bug
 - Submitting a bug fix
-- Asking a question
 - Proposing new features
 - Submitting a new feature
 - Improving documentation
 - Becoming a maintainer
 
+**Note:** If you need help or support using HeliOS, please see [SUPPORT.md](/SUPPORT.md) instead.
+
 ## We Develop with Github
+
 The HeliOS Project uses GitHub exclusively to maintain and develop HeliOS. The best methods for engaging with the HeliOS Project is through GitHub Issues and Pull Requests.
 
 Submit a:
-- **Issue**: If you are reporting a bug, asking a question or proposing a new feature, then submit an issue. Please do not submit source code or other file changes through an issue. If you do, you will be asked to submit a pull request and your issue will be closed. See the **Submitting an Issue** section below for more details on submitting an issue.
+- **Issue**: If you are reporting a bug or proposing a new feature, then submit an issue. Please do not submit source code or other file changes through an issue. If you do, you will be asked to submit a pull request and your issue will be closed. See the **Submitting an Issue** section below for more details on submitting an issue.
 - **Pull Request**: If you are submitting a bug fix or a new feature, then submit a pull request. See the **Submitting a Pull Request** section below for more details.
 
 ## Submitting an Issue
 
-If you are reporting a bug then submit a **Bug Report** issue. If you are in need of help or seeking support then submit a **Support Request**. Anything else should be submitted as an **Other Request**. To open a new issue, go [here](https://github.com/heliosproj/HeliOS/issues). We kindly ask for your patience as it may take several days before we are able to respond to your issue. If it is a bug report or support request, it may take longer.
+HeliOS uses GitHub issue templates to streamline the reporting process:
+
+- **Bug Report** - If you are reporting a bug, use the [Bug Report](https://github.com/heliosproj/HeliOS/issues/new/choose) template
+- **Feature Request** - If you are proposing a new feature or enhancement, use the [Feature Request](https://github.com/heliosproj/HeliOS/issues/new/choose) template
+- **Other Request** - For documentation improvements or other requests, use the [Other Request](https://github.com/heliosproj/HeliOS/issues/new/choose) template
+- **Support Request** - If you need help using HeliOS, see [SUPPORT.md](/SUPPORT.md) and use the [Support Request](https://github.com/heliosproj/HeliOS/issues/new/choose) template
+
+We kindly ask for your patience as it may take several days before we are able to respond to your issue. Bug reports and support requests may take longer to investigate.
 
 ## Submitting a Pull Request
 

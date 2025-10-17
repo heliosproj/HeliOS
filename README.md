@@ -165,7 +165,7 @@ The testing framework has been significantly enhanced with modern development pr
 
 The complete HeliOS syscall API is documented in the [HeliOS Developer's Guide](/doc/HeliOS_Developers_Guide.pdf). All API functions are also documented with detailed Doxygen comments in `/src/HeliOS.h`.
 
-For support, refer to the "Contributing" section for how to submit issues.
+For support and help, see [SUPPORT.md](/SUPPORT.md).
 
 ## Quick Start: Arduino IDE
 
@@ -373,18 +373,15 @@ Download the latest release from the [GitHub releases page](https://github.com/h
 
 ***
 
+# :raising_hand: Getting Support
+
+Need help using HeliOS? Start with the [HeliOS Developer's Guide](/doc/HeliOS_Developers_Guide.pdf), then see [SUPPORT.md](/SUPPORT.md) for details on requesting support.
+
+***
+
 # :construction: Contributing
 
-We welcome contributions to HeliOS! Please review the [contributing guidelines](/CONTRIBUTING.md) before submitting pull requests.
-
-**Important:**
-- Fork from the **`develop`** branch, not `master`
-- Pull requests from `master` will **not** be accepted
-- Ensure code follows existing style and conventions
-- Include documentation for new features
-- Test thoroughly on target hardware
-
-Issues, bug reports, and feature requests should be submitted through [GitHub Issues](https://github.com/heliosproj/HeliOS/issues).
+Ready to contribute code? See [CONTRIBUTING.md](/CONTRIBUTING.md) for complete details on the pull request process, code quality standards, and contribution workflow.
 
 ***
 
@@ -409,7 +406,6 @@ Do **NOT** use HeliOS (in whole or in part) in any application where:
 - Human life or safety could be at risk
 - Failure could result in injury, death, or property damage
 - Regulatory certification is required (medical, automotive, aerospace, etc.)
-- Hard real-time guarantees are mandatory
 
 HeliOS provides **soft real-time** scheduling only. While robust and well-tested, it has not undergone the rigorous certification processes required for safety-critical systems.
 
