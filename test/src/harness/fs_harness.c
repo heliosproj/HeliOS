@@ -48,21 +48,21 @@ void fs_harness(void) {
 
   /* Driver registration tests */
   unit_begin("Driver Registration and FS Mount Tests");
-  printf("[TEST] Registering RAM disk driver...\n");
+  unit_print("Registering RAM disk driver...");
 
 
   /* RAM disk driver registration */
   unit_try(OK(xDeviceRegisterDevice(RAMDISK0_self_register)));
-  printf("[TEST] Initializing RAM disk...\n");
+  unit_print("Initializing RAM disk...");
   unit_try(OK(xDeviceInitDevice(0x0100u)));
-  printf("[TEST] Registering block device driver...\n");
+  unit_print("Registering block device driver...");
 
 
   /* Block device driver registration */
   unit_try(OK(xDeviceRegisterDevice(BLOCKDEV_self_register)));
-  printf("[TEST] Initializing block device...\n");
+  unit_print("Initializing block device...");
   unit_try(OK(xDeviceInitDevice(0x1000u)));
-  printf("[TEST] Configuring block device...\n");
+  unit_print("Configuring block device...");
 
 
   /* Allocate config structure from heap (required by xDeviceConfigDevice) */
@@ -75,20 +75,16 @@ void fs_harness(void) {
   blockConfig->blockSize = 512; /* 512 bytes per sector */
   blockConfig->totalBlocks = 2048; /* 1MB / 512 = 2048 blocks */
   configSize = sizeof(BlockDeviceConfig_t);
-  printf("[TEST] Config: ioDriverUID=%u, protocol=%u, blockSize=%u, totalBlocks=%lu\n", blockConfig->ioDriverUID, blockConfig->protocol, blockConfig->blockSize,
-    (unsigned long) blockConfig->totalBlocks);
-  printf("[TEST] sizeof(BlockDeviceConfig_t)=%lu, configSize=%lu\n", (unsigned long) sizeof(BlockDeviceConfig_t), (unsigned long) configSize);
+  unit_print("Block device config set: ioDriverUID=256, protocol=255, blockSize=512, totalBlocks=2048");
   unit_try(OK(xDeviceConfigDevice(0x1000u, &configSize, (Addr_t *) blockConfig)));
-  printf("[TEST] Block device configured\n");
+  unit_print("Block device configured");
   xMemFree((Addr_t *) blockConfig);
 
 
   /* Format the RAM disk with FAT32 filesystem */
-  printf("[TEST] Starting format test...\n");
-  fflush(stdout);
+  unit_print("Starting format test...");
   unit_try(OK(xFSFormat(0x1000u, (const Byte_t *) "HELIOS     ")));
-  printf("[TEST] Format completed\n");
-  fflush(stdout);
+  unit_print("Format completed");
 
 
   unit_end();

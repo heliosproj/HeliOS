@@ -136,7 +136,7 @@ void unit_print(const char *msg_) {
   if((null != unit) && (true == unit->begun) && (null != msg_)) {
 
 #if defined(UNIT_TEST_COLORIZE)
-      printf("\033[92munit: %s\n\033[39m", msg_);
+      printf("\033[95munit:\033[96m %s\n\033[39m", msg_);
 #else  /* if defined(UNIT_TEST_COLORIZE) */
       printf("unit: %s\n", msg_);
 #endif /* if defined(UNIT_TEST_COLORIZE) */

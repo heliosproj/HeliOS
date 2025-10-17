@@ -221,7 +221,6 @@ void test_memory_edge_cases(void) {
     }
 
     /* Should have allocated at least some blocks */
-    printf("DEBUG: allocCount=%d, sizeBefore=%u\n", allocCount, (unsigned int)sizeBefore);
     unit_try(allocCount > 0);
 
     /* Free all allocated blocks */
@@ -231,7 +230,6 @@ void test_memory_edge_cases(void) {
 
     /* Verify memory returns to baseline */
     unit_try(OK(xMemGetUsed(&sizeAfter)));
-    printf("DEBUG: sizeAfter=%u\n", (unsigned int)sizeAfter);
     unit_try(sizeBefore == sizeAfter);
   }
   unit_end();
