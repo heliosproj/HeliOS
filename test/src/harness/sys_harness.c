@@ -48,9 +48,7 @@ void test_system_info(void) {
 
   /* Verify system info contains valid data */
   unit_try(info->productName[0] != '\0');
-  unit_try(info->majorVersion >= 0);
-  unit_try(info->minorVersion >= 0);
-  unit_try(info->patchVersion >= 0);
+  /* Note: Version fields are unsigned, so no need to check >= 0 */
 
   /* Free allocated memory */
   unit_try(OK(xMemFree(info)));
