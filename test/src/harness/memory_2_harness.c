@@ -16,6 +16,12 @@
 /*UNCRUSTIFY-ON*/
 #include "memory_2_harness.h"
 
+/* Test constants */
+#define TEST_ALLOC_SIZE         128         /* Allocation size for consistency tests */
+#define EXPECTED_USED_SIZE      160         /* Expected memory used (128 + overhead) */
+#define CORRUPT_VALUE           123         /* Arbitrary value for corruption tests */
+#define CORRUPT_POINTER         823829342   /* Arbitrary invalid pointer value */
+
 
 void memory_2_harness(void) {
   /*UNCRUSTIFY-OFF*/
@@ -53,12 +59,12 @@ void test_magic(void) {
 
 
   /* 1) Create something in the heap*/
-  unit_assert_ok(xMemAlloc(&ptr, 128));
+  unit_assert_ok(xMemAlloc(&ptr, TEST_ALLOC_SIZE));
 
 
   /* 2) Call a memory syscall like xMemGetUsed() which should return ReturnOK */
   unit_assert_ok(xMemGetUsed(&size));
-  unit_try(160 == size);
+  unit_try(EXPECTED_USED_SIZE == size);
 
 
   /* 3) Check the memfault flag (should be "false" at this point) */
@@ -94,12 +100,12 @@ void test_free(void) {
 
 
   /* 1) Create something in the heap*/
-  unit_assert_ok(xMemAlloc(&ptr, 128));
+  unit_assert_ok(xMemAlloc(&ptr, TEST_ALLOC_SIZE));
 
 
   /* 2) Call a memory syscall like xMemGetUsed() which should return ReturnOK */
   unit_assert_ok(xMemGetUsed(&size));
-  unit_try(160 == size);
+  unit_try(EXPECTED_USED_SIZE == size);
 
 
   /* 3) Check the memfault flag (should be "false" at this point) */
@@ -108,8 +114,7 @@ void test_free(void) {
 
   /* 4) Modify some part of the memory entry */
   entry = ADDR2ENTRY(ptr);
-  entry->free = 123; /* 123 has no special meaning, it's just an arbitrary
-                      * number. */
+  entry->free = CORRUPT_VALUE;
   /* 5) Call a memory syscall like xMemGetUsed() which should return ReturnError
    */
   unit_assert_not_ok(xMemGetUsed(&size));
@@ -134,12 +139,12 @@ void test_blocks(void) {
 
 
   /* 1) Create something in the heap*/
-  unit_assert_ok(xMemAlloc(&ptr, 128));
+  unit_assert_ok(xMemAlloc(&ptr, TEST_ALLOC_SIZE));
 
 
   /* 2) Call a memory syscall like xMemGetUsed() which should return ReturnOK */
   unit_assert_ok(xMemGetUsed(&size));
-  unit_try(160 == size);
+  unit_try(EXPECTED_USED_SIZE == size);
 
 
   /* 3) Check the memfault flag (should be "false" at this point) */
@@ -148,8 +153,7 @@ void test_blocks(void) {
 
   /* 4) Modify some part of the memory entry */
   entry = ADDR2ENTRY(ptr);
-  entry->blocks = 123; /* 123 has no special meaning, it's just an arbitrary
-                        * number. */
+  entry->blocks = CORRUPT_VALUE;
   /* 5) Call a memory syscall like xMemGetUsed() which should return ReturnError
    */
   unit_assert_not_ok(xMemGetUsed(&size));
@@ -174,12 +178,12 @@ void test_next(void) {
 
 
   /* 1) Create something in the heap*/
-  unit_assert_ok(xMemAlloc(&ptr, 128));
+  unit_assert_ok(xMemAlloc(&ptr, TEST_ALLOC_SIZE));
 
 
   /* 2) Call a memory syscall like xMemGetUsed() which should return ReturnOK */
   unit_assert_ok(xMemGetUsed(&size));
-  unit_try(160 == size);
+  unit_try(EXPECTED_USED_SIZE == size);
 
 
   /* 3) Check the memfault flag (should be "false" at this point) */
@@ -188,9 +192,7 @@ void test_next(void) {
 
   /* 4) Modify some part of the memory entry */
   entry = ADDR2ENTRY(ptr);
-  entry->next = (MemoryEntry_t *) 823829342; /* 823829342 has no special
-                                              * meaning, it's just an arbitrary
-                                              * number. */
+  entry->next = (MemoryEntry_t *) CORRUPT_POINTER;
   /* 5) Call a memory syscall like xMemGetUsed() which should return ReturnError
    */
   unit_assert_not_ok(xMemGetUsed(&size));

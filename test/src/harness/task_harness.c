@@ -16,6 +16,17 @@
 /*UNCRUSTIFY-ON*/
 #include "task_harness.h"
 
+/* Test constants */
+#define TASK_NAME_LENGTH        0x6     /* Length of "TASK01" string */
+#define MESSAGE_TEXT            "MESSAGE"
+#define MESSAGE_LENGTH          0x7     /* Length of MESSAGE string */
+#define EXPECTED_TASK_ID        0x1     /* First task ID */
+#define TASK_PERIOD_3333_MS     0xD05   /* 3333 milliseconds */
+#define TASK_PERIOD_7777_MS     0x1E61  /* 7777 milliseconds */
+#define TASK_PERIOD_3000_MS     0xBB8   /* 3000 milliseconds */
+#define TASK_WD_PERIOD_2000_MS  0x7D0u  /* 2000 milliseconds watchdog */
+#define TASK_WAIT_SECONDS       3       /* Sleep duration for task tests */
+
 
 void task_harness(void) {
   Task_t *task01;
@@ -70,28 +81,28 @@ void task_harness(void) {
   task05 = 0;
   unit_assert_ok(xTaskGetAllRunTimeStats(&task04, &task05));
   unit_assert_not_null(task04);
-  unit_assert_equal(0x1, task05);
-  unit_assert_equal(task04[0].id, 0x1);
+  unit_assert_equal(EXPECTED_TASK_ID, task05);
+  unit_assert_equal(task04[0].id, EXPECTED_TASK_ID);
   unit_assert_ok(xMemFree(task04));
   unit_end();
   unit_begin("Individual task runtime statistics retrieval succeeds");
   task04 = null;
   unit_assert_ok(xTaskGetTaskRunTimeStats(task01, &task04));
   unit_assert_not_null(task04);
-  unit_assert_equal(task04->id, 0x1);
+  unit_assert_equal(task04->id, EXPECTED_TASK_ID);
   unit_assert_ok(xMemFree(task04));
   unit_end();
   unit_begin("Task count retrieval returns correct number");
   task06 = 0;
   unit_assert_ok(xTaskGetNumberOfTasks(&task06));
-  unit_assert_equal(0x1, task06);
+  unit_assert_equal(EXPECTED_TASK_ID, task06);
   unit_end();
   unit_begin("Task information retrieval returns task details");
   task07 = null;
   unit_assert_ok(xTaskGetTaskInfo(task01, &task07));
   unit_assert_not_null(task07);
-  unit_assert_equal(task07->id, 0x1);
-  unit_assert_equal(strncmp("TASK01", (char *) task07->name, 0x6), 0x0);
+  unit_assert_equal(task07->id, EXPECTED_TASK_ID);
+  unit_assert_equal(strncmp("TASK01", (char *) task07->name, TASK_NAME_LENGTH), 0x0);
   unit_assert_equal(task07->state, TaskStateSuspended);
   unit_assert_ok(xMemFree(task07));
   unit_end();
@@ -99,9 +110,9 @@ void task_harness(void) {
   task07 = null;
   unit_assert_ok(xTaskGetAllTaskInfo(&task07, &task06));
   unit_assert_not_null(task07);
-  unit_assert_equal(0x1, task06);
-  unit_assert_equal(task07->id, 0x1);
-  unit_assert_equal(strncmp("TASK01", (char *) task07->name, 0x6), 0x0);
+  unit_assert_equal(EXPECTED_TASK_ID, task06);
+  unit_assert_equal(task07->id, EXPECTED_TASK_ID);
+  unit_assert_equal(strncmp("TASK01", (char *) task07->name, TASK_NAME_LENGTH), 0x0);
   unit_assert_equal(task07->state, TaskStateSuspended);
   unit_assert_ok(xMemFree(task07));
   unit_end();
@@ -112,14 +123,14 @@ void task_harness(void) {
   unit_begin("Task name retrieval returns correct name");
   unit_assert_ok(xTaskGetName(task01, &task08));
   unit_assert_not_null(task08);
-  unit_assert_equal(strncmp("TASK01", (char *) task08, 0x6), 0x0);
+  unit_assert_equal(strncmp("TASK01", (char *) task08, TASK_NAME_LENGTH), 0x0);
   unit_end();
   unit_begin("Task ID retrieval returns correct ID");
   unit_assert_ok(xTaskGetId(task01, &task14));
-  unit_assert_equal(0x1, task14);
+  unit_assert_equal(EXPECTED_TASK_ID, task14);
   unit_end();
   unit_begin("Task notification delivery succeeds");
-  unit_assert_ok(xTaskNotifyGive(task01, 0x7, (Byte_t *) "MESSAGE"));
+  unit_assert_ok(xTaskNotifyGive(task01, MESSAGE_LENGTH, (Byte_t *) MESSAGE_TEXT));
   unit_end();
   unit_begin("Task notification waiting check returns true");
   unit_assert_ok(xTaskNotificationIsWaiting(task01, &task15));
@@ -132,11 +143,11 @@ void task_harness(void) {
   unit_end();
   unit_begin("Task notification retrieval returns message");
   task09 = null;
-  unit_assert_ok(xTaskNotifyGive(task01, 0x7, (Byte_t *) "MESSAGE"));
+  unit_assert_ok(xTaskNotifyGive(task01, MESSAGE_LENGTH, (Byte_t *) MESSAGE_TEXT));
   unit_assert_ok(xTaskNotifyTake(task01, &task09));
   unit_assert_not_null(task09);
-  unit_assert_equal(task09->notificationBytes, 0x7);
-  unit_assert_equal(strncmp("MESSAGE", (char *) task09->notificationValue, 0x7), 0x0);
+  unit_assert_equal(task09->notificationBytes, MESSAGE_LENGTH);
+  unit_assert_equal(strncmp(MESSAGE_TEXT, (char *) task09->notificationValue, MESSAGE_LENGTH), 0x0);
   unit_assert_ok(xMemFree(task09));
   unit_end();
   unit_begin("Task resume changes state to running");
@@ -155,14 +166,14 @@ void task_harness(void) {
   unit_assert_equal(TaskStateWaiting, task19);
   unit_end();
   unit_begin("Task period change updates period value");
-  unit_assert_ok(xTaskChangePeriod(task01, 0xD05));
+  unit_assert_ok(xTaskChangePeriod(task01, TASK_PERIOD_3333_MS));
   unit_assert_ok(xTaskGetPeriod(task01, &task20));
-  unit_assert_equal(0xD05, task20);
+  unit_assert_equal(TASK_PERIOD_3333_MS, task20);
   unit_end();
   unit_begin("Task period retrieval returns configured value");
-  unit_assert_ok(xTaskChangePeriod(task01, 0x1E61));
+  unit_assert_ok(xTaskChangePeriod(task01, TASK_PERIOD_7777_MS));
   unit_assert_ok(xTaskGetPeriod(task01, &task21));
-  unit_assert_equal(0x1E61, task21);
+  unit_assert_equal(TASK_PERIOD_7777_MS, task21);
   unit_end();
   unit_begin("Task timer reset succeeds");
   unit_assert_ok(xTaskResetTimer(task01));
@@ -181,7 +192,7 @@ void task_harness(void) {
   task10 = null;
   unit_assert_ok(xTaskCreate(&task10, (Byte_t *) "TASK10", task_harness_task, null));
   unit_assert_not_null(task10);
-  unit_assert_ok(xTaskChangePeriod(task10, 0xBB8));
+  unit_assert_ok(xTaskChangePeriod(task10, TASK_PERIOD_3000_MS));
   unit_assert_ok(xTaskWait(task10));
   unit_assert_ok(xTaskResetTimer(task10));
   unit_assert_ok(xTaskStartScheduler());
@@ -193,7 +204,7 @@ void task_harness(void) {
   unit_assert_ok(xTaskCreate(&task11, (Byte_t *) "TASK11", task_harness_task, null));
   unit_assert_not_null(task11);
   unit_assert_ok(xTaskWait(task11));
-  unit_assert_ok(xTaskNotifyGive(task11, 0x7, (Byte_t *) "MESSAGE"));
+  unit_assert_ok(xTaskNotifyGive(task11, MESSAGE_LENGTH, (Byte_t *) MESSAGE_TEXT));
   unit_assert_ok(xTaskNotificationIsWaiting(task11, &task24));
   unit_assert_true(task24);
   unit_assert_ok(xTaskResumeAll());
@@ -207,7 +218,7 @@ void task_harness(void) {
   task12 = null;
   unit_assert_ok(xTaskCreate(&task12, (Byte_t *) "TASK12", task_harness_task2, null));
   unit_assert_not_null(task12);
-  unit_assert_ok(xTaskChangeWDPeriod(task12, 0x7D0u));
+  unit_assert_ok(xTaskChangeWDPeriod(task12, TASK_WD_PERIOD_2000_MS));
   unit_assert_ok(xTaskResume(task12));
   unit_assert_ok(xTaskGetTaskState(task12, &task26));
   unit_assert_equal(TaskStateRunning, task26);
@@ -217,7 +228,7 @@ void task_harness(void) {
   unit_end();
   unit_begin("Task watchdog period retrieval returns configured value");
   unit_assert_ok(xTaskGetWDPeriod(task12, &task28));
-  unit_assert_equal(0x7D0u, task28);
+  unit_assert_equal(TASK_WD_PERIOD_2000_MS, task28);
   unit_end();
 
   return;
@@ -233,7 +244,7 @@ void task_harness_task(Task_t *task_, TaskParm_t *parm_) {
 
 
 void task_harness_task2(Task_t *task_, TaskParm_t *parm_) {
-  sleep(3);
+  sleep(TASK_WAIT_SECONDS);
   xTaskSuspendAll();
 
   return;

@@ -16,6 +16,11 @@
 /*UNCRUSTIFY-ON*/
 #include "timer_harness.h"
 
+/* Test constants for timer periods (in ticks/milliseconds) */
+#define TIMER_PERIOD_1_SECOND   0x3E8   /* 1000 ms */
+#define TIMER_PERIOD_2_SECONDS  0x7D0   /* 2000 ms */
+#define TIMER_WAIT_SECONDS      3       /* Sleep duration for expiration tests */
+
 
 void timer_harness(void) {
   Timer_t *timer01 = null;
@@ -32,17 +37,17 @@ void timer_harness(void) {
 
   unit_begin("Timer creation with specified period succeeds");
   timer01 = null;
-  unit_assert_ok(xTimerCreate(&timer01, 0x3E8));
+  unit_assert_ok(xTimerCreate(&timer01, TIMER_PERIOD_1_SECOND));
   unit_assert_not_null(timer01);
   unit_end();
   unit_begin("Timer period retrieval returns configured value");
   unit_assert_ok(xTimerGetPeriod(timer01, &timer02));
-  unit_assert_equal(timer02, 0x3E8);
+  unit_assert_equal(timer02, TIMER_PERIOD_1_SECOND);
   unit_end();
   unit_begin("Timer period change updates period value");
-  unit_assert_ok(xTimerChangePeriod(timer01, 0x7D0));
+  unit_assert_ok(xTimerChangePeriod(timer01, TIMER_PERIOD_2_SECONDS));
   unit_assert_ok(xTimerGetPeriod(timer01, &timer03));
-  unit_assert_equal(timer03, 0x7D0);
+  unit_assert_equal(timer03, TIMER_PERIOD_2_SECONDS);
   unit_end();
   unit_begin("Timer active check returns false for inactive timer");
   unit_assert_ok(xTimerIsTimerActive(timer01, &timer04));
@@ -52,7 +57,7 @@ void timer_harness(void) {
   unit_assert_not_ok(xTimerHasTimerExpired(timer01, &timer05));
   unit_assert_false(timer05);
   unit_assert_ok(xTimerStart(timer01));
-  sleep(3);
+  sleep(TIMER_WAIT_SECONDS);  /* Wait for timer to expire */
   unit_assert_ok(xTimerHasTimerExpired(timer01, &timer06));
   unit_assert_true(timer06);
   unit_end();
@@ -67,7 +72,7 @@ void timer_harness(void) {
   unit_assert_true(timer08);
   unit_end();
   unit_begin("Timer reset clears expiration status");
-  sleep(3);
+  sleep(TIMER_WAIT_SECONDS);  /* Wait for timer to expire again */
   unit_assert_ok(xTimerHasTimerExpired(timer01, &timer09));
   unit_assert_true(timer09);
   unit_assert_ok(xTimerReset(timer01));

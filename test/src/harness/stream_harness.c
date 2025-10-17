@@ -16,6 +16,10 @@
 /*UNCRUSTIFY-ON*/
 #include "stream_harness.h"
 
+/* Test constants */
+#define STREAM_BUFFER_SIZE      0x20u   /* 32 bytes - stream buffer capacity */
+#define STREAM_LAST_BYTE_INDEX  0x1Fu   /* Index of last byte in buffer */
+
 
 void stream_harness(void) {
   StreamBuffer_t *stream01 = null;
@@ -48,13 +52,13 @@ void stream_harness(void) {
   unit_end();
   unit_begin("Stream bytes available returns buffer capacity");
   unit_assert_ok(xStreamBytesAvailable(stream01, &stream04));
-  unit_assert_equal(stream04, 0x20u);
+  unit_assert_equal(stream04, STREAM_BUFFER_SIZE);
   unit_end();
   unit_begin("Stream receive returns all buffered bytes");
   unit_assert_ok(xStreamReceive(stream01, &stream02, &stream03));
   unit_assert_not_null(stream03);
-  unit_assert_equal(stream02, 0x20u);
-  unit_assert_equal(stream03[0x1Fu], 0x1Fu);
+  unit_assert_equal(stream02, STREAM_BUFFER_SIZE);
+  unit_assert_equal(stream03[STREAM_LAST_BYTE_INDEX], STREAM_LAST_BYTE_INDEX);
   unit_end();
   unit_begin("Stream reset clears buffer contents");
 

@@ -16,15 +16,37 @@
 /*UNCRUSTIFY-ON*/
 #include "memory_1_harness.h"
 
-static Size_t sizes[0x20u] = {
+/* Test constants */
+#define NUM_TEST_ALLOCS         0x20u       /* Number of allocation test iterations */
+#define OVERSIZED_ALLOC         0x99999u    /* Size that should fail allocation */
+#define LARGE_BLOCK_SIZE        0x32000u    /* 204,800 bytes - large allocation test */
+#define LARGE_BLOCK_USED        0x32020u    /* Expected memory used after large alloc */
+#define HEAP_AVAILABLE_BYTES    0x63A0u     /* Expected heap available space */
+#define HEAP_FREE_BLOCKS        0x31Du      /* Expected number of free blocks */
+#define HEAP_ALLOC_COUNT        0x24u       /* Expected successful allocations */
+#define HEAP_FREE_COUNT         0x22u       /* Expected successful frees */
+#define KERNEL_AVAILABLE_BYTES  0x383C0u    /* Expected kernel available space */
+#define KERNEL_MIN_FREE         0x38340u    /* Minimum ever free bytes remaining */
+#define KERNEL_FREE_BLOCKS      0x1C1Eu     /* Expected kernel free blocks */
+#define KERNEL_ALLOC_COUNT      0x2u        /* Expected kernel allocations */
+#define KERNEL_FREE_COUNT       0x1u        /* Expected kernel frees */
+#define SMALL_ALLOC_SIZE        128         /* Small allocation test size */
+#define TINY_ALLOC_SIZE         64          /* Tiny block for max allocs test */
+#define MEDIUM_ALLOC_SIZE       256         /* Medium allocation size */
+#define LARGE_ALLOC_SIZE        512         /* Large allocation size */
+#define FRAG_BLOCK_SIZE         1024        /* Fragmentation test block size */
+#define MAX_SIZE_TEST           0xFFFFFFFFu /* Maximum size boundary test */
+#define MAX_TEST_ALLOCS         100         /* Maximum test allocations */
+
+static Size_t sizes[NUM_TEST_ALLOCS] = {
   0x2532u, 0x1832u, 0x132u, 0x2932u, 0x332u, 0x1432u, 0x1332u, 0x532u, 0x1732u, 0x932u, 0x1432u, 0x2232u, 0x1432u, 0x3132u, 0x032u, 0x1132u, 0x632u, 0x932u,
     0x1532u, 0x632u, 0x1832u, 0x132u, 0x1332u, 0x3132u, 0x2732u, 0x1532u, 0x2432u, 0x2932u, 0x2432u, 0x2932u, 0x3032u, 0x2332u
 };
-static Size_t order[0x20u] = {
+static Size_t order[NUM_TEST_ALLOCS] = {
   0x02u, 0x16u, 0x07u, 0x0Cu, 0x06u, 0x00u, 0x0Du, 0x18u, 0x10u, 0x08u, 0x0Au, 0x1Eu, 0x0Bu, 0x0Eu, 0x03u, 0x09u, 0x19u, 0x05u, 0x1Cu, 0x1Du, 0x0Fu, 0x01u,
     0x1Au, 0x04u, 0x13u, 0x11u, 0x1Fu, 0x12u, 0x17u, 0x15u, 0x14u, 0x1Bu
 };
-static MemoryTest_t tests[0x20u];
+static MemoryTest_t tests[NUM_TEST_ALLOCS];
 
 
 void memory_1_harness(void) {
@@ -43,7 +65,7 @@ void memory_1_harness(void) {
   used = nil;
   actual = nil;
 
-  for(i = 0; i < 0x20u; i++) {
+  for(i = 0; i < NUM_TEST_ALLOCS; i++) {
     tests[i].size = sizes[i];
     tests[i].blocks = (sizes[i] / CONFIG_MEMORY_REGION_BLOCK_SIZE) + 1;
 
@@ -60,9 +82,9 @@ void memory_1_harness(void) {
     unit_try((tests[i].blocks * CONFIG_MEMORY_REGION_BLOCK_SIZE) == actual);
   }
 
-  unit_try(!OK(xMemAlloc((volatile Addr_t **) &mem05, 0x99999u)));
+  unit_try(!OK(xMemAlloc((volatile Addr_t **) &mem05, OVERSIZED_ALLOC)));
 
-  for(i = 0; i < 0x20u; i++) {
+  for(i = 0; i < NUM_TEST_ALLOCS; i++) {
     unit_assert_ok(xMemFree(tests[order[i]].ptr));
   }
 
@@ -76,28 +98,28 @@ void memory_1_harness(void) {
   unit_end();
   unit_begin("Memory allocation succeeds for large block");
   mem01 = null;
-  unit_try(OK(xMemAlloc((volatile Addr_t **) &mem01, 0x32000u)));
+  unit_try(OK(xMemAlloc((volatile Addr_t **) &mem01, LARGE_BLOCK_SIZE)));
   unit_assert_not_null(mem01);
   unit_end();
   unit_begin("Used memory tracking reflects allocations");
   unit_assert_ok(xMemGetUsed(&actual));
-  unit_assert_equal(actual, 0x32020u);
+  unit_assert_equal(actual, LARGE_BLOCK_USED);
   unit_end();
   unit_begin("Allocated block size retrieval is accurate");
   unit_assert_ok(xMemGetSize(mem01, &actual));
-  unit_assert_equal(actual, 0x32020u);
+  unit_assert_equal(actual, LARGE_BLOCK_USED);
   unit_end();
   unit_begin("Heap statistics reflect current memory state");
   mem02 = null;
   unit_assert_ok(xMemGetHeapStats(&mem02));
   unit_assert_not_null(mem02);
-  unit_assert_equal(mem02->availableSpaceInBytes, 0x63A0u);
-  unit_assert_equal(mem02->largestFreeEntryInBytes, 0x63A0u);
+  unit_assert_equal(mem02->availableSpaceInBytes, HEAP_AVAILABLE_BYTES);
+  unit_assert_equal(mem02->largestFreeEntryInBytes, HEAP_AVAILABLE_BYTES);
   unit_assert_equal(mem02->minimumEverFreeBytesRemaining, 0x0u);
-  unit_assert_equal(mem02->numberOfFreeBlocks, 0x31Du);
-  unit_assert_equal(mem02->smallestFreeEntryInBytes, 0x63A0u);
-  unit_assert_equal(mem02->successfulAllocations, 0x24u); /* +1 from xSystemGetSystemInfo */
-  unit_assert_equal(mem02->successfulFrees, 0x22u); /* +1 from xSystemGetSystemInfo */
+  unit_assert_equal(mem02->numberOfFreeBlocks, HEAP_FREE_BLOCKS);
+  unit_assert_equal(mem02->smallestFreeEntryInBytes, HEAP_AVAILABLE_BYTES);
+  unit_assert_equal(mem02->successfulAllocations, HEAP_ALLOC_COUNT); /* +1 from xSystemGetSystemInfo */
+  unit_assert_equal(mem02->successfulFrees, HEAP_FREE_COUNT); /* +1 from xSystemGetSystemInfo */
   unit_end();
   unit_begin("Kernel statistics track internal allocations");
   mem03 = null;
@@ -107,13 +129,13 @@ void memory_1_harness(void) {
   unit_assert_ok(xTaskDelete(mem04));
   unit_assert_ok(xMemGetKernelStats(&mem03));
   unit_assert_not_null(mem03);
-  unit_assert_equal(mem03->availableSpaceInBytes, 0x383C0u);
-  unit_assert_equal(mem03->largestFreeEntryInBytes, 0x383C0u);
-  unit_assert_equal(mem03->minimumEverFreeBytesRemaining, 0x38340u);
-  unit_assert_equal(mem03->numberOfFreeBlocks, 0x1C1Eu);
-  unit_assert_equal(mem03->smallestFreeEntryInBytes, 0x383C0u);
-  unit_assert_equal(mem03->successfulAllocations, 0x2u);
-  unit_assert_equal(mem03->successfulFrees, 0x1u);
+  unit_assert_equal(mem03->availableSpaceInBytes, KERNEL_AVAILABLE_BYTES);
+  unit_assert_equal(mem03->largestFreeEntryInBytes, KERNEL_AVAILABLE_BYTES);
+  unit_assert_equal(mem03->minimumEverFreeBytesRemaining, KERNEL_MIN_FREE);
+  unit_assert_equal(mem03->numberOfFreeBlocks, KERNEL_FREE_BLOCKS);
+  unit_assert_equal(mem03->smallestFreeEntryInBytes, KERNEL_AVAILABLE_BYTES);
+  unit_assert_equal(mem03->successfulAllocations, KERNEL_ALLOC_COUNT);
+  unit_assert_equal(mem03->successfulFrees, KERNEL_FREE_COUNT);
   unit_assert_ok(xMemFree(mem01));
   unit_assert_ok(xMemFree(mem02));
   unit_assert_ok(xMemFree(mem03));
@@ -133,7 +155,7 @@ void test_memory_edge_cases(void) {
 
   /* Test NULL pointer handling */
   unit_begin("Edge Case - xMemAlloc() NULL Pointer");
-  unit_assert_not_ok(xMemAlloc(null, 128));
+  unit_assert_not_ok(xMemAlloc(null, SMALL_ALLOC_SIZE));
   unit_end();
 
   /* Test zero size allocation */
@@ -146,7 +168,7 @@ void test_memory_edge_cases(void) {
   /* Test oversized allocation */
   unit_begin("Edge Case - xMemAlloc() Oversized");
   ptr1 = null;
-  unit_assert_not_ok(xMemAlloc(&ptr1, 0xFFFFFFFFu));
+  unit_assert_not_ok(xMemAlloc(&ptr1, MAX_SIZE_TEST));
   unit_assert_null(ptr1);
   unit_end();
 
@@ -158,7 +180,7 @@ void test_memory_edge_cases(void) {
   /* Test double free */
   unit_begin("Edge Case - xMemFree() Double Free");
   ptr1 = null;
-  unit_assert_ok(xMemAlloc(&ptr1, 128));
+  unit_assert_ok(xMemAlloc(&ptr1, SMALL_ALLOC_SIZE));
   unit_assert_not_null(ptr1);
   unit_assert_ok(xMemFree(ptr1));
   /* Attempting to free again should fail */
@@ -174,7 +196,7 @@ void test_memory_edge_cases(void) {
   /* Test getting size with NULL output parameter */
   unit_begin("Edge Case - xMemGetSize() NULL Output");
   ptr1 = null;
-  unit_assert_ok(xMemAlloc(&ptr1, 128));
+  unit_assert_ok(xMemAlloc(&ptr1, SMALL_ALLOC_SIZE));
   unit_assert_not_null(ptr1);
   unit_assert_not_ok(xMemGetSize(ptr1, null));
   unit_assert_ok(xMemFree(ptr1));
@@ -198,7 +220,6 @@ void test_memory_edge_cases(void) {
   /* Test maximum number of allocations */
   unit_begin("Edge Case - Maximum Allocations");
   {
-    #define MAX_TEST_ALLOCS 100
     volatile Addr_t *ptrs[MAX_TEST_ALLOCS];
     int i;
     int allocCount = 0;
@@ -212,7 +233,7 @@ void test_memory_edge_cases(void) {
     for(i = 0; i < MAX_TEST_ALLOCS; i++) {
       ptrs[i] = null;
 
-      if(OK(xMemAlloc(&ptrs[i], 64))) {
+      if(OK(xMemAlloc(&ptrs[i], TINY_ALLOC_SIZE))) {
         unit_assert_not_null(ptrs[i]);
         allocCount++;
       } else {
@@ -242,16 +263,16 @@ void test_memory_edge_cases(void) {
     volatile Addr_t *frag3 = null;
 
     /* Create fragmented memory pattern */
-    unit_assert_ok(xMemAlloc(&frag1, 1024));
-    unit_assert_ok(xMemAlloc(&frag2, 1024));
-    unit_assert_ok(xMemAlloc(&frag3, 1024));
+    unit_assert_ok(xMemAlloc(&frag1, FRAG_BLOCK_SIZE));
+    unit_assert_ok(xMemAlloc(&frag2, FRAG_BLOCK_SIZE));
+    unit_assert_ok(xMemAlloc(&frag3, FRAG_BLOCK_SIZE));
 
     /* Free middle block */
     unit_assert_ok(xMemFree(frag2));
 
     /* Try to allocate a block that fits in the freed space */
     frag2 = null;
-    unit_assert_ok(xMemAlloc(&frag2, 512));
+    unit_assert_ok(xMemAlloc(&frag2, LARGE_ALLOC_SIZE));
     unit_assert_not_null(frag2);
 
     /* Cleanup */
@@ -265,8 +286,8 @@ void test_memory_edge_cases(void) {
   unit_begin("Edge Case - Allocation After xMemFreeAll()");
   ptr1 = null;
   ptr2 = null;
-  unit_assert_ok(xMemAlloc(&ptr1, 256));
-  unit_assert_ok(xMemAlloc(&ptr2, 512));
+  unit_assert_ok(xMemAlloc(&ptr1, MEDIUM_ALLOC_SIZE));
+  unit_assert_ok(xMemAlloc(&ptr2, LARGE_ALLOC_SIZE));
 
   /* Free all memory */
   unit_assert_ok(xMemFreeAll());
@@ -277,7 +298,7 @@ void test_memory_edge_cases(void) {
 
   /* Allocate again - should succeed */
   ptr1 = null;
-  unit_assert_ok(xMemAlloc(&ptr1, 128));
+  unit_assert_ok(xMemAlloc(&ptr1, SMALL_ALLOC_SIZE));
   unit_assert_not_null(ptr1);
   unit_assert_ok(xMemFree(ptr1));
   unit_end();
