@@ -25,7 +25,6 @@ HeliOS uses GitHub issue templates to streamline the reporting process:
 
 - **Bug Report** - If you are reporting a bug, use the [Bug Report](https://github.com/heliosproj/HeliOS/issues/new/choose) template
 - **Feature Request** - If you are proposing a new feature or enhancement, use the [Feature Request](https://github.com/heliosproj/HeliOS/issues/new/choose) template
-- **Other Request** - For documentation improvements or other requests, use the [Other Request](https://github.com/heliosproj/HeliOS/issues/new/choose) template
 - **Support Request** - If you need help using HeliOS, see [SUPPORT.md](/SUPPORT.md) and use the [Support Request](https://github.com/heliosproj/HeliOS/issues/new/choose) template
 
 We kindly ask for your patience as it may take several days before we are able to respond to your issue. Bug reports and support requests may take longer to investigate.
