@@ -900,32 +900,193 @@
 
 
   /**
-   * @brief Syscall to query the device driver about the availability of a
-   * device
+   * @brief Query device availability and readiness status
    *
-   * The xDeviceIsAvailable() syscall queries the device driver about the
-   * availability of a device. Generally "available" means the that the device
-   * is available for read and/or write operations though the meaning is
-   * implementation specific and left up to the device driver's author.
+   * Checks whether a device is available and ready for I/O operations by
+   * invoking the device driver's availability callback. The meaning of
+   * "available" is driver-specific but typically indicates the device is
+   * initialized, operational, and ready to accept read/write requests without
+   * errors.
    *
-   * @sa xReturn
+   * Device availability can vary based on hardware state, driver configuration,
+   * and operational conditions. For example, a UART might be unavailable if not
+   * initialized, a sensor might be unavailable during calibration, or a storage
+   * device might be unavailable if busy with another operation.
    *
-   * @param  uid_ The unique identifier ("UID") of the device driver to be
-   *              operated on.
-   * @param  res_ The result of the inquiry; here, taken to mean the
-   *              availability of the device.
-   * @return      On success, the syscall returns ReturnOK. On failure, the
-   *              syscall returns ReturnError. A failure is any condition in
-   *              which the syscall was unable to achieve its intended
-   *              objective. For example, if xTaskGetId() was unable to locate
-   *              the task by the task object (i.e., xTask) passed to the
-   *              syscall, because either the object was null or invalid (e.g.,
-   *              a deleted task), xTaskGetId() would return ReturnError. All
-   *              HeliOS syscalls return the xReturn (a.k.a., Return_t) type
-   *              which can either be ReturnOK or ReturnError. The C macros OK()
-   *              and ERROR() can be used as a more concise way of checking the
-   *              return value of a syscall (e.g., if(OK(xMemGetUsed(&size))) {}
-   *              or if(ERROR(xMemGetUsed(&size))) {}).
+   * Typical availability semantics by device type:
+   * - **Serial devices**: Ready to transmit/receive (not in error state)
+   * - **Storage devices**: Not busy, no pending operations, hardware ready
+   * - **Sensors**: Calibrated, powered up, and ready to sample
+   * - **Network devices**: Link established, buffers available
+   * - **Custom devices**: Driver-defined operational readiness
+   *
+   * Common use cases:
+   * - **Pre-operation checks**: Verify device is ready before I/O
+   * - **Error recovery**: Check availability after device errors
+   * - **Initialization validation**: Confirm device initialized successfully
+   * - **Polling loops**: Wait for device to become ready
+   * - **Diagnostics**: Determine which devices are operational
+   *
+   * Example 1: Check device before write operation
+   * @code
+   * #define UART0_UID 0x0100
+   *
+   * xReturn sendData(const xByte *data, xSize len) {
+   *   xBase isAvailable;
+   *
+   *   // Check if UART is available before writing
+   *   if (OK(xDeviceIsAvailable(UART0_UID, &isAvailable))) {
+   *     if (isAvailable) {
+   *       // Device ready - perform write
+   *       return xDeviceWrite(UART0_UID, &len, (xAddr)data);
+   *     } else {
+   *       logWarning("UART not available for write");
+   *       return ReturnError;
+   *     }
+   *   }
+   *
+   *   logError("Failed to query UART availability");
+   *   return ReturnError;
+   * }
+   * @endcode
+   *
+   * Example 2: Poll until device becomes available
+   * @code
+   * #define SENSOR_UID 0x0300
+   * #define MAX_WAIT_CYCLES 100
+   *
+   * xReturn waitForSensorReady(void) {
+   *   xBase isAvailable;
+   *   xBase retries = 0;
+   *
+   *   while (retries < MAX_WAIT_CYCLES) {
+   *     if (OK(xDeviceIsAvailable(SENSOR_UID, &isAvailable))) {
+   *       if (isAvailable) {
+   *         logInfo("Sensor ready after %u attempts", retries);
+   *         return ReturnOK;
+   *       }
+   *     }
+   *
+   *     // Wait a bit before retrying
+   *     xTaskDelayUntil(10);  // 10 ticks
+   *     retries++;
+   *   }
+   *
+   *   logError("Sensor failed to become available");
+   *   return ReturnError;
+   * }
+   * @endcode
+   *
+   * Example 3: System diagnostic - check all devices
+   * @code
+   * typedef struct {
+   *   xHalfWord uid;
+   *   const char *name;
+   * } DeviceInfo_t;
+   *
+   * void checkSystemDevices(void) {
+   *   DeviceInfo_t devices[] = {
+   *     {0x0100, "UART0"},
+   *     {0x0200, "SPI0"},
+   *     {0x0300, "Sensor"},
+   *     {0x0400, "Storage"}
+   *   };
+   *   xBase deviceCount = 4;
+   *   xBase availableCount = 0;
+   *
+   *   printf("Device Availability Check:\n");
+   *
+   *   for (xBase i = 0; i < deviceCount; i++) {
+   *     xBase isAvailable;
+   *
+   *     if (OK(xDeviceIsAvailable(devices[i].uid, &isAvailable))) {
+   *       printf("  %-10s [0x%04X]: %s\n",
+   *              devices[i].name,
+   *              devices[i].uid,
+   *              isAvailable ? "AVAILABLE" : "UNAVAILABLE");
+   *
+   *       if (isAvailable) {
+   *         availableCount++;
+   *       }
+   *     } else {
+   *       printf("  %-10s [0x%04X]: ERROR (not registered?)\n",
+   *              devices[i].name, devices[i].uid);
+   *     }
+   *   }
+   *
+   *   printf("\nSummary: %u/%u devices available\n",
+   *          availableCount, deviceCount);
+   * }
+   * @endcode
+   *
+   * Example 4: Retry I/O with availability check
+   * @code
+   * #define FLASH_UID 0x1000
+   * #define MAX_RETRIES 5
+   *
+   * xReturn writeFlashWithRetry(xByte *data, xSize len) {
+   *   xBase retries = 0;
+   *
+   *   while (retries < MAX_RETRIES) {
+   *     xBase isAvailable;
+   *
+   *     // Check availability
+   *     if (OK(xDeviceIsAvailable(FLASH_UID, &isAvailable)) && isAvailable) {
+   *       // Try write operation
+   *       if (OK(xDeviceWrite(FLASH_UID, &len, (xAddr)data))) {
+   *         return ReturnOK;  // Success
+   *       }
+   *     }
+   *
+   *     // Write failed or device unavailable - wait and retry
+   *     logWarning("Flash write failed, retry %u/%u", retries + 1, MAX_RETRIES);
+   *     xTaskDelayUntil(100);  // Wait longer for flash
+   *     retries++;
+   *   }
+   *
+   *   logError("Flash write failed after %u retries", MAX_RETRIES);
+   *   return ReturnError;
+   * }
+   * @endcode
+   *
+   * @param[in]  uid_ Unique identifier of the device to query. Must match a UID
+   *                  previously registered via xDeviceRegisterDevice().
+   * @param[out] res_ Pointer to variable that receives the availability status.
+   *                  Set to non-zero (true) if device is available, zero (false)
+   *                  if unavailable.
+   *
+   * @return          ReturnOK if query succeeded (res_ contains valid result),
+   *                  ReturnError if query failed (invalid UID, device not
+   *                  registered, or driver does not implement availability
+   *                  check).
+   *
+   * @warning A successful return (ReturnOK) only means the query was performed.
+   * Check the res_ value to determine actual device availability. ReturnOK with
+   * res_=0 means "successfully determined device is unavailable."
+   *
+   * @warning Device availability can change between checking and using. After
+   * confirming availability, the device might become unavailable before your
+   * I/O operation. Always check I/O function return values.
+   *
+   * @warning If the driver does not implement an availability callback, this
+   * function may return ReturnError or always report available. Check your
+   * driver documentation.
+   *
+   * @note The interpretation of "available" is driver-specific. Some drivers
+   * may always return available after initialization, while others perform
+   * detailed hardware checks.
+   *
+   * @note This is a lightweight query that typically does not perform I/O.
+   * It's safe to call frequently in polling loops.
+   *
+   * @note Combining availability checks with actual I/O operations is a common
+   * pattern for robust device communication in embedded systems.
+   *
+   * @sa xDeviceInitDevice() - Initialize device before checking availability
+   * @sa xDeviceConfigDevice() - Configure device state
+   * @sa xDeviceWrite() - Write to device (check availability first)
+   * @sa xDeviceRead() - Read from device (check availability first)
+   * @sa xDeviceRegisterDevice() - Register device driver
    */
   xReturn xDeviceIsAvailable(const xHalfWord uid_, xBase *res_);
 
@@ -2300,61 +2461,327 @@
 
 
   /**
-   * @brief Syscall to get memory statistics on the heap memory region
+   * @brief Retrieve detailed statistics about the user heap memory region
    *
-   * The xMemGetHeapStats() syscall is used to obtain detailed statistics about
-   * the heap memory region which can be used by the application to monitor
-   * memory utilization.
+   * Returns comprehensive statistics about the user heap including total size,
+   * used/free space, allocation counts, fragmentation metrics, and largest
+   * available block. This provides deep insight into memory utilization,
+   * allocation patterns, and fragmentation for optimization and diagnostics.
    *
-   * @sa xReturn
-   * @sa xMemoryRegionStats
-   * @sa xMemFree()
+   * The function allocates a xMemoryRegionStats structure from the heap and
+   * populates it with current heap metrics. The caller MUST free this structure
+   * with xMemFree() after use. The statistics represent a snapshot at the time
+   * of the call and may become outdated as allocations/frees occur.
    *
-   * @param  stats_ The memory region statistics. The memory region statistics
-   *                must be freed by xMemFree().
-   * @return        On success, the syscall returns ReturnOK. On failure, the
-   *                syscall returns ReturnError. A failure is any condition in
-   *                which the syscall was unable to achieve its intended
-   *                objective. For example, if xTaskGetId() was unable to locate
-   *                the task by the task object (i.e., xTask) passed to the
-   *                syscall, because either the object was null or invalid
-   *                (e.g., a deleted task), xTaskGetId() would return
-   *                ReturnError. All HeliOS syscalls return the xReturn (a.k.a.,
-   *                Return_t) type which can either be ReturnOK or ReturnError.
-   *                The C macros OK() and ERROR() can be used as a more concise
-   *                way of checking the return value of a syscall (e.g.,
-   *                if(OK(xMemGetUsed(&size))) {} or
-   *                if(ERROR(xMemGetUsed(&size))) {}).
+   * Statistics provided in xMemoryRegionStats:
+   * - **totalSize**: Total heap capacity in bytes
+   * - **usedSpace**: Bytes currently allocated
+   * - **freeSpace**: Bytes available for allocation
+   * - **allocationCount**: Number of active allocations
+   * - **largestFreeBlock**: Size of largest contiguous free block
+   * - **fragmentationPercent**: Degree of memory fragmentation (0-100%)
+   *
+   * Common use cases:
+   * - **Memory profiling**: Understanding application memory footprint
+   * - **Fragmentation analysis**: Detecting and addressing heap fragmentation
+   * - **Capacity planning**: Determining if heap size is adequate
+   * - **Performance tuning**: Optimizing allocation patterns
+   * - **Diagnostic logging**: Capturing memory state for troubleshooting
+   * - **Runtime monitoring**: Tracking memory trends over time
+   *
+   * Example 1: Display heap utilization
+   * @code
+   * void displayHeapStatus(void) {
+   *   xMemoryRegionStats *stats = NULL;
+   *
+   *   if (OK(xMemGetHeapStats(&stats))) {
+   *     xByte usagePercent = (xByte)((stats->usedSpace * 100) / stats->totalSize);
+   *
+   *     printf("Heap Memory Status:\n");
+   *     printf("  Total:       %lu bytes\n", stats->totalSize);
+   *     printf("  Used:        %lu bytes (%u%%)\n", stats->usedSpace, usagePercent);
+   *     printf("  Free:        %lu bytes\n", stats->freeSpace);
+   *     printf("  Allocations: %lu\n", stats->allocationCount);
+   *     printf("  Largest free block: %lu bytes\n", stats->largestFreeBlock);
+   *     printf("  Fragmentation: %u%%\n", stats->fragmentationPercent);
+   *
+   *     // Always free the stats structure
+   *     xMemFree((xAddr)stats);
+   *   }
+   * }
+   * @endcode
+   *
+   * Example 2: Monitor for fragmentation issues
+   * @code
+   * #define FRAG_WARNING_THRESHOLD 30
+   * #define FRAG_CRITICAL_THRESHOLD 50
+   *
+   * void checkHeapFragmentation(void) {
+   *   xMemoryRegionStats *stats = NULL;
+   *
+   *   if (OK(xMemGetHeapStats(&stats))) {
+   *     if (stats->fragmentationPercent >= FRAG_CRITICAL_THRESHOLD) {
+   *       logCritical("Heap fragmentation critical: %u%%",
+   *                   stats->fragmentationPercent);
+   *       // Consider xMemFreeAll() or defragmentation strategy
+   *     } else if (stats->fragmentationPercent >= FRAG_WARNING_THRESHOLD) {
+   *       logWarning("Heap fragmentation high: %u%%",
+   *                  stats->fragmentationPercent);
+   *     }
+   *
+   *     xMemFree((xAddr)stats);
+   *   }
+   * }
+   * @endcode
+   *
+   * Example 3: Check if allocation will succeed
+   * @code
+   * xReturn canAllocate(xSize requestedSize) {
+   *   xMemoryRegionStats *stats = NULL;
+   *
+   *   if (OK(xMemGetHeapStats(&stats))) {
+   *     // Check if largest free block can satisfy request
+   *     if (stats->largestFreeBlock >= requestedSize) {
+   *       xMemFree((xAddr)stats);
+   *       return ReturnOK;  // Allocation likely to succeed
+   *     }
+   *
+   *     logWarning("Insufficient contiguous space: need %lu, have %lu",
+   *                requestedSize, stats->largestFreeBlock);
+   *     xMemFree((xAddr)stats);
+   *   }
+   *
+   *   return ReturnError;
+   * }
+   * @endcode
+   *
+   * Example 4: Periodic heap health monitoring
+   * @code
+   * #define HEAP_WARNING_THRESHOLD 85
+   *
+   * void heapMonitorTask(xTask task, xTaskParm parm) {
+   *   static xWord lastUsed = 0;
+   *   xMemoryRegionStats *stats = NULL;
+   *
+   *   if (OK(xMemGetHeapStats(&stats))) {
+   *     xByte usagePercent = (xByte)((stats->usedSpace * 100) / stats->totalSize);
+   *
+   *     // Check for high usage
+   *     if (usagePercent >= HEAP_WARNING_THRESHOLD) {
+   *       logWarning("Heap usage high: %u%% (%lu/%lu bytes)",
+   *                  usagePercent, stats->usedSpace, stats->totalSize);
+   *     }
+   *
+   *     // Check for memory leaks (continually increasing usage)
+   *     if (stats->usedSpace > lastUsed) {
+   *       xWord increase = stats->usedSpace - lastUsed;
+   *       logInfo("Heap usage increased by %lu bytes", increase);
+   *     }
+   *     lastUsed = stats->usedSpace;
+   *
+   *     xMemFree((xAddr)stats);
+   *   }
+   * }
+   * @endcode
+   *
+   * @param[out] stats_ Pointer to xMemoryRegionStats pointer that will receive
+   *                    the allocated statistics structure. Caller MUST free with
+   *                    xMemFree() after use.
+   *
+   * @return            ReturnOK if statistics retrieved successfully,
+   *                    ReturnError if operation failed (memory allocation
+   *                    error or invalid parameter).
+   *
+   * @warning The caller MUST free the returned statistics structure using
+   * xMemFree(). Failing to do so will cause a memory leak.
+   *
+   * @warning The statistics are a snapshot at call time. Memory state changes
+   * continuously, so values may be outdated immediately after return.
+   *
+   * @warning Calling this function allocates memory from the heap it's
+   * measuring, slightly affecting the reported statistics. The stats structure
+   * itself consumes heap space.
+   *
+   * @note For a quick usage check without detailed stats, use xMemGetUsed()
+   * instead, which is faster and doesn't allocate memory.
+   *
+   * @note High fragmentation (>40%) indicates many small free blocks scattered
+   * throughout the heap, which can prevent large allocations even when total
+   * free space is adequate.
+   *
+   * @note The largestFreeBlock value indicates the maximum allocation size that
+   * can succeed, regardless of total free space available.
+   *
+   * @note This function provides heap statistics only. For kernel memory stats,
+   * use xMemGetKernelStats().
+   *
+   * @sa xMemGetKernelStats() - Get kernel memory region statistics
+   * @sa xMemGetUsed() - Quick check of heap usage (no allocation)
+   * @sa xMemFree() - Free the statistics structure
+   * @sa xMemFreeAll() - Free all heap memory (may help with fragmentation)
+   * @sa xMemAlloc() - Allocate heap memory
    */
   xReturn xMemGetHeapStats(xMemoryRegionStats *stats_);
 
 
   /**
-   * @brief Syscall to get memory statistics on the kernel memory region
+   * @brief Retrieve detailed statistics about the kernel memory region
    *
-   * The xMemGetKernelStats() syscall is used to obtain detailed statistics
-   * about the kernel memory region which can be used by the application to
-   * monitor memory utilization.
+   * Returns comprehensive statistics about the kernel memory region including
+   * total size, used/free space, and allocation metrics. Kernel memory is used
+   * exclusively by HeliOS for internal data structures like tasks, timers,
+   * queues, and streams, separate from user heap memory.
    *
-   * @sa xReturn
-   * @sa xMemoryRegionStats
-   * @sa xMemFree()
+   * The function allocates a xMemoryRegionStats structure from the user heap
+   * (not kernel memory) and populates it with kernel memory metrics. The caller
+   * MUST free this structure with xMemFree() after use. The statistics
+   * represent a snapshot at call time.
    *
-   * @param  stats_ The memory region statistics. The memory region statistics
-   *                must be freed by xMemFree().
-   * @return        On success, the syscall returns ReturnOK. On failure, the
-   *                syscall returns ReturnError. A failure is any condition in
-   *                which the syscall was unable to achieve its intended
-   *                objective. For example, if xTaskGetId() was unable to locate
-   *                the task by the task object (i.e., xTask) passed to the
-   *                syscall, because either the object was null or invalid
-   *                (e.g., a deleted task), xTaskGetId() would return
-   *                ReturnError. All HeliOS syscalls return the xReturn (a.k.a.,
-   *                Return_t) type which can either be ReturnOK or ReturnError.
-   *                The C macros OK() and ERROR() can be used as a more concise
-   *                way of checking the return value of a syscall (e.g.,
-   *                if(OK(xMemGetUsed(&size))) {} or
-   *                if(ERROR(xMemGetUsed(&size))) {}).
+   * Kernel memory is consumed by:
+   * - **Task control blocks**: One per task created
+   * - **Timers**: Task timers and watchdog timers
+   * - **Queues**: Message queue structures and buffers
+   * - **Streams**: Stream buffer control structures
+   * - **Notifications**: Task notification state
+   * - **Internal structures**: Scheduler and system data
+   *
+   * Common use cases:
+   * - **System capacity monitoring**: Tracking kernel resource usage
+   * - **Leak detection**: Identifying kernel memory leaks
+   * - **Capacity planning**: Determining if kernel memory is sufficient
+   * - **Performance analysis**: Understanding kernel memory overhead
+   * - **Diagnostics**: Troubleshooting kernel memory exhaustion
+   *
+   * Example 1: Display kernel memory status
+   * @code
+   * void displayKernelMemoryStatus(void) {
+   *   xMemoryRegionStats *stats = NULL;
+   *
+   *   if (OK(xMemGetKernelStats(&stats))) {
+   *     xByte usagePercent = (xByte)((stats->usedSpace * 100) / stats->totalSize);
+   *
+   *     printf("Kernel Memory Status:\n");
+   *     printf("  Total:       %lu bytes\n", stats->totalSize);
+   *     printf("  Used:        %lu bytes (%u%%)\n", stats->usedSpace, usagePercent);
+   *     printf("  Free:        %lu bytes\n", stats->freeSpace);
+   *     printf("  Allocations: %lu\n", stats->allocationCount);
+   *
+   *     // Always free (from user heap, not kernel)
+   *     xMemFree((xAddr)stats);
+   *   }
+   * }
+   * @endcode
+   *
+   * Example 2: Compare heap vs kernel memory usage
+   * @code
+   * void compareMemoryRegions(void) {
+   *   xMemoryRegionStats *heapStats = NULL;
+   *   xMemoryRegionStats *kernelStats = NULL;
+   *
+   *   if (OK(xMemGetHeapStats(&heapStats)) &&
+   *       OK(xMemGetKernelStats(&kernelStats))) {
+   *
+   *     printf("Memory Comparison:\n");
+   *     printf("  Heap   - Used: %lu / Total: %lu (%u%%)\n",
+   *            heapStats->usedSpace, heapStats->totalSize,
+   *            (xByte)((heapStats->usedSpace * 100) / heapStats->totalSize));
+   *     printf("  Kernel - Used: %lu / Total: %lu (%u%%)\n",
+   *            kernelStats->usedSpace, kernelStats->totalSize,
+   *            (xByte)((kernelStats->usedSpace * 100) / kernelStats->totalSize));
+   *
+   *     xMemFree((xAddr)heapStats);
+   *     xMemFree((xAddr)kernelStats);
+   *   }
+   * }
+   * @endcode
+   *
+   * Example 3: Monitor kernel memory for leaks
+   * @code
+   * void monitorKernelMemory(void) {
+   *   static xWord lastUsed = 0;
+   *   static xBase lastAllocCount = 0;
+   *   xMemoryRegionStats *stats = NULL;
+   *
+   *   if (OK(xMemGetKernelStats(&stats))) {
+   *     // Check for increasing usage
+   *     if (stats->usedSpace > lastUsed) {
+   *       xWord increase = stats->usedSpace - lastUsed;
+   *       xBase newAllocs = stats->allocationCount - lastAllocCount;
+   *
+   *       logInfo("Kernel memory increased: +%lu bytes, +%u allocations",
+   *               increase, newAllocs);
+   *
+   *       // Unexpected growth might indicate a leak
+   *       if (newAllocs == 0 && increase > 0) {
+   *         logWarning("Kernel memory grew without new allocations!");
+   *       }
+   *     }
+   *
+   *     lastUsed = stats->usedSpace;
+   *     lastAllocCount = stats->allocationCount;
+   *
+   *     xMemFree((xAddr)stats);
+   *   }
+   * }
+   * @endcode
+   *
+   * Example 4: Check if kernel memory available for new resources
+   * @code
+   * #define KERNEL_MIN_FREE_BYTES 512
+   *
+   * xReturn canCreateKernelResource(void) {
+   *   xMemoryRegionStats *stats = NULL;
+   *
+   *   if (OK(xMemGetKernelStats(&stats))) {
+   *     if (stats->freeSpace < KERNEL_MIN_FREE_BYTES) {
+   *       logWarning("Kernel memory low: %lu bytes free (min: %u)",
+   *                  stats->freeSpace, KERNEL_MIN_FREE_BYTES);
+   *       xMemFree((xAddr)stats);
+   *       return ReturnError;
+   *     }
+   *
+   *     xMemFree((xAddr)stats);
+   *     return ReturnOK;
+   *   }
+   *
+   *   return ReturnError;
+   * }
+   * @endcode
+   *
+   * @param[out] stats_ Pointer to xMemoryRegionStats pointer that will receive
+   *                    the allocated statistics structure. Allocated from user
+   *                    heap. Caller MUST free with xMemFree() after use.
+   *
+   * @return            ReturnOK if statistics retrieved successfully,
+   *                    ReturnError if operation failed (memory allocation error
+   *                    or invalid parameter).
+   *
+   * @warning The caller MUST free the returned statistics structure using
+   * xMemFree(). The structure is allocated from user heap, not kernel memory.
+   *
+   * @warning Kernel memory statistics are a snapshot. Values change as tasks,
+   * queues, timers, and other kernel objects are created or destroyed.
+   *
+   * @warning Running out of kernel memory prevents creating new tasks, queues,
+   * timers, and other kernel objects. Monitor kernel usage to avoid exhaustion.
+   *
+   * @note The statistics structure itself is allocated from user heap, NOT
+   * kernel memory. Only the statistics content describes kernel memory.
+   *
+   * @note Kernel memory size is configured at compile time via
+   * CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS. It cannot be changed at runtime.
+   *
+   * @note Unlike user heap, kernel memory is typically not fragmented because
+   * kernel objects are usually longer-lived and not freed frequently.
+   *
+   * @note Kernel memory usage increases primarily when creating tasks, queues,
+   * timers, or streams. Deleting these objects frees kernel memory.
+   *
+   * @sa xMemGetHeapStats() - Get user heap memory statistics
+   * @sa xMemFree() - Free the statistics structure (from user heap)
+   * @sa xTaskCreate() - Creates task (uses kernel memory)
+   * @sa xQueueCreate() - Creates queue (uses kernel memory)
+   * @sa CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS - Kernel memory size configuration
    */
   xReturn xMemGetKernelStats(xMemoryRegionStats *stats_);
 
@@ -4817,116 +5244,698 @@
 
 
   /**
-   * @brief Syscall to to raise a system assert
+   * @brief Trigger a system assertion failure for critical error handling
    *
-   * The xSystemAssert() syscall is used to raise a system assert. In order fot
-   * xSystemAssert() to have an effect the configuration setting
-   * CONFIG_SYSTEM_ASSERT_BEHAVIOR must be defined. That said, it is recommended
-   * that the __AssertOnElse__() C macro be used in place of xSystemAssert(). In
-   * order for the __AssertOnElse__() C macro to have any effect, the
-   * configuration setting CONFIG_ENABLE_SYSTEM_ASSERT must be defined.
+   * Raises a system assertion to handle critical error conditions that violate
+   * fundamental assumptions or invariants in the code. Assertions are defensive
+   * programming constructs that catch bugs during development and provide
+   * configurable responses in production builds.
    *
-   * @sa xReturn
-   * @sa CONFIG_SYSTEM_ASSERT_BEHAVIOR
-   * @sa CONFIG_ENABLE_SYSTEM_ASSERT
-   * @sa __AssertOnElse__()
+   * The behavior when an assertion triggers is determined by
+   * CONFIG_SYSTEM_ASSERT_BEHAVIOR:
+   * - **Halt**: Stop system execution completely (safest for critical systems)
+   * - **Log**: Record assertion and continue (for debugging)
+   * - **Callback**: Invoke custom handler function
+   * - **Disabled**: Assertions compiled out entirely (production optimization)
    *
-   * @param  file_ The C file where the assert occurred. This will be set by the
-   *               __AssertOnElse__() C macro.
-   * @param  line_ The C file line where the assert occurred. This will be set
-   *               by the __AssertOnElse__() C macro.
-   * @return       On success, the syscall returns ReturnOK. On failure, the
-   *               syscall returns ReturnError. A failure is any condition in
-   *               which the syscall was unable to achieve its intended
-   *               objective. For example, if xTaskGetId() was unable to locate
-   *               the task by the task object (i.e., xTask) passed to the
-   *               syscall, because either the object was null or invalid (e.g.,
-   *               a deleted task), xTaskGetId() would return ReturnError. All
-   *               HeliOS syscalls return the xReturn (a.k.a., Return_t) type
-   *               which can either be ReturnOK or ReturnError. The C macros
-   *               OK() and ERROR() can be used as a more concise way of
-   *               checking the return value of a syscall (e.g.,
-   *               if(OK(xMemGetUsed(&size))) {} or
-   *               if(ERROR(xMemGetUsed(&size))) {}).
+   * It is strongly recommended to use the __AssertOnElse__() macro rather than
+   * calling xSystemAssert() directly. The macro automatically captures file name
+   * and line number, making debugging significantly easier.
+   *
+   * Common use cases:
+   * - **Precondition checking**: Validating function parameters and state
+   * - **Postcondition verification**: Ensuring expected results after operations
+   * - **Invariant enforcement**: Checking critical system state consistency
+   * - **Null pointer detection**: Catching unexpected null dereferences
+   * - **Range validation**: Detecting out-of-bounds array/buffer access
+   * - **Resource validation**: Ensuring handles and resources are valid
+   *
+   * Example 1: Parameter validation with __AssertOnElse__()
+   * @code
+   * void processData(xByte *buffer, xSize size) {
+   *   // Assert buffer is not null
+   *   __AssertOnElse__(buffer != NULL, return);
+   *
+   *   // Assert size is reasonable
+   *   __AssertOnElse__(size > 0 && size <= MAX_BUFFER_SIZE, return);
+   *
+   *   // Proceed with processing - preconditions verified
+   *   for (xSize i = 0; i < size; i++) {
+   *     processBuffer(buffer[i]);
+   *   }
+   * }
+   * @endcode
+   *
+   * Example 2: State invariant checking
+   * @code
+   * typedef enum {
+   *   STATE_IDLE,
+   *   STATE_ACTIVE,
+   *   STATE_ERROR
+   * } SystemState_t;
+   *
+   * SystemState_t systemState = STATE_IDLE;
+   *
+   * void startOperation(void) {
+   *   // Assert we're in correct state to start
+   *   __AssertOnElse__(systemState == STATE_IDLE, return);
+   *
+   *   systemState = STATE_ACTIVE;
+   *   performOperation();
+   *
+   *   // Assert valid ending state
+   *   __AssertOnElse__(systemState == STATE_ACTIVE || systemState == STATE_ERROR,
+   *                    systemState = STATE_ERROR);
+   * }
+   * @endcode
+   *
+   * Example 3: Handle validation
+   * @code
+   * xReturn sendToQueue(xQueue queue, xByte *data, xSize len) {
+   *   // Assert queue handle is valid
+   *   __AssertOnElse__(queue != NULL, return ReturnError);
+   *
+   *   // Assert data parameters are reasonable
+   *   __AssertOnElse__(data != NULL, return ReturnError);
+   *   __AssertOnElse__(len > 0, return ReturnError);
+   *
+   *   return xQueueSend(queue, len, data);
+   * }
+   * @endcode
+   *
+   * Example 4: Array bounds checking
+   * @code
+   * #define SENSOR_COUNT 8
+   * xByte sensorReadings[SENSOR_COUNT];
+   *
+   * xByte getSensorReading(xBase sensorId) {
+   *   // Assert index is in valid range
+   *   __AssertOnElse__(sensorId < SENSOR_COUNT, return 0);
+   *
+   *   return sensorReadings[sensorId];
+   * }
+   * @endcode
+   *
+   * @param[in] file_ Source file name where assertion occurred. Automatically
+   *                  provided by __AssertOnElse__() macro using __FILE__.
+   * @param[in] line_ Line number where assertion occurred. Automatically
+   *                  provided by __AssertOnElse__() macro using __LINE__.
+   *
+   * @return          ReturnOK if assertion handling completed (when configured
+   *                  to continue), ReturnError if assertion handling failed.
+   *                  Note: May not return if CONFIG_SYSTEM_ASSERT_BEHAVIOR
+   *                  halts the system.
+   *
+   * @warning Assertions are for catching programming errors, NOT for runtime
+   * error handling. Use normal error checking (if/return) for expected error
+   * conditions like invalid user input or communication failures.
+   *
+   * @warning If CONFIG_SYSTEM_ASSERT_BEHAVIOR is set to halt, calling this
+   * function will stop system execution permanently. The system must be reset
+   * to recover.
+   *
+   * @warning Assertions enabled in production builds add code size and
+   * execution overhead. Consider CONFIG_ENABLE_SYSTEM_ASSERT carefully based
+   * on safety vs performance requirements.
+   *
+   * @note Use __AssertOnElse__(condition, action) macro instead of calling
+   * this function directly. The macro provides automatic file/line capture and
+   * better readability.
+   *
+   * @note Assertions can be completely disabled by not defining
+   * CONFIG_ENABLE_SYSTEM_ASSERT, causing __AssertOnElse__() to compile to
+   * nothing for zero overhead in production.
+   *
+   * @note The file_ and line_ parameters help identify exactly where the
+   * assertion failed, making debugging much faster than generic error messages.
+   *
+   * @note Consider different assert behaviors for development vs production:
+   * development might halt immediately, while production might log and attempt
+   * graceful degradation.
+   *
+   * @sa __AssertOnElse__() - Recommended macro for triggering assertions
+   * @sa CONFIG_SYSTEM_ASSERT_BEHAVIOR - Controls assertion response
+   * @sa CONFIG_ENABLE_SYSTEM_ASSERT - Enables/disables assertion system
+   * @sa xSystemHalt() - May be called by assertion handler
    */
   xReturn xSystemAssert(const char *file_, const int line_);
 
 
   /**
-   * @brief Syscall to bootstrap HeliOS
+   * @brief Bootstrap HeliOS kernel and initialize all system resources
    *
-   * The xSystemInit() syscall is used to bootstrap HeliOS and must be the first
-   * syscall made in the user's application. The xSystemInit() syscall
-   * initializes memory and calls initialization functions through the port
-   * layer.
+   * Performs initial system bootstrap and initialization of the HeliOS
+   * real-time kernel. This function MUST be the very first HeliOS function
+   * called in any application, as it establishes the fundamental runtime
+   * environment for all subsequent operations.
    *
-   * @sa xReturn
+   * The initialization process performs several critical operations in
+   * sequence:
+   * - Initializes the kernel memory management subsystem (both user heap and
+   *   kernel memory pools)
+   * - Establishes internal kernel data structures for task management,
+   *   scheduling, and device tracking
+   * - Calls port-specific initialization functions to configure
+   *   hardware-dependent features (timers, interrupts, system clock)
+   * - Sets up the system state machine to prepare for task creation and
+   *   scheduler startup
+   * - Validates configuration parameters defined at compile time
    *
-   * @return On success, the syscall returns ReturnOK. On failure, the syscall
-   *         returns ReturnError. A failure is any condition in which the
-   *         syscall was unable to achieve its intended objective. For example,
-   *         if xTaskGetId() was unable to locate the task by the task object
-   *         (i.e., xTask) passed to the syscall, because either the object was
-   *         null or invalid (e.g., a deleted task), xTaskGetId() would return
-   *         ReturnError. All HeliOS syscalls return the xReturn (a.k.a.,
-   *         Return_t) type which can either be ReturnOK or ReturnError. The C
-   *         macros OK() and ERROR() can be used as a more concise way of
-   *         checking the return value of a syscall (e.g.,
-   *         if(OK(xMemGetUsed(&size))) {} or if(ERROR(xMemGetUsed(&size))) {}).
+   * After successful initialization, the system is ready to accept task
+   * creation requests (xTaskCreate()) and device registrations
+   * (xDeviceConfig()). The scheduler itself is not started until
+   * xTaskStartScheduler() is called, allowing the application to set up all
+   * tasks and devices before cooperative multitasking begins.
+   *
+   * Initialization is a one-time operation that cannot be reversed without a
+   * system reset. The function maintains internal state to detect and reject
+   * multiple initialization attempts, returning ReturnError if called more than
+   * once.
+   *
+   * **Common use cases:**
+   * - Standard application startup: Initialize HeliOS before any other system
+   *   calls
+   * - Robust initialization: Check return value to detect initialization
+   *   failures
+   * - Configuration validation: Verify system configuration before proceeding
+   * - Resource preparation: Ensure kernel resources are ready before task
+   *   creation
+   * - Hardware setup: Trigger port-specific hardware initialization sequences
+   * - Memory pool establishment: Set up heap and kernel memory allocators
+   *
+   * Example 1: Basic application initialization
+   * @code
+   * int main(void) {
+   *   // First thing: initialize HeliOS
+   *   if (ERROR(xSystemInit())) {
+   *     // Initialization failed - cannot proceed
+   *     // On embedded systems, might enter error loop
+   *     while (1) {
+   *       // Flash error LED or output diagnostic
+   *     }
+   *   }
+   *
+   *   // System ready - create tasks
+   *   xTask taskHandle = NULL;
+   *   xTaskCreate(&taskHandle, "MainTask", sensorTask, NULL);
+   *   xTaskResume(taskHandle);
+   *
+   *   // Start scheduler
+   *   xTaskStartScheduler();
+   *
+   *   // Never reached
+   *   return 0;
+   * }
+   * @endcode
+   *
+   * Example 2: Initialization with system validation
+   * @code
+   * #include <stdio.h>
+   *
+   * xReturn initializeSystem(void) {
+   *   xReturn res = xSystemInit();
+   *
+   *   if (OK(res)) {
+   *     // Get and validate system information
+   *     xSystemInfo *sysInfo = NULL;
+   *     if (OK(xSystemGetSystemInfo(&sysInfo))) {
+   *       printf("Initialized %s v%s\n",
+   *              sysInfo->productName,
+   *              sysInfo->productVersion);
+   *       xMemFree(sysInfo);
+   *     }
+   *   }
+   *
+   *   return res;
+   * }
+   *
+   * int main(void) {
+   *   if (ERROR(initializeSystem())) {
+   *     return -1;
+   *   }
+   *
+   *   // Continue with application setup
+   *   return 0;
+   * }
+   * @endcode
+   *
+   * Example 3: Memory configuration validation after init
+   * @code
+   * int main(void) {
+   *   // Initialize system
+   *   if (ERROR(xSystemInit())) {
+   *     return -1;
+   *   }
+   *
+   *   // Verify memory configuration is adequate
+   *   xMemStats *heapStats = NULL;
+   *   if (OK(xMemGetHeapStats(&heapStats))) {
+   *     if (heapStats->regionSizeInBytes < 4096) {
+   *       // Warning: limited memory available
+   *     }
+   *     xMemFree(heapStats);
+   *   }
+   *
+   *   // Proceed with task creation
+   *   // ...
+   *
+   *   return 0;
+   * }
+   * @endcode
+   *
+   * Example 4: Multiple subsystem initialization
+   * @code
+   * // Application-specific initialization sequence
+   * xReturn appInit(void) {
+   *   // Step 1: Initialize HeliOS (MUST be first)
+   *   if (ERROR(xSystemInit())) {
+   *     return ReturnError;
+   *   }
+   *
+   *   // Step 2: Initialize device drivers
+   *   xDevice uartDev = NULL;
+   *   if (ERROR(xDeviceInitDevice("UART0   ", &uartDev, myUARTDriver))) {
+   *     return ReturnError;
+   *   }
+   *
+   *   // Step 3: Create application tasks
+   *   xTask commTask = NULL;
+   *   if (ERROR(xTaskCreate(&commTask, "CommTask", commHandler, uartDev))) {
+   *     return ReturnError;
+   *   }
+   *   xTaskResume(commTask);
+   *
+   *   return ReturnOK;
+   * }
+   *
+   * int main(void) {
+   *   if (OK(appInit())) {
+   *     xTaskStartScheduler();  // Start cooperative multitasking
+   *   }
+   *   return 0;
+   * }
+   * @endcode
+   *
+   * @return          ReturnOK if initialization completed successfully and the
+   *                  system is ready for task creation and device registration.
+   *                  ReturnError if initialization failed (e.g., already
+   *                  initialized, memory pool configuration invalid, port layer
+   *                  initialization failure).
+   *
+   * @warning This function MUST be called before any other HeliOS functions. Calling
+   * any HeliOS function before xSystemInit() results in undefined behavior and
+   * likely system crashes.
+   *
+   * @warning This function can only be called ONCE. Subsequent calls will return
+   * ReturnError. The system cannot be re-initialized without a hardware reset.
+   *
+   * @warning Initialization failure typically indicates a critical system
+   * problem (invalid configuration, hardware failure, etc.). If this function
+   * returns ReturnError, the application should not attempt to use any HeliOS
+   * features.
+   *
+   * @warning On embedded systems without an operating system, initialization
+   * failure often requires entering an infinite error loop or triggering a
+   * watchdog reset, as there is no graceful way to recover.
+   *
+   * @note This function does NOT start the scheduler. After initialization,
+   * tasks must be created with xTaskCreate() and the scheduler started with
+   * xTaskStartScheduler().
+   *
+   * @note Port-specific initialization (xPortSystemInit()) is called internally
+   * and varies by platform. This may include timer setup, interrupt
+   * configuration, or other hardware-dependent operations.
+   *
+   * @note The memory configuration (CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS) is
+   * validated during initialization. Invalid configurations will cause
+   * initialization to fail.
+   *
+   * @note Memory allocations (xMemAlloc, xMemFree) can be performed after
+   * successful initialization but before the scheduler starts. This is useful
+   * for pre-allocating shared resources.
+   *
+   * @sa xTaskCreate() - Create tasks after initialization
+   * @sa xTaskStartScheduler() - Start scheduler after task setup
+   * @sa xSystemGetSystemInfo() - Query system information post-init
+   * @sa xSystemHalt() - Halt system in case of critical errors
+   * @sa CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS - Memory configuration
+   * @sa xPortSystemInit() - Port-specific initialization (internal)
    */
   xReturn xSystemInit(void);
 
 
   /**
-   * @brief Syscall to halt HeliOS
+   * @brief Immediately halt HeliOS and stop all system execution
    *
-   * The xSystemHalt() syscall is used to halt HeliOS. Once called,
-   * xSystemHalt() will disable all interrupts and stops the execution of
-   * further statements. The system will have to be reset to recover.
+   * Triggers an immediate, unrecoverable system halt that stops all task
+   * execution, disables interrupts, and freezes the processor. This function
+   * is used for critical error conditions where continued operation would be
+   * unsafe or impossible. Once halted, the system requires a hardware reset
+   * to recover.
    *
-   * @sa xReturn
+   * The halt operation performs the following sequence:
+   * - Disables all interrupts globally to prevent further interrupt processing
+   * - Stops the scheduler to prevent task switching
+   * - Calls port-specific halt functions that may include watchdog disabling,
+   *   peripheral shutdown, or entry into low-power sleep modes
+   * - Enters an infinite loop or processor halt instruction
+   * - May optionally flash an LED or output diagnostic information if
+   *   configured at the port layer
    *
-   * @return On success, the syscall returns ReturnOK. On failure, the syscall
-   *         returns ReturnError. A failure is any condition in which the
-   *         syscall was unable to achieve its intended objective. For example,
-   *         if xTaskGetId() was unable to locate the task by the task object
-   *         (i.e., xTask) passed to the syscall, because either the object was
-   *         null or invalid (e.g., a deleted task), xTaskGetId() would return
-   *         ReturnError. All HeliOS syscalls return the xReturn (a.k.a.,
-   *         Return_t) type which can either be ReturnOK or ReturnError. The C
-   *         macros OK() and ERROR() can be used as a more concise way of
-   *         checking the return value of a syscall (e.g.,
-   *         if(OK(xMemGetUsed(&size))) {} or if(ERROR(xMemGetUsed(&size))) {}).
+   * This function is typically called in response to unrecoverable errors such
+   * as assertion failures, stack overflow detection, memory corruption, or
+   * critical hardware faults. It provides a safe shutdown mechanism that
+   * prevents erratic behavior or dangerous actions from a malfunctioning
+   * system.
+   *
+   * The system halt is permanent and irreversible without physical intervention
+   * (reset button, power cycle, watchdog timer, or external reset signal).
+   * This makes it suitable for fail-safe scenarios where the system must stop
+   * completely rather than risk continued operation in an unknown state.
+   *
+   * **Common use cases:**
+   * - Assertion failure handling: Stop execution when invariants are violated
+   * - Critical error response: Halt on unrecoverable errors like stack
+   *   overflow
+   * - Safety-critical shutdown: Stop dangerous operations immediately
+   * - Debug breakpoints: Halt for debugging when critical conditions occur
+   * - Watchdog trigger: Halt before external watchdog forces reset
+   * - Memory corruption detection: Stop when heap or kernel memory is damaged
+   *
+   * Example 1: Assertion failure handler
+   * @code
+   * // Custom assertion behavior using halt
+   * void assertionHandler(const char *file, int line) {
+   *   // Log assertion information if possible
+   *   #ifdef DEBUG_UART
+   *   printf("ASSERTION FAILED: %s:%d\n", file, line);
+   *   #endif
+   *
+   *   // Halt system - no recovery possible
+   *   xSystemHalt();
+   *
+   *   // Never reached
+   * }
+   * @endcode
+   *
+   * Example 2: Critical error handling
+   * @code
+   * void criticalErrorHandler(ErrorCode error) {
+   *   // Flash error code on LED if available
+   *   for (int i = 0; i < error; i++) {
+   *     toggleErrorLED();
+   *     delayMs(200);
+   *   }
+   *
+   *   // Critical error - cannot continue
+   *   xSystemHalt();
+   * }
+   *
+   * void sensorTask(xTask task, xTaskParm parm) {
+   *   xByte buffer[128];
+   *
+   *   if (ERROR(xDeviceSimpleRead(sensorDevice, 128, buffer))) {
+   *     // Sensor communication critical for safety
+   *     criticalErrorHandler(ERROR_SENSOR_COMM);
+   *   }
+   *
+   *   // Process sensor data
+   *   // ...
+   * }
+   * @endcode
+   *
+   * Example 3: Stack overflow detection
+   * @code
+   * #define STACK_CANARY 0xDEADBEEF
+   *
+   * void checkStackIntegrity(void) {
+   *   volatile uint32_t *stackCanary = (uint32_t*)STACK_CANARY_ADDRESS;
+   *
+   *   if (*stackCanary != STACK_CANARY) {
+   *     // Stack overflow detected!
+   *     #ifdef DEBUG_OUTPUT
+   *     printf("FATAL: Stack overflow detected\n");
+   *     #endif
+   *
+   *     xSystemHalt();  // Stop immediately
+   *   }
+   * }
+   *
+   * void taskWithStackCheck(xTask task, xTaskParm parm) {
+   *   checkStackIntegrity();
+   *   // Perform task operations
+   *   // ...
+   * }
+   * @endcode
+   *
+   * Example 4: Watchdog-aware halt
+   * @code
+   * void safeHalt(void) {
+   *   // Disable watchdog before halting to prevent continuous resets
+   *   #ifdef WATCHDOG_ENABLED
+   *   disableWatchdog();
+   *   #endif
+   *
+   *   // Output diagnostic information
+   *   #ifdef DEBUG_MODE
+   *   xSystemInfo *info = NULL;
+   *   if (OK(xSystemGetSystemInfo(&info))) {
+   *     printf("System halted. Tasks: %d\n", info->numberOfTasks);
+   *     xMemFree(info);
+   *   }
+   *   #endif
+   *
+   *   // Halt system
+   *   xSystemHalt();
+   * }
+   * @endcode
+   *
+   * @return          This function typically does NOT return. If it does return
+   *                  ReturnOK, the halt operation completed but the port layer
+   *                  implementation allowed return (unusual). ReturnError if
+   *                  halt could not be performed (rare - usually indicates port
+   *                  layer issue).
+   *
+   * @warning This function NEVER returns under normal circumstances. Any code
+   * following xSystemHalt() will not execute. Always treat this as a terminal
+   * function call.
+   *
+   * @warning Once halted, the system cannot be recovered without a hardware
+   * reset. All task state, memory contents, and device configurations are lost
+   * on reset.
+   *
+   * @warning Interrupts are disabled before halting. This means any pending or
+   * future interrupt requests will not be serviced. External hardware expecting
+   * interrupt acknowledgment may time out or enter error states.
+   *
+   * @warning On battery-powered systems, halting may not fully power down the
+   * device. Consider entering a low-power sleep mode instead if power
+   * conservation is important.
+   *
+   * @warning Do NOT use this function for normal shutdown or task termination.
+   * It is only for critical, unrecoverable error conditions. For normal
+   * operation control, use task management functions.
+   *
+   * @note Some port implementations may flash an LED or output a diagnostic
+   * pattern before entering the halt loop, which can aid in debugging.
+   *
+   * @note The port layer implementation (xPortSystemHalt()) determines the
+   * exact behavior. Common implementations include infinite loops, WFI (Wait
+   * For Interrupt) instructions, or entering deep sleep modes.
+   *
+   * @note In some debugging environments (JTAG, debugger attached), the halt
+   * may trigger a breakpoint that allows the developer to inspect system state.
+   *
+   * @note If a watchdog timer is enabled and not disabled before halting, the
+   * watchdog will eventually reset the system, which may or may not be desired
+   * depending on the application.
+   *
+   * @sa xSystemAssert() - May call this function when assertions are configured to halt
+   * @sa xSystemInit() - Must be called before system is operational
+   * @sa CONFIG_SYSTEM_ASSERT_BEHAVIOR - May configure assertions to halt
+   * @sa xPortSystemHalt() - Port-specific halt implementation (internal)
    */
   xReturn xSystemHalt(void);
 
 
   /**
-   * @brief Syscall to inquire about the system
+   * @brief Retrieve comprehensive system information and runtime statistics
    *
-   * The xSystemGetSystemInfo() syscall is used to inquire about the system. The
-   * information bout the system that may be obtained is the product (i.e., OS)
-   * name, version and number of tasks.
+   * Obtains detailed information about the HeliOS system configuration and
+   * current runtime state. The function allocates and populates a xSystemInfo
+   * structure containing the operating system name, version string, and task
+   * count. This information is useful for diagnostics, logging, runtime
+   * monitoring, and version verification.
    *
-   * @sa xReturn
-   * @sa xSystemInfo
-   * @sa xMemFree()
+   * The returned xSystemInfo structure contains:
+   * - **productName**: String identifying the operating system (e.g., "HeliOS")
+   * - **productVersion**: Version string in semantic versioning format (e.g.,
+   *   "2.1.0")
+   * - **numberOfTasks**: Current count of tasks registered with the scheduler,
+   *   including both running and suspended tasks
    *
-   * @param  info_ The system information. The system information must be freed
-   *               by xMemFree().
-   * @return       On success, the syscall returns ReturnOK. On failure, the
-   *               syscall returns ReturnError. A failure is any condition in
-   *               which the syscall was unable to achieve its intended
-   *               objective. For example, if xTaskGetId() was unable to locate
-   *               the task by the task object (i.e., xTask) passed to the
-   *               syscall, because either the object was null or invalid (e.g.,
-   *               a deleted task), xTaskGetId() would return ReturnError. All
-   *               HeliOS syscalls return the xReturn (a.k.a., Return_t) type
-   *               which can either be ReturnOK or ReturnError. The C macros
-   *               OK() and ERROR() can be used as a more concise way of
-   *               checking the return value of a syscall (e.g.,
-   *               if(OK(xMemGetUsed(&size))) {} or
-   *               if(ERROR(xMemGetUsed(&size))) {}).
+   * Memory for the xSystemInfo structure is allocated from the user heap using
+   * xMemAlloc(). The caller is responsible for freeing this memory using
+   * xMemFree() when the information is no longer needed. Failure to free the
+   * structure will result in a memory leak.
+   *
+   * This function can be called at any time after xSystemInit() has completed
+   * successfully. It works both before and after the scheduler has started,
+   * making it useful for initialization-time validation as well as runtime
+   * monitoring.
+   *
+   * The task count reflects the instantaneous number of tasks at the moment of
+   * the call. In a running system, this count may change as tasks are created
+   * or deleted by other tasks.
+   *
+   * **Common use cases:**
+   * - System diagnostics: Log version information at startup for debugging
+   * - Version verification: Ensure correct OS version is deployed
+   * - Runtime monitoring: Track task count during system operation
+   * - Status reporting: Send system information over communication interfaces
+   * - Compatibility checking: Verify application compatibility with OS version
+   * - Debug output: Include system details in error reports or crash dumps
+   *
+   * Example 1: Basic system information logging
+   * @code
+   * void logSystemInfo(void) {
+   *   xSystemInfo *sysInfo = NULL;
+   *
+   *   if (OK(xSystemGetSystemInfo(&sysInfo))) {
+   *     printf("System: %s v%s\n",
+   *            sysInfo->productName,
+   *            sysInfo->productVersion);
+   *     printf("Active tasks: %d\n", sysInfo->numberOfTasks);
+   *
+   *     // Clean up allocated memory
+   *     xMemFree(sysInfo);
+   *   } else {
+   *     printf("Failed to get system info\n");
+   *   }
+   * }
+   *
+   * int main(void) {
+   *   xSystemInit();
+   *   logSystemInfo();  // Log at startup
+   *
+   *   // Create tasks and start scheduler
+   *   // ...
+   * }
+   * @endcode
+   *
+   * Example 2: Version compatibility check
+   * @code
+   * #define REQUIRED_MAJOR_VERSION 2
+   * #define REQUIRED_MINOR_VERSION 1
+   *
+   * xReturn checkSystemVersion(void) {
+   *   xSystemInfo *sysInfo = NULL;
+   *
+   *   if (ERROR(xSystemGetSystemInfo(&sysInfo))) {
+   *     return ReturnError;
+   *   }
+   *
+   *   // Parse version string (assumes "X.Y.Z" format)
+   *   int major, minor, patch;
+   *   sscanf(sysInfo->productVersion, "%d.%d.%d", &major, &minor, &patch);
+   *
+   *   xReturn result = ReturnOK;
+   *   if (major < REQUIRED_MAJOR_VERSION ||
+   *       (major == REQUIRED_MAJOR_VERSION && minor < REQUIRED_MINOR_VERSION)) {
+   *     printf("ERROR: HeliOS version %s too old (need %d.%d+)\n",
+   *            sysInfo->productVersion,
+   *            REQUIRED_MAJOR_VERSION,
+   *            REQUIRED_MINOR_VERSION);
+   *     result = ReturnError;
+   *   }
+   *
+   *   xMemFree(sysInfo);
+   *   return result;
+   * }
+   * @endcode
+   *
+   * Example 3: Runtime task monitoring
+   * @code
+   * void monitoringTask(xTask task, xTaskParm parm) {
+   *   static xBase lastTaskCount = 0;
+   *   xSystemInfo *sysInfo = NULL;
+   *
+   *   if (OK(xSystemGetSystemInfo(&sysInfo))) {
+   *     if (sysInfo->numberOfTasks != lastTaskCount) {
+   *       printf("Task count changed: %d -> %d\n",
+   *              lastTaskCount,
+   *              sysInfo->numberOfTasks);
+   *       lastTaskCount = sysInfo->numberOfTasks;
+   *     }
+   *
+   *     xMemFree(sysInfo);
+   *   }
+   * }
+   * @endcode
+   *
+   * Example 4: Sending system info over UART
+   * @code
+   * void sendSystemInfoToHost(xDevice uart) {
+   *   xSystemInfo *sysInfo = NULL;
+   *
+   *   if (OK(xSystemGetSystemInfo(&sysInfo))) {
+   *     // Format as JSON for easy parsing by host
+   *     char buffer[128];
+   *     snprintf(buffer, sizeof(buffer),
+   *              "{\"os\":\"%s\",\"version\":\"%s\",\"tasks\":%d}\n",
+   *              sysInfo->productName,
+   *              sysInfo->productVersion,
+   *              sysInfo->numberOfTasks);
+   *
+   *     // Send over UART
+   *     xDeviceSimpleWrite(uart, strlen(buffer), (xByte*)buffer);
+   *
+   *     xMemFree(sysInfo);
+   *   }
+   * }
+   * @endcode
+   *
+   * @param[out] info_ Pointer to xSystemInfo pointer that will receive the
+   *                   allocated system information structure. Must not be NULL.
+   *                   On success, points to allocated structure that must be
+   *                   freed with xMemFree(). On failure, remains unchanged.
+   *
+   * @return          ReturnOK if system information was successfully retrieved
+   *                  and the structure allocated. ReturnError if the operation
+   *                  failed (e.g., info_ is NULL, memory allocation failed,
+   *                  system not initialized).
+   *
+   * @warning The caller MUST free the returned xSystemInfo structure using
+   * xMemFree(). Failure to do so will leak memory from the user heap.
+   *
+   * @warning Do NOT free the structure using standard free() or other
+   * allocators. Only xMemFree() is compatible with HeliOS memory management.
+   *
+   * @warning The strings within the xSystemInfo structure (productName,
+   * productVersion) are part of the allocated structure and should NOT be freed
+   * separately. xMemFree() on the structure handles all cleanup.
+   *
+   * @warning The numberOfTasks value is a snapshot at the moment of the call.
+   * It may change immediately afterward if tasks are created or deleted. Do not
+   * rely on this value remaining constant.
+   *
+   * @note This function allocates memory using xMemAlloc() from the user heap.
+   * Ensure adequate heap space is available, especially if called frequently.
+   *
+   * @note The function can be called before the scheduler starts, making it
+   * useful for startup diagnostics and initialization-time verification.
+   *
+   * @note Task count includes all tasks in any state (running, suspended,
+   * waiting). It does not distinguish between active and inactive tasks.
+   *
+   * @note The version string format follows semantic versioning (major.minor.patch)
+   * but the exact format is determined by the HeliOS build configuration.
+   *
+   * @sa xSystemInfo - Structure containing system information
+   * @sa xMemFree() - Must be used to free the returned structure
+   * @sa xSystemInit() - Must be called before this function
+   * @sa xTaskGetNumberOfTasks() - Alternative way to get task count
+   * @sa xMemGetHeapStats() - For detailed memory usage information
    */
   xReturn xSystemGetSystemInfo(xSystemInfo *info_);
 
@@ -5411,63 +6420,391 @@
 
 
   /**
-   * @brief Syscall to get obtain the runtime statistics of all tasks
+   * @brief Retrieve runtime execution statistics for all tasks in the system
    *
-   * The xTaskGetAllRunTimeStats() syscall is used to obtain the runtime
-   * statistics of all tasks.
+   * Collects and returns runtime performance statistics for every task currently
+   * registered with the HeliOS scheduler. This function provides comprehensive
+   * visibility into task execution patterns, CPU utilization, and system
+   * workload distribution. The statistics are essential for performance
+   * analysis, optimization, and debugging.
    *
-   * @sa xReturn
-   * @sa xTask
-   * @sa xTaskRunTimeStats
-   * @sa xMemFree()
+   * The function allocates an array of xTaskRunTimeStats structures, one entry
+   * for each task in the system. Each structure contains detailed timing and
+   * execution metrics:
+   * - **totalRunTime**: Total accumulated execution time in system ticks
+   * - **lastRunTime**: Duration of the most recent execution in ticks
+   * - **taskId**: Unique identifier for the task
+   * - Additional port-specific timing information
    *
-   * @param  stats_ The runtime statistics. The runtime statics must be freed by
-   *                xMemFree().
-   * @param  tasks_ The number of tasks in the runtime statistics.
-   * @return        On success, the syscall returns ReturnOK. On failure, the
-   *                syscall returns ReturnError. A failure is any condition in
-   *                which the syscall was unable to achieve its intended
-   *                objective. For example, if xTaskGetId() was unable to locate
-   *                the task by the task object (i.e., xTask) passed to the
-   *                syscall, because either the object was null or invalid
-   *                (e.g., a deleted task), xTaskGetId() would return
-   *                ReturnError. All HeliOS syscalls return the xReturn (a.k.a.,
-   *                Return_t) type which can either be ReturnOK or ReturnError.
-   *                The C macros OK() and ERROR() can be used as a more concise
-   *                way of checking the return value of a syscall (e.g.,
-   *                if(OK(xMemGetUsed(&size))) {} or
-   *                if(ERROR(xMemGetUsed(&size))) {}).
+   * The statistics array is dynamically allocated from the user heap and must
+   * be freed by the caller using xMemFree() to prevent memory leaks. The number
+   * of entries in the array is returned through the tasks_ parameter, allowing
+   * the caller to iterate through all task statistics.
+   *
+   * Runtime statistics tracking must be enabled at compile time with
+   * CONFIG_ENABLE_RUNTIME_STATS for this function to return meaningful data. If
+   * runtime stats are disabled, the function may return empty or zero-valued
+   * statistics.
+   *
+   * The statistics represent a snapshot of task execution at the moment of the
+   * call. In a running system, these values continuously change as tasks
+   * execute. For accurate profiling, consider calling this function
+   * periodically and analyzing trends over time.
+   *
+   * **Common use cases:**
+   * - Performance profiling: Identify CPU-intensive tasks consuming excessive
+   *   time
+   * - Load balancing: Analyze workload distribution across tasks
+   * - Optimization targets: Find tasks that are candidates for optimization
+   * - System monitoring: Track overall system execution patterns
+   * - Debug analysis: Investigate scheduling anomalies or starvation issues
+   * - Capacity planning: Determine if system can handle additional tasks
+   *
+   * Example 1: Basic runtime statistics display
+   * @code
+   * void displayTaskStats(void) {
+   *   xTaskRunTimeStats *stats = NULL;
+   *   xBase taskCount = 0;
+   *
+   *   if (OK(xTaskGetAllRunTimeStats(&stats, &taskCount))) {
+   *     printf("Runtime Statistics for %d tasks:\n", taskCount);
+   *
+   *     for (xBase i = 0; i < taskCount; i++) {
+   *       printf("  Task ID %d: Total=%lu ticks, Last=%lu ticks\n",
+   *              stats[i].taskId,
+   *              stats[i].totalRunTime,
+   *              stats[i].lastRunTime);
+   *     }
+   *
+   *     xMemFree(stats);
+   *   } else {
+   *     printf("Failed to get runtime statistics\n");
+   *   }
+   * }
+   * @endcode
+   *
+   * Example 2: CPU utilization percentage calculation
+   * @code
+   * void showCPUUtilization(void) {
+   *   xTaskRunTimeStats *stats = NULL;
+   *   xBase taskCount = 0;
+   *
+   *   if (OK(xTaskGetAllRunTimeStats(&stats, &taskCount))) {
+   *     // Calculate total system runtime
+   *     unsigned long totalTime = 0;
+   *     for (xBase i = 0; i < taskCount; i++) {
+   *       totalTime += stats[i].totalRunTime;
+   *     }
+   *
+   *     // Display percentage utilization per task
+   *     printf("CPU Utilization:\n");
+   *     for (xBase i = 0; i < taskCount; i++) {
+   *       float percent = (stats[i].totalRunTime * 100.0f) / totalTime;
+   *       printf("  Task %d: %.2f%%\n", stats[i].taskId, percent);
+   *     }
+   *
+   *     xMemFree(stats);
+   *   }
+   * }
+   * @endcode
+   *
+   * Example 3: Identifying overloaded tasks
+   * @code
+   * #define CPU_THRESHOLD_PERCENT 30.0f
+   *
+   * void detectOverloadedTasks(void) {
+   *   xTaskRunTimeStats *stats = NULL;
+   *   xBase taskCount = 0;
+   *
+   *   if (ERROR(xTaskGetAllRunTimeStats(&stats, &taskCount))) {
+   *     return;
+   *   }
+   *
+   *   // Calculate total runtime
+   *   unsigned long totalTime = 0;
+   *   for (xBase i = 0; i < taskCount; i++) {
+   *     totalTime += stats[i].totalRunTime;
+   *   }
+   *
+   *   // Identify tasks exceeding threshold
+   *   printf("Tasks exceeding %0.f%% CPU:\n", CPU_THRESHOLD_PERCENT);
+   *   for (xBase i = 0; i < taskCount; i++) {
+   *     float percent = (stats[i].totalRunTime * 100.0f) / totalTime;
+   *     if (percent > CPU_THRESHOLD_PERCENT) {
+   *       printf("  WARNING: Task %d using %.2f%% CPU\n",
+   *              stats[i].taskId, percent);
+   *     }
+   *   }
+   *
+   *   xMemFree(stats);
+   * }
+   * @endcode
+   *
+   * Example 4: Periodic monitoring with trend detection
+   * @code
+   * void monitoringTask(xTask task, xTaskParm parm) {
+   *   static unsigned long lastTotalRuntime[32] = {0};
+   *   xTaskRunTimeStats *stats = NULL;
+   *   xBase taskCount = 0;
+   *
+   *   if (OK(xTaskGetAllRunTimeStats(&stats, &taskCount))) {
+   *     for (xBase i = 0; i < taskCount && i < 32; i++) {
+   *       unsigned long delta = stats[i].totalRunTime - lastTotalRuntime[i];
+   *
+   *       if (delta > 10000) {  // More than 10000 ticks since last check
+   *         printf("Task %d execution increased significantly: +%lu ticks\n",
+   *                stats[i].taskId, delta);
+   *       }
+   *
+   *       lastTotalRuntime[i] = stats[i].totalRunTime;
+   *     }
+   *
+   *     xMemFree(stats);
+   *   }
+   * }
+   * @endcode
+   *
+   * @param[out] stats_ Pointer to xTaskRunTimeStats pointer that will receive
+   *                    the allocated array of runtime statistics. One entry per
+   *                    task. Must not be NULL. On success, points to allocated
+   *                    array that must be freed with xMemFree(). On failure,
+   *                    remains unchanged.
+   * @param[out] tasks_ Pointer to xBase variable that will receive the number
+   *                    of tasks (and array elements) in stats_. Must not be
+   *                    NULL. On success, contains the task count. On failure,
+   *                    remains unchanged.
+   *
+   * @return           ReturnOK if statistics were successfully retrieved and
+   *                   allocated. ReturnError if the operation failed (e.g.,
+   *                   stats_ or tasks_ is NULL, memory allocation failed, no
+   *                   tasks exist, runtime stats not enabled).
+   *
+   * @warning The caller MUST free the returned array using xMemFree(). Failure
+   * to do so will leak memory from the user heap.
+   *
+   * @warning Runtime statistics tracking must be enabled with
+   * CONFIG_ENABLE_RUNTIME_STATS at compile time. If disabled, this function may
+   * return zero values or return an error.
+   *
+   * @warning The statistics are a snapshot in time. Values change continuously
+   * as tasks execute. Do not rely on absolute values remaining constant between
+   * calls.
+   *
+   * @warning Large systems with many tasks may allocate significant memory for
+   * the statistics array. Ensure adequate heap space is available, especially
+   * if calling frequently.
+   *
+   * @note The array is allocated using xMemAlloc() from the user heap. Each
+   * element corresponds to one task in the system.
+   *
+   * @note The order of tasks in the array is not guaranteed and may change
+   * between calls. Use the taskId field to identify specific tasks.
+   *
+   * @note Runtime values are typically in system tick units. The exact time
+   * resolution depends on the port configuration and system tick frequency.
+   *
+   * @note For single-task statistics, use xTaskGetTaskRunTimeStats() to avoid
+   * allocating memory for all tasks.
+   *
+   * @sa xTaskRunTimeStats - Structure containing runtime statistics
+   * @sa xTaskGetTaskRunTimeStats() - Get statistics for a single task
+   * @sa xMemFree() - Must be used to free the returned array
+   * @sa xTaskGetNumberOfTasks() - Get task count without statistics
+   * @sa CONFIG_ENABLE_RUNTIME_STATS - Must be enabled for statistics tracking
    */
   xReturn xTaskGetAllRunTimeStats(xTaskRunTimeStats *stats_, xBase *tasks_);
 
 
   /**
-   * @brief Syscall to get the runtime statistics for a single task.
+   * @brief Retrieve runtime execution statistics for a specific task
    *
-   * The xTaskGetTaskRunTimeStats() syscall is used to get the runtime
-   * statistics for a single task.
+   * Obtains detailed runtime performance statistics for a single task identified
+   * by its task handle. This function provides targeted performance data for
+   * individual task analysis without the overhead of retrieving statistics for
+   * all tasks in the system. It's ideal for monitoring specific critical tasks
+   * or profiling individual task behavior.
    *
-   * @sa xReturn
-   * @sa xTask
-   * @sa xTaskRunTimeStats
-   * @sa xMemFree()
+   * The function allocates and populates a xTaskRunTimeStats structure
+   * containing comprehensive timing metrics for the specified task:
+   * - **totalRunTime**: Cumulative execution time since task creation, measured
+   *   in system ticks
+   * - **lastRunTime**: Duration of the most recent task execution in ticks
+   * - **taskId**: Unique numeric identifier for the task
+   * - Additional port-specific timing information that may include execution
+   *   counts, context switch counts, or other performance metrics
    *
-   * @param  task_  The task to be operated on.
-   * @param  stats_ The runtime statistics. The runtime statistics must be freed
-   *                by xMemFree().
-   * @return        On success, the syscall returns ReturnOK. On failure, the
-   *                syscall returns ReturnError. A failure is any condition in
-   *                which the syscall was unable to achieve its intended
-   *                objective. For example, if xTaskGetId() was unable to locate
-   *                the task by the task object (i.e., xTask) passed to the
-   *                syscall, because either the object was null or invalid
-   *                (e.g., a deleted task), xTaskGetId() would return
-   *                ReturnError. All HeliOS syscalls return the xReturn (a.k.a.,
-   *                Return_t) type which can either be ReturnOK or ReturnError.
-   *                The C macros OK() and ERROR() can be used as a more concise
-   *                way of checking the return value of a syscall (e.g.,
-   *                if(OK(xMemGetUsed(&size))) {} or
-   *                if(ERROR(xMemGetUsed(&size))) {}).
+   * The statistics structure is allocated from the user heap and must be freed
+   * by the caller using xMemFree() to prevent memory leaks. This allocation is
+   * significantly smaller than xTaskGetAllRunTimeStats() which allocates an
+   * array for all tasks.
+   *
+   * Runtime statistics tracking must be enabled at compile time using
+   * CONFIG_ENABLE_RUNTIME_STATS. If disabled, this function may return
+   * zero-valued statistics or an error depending on the configuration.
+   *
+   * The returned statistics are a point-in-time snapshot. For a running task,
+   * the totalRunTime value increases continuously as the task executes. The
+   * lastRunTime value reflects the duration of the most recent complete
+   * execution cycle.
+   *
+   * **Common use cases:**
+   * - Critical task monitoring: Track execution time of safety-critical or
+   *   high-priority tasks
+   * - Performance debugging: Profile specific tasks suspected of performance
+   *   issues
+   * - Periodic sampling: Monitor individual task behavior over time
+   * - Watchdog implementation: Verify tasks are executing within expected time
+   *   bounds
+   * - Resource optimization: Identify if specific tasks need optimization
+   * - SLA verification: Ensure tasks meet service level agreements for
+   *   execution time
+   *
+   * Example 1: Monitor specific critical task
+   * @code
+   * void checkSensorTaskPerformance(xTask sensorTask) {
+   *   xTaskRunTimeStats *stats = NULL;
+   *
+   *   if (OK(xTaskGetTaskRunTimeStats(sensorTask, &stats))) {
+   *     printf("Sensor Task (ID %d):\n", stats->taskId);
+   *     printf("  Total runtime: %lu ticks\n", stats->totalRunTime);
+   *     printf("  Last execution: %lu ticks\n", stats->lastRunTime);
+   *
+   *     xMemFree(stats);
+   *   } else {
+   *     printf("ERROR: Failed to get sensor task stats\n");
+   *   }
+   * }
+   * @endcode
+   *
+   * Example 2: Watchdog for task execution time
+   * @code
+   * #define MAX_EXECUTION_TIME_TICKS 1000
+   *
+   * xReturn validateTaskExecution(xTask task) {
+   *   xTaskRunTimeStats *stats = NULL;
+   *
+   *   if (ERROR(xTaskGetTaskRunTimeStats(task, &stats))) {
+   *     return ReturnError;
+   *   }
+   *
+   *   xReturn result = ReturnOK;
+   *   if (stats->lastRunTime > MAX_EXECUTION_TIME_TICKS) {
+   *     printf("WARNING: Task %d exceeded max execution time: %lu > %d\n",
+   *            stats->taskId,
+   *            stats->lastRunTime,
+   *            MAX_EXECUTION_TIME_TICKS);
+   *     result = ReturnError;
+   *   }
+   *
+   *   xMemFree(stats);
+   *   return result;
+   * }
+   * @endcode
+   *
+   * Example 3: Periodic task profiling
+   * @code
+   * void profileTask(xTask task, xTaskParm parm) {
+   *   static unsigned long lastTotalRuntime = 0;
+   *   static unsigned long callCount = 0;
+   *   xTaskRunTimeStats *stats = NULL;
+   *
+   *   // Get stats for the monitored task (passed as parameter)
+   *   xTask monitoredTask = (xTask)parm;
+   *
+   *   if (OK(xTaskGetTaskRunTimeStats(monitoredTask, &stats))) {
+   *     unsigned long delta = stats->totalRunTime - lastTotalRuntime;
+   *     callCount++;
+   *
+   *     if (callCount % 100 == 0) {  // Report every 100 samples
+   *       printf("Task %d: Average execution per sample: %lu ticks\n",
+   *              stats->taskId,
+   *              delta / 100);
+   *       lastTotalRuntime = stats->totalRunTime;
+   *     }
+   *
+   *     xMemFree(stats);
+   *   }
+   * }
+   * @endcode
+   *
+   * Example 4: Compare task execution before and after optimization
+   * @code
+   * typedef struct {
+   *   unsigned long totalBefore;
+   *   unsigned long totalAfter;
+   * } OptimizationResults;
+   *
+   * void measureOptimizationImpact(xTask task, OptimizationResults *results) {
+   *   xTaskRunTimeStats *stats = NULL;
+   *
+   *   // Measure before optimization
+   *   if (OK(xTaskGetTaskRunTimeStats(task, &stats))) {
+   *     results->totalBefore = stats->totalRunTime;
+   *     xMemFree(stats);
+   *   }
+   *
+   *   // ... perform optimization ...
+   *   // ... let task run for measurement period ...
+   *
+   *   // Measure after optimization
+   *   if (OK(xTaskGetTaskRunTimeStats(task, &stats))) {
+   *     results->totalAfter = stats->totalRunTime;
+   *     xMemFree(stats);
+   *
+   *     unsigned long improvement = results->totalBefore - results->totalAfter;
+   *     float percent = (improvement * 100.0f) / results->totalBefore;
+   *     printf("Optimization reduced runtime by %.2f%%\n", percent);
+   *   }
+   * }
+   * @endcode
+   *
+   * @param[in]  task_  Task handle for the task to query. Must be a valid task
+   *                    handle obtained from xTaskCreate() or xTaskGetHandleByName().
+   *                    Must not be NULL or refer to a deleted task.
+   * @param[out] stats_ Pointer to xTaskRunTimeStats pointer that will receive
+   *                    the allocated statistics structure. Must not be NULL. On
+   *                    success, points to allocated structure that must be freed
+   *                    with xMemFree(). On failure, remains unchanged.
+   *
+   * @return           ReturnOK if statistics were successfully retrieved and
+   *                   allocated. ReturnError if the operation failed (e.g.,
+   *                   task_ is NULL or invalid, stats_ is NULL, memory
+   *                   allocation failed, task no longer exists, runtime stats
+   *                   not enabled).
+   *
+   * @warning The caller MUST free the returned structure using xMemFree().
+   * Failure to do so will leak memory from the user heap.
+   *
+   * @warning The task handle must be valid. If the task has been deleted or the
+   * handle is corrupted, this function returns ReturnError. Always verify task
+   * existence before calling.
+   *
+   * @warning Runtime statistics tracking must be enabled with
+   * CONFIG_ENABLE_RUNTIME_STATS at compile time. If disabled, this function may
+   * return zero values or an error.
+   *
+   * @warning The statistics are a snapshot. For a currently executing task, the
+   * values may be outdated immediately after return. Use for trend analysis
+   * rather than instant-precise measurements.
+   *
+   * @note This function is more efficient than xTaskGetAllRunTimeStats() when
+   * you only need information about a single task, as it allocates less memory
+   * and performs less processing.
+   *
+   * @note The structure is allocated using xMemAlloc() from the user heap.
+   * Ensure adequate heap space is available.
+   *
+   * @note Runtime values are in system tick units. Convert to real time using
+   * the system tick frequency (typically configured in port layer).
+   *
+   * @note The taskId in the returned structure matches the ID returned by
+   * xTaskGetId() for the same task.
+   *
+   * @sa xTaskRunTimeStats - Structure containing runtime statistics
+   * @sa xTaskGetAllRunTimeStats() - Get statistics for all tasks at once
+   * @sa xMemFree() - Must be used to free the returned structure
+   * @sa xTaskGetId() - Get task ID for comparison
+   * @sa CONFIG_ENABLE_RUNTIME_STATS - Must be enabled for statistics tracking
    */
   xReturn xTaskGetTaskRunTimeStats(const xTask task_, xTaskRunTimeStats *stats_);
 
@@ -5637,276 +6974,1608 @@
 
 
   /**
-   * @brief Syscall to get info about a task
+   * @brief Retrieve comprehensive information about a task
    *
-   * The xTaskGetTaskInfo() syscall is used to get info about a single task.
-   * xTaskGetTaskInfo() is similar to xTaskGetTaskRunTimeStats() with one
-   * difference, xTaskGetTaskInfo() provides the state and name of the task
-   * along with the task's runtime statistics.
+   * Returns detailed information about a specific task including its name,
+   * state, and runtime statistics. This provides a complete snapshot of a
+   * task's identity and performance in a single call, allocating and returning
+   * a xTaskInfo structure that must be freed by the caller.
    *
-   * @sa xReturn
-   * @sa xMemFree()
-   * @sa xTask
-   * @sa xTaskInfo
+   * The returned xTaskInfo structure contains:
+   * - **name**: Task name (CONFIG_TASK_NAME_BYTES bytes)
+   * - **state**: Current task state (TaskStateRunning, TaskStateSuspended,
+   * TaskStateWaiting)
+   * - **Runtime statistics**: Execution time, run count, and performance metrics
    *
-   * @param  task_ The task to be operated on.
-   * @param  info_ Information about the task. The task information must be
-   *               freed by xMemFree().
-   * @return       On success, the syscall returns ReturnOK. On failure, the
-   *               syscall returns ReturnError. A failure is any condition in
-   *               which the syscall was unable to achieve its intended
-   *               objective. For example, if xTaskGetId() was unable to locate
-   *               the task by the task object (i.e., xTask) passed to the
-   *               syscall, because either the object was null or invalid (e.g.,
-   *               a deleted task), xTaskGetId() would return ReturnError. All
-   *               HeliOS syscalls return the xReturn (a.k.a., Return_t) type
-   *               which can either be ReturnOK or ReturnError. The C macros
-   *               OK() and ERROR() can be used as a more concise way of
-   *               checking the return value of a syscall (e.g.,
-   *               if(OK(xMemGetUsed(&size))) {} or
-   *               if(ERROR(xMemGetUsed(&size))) {}).
+   * This function allocates memory from the user heap for the info structure
+   * and returns it to the caller. The caller MUST free this memory with
+   * xMemFree() after use to prevent memory leaks.
+   *
+   * Common use cases:
+   * - **Task monitoring**: Inspecting individual task state and performance
+   * - **Debugging**: Examining specific task behavior during development
+   * - **Health checks**: Verifying critical tasks are in expected states
+   * - **Performance profiling**: Analyzing task execution patterns
+   * - **Diagnostic logging**: Recording task status for troubleshooting
+   *
+   * Example 1: Check task state and log status
+   * @code
+   * void checkTaskHealth(xTask task, const char *expectedName) {
+   *   xTaskInfo *info = NULL;
+   *
+   *   if (OK(xTaskGetTaskInfo(task, &info))) {
+   *     logInfo("Task: %s", info->name);
+   *     logInfo("  State: %s",
+   *             info->state == TaskStateRunning ? "Running" :
+   *             info->state == TaskStateSuspended ? "Suspended" : "Waiting");
+   *
+   *     // Verify task is as expected
+   *     if (strncmp((char*)info->name, expectedName,
+   * CONFIG_TASK_NAME_BYTES) != 0) {
+   *       logWarning("Task name mismatch!");
+   *     }
+   *
+   *     if (info->state != TaskStateRunning) {
+   *       logWarning("Task not running!");
+   *     }
+   *
+   *     // Always free the allocated info structure
+   *     xMemFree((xAddr)info);
+   *   }
+   * }
+   * @endcode
+   *
+   * Example 2: Monitor task runtime statistics
+   * @code
+   * void profileTask(xTask task) {
+   *   xTaskInfo *info = NULL;
+   *
+   *   if (OK(xTaskGetTaskInfo(task, &info))) {
+   *     printf("Task Profile: %s\n", info->name);
+   *     printf("  Total Runtime: %lu ticks\n", info->totalRunTime);
+   *     printf("  Run Count: %lu\n", info->runCount);
+   *
+   *     // Calculate average runtime per execution
+   *     if (info->runCount > 0) {
+   *       xWord avgRuntime = info->totalRunTime / info->runCount;
+   *       printf("  Avg Runtime: %lu ticks/run\n", avgRuntime);
+   *     }
+   *
+   *     xMemFree((xAddr)info);
+   *   }
+   * }
+   * @endcode
+   *
+   * Example 3: Find and inspect task by name
+   * @code
+   * xReturn inspectTaskByName(const char *taskName) {
+   *   xTask task;
+   *   xTaskInfo *info = NULL;
+   *   xByte paddedName[CONFIG_TASK_NAME_BYTES];
+   *
+   *   // Prepare padded name
+   *   memset(paddedName, 0, sizeof(paddedName));
+   *   strncpy((char*)paddedName, taskName, sizeof(paddedName));
+   *
+   *   // Find task
+   *   if (ERROR(xTaskGetHandleByName(&task, paddedName))) {
+   *     logError("Task '%s' not found", taskName);
+   *     return ReturnError;
+   *   }
+   *
+   *   // Get detailed info
+   *   if (OK(xTaskGetTaskInfo(task, &info))) {
+   *     printf("Task Information:\n");
+   *     printf("  Name: %s\n", info->name);
+   *     printf("  State: %d\n", info->state);
+   *     printf("  Statistics available\n");
+   *
+   *     xMemFree((xAddr)info);
+   *     return ReturnOK;
+   *   }
+   *
+   *   return ReturnError;
+   * }
+   * @endcode
+   *
+   * Example 4: Periodic task health monitoring
+   * @code
+   * void monitorCriticalTasks(void) {
+   *   xTask watchdogTask;
+   *   xByte taskName[CONFIG_TASK_NAME_BYTES] = "Watchdog";
+   *
+   *   if (OK(xTaskGetHandleByName(&watchdogTask, taskName))) {
+   *     xTaskInfo *info = NULL;
+   *
+   *     if (OK(xTaskGetTaskInfo(watchdogTask, &info))) {
+   *       // Check if watchdog is running
+   *       if (info->state != TaskStateRunning) {
+   *         logCritical("Watchdog task not running! State: %d",
+   * info->state);
+   *         // Attempt to resume
+   *         xTaskResume(watchdogTask);
+   *       }
+   *
+   *       // Check if watchdog is executing regularly
+   *       static xWord lastRunCount = 0;
+   *       if (info->runCount == lastRunCount) {
+   *         logWarning("Watchdog task may be stuck");
+   *       }
+   *       lastRunCount = info->runCount;
+   *
+   *       xMemFree((xAddr)info);
+   *     }
+   *   }
+   * }
+   * @endcode
+   *
+   * @param[in]  task_ Task handle to query. Must be a valid task handle from
+   *                   xTaskCreate(), xTaskGetHandleByName(), or
+   *                   xTaskGetHandleById().
+   * @param[out] info_ Pointer to xTaskInfo pointer that will receive the
+   *                   allocated task information structure. Caller MUST free
+   *                   this with xMemFree() after use.
+   *
+   * @return           ReturnOK if information retrieved successfully,
+   *                   ReturnError if operation failed (invalid task handle,
+   *                   task deleted, or memory allocation failed).
+   *
+   * @warning The caller MUST free the returned info structure using xMemFree().
+   * Failing to do so will cause memory leaks. The structure is allocated by
+   * this function specifically for the caller.
+   *
+   * @warning Do not access the info structure after freeing it with
+   * xMemFree(). Set the pointer to NULL after freeing to prevent accidental use.
+   *
+   * @warning The returned information is a snapshot at the time of the call.
+   * Task state and statistics may change immediately after this function
+   * returns.
+   *
+   * @note This function combines task identity (name, state) with runtime
+   * statistics in a single structure, making it more convenient than calling
+   * multiple separate functions.
+   *
+   * @note For bulk operations on all tasks, use xTaskGetAllTaskInfo() instead,
+   * which is more efficient than calling this function in a loop.
+   *
+   * @note The xTaskInfo structure size depends on configuration. The function
+   * allocates the exact size needed from the heap.
+   *
+   * @sa xTaskGetAllTaskInfo() - Get info for all tasks at once
+   * @sa xTaskGetTaskRunTimeStats() - Get runtime stats only (without name/state)
+   * @sa xTaskGetTaskState() - Get just the task state
+   * @sa xTaskGetName() - Get just the task name
+   * @sa xMemFree() - Free the allocated info structure
+   * @sa xTaskGetHandleByName() - Find task by name before getting info
+   * @sa xTaskGetHandleById() - Find task by ID before getting info
    */
   xReturn xTaskGetTaskInfo(const xTask task_, xTaskInfo *info_);
 
 
   /**
-   * @brief Syscall to get info about all tasks
+   * @brief Retrieve comprehensive information about all tasks
    *
-   * The xTaskGetAllTaskInfo() syscall is used to get info about all tasks.
-   * xTaskGetAllTaskInfo() is similar to xTaskGetAllRunTimeStats() with one
-   * difference, xTaskGetAllTaskInfo() provides the state and name of the task
-   * along with the task's runtime statistics.
+   * Returns detailed information for all tasks in the system in a single
+   * efficient call. Allocates an array of xTaskInfo structures containing name,
+   * state, and runtime statistics for every task, providing a complete system
+   * snapshot for monitoring, diagnostics, or reporting.
    *
-   * @sa xReturn
-   * @sa xTaskInfo
-   * @sa xMemFree()
+   * This function allocates a single contiguous array from the user heap
+   * containing one xTaskInfo structure per task. The array is indexed by task
+   * ID (0 to N-1), making it easy to access information for any specific task.
+   * The caller MUST free this array with xMemFree() after use.
    *
-   * @param  info_  Information about the tasks. The task information must be
-   *                freed by xMemFree().
-   * @param  tasks_ The number of tasks.
-   * @return        On success, the syscall returns ReturnOK. On failure, the
-   *                syscall returns ReturnError. A failure is any condition in
-   *                which the syscall was unable to achieve its intended
-   *                objective. For example, if xTaskGetId() was unable to locate
-   *                the task by the task object (i.e., xTask) passed to the
-   *                syscall, because either the object was null or invalid
-   *                (e.g., a deleted task), xTaskGetId() would return
-   *                ReturnError. All HeliOS syscalls return the xReturn (a.k.a.,
-   *                Return_t) type which can either be ReturnOK or ReturnError.
-   *                The C macros OK() and ERROR() can be used as a more concise
-   *                way of checking the return value of a syscall (e.g.,
-   *                if(OK(xMemGetUsed(&size))) {} or
-   *                if(ERROR(xMemGetUsed(&size))) {}).
+   * Each xTaskInfo in the array contains:
+   * - **name**: Task name (CONFIG_TASK_NAME_BYTES bytes)
+   * - **state**: Current state (Running, Suspended, or Waiting)
+   * - **Runtime statistics**: Execution time, run counts, performance metrics
+   *
+   * Common use cases:
+   * - **System dashboards**: Display all task statuses and performance
+   * - **Performance analysis**: Compare execution times across all tasks
+   * - **System health checks**: Verify all expected tasks are present and running
+   * - **Diagnostic dumps**: Capture complete system state for troubleshooting
+   * - **Load balancing**: Analyze task distribution and CPU utilization
+   *
+   * Example 1: Display complete system task status
+   * @code
+   * void displaySystemStatus(void) {
+   *   xTaskInfo *allInfo = NULL;
+   *   xBase taskCount;
+   *
+   *   if (OK(xTaskGetAllTaskInfo(&allInfo, &taskCount))) {
+   *     printf("System Tasks (%u total):\n", taskCount);
+   *     printf("%-10s %-12s %-10s %-15s\n",
+   *            "ID", "Name", "State", "Runtime");
+   *     printf("----------------------------------------------------\n");
+   *
+   *     for (xBase i = 0; i < taskCount; i++) {
+   *       const char *stateStr =
+   *         allInfo[i].state == TaskStateRunning ? "Running" :
+   *         allInfo[i].state == TaskStateSuspended ? "Suspended" : "Waiting";
+   *
+   *       printf("%-10u %-12s %-12s %-15lu\n",
+   *              i, allInfo[i].name, stateStr, allInfo[i].totalRunTime);
+   *     }
+   *
+   *     // Always free the array
+   *     xMemFree((xAddr)allInfo);
+   *   }
+   * }
+   * @endcode
+   *
+   * Example 2: Find tasks in specific states
+   * @code
+   * void findSuspendedTasks(void) {
+   *   xTaskInfo *allInfo = NULL;
+   *   xBase taskCount;
+   *   xBase suspendedCount = 0;
+   *
+   *   if (OK(xTaskGetAllTaskInfo(&allInfo, &taskCount))) {
+   *     printf("Suspended tasks:\n");
+   *
+   *     for (xBase i = 0; i < taskCount; i++) {
+   *       if (allInfo[i].state == TaskStateSuspended) {
+   *         printf("  %s (ID: %u)\n", allInfo[i].name, i);
+   *         suspendedCount++;
+   *       }
+   *     }
+   *
+   *     if (suspendedCount == 0) {
+   *       printf("  (none)\n");
+   *     }
+   *
+   *     xMemFree((xAddr)allInfo);
+   *   }
+   * }
+   * @endcode
+   *
+   * Example 3: Analyze CPU utilization across tasks
+   * @code
+   * void analyzeCPUUsage(void) {
+   *   xTaskInfo *allInfo = NULL;
+   *   xBase taskCount;
+   *
+   *   if (OK(xTaskGetAllTaskInfo(&allInfo, &taskCount))) {
+   *     xWord totalRuntime = 0;
+   *
+   *     // Calculate total runtime
+   *     for (xBase i = 0; i < taskCount; i++) {
+   *       totalRuntime += allInfo[i].totalRunTime;
+   *     }
+   *
+   *     if (totalRuntime > 0) {
+   *       printf("CPU Usage by Task:\n");
+   *
+   *       // Calculate and display percentage for each task
+   *       for (xBase i = 0; i < taskCount; i++) {
+   *         xByte percentage = (xByte)((allInfo[i].totalRunTime * 100) /
+   *                                     totalRuntime);
+   *         printf("  %-12s: %3u%%\n", allInfo[i].name, percentage);
+   *       }
+   *     }
+   *
+   *     xMemFree((xAddr)allInfo);
+   *   }
+   * }
+   * @endcode
+   *
+   * Example 4: Periodic system health check
+   * @code
+   * #define EXPECTED_TASKS 8
+   *
+   * xReturn performHealthCheck(void) {
+   *   xTaskInfo *allInfo = NULL;
+   *   xBase taskCount;
+   *   xBase runningCount = 0;
+   *   xBase suspendedCount = 0;
+   *
+   *   if (ERROR(xTaskGetAllTaskInfo(&allInfo, &taskCount))) {
+   *     logError("Failed to get task info");
+   *     return ReturnError;
+   *   }
+   *
+   *   // Verify expected task count
+   *   if (taskCount != EXPECTED_TASKS) {
+   *     logWarning("Task count mismatch: expected %u, got %u",
+   *                EXPECTED_TASKS, taskCount);
+   *   }
+   *
+   *   // Count tasks by state
+   *   for (xBase i = 0; i < taskCount; i++) {
+   *     if (allInfo[i].state == TaskStateRunning) {
+   *       runningCount++;
+   *     } else if (allInfo[i].state == TaskStateSuspended) {
+   *       suspendedCount++;
+   *       logWarning("Task %s is suspended", allInfo[i].name);
+   *     }
+   *   }
+   *
+   *   logInfo("Health check: %u running, %u suspended",
+   *           runningCount, suspendedCount);
+   *
+   *   xMemFree((xAddr)allInfo);
+   *   return ReturnOK;
+   * }
+   * @endcode
+   *
+   * @param[out] info_  Pointer to xTaskInfo pointer that will receive the
+   *                    allocated array of task information structures. Array
+   *                    contains taskCount elements indexed by task ID. Caller
+   *                    MUST free with xMemFree() after use.
+   * @param[out] tasks_ Pointer to variable that receives the number of tasks
+   *                    (and array elements) returned.
+   *
+   * @return            ReturnOK if information retrieved successfully,
+   *                    ReturnError if operation failed (memory allocation error
+   *                    or invalid parameters).
+   *
+   * @warning The caller MUST free the returned array using xMemFree(). Failing
+   * to do so will cause significant memory leaks since the array size is
+   * proportional to the number of tasks.
+   *
+   * @warning Do not access the array after freeing it. Set the pointer to NULL
+   * after calling xMemFree() to prevent accidental use.
+   *
+   * @warning The returned information is a snapshot at the time of the call.
+   * Task states and statistics change continuously, so the data may be stale
+   * immediately after return.
+   *
+   * @note This function is more efficient than calling xTaskGetTaskInfo() in a
+   * loop, as it allocates memory once and captures all task data atomically.
+   *
+   * @note The array is indexed by task ID (0 to taskCount-1), providing direct
+   * access to any task's information.
+   *
+   * @note For systems with many tasks, this function allocates significant
+   * memory. Ensure sufficient heap space is available before calling.
+   *
+   * @note The array size is (sizeof(xTaskInfo) * taskCount) bytes. On
+   * memory-constrained systems, consider iterating through tasks individually
+   * with xTaskGetTaskInfo() instead.
+   *
+   * @sa xTaskGetTaskInfo() - Get info for single task (uses less memory)
+   * @sa xTaskGetNumberOfTasks() - Get task count (for array sizing)
+   * @sa xTaskGetAllRunTimeStats() - Get runtime stats only (smaller structures)
+   * @sa xMemFree() - Free the allocated array
+   * @sa xTaskGetHandleById() - Access individual tasks by ID
    */
   xReturn xTaskGetAllTaskInfo(xTaskInfo *info_, xBase *tasks_);
 
 
   /**
-   * @brief Syscall to get the state of a task
+   * @brief Query the current execution state of a task
    *
-   * The xTaskGetTaskState() syscall is used to obtain the state of a task
-   * (i.e., suspended, running or waiting).
+   * Retrieves the current state of a task, which indicates whether the task is
+   * actively running, suspended awaiting resume, or waiting for a notification.
+   * Understanding task state is essential for debugging scheduling behavior,
+   * implementing state machines, and monitoring system health.
    *
-   * @sa xReturn
-   * @sa xTask
-   * @sa xTaskState
+   * HeliOS tasks exist in one of three states at any given time:
+   * - **TaskStateRunning**: Task is actively scheduled and will execute when
+   *   the scheduler selects it. This is the normal operational state for tasks
+   *   that should be executing their callback functions periodically.
+   * - **TaskStateSuspended**: Task has been suspended via xTaskSuspend() and
+   *   will not execute until explicitly resumed with xTaskResume(). Newly
+   *   created tasks start in this state.
+   * - **TaskStateWaiting**: Task is blocked waiting for a direct-to-task
+   *   notification. It will not execute until a notification is sent via
+   *   xTaskNotify() or xTaskNotifyGive(). This state is used for event-driven
+   *   task synchronization.
    *
-   * @param  task_  The task to be operated on.
-   * @param  state_ The state of the task.
-   * @return        On success, the syscall returns ReturnOK. On failure, the
-   *                syscall returns ReturnError. A failure is any condition in
-   *                which the syscall was unable to achieve its intended
-   *                objective. For example, if xTaskGetId() was unable to locate
-   *                the task by the task object (i.e., xTask) passed to the
-   *                syscall, because either the object was null or invalid
-   *                (e.g., a deleted task), xTaskGetId() would return
-   *                ReturnError. All HeliOS syscalls return the xReturn (a.k.a.,
-   *                Return_t) type which can either be ReturnOK or ReturnError.
-   *                The C macros OK() and ERROR() can be used as a more concise
-   *                way of checking the return value of a syscall (e.g.,
-   *                if(OK(xMemGetUsed(&size))) {} or
-   *                if(ERROR(xMemGetUsed(&size))) {}).
+   * The state query is instantaneous and reflects the task state at the moment
+   * of the call. In a running system, states can change rapidly as tasks are
+   * suspended, resumed, and notified. This function does not affect the task's
+   * state - it is purely a query operation.
+   *
+   * State information is useful for debugging race conditions, verifying that
+   * tasks transition properly through state machines, and ensuring that
+   * synchronization mechanisms are working correctly. It's also valuable for
+   * system health monitoring and diagnostic reporting.
+   *
+   * **Common use cases:**
+   * - State verification: Confirm task is in expected state before performing
+   *   operations
+   * - Debug output: Include task state in diagnostic messages
+   * - Health monitoring: Detect tasks stuck in unexpected states
+   * - State machine implementation: Query state to determine next action
+   * - Synchronization debugging: Verify tasks are waiting as expected
+   * - System visualization: Display task states in monitoring tools
+   *
+   * Example 1: Verify task state before operation
+   * @code
+   * xReturn safeTaskOperation(xTask task) {
+   *   xTaskState state;
+   *
+   *   if (ERROR(xTaskGetTaskState(task, &state))) {
+   *     return ReturnError;  // Invalid task handle
+   *   }
+   *
+   *   if (state != TaskStateRunning) {
+   *     printf("WARNING: Task not in running state (state=%d)\n", state);
+   *     return ReturnError;
+   *   }
+   *
+   *   // Task is running - safe to proceed
+   *   return ReturnOK;
+   * }
+   * @endcode
+   *
+   * Example 2: Debug output with state information
+   * @code
+   * void debugPrintTaskState(xTask task, const char *taskName) {
+   *   xTaskState state;
+   *
+   *   if (OK(xTaskGetTaskState(task, &state))) {
+   *     const char *stateName;
+   *     switch (state) {
+   *       case TaskStateRunning:
+   *         stateName = "Running";
+   *         break;
+   *       case TaskStateSuspended:
+   *         stateName = "Suspended";
+   *         break;
+   *       case TaskStateWaiting:
+   *         stateName = "Waiting";
+   *         break;
+   *       default:
+   *         stateName = "Unknown";
+   *     }
+   *     printf("%s: %s\n", taskName, stateName);
+   *   } else {
+   *     printf("%s: Error querying state\n", taskName);
+   *   }
+   * }
+   * @endcode
+   *
+   * Example 3: Monitoring task for stuck state
+   * @code
+   * void monitorTask(xTask task, xTaskParm parm) {
+   *   static xTaskState lastState = TaskStateRunning;
+   *   static int sameStateCount = 0;
+   *   xTask monitoredTask = (xTask)parm;
+   *   xTaskState currentState;
+   *
+   *   if (OK(xTaskGetTaskState(monitoredTask, &currentState))) {
+   *     if (currentState == lastState) {
+   *       sameStateCount++;
+   *       if (sameStateCount > 1000 && currentState == TaskStateWaiting) {
+   *         printf("WARNING: Task stuck in Waiting state for %d checks\n",
+   *                sameStateCount);
+   *       }
+   *     } else {
+   *       sameStateCount = 0;
+   *       lastState = currentState;
+   *     }
+   *   }
+   * }
+   * @endcode
+   *
+   * Example 4: Conditional task resume based on state
+   * @code
+   * xReturn ensureTaskRunning(xTask task) {
+   *   xTaskState state;
+   *
+   *   if (ERROR(xTaskGetTaskState(task, &state))) {
+   *     return ReturnError;
+   *   }
+   *
+   *   // If suspended, resume it
+   *   if (state == TaskStateSuspended) {
+   *     printf("Task was suspended - resuming\n");
+   *     return xTaskResume(task);
+   *   }
+   *
+   *   // If waiting, send notification to unblock
+   *   if (state == TaskStateWaiting) {
+   *     printf("Task was waiting - sending notification\n");
+   *     return xTaskNotifyGive(task);
+   *   }
+   *
+   *   // Already running
+   *   return ReturnOK;
+   * }
+   * @endcode
+   *
+   * @param[in]  task_  Task handle for the task to query. Must be a valid task
+   *                    handle obtained from xTaskCreate() or xTaskGetHandleByName().
+   *                    Must not be NULL or refer to a deleted task.
+   * @param[out] state_ Pointer to xTaskState variable that will receive the
+   *                    task's current state. Must not be NULL. On success,
+   *                    contains one of: TaskStateRunning, TaskStateSuspended, or
+   *                    TaskStateWaiting. On failure, remains unchanged.
+   *
+   * @return           ReturnOK if state was successfully retrieved. ReturnError
+   *                   if the operation failed (e.g., task_ is NULL or invalid,
+   *                   state_ is NULL, task has been deleted).
+   *
+   * @warning The task handle must be valid. If the task has been deleted or the
+   * handle is corrupted, this function returns ReturnError.
+   *
+   * @warning The returned state is a snapshot and may change immediately after
+   * return, especially in systems with multiple tasks or interrupt handlers that
+   * modify task states.
+   *
+   * @warning Do not assume state persistence across function calls. Always
+   * re-query state if making decisions based on it, as another task or interrupt
+   * may have changed it.
+   *
+   * @warning Repeatedly polling task state in a tight loop wastes CPU cycles.
+   * Use notifications or timers for event-driven task coordination instead.
+   *
+   * @note This function does not change the task's state - it only queries it.
+   * To change state, use xTaskSuspend(), xTaskResume(), or notification
+   * functions.
+   *
+   * @note The state query is very lightweight and can be called frequently
+   * without significant performance impact.
+   *
+   * @note Newly created tasks start in TaskStateSuspended state until
+   * xTaskResume() is called.
+   *
+   * @note Tasks transition to TaskStateWaiting only when explicitly waiting for
+   * notifications via xTaskNotifyTake() or xTaskNotifyWait().
+   *
+   * @sa xTaskState - Enumeration of possible task states
+   * @sa xTaskSuspend() - Transition task to suspended state
+   * @sa xTaskResume() - Transition task to running state
+   * @sa xTaskNotifyTake() - Wait for notification (transitions to waiting state)
+   * @sa xTaskNotifyGive() - Send notification (may exit waiting state)
+   * @sa xTaskGetTaskInfo() - Get comprehensive task information including state
    */
   xReturn xTaskGetTaskState(const xTask task_, xTaskState *state_);
 
 
   /**
-   * @brief Syscall to get the name of a task
+   * @brief Retrieve the ASCII name string of a task
    *
-   * The xTaskGetName() syscall is used to get the ASCII name of a task. The
-   * size of the task name is CONFIG_TASK_NAME_BYTES (default is 8) bytes in
-   * length.
+   * Obtains the human-readable ASCII name assigned to a task when it was
+   * created with xTaskCreate(). Task names are essential for debugging,
+   * logging, and identifying tasks in system diagnostics. This function
+   * allocates and returns a copy of the task's name string.
    *
-   * @sa xReturn
-   * @sa xTask
-   * @sa xMemFree()
+   * Task names in HeliOS have a fixed length defined by CONFIG_TASK_NAME_BYTES
+   * (default is 8 bytes). When tasks are created, names shorter than this
+   * length should be space-padded, and names longer than this length are
+   * truncated. The returned name buffer is exactly CONFIG_TASK_NAME_BYTES in
+   * size.
    *
-   * @param  task_ The task to be operated on.
-   * @param  name_ The task name which must be precisely CONFIG_TASK_NAME_BYTES
-   *               (default is 8) bytes in length. The task name must be freed
-   *               by xMemFree().
-   * @return       On success, the syscall returns ReturnOK. On failure, the
-   *               syscall returns ReturnError. A failure is any condition in
-   *               which the syscall was unable to achieve its intended
-   *               objective. For example, if xTaskGetId() was unable to locate
-   *               the task by the task object (i.e., xTask) passed to the
-   *               syscall, because either the object was null or invalid (e.g.,
-   *               a deleted task), xTaskGetId() would return ReturnError. All
-   *               HeliOS syscalls return the xReturn (a.k.a., Return_t) type
-   *               which can either be ReturnOK or ReturnError. The C macros
-   *               OK() and ERROR() can be used as a more concise way of
-   *               checking the return value of a syscall (e.g.,
-   *               if(OK(xMemGetUsed(&size))) {} or
-   *               if(ERROR(xMemGetUsed(&size))) {}).
+   * The name buffer is allocated from the user heap using xMemAlloc() and must
+   * be freed by the caller using xMemFree() to prevent memory leaks. This is a
+   * common pattern in HeliOS for returning variable-length or dynamically
+   * allocated data to the caller.
+   *
+   * Task names are particularly useful for:
+   * - **Debug output**: Including readable task names in printf/logging
+   *   statements
+   * - **Task identification**: Finding specific tasks without hard-coding task
+   *   IDs
+   * - **Error reporting**: Identifying which task encountered an error
+   * - **System monitoring**: Displaying human-readable task information in
+   *   monitoring interfaces
+   * - **Reverse lookup**: Verifying you have the correct task handle
+   *
+   * The name string is a direct copy of what was provided to xTaskCreate(), so
+   * any padding or truncation that occurred during creation is preserved in the
+   * returned string.
+   *
+   * **Common use cases:**
+   * - Debug logging: Include task names in diagnostic output
+   * - Error reporting: Identify tasks in error messages
+   * - Task verification: Confirm you have the correct task handle
+   * - System monitoring: Display task names in status reports
+   * - Task enumeration: Build lists of task names for user interfaces
+   * - Reverse lookup: Verify task handle corresponds to expected name
+   *
+   * Example 1: Basic task name retrieval for debugging
+   * @code
+   * void debugTask(xTask task) {
+   *   xByte *name = NULL;
+   *
+   *   if (OK(xTaskGetName(task, &name))) {
+   *     printf("Task name: %.*s\n", CONFIG_TASK_NAME_BYTES, name);
+   *     xMemFree(name);
+   *   } else {
+   *     printf("ERROR: Failed to get task name\n");
+   *   }
+   * }
+   * @endcode
+   *
+   * Example 2: Error reporting with task name
+   * @code
+   * void reportTaskError(xTask task, const char *errorMsg) {
+   *   xByte *taskName = NULL;
+   *
+   *   if (OK(xTaskGetName(task, &taskName))) {
+   *     printf("ERROR in task '%.*s': %s\n",
+   *            CONFIG_TASK_NAME_BYTES,
+   *            taskName,
+   *            errorMsg);
+   *     xMemFree(taskName);
+   *   } else {
+   *     printf("ERROR in unknown task: %s\n", errorMsg);
+   *   }
+   * }
+   * @endcode
+   *
+   * Example 3: Verify task handle corresponds to expected name
+   * @code
+   * xReturn verifyTaskHandle(xTask task, const char *expectedName) {
+   *   xByte *actualName = NULL;
+   *
+   *   if (ERROR(xTaskGetName(task, &actualName))) {
+   *     return ReturnError;  // Invalid handle
+   *   }
+   *
+   *   // Compare names (using strncmp for safety)
+   *   xReturn result = ReturnOK;
+   *   if (strncmp((char*)actualName, expectedName, CONFIG_TASK_NAME_BYTES) != 0) {
+   *     printf("WARNING: Expected task '%s' but got '%.8s'\n",
+   *            expectedName,
+   *            actualName);
+   *     result = ReturnError;
+   *   }
+   *
+   *   xMemFree(actualName);
+   *   return result;
+   * }
+   * @endcode
+   *
+   * Example 4: Build list of all task names
+   * @code
+   * void listAllTaskNames(void) {
+   *   xBase taskCount = 0;
+   *
+   *   if (ERROR(xTaskGetNumberOfTasks(&taskCount))) {
+   *     return;
+   *   }
+   *
+   *   printf("System Tasks (%d total):\n", taskCount);
+   *
+   *   // Get all task info
+   *   xTaskInfo *taskInfo = NULL;
+   *   if (OK(xTaskGetAllTaskInfo(&taskInfo, &taskCount))) {
+   *     for (xBase i = 0; i < taskCount; i++) {
+   *       printf("  %d. %.*s (ID: %d)\n",
+   *              i + 1,
+   *              CONFIG_TASK_NAME_BYTES,
+   *              taskInfo[i].name,
+   *              taskInfo[i].id);
+   *     }
+   *     xMemFree(taskInfo);
+   *   }
+   * }
+   * @endcode
+   *
+   * @param[in]  task_ Task handle for the task to query. Must be a valid task
+   *                   handle obtained from xTaskCreate() or xTaskGetHandleByName().
+   *                   Must not be NULL or refer to a deleted task.
+   * @param[out] name_ Pointer to xByte pointer that will receive the allocated
+   *                   name buffer. Must not be NULL. On success, points to
+   *                   allocated buffer of exactly CONFIG_TASK_NAME_BYTES size
+   *                   that must be freed with xMemFree(). On failure, remains
+   *                   unchanged.
+   *
+   * @return          ReturnOK if name was successfully retrieved and allocated.
+   *                  ReturnError if the operation failed (e.g., task_ is NULL
+   *                  or invalid, name_ is NULL, memory allocation failed, task
+   *                  has been deleted).
+   *
+   * @warning The caller MUST free the returned name buffer using xMemFree().
+   * Failure to do so will leak memory from the user heap.
+   *
+   * @warning The returned name is exactly CONFIG_TASK_NAME_BYTES in length. It
+   * may NOT be null-terminated if the original name was exactly that length.
+   * Always use length-limited string functions (strncmp, snprintf with width)
+   * when working with task names.
+   *
+   * @warning The task handle must be valid. If the task has been deleted or the
+   * handle is corrupted, this function returns ReturnError.
+   *
+   * @warning Do not modify the task's name after creation. Task names are
+   * immutable in HeliOS. This function returns a copy - modifying the copy does
+   * not affect the task's actual name.
+   *
+   * @note The name buffer is allocated using xMemAlloc() from the user heap.
+   * Ensure adequate heap space is available.
+   *
+   * @note Task names are set during xTaskCreate() and cannot be changed
+   * afterward. This function only retrieves the existing name.
+   *
+   * @note The CONFIG_TASK_NAME_BYTES configuration (default 8) determines the
+   * exact size of all task names. This is a compile-time constant.
+   *
+   * @note For efficient lookup by name without allocating memory, use
+   * xTaskGetHandleByName() which searches for tasks by name string.
+   *
+   * @note The returned name may contain spaces if the original name was shorter
+   * than CONFIG_TASK_NAME_BYTES and was space-padded during creation.
+   *
+   * @sa xTaskCreate() - Assigns the task name during creation
+   * @sa xTaskGetHandleByName() - Find task by name (reverse operation)
+   * @sa xMemFree() - Must be used to free the returned buffer
+   * @sa xTaskGetTaskInfo() - Get comprehensive info including name
+   * @sa CONFIG_TASK_NAME_BYTES - Defines task name length
    */
   xReturn xTaskGetName(const xTask task_, xByte **name_);
 
 
   /**
-   * @brief Syscall to get the task id of a task
+   * @brief Retrieve the unique numeric identifier of a task
    *
-   * The xTaskGetId() syscall is used to obtain the id of a task.
+   * Obtains the unique integer ID assigned to a task when it was created by
+   * xTaskCreate(). Each task in HeliOS has a unique numeric identifier that
+   * remains constant throughout the task's lifetime. Task IDs are useful for
+   * compact task identification, array indexing, and logging where numeric
+   * values are more efficient than name strings.
    *
-   * @sa xReturn
-   * @sa xTask
+   * Task IDs are automatically assigned by HeliOS during task creation and
+   * cannot be changed. The ID assignment is typically sequential, starting from
+   * 1 (or 0 depending on implementation), but the exact assignment mechanism
+   * should be treated as opaque. Task IDs are never reused during a single boot
+   * cycle, even if tasks are deleted.
    *
-   * @param  task_ The task to be operated on.
-   * @param  id_   The id of the task.
-   * @return       On success, the syscall returns ReturnOK. On failure, the
-   *               syscall returns ReturnError. A failure is any condition in
-   *               which the syscall was unable to achieve its intended
-   *               objective. For example, if xTaskGetId() was unable to locate
-   *               the task by the task object (i.e., xTask) passed to the
-   *               syscall, because either the object was null or invalid (e.g.,
-   *               a deleted task), xTaskGetId() would return ReturnError. All
-   *               HeliOS syscalls return the xReturn (a.k.a., Return_t) type
-   *               which can either be ReturnOK or ReturnError. The C macros
-   *               OK() and ERROR() can be used as a more concise way of
-   *               checking the return value of a syscall (e.g.,
-   *               if(OK(xMemGetUsed(&size))) {} or
-   *               if(ERROR(xMemGetUsed(&size))) {}).
+   * Unlike task names (which are strings of fixed length CONFIG_TASK_NAME_BYTES),
+   * task IDs are simple integers (xBase type) that require minimal storage and
+   * can be efficiently compared, logged, or used as array indices. This makes
+   * IDs ideal for performance-critical code or space-constrained logging.
+   *
+   * Task IDs complement task names and handles:
+   * - **Task Handle (xTask)**: Opaque pointer used for all task operations
+   * - **Task Name (string)**: Human-readable identifier for debugging
+   * - **Task ID (integer)**: Compact numeric identifier for efficient processing
+   *
+   * The ID can be used with xTaskGetHandleById() to perform reverse lookup,
+   * converting from numeric ID back to task handle. This is useful when task
+   * IDs are stored in data structures or received over communication channels.
+   *
+   * **Common use cases:**
+   * - Compact logging: Store task IDs in logs instead of full names
+   * - Array indexing: Use task IDs as indices into task-specific data arrays
+   * - Efficient comparison: Compare integers instead of string names
+   * - Cross-reference: Store task IDs in data structures for later lookup
+   * - Performance tracking: Associate numeric IDs with performance metrics
+   * - Communication protocols: Send task IDs over serial/network interfaces
+   *
+   * Example 1: Basic task ID retrieval
+   * @code
+   * void printTaskId(xTask task) {
+   *   xBase taskId;
+   *
+   *   if (OK(xTaskGetId(task, &taskId))) {
+   *     printf("Task ID: %d\n", taskId);
+   *   } else {
+   *     printf("ERROR: Invalid task handle\n");
+   *   }
+   * }
+   * @endcode
+   *
+   * Example 2: Task-specific data array using IDs as indices
+   * @code
+   * #define MAX_TASKS 16
+   * typedef struct {
+   *   unsigned long executionCount;
+   *   unsigned long errorCount;
+   * } TaskMetrics;
+   *
+   * TaskMetrics taskMetrics[MAX_TASKS] = {0};
+   *
+   * void recordTaskExecution(xTask task) {
+   *   xBase taskId;
+   *
+   *   if (OK(xTaskGetId(task, &taskId)) && taskId < MAX_TASKS) {
+   *     taskMetrics[taskId].executionCount++;
+   *   }
+   * }
+   *
+   * void recordTaskError(xTask task) {
+   *   xBase taskId;
+   *
+   *   if (OK(xTaskGetId(task, &taskId)) && taskId < MAX_TASKS) {
+   *     taskMetrics[taskId].errorCount++;
+   *   }
+   * }
+   * @endcode
+   *
+   * Example 3: Compact logging with task IDs
+   * @code
+   * typedef struct {
+   *   xBase taskId;
+   *   unsigned long timestamp;
+   *   xByte eventCode;
+   * } LogEntry;
+   *
+   * #define LOG_SIZE 128
+   * LogEntry eventLog[LOG_SIZE];
+   * int logIndex = 0;
+   *
+   * void logEvent(xTask task, xByte eventCode) {
+   *   xBase taskId;
+   *
+   *   if (OK(xTaskGetId(task, &taskId))) {
+   *     eventLog[logIndex % LOG_SIZE].taskId = taskId;
+   *     eventLog[logIndex % LOG_SIZE].timestamp = getSystemTime();
+   *     eventLog[logIndex % LOG_SIZE].eventCode = eventCode;
+   *     logIndex++;
+   *   }
+   * }
+   *
+   * void printLog(void) {
+   *   for (int i = 0; i < LOG_SIZE; i++) {
+   *     printf("Task %d: Event 0x%02X at %lu\n",
+   *            eventLog[i].taskId,
+   *            eventLog[i].eventCode,
+   *            eventLog[i].timestamp);
+   *   }
+   * }
+   * @endcode
+   *
+   * Example 4: ID-based task lookup and verification
+   * @code
+   * xReturn verifyTaskById(xBase expectedId) {
+   *   // Get handle by ID
+   *   xTask task = NULL;
+   *   if (ERROR(xTaskGetHandleById(&task, expectedId))) {
+   *     printf("ERROR: No task with ID %d\n", expectedId);
+   *     return ReturnError;
+   *   }
+   *
+   *   // Verify ID matches (round-trip test)
+   *   xBase retrievedId;
+   *   if (OK(xTaskGetId(task, &retrievedId))) {
+   *     if (retrievedId == expectedId) {
+   *       printf("Task ID %d verified\n", expectedId);
+   *       return ReturnOK;
+   *     }
+   *   }
+   *
+   *   return ReturnError;
+   * }
+   * @endcode
+   *
+   * @param[in]  task_ Task handle for the task to query. Must be a valid task
+   *                   handle obtained from xTaskCreate() or xTaskGetHandleByName().
+   *                   Must not be NULL or refer to a deleted task.
+   * @param[out] id_   Pointer to xBase variable that will receive the task's
+   *                   unique numeric identifier. Must not be NULL. On success,
+   *                   contains the task ID. On failure, remains unchanged.
+   *
+   * @return          ReturnOK if ID was successfully retrieved. ReturnError if
+   *                  the operation failed (e.g., task_ is NULL or invalid, id_
+   *                  is NULL, task has been deleted).
+   *
+   * @warning The task handle must be valid. If the task has been deleted or the
+   * handle is corrupted, this function returns ReturnError.
+   *
+   * @warning Task IDs should not be assumed to be sequential or start from any
+   * specific value. Always treat IDs as opaque identifiers.
+   *
+   * @warning Task IDs are not reused within a single boot cycle, but may be
+   * reused after a system reset. Do not persist task IDs across reboots.
+   *
+   * @warning When using task IDs as array indices, always validate the ID is
+   * within array bounds before indexing. IDs may be larger than expected.
+   *
+   * @note Task IDs are assigned automatically during xTaskCreate() and cannot
+   * be changed. They remain constant for the task's lifetime.
+   *
+   * @note Task IDs are lightweight integers (xBase type) that require minimal
+   * storage compared to name strings or handles.
+   *
+   * @note The ID is particularly useful in logging and telemetry where
+   * bandwidth or storage is limited.
+   *
+   * @note For reverse lookup (ID to handle), use xTaskGetHandleById(). For name
+   * lookup, use xTaskGetHandleByName().
+   *
+   * @note The xBase type is typically a 16-bit or 32-bit integer depending on
+   * platform. Check your platform's type definitions.
+   *
+   * @sa xTaskGetHandleById() - Get task handle from ID (reverse operation)
+   * @sa xTaskGetName() - Get task name string
+   * @sa xTaskGetTaskInfo() - Get comprehensive info including ID
+   * @sa xTaskCreate() - Assigns task ID during creation
    */
   xReturn xTaskGetId(const xTask task_, xBase *id_);
 
 
   /**
-   * @brief Syscall to clear a waiting direct-to-task notification
+   * @brief Clear any pending direct-to-task notification for a task
    *
-   * The xTaskNotifyStateClear() syscall is used to clear a waiting
-   * direct-to-task notification for the given task.
+   * Clears (discards) any pending direct-to-task notification that is waiting
+   * for the specified task. If a notification is waiting, it is removed and its
+   * value is discarded. The task's notification state transitions from "waiting"
+   * to "no notification pending". This function is useful for resetting
+   * notification state or discarding stale notifications.
    *
-   * @sa xReturn
-   * @sa xTask
+   * HeliOS implements a lightweight direct-to-task notification mechanism that
+   * allows one task to signal another with an optional data payload. Each task
+   * has a single notification "slot" that can hold one pending notification at
+   * a time. When a notification is sent via xTaskNotifyGive(), it remains
+   * pending until consumed via xTaskNotifyTake() or cleared with this function.
    *
-   * @param  task_ The task to be operated on.
-   * @return       On success, the syscall returns ReturnOK. On failure, the
-   *               syscall returns ReturnError. A failure is any condition in
-   *               which the syscall was unable to achieve its intended
-   *               objective. For example, if xTaskGetId() was unable to locate
-   *               the task by the task object (i.e., xTask) passed to the
-   *               syscall, because either the object was null or invalid (e.g.,
-   *               a deleted task), xTaskGetId() would return ReturnError. All
-   *               HeliOS syscalls return the xReturn (a.k.a., Return_t) type
-   *               which can either be ReturnOK or ReturnError. The C macros
-   *               OK() and ERROR() can be used as a more concise way of
-   *               checking the return value of a syscall (e.g.,
-   *               if(OK(xMemGetUsed(&size))) {} or
-   *               if(ERROR(xMemGetUsed(&size))) {}).
+   * Clearing notifications is useful in several scenarios:
+   * - **State reset**: Clearing stale notifications before starting a new
+   *   operation
+   * - **Error recovery**: Discarding notifications that arrived during error
+   *   conditions
+   * - **Synchronization reset**: Clearing notifications to ensure clean starting
+   *   state
+   * - **Spurious notification handling**: Discarding unexpected notifications
+   *
+   * If no notification is pending when this function is called, it has no
+   * effect and still returns ReturnOK. The operation is idempotent - calling it
+   * multiple times produces the same result as calling it once.
+   *
+   * The cleared notification's value (if any) is discarded and cannot be
+   * retrieved. If you need the notification value, use xTaskNotifyTake()
+   * instead.
+   *
+   * **Common use cases:**
+   * - Initialization: Clear any stale notifications before task begins operation
+   * - Error recovery: Discard notifications from failed operations
+   * - State machine reset: Clear notifications when resetting to initial state
+   * - Timeout handling: Clear notifications after waiting period expires
+   * - Synchronization cleanup: Remove notifications during shutdown sequences
+   * - Protocol reset: Clear notifications when restarting communication protocol
+   *
+   * Example 1: Clear notification before starting operation
+   * @code
+   * void processData(xTask task, xTaskParm parm) {
+   *   // Clear any stale notifications from previous iterations
+   *   xTaskNotifyStateClear(task);
+   *
+   *   // Perform data processing
+   *   doWork();
+   *
+   *   // Now wait for fresh notification
+   *   xTaskNotification notification;
+   *   if (OK(xTaskNotifyTake(task, &notification))) {
+   *     // Process notification value
+   *   }
+   * }
+   * @endcode
+   *
+   * Example 2: Error recovery with notification cleanup
+   * @code
+   * xReturn recoverFromError(xTask task) {
+   *   // Clear any notifications that arrived during error state
+   *   if (ERROR(xTaskNotifyStateClear(task))) {
+   *     return ReturnError;
+   *   }
+   *
+   *   // Reset task state
+   *   resetTaskState();
+   *
+   *   // Task ready for fresh operation
+   *   return ReturnOK;
+   * }
+   * @endcode
+   *
+   * Example 3: State machine reset
+   * @code
+   * typedef enum {
+   *   STATE_IDLE,
+   *   STATE_PROCESSING,
+   *   STATE_ERROR
+   * } TaskState;
+   *
+   * TaskState currentState = STATE_IDLE;
+   *
+   * void resetStateMachine(xTask task) {
+   *   // Clear any pending notifications
+   *   xTaskNotifyStateClear(task);
+   *
+   *   // Reset state to idle
+   *   currentState = STATE_IDLE;
+   *
+   *   printf("State machine reset to IDLE\n");
+   * }
+   * @endcode
+   *
+   * Example 4: Timeout with notification discard
+   * @code
+   * void taskWithTimeout(xTask task, xTaskParm parm) {
+   *   static int waitCounter = 0;
+   *   xTaskNotification notification;
+   *   xBase isWaiting;
+   *
+   *   // Check if notification is pending
+   *   if (OK(xTaskNotificationIsWaiting(task, &isWaiting)) && isWaiting) {
+   *     // Notification available - process it
+   *     if (OK(xTaskNotifyTake(task, &notification))) {
+   *       processNotification(&notification);
+   *       waitCounter = 0;
+   *     }
+   *   } else {
+   *     // No notification - increment timeout counter
+   *     waitCounter++;
+   *     if (waitCounter > 100) {
+   *       printf("Timeout waiting for notification\n");
+   *       // Clear any notifications and reset
+   *       xTaskNotifyStateClear(task);
+   *       waitCounter = 0;
+   *     }
+   *   }
+   * }
+   * @endcode
+   *
+   * @param[in] task_ Task handle for the task whose notification state should
+   *                  be cleared. Must be a valid task handle obtained from
+   *                  xTaskCreate() or xTaskGetHandleByName(). Must not be NULL
+   *                  or refer to a deleted task.
+   *
+   * @return         ReturnOK if the notification state was successfully cleared
+   *                 (or if no notification was pending). ReturnError if the
+   *                 operation failed (e.g., task_ is NULL or invalid, task has
+   *                 been deleted).
+   *
+   * @warning The task handle must be valid. If the task has been deleted or the
+   * handle is corrupted, this function returns ReturnError.
+   *
+   * @warning Any pending notification value is permanently discarded and cannot
+   * be retrieved. Use xTaskNotifyTake() if you need to access the notification
+   * value before clearing it.
+   *
+   * @warning This function only clears the notification state. It does NOT
+   * change the task's execution state (running/suspended/waiting). A task in
+   * TaskStateWaiting remains in that state after clearing notifications.
+   *
+   * @warning Calling this on a task that is currently blocked in
+   * xTaskNotifyTake() does not unblock the task. It only clears pending
+   * notifications, not the waiting state itself.
+   *
+   * @note This function is idempotent - calling it multiple times has the same
+   * effect as calling it once. It always returns ReturnOK for valid tasks,
+   * whether or not a notification was actually pending.
+   *
+   * @note Each task has only one notification slot. There is no queue - only
+   * the most recent notification is stored. Clearing removes this single
+   * pending notification.
+   *
+   * @note This is a lightweight operation with minimal overhead. It can be
+   * called frequently without performance concerns.
+   *
+   * @note To check if a notification is pending before clearing, use
+   * xTaskNotificationIsWaiting().
+   *
+   * @sa xTaskNotifyGive() - Send a notification to a task
+   * @sa xTaskNotifyTake() - Receive and consume a notification
+   * @sa xTaskNotificationIsWaiting() - Check if notification is pending
+   * @sa xTaskNotification - Structure containing notification data
    */
   xReturn xTaskNotifyStateClear(xTask task_);
 
 
   /**
-   * @brief Syscall to inquire as to whether a direct-to-task notification is
-   * waiting
+   * @brief Check if a direct-to-task notification is pending for a task
    *
-   * The xTaskNotificationIsWaiting() syscall is used to inquire as to whether a
-   * direct-to-task notification is waiting for the given task.
+   * Queries whether a task has a pending direct-to-task notification waiting to
+   * be consumed. Returns a boolean result indicating notification presence
+   * without actually consuming the notification. This non-destructive query is
+   * useful for polling notification status or implementing conditional logic
+   * based on notification availability.
    *
-   * @sa xReturn
-   * @sa xTask
+   * HeliOS's direct-to-task notification system provides a lightweight mechanism
+   * for task-to-task signaling. Each task has a single notification slot that
+   * can hold one pending notification sent via xTaskNotifyGive(). This function
+   * checks whether that slot currently contains a pending notification without
+   * removing it or accessing its value.
    *
-   * @param  task_ Task to be operated on.
-   * @param  res_  The result of the inquiry; taken here to mean "true" if there
-   *               is a waiting direct-to-task notification. Otherwise "false",
-   *               if there is not a waiting direct-to-notification.
-   * @return       On success, the syscall returns ReturnOK. On failure, the
-   *               syscall returns ReturnError. A failure is any condition in
-   *               which the syscall was unable to achieve its intended
-   *               objective. For example, if xTaskGetId() was unable to locate
-   *               the task by the task object (i.e., xTask) passed to the
-   *               syscall, because either the object was null or invalid (e.g.,
-   *               a deleted task), xTaskGetId() would return ReturnError. All
-   *               HeliOS syscalls return the xReturn (a.k.a., Return_t) type
-   *               which can either be ReturnOK or ReturnError. The C macros
-   *               OK() and ERROR() can be used as a more concise way of
-   *               checking the return value of a syscall (e.g.,
-   *               if(OK(xMemGetUsed(&size))) {} or
-   *               if(ERROR(xMemGetUsed(&size))) {}).
+   * The result is a simple boolean indicator (non-zero = notification waiting,
+   * zero = no notification). Unlike xTaskNotifyTake() which blocks or returns
+   * the notification value, this function only queries the notification state
+   * and always returns immediately.
+   *
+   * Common scenarios for checking notification status:
+   * - **Polling patterns**: Periodically check for notifications without blocking
+   * - **Conditional processing**: Execute different code paths based on
+   *   notification presence
+   * - **Non-blocking checks**: Determine if notification is available before
+   *   calling xTaskNotifyTake()
+   * - **Diagnostic monitoring**: Track notification patterns for debugging
+   * - **Priority handling**: Process notifications only when available
+   *
+   * **Common use cases:**
+   * - Poll for notifications: Check periodically without blocking
+   * - Conditional logic: Branch based on notification availability
+   * - Diagnostic monitoring: Log notification arrival patterns
+   * - Performance optimization: Avoid blocking on xTaskNotifyTake() when no
+   *   notification exists
+   * - Multi-source handling: Check multiple tasks for pending notifications
+   * - Timeout implementation: Combine with counters for custom timeout behavior
+   *
+   * Example 1: Poll for notification without blocking
+   * @code
+   * void pollingTask(xTask task, xTaskParm parm) {
+   *   xBase hasNotification;
+   *
+   *   // Check if notification is waiting
+   *   if (OK(xTaskNotificationIsWaiting(task, &hasNotification))) {
+   *     if (hasNotification) {
+   *       // Notification present - process it
+   *       xTaskNotification notification;
+   *       if (OK(xTaskNotifyTake(task, &notification))) {
+   *         processNotification(&notification);
+   *       }
+   *     } else {
+   *       // No notification - do other work
+   *       performBackgroundTasks();
+   *     }
+   *   }
+   * }
+   * @endcode
+   *
+   * Example 2: Conditional processing based on notification
+   * @code
+   * void smartTask(xTask task, xTaskParm parm) {
+   *   xBase hasWork;
+   *
+   *   if (OK(xTaskNotificationIsWaiting(task, &hasWork)) && hasWork) {
+   *     // High-priority: Process notification first
+   *     xTaskNotification notif;
+   *     xTaskNotifyTake(task, &notif);
+   *     handleUrgentWork(&notif);
+   *   } else {
+   *     // Low-priority: Do regular housekeeping
+   *     performMaintenanceTasks();
+   *   }
+   * }
+   * @endcode
+   *
+   * Example 3: Multi-task notification monitoring
+   * @code
+   * // Global task handles
+   * xTask sensorTask, commTask, storageTask;
+   *
+   * void monitorNotifications(void) {
+   *   xBase pending;
+   *   int totalPending = 0;
+   *
+   *   if (OK(xTaskNotificationIsWaiting(sensorTask, &pending)) && pending) {
+   *     printf("Sensor task has pending notification\n");
+   *     totalPending++;
+   *   }
+   *
+   *   if (OK(xTaskNotificationIsWaiting(commTask, &pending)) && pending) {
+   *     printf("Comm task has pending notification\n");
+   *     totalPending++;
+   *   }
+   *
+   *   if (OK(xTaskNotificationIsWaiting(storageTask, &pending)) && pending) {
+   *     printf("Storage task has pending notification\n");
+   *     totalPending++;
+   *   }
+   *
+   *   printf("Total pending notifications: %d\n", totalPending);
+   * }
+   * @endcode
+   *
+   * Example 4: Custom timeout with notification check
+   * @code
+   * #define NOTIFICATION_TIMEOUT 1000  // 1000 task iterations
+   *
+   * void taskWithCustomTimeout(xTask task, xTaskParm parm) {
+   *   static int waitCount = 0;
+   *   xBase hasNotification;
+   *
+   *   if (OK(xTaskNotificationIsWaiting(task, &hasNotification))) {
+   *     if (hasNotification) {
+   *       // Notification arrived - process it
+   *       xTaskNotification notif;
+   *       xTaskNotifyTake(task, &notif);
+   *       handleNotification(&notif);
+   *       waitCount = 0;  // Reset timeout
+   *     } else {
+   *       // No notification yet - check timeout
+   *       waitCount++;
+   *       if (waitCount >= NOTIFICATION_TIMEOUT) {
+   *         printf("Timeout: No notification received in %d cycles\n", waitCount);
+   *         handleTimeout();
+   *         waitCount = 0;
+   *       }
+   *     }
+   *   }
+   * }
+   * @endcode
+   *
+   * @param[in]  task_ Task handle for the task to query. Must be a valid task
+   *                   handle obtained from xTaskCreate() or xTaskGetHandleByName().
+   *                   Must not be NULL or refer to a deleted task.
+   * @param[out] res_  Pointer to xBase variable that will receive the result.
+   *                   Must not be NULL. On success, set to non-zero if a
+   *                   notification is pending, or zero if no notification is
+   *                   pending. On failure, remains unchanged.
+   *
+   * @return          ReturnOK if the query was successful and res_ was updated.
+   *                  ReturnError if the operation failed (e.g., task_ is NULL or
+   *                  invalid, res_ is NULL, task has been deleted).
+   *
+   * @warning The task handle must be valid. If the task has been deleted or the
+   * handle is corrupted, this function returns ReturnError.
+   *
+   * @warning The result is a snapshot in time. The notification state may change
+   * immediately after this function returns if another task sends or clears a
+   * notification.
+   *
+   * @warning This function only checks for notification presence. It does NOT
+   * retrieve the notification value or remove the notification. Use
+   * xTaskNotifyTake() to actually consume the notification.
+   *
+   * @warning Do not use tight polling loops based solely on this function - this
+   * wastes CPU cycles. Consider using event-driven patterns or periodic checks
+   * within a task's normal execution cycle.
+   *
+   * @note This is a non-blocking, non-destructive query. The notification (if
+   * present) remains pending after this call.
+   *
+   * @note The returned value is boolean: non-zero = notification waiting, zero =
+   * no notification. The exact non-zero value should not be relied upon.
+   *
+   * @note This function is lightweight and can be called frequently without
+   * significant performance impact.
+   *
+   * @note Each task has only one notification slot. Multiple notifications sent
+   * before consumption will overwrite each other - only the most recent is
+   * available.
+   *
+   * @sa xTaskNotifyGive() - Send a notification to a task
+   * @sa xTaskNotifyTake() - Receive and consume a notification
+   * @sa xTaskNotifyStateClear() - Clear a pending notification without reading it
+   * @sa xTaskNotification - Structure containing notification data
    */
   xReturn xTaskNotificationIsWaiting(const xTask task_, xBase *res_);
 
 
   /**
-   * @brief Syscall to give (i.e., send) a task a direct-to-task notification
+   * @brief Send a direct-to-task notification with optional data payload
    *
-   * The xTaskNotifyGive() syscall is used to give (i.e., send) a direct-to-task
-   * notification to the given task.
+   * Sends a lightweight direct-to-task notification to the specified task,
+   * optionally including a small data payload of up to CONFIG_NOTIFICATION_VALUE_BYTES
+   * (default 8 bytes). This provides efficient task-to-task signaling without
+   * the overhead of message queues. If the task is waiting for a notification
+   * (TaskStateWaiting), this unblocks it and transitions it to TaskStateRunning.
    *
-   * @sa xReturn
-   * @sa xTask
-   * @sa CONFIG_NOTIFICATION_VALUE_BYTES
+   * HeliOS's notification mechanism is optimized for simple signaling and small
+   * data transfers between tasks. Each task has a single notification slot that
+   * stores one pending notification. If a notification is sent while one is
+   * already pending, the old notification is overwritten with the new one - there
+   * is no queuing.
    *
-   * @param  task_  The task to be operated on.
-   * @param  bytes_ The number of bytes contained in the notification value. The
-   *                number of bytes in the notification value cannot exceed
-   *                CONFIG_NOTIFICATION_VALUE_BYTES (default is 8) bytes.
-   * @param  value_ The notification value which is a byte array whose length is
-   *                defined by "bytes_".
-   * @return        On success, the syscall returns ReturnOK. On failure, the
-   *                syscall returns ReturnError. A failure is any condition in
-   *                which the syscall was unable to achieve its intended
-   *                objective. For example, if xTaskGetId() was unable to locate
-   *                the task by the task object (i.e., xTask) passed to the
-   *                syscall, because either the object was null or invalid
-   *                (e.g., a deleted task), xTaskGetId() would return
-   *                ReturnError. All HeliOS syscalls return the xReturn (a.k.a.,
-   *                Return_t) type which can either be ReturnOK or ReturnError.
-   *                The C macros OK() and ERROR() can be used as a more concise
-   *                way of checking the return value of a syscall (e.g.,
-   *                if(OK(xMemGetUsed(&size))) {} or
-   *                if(ERROR(xMemGetUsed(&size))) {}).
+   * The notification value is optional - you can send a zero-length notification
+   * (bytes_=0, value_=NULL) purely as a wake-up signal, or include up to
+   * CONFIG_NOTIFICATION_VALUE_BYTES of data. Common uses include sending status
+   * codes, event flags, sensor readings, or pointers to shared data structures.
+   *
+   * **Notification semantics:**
+   * - **Overwrite behavior**: New notifications overwrite pending ones
+   * - **Lightweight**: No memory allocation, minimal overhead
+   * - **Task wakeup**: Transitions waiting tasks to running state
+   * - **Data payload**: Optional byte array up to CONFIG_NOTIFICATION_VALUE_BYTES
+   *
+   * **Common use cases:**
+   * - Event signaling: Notify tasks of events without data transfer
+   * - Semaphore emulation: Use zero-length notifications as binary semaphores
+   * - Status updates: Send small status codes or flags between tasks
+   * - Data ready signals: Notify when shared data is ready for processing
+   * - Synchronization: Coordinate task execution sequences
+   * - Interrupt-to-task: Signal tasks from ISRs (if port supports it)
+   *
+   * Example 1: Simple event notification (zero-length)
+   * @code
+   * // Producer task signals consumer when data is ready
+   * xTask consumerTask = NULL;  // Obtained during initialization
+   *
+   * void producerTask(xTask task, xTaskParm parm) {
+   *   // Produce data
+   *   prepareData();
+   *
+   *   // Signal consumer (no data payload needed)
+   *   if (OK(xTaskNotifyGive(consumerTask, 0, NULL))) {
+   *     printf("Consumer notified\n");
+   *   }
+   * }
+   * @endcode
+   *
+   * Example 2: Notification with status code
+   * @code
+   * typedef enum {
+   *   STATUS_SUCCESS = 0,
+   *   STATUS_WARNING = 1,
+   *   STATUS_ERROR = 2
+   * } StatusCode;
+   *
+   * void sendStatus(xTask targetTask, StatusCode status) {
+   *   xByte statusByte = (xByte)status;
+   *
+   *   if (ERROR(xTaskNotifyGive(targetTask, 1, &statusByte))) {
+   *     printf("ERROR: Failed to send status notification\n");
+   *   }
+   * }
+   * @endcode
+   *
+   * Example 3: Send sensor reading
+   * @code
+   * void sensorTask(xTask task, xTaskParm parm) {
+   *   xTask *displayTask = (xTask*)parm;
+   *
+   *   // Read temperature sensor (16-bit value)
+   *   uint16_t temperature = readTemperatureSensor();
+   *
+   *   // Send as notification (2 bytes)
+   *   xTaskNotifyGive(*displayTask, sizeof(temperature), (xByte*)&temperature);
+   * }
+   * @endcode
+   *
+   * Example 4: Producer-consumer pattern
+   * @code
+   * #define BUFFER_SIZE 128
+   * xByte sharedBuffer[BUFFER_SIZE];
+   * xTask processorTask;
+   *
+   * void dataCollectorTask(xTask task, xTaskParm parm) {
+   *   // Fill buffer with data
+   *   xBase bytesCollected = collectDataIntoBuffer(sharedBuffer, BUFFER_SIZE);
+   *
+   *   if (bytesCollected > 0) {
+   *     // Notify processor with byte count
+   *     xTaskNotifyGive(processorTask, sizeof(bytesCollected),
+   *                     (xByte*)&bytesCollected);
+   *   }
+   * }
+   *
+   * void dataProcessorTask(xTask task, xTaskParm parm) {
+   *   xTaskNotification notif;
+   *
+   *   if (OK(xTaskNotifyTake(task, &notif))) {
+   *     // Extract byte count from notification
+   *     xBase byteCount = *((xBase*)notif.value);
+   *
+   *     // Process that many bytes from shared buffer
+   *     processData(sharedBuffer, byteCount);
+   *   }
+   * }
+   * @endcode
+   *
+   * @param[in] task_  Task handle for the task to notify. Must be a valid task
+   *                   handle obtained from xTaskCreate() or xTaskGetHandleByName().
+   *                   Must not be NULL or refer to a deleted task.
+   * @param[in] bytes_ Number of bytes in the notification value payload. Must be
+   *                   0 to CONFIG_NOTIFICATION_VALUE_BYTES (default 8). Use 0 for
+   *                   simple event notifications without data.
+   * @param[in] value_ Pointer to byte array containing the notification payload,
+   *                   or NULL if bytes_=0. If non-NULL, must point to valid
+   *                   memory of at least bytes_ length. The data is copied - the
+   *                   caller retains ownership of this memory.
+   *
+   * @return          ReturnOK if notification was successfully sent. ReturnError
+   *                  if the operation failed (e.g., task_ is NULL or invalid,
+   *                  bytes_ exceeds CONFIG_NOTIFICATION_VALUE_BYTES, task has
+   *                  been deleted).
+   *
+   * @warning If a notification is already pending for the task, it will be
+   * overwritten by the new notification. There is no queuing - only the most
+   * recent notification is stored.
+   *
+   * @warning The bytes_ parameter must not exceed CONFIG_NOTIFICATION_VALUE_BYTES.
+   * Exceeding this limit results in ReturnError.
+   *
+   * @warning The task handle must be valid. If the task has been deleted or the
+   * handle is corrupted, this function returns ReturnError.
+   *
+   * @warning The notification value is copied into the task's notification slot.
+   * Changes to the source buffer after this call do not affect the notification.
+   *
+   * @note This function can be called from any task or (if port supports)
+   * interrupt service routine to signal other tasks.
+   *
+   * @note If the target task is in TaskStateWaiting (blocked in xTaskNotifyTake()),
+   * this notification immediately unblocks it and transitions it to
+   * TaskStateRunning.
+   *
+   * @note Zero-length notifications (bytes_=0, value_=NULL) are valid and useful
+   * for simple event signaling without data transfer.
+   *
+   * @note The CONFIG_NOTIFICATION_VALUE_BYTES configuration (default 8) determines
+   * the maximum payload size. This is a compile-time constant.
+   *
+   * @sa xTaskNotifyTake() - Receive and consume a notification
+   * @sa xTaskNotificationIsWaiting() - Check if notification is pending
+   * @sa xTaskNotifyStateClear() - Clear a notification without reading it
+   * @sa xTaskNotification - Structure containing notification data
+   * @sa CONFIG_NOTIFICATION_VALUE_BYTES - Maximum notification payload size
    */
   xReturn xTaskNotifyGive(xTask task_, const xBase bytes_, const xByte *value_);
 
 
   /**
-   * @brief Syscall to take (i.e. receive) a waiting direct-to-task notification
+   * @brief Receive and consume a pending direct-to-task notification
    *
-   * The xTaskNotifyTake() syscall is used to take (i.e., receive) a waiting
-   * direct-to-task notification.
+   * Retrieves and consumes a pending direct-to-task notification sent via
+   * xTaskNotifyGive(). If a notification is waiting, it is removed from the
+   * task's notification slot and its value is returned. If no notification is
+   * pending, the function returns ReturnError immediately (non-blocking
+   * behavior in HeliOS cooperative scheduler).
    *
-   * @sa xReturn
-   * @sa xTask
-   * @sa CONFIG_NOTIFICATION_VALUE_BYTES
-   * @sa xTaskNotification
+   * The received notification is packaged in a xTaskNotification structure
+   * containing the notification value (byte array) and the number of bytes. This
+   * structure must be examined to extract the notification data sent by the
+   * notifying task.
    *
-   * @param  task_         The task to be operated on.
-   * @param  notification_ The direct-to-task notification.
-   * @return               On success, the syscall returns ReturnOK. On failure,
-   *                       the syscall returns ReturnError. A failure is any
-   *                       condition in which the syscall was unable to achieve
-   *                       its intended objective. For example, if xTaskGetId()
-   *                       was unable to locate the task by the task object
-   *                       (i.e., xTask) passed to the syscall, because either
-   *                       the object was null or invalid (e.g., a deleted
-   *                       task), xTaskGetId() would return ReturnError. All
-   *                       HeliOS syscalls return the xReturn (a.k.a., Return_t)
-   *                       type which can either be ReturnOK or ReturnError. The
-   *                       C macros OK() and ERROR() can be used as a more
-   *                       concise way of checking the return value of a syscall
-   *                       (e.g., if(OK(xMemGetUsed(&size)))
-   *                       {} or if(ERROR(xMemGetUsed(&size))) {}).
+   * Taking a notification is a destructive operation - the notification is
+   * removed from the task's notification slot after being retrieved. If no new
+   * notifications arrive, subsequent calls to this function will return
+   * ReturnError until another notification is sent.
+   *
+   * In HeliOS's cooperative multitasking model, tasks are not pre-emptively
+   * interrupted. Therefore, this function does not block waiting for
+   * notifications - it either returns the pending notification immediately or
+   * returns ReturnError if none is available. Tasks typically poll for
+   * notifications during their execution cycle or use xTaskNotificationIsWaiting()
+   * to check availability first.
+   *
+   * **Notification lifecycle:**
+   * 1. Sender calls xTaskNotifyGive() - notification becomes pending
+   * 2. Receiver calls xTaskNotifyTake() - notification is consumed and removed
+   * 3. If no notification pending, xTaskNotifyTake() returns ReturnError
+   *
+   * **Common use cases:**
+   * - Event-driven processing: Wait for and process notifications from other
+   *   tasks
+   * - Producer-consumer: Receive data-ready signals from producer tasks
+   * - Status reception: Receive status codes or flags from other tasks
+   * - Synchronization: Coordinate task execution with notification handshakes
+   * - ISR-to-task: Receive signals from interrupt handlers (port-dependent)
+   * - Command reception: Receive small command codes or parameters
+   *
+   * Example 1: Simple notification reception
+   * @code
+   * void consumerTask(xTask task, xTaskParm parm) {
+   *   xTaskNotification notification;
+   *
+   *   // Try to receive notification
+   *   if (OK(xTaskNotifyTake(task, &notification))) {
+   *     printf("Received notification with %d bytes\n", notification.bytes);
+   *     // Process notification
+   *   } else {
+   *     // No notification - do other work
+   *     performBackgroundWork();
+   *   }
+   * }
+   * @endcode
+   *
+   * Example 2: Extract status code from notification
+   * @code
+   * typedef enum {
+   *   CMD_START = 1,
+   *   CMD_STOP = 2,
+   *   CMD_RESET = 3
+   * } CommandCode;
+   *
+   * void commandTask(xTask task, xTaskParm parm) {
+   *   xTaskNotification notif;
+   *
+   *   if (OK(xTaskNotifyTake(task, &notif)) && notif.bytes >= 1) {
+   *     CommandCode cmd = (CommandCode)notif.value[0];
+   *
+   *     switch (cmd) {
+   *       case CMD_START:
+   *         startOperation();
+   *         break;
+   *       case CMD_STOP:
+   *         stopOperation();
+   *         break;
+   *       case CMD_RESET:
+   *         resetOperation();
+   *         break;
+   *     }
+   *   }
+   * }
+   * @endcode
+   *
+   * Example 3: Producer-consumer with byte count
+   * @code
+   * extern xByte sharedBuffer[256];
+   *
+   * void processorTask(xTask task, xTaskParm parm) {
+   *   xTaskNotification notif;
+   *
+   *   if (OK(xTaskNotifyTake(task, &notif))) {
+   *     // Notification contains number of valid bytes in shared buffer
+   *     if (notif.bytes == sizeof(xBase)) {
+   *       xBase byteCount = *((xBase*)notif.value);
+   *       printf("Processing %d bytes from buffer\n", byteCount);
+   *
+   *       // Process that many bytes
+   *       for (xBase i = 0; i < byteCount; i++) {
+   *         processBytes(sharedBuffer[i]);
+   *       }
+   *     }
+   *   }
+   * }
+   * @endcode
+   *
+   * Example 4: Multi-value notification with structured data
+   * @code
+   * typedef struct {
+   *   uint8_t sensorId;
+   *   uint16_t value;
+   *   uint8_t status;
+   * } __attribute__((packed)) SensorData;  // 4 bytes total
+   *
+   * void monitorTask(xTask task, xTaskParm parm) {
+   *   xTaskNotification notif;
+   *
+   *   if (OK(xTaskNotifyTake(task, &notif))) {
+   *     if (notif.bytes == sizeof(SensorData)) {
+   *       SensorData *data = (SensorData*)notif.value;
+   *       printf("Sensor %d: value=%u, status=%u\n",
+   *              data->sensorId,
+   *              data->value,
+   *              data->status);
+   *
+   *       // Take action based on sensor reading
+   *       if (data->value > THRESHOLD) {
+   *         triggerAlarm();
+   *       }
+   *     }
+   *   }
+   * }
+   * @endcode
+   *
+   * @param[in]  task_         Task handle for the task receiving the notification.
+   *                           Must be a valid task handle obtained from
+   *                           xTaskCreate() or xTaskGetHandleByName(). Must not
+   *                           be NULL or refer to a deleted task.
+   * @param[out] notification_ Pointer to xTaskNotification structure that will
+   *                           receive the notification data. Must not be NULL.
+   *                           On success, contains the notification value and
+   *                           byte count. On failure, remains unchanged.
+   *
+   * @return                  ReturnOK if a notification was pending and has been
+   *                          retrieved. ReturnError if no notification was
+   *                          pending, or task_ is NULL/invalid, or notification_
+   *                          is NULL, or task has been deleted.
+   *
+   * @warning This function is non-blocking. If no notification is pending, it
+   * returns ReturnError immediately. There is no blocking/waiting behavior in
+   * HeliOS's cooperative model.
+   *
+   * @warning The task handle must be valid. If the task has been deleted or the
+   * handle is corrupted, this function returns ReturnError.
+   *
+   * @warning Taking a notification is destructive - it removes the notification
+   * from the task's slot. You cannot retrieve the same notification twice.
+   *
+   * @warning The notification value is embedded in the xTaskNotification
+   * structure. Examine notification_.bytes to determine how many bytes of
+   * notification_.value are valid.
+   *
+   * @warning The notification value array has a maximum size of
+   * CONFIG_NOTIFICATION_VALUE_BYTES (default 8). Ensure your code handles
+   * notifications of varying lengths correctly.
+   *
+   * @note HeliOS uses cooperative multitasking - tasks are not preempted. This
+   * function returns immediately whether or not a notification is available.
+   *
+   * @note Each task has only one notification slot. Multiple pending
+   * notifications are not queued - only the most recent notification is
+   * available.
+   *
+   * @note Zero-length notifications (bytes=0) are valid. Check notification_.bytes
+   * to determine if a value payload is included.
+   *
+   * @note The xTaskNotification structure is not dynamically allocated - it's
+   * filled in by this function. No memory management is required.
+   *
+   * @note To check for notification availability before taking, use
+   * xTaskNotificationIsWaiting().
+   *
+   * @sa xTaskNotifyGive() - Send a notification to a task
+   * @sa xTaskNotificationIsWaiting() - Check if notification is pending
+   * @sa xTaskNotifyStateClear() - Clear a notification without reading it
+   * @sa xTaskNotification - Structure containing notification data
+   * @sa CONFIG_NOTIFICATION_VALUE_BYTES - Maximum notification payload size
    */
   xReturn xTaskNotifyTake(xTask task_, xTaskNotification *notification_);
 
@@ -6151,131 +8820,172 @@
 
 
   /**
-   * @brief Syscall to change the interval period of a task timer
+   * @brief Set the execution period for periodic task scheduling
    *
-   * The xTaskChangePeriod() is used to change the interval period of a task
-   * timer. The period is measured in ticks. While architecture and/or platform
-   * dependent, a tick is often one millisecond. In order for the task timer to
-   * have an effect, the task must be in the "waiting" state which can be set
-   * using xTaskWait().
+   * Changes the interval period that controls how frequently a task executes
+   * under the HeliOS scheduler. The period determines the minimum time (in system
+   * ticks) between successive executions of the task's callback function. This
+   * enables periodic task execution for time-driven operations like sensor
+   * sampling, LED blinking, or periodic communication.
    *
-   * @sa xReturn
-   * @sa xTask
-   * @sa xTicks
-   * @sa xTaskWait()
+   * **Period semantics:**
+   * - **Period = 0**: Task runs every scheduler cycle (maximum frequency)
+   * - **Period > 0**: Task runs when elapsed ticks ≥ period
    *
-   * @param  task_   The task to be operated on.
-   * @param  period_ The interval period in ticks.
-   * @return         On success, the syscall returns ReturnOK. On failure, the
-   *                 syscall returns ReturnError. A failure is any condition in
-   *                 which the syscall was unable to achieve its intended
-   *                 objective. For example, if xTaskGetId() was unable to
-   *                 locate the task by the task object (i.e., xTask) passed to
-   *                 the syscall, because either the object was null or invalid
-   *                 (e.g., a deleted task), xTaskGetId() would return
-   *                 ReturnError. All HeliOS syscalls return the xReturn
-   *                 (a.k.a., Return_t) type which can either be ReturnOK or
-   *                 ReturnError. The C macros OK() and ERROR() can be used as a
-   *                 more concise way of checking the return value of a syscall
-   *                 (e.g., if(OK(xMemGetUsed(&size))) {} or
-   *                 if(ERROR(xMemGetUsed(&size))) {}).
+   * The period is measured in system ticks, which are platform-dependent but
+   * typically represent 1 millisecond. A task with period 100 executes approximately
+   * every 100ms (10 Hz), assuming the scheduler runs at least that frequently.
+   *
+   * Tasks created with xTaskCreate() default to period 0, meaning they run on every
+   * scheduler cycle. Use this function to set periodic behavior after creation.
+   * The period can be changed at any time - even while the scheduler is running -
+   * allowing dynamic adjustment of task execution frequency.
+   *
+   * **Common use cases:**
+   * - Periodic sampling: Set sensor tasks to sample at regular intervals
+   * - LED patterns: Control blink rates by adjusting period
+   * - Communication timing: Schedule periodic transmissions
+   * - Adaptive frequency: Dynamically adjust task rate based on workload
+   * - Power management: Reduce update frequency to save power
+   *
+   * @param[in] task_   Task handle. Must be valid from xTaskCreate() or
+   *                    xTaskGetHandleByName().
+   * @param[in] period_ Execution period in ticks. 0 = every cycle, >0 = periodic.
+   *
+   * @return           ReturnOK if period was set. ReturnError if task_ invalid.
+   *
+   * @warning Period 0 causes task to run every scheduler cycle, consuming maximum
+   * CPU time. Use sparingly to avoid starving other tasks.
+   *
+   * @sa xTaskGetPeriod() - Query current task period
+   * @sa xTaskCreate() - Tasks default to period 0
    */
   xReturn xTaskChangePeriod(xTask task_, const xTicks period_);
 
 
   /**
-   * @brief Syscall to change the task watchdog timer period
+   * @brief Set task watchdog timeout for detecting runaway tasks
    *
-   * The xTaskChangeWDPeriod() syscall is used to change the task watchdog timer
-   * period. This has no effect unless CONFIG_TASK_WD_TIMER_ENABLE is defined
-   * and the watchdog timer period is greater than nil. The task watchdog timer
-   * will place a task in a suspended state if a task's runtime exceeds the
-   * watchdog timer period. The task watchdog timer period is set on a per task
-   * basis.
+   * Configures the per-task watchdog timer period that automatically suspends
+   * tasks exceeding their execution time budget. This safety feature prevents
+   * runaway tasks from monopolizing CPU time and starving other tasks in the
+   * system.
    *
-   * @sa xReturn
-   * @sa xTask
-   * @sa xTicks
-   * @sa CONFIG_TASK_WD_TIMER_ENABLE
+   * When a task's single execution exceeds the watchdog period, HeliOS
+   * automatically suspends it (transitions to TaskStateSuspended), preventing
+   * further execution until explicitly resumed. This protects system
+   * responsiveness and prevents infinite loops or excessive computation from
+   * blocking other tasks.
    *
+   * **Watchdog semantics:**
+   * - Monitors single execution duration, not cumulative time
+   * - Automatically suspends tasks that exceed period
+   * - Requires CONFIG_TASK_WD_TIMER_ENABLE at compile time
+   * - Per-task configuration (each task has independent watchdog)
    *
-   * @param  task_   The task to be operated on.
-   * @param  period_ The task watchdog timer period measured in ticks. Ticks is
-   *                 platform and/or architecture dependent. However, most
-   *                 platforms and/or architectures have a one millisecond tick
-   *                 duration.
-   * @return         On success, the syscall returns ReturnOK. On failure, the
-   *                 syscall returns ReturnError. A failure is any condition in
-   *                 which the syscall was unable to achieve its intended
-   *                 objective. For example, if xTaskGetId() was unable to
-   *                 locate the task by the task object (i.e., xTask) passed to
-   *                 the syscall, because either the object was null or invalid
-   *                 (e.g., a deleted task), xTaskGetId() would return
-   *                 ReturnError. All HeliOS syscalls return the xReturn
-   *                 (a.k.a., Return_t) type which can either be ReturnOK or
-   *                 ReturnError. The C macros OK() and ERROR() can be used as a
-   *                 more concise way of checking the return value of a syscall
-   *                 (e.g., if(OK(xMemGetUsed(&size))) {} or
-   *                 if(ERROR(xMemGetUsed(&size))) {}).
+   * **Common use cases:**
+   * - Infinite loop protection: Catch tasks stuck in loops
+   * - Execution time enforcement: Ensure tasks complete within budgets
+   * - System stability: Prevent CPU monopolization
+   * - Debug assistance: Identify performance problems
+   *
+   * @param[in] task_   Task handle. Must be valid.
+   * @param[in] period_ Watchdog timeout in ticks. Task suspended if single
+   *                    execution exceeds this duration.
+   *
+   * @return           ReturnOK if watchdog period set. ReturnError if
+   *                   task_ invalid or CONFIG_TASK_WD_TIMER_ENABLE not defined.
+   *
+   * @warning Requires CONFIG_TASK_WD_TIMER_ENABLE defined at compile time.
+   * Without this, function has no effect.
+   *
+   * @warning Suspended tasks must be manually resumed with xTaskResume().
+   * Watchdog does not auto-recover.
+   *
+   * @sa xTaskGetWDPeriod() - Query watchdog period
+   * @sa xTaskResume() - Resume suspended task
+   * @sa CONFIG_TASK_WD_TIMER_ENABLE - Enables watchdog feature
    */
   xReturn xTaskChangeWDPeriod(xTask task_, const xTicks period_);
 
 
   /**
-   * @brief Syscall to obtain the task timer period
+   * @brief Query the current execution period of a task
    *
-   * The xTaskGetPeriod() syscall is used to obtain the current task timer
-   * period.
+   * Retrieves the interval period that controls how frequently the task executes.
+   * Returns the value previously set with xTaskChangePeriod() or the default
+   * value (0) if never explicitly set.
    *
-   * @sa xReturn
-   * @sa xTask
-   * @sa xTicks
+   * **Period values:**
+   * - **0**: Task runs every scheduler cycle (maximum frequency)
+   * - **>0**: Task runs when elapsed time ≥ period (in ticks)
    *
-   * @param  task_   The task to be operated on.
-   * @param  period_ The task timer period in ticks. Ticks is platform and/or
-   *                 architecture dependent. However, most platforms and/or
-   *                 architect
-   * @return         On success, the syscall returns ReturnOK. On failure, the
-   *                 syscall returns ReturnError. A failure is any condition in
-   *                 which the syscall was unable to achieve its intended
-   *                 objective. For example, if xTaskGetId() was unable to
-   *                 locate the task by the task object (i.e., xTask) passed to
-   *                 the syscall, because either the object was null or invalid
-   *                 (e.g., a deleted task), xTaskGetId() would return
-   *                 ReturnError. All HeliOS syscalls return the xReturn
-   *                 (a.k.a., Return_t) type which can either be ReturnOK or
-   *                 ReturnError. The C macros OK() and ERROR() can be used as a
-   *                 more concise way of checking the return value of a syscall
-   *                 (e.g., if(OK(xMemGetUsed(&size))) {} or
-   *                 if(ERROR(xMemGetUsed(&size))) {}).
+   * @param[in]  task_   Task handle. Must be valid.
+   * @param[out] period_ Receives current period in ticks.
+   *
+   * @return            ReturnOK if period retrieved. ReturnError if task_
+   *                    or period_ invalid.
+   *
+   * @sa xTaskChangePeriod() - Set task execution period
    */
   xReturn xTaskGetPeriod(const xTask task_, xTicks *period_);
 
 
   /**
-   * @brief Syscall to set the task timer elapsed time to nil
+   * @brief Reset a task's elapsed time counter to zero
    *
-   * The xTaskResetTimer() syscall is used to reset the task timer. In effect,
-   * this sets the elapsed time, measured in ticks, back to nil.
+   * Resets the task's internal elapsed time counter back to zero, effectively
+   * restarting the timing measurement for periodic task execution. This forces
+   * the task to restart its period measurement from the current moment,
+   * delaying the next scheduled execution by one full period.
    *
-   * @sa xReturn
-   * @sa xTask
-   * @sa xTicks
+   * Each task maintains an elapsed time counter that tracks how many ticks have
+   * passed since the task last executed. When this elapsed time meets or exceeds
+   * the task's configured period (set via xTaskChangePeriod()), the scheduler
+   * runs the task. Resetting the timer to zero extends the wait time before the
+   * next execution.
    *
-   * @param  task_ The task to be operated on.
-   * @return       On success, the syscall returns ReturnOK. On failure, the
-   *               syscall returns ReturnError. A failure is any condition in
-   *               which the syscall was unable to achieve its intended
-   *               objective. For example, if xTaskGetId() was unable to locate
-   *               the task by the task object (i.e., xTask) passed to the
-   *               syscall, because either the object was null or invalid (e.g.,
-   *               a deleted task), xTaskGetId() would return ReturnError. All
-   *               HeliOS syscalls return the xReturn (a.k.a., Return_t) type
-   *               which can either be ReturnOK or ReturnError. The C macros
-   *               OK() and ERROR() can be used as a more concise way of
-   *               checking the return value of a syscall (e.g.,
-   *               if(OK(xMemGetUsed(&size))) {} or
-   *               if(ERROR(xMemGetUsed(&size))) {}).
+   * **Use cases:**
+   * - Synchronize task execution: Reset timing after external events
+   * - Delay execution: Push back next execution without changing period
+   * - Phase alignment: Coordinate multiple tasks to execute in sequence
+   * - Event response: Restart timing after processing an event
+   *
+   * **Example 1: Delay next execution**
+   * @code
+   * void sensorTask(xTask task, xTaskParm parm) {
+   *   if (errorDetected()) {
+   *     // Reset timer to delay next sample
+   *     xTaskResetTimer(task);
+   *     return;
+   *   }
+   *   readSensor();
+   * }
+   * @endcode
+   *
+   * **Example 2: Synchronize on external event**
+   * @code
+   * void displayTask(xTask task, xTaskParm parm) {
+   *   if (dataAvailable()) {
+   *     updateDisplay();
+   *     // Restart timing from now
+   *     xTaskResetTimer(task);
+   *   }
+   * }
+   * @endcode
+   *
+   * @param[in] task_ Task handle. Must be valid.
+   *
+   * @return         ReturnOK if timer reset. ReturnError if task_ invalid.
+   *
+   * @note This does not change the task's period, only resets the elapsed time
+   * counter to zero.
+   *
+   * @note For tasks with period 0 (run every cycle), this has no practical
+   * effect since they execute every scheduler cycle regardless.
+   *
+   * @sa xTaskChangePeriod() - Set task execution period
+   * @sa xTaskGetPeriod() - Query current period
    */
   xReturn xTaskResetTimer(xTask task_);
 
@@ -6451,60 +9161,60 @@
 
 
   /**
-   * @brief Syscall to get the scheduler state
+   * @brief Query the current state of the task scheduler
    *
-   * The xTaskGetSchedulerState() is used to get the state of the scheduler.
+   * Retrieves the scheduler's current operational state, which indicates whether
+   * the scheduler is actively running tasks or has been suspended. The scheduler
+   * state determines whether xTaskStartScheduler() will enter the scheduling loop
+   * or return immediately.
    *
-   * @sa xReturn
-   * @sa xSchedulerState
+   * **Scheduler states:**
+   * - **SchedulerStateRunning**: Scheduler is active and executing tasks
+   * - **SchedulerStateSuspended**: Scheduler suspended via xTaskSuspendAll()
    *
-   * @param  state_ The state of the scheduler.
-   * @return        On success, the syscall returns ReturnOK. On failure, the
-   *                syscall returns ReturnError. A failure is any condition in
-   *                which the syscall was unable to achieve its intended
-   *                objective. For example, if xTaskGetId() was unable to locate
-   *                the task by the task object (i.e., xTask) passed to the
-   *                syscall, because either the object was null or invalid
-   *                (e.g., a deleted task), xTaskGetId() would return
-   *                ReturnError. All HeliOS syscalls return the xReturn (a.k.a.,
-   *                Return_t) type which can either be ReturnOK or ReturnError.
-   *                The C macros OK() and ERROR() can be used as a more concise
-   *                way of checking the return value of a syscall (e.g.,
-   *                if(OK(xMemGetUsed(&size))) {} or
-   *                if(ERROR(xMemGetUsed(&size))) {}).
+   * This function is useful for debugging, system monitoring, or conditional logic
+   * that depends on scheduler status. Tasks can query scheduler state to determine
+   * if they're running under active scheduling or during suspended periods.
+   *
+   * **Common use cases:**
+   * - Debug diagnostics: Log scheduler state during troubleshooting
+   * - Conditional behavior: Execute different code paths based on scheduler state
+   * - System monitoring: Track scheduler transitions
+   * - State verification: Confirm scheduler is in expected state
+   *
+   * @param[out] state_ Receives current scheduler state (SchedulerStateRunning
+   *                    or SchedulerStateSuspended).
+   *
+   * @return           ReturnOK if state retrieved. ReturnError if state_ is NULL.
+   *
+   * @sa xTaskStartScheduler() - Start scheduler (behavior depends on state)
+   * @sa xTaskSuspendAll() - Suspend scheduler
+   * @sa xTaskResumeAll() - Resume scheduler
+   * @sa xSchedulerState - Scheduler state enumeration
    */
   xReturn xTaskGetSchedulerState(xSchedulerState *state_);
 
 
   /**
-   * @brief Syscall to get the task watchdog timer period
+   * @brief Query the task watchdog timeout period
    *
-   * The xTaskGetWDPeriod() syscall is used to obtain the task watchdog timer
-   * period.
+   * Retrieves the watchdog timer period for a task. This is the maximum execution
+   * time allowed for a single task invocation before automatic suspension occurs.
    *
-   * @sa xReturn
-   * @sa xTask
-   * @sa xTicks
-   * @sa CONFIG_TASK_WD_TIMER_ENABLE
+   * Returns the value previously set with xTaskChangeWDPeriod(). Requires
+   * CONFIG_TASK_WD_TIMER_ENABLE defined at compile time.
    *
-   * @param  task_   The task to be operated on.
-   * @param  period_ The task watchdog timer period, measured in ticks. Ticks
-   *                 are platform and/or architecture dependent. However, on
-   *                 must platforms and/or architectures the tick represents one
-   *                 millisecond.
-   * @return         On success, the syscall returns ReturnOK. On failure, the
-   *                 syscall returns ReturnError. A failure is any condition in
-   *                 which the syscall was unable to achieve its intended
-   *                 objective. For example, if xTaskGetId() was unable to
-   *                 locate the task by the task object (i.e., xTask) passed to
-   *                 the syscall, because either the object was null or invalid
-   *                 (e.g., a deleted task), xTaskGetId() would return
-   *                 ReturnError. All HeliOS syscalls return the xReturn
-   *                 (a.k.a., Return_t) type which can either be ReturnOK or
-   *                 ReturnError. The C macros OK() and ERROR() can be used as a
-   *                 more concise way of checking the return value of a syscall
-   *                 (e.g., if(OK(xMemGetUsed(&size))) {} or
-   *                 if(ERROR(xMemGetUsed(&size))) {}).
+   * @param[in]  task_   Task handle. Must be valid.
+   * @param[out] period_ Receives watchdog period in ticks.
+   *
+   * @return            ReturnOK if period retrieved. ReturnError if task_
+   *                    or period_ invalid, or CONFIG_TASK_WD_TIMER_ENABLE
+   *                    not defined.
+   *
+   * @warning Requires CONFIG_TASK_WD_TIMER_ENABLE. Returns error if not enabled.
+   *
+   * @sa xTaskChangeWDPeriod() - Set watchdog timeout
+   * @sa CONFIG_TASK_WD_TIMER_ENABLE - Enables watchdog feature
    */
   xReturn xTaskGetWDPeriod(const xTask task_, xTicks *period_);
 
