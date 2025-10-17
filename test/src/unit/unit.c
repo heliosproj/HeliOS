@@ -144,3 +144,167 @@ void unit_print(const char *msg_) {
 
   return;
 }
+
+
+void unit_assert_equal_impl(const char *file_, int line_,
+                            unsigned long actual_, unsigned long expected_,
+                            const char *actual_expr_, const char *expected_expr_) {
+  if((null != unit) && (true == unit->begun)) {
+    if(actual_ != expected_) {
+      unit->failed = true;
+#if defined(UNIT_TEST_COLORIZE)
+        printf("\033[95munit:\033[91m FAILED at %s:%d\n", file_, line_);
+        printf("\033[95munit:\033[91m   Expected: %s == %s\n", actual_expr_, expected_expr_);
+        printf("\033[95munit:\033[91m   Actual:   0x%lX != 0x%lX\n\033[39m", actual_, expected_);
+#else  /* if defined(UNIT_TEST_COLORIZE) */
+        printf("unit: FAILED at %s:%d\n", file_, line_);
+        printf("unit:    Expected: %s == %s\n", actual_expr_, expected_expr_);
+        printf("unit:    Actual:   0x%lX != 0x%lX\n", actual_, expected_);
+#endif /* if defined(UNIT_TEST_COLORIZE) */
+    }
+  } else if(false == unit->begun) {
+#if defined(UNIT_TEST_COLORIZE)
+      printf("\033[95munit:\033[91m error: unit_assert_equal() called outside a unit test\n\033[39m");
+#else  /* if defined(UNIT_TEST_COLORIZE) */
+      printf("unit: error: unit_assert_equal() called outside a unit test\n");
+#endif /* if defined(UNIT_TEST_COLORIZE) */
+  }
+
+  return;
+}
+
+
+void unit_assert_not_equal_impl(const char *file_, int line_,
+                                unsigned long actual_, unsigned long expected_,
+                                const char *actual_expr_, const char *expected_expr_) {
+  if((null != unit) && (true == unit->begun)) {
+    if(actual_ == expected_) {
+      unit->failed = true;
+#if defined(UNIT_TEST_COLORIZE)
+        printf("\033[95munit:\033[91m FAILED at %s:%d\n", file_, line_);
+        printf("\033[95munit:\033[91m   Expected: %s != %s\n", actual_expr_, expected_expr_);
+        printf("\033[95munit:\033[91m   Actual:   0x%lX == 0x%lX\n\033[39m", actual_, expected_);
+#else  /* if defined(UNIT_TEST_COLORIZE) */
+        printf("unit: FAILED at %s:%d\n", file_, line_);
+        printf("unit:    Expected: %s != %s\n", actual_expr_, expected_expr_);
+        printf("unit:    Actual:   0x%lX == 0x%lX\n", actual_, expected_);
+#endif /* if defined(UNIT_TEST_COLORIZE) */
+    }
+  } else if(false == unit->begun) {
+#if defined(UNIT_TEST_COLORIZE)
+      printf("\033[95munit:\033[91m error: unit_assert_not_equal() called outside a unit test\n\033[39m");
+#else  /* if defined(UNIT_TEST_COLORIZE) */
+      printf("unit: error: unit_assert_not_equal() called outside a unit test\n");
+#endif /* if defined(UNIT_TEST_COLORIZE) */
+  }
+
+  return;
+}
+
+
+void unit_assert_null_impl(const char *file_, int line_,
+                           const void *ptr_, const char *ptr_expr_) {
+  if((null != unit) && (true == unit->begun)) {
+    if(null != ptr_) {
+      unit->failed = true;
+#if defined(UNIT_TEST_COLORIZE)
+        printf("\033[95munit:\033[91m FAILED at %s:%d\n", file_, line_);
+        printf("\033[95munit:\033[91m   Expected: %s == NULL\n", ptr_expr_);
+        printf("\033[95munit:\033[91m   Actual:   %p != NULL\n\033[39m", ptr_);
+#else  /* if defined(UNIT_TEST_COLORIZE) */
+        printf("unit: FAILED at %s:%d\n", file_, line_);
+        printf("unit:    Expected: %s == NULL\n", ptr_expr_);
+        printf("unit:    Actual:   %p != NULL\n", ptr_);
+#endif /* if defined(UNIT_TEST_COLORIZE) */
+    }
+  } else if(false == unit->begun) {
+#if defined(UNIT_TEST_COLORIZE)
+      printf("\033[95munit:\033[91m error: unit_assert_null() called outside a unit test\n\033[39m");
+#else  /* if defined(UNIT_TEST_COLORIZE) */
+      printf("unit: error: unit_assert_null() called outside a unit test\n");
+#endif /* if defined(UNIT_TEST_COLORIZE) */
+  }
+
+  return;
+}
+
+
+void unit_assert_not_null_impl(const char *file_, int line_,
+                               const void *ptr_, const char *ptr_expr_) {
+  if((null != unit) && (true == unit->begun)) {
+    if(null == ptr_) {
+      unit->failed = true;
+#if defined(UNIT_TEST_COLORIZE)
+        printf("\033[95munit:\033[91m FAILED at %s:%d\n", file_, line_);
+        printf("\033[95munit:\033[91m   Expected: %s != NULL\n", ptr_expr_);
+        printf("\033[95munit:\033[91m   Actual:   NULL\n\033[39m");
+#else  /* if defined(UNIT_TEST_COLORIZE) */
+        printf("unit: FAILED at %s:%d\n", file_, line_);
+        printf("unit:    Expected: %s != NULL\n", ptr_expr_);
+        printf("unit:    Actual:   NULL\n");
+#endif /* if defined(UNIT_TEST_COLORIZE) */
+    }
+  } else if(false == unit->begun) {
+#if defined(UNIT_TEST_COLORIZE)
+      printf("\033[95munit:\033[91m error: unit_assert_not_null() called outside a unit test\n\033[39m");
+#else  /* if defined(UNIT_TEST_COLORIZE) */
+      printf("unit: error: unit_assert_not_null() called outside a unit test\n");
+#endif /* if defined(UNIT_TEST_COLORIZE) */
+  }
+
+  return;
+}
+
+
+void unit_assert_true_impl(const char *file_, int line_,
+                           int condition_, const char *condition_expr_) {
+  if((null != unit) && (true == unit->begun)) {
+    if(false == condition_) {
+      unit->failed = true;
+#if defined(UNIT_TEST_COLORIZE)
+        printf("\033[95munit:\033[91m FAILED at %s:%d\n", file_, line_);
+        printf("\033[95munit:\033[91m   Expected: %s == true\n", condition_expr_);
+        printf("\033[95munit:\033[91m   Actual:   false\n\033[39m");
+#else  /* if defined(UNIT_TEST_COLORIZE) */
+        printf("unit: FAILED at %s:%d\n", file_, line_);
+        printf("unit:    Expected: %s == true\n", condition_expr_);
+        printf("unit:    Actual:   false\n");
+#endif /* if defined(UNIT_TEST_COLORIZE) */
+    }
+  } else if(false == unit->begun) {
+#if defined(UNIT_TEST_COLORIZE)
+      printf("\033[95munit:\033[91m error: unit_assert_true() called outside a unit test\n\033[39m");
+#else  /* if defined(UNIT_TEST_COLORIZE) */
+      printf("unit: error: unit_assert_true() called outside a unit test\n");
+#endif /* if defined(UNIT_TEST_COLORIZE) */
+  }
+
+  return;
+}
+
+
+void unit_assert_false_impl(const char *file_, int line_,
+                            int condition_, const char *condition_expr_) {
+  if((null != unit) && (true == unit->begun)) {
+    if(true == condition_) {
+      unit->failed = true;
+#if defined(UNIT_TEST_COLORIZE)
+        printf("\033[95munit:\033[91m FAILED at %s:%d\n", file_, line_);
+        printf("\033[95munit:\033[91m   Expected: %s == false\n", condition_expr_);
+        printf("\033[95munit:\033[91m   Actual:   true\n\033[39m");
+#else  /* if defined(UNIT_TEST_COLORIZE) */
+        printf("unit: FAILED at %s:%d\n", file_, line_);
+        printf("unit:    Expected: %s == false\n", condition_expr_);
+        printf("unit:    Actual:   true\n");
+#endif /* if defined(UNIT_TEST_COLORIZE) */
+    }
+  } else if(false == unit->begun) {
+#if defined(UNIT_TEST_COLORIZE)
+      printf("\033[95munit:\033[91m error: unit_assert_false() called outside a unit test\n\033[39m");
+#else  /* if defined(UNIT_TEST_COLORIZE) */
+      printf("unit: error: unit_assert_false() called outside a unit test\n");
+#endif /* if defined(UNIT_TEST_COLORIZE) */
+  }
+
+  return;
+}

@@ -49,9 +49,56 @@
   void unit_exit(void);
   void unit_print(const char *msg_);
 
+  /* Enhanced assertion functions */
+  void unit_assert_equal_impl(const char *file_, int line_,
+                              unsigned long actual_, unsigned long expected_,
+                              const char *actual_expr_, const char *expected_expr_);
+  void unit_assert_not_equal_impl(const char *file_, int line_,
+                                  unsigned long actual_, unsigned long expected_,
+                                  const char *actual_expr_, const char *expected_expr_);
+  void unit_assert_null_impl(const char *file_, int line_,
+                             const void *ptr_, const char *ptr_expr_);
+  void unit_assert_not_null_impl(const char *file_, int line_,
+                                 const void *ptr_, const char *ptr_expr_);
+  void unit_assert_true_impl(const char *file_, int line_,
+                             int condition_, const char *condition_expr_);
+  void unit_assert_false_impl(const char *file_, int line_,
+                              int condition_, const char *condition_expr_);
+
   #ifdef __cplusplus
     }
   #endif /* ifdef __cplusplus */
+
+  /* Enhanced assertion macros */
+  #define unit_assert_equal(actual, expected) \
+    unit_assert_equal_impl(__FILE__, __LINE__, \
+                           (unsigned long)(actual), \
+                           (unsigned long)(expected), \
+                           #actual, #expected)
+
+  #define unit_assert_not_equal(actual, expected) \
+    unit_assert_not_equal_impl(__FILE__, __LINE__, \
+                               (unsigned long)(actual), \
+                               (unsigned long)(expected), \
+                               #actual, #expected)
+
+  #define unit_assert_null(ptr) \
+    unit_assert_null_impl(__FILE__, __LINE__, (const void *)(ptr), #ptr)
+
+  #define unit_assert_not_null(ptr) \
+    unit_assert_not_null_impl(__FILE__, __LINE__, (const void *)(ptr), #ptr)
+
+  #define unit_assert_true(condition) \
+    unit_assert_true_impl(__FILE__, __LINE__, (condition), #condition)
+
+  #define unit_assert_false(condition) \
+    unit_assert_false_impl(__FILE__, __LINE__, (condition), #condition)
+
+  #define unit_assert_ok(result) \
+    unit_assert_true_impl(__FILE__, __LINE__, OK(result), #result)
+
+  #define unit_assert_not_ok(result) \
+    unit_assert_false_impl(__FILE__, __LINE__, OK(result), #result)
 
 
 #endif /* ifndef UNIT_H_ */

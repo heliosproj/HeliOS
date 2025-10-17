@@ -23,6 +23,7 @@ void sys_harness(void) {
   test_system_info();
   test_system_halt();
   test_system_assert();
+  test_enhanced_assertions();
 }
 
 
@@ -31,7 +32,7 @@ void test_system_init(void) {
 
   /* System should already be initialized by the test harness,
    * calling it again should succeed (idempotent) */
-  unit_try(OK(xSystemInit()));
+  unit_assert_ok(xSystemInit());
 
   unit_end();
 }
@@ -43,21 +44,21 @@ void test_system_info(void) {
   unit_begin("System information retrieval returns valid product data");
 
   /* Get system information */
-  unit_try(OK(xSystemGetSystemInfo(&info)));
-  unit_try(null != info);
+  unit_assert_ok(xSystemGetSystemInfo(&info));
+  unit_assert_not_null(info);
 
   /* Verify system info contains valid data */
-  unit_try(info->productName[0] != '\0');
+  unit_assert_true(info->productName[0] != '\0');
   /* Note: Version fields are unsigned, so no need to check >= 0 */
 
   /* Free allocated memory */
-  unit_try(OK(xMemFree(info)));
+  unit_assert_ok(xMemFree(info));
 
   unit_end();
 
   /* Test NULL pointer handling */
   unit_begin("System info retrieval rejects NULL pointer");
-  unit_try(!OK(xSystemGetSystemInfo(null)));
+  unit_assert_not_ok(xSystemGetSystemInfo(null));
   unit_end();
 }
 
@@ -93,7 +94,45 @@ void test_system_assert(void) {
   unit_print("Verifying system assert function exists and has correct signature");
 
   /* Test that system continues after initialization */
-  unit_try(OK(xSystemInit()));
+  unit_assert_ok(xSystemInit());
+
+  unit_end();
+}
+
+
+void test_enhanced_assertions(void) {
+  Size_t size1 = 0x100;
+  Size_t size2 = 0x100;
+  Size_t size3 = 0x200;
+  Base_t *ptr1 = null;
+  Base_t *ptr2 = (Base_t *) 0x12345678;
+
+  unit_begin("Enhanced assertions - equality checks");
+
+  /* These should pass */
+  unit_assert_equal(size1, size2);
+  unit_assert_equal(0x100, size1);
+
+  /* Test not equal */
+  unit_assert_not_equal(size1, size3);
+
+  unit_end();
+
+  unit_begin("Enhanced assertions - pointer checks");
+
+  /* These should pass */
+  unit_assert_null(ptr1);
+  unit_assert_not_null(ptr2);
+
+  unit_end();
+
+  unit_begin("Enhanced assertions - boolean checks");
+
+  /* These should pass */
+  unit_assert_true(size1 == size2);
+  unit_assert_false(size1 == size3);
+  unit_assert_true(1);
+  unit_assert_false(0);
 
   unit_end();
 }
