@@ -6,35 +6,45 @@ labels: support
 assignees: MannyPeterson
 ---
 
-## :dart: **Help us help you by filling out this issue completely.**
-### **1. How can we help you (i.e., what is the issue you are facing)?**
+## :question: Support Request
+
+### What do you need help with?
+
+**Describe your question:**
+<!-- Clear description of what you're trying to do or what you need help with -->
 
 
-### **2. What results, output, behavior are you expecting?**
+**What have you tried?**
+<!-- What troubleshooting steps have you already attempted? -->
 
 
-### **3. What version of HeliOS are you using?**
+### Code Sample
 
+**Relevant code:**
+```c
+// Your code here (DO NOT use screenshots)
+```
 
-### **4. Provide the following details about your development environment and development board/microcontroller:**
+### Environment
 
-OS [Windows, macOS, Linux]:
+**HeliOS Version:**
+<!-- e.g., 0.5.0, develop branch -->
 
-OS Version [Windows 10, Ventura, Ubuntu 22.04]:
+**Hardware:**
+<!-- e.g., Arduino UNO, Teensy 4.1, ESP8266 -->
 
-IDE [Arduino IDE, PlatformIO, STM32CubeIDE, Keil]:
+**Development Environment:**
+<!-- e.g., Arduino IDE 2.0, PlatformIO -->
 
-IDE Version:
+### Output (if applicable)
 
-Board/MCU Mfg [Arduino, PJRC, ST Micro]:
+```
+Paste compiler errors or serial output here
+```
 
-Board/MCU Model [UNO, Teensy 4.1, NUCLEO-F429ZI]:
+### Checklist
 
-### **5. Are you experiencing any compiler or linker errors? If so, copy and paste them here (please do not provide screenshots):**
-
-
-### **6. If you have questions about a specific block of source code, copy and paste an excerpt of the source code here (use a markdown code block and please do not provide screenshots):**
-
-
-### 7. **Attach a copy of your source code file(s) so we may compile them if needed:**
+- [ ] I have read the [Developer's Guide](/doc/HeliOS_Developers_Guide.pdf)
+- [ ] I have checked the [README examples](https://github.com/heliosproj/HeliOS#readme)
+- [ ] I have searched existing issues
 

@@ -6,31 +6,51 @@ labels: bug
 assignees: MannyPeterson
 ---
 
-## :dart: **Help us help you by filling out this issue completely. This issue is ONLY for bug reports. If you are seeking support, please submit a support request.**
-### **1. Describe, in detail, the bug you have encountered and how to reproduce it (if providing a source code excerpt, use a markdown code block and please do not provide screenshots of source code):**
+## :bug: Bug Report
+
+### Describe the Bug
+
+**What's happening?**
+<!-- Clear description of the bug -->
 
 
-### **2. What results, output, behavior are you expecting?**
+**Steps to reproduce:**
+1.
+2.
+3.
+
+**Expected behavior:**
+<!-- What should happen instead? -->
 
 
-### **3. What version of HeliOS are you using?**
+**Code sample (if applicable):**
+```c
+// Your code here (DO NOT use screenshots)
+```
 
+### Environment
 
-### **4. Provide the following details about your development environment and development board/microcontroller:**
+**HeliOS Version:**
+<!-- e.g., 0.5.0, develop branch commit abc1234 -->
 
-OS [Windows, macOS, Linux]:
+**Hardware:**
+<!-- e.g., Arduino UNO, Teensy 4.1, STM32F429 -->
 
-OS Version [Windows 10, Ventura, Ubuntu 22.04]:
+**Development Environment:**
+<!-- e.g., Arduino IDE 2.0, PlatformIO, STM32CubeIDE -->
 
-IDE [Arduino IDE, PlatformIO, STM32CubeIDE, Keil]:
+### Error Output
 
-IDE Version:
+**Compiler errors or runtime output:**
+```
+Paste errors here (DO NOT use screenshots)
+```
 
-Board/MCU Mfg [Arduino, PJRC, ST Micro]:
+### Additional Context
 
-Board/MCU Model [UNO, Teensy 4.1, NUCLEO-F429ZI]:
+- [ ] I have tested with the latest HeliOS version
+- [ ] I have checked for existing issues
 
-### **5. Are you experiencing any compiler or linker errors? If so, copy and paste them here (please do not provide screenshots):**
+**Additional information:**
+<!-- Anything else that might help -->
 
-
-### 7. **Attach a copy of your source code file(s) so we may compile them if needed:**
