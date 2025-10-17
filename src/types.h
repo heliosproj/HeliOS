@@ -228,6 +228,8 @@
     Byte_t mode;
     Base_t isOpen;
     Base_t isDirty;
+    Byte_t path[256];
+    Word_t parentDirCluster;
   } File_t;
   typedef struct DirEntry_s {
     Byte_t name[256];

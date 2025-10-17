@@ -136,6 +136,12 @@ static Return_t __FindFreeCluster__(const Volume_t *vol_, Word_t startHint_, Wor
 static Base_t __IsDeviceMounted__(const HalfWord_t blockDeviceUID_);
 static Return_t __AddMountedDevice__(const HalfWord_t blockDeviceUID_);
 static Return_t __RemoveMountedDevice__(const HalfWord_t blockDeviceUID_);
+static Base_t __ByteCompare__(const Byte_t *s1_, const Byte_t *s2_, Word_t len_);
+static Return_t __ConvertToFAT83__(const Byte_t *path_, Byte_t *fat83_);
+static Return_t __FindDirEntry__(const Volume_t *vol_, Word_t dirCluster_, const Byte_t *name83_, FAT32DirEntry_t *entry_, Word_t *entryCluster_, Word_t *entryOffset_);
+static Return_t __FindFileByPath__(const Volume_t *vol_, const Byte_t *path_, FAT32DirEntry_t *entry_, Word_t *parentCluster_, Word_t *entryCluster_, Word_t *entryOffset_);
+static Return_t __FreeClusters__(const Volume_t *vol_, Word_t startCluster_);
+static Return_t __CreateDirEntry__(const Volume_t *vol_, Word_t parentCluster_, const Byte_t *name83_, Byte_t attr_, Word_t firstCluster_, Word_t size_);
 
 
 Return_t xFSMount(Volume_t **volume_, const HalfWord_t blockDeviceUID_) {
@@ -427,6 +433,10 @@ Return_t xFileOpen(File_t **file_, Volume_t *volume_, const Byte_t *path_, const
 
 
   File_t *file = null;
+  FAT32DirEntry_t entry;
+  Base_t fileExists = false;
+  Word_t parentCluster = 0;
+  Word_t i = 0;
 
 
   if(__PointerIsNotNull__(file_) && __PointerIsNotNull__(volume_) && __PointerIsNotNull__(path_)) {
@@ -434,6 +444,42 @@ Return_t xFileOpen(File_t **file_, Volume_t *volume_, const Byte_t *path_, const
     if(!volume_->mounted) {
       __ReturnError__();
       FUNCTION_EXIT;
+    }
+
+    /* Try to find existing file */
+    if(OK(__FindFileByPath__(volume_, path_, &entry, &parentCluster, null, null))) {
+      fileExists = true;
+    } else {
+      /* If file doesn't exist, try to determine parent directory */
+      const Byte_t *lastSlash = null;
+      Byte_t parentPath[256];
+      Word_t parentPathLen = 0;
+
+      /* Find parent directory cluster */
+      for(i = 0; path_[i] != '\0'; i++) {
+        if(path_[i] == '/') {
+          lastSlash = &path_[i];
+        }
+      }
+
+      if(__PointerIsNotNull__(lastSlash)) {
+        parentPathLen = lastSlash - path_;
+
+        if(parentPathLen == 0) {
+          /* Parent is root */
+          parentCluster = volume_->rootDirCluster;
+        } else {
+          __memcpy__(parentPath, path_, parentPathLen);
+          parentPath[parentPathLen] = '\0';
+
+          if(ERROR(__FindFileByPath__(volume_, parentPath, null, &parentCluster, null, null))) {
+            parentCluster = volume_->rootDirCluster;
+          }
+        }
+      } else {
+        /* No slash - parent is root */
+        parentCluster = volume_->rootDirCluster;
+      }
     }
 
     /* Allocate file structure in kernel heap */
@@ -444,9 +490,60 @@ Return_t xFileOpen(File_t **file_, Volume_t *volume_, const Byte_t *path_, const
       file->position = 0;
       file->isOpen = true;
       file->isDirty = false;
-      file->firstCluster = 0;
-      file->currentCluster = 0;
-      file->fileSize = 0;
+      file->parentDirCluster = parentCluster;
+
+      /* Copy path to file structure */
+      for(i = 0; path_[i] != '\0' && i < 255; i++) {
+        file->path[i] = path_[i];
+      }
+
+      file->path[i] = '\0';
+
+      if(fileExists) {
+        /* Open existing file - get cluster and size from directory entry */
+        file->firstCluster = ((Word_t) __ReadLE16__(entry.firstClusterHigh) << 16) | __ReadLE16__(entry.firstClusterLow);
+        file->currentCluster = file->firstCluster;
+        file->fileSize = __ReadLE32__(entry.fileSize);
+
+        /* If append mode, seek to end */
+        if((mode_ & FS_MODE_APPEND) != 0) {
+          file->position = file->fileSize;
+          /* Need to navigate to last cluster for append */
+          if(file->firstCluster >= 2 && file->firstCluster < FAT32_EOC_MIN) {
+            Word_t nextCluster = 0;
+            Word_t clusterSize = (Word_t) volume_->bytesPerSector * volume_->sectorsPerCluster;
+            Word_t clustersToSkip = file->fileSize / clusterSize;
+
+            file->currentCluster = file->firstCluster;
+
+            for(i = 0; i < clustersToSkip; i++) {
+              if(OK(__GetFATEntry__(volume_, file->currentCluster, &nextCluster))) {
+                if(nextCluster >= FAT32_EOC_MIN) {
+                  break;
+                }
+
+                file->currentCluster = nextCluster;
+              } else {
+                break;
+              }
+            }
+          }
+        }
+      } else {
+        /* File doesn't exist - check if CREATE mode is set */
+        if((mode_ & FS_MODE_CREATE) == 0) {
+          /* Cannot open non-existent file without CREATE mode */
+          __KernelFreeMemory__(file);
+          __ReturnError__();
+          FUNCTION_EXIT;
+        }
+
+        /* New file - will be created on first write */
+        file->firstCluster = 0;
+        file->currentCluster = 0;
+        file->fileSize = 0;
+      }
+
       *file_ = file;
       __ReturnOk__();
     } else {
@@ -464,9 +561,67 @@ Return_t xFileOpen(File_t **file_, Volume_t *volume_, const Byte_t *path_, const
 Return_t xFileClose(File_t *file_) {
   FUNCTION_ENTER;
 
-  if(__PointerIsNotNull__(file_)) {
-    file_->isOpen = false;
 
+  FAT32DirEntry_t entry;
+  Word_t entryCluster = 0;
+  Word_t entryOffset = 0;
+  Byte_t *clusterData = null;
+  Word_t firstSector = 0;
+  Word_t i = 0;
+  const Byte_t *lastSlash = null;
+  const Byte_t *fileName = null;
+  Byte_t name83[11];
+  Base_t fileExisted = false;
+
+
+  if(__PointerIsNotNull__(file_)) {
+    /* If file is dirty, create or update directory entry */
+    if(file_->isDirty && file_->path[0] != '\0') {
+      /* Extract just the filename from path */
+      fileName = file_->path;
+
+      for(i = 0; file_->path[i] != '\0'; i++) {
+        if(file_->path[i] == '/') {
+          lastSlash = &file_->path[i];
+        }
+      }
+
+      if(__PointerIsNotNull__(lastSlash)) {
+        fileName = lastSlash + 1;
+      }
+
+      /* Convert filename to 8.3 format */
+      if(OK(__ConvertToFAT83__(fileName, name83))) {
+        /* Check if file entry already exists */
+        if(OK(__FindFileByPath__(file_->volume, file_->path, &entry, null, &entryCluster, &entryOffset))) {
+          /* Update existing directory entry */
+          fileExisted = true;
+
+          if(OK(__ReadCluster__(file_->volume, entryCluster, &clusterData))) {
+            FAT32DirEntry_t *fatEntry = (FAT32DirEntry_t *) (clusterData + entryOffset);
+
+            /* Update file size and first cluster */
+            __WriteLE32__(fatEntry->fileSize, file_->fileSize);
+            __WriteLE16__(fatEntry->firstClusterHigh, (HalfWord_t) (file_->firstCluster >> 16));
+            __WriteLE16__(fatEntry->firstClusterLow, (HalfWord_t) (file_->firstCluster & 0xFFFFu));
+
+            /* Write directory cluster back */
+            firstSector = __ClusterToSector__(file_->volume, entryCluster);
+
+            for(i = 0; i < file_->volume->sectorsPerCluster; i++) {
+              __WriteSector__(file_->volume, firstSector + i, clusterData + (i * file_->volume->bytesPerSector));
+            }
+
+            __KernelFreeMemory__(clusterData);
+          }
+        } else {
+          /* Create new directory entry */
+          __CreateDirEntry__(file_->volume, file_->parentDirCluster, name83, FAT_ATTR_ARCHIVE, file_->firstCluster, file_->fileSize);
+        }
+      }
+    }
+
+    file_->isOpen = false;
 
     /* Free file structure from kernel heap */
     if(OK(__KernelFreeMemory__(file_))) {
@@ -1100,13 +1255,126 @@ Return_t xDirMake(Volume_t *volume_, const Byte_t *path_) {
   FUNCTION_ENTER;
 
 
-  /* Simplified implementation - directory creation requires:
-   * 1. Finding parent directory 2. Allocating cluster for new directory 3.
-   * Creating . and .. entries 4. Adding entry to parent directory This is
-   * complex and deferred for basic implementation */
+  Word_t parentCluster = 0;
+  Word_t newDirCluster = 0;
+  Byte_t dirName83[11];
+  Byte_t *clusterData = null;
+  FAT32DirEntry_t *dotEntry = null;
+  FAT32DirEntry_t *dotdotEntry = null;
+  Word_t firstSector = 0;
+  Word_t i = 0;
+  const Byte_t *lastSlash = null;
+  const Byte_t *dirName = null;
+  Byte_t parentPath[256];
+  Word_t parentPathLen = 0;
+
+
   if(__PointerIsNotNull__(volume_) && __PointerIsNotNull__(path_)) {
-    /* TODO: Implement directory creation */
-    __AssertOnElse__();
+    /* Check if volume is mounted */
+    if(!volume_->mounted) {
+      __ReturnError__();
+      FUNCTION_EXIT;
+    }
+
+    /* Extract directory name and parent path */
+    dirName = path_;
+    lastSlash = null;
+
+    for(i = 0; path_[i] != '\0'; i++) {
+      if(path_[i] == '/') {
+        lastSlash = &path_[i];
+      }
+    }
+
+    if(__PointerIsNotNull__(lastSlash)) {
+      dirName = lastSlash + 1;
+      /* Extract parent path */
+      parentPathLen = lastSlash - path_;
+
+      if(parentPathLen == 0) {
+        /* Parent is root */
+        parentPath[0] = '/';
+        parentPath[1] = '\0';
+      } else {
+        __memcpy__(parentPath, path_, parentPathLen);
+        parentPath[parentPathLen] = '\0';
+      }
+    } else {
+      /* No slash, parent is root */
+      parentPath[0] = '/';
+      parentPath[1] = '\0';
+    }
+
+    /* Find parent directory */
+    if(ERROR(__FindFileByPath__(volume_, parentPath, null, &parentCluster, null, null))) {
+      __AssertOnElse__();
+      FUNCTION_EXIT;
+    }
+
+    /* Convert directory name to 8.3 format */
+    if(ERROR(__ConvertToFAT83__(dirName, dirName83))) {
+      __AssertOnElse__();
+      FUNCTION_EXIT;
+    }
+
+    /* Allocate a cluster for the new directory */
+    if(OK(__FindFreeCluster__(volume_, 3u, &newDirCluster))) {
+      /* Mark cluster as end of chain */
+      if(OK(__SetFATEntry__(volume_, newDirCluster, FAT32_EOC_MAX))) {
+        /* Initialize directory cluster with . and .. entries */
+        if(OK(__ReadCluster__(volume_, newDirCluster, &clusterData))) {
+          /* Zero out the cluster */
+          __memset__(clusterData, 0x00u, (Word_t) volume_->bytesPerSector * volume_->sectorsPerCluster);
+
+          /* Create . entry (self reference) */
+          dotEntry = (FAT32DirEntry_t *) clusterData;
+          __memcpy__(dotEntry->name, ".          ", 11);
+          dotEntry->attr = FAT_ATTR_DIRECTORY;
+          __WriteLE16__(dotEntry->firstClusterHigh, (HalfWord_t) (newDirCluster >> 16));
+          __WriteLE16__(dotEntry->firstClusterLow, (HalfWord_t) (newDirCluster & 0xFFFFu));
+          __WriteLE32__(dotEntry->fileSize, 0);
+
+          /* Create .. entry (parent reference) */
+          dotdotEntry = (FAT32DirEntry_t *) (clusterData + sizeof(FAT32DirEntry_t));
+          __memcpy__(dotdotEntry->name, "..         ", 11);
+          dotdotEntry->attr = FAT_ATTR_DIRECTORY;
+          __WriteLE16__(dotdotEntry->firstClusterHigh, (HalfWord_t) (parentCluster >> 16));
+          __WriteLE16__(dotdotEntry->firstClusterLow, (HalfWord_t) (parentCluster & 0xFFFFu));
+          __WriteLE32__(dotdotEntry->fileSize, 0);
+
+          /* Write directory cluster */
+          firstSector = __ClusterToSector__(volume_, newDirCluster);
+
+          for(i = 0; i < volume_->sectorsPerCluster; i++) {
+            if(ERROR(__WriteSector__(volume_, firstSector + i, clusterData + (i * volume_->bytesPerSector)))) {
+              __KernelFreeMemory__(clusterData);
+              __AssertOnElse__();
+              FUNCTION_EXIT;
+            }
+          }
+
+          __KernelFreeMemory__(clusterData);
+
+          /* Add entry to parent directory */
+          if(OK(__CreateDirEntry__(volume_, parentCluster, dirName83, FAT_ATTR_DIRECTORY, newDirCluster, 0))) {
+            __ReturnOk__();
+          } else {
+            /* Failed to add entry - free the cluster */
+            __SetFATEntry__(volume_, newDirCluster, FAT32_FREE_CLUSTER);
+            __AssertOnElse__();
+          }
+        } else {
+          /* Failed to read cluster - free it */
+          __SetFATEntry__(volume_, newDirCluster, FAT32_FREE_CLUSTER);
+          __AssertOnElse__();
+        }
+      } else {
+        __AssertOnElse__();
+      }
+    } else {
+      /* No free clusters */
+      __AssertOnElse__();
+    }
   } else {
     /* NULL pointer passed - return error instead of asserting */
     __ReturnError__();
@@ -1120,13 +1388,104 @@ Return_t xDirRemove(Volume_t *volume_, const Byte_t *path_) {
   FUNCTION_ENTER;
 
 
-  /* Simplified implementation - directory removal requires:
-   * 1. Verifying directory is empty 2. Finding directory entry in parent 3.
-   * Marking entry as deleted 4. Freeing directory clusters This is complex and
-   * deferred for basic implementation */
+  FAT32DirEntry_t entry;
+  Word_t entryCluster = 0;
+  Word_t entryOffset = 0;
+  Word_t dirCluster = 0;
+  Byte_t *clusterData = null;
+  FAT32DirEntry_t *fatEntry = null;
+  Word_t entriesPerCluster = 0;
+  Word_t entryIdx = 0;
+  Word_t firstSector = 0;
+  Word_t i = 0;
+  Base_t isEmpty = true;
+
+
   if(__PointerIsNotNull__(volume_) && __PointerIsNotNull__(path_)) {
-    /* TODO: Implement directory removal */
-    __AssertOnElse__();
+    /* Check if volume is mounted */
+    if(!volume_->mounted) {
+      __ReturnError__();
+      FUNCTION_EXIT;
+    }
+
+    /* Find the directory entry */
+    if(OK(__FindFileByPath__(volume_, path_, &entry, null, &entryCluster, &entryOffset))) {
+      /* Must be a directory */
+      if((entry.attr & FAT_ATTR_DIRECTORY) == 0) {
+        __AssertOnElse__();
+        FUNCTION_EXIT;
+      }
+
+      /* Get directory's first cluster */
+      dirCluster = ((Word_t) __ReadLE16__(entry.firstClusterHigh) << 16) | __ReadLE16__(entry.firstClusterLow);
+
+      /* Check if directory is empty (only . and .. entries) */
+      entriesPerCluster = ((Word_t) volume_->bytesPerSector * volume_->sectorsPerCluster) / sizeof(FAT32DirEntry_t);
+
+      if(OK(__ReadCluster__(volume_, dirCluster, &clusterData))) {
+        for(entryIdx = 0; entryIdx < entriesPerCluster; entryIdx++) {
+          fatEntry = (FAT32DirEntry_t *) (clusterData + (entryIdx * sizeof(FAT32DirEntry_t)));
+
+          /* End of directory? */
+          if(fatEntry->name[0] == 0x00u) {
+            break;
+          }
+
+          /* Skip deleted, . and .. entries */
+          if((fatEntry->name[0] == 0xE5u) || __ByteCompare__(fatEntry->name, (const Byte_t *) ".          ", 11) || __ByteCompare__(fatEntry->name, (const Byte_t *) "..         ", 11)) {
+            continue;
+          }
+
+          /* Found a real entry - directory is not empty */
+          isEmpty = false;
+          break;
+        }
+
+        __KernelFreeMemory__(clusterData);
+
+        if(!isEmpty) {
+          /* Directory not empty - cannot remove */
+          __AssertOnElse__();
+          FUNCTION_EXIT;
+        }
+
+        /* Directory is empty - mark entry as deleted */
+        if(OK(__ReadCluster__(volume_, entryCluster, &clusterData))) {
+          clusterData[entryOffset] = 0xE5u;
+
+          /* Write directory cluster back */
+          firstSector = __ClusterToSector__(volume_, entryCluster);
+
+          for(i = 0; i < volume_->sectorsPerCluster; i++) {
+            if(ERROR(__WriteSector__(volume_, firstSector + i, clusterData + (i * volume_->bytesPerSector)))) {
+              __KernelFreeMemory__(clusterData);
+              __AssertOnElse__();
+              FUNCTION_EXIT;
+            }
+          }
+
+          __KernelFreeMemory__(clusterData);
+
+          /* Free directory's cluster chain */
+          if(dirCluster >= 2 && dirCluster < FAT32_EOC_MIN) {
+            if(OK(__FreeClusters__(volume_, dirCluster))) {
+              __ReturnOk__();
+            } else {
+              __AssertOnElse__();
+            }
+          } else {
+            __ReturnOk__();
+          }
+        } else {
+          __AssertOnElse__();
+        }
+      } else {
+        __AssertOnElse__();
+      }
+    } else {
+      /* Directory not found */
+      __AssertOnElse__();
+    }
   } else {
     /* NULL pointer passed - return error instead of asserting */
     __ReturnError__();
@@ -1140,20 +1499,25 @@ Return_t xFileExists(Volume_t *volume_, const Byte_t *path_, Base_t *exists_) {
   FUNCTION_ENTER;
 
 
-  /* Simplified implementation - file lookup requires:
-   * 1. Path parsing (splitting by /) 2. Traversing directory hierarchy 3.
-   * Searching each directory for next component This is complex and deferred
-   * for basic implementation */
+  FAT32DirEntry_t entry;
+
+
   if(__PointerIsNotNull__(volume_) && __PointerIsNotNull__(path_) && __PointerIsNotNull__(exists_)) {
     /* Check if volume is mounted */
     if(!volume_->mounted) {
+      *exists_ = false;
       __ReturnError__();
       FUNCTION_EXIT;
     }
 
-    /* TODO: Implement file lookup */
-    *exists_ = false;
-    __AssertOnElse__();
+    /* Try to find the file using helper function */
+    if(OK(__FindFileByPath__(volume_, path_, &entry, null, null, null))) {
+      *exists_ = true;
+      __ReturnOk__();
+    } else {
+      *exists_ = false;
+      __ReturnOk__();
+    }
   } else {
     /* NULL pointer passed - return error instead of asserting */
     __ReturnError__();
@@ -1167,13 +1531,69 @@ Return_t xFileUnlink(Volume_t *volume_, const Byte_t *path_) {
   FUNCTION_ENTER;
 
 
-  /* Simplified implementation - file deletion requires:
-   * 1. Finding file entry in directory 2. Marking entry as deleted (first byte
-   * = 0xE5) 3. Freeing file's cluster chain This is deferred for basic
-   * implementation */
+  FAT32DirEntry_t entry;
+  Word_t entryCluster = 0;
+  Word_t entryOffset = 0;
+  Word_t firstCluster = 0;
+  Byte_t *clusterData = null;
+  Word_t firstSector = 0;
+  Word_t i = 0;
+
+
   if(__PointerIsNotNull__(volume_) && __PointerIsNotNull__(path_)) {
-    /* TODO: Implement file deletion */
-    __AssertOnElse__();
+    /* Check if volume is mounted */
+    if(!volume_->mounted) {
+      __ReturnError__();
+      FUNCTION_EXIT;
+    }
+
+    /* Find the file and get its location */
+    if(OK(__FindFileByPath__(volume_, path_, &entry, null, &entryCluster, &entryOffset))) {
+      /* Don't allow deleting directories with this function */
+      if((entry.attr & FAT_ATTR_DIRECTORY) != 0) {
+        __AssertOnElse__();
+        FUNCTION_EXIT;
+      }
+
+      /* Get first cluster to free */
+      firstCluster = ((Word_t) __ReadLE16__(entry.firstClusterHigh) << 16) | __ReadLE16__(entry.firstClusterLow);
+
+      /* Read directory cluster containing the entry */
+      if(OK(__ReadCluster__(volume_, entryCluster, &clusterData))) {
+        /* Mark entry as deleted (first byte = 0xE5) */
+        clusterData[entryOffset] = 0xE5u;
+
+        /* Write directory cluster back */
+        firstSector = __ClusterToSector__(volume_, entryCluster);
+
+        for(i = 0; i < volume_->sectorsPerCluster; i++) {
+          if(ERROR(__WriteSector__(volume_, firstSector + i, clusterData + (i * volume_->bytesPerSector)))) {
+            __KernelFreeMemory__(clusterData);
+            __AssertOnElse__();
+            FUNCTION_EXIT;
+          }
+        }
+
+        __KernelFreeMemory__(clusterData);
+
+        /* Free file's cluster chain if it has one */
+        if(firstCluster >= 2 && firstCluster < FAT32_EOC_MIN) {
+          if(OK(__FreeClusters__(volume_, firstCluster))) {
+            __ReturnOk__();
+          } else {
+            __AssertOnElse__();
+          }
+        } else {
+          /* File had no clusters allocated (zero-length file) */
+          __ReturnOk__();
+        }
+      } else {
+        __AssertOnElse__();
+      }
+    } else {
+      /* File not found */
+      __AssertOnElse__();
+    }
   } else {
     /* NULL pointer passed - return error instead of asserting */
     __ReturnError__();
@@ -1187,13 +1607,91 @@ Return_t xFileRename(Volume_t *volume_, const Byte_t *oldPath_, const Byte_t *ne
   FUNCTION_ENTER;
 
 
-  /* Simplified implementation - file rename/move requires:
-   * 1. Finding source file entry 2. Creating new entry in destination directory
-   * 3. Marking old entry as deleted This is complex and deferred for basic
-   * implementation */
+  FAT32DirEntry_t oldEntry;
+  Word_t oldEntryCluster = 0;
+  Word_t oldEntryOffset = 0;
+  Word_t newParentCluster = 0;
+  Byte_t newName83[11];
+  Byte_t *clusterData = null;
+  Word_t firstSector = 0;
+  Word_t i = 0;
+  Word_t firstCluster = 0;
+  Word_t fileSize = 0;
+  Byte_t attr = 0;
+  const Byte_t *lastSlash = null;
+  const Byte_t *fileName = null;
+
+
   if(__PointerIsNotNull__(volume_) && __PointerIsNotNull__(oldPath_) && __PointerIsNotNull__(newPath_)) {
-    /* TODO: Implement file rename */
-    __AssertOnElse__();
+    /* Check if volume is mounted */
+    if(!volume_->mounted) {
+      __ReturnError__();
+      FUNCTION_EXIT;
+    }
+
+    /* Find the old file entry */
+    if(OK(__FindFileByPath__(volume_, oldPath_, &oldEntry, null, &oldEntryCluster, &oldEntryOffset))) {
+      /* Extract just the filename from newPath */
+      fileName = newPath_;
+      lastSlash = null;
+
+      for(i = 0; newPath_[i] != '\0'; i++) {
+        if(newPath_[i] == '/') {
+          lastSlash = &newPath_[i];
+        }
+      }
+
+      if(__PointerIsNotNull__(lastSlash)) {
+        fileName = lastSlash + 1;
+      }
+
+      /* Convert new filename to 8.3 format */
+      if(ERROR(__ConvertToFAT83__(fileName, newName83))) {
+        __AssertOnElse__();
+        FUNCTION_EXIT;
+      }
+
+      /* For simplicity, assume rename is in same directory */
+      /* Get parent directory from old path */
+      if(ERROR(__FindFileByPath__(volume_, oldPath_, null, &newParentCluster, null, null))) {
+        __AssertOnElse__();
+        FUNCTION_EXIT;
+      }
+
+      /* Get file attributes and cluster info from old entry */
+      firstCluster = ((Word_t) __ReadLE16__(oldEntry.firstClusterHigh) << 16) | __ReadLE16__(oldEntry.firstClusterLow);
+      fileSize = __ReadLE32__(oldEntry.fileSize);
+      attr = oldEntry.attr;
+
+      /* Create new directory entry */
+      if(OK(__CreateDirEntry__(volume_, newParentCluster, newName83, attr, firstCluster, fileSize))) {
+        /* Mark old entry as deleted */
+        if(OK(__ReadCluster__(volume_, oldEntryCluster, &clusterData))) {
+          clusterData[oldEntryOffset] = 0xE5u;
+
+          /* Write directory cluster back */
+          firstSector = __ClusterToSector__(volume_, oldEntryCluster);
+
+          for(i = 0; i < volume_->sectorsPerCluster; i++) {
+            if(ERROR(__WriteSector__(volume_, firstSector + i, clusterData + (i * volume_->bytesPerSector)))) {
+              __KernelFreeMemory__(clusterData);
+              __AssertOnElse__();
+              FUNCTION_EXIT;
+            }
+          }
+
+          __KernelFreeMemory__(clusterData);
+          __ReturnOk__();
+        } else {
+          __AssertOnElse__();
+        }
+      } else {
+        __AssertOnElse__();
+      }
+    } else {
+      /* Old file not found */
+      __AssertOnElse__();
+    }
   } else {
     /* NULL pointer passed - return error instead of asserting */
     __ReturnError__();
@@ -1207,12 +1705,58 @@ Return_t xFileGetInfo(Volume_t *volume_, const Byte_t *path_, DirEntry_t **entry
   FUNCTION_ENTER;
 
 
-  /* Simplified implementation - getting file info requires:
-   * 1. Finding file entry in directory 2. Allocating and filling DirEntry_t
-   * structure This is deferred for basic implementation */
+  FAT32DirEntry_t fatEntry;
+  DirEntry_t *dirEntry = null;
+
+
   if(__PointerIsNotNull__(volume_) && __PointerIsNotNull__(path_) && __PointerIsNotNull__(entry_)) {
-    /* TODO: Implement file info lookup */
-    __AssertOnElse__();
+    /* Check if volume is mounted */
+    if(!volume_->mounted) {
+      __ReturnError__();
+      FUNCTION_EXIT;
+    }
+
+    /* Find the file */
+    if(OK(__FindFileByPath__(volume_, path_, &fatEntry, null, null, null))) {
+      /* Allocate and fill directory entry from user heap (returned to caller) */
+      if(OK(xMemAlloc((volatile Addr_t **) &dirEntry, sizeof(DirEntry_t)))) {
+        /* Convert 8.3 filename to null-terminated string */
+        Word_t i = 0;
+        Word_t j = 0;
+
+
+        /* Copy name part (8 chars) */
+        for(i = 0; i < 8 && fatEntry.name[i] != ' '; i++) {
+          dirEntry->name[j++] = fatEntry.name[i];
+        }
+
+        /* Add extension if present */
+        if(fatEntry.name[8] != ' ') {
+          dirEntry->name[j++] = '.';
+
+          for(i = 8; i < 11 && fatEntry.name[i] != ' '; i++) {
+            dirEntry->name[j++] = fatEntry.name[i];
+          }
+        }
+
+        dirEntry->name[j] = '\0';
+
+        /* Fill in file attributes */
+        dirEntry->size = __ReadLE32__(fatEntry.fileSize);
+        dirEntry->firstCluster = ((Word_t) __ReadLE16__(fatEntry.firstClusterHigh) << 16) | __ReadLE16__(fatEntry.firstClusterLow);
+        dirEntry->isDirectory = (fatEntry.attr & FAT_ATTR_DIRECTORY) ? true : false;
+        dirEntry->isReadOnly = (fatEntry.attr & FAT_ATTR_READ_ONLY) ? true : false;
+        dirEntry->isHidden = (fatEntry.attr & FAT_ATTR_HIDDEN) ? true : false;
+        dirEntry->isSystem = (fatEntry.attr & FAT_ATTR_SYSTEM) ? true : false;
+        *entry_ = dirEntry;
+        __ReturnOk__();
+      } else {
+        __AssertOnElse__();
+      }
+    } else {
+      /* File not found */
+      __AssertOnElse__();
+    }
   } else {
     /* NULL pointer passed - return error instead of asserting */
     __ReturnError__();
@@ -1225,6 +1769,426 @@ Return_t xFileGetInfo(Volume_t *volume_, const Byte_t *path_, DirEntry_t **entry
 /* ============================================================================
 * Internal Helper Functions
 * ========================================================================== */
+
+
+/**
+ * @brief Simple byte-by-byte comparison for FAT names
+ * @param s1_ First buffer
+ * @param s2_ Second buffer
+ * @param len_ Number of bytes to compare
+ * @return true if equal, false if not equal
+ */
+static Base_t __ByteCompare__(const Byte_t *s1_, const Byte_t *s2_, Word_t len_) {
+  Word_t i = 0;
+
+  for(i = 0; i < len_; i++) {
+    if(s1_[i] != s2_[i]) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+
+/**
+ * @brief Convert a filename to 8.3 FAT format
+ * @param path_ Input filename (e.g., "FILE.TXT" or "file.txt")
+ * @param fat83_ Output buffer (11 bytes) for FAT 8.3 name
+ * @return ReturnOK on success, ReturnError on invalid name
+ */
+static Return_t __ConvertToFAT83__(const Byte_t *path_, Byte_t *fat83_) {
+  Word_t i = 0;
+  Word_t j = 0;
+  Word_t nameLen = 0;
+  Word_t extLen = 0;
+  const Byte_t *dotPos = null;
+
+
+  if(__PointerIsNull__(path_) || __PointerIsNull__(fat83_)) {
+    return ReturnError;
+  }
+
+  /* Initialize output to spaces */
+  for(i = 0; i < 11; i++) {
+    fat83_[i] = ' ';
+  }
+
+  /* Find dot position for extension */
+  for(i = 0; path_[i] != '\0'; i++) {
+    if(path_[i] == '.') {
+      dotPos = &path_[i];
+    }
+  }
+
+  /* Copy name part (up to 8 chars, before dot or end) */
+  nameLen = 0;
+
+  for(i = 0; path_[i] != '\0' && path_[i] != '.' && nameLen < 8; i++) {
+    Byte_t c = path_[i];
+
+    /* Convert to uppercase */
+    if(c >= 'a' && c <= 'z') {
+      c = c - 'a' + 'A';
+    }
+
+    fat83_[nameLen++] = c;
+  }
+
+  /* Copy extension part (up to 3 chars, after dot) */
+  if(__PointerIsNotNull__(dotPos)) {
+    extLen = 0;
+
+    for(j = 1; dotPos[j] != '\0' && extLen < 3; j++) {
+      Byte_t c = dotPos[j];
+
+      /* Convert to uppercase */
+      if(c >= 'a' && c <= 'z') {
+        c = c - 'a' + 'A';
+      }
+
+      fat83_[8 + extLen++] = c;
+    }
+  }
+
+  return ReturnOK;
+}
+
+
+/**
+ * @brief Search a directory cluster chain for a file/directory entry
+ * @param vol_ Pointer to mounted volume
+ * @param dirCluster_ Starting cluster of directory to search
+ * @param name83_ 8.3 FAT format name to search for (11 bytes)
+ * @param entry_ Pointer to receive directory entry if found (can be NULL)
+ * @param entryCluster_ Pointer to receive cluster containing the entry (can be NULL)
+ * @param entryOffset_ Pointer to receive byte offset within cluster (can be NULL)
+ * @return ReturnOK if found, ReturnError if not found
+ */
+static Return_t __FindDirEntry__(const Volume_t *vol_, Word_t dirCluster_, const Byte_t *name83_, FAT32DirEntry_t *entry_, Word_t *entryCluster_, Word_t *entryOffset_) {
+  Byte_t *clusterData = null;
+  FAT32DirEntry_t *fatEntry = null;
+  Word_t entriesPerCluster = 0;
+  Word_t entryIdx = 0;
+  Word_t currentCluster = dirCluster_;
+  Word_t nextCluster = 0;
+  Base_t found = false;
+
+
+  if(__PointerIsNull__(vol_) || __PointerIsNull__(name83_)) {
+    return ReturnError;
+  }
+
+  entriesPerCluster = ((Word_t) vol_->bytesPerSector * vol_->sectorsPerCluster) / sizeof(FAT32DirEntry_t);
+
+  /* Search through directory cluster chain */
+  while(!found && currentCluster < FAT32_EOC_MIN) {
+    /* Read directory cluster */
+    if(ERROR(__ReadCluster__(vol_, currentCluster, &clusterData))) {
+      return ReturnError;
+    }
+
+    /* Search entries in this cluster */
+    for(entryIdx = 0; entryIdx < entriesPerCluster; entryIdx++) {
+      fatEntry = (FAT32DirEntry_t *) (clusterData + (entryIdx * sizeof(FAT32DirEntry_t)));
+
+      /* Check for end of directory */
+      if(fatEntry->name[0] == 0x00u) {
+        __KernelFreeMemory__(clusterData);
+        return ReturnError; /* Not found */
+      }
+
+      /* Skip deleted entries and long filename entries */
+      if((fatEntry->name[0] == 0xE5u) || ((fatEntry->attr & FAT_ATTR_LONG_NAME) == FAT_ATTR_LONG_NAME)) {
+        continue;
+      }
+
+      /* Compare filenames */
+      if(__ByteCompare__(fatEntry->name, name83_, 11)) {
+        /* Found it! */
+        if(__PointerIsNotNull__(entry_)) {
+          __memcpy__(entry_, fatEntry, sizeof(FAT32DirEntry_t));
+        }
+
+        if(__PointerIsNotNull__(entryCluster_)) {
+          *entryCluster_ = currentCluster;
+        }
+
+        if(__PointerIsNotNull__(entryOffset_)) {
+          *entryOffset_ = entryIdx * sizeof(FAT32DirEntry_t);
+        }
+
+        __KernelFreeMemory__(clusterData);
+        return ReturnOK;
+      }
+    }
+
+    __KernelFreeMemory__(clusterData);
+
+    /* Move to next cluster in chain */
+    if(OK(__GetFATEntry__(vol_, currentCluster, &nextCluster))) {
+      currentCluster = nextCluster;
+    } else {
+      return ReturnError;
+    }
+  }
+
+  return ReturnError; /* Not found */
+}
+
+
+/**
+ * @brief Parse a path and find the corresponding file/directory entry
+ * @param vol_ Pointer to mounted volume
+ * @param path_ Path to find (e.g., "/dir/file.txt" or "file.txt")
+ * @param entry_ Pointer to receive directory entry if found (can be NULL)
+ * @param parentCluster_ Pointer to receive parent directory cluster (can be NULL)
+ * @param entryCluster_ Pointer to receive cluster containing the entry (can be NULL)
+ * @param entryOffset_ Pointer to receive byte offset within cluster (can be NULL)
+ * @return ReturnOK if found, ReturnError if not found
+ */
+static Return_t __FindFileByPath__(const Volume_t *vol_, const Byte_t *path_, FAT32DirEntry_t *entry_, Word_t *parentCluster_, Word_t *entryCluster_, Word_t *entryOffset_) {
+  Byte_t name83[11];
+  Byte_t component[256];
+  Word_t pathIdx = 0;
+  Word_t componentIdx = 0;
+  Word_t currentCluster = 0;
+  FAT32DirEntry_t dirEntry;
+  Return_t result = ReturnError;
+
+
+  if(__PointerIsNull__(vol_) || __PointerIsNull__(path_)) {
+    return ReturnError;
+  }
+
+  /* Start at root directory */
+  currentCluster = vol_->rootDirCluster;
+
+  /* Skip leading slash if present */
+  if(path_[0] == '/') {
+    pathIdx = 1;
+  }
+
+  /* If path is just "/" or empty, return root directory info */
+  if(path_[pathIdx] == '\0') {
+    if(__PointerIsNotNull__(entry_)) {
+      __memset__(entry_, 0x00u, sizeof(FAT32DirEntry_t));
+      entry_->attr = FAT_ATTR_DIRECTORY;
+    }
+
+    if(__PointerIsNotNull__(parentCluster_)) {
+      *parentCluster_ = currentCluster;
+    }
+
+    if(__PointerIsNotNull__(entryCluster_)) {
+      *entryCluster_ = currentCluster;
+    }
+
+    if(__PointerIsNotNull__(entryOffset_)) {
+      *entryOffset_ = 0;
+    }
+
+    return ReturnOK;
+  }
+
+  /* Parse path components and traverse directories */
+  while(path_[pathIdx] != '\0') {
+    /* Extract next component */
+    componentIdx = 0;
+
+    while(path_[pathIdx] != '\0' && path_[pathIdx] != '/' && componentIdx < 255) {
+      component[componentIdx++] = path_[pathIdx++];
+    }
+
+    component[componentIdx] = '\0';
+
+    /* Skip slash */
+    if(path_[pathIdx] == '/') {
+      pathIdx++;
+    }
+
+    /* Convert component to 8.3 format */
+    if(ERROR(__ConvertToFAT83__(component, name83))) {
+      return ReturnError;
+    }
+
+    /* Search for this component in current directory */
+    result = __FindDirEntry__(vol_, currentCluster, name83, &dirEntry, entryCluster_, entryOffset_);
+
+    if(ERROR(result)) {
+      return ReturnError; /* Component not found */
+    }
+
+    /* If this is the last component, we're done */
+    if(path_[pathIdx] == '\0') {
+      if(__PointerIsNotNull__(entry_)) {
+        __memcpy__(entry_, &dirEntry, sizeof(FAT32DirEntry_t));
+      }
+
+      if(__PointerIsNotNull__(parentCluster_)) {
+        *parentCluster_ = currentCluster;
+      }
+
+      return ReturnOK;
+    }
+
+    /* Otherwise, move into this directory (must be a directory) */
+    if((dirEntry.attr & FAT_ATTR_DIRECTORY) == 0) {
+      return ReturnError; /* Not a directory, can't traverse further */
+    }
+
+    /* Update parent and current cluster for next iteration */
+    currentCluster = ((Word_t) __ReadLE16__(dirEntry.firstClusterHigh) << 16) | __ReadLE16__(dirEntry.firstClusterLow);
+  }
+
+  return result;
+}
+
+
+/**
+ * @brief Free all clusters in a cluster chain
+ * @param vol_ Pointer to mounted volume
+ * @param startCluster_ First cluster in chain to free
+ * @return ReturnOK on success, ReturnError on failure
+ */
+static Return_t __FreeClusters__(const Volume_t *vol_, Word_t startCluster_) {
+  Word_t currentCluster = startCluster_;
+  Word_t nextCluster = 0;
+
+
+  if(__PointerIsNull__(vol_)) {
+    return ReturnError;
+  }
+
+  /* Follow cluster chain and free each cluster */
+  while(currentCluster >= 2 && currentCluster < FAT32_EOC_MIN) {
+    /* Get next cluster before we free this one */
+    if(ERROR(__GetFATEntry__(vol_, currentCluster, &nextCluster))) {
+      return ReturnError;
+    }
+
+    /* Free this cluster */
+    if(ERROR(__SetFATEntry__(vol_, currentCluster, FAT32_FREE_CLUSTER))) {
+      return ReturnError;
+    }
+
+    currentCluster = nextCluster;
+  }
+
+  return ReturnOK;
+}
+
+
+/**
+ * @brief Create a new directory entry in a parent directory
+ * @param vol_ Pointer to mounted volume
+ * @param parentCluster_ Parent directory cluster
+ * @param name83_ Filename in 8.3 FAT format (11 bytes)
+ * @param attr_ File attributes
+ * @param firstCluster_ First cluster of file/directory
+ * @param size_ File size (0 for directories)
+ * @return ReturnOK on success, ReturnError on failure
+ */
+static Return_t __CreateDirEntry__(const Volume_t *vol_, Word_t parentCluster_, const Byte_t *name83_, Byte_t attr_, Word_t firstCluster_, Word_t size_) {
+  Byte_t *clusterData = null;
+  FAT32DirEntry_t *fatEntry = null;
+  Word_t entriesPerCluster = 0;
+  Word_t entryIdx = 0;
+  Word_t currentCluster = parentCluster_;
+  Word_t nextCluster = 0;
+  Word_t firstSector = 0;
+  Word_t i = 0;
+  Base_t found = false;
+
+
+  if(__PointerIsNull__(vol_) || __PointerIsNull__(name83_)) {
+    return ReturnError;
+  }
+
+  entriesPerCluster = ((Word_t) vol_->bytesPerSector * vol_->sectorsPerCluster) / sizeof(FAT32DirEntry_t);
+
+  /* Search through directory cluster chain for free entry */
+  while(!found && currentCluster < FAT32_EOC_MIN) {
+    /* Read directory cluster */
+    if(ERROR(__ReadCluster__(vol_, currentCluster, &clusterData))) {
+      return ReturnError;
+    }
+
+    /* Search for free entry in this cluster */
+    for(entryIdx = 0; entryIdx < entriesPerCluster; entryIdx++) {
+      fatEntry = (FAT32DirEntry_t *) (clusterData + (entryIdx * sizeof(FAT32DirEntry_t)));
+
+      /* Check for free entry (deleted or end marker) */
+      if((fatEntry->name[0] == 0x00u) || (fatEntry->name[0] == 0xE5u)) {
+        /* Found free entry! Fill it in */
+        __memcpy__(fatEntry->name, name83_, 11);
+        fatEntry->attr = attr_;
+        fatEntry->ntReserved = 0;
+        fatEntry->createTimeTenth = 0;
+        __WriteLE16__(fatEntry->createTime, 0);
+        __WriteLE16__(fatEntry->createDate, 0);
+        __WriteLE16__(fatEntry->lastAccessDate, 0);
+        __WriteLE16__(fatEntry->firstClusterHigh, (HalfWord_t) (firstCluster_ >> 16));
+        __WriteLE16__(fatEntry->writeTime, 0);
+        __WriteLE16__(fatEntry->writeDate, 0);
+        __WriteLE16__(fatEntry->firstClusterLow, (HalfWord_t) (firstCluster_ & 0xFFFFu));
+        __WriteLE32__(fatEntry->fileSize, size_);
+
+        /* Write cluster back */
+        firstSector = __ClusterToSector__(vol_, currentCluster);
+
+        for(i = 0; i < vol_->sectorsPerCluster; i++) {
+          if(ERROR(__WriteSector__(vol_, firstSector + i, clusterData + (i * vol_->bytesPerSector)))) {
+            __KernelFreeMemory__(clusterData);
+            return ReturnError;
+          }
+        }
+
+        __KernelFreeMemory__(clusterData);
+        return ReturnOK;
+      }
+    }
+
+    __KernelFreeMemory__(clusterData);
+
+    /* Move to next cluster in chain */
+    if(OK(__GetFATEntry__(vol_, currentCluster, &nextCluster))) {
+      if(nextCluster >= FAT32_EOC_MIN) {
+        /* Need to allocate new cluster for directory */
+        Word_t newCluster = 0;
+
+        if(OK(__FindFreeCluster__(vol_, currentCluster + 1u, &newCluster))) {
+          /* Link current cluster to new cluster */
+          __SetFATEntry__(vol_, currentCluster, newCluster);
+          /* Mark new cluster as end of chain */
+          __SetFATEntry__(vol_, newCluster, FAT32_EOC_MAX);
+          /* Zero out new cluster */
+          if(OK(__ReadCluster__(vol_, newCluster, &clusterData))) {
+            __memset__(clusterData, 0x00u, (Word_t) vol_->bytesPerSector * vol_->sectorsPerCluster);
+            firstSector = __ClusterToSector__(vol_, newCluster);
+
+            for(i = 0; i < vol_->sectorsPerCluster; i++) {
+              __WriteSector__(vol_, firstSector + i, clusterData + (i * vol_->bytesPerSector));
+            }
+
+            __KernelFreeMemory__(clusterData);
+          }
+
+          currentCluster = newCluster;
+          continue;
+        } else {
+          return ReturnError; /* No free clusters */
+        }
+      }
+
+      currentCluster = nextCluster;
+    } else {
+      return ReturnError;
+    }
+  }
+
+  return ReturnError; /* Shouldn't reach here */
+}
 
 
 /**
