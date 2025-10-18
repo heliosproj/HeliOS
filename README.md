@@ -30,7 +30,7 @@ HeliOS supports two complementary multitasking approaches that work seamlessly t
 - Prevents any single task from monopolizing system resources
 - No context switching required—simplifies development and reduces overhead
 
-Event-driven tasks always receive execution priority over cooperative tasks, ensuring responsive behavior for time-critical operations.
+Event-driven tasks always receive execution priority over cooperative tasks, ensuring responsive behavior when consistent execution is important.
 
 ### Inter-Process Communication
 HeliOS provides three powerful IPC mechanisms:
@@ -388,7 +388,7 @@ Ready to contribute code? See [CONTRIBUTING.md](/CONTRIBUTING.md) for complete d
 # :scroll: Copyright & License
 
 **HeliOS Embedded Operating System**
-Copyright (C) 2020-2023 HeliOS Project <license@heliosproj.org>
+Copyright (C) 2020-2026 HeliOS Project <license@heliosproj.org>
 
 HeliOS is licensed under the **GNU General Public License (GPL) Version 2** as published by the Free Software Foundation.
 
