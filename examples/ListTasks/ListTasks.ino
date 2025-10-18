@@ -21,7 +21,7 @@
 void taskPrint_main(Task_t *task_, TaskParm_t *parm_) {
   String str;
   Base_t tasks;
-  xTaskRunTimeStats stats;
+  TaskRunTimeStats_t *stats;
 
 
   if(OK(xTaskGetAllRunTimeStats(&stats, &tasks))) {

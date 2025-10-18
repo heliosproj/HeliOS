@@ -238,32 +238,32 @@
   #ifndef TASK_T_
     #define TASK_T_
     typedef struct Task_s {
-    Base_t id;
-    Byte_t name[CONFIG_TASK_NAME_BYTES];
-    TaskState_t state;
-    TaskParm_t *taskParameter;
+      Base_t id;
+      Byte_t name[CONFIG_TASK_NAME_BYTES];
+      TaskState_t state;
+      TaskParm_t *taskParameter;
 
 
 
-    void (*callback)(struct Task_s *task_, TaskParm_t *parm_);
+      void (*callback)(struct Task_s *task_, TaskParm_t *parm_);
 
 
 
-    Base_t notificationBytes;
-    Byte_t notificationValue[CONFIG_NOTIFICATION_VALUE_BYTES];
-    Ticks_t lastRunTime;
-    Ticks_t totalRunTime;
-    Ticks_t timerPeriod;
-    Ticks_t timerStartTime;
+      Base_t notificationBytes;
+      Byte_t notificationValue[CONFIG_NOTIFICATION_VALUE_BYTES];
+      Ticks_t lastRunTime;
+      Ticks_t totalRunTime;
+      Ticks_t timerPeriod;
+      Ticks_t timerStartTime;
 
 
 
-  #if defined(CONFIG_TASK_WD_TIMER_ENABLE)
-      Ticks_t wdTimerPeriod;
+    #if defined(CONFIG_TASK_WD_TIMER_ENABLE)
+        Ticks_t wdTimerPeriod;
 
 
 
-  #endif /* if defined(CONFIG_TASK_WD_TIMER_ENABLE) */
+    #endif /* if defined(CONFIG_TASK_WD_TIMER_ENABLE) */
       struct Task_s *next;
     } Task_t;
   #endif /* ifndef TASK_T_ */

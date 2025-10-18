@@ -49,6 +49,7 @@
 #define MAX_SIZE_TEST ((CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS + 100) * CONFIG_MEMORY_REGION_BLOCK_SIZE) /*
                                                                                                        *
                                                                                                        *
+                                                                                                       *
                                                                                                        * Oversized
                                                                                                        * allocation
                                                                                                        * test

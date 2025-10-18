@@ -33,132 +33,112 @@
   #endif /* if !defined(CHAR_BIT) */
 
 
-  #if defined(true)
-    #undef true
-  #endif /* if defined(true) */
-  #define true 0xFFu /* 255*/
+  #if !defined(true)
+    #define true 0xFFu /* 255 */
+  #endif /* if !defined(true) */
 
 
-  #if defined(false)
-    #undef false
-  #endif /* if defined(false) */
-  #define false 0x0u /* 0 */
+  #if !defined(false)
+    #define false 0x00u /* 0 */
+  #endif /* if !defined(false) */
 
 
-  #if defined(null)
-    #undef null
-  #endif /* if defined(null) */
-  #if defined(__cplusplus)
-    #define null 0x0 /* 0 */
-  #else  /* if defined(__cplusplus) */
-    #define null ((void *) 0x0) /* 0 */
-  #endif /* if defined(__cplusplus) */
+  #if !defined(null)
+    #if defined(__cplusplus)
+      #define null 0x0 /* 0 */
+    #else  /* if defined(__cplusplus) */
+      #define null ((void *) 0x0) /* 0 */
+    #endif /* if defined(__cplusplus) */
+  #endif /* if !defined(null) */
 
 
-  #if defined(nil)
-    #undef nil
-  #endif /* if defined(nil) */
-  #define nil 0x0u /* 0 */
+  #if !defined(nil)
+    #define nil 0x00u /* 0 */
+  #endif /* if !defined(nil) */
 
 
-  #if defined(UINT8_TYPE)
-    #undef UINT8_TYPE
-  #endif /* if defined(UINT8_TYPE) */
-  #define UINT8_TYPE uint8_t
+  #if !defined(UINT8_TYPE)
+    #define UINT8_TYPE uint8_t
+  #endif /* if !defined(UINT8_TYPE) */
 
 
-  #if defined(UINT16_TYPE)
-    #undef UINT16_TYPE
-  #endif /* if defined(UINT16_TYPE) */
-  #define UINT16_TYPE uint16_t
+  #if !defined(UINT16_TYPE)
+    #define UINT16_TYPE uint16_t
+  #endif /* if !defined(UINT16_TYPE) */
 
 
-  #if defined(UINT32_TYPE)
-    #undef UINT32_TYPE
-  #endif /* if defined(UINT32_TYPE) */
-  #define UINT32_TYPE uint32_t
+  #if !defined(UINT32_TYPE)
+    #define UINT32_TYPE uint32_t
+  #endif /* if !defined(UINT32_TYPE) */
 
 
-  #if defined(SIZE_TYPE)
-    #undef SIZE_TYPE
-  #endif /* if defined(SIZE_TYPE) */
-  #define SIZE_TYPE size_t
+  #if !defined(SIZE_TYPE)
+    #define SIZE_TYPE size_t
+  #endif /* if !defined(SIZE_TYPE) */
 
 
-  #if defined(VOID_TYPE)
-    #undef VOID_TYPE
-  #endif /* if defined(VOID_TYPE) */
-  #define VOID_TYPE void
+  #if !defined(VOID_TYPE)
+    #define VOID_TYPE void
+  #endif /* if !defined(VOID_TYPE) */
 
 
-  #if defined(OS_PRODUCT_NAME_SIZE)
-    #undef OS_PRODUCT_NAME_SIZE
-  #endif /* if defined(OS_PRODUCT_NAME_SIZE) */
-  #define OS_PRODUCT_NAME_SIZE 0x6u /* 6 */
+  #if !defined(OS_PRODUCT_NAME_SIZE)
+    #define OS_PRODUCT_NAME_SIZE 0x6u /* 6 */
+  #endif /* if !defined(OS_PRODUCT_NAME_SIZE) */
 
 
-  #if defined(MEMORY_REGION_SIZE_IN_BYTES)
-    #undef MEMORY_REGION_SIZE_IN_BYTES
-  #endif /* if defined(MEMORY_REGION_SIZE_IN_BYTES) */
-  #define MEMORY_REGION_SIZE_IN_BYTES CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS *CONFIG_MEMORY_REGION_BLOCK_SIZE
+  #if !defined(MEMORY_REGION_SIZE_IN_BYTES)
+    #define MEMORY_REGION_SIZE_IN_BYTES CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS *CONFIG_MEMORY_REGION_BLOCK_SIZE
+  #endif /* if !defined(MEMORY_REGION_SIZE_IN_BYTES) */
 
 
-  #if defined(OK)
-    #undef OK
-  #endif /* if defined(OK) */
-  #define OK(expr_) (ReturnOK == (expr_))
+  #if !defined(OK)
+    #define OK(expr_) (ReturnOK == (expr_))
+  #endif /* if !defined(OK) */
 
 
-  #if defined(ERROR)
-    #undef ERROR
-  #endif /* if defined(ERROR) */
-  #define ERROR(expr_) (ReturnError == (expr_))
+  #if !defined(ERROR)
+    #define ERROR(expr_) (ReturnError == (expr_))
+  #endif /* if !defined(ERROR) */
 
 
-  #if defined(FUNCTION_ENTER)
-    #undef FUNCTION_ENTER
-  #endif /* if defined(FUNCTION_ENTER) */
-  #define FUNCTION_ENTER Return_t ret = ReturnError
+  #if !defined(FUNCTION_ENTER)
+    #define FUNCTION_ENTER Return_t ret = ReturnError
+  #endif /* if !defined(FUNCTION_ENTER) */
 
 
-  #if defined(FUNCTION_EXIT)
-    #undef FUNCTION_EXIT
-  #endif /* if defined(FUNCTION_EXIT) */
-  #define FUNCTION_EXIT return(ret)
+  #if !defined(FUNCTION_EXIT)
+    #define FUNCTION_EXIT return(ret)
+  #endif /* if !defined(FUNCTION_EXIT) */
 
 
-  #if defined(__PointerIsNotNull__)
-    #undef __PointerIsNotNull__
-  #endif /* if defined(__PointerIsNotNull__) */
-  #define __PointerIsNotNull__(addr_) (null != (addr_))
+  #if !defined(__PointerIsNotNull__)
+    #define __PointerIsNotNull__(addr_) (null != (addr_))
+  #endif /* if !defined(__PointerIsNotNull__) */
 
 
-  #if defined(__PointerIsNull__)
-    #undef __PointerIsNull__
-  #endif /* if defined(__PointerIsNull__) */
-  #define __PointerIsNull__(addr_) (null == (addr_))
+  #if !defined(__PointerIsNull__)
+    #define __PointerIsNull__(addr_) (null == (addr_))
+  #endif /* if !defined(__PointerIsNull__) */
 
 
-  #if defined(__ReturnOk__)
-    #undef __ReturnOk__
-  #endif /* if defined(__ReturnOk__) */
-  #define __ReturnOk__() ret = ReturnOK
+  #if !defined(__ReturnOk__)
+    #define __ReturnOk__() ret = ReturnOK
+  #endif /* if !defined(__ReturnOk__) */
 
 
-  #if defined(__ReturnError__)
-    #undef __ReturnError__
-  #endif /* if defined(__ReturnError__) */
-  #define __ReturnError__() ret = ReturnError
+  #if !defined(__ReturnError__)
+    #define __ReturnError__() ret = ReturnError
+  #endif /* if !defined(__ReturnError__) */
 
 
-  #if defined(__AssertOnElse__)
-    #undef __AssertOnElse__
-  #endif /* if defined(__AssertOnElse__()) */
-  #if defined(CONFIG_ENABLE_SYSTEM_ASSERT)
-    #define __AssertOnElse__() xSystemAssert(__FILE__, __LINE__)
-  #else  /* if defined(CONFIG_ENABLE_SYSTEM_ASSERT) */
-    #define __AssertOnElse__()
-  #endif /* if defined(CONFIG_ENABLE_SYSTEM_ASSERT) */
+  #if !defined(__AssertOnElse__)
+    #if defined(CONFIG_ENABLE_SYSTEM_ASSERT)
+      #define __AssertOnElse__() xSystemAssert(__FILE__, __LINE__)
+    #else  /* if defined(CONFIG_ENABLE_SYSTEM_ASSERT) */
+      #define __AssertOnElse__()
+    #endif /* if defined(CONFIG_ENABLE_SYSTEM_ASSERT) */
+  #endif /* if !defined(__AssertOnElse__) */
 
 
 #endif /* ifndef DEFINES_H_ */
