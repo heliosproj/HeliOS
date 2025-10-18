@@ -125,42 +125,54 @@
     #define TICKS_T_
     typedef UINT32_TYPE Ticks_t;
   #endif /* ifndef TICKS_T_ */
-  typedef struct Device_s {
-    HalfWord_t uid;
-    Byte_t name[CONFIG_DEVICE_NAME_BYTES];
-    DeviceState_t state;
-    DeviceMode_t mode;
-    Word_t bytesWritten;
-    Word_t bytesRead;
-    Base_t available;
+
+  #ifndef DEVICE_T_
+    #define DEVICE_T_
+    typedef struct Device_s {
+      HalfWord_t uid;
+      Byte_t name[CONFIG_DEVICE_NAME_BYTES];
+      DeviceState_t state;
+      DeviceMode_t mode;
+      Word_t bytesWritten;
+      Word_t bytesRead;
+      Base_t available;
 
 
 
-    Return_t (*init)(struct Device_s *device_);
-    Return_t (*config)(struct Device_s *device_, Size_t *size_, Addr_t *config_);
-    Return_t (*read)(struct Device_s *device_, Size_t *size_, Addr_t **data_);
-    Return_t (*write)(struct Device_s *device_, Size_t *size_, Addr_t *data_);
-    Return_t (*simple_read)(struct Device_s *device_, Byte_t *data_);
-    Return_t (*simple_write)(struct Device_s *device_, Byte_t data_);
+      Return_t (*init)(struct Device_s *device_);
+      Return_t (*config)(struct Device_s *device_, Size_t *size_, Addr_t *config_);
+      Return_t (*read)(struct Device_s *device_, Size_t *size_, Addr_t **data_);
+      Return_t (*write)(struct Device_s *device_, Size_t *size_, Addr_t *data_);
+      Return_t (*simple_read)(struct Device_s *device_, Byte_t *data_);
+      Return_t (*simple_write)(struct Device_s *device_, Byte_t data_);
 
 
 
-    struct Device_s *next;
-  } Device_t;
-  typedef struct MemoryEntry_s {
-    Word_t magic;
-    Byte_t free;
-    HalfWord_t blocks;
-    struct MemoryEntry_s *next;
-  } MemoryEntry_t;
-  typedef struct MemoryRegion_s {
-    volatile Byte_t mem[MEMORY_REGION_SIZE_IN_BYTES];
-    MemoryEntry_t *start;
-    HalfWord_t entrySize;
-    HalfWord_t allocations;
-    HalfWord_t frees;
-    Word_t minAvailableEver;
-  } MemoryRegion_t;
+      struct Device_s *next;
+    } Device_t;
+  #endif /* ifndef DEVICE_T_ */
+
+  #ifndef MEMORYENTRY_T_
+    #define MEMORYENTRY_T_
+    typedef struct MemoryEntry_s {
+      Word_t magic;
+      Byte_t free;
+      HalfWord_t blocks;
+      struct MemoryEntry_s *next;
+    } MemoryEntry_t;
+  #endif /* ifndef MEMORYENTRY_T_ */
+
+  #ifndef MEMORYREGION_T_
+    #define MEMORYREGION_T_
+    typedef struct MemoryRegion_s {
+      volatile Byte_t mem[MEMORY_REGION_SIZE_IN_BYTES];
+      MemoryEntry_t *start;
+      HalfWord_t entrySize;
+      HalfWord_t allocations;
+      HalfWord_t frees;
+      Word_t minAvailableEver;
+    } MemoryRegion_t;
+  #endif /* ifndef MEMORYREGION_T_ */
 
   #ifndef TASKNOTIFICATION_T_
     #define TASKNOTIFICATION_T_
@@ -256,15 +268,22 @@
     } Task_t;
   #endif /* ifndef TASK_T_ */
 
-  typedef struct TaskList_s {
-    Base_t nextId;
-    Base_t length;
-    Task_t *head;
-  } TaskList_t;
-  typedef struct DeviceList_s {
-    Base_t length;
-    Device_t *head;
-  } DeviceList_t;
+  #ifndef TASKLIST_T_
+    #define TASKLIST_T_
+    typedef struct TaskList_s {
+      Base_t nextId;
+      Base_t length;
+      Task_t *head;
+    } TaskList_t;
+  #endif /* ifndef TASKLIST_T_ */
+
+  #ifndef DEVICELIST_T_
+    #define DEVICELIST_T_
+    typedef struct DeviceList_s {
+      Base_t length;
+      Device_t *head;
+    } DeviceList_t;
+  #endif /* ifndef DEVICELIST_T_ */
 
   #ifndef TIMER_T_
     #define TIMER_T_
@@ -275,10 +294,13 @@
     } Timer_t;
   #endif /* ifndef TIMER_T_ */
 
-  typedef struct TimerList_s {
-    Base_t length;
-    Timer_t *head;
-  } TimerList_t;
+  #ifndef TIMERLIST_T_
+    #define TIMERLIST_T_
+    typedef struct TimerList_s {
+      Base_t length;
+      Timer_t *head;
+    } TimerList_t;
+  #endif /* ifndef TIMERLIST_T_ */
 
   #ifndef FLAGS_T_
     #define FLAGS_T_
@@ -290,11 +312,14 @@
     } Flags_t;
   #endif /* ifndef FLAGS_T_ */
 
-  typedef struct Message_s {
-    Base_t messageBytes;
-    Byte_t messageValue[CONFIG_MESSAGE_VALUE_BYTES];
-    struct Message_s *next;
-  } Message_t;
+  #ifndef MESSAGE_T_
+    #define MESSAGE_T_
+    typedef struct Message_s {
+      Base_t messageBytes;
+      Byte_t messageValue[CONFIG_MESSAGE_VALUE_BYTES];
+      struct Message_s *next;
+    } Message_t;
+  #endif /* ifndef MESSAGE_T_ */
 
   #ifndef QUEUE_T_
     #define QUEUE_T_
