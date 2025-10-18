@@ -14,13 +14,15 @@
       "examples/*",
       "extras/*",
       "src/*",
-      "test/*",
       "*.md",
-      "library.properties"
+      "library.properties",
+      "library.json"
     ],
     "exclude":[
       ".git/*",
       ".vscode/*",
+      ".claude/*",
+      "test/*",
       "test/bin/test",
       ".gitattributes",
       ".gitignore"
