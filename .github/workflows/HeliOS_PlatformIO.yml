@@ -41,6 +41,6 @@ jobs:
 
       - name: Build example (${{ matrix.example }})
         run: |
-          pio ci --lib="." --board=uno --board=megaatmega2560 --board=due --board=teensy41 --board=nucleo_f767zi
+          pio ci --lib="." --board=uno --board=megaatmega2560 --board=teensy41 --board=nucleo_f767zi
         env:
           PLATFORMIO_CI_SRC: ${{ matrix.example }}

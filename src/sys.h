@@ -103,7 +103,6 @@
   #ifdef __cplusplus
     extern "C" {
   #endif /* ifdef __cplusplus */
-
   extern Flags_t flag;
   Return_t xSystemAssert(const char *file_, const int line_);
   Return_t xSystemInit(void);
