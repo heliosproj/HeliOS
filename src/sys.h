@@ -80,13 +80,13 @@
   #if defined(__SetFlag__)
     #undef __SetFlag__
   #endif /* if defined(__SetFlag__) */
-  #define __SetFlag__(flag_) (flag_) = 0xFFu
+  #define __SetFlag__(flag_) flag_ = 0xFFu
 
 
   #if defined(__UnsetFlag__)
     #undef __UnsetFlag__
   #endif /* if defined(__UnsetFlag__) */
-  #define __UnsetFlag__(flag_) (flag_) = 0x0u
+  #define __UnsetFlag__(flag_) flag_ = 0x00u
 
 
   #if defined(__FlagIsSet__)
