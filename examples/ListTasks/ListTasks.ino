@@ -18,9 +18,9 @@
 #include <HeliOS.h>
 
 
-void taskPrint_main(xTask task_, xTaskParm parm_) {
+void taskPrint_main(Task_t *task_, TaskParm_t *parm_) {
   String str;
-  xBase tasks;
+  Base_t tasks;
   xTaskRunTimeStats stats;
 
 
@@ -41,7 +41,7 @@ void taskPrint_main(xTask task_, xTaskParm parm_) {
 
 
 void setup() {
-  xTask task;
+  Task_t *task;
 
 
   Serial.begin(9600);
@@ -50,7 +50,7 @@ void setup() {
     xSystemHalt();
   }
 
-  if(ERROR(xTaskCreate(&task, (const xByte *) "PRINTTSK", taskPrint_main, null))) {
+  if(ERROR(xTaskCreate(&task, (const Byte_t *) "PRINTTSK", taskPrint_main, null))) {
     xSystemHalt();
   }
 

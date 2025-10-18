@@ -7,13 +7,13 @@
   defined(ARDUINO_TEENSY31) || defined(ARDUINO_TEENSY32) || defined(ARDUINO_TEENSY30) || defined(ARDUINO_TEENSYLC)
 
 
-    String xByte2String(xSize size_, xByte *bytes_) {
+    String xByte2String(Size_t size_, Byte_t *bytes_) {
       String str = "";
-      xSize i = 0;
+      Size_t i = 0;
       char buf[size_ + 1];
 
 
-      if((bytes_ != nullptr) && ((xSize)0 < size_)) {
+      if((bytes_ != nullptr) && ((Size_t)0 < size_)) {
         for(i = 0; i < size_; i++) {
           buf[i] = (char) bytes_[i];
         }

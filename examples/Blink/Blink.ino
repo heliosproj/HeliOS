@@ -18,7 +18,7 @@
 #include <HeliOS.h>
 
 
-void blinkTask_main(xTask task_, xTaskParm parm_) {
+void blinkTask_main(Task_t *task_, TaskParm_t *parm_) {
   int ledState = DEREF_TASKPARM(int, parm_);
 
 
@@ -37,7 +37,7 @@ void blinkTask_main(xTask task_, xTaskParm parm_) {
 
 
 void setup() {
-  xTask blink;
+  Task_t *blink;
   int ledState;
 
 
@@ -47,7 +47,7 @@ void setup() {
     xSystemHalt();
   }
 
-  if(ERROR(xTaskCreate(&blink, (const xByte *) "BLINKTSK", blinkTask_main, &ledState))) {
+  if(ERROR(xTaskCreate(&blink, (const Byte_t *) "BLINKTSK", blinkTask_main, &ledState))) {
     xSystemHalt();
   }
 

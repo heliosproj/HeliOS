@@ -42,7 +42,7 @@ static Return_t __QueuePeek__(const Queue_t *queue_, QueueMessage_t **message_);
 #define __QueueLengthNotAtLimit__() (messages < queue_->limit)
 
 
-Return_t xQueueCreate(Queue_t **queue_, Base_t limit_) {
+Return_t xQueueCreate(Queue_t **queue_, const Base_t limit_) {
   FUNCTION_ENTER;
 
   if(__PointerIsNotNull__(queue_) && (CONFIG_QUEUE_MINIMUM_LIMIT <= limit_)) {

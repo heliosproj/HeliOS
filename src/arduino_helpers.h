@@ -9,7 +9,7 @@
   defined(ARDUINO_TEENSY31) || defined(ARDUINO_TEENSY32) || defined(ARDUINO_TEENSY30) || defined(ARDUINO_TEENSYLC)
     #include <Arduino.h>
     #include "HeliOS.h"
-    String xByte2String(xSize size_, xByte *bytes_);
+    String xByte2String(Size_t size_, Byte_t *bytes_);
 
   #endif /* if defined(ARDUINO_ARCH_AVR) || defined(ARDUINO_ARCH_SAM) ||
           * defined(ARDUINO_ARCH_SAMD) || defined(ARDUINO_ARCH_ESP8266) ||

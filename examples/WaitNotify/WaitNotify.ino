@@ -19,17 +19,17 @@
 #include <arduino_helpers.h>
 
 
-void taskSender_main(xTask task_, xTaskParm parm_) {
-  xTask receiver;
+void taskSender_main(Task_t *task_, TaskParm_t *parm_) {
+  Task_t *receiver;
 
 
-  if(OK(xTaskGetHandleByName(&receiver, (const xByte *) "RECEIVER"))) {
-    xTaskNotifyGive(receiver, 5, (const xByte *) "HELLO");
+  if(OK(xTaskGetHandleByName(&receiver, (const Byte_t *) "RECEIVER"))) {
+    xTaskNotifyGive(receiver, 5, (const Byte_t *) "HELLO");
   }
 }
 
 
-void taskReceiver_main(xTask task_, xTaskParm parm_) {
+void taskReceiver_main(Task_t *task_, TaskParm_t *parm_) {
   String str;
   xTaskNotification notif;
 
@@ -46,8 +46,8 @@ void taskReceiver_main(xTask task_, xTaskParm parm_) {
 
 
 void setup() {
-  xTask sender;
-  xTask receiver;
+  Task_t *sender;
+  Task_t *receiver;
 
 
   Serial.begin(9600);
@@ -56,11 +56,11 @@ void setup() {
     xSystemHalt();
   }
 
-  if(ERROR(xTaskCreate(&sender, (const xByte *) "SENDER__", taskSender_main, null))) {
+  if(ERROR(xTaskCreate(&sender, (const Byte_t *) "SENDER__", taskSender_main, null))) {
     xSystemHalt();
   }
 
-  if(ERROR(xTaskCreate(&receiver, (const xByte *) "RECEIVER", taskReceiver_main, null))) {
+  if(ERROR(xTaskCreate(&receiver, (const Byte_t *) "RECEIVER", taskReceiver_main, null))) {
     xSystemHalt();
   }
 

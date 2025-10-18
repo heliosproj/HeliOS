@@ -18,7 +18,7 @@
 #include <HeliOS.h>
 
 
-void taskShort_main(xTask task_, xTaskParm parm_) {
+void taskShort_main(Task_t *task_, TaskParm_t *parm_) {
   /* Arduino's delay() is only used here to demonstrate HeliOS functionality and
    * must not be used in a real application built on HeliOS. */
   delay(10);
@@ -26,7 +26,7 @@ void taskShort_main(xTask task_, xTaskParm parm_) {
 }
 
 
-void taskLong_main(xTask task_, xTaskParm parm_) {
+void taskLong_main(Task_t *task_, TaskParm_t *parm_) {
   /* Arduino's delay() is only used here to demonstrate HeliOS functionality and
    * must not be used in a real application built on HeliOS. */
   delay(60);
@@ -35,8 +35,8 @@ void taskLong_main(xTask task_, xTaskParm parm_) {
 
 
 void setup() {
-  xTask shortTask;
-  xTask longTask;
+  Task_t *shortTask;
+  Task_t *longTask;
 
 
   Serial.begin(9600);
@@ -45,11 +45,11 @@ void setup() {
     xSystemHalt();
   }
 
-  if(ERROR(xTaskCreate(&shortTask, (const xByte *) "SHORTTSK", taskShort_main, null))) {
+  if(ERROR(xTaskCreate(&shortTask, (const Byte_t *) "SHORTTSK", taskShort_main, null))) {
     xSystemHalt();
   }
 
-  if(ERROR(xTaskCreate(&longTask, (const xByte *) "LONGTSK ", taskLong_main, null))) {
+  if(ERROR(xTaskCreate(&longTask, (const Byte_t *) "LONGTSK ", taskLong_main, null))) {
     xSystemHalt();
   }
 
