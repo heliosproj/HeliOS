@@ -557,170 +557,184 @@
    * @sa xTaskWait()
    *
    */
-  typedef struct TaskNotification_s {
-    Base_t notificationBytes; /**< The length in bytes of the notification value
-                               * which cannot exceed
-                               * CONFIG_NOTIFICATION_VALUE_BYTES. */
-    Byte_t notificationValue[CONFIG_NOTIFICATION_VALUE_BYTES]; /**< The
-                                                                * notification
-                                                                * value whose
-                                                                * length is
-                                                                * specified by
-                                                                * the
-                                                                * notification
-                                                                * bytes member.
-                                                                */
-  } TaskNotification_t;
+
+  #ifndef HELIOS_PUBLIC_STRUCTURES_DEFINED_
+    #define HELIOS_PUBLIC_STRUCTURES_DEFINED_
+    typedef struct TaskNotification_s {
+      Base_t notificationBytes; /**< The length in bytes of the notification
+                                 * value which cannot exceed
+                                 * CONFIG_NOTIFICATION_VALUE_BYTES. */
+      Byte_t notificationValue[CONFIG_NOTIFICATION_VALUE_BYTES]; /**< The
+                                                                  * notification
+                                                                  * value whose
+                                                                  * length is
+                                                                  * specified by
+                                                                  * the
+                                                                  * notification
+                                                                  * bytes
+                                                                  * member.
+                                                                  */
+    } TaskNotification_t;
 
 
-  /**
-   * @brief Data structure for a direct to task notification
-   *
-   * @sa TaskNotification_t
-   *
-   */
-  /**
-   * @brief Data structure for task runtime statistics
-   *
-   * The TaskRunTimeStats_t data structure is used by xTaskGetTaskRunTimeStats()
-   * and xTaskGetAllRuntimeStats() to obtain runtime statistics about a task.
-   *
-   * @sa TaskRunTimeStats_t *
-   * @sa xTaskGetTaskRunTimeStats()
-   * @sa xTaskGetAllRunTimeStats()
-   * @sa xMemFree()
-   *
-   */
-  typedef struct TaskRunTimeStats_s {
-    Base_t id; /**< The ID of the task. */
-    Ticks_t lastRunTime; /**< The duration in ticks of the task's last runtime.
-                          */
-    Ticks_t totalRunTime; /**< The duration in ticks of the task's total
-                           * runtime. */
-  } TaskRunTimeStats_t;
+    /**
+     * @brief Data structure for a direct to task notification
+     *
+     * @sa TaskNotification_t
+     *
+     */
+    /**
+     * @brief Data structure for task runtime statistics
+     *
+     * The TaskRunTimeStats_t data structure is used by
+     * xTaskGetTaskRunTimeStats() and xTaskGetAllRuntimeStats() to obtain
+     * runtime statistics about a task.
+     *
+     * @sa TaskRunTimeStats_t *
+     * @sa xTaskGetTaskRunTimeStats()
+     * @sa xTaskGetAllRunTimeStats()
+     * @sa xMemFree()
+     *
+     */
+    typedef struct TaskRunTimeStats_s {
+      Base_t id; /**< The ID of the task. */
+      Ticks_t lastRunTime; /**< The duration in ticks of the task's last
+                            * runtime.
+                            */
+      Ticks_t totalRunTime; /**< The duration in ticks of the task's total
+                             * runtime. */
+    } TaskRunTimeStats_t;
 
 
-  /**
-   * @brief Data structure for task runtime statistics
-   *
-   */
-  /**
-   * @brief Data structure for memory region statistics
-   *
-   * The MemoryRegionStats_t data structure is used by xMemGetHeapStats() and
-   * xMemGetKernelStats() to obtain statistics about either memory region.
-   *
-   * @sa MemoryRegionStats_t *
-   * @sa xMemGetHeapStats()
-   * @sa xMemGetKernelStats()
-   * @sa xMemFree()
-   *
-   */
-  typedef struct MemoryRegionStats_s {
-    Word_t largestFreeEntryInBytes; /**< The largest free entry in bytes. */
-    Word_t smallestFreeEntryInBytes; /**< The smallest free entry in bytes. */
-    Word_t numberOfFreeBlocks; /**< The number of free blocks. See
-                                * CONFIG_MEMORY_REGION_BLOCK_SIZE for block size
-                                * in bytes. */
-    Word_t availableSpaceInBytes; /**< The amount of free memory in bytes (i.e.,
-                                   * numberOfFreeBlocks *
-                                   * CONFIG_MEMORY_REGION_BLOCK_SIZE). */
-    Word_t successfulAllocations; /**< Number of successful memory allocations.
-                                   */
-    Word_t successfulFrees; /**< Number of successful memory "frees". */
-    Word_t minimumEverFreeBytesRemaining; /**< Lowest water lever since system
-                                           * initialization of free bytes of
-                                           * memory. */
-  } MemoryRegionStats_t;
+    /**
+     * @brief Data structure for task runtime statistics
+     *
+     */
+    /**
+     * @brief Data structure for memory region statistics
+     *
+     * The MemoryRegionStats_t data structure is used by xMemGetHeapStats() and
+     * xMemGetKernelStats() to obtain statistics about either memory region.
+     *
+     * @sa MemoryRegionStats_t *
+     * @sa xMemGetHeapStats()
+     * @sa xMemGetKernelStats()
+     * @sa xMemFree()
+     *
+     */
+    typedef struct MemoryRegionStats_s {
+      Word_t largestFreeEntryInBytes; /**< The largest free entry in bytes. */
+      Word_t smallestFreeEntryInBytes; /**< The smallest free entry in bytes. */
+      Word_t numberOfFreeBlocks; /**< The number of free blocks. See
+                                  * CONFIG_MEMORY_REGION_BLOCK_SIZE for block
+                                  * size in bytes. */
+      Word_t availableSpaceInBytes; /**< The amount of free memory in bytes
+                                     * (i.e., numberOfFreeBlocks *
+                                     * CONFIG_MEMORY_REGION_BLOCK_SIZE). */
+      Word_t successfulAllocations; /**< Number of successful memory
+                                     * allocations.
+                                     */
+      Word_t successfulFrees; /**< Number of successful memory "frees". */
+      Word_t minimumEverFreeBytesRemaining; /**< Lowest water lever since system
+                                             * initialization of free bytes of
+                                             * memory. */
+    } MemoryRegionStats_t;
 
 
-  /**
-   * @brief Data structure for memory region statistics
-   *
-   */
-  /**
-   * @brief Data structure for information about a task
-   *
-   * The TaskInfo_t structure is similar to xTaskRuntimeStats_t in that it
-   * contains runtime statistics for a task. However, TaskInfo_t also contains
-   * additional details about a task such as its name and state. The TaskInfo_t
-   * structure is returned by xTaskGetTaskInfo() and xTaskGetAllTaskInfo(). If
-   * only runtime statistics are needed, then TaskRunTimeStats_t should be used
-   * because of its smaller memory footprint.
-   *
-   * @sa TaskInfo_t *
-   * @sa xTaskGetTaskInfo()
-   * @sa xTaskGetAllTaskInfo()
-   * @sa CONFIG_TASK_NAME_BYTES
-   * @sa xMemFree()
-   *
-   */
-  typedef struct TaskInfo_s {
-    Base_t id; /**< The ID of the task. */
-    Byte_t name[CONFIG_TASK_NAME_BYTES]; /**< The name of the task which must be
-                                          * exactly CONFIG_TASK_NAME_BYTES bytes
-                                          * in length. Shorter task names must
-                                          * be padded. */
-    TaskState_t state; /**< The state the task is in which is one of four states
-                        * specified in the TaskState_t enumerated data type. */
-    Ticks_t lastRunTime; /**< The duration in ticks of the task's last runtime.
-                          */
-    Ticks_t totalRunTime; /**< The duration in ticks of the task's total
-                           * runtime. */
-  } TaskInfo_t;
+    /**
+     * @brief Data structure for memory region statistics
+     *
+     */
+    /**
+     * @brief Data structure for information about a task
+     *
+     * The TaskInfo_t structure is similar to xTaskRuntimeStats_t in that it
+     * contains runtime statistics for a task. However, TaskInfo_t also contains
+     * additional details about a task such as its name and state. The
+     * TaskInfo_t structure is returned by xTaskGetTaskInfo() and
+     * xTaskGetAllTaskInfo(). If only runtime statistics are needed, then
+     * TaskRunTimeStats_t should be used because of its smaller memory
+     * footprint.
+     *
+     * @sa TaskInfo_t *
+     * @sa xTaskGetTaskInfo()
+     * @sa xTaskGetAllTaskInfo()
+     * @sa CONFIG_TASK_NAME_BYTES
+     * @sa xMemFree()
+     *
+     */
+    typedef struct TaskInfo_s {
+      Base_t id; /**< The ID of the task. */
+      Byte_t name[CONFIG_TASK_NAME_BYTES]; /**< The name of the task which must
+                                            * be exactly CONFIG_TASK_NAME_BYTES
+                                            * bytes in length. Shorter task
+                                            * names must be padded. */
+      TaskState_t state; /**< The state the task is in which is one of four
+                          * states specified in the TaskState_t enumerated data
+                          * type. */
+      Ticks_t lastRunTime; /**< The duration in ticks of the task's last
+                            * runtime.
+                            */
+      Ticks_t totalRunTime; /**< The duration in ticks of the task's total
+                             * runtime. */
+    } TaskInfo_t;
 
 
-  /**
-   * @brief Data structure for information about a task
-   *
-   */
-  /**
-   * @brief Data structure for a queue message
-   *
-   * The QueueMessage_t stucture is used to store a queue message and is
-   * returned by xQueueReceive() and xQueuePeek().
-   *
-   * @sa QueueMessage_t *
-   * @sa xQueueReceive()
-   * @sa xQueuePeek()
-   * @sa CONFIG_MESSAGE_VALUE_BYTES
-   * @sa xMemFree()
-   *
-   */
-  typedef struct QueueMessage_s {
-    Base_t messageBytes; /**< The number of bytes contained in the message value
-                          * which cannot exceed CONFIG_MESSAGE_VALUE_BYTES. */
-    Byte_t messageValue[CONFIG_MESSAGE_VALUE_BYTES]; /**< The queue message
-                                                      * value. */
-  } QueueMessage_t;
+    /**
+     * @brief Data structure for information about a task
+     *
+     */
+    /**
+     * @brief Data structure for a queue message
+     *
+     * The QueueMessage_t stucture is used to store a queue message and is
+     * returned by xQueueReceive() and xQueuePeek().
+     *
+     * @sa QueueMessage_t *
+     * @sa xQueueReceive()
+     * @sa xQueuePeek()
+     * @sa CONFIG_MESSAGE_VALUE_BYTES
+     * @sa xMemFree()
+     *
+     */
+    typedef struct QueueMessage_s {
+      Base_t messageBytes; /**< The number of bytes contained in the message
+                            * value which cannot exceed
+                            * CONFIG_MESSAGE_VALUE_BYTES. */
+      Byte_t messageValue[CONFIG_MESSAGE_VALUE_BYTES]; /**< The queue message
+                                                        * value. */
+    } QueueMessage_t;
 
 
-  /**
-   * @brief Data structure for a queue message
-   *
-   */
-  /**
-   * @brief Data structure for information about the HeliOS system
-   *
-   * The SystemInfo_t data structure is used to store information about the
-   * HeliOS system and is returned by xSystemGetSystemInfo().
-   *
-   * @sa SystemInfo_t *
-   * @sa xSystemGetSystemInfo()
-   * @sa OS_PRODUCT_NAME_SIZE
-   * @sa xMemFree()
-   *
-   */
-  typedef struct SystemInfo_s {
-    Byte_t productName[OS_PRODUCT_NAME_SIZE]; /**< The product name of the
-                                               * operating system (always
-                                               * "HeliOS"). */
-    Base_t majorVersion; /**< The SemVer major version number of HeliOS. */
-    Base_t minorVersion; /**< The SemVer minor version number of HeliOS. */
-    Base_t patchVersion; /**< The SemVer patch version number of HeliOS. */
-    Base_t numberOfTasks; /**< The number of tasks regardless of their state. */
-    Base_t littleEndian; /**< True if the system byte order is little endian. */
-  } SystemInfo_t;
+    /**
+     * @brief Data structure for a queue message
+     *
+     */
+    /**
+     * @brief Data structure for information about the HeliOS system
+     *
+     * The SystemInfo_t data structure is used to store information about the
+     * HeliOS system and is returned by xSystemGetSystemInfo().
+     *
+     * @sa SystemInfo_t *
+     * @sa xSystemGetSystemInfo()
+     * @sa OS_PRODUCT_NAME_SIZE
+     * @sa xMemFree()
+     *
+     */
+    typedef struct SystemInfo_s {
+      Byte_t productName[OS_PRODUCT_NAME_SIZE]; /**< The product name of the
+                                                 * operating system (always
+                                                 * "HeliOS"). */
+      Base_t majorVersion; /**< The SemVer major version number of HeliOS. */
+      Base_t minorVersion; /**< The SemVer minor version number of HeliOS. */
+      Base_t patchVersion; /**< The SemVer patch version number of HeliOS. */
+      Base_t numberOfTasks; /**< The number of tasks regardless of their state.
+                             */
+      Base_t littleEndian; /**< True if the system byte order is little endian.
+                            */
+    } SystemInfo_t;
+  #endif /* ifndef HELIOS_PUBLIC_STRUCTURES_DEFINED_ */
 
 
   /**
@@ -2752,7 +2766,7 @@
    *   }
    *
    *   // Consumer task: Process sensor readings void processingTask(Task_t
-   * *task, TaskParm_t *parm) {
+   * task, TaskParm_t *parm) {
    *     QueueMessage_t *message;
    *
    *     // Check if messages available Base_t messagesWaiting;
@@ -4011,7 +4025,7 @@
    * }
    *
    * // Producer accumulates bytes void receiveTask(Task_t *task, TaskParm_t
-   * *parm)
+   * parm)
    * {
    *   Byte_t receivedByte = getByteFromSource();
    *   xStreamSend(protocolStream, receivedByte);
@@ -7881,8 +7895,7 @@
    *   // Check if notification is waiting if
    * (OK(xTaskNotificationIsWaiting(task, &hasNotification))) {
    *     if (hasNotification) {
-   *       // Notification present - process it TaskNotification_t
-   * *notification;
+   *       // Notification present - process it TaskNotification_t notification;
    *       if (OK(xTaskNotifyTake(task, &notification))) {
    *         processNotification(&notification);
    *       }
@@ -11550,8 +11563,8 @@
    *   Byte_t data[64];
    * } Record_t;
    *
-   * Return_t updateRecord(File_t *file, Word_t recordIndex, Record_t
-   * *newRecord) {
+   * Return_t updateRecord(File_t *file, Word_t recordIndex, Record_t newRecord)
+   * {
    *   Word_t recordOffset = recordIndex * sizeof(Record_t);
    *
    *   // Seek to record position if (ERROR(xFileSeek(file, recordOffset,

@@ -101,10 +101,47 @@
     HalfWord_t frees;
     Word_t minAvailableEver;
   } MemoryRegion_t;
-  typedef struct TaskNotification_s {
-    Base_t notificationBytes;
-    Byte_t notificationValue[CONFIG_NOTIFICATION_VALUE_BYTES];
-  } TaskNotification_t;
+
+  #ifndef HELIOS_PUBLIC_STRUCTURES_DEFINED_
+    #define HELIOS_PUBLIC_STRUCTURES_DEFINED_
+    typedef struct TaskNotification_s {
+      Base_t notificationBytes;
+      Byte_t notificationValue[CONFIG_NOTIFICATION_VALUE_BYTES];
+    } TaskNotification_t;
+    typedef struct TaskRunTimeStats_s {
+      Base_t id;
+      Ticks_t lastRunTime;
+      Ticks_t totalRunTime;
+    } TaskRunTimeStats_t;
+    typedef struct MemoryRegionStats_s {
+      Word_t largestFreeEntryInBytes;
+      Word_t smallestFreeEntryInBytes;
+      Word_t numberOfFreeBlocks;
+      Word_t availableSpaceInBytes;
+      Word_t successfulAllocations;
+      Word_t successfulFrees;
+      Word_t minimumEverFreeBytesRemaining;
+    } MemoryRegionStats_t;
+    typedef struct TaskInfo_s {
+      Base_t id;
+      Byte_t name[CONFIG_TASK_NAME_BYTES];
+      TaskState_t state;
+      Ticks_t lastRunTime;
+      Ticks_t totalRunTime;
+    } TaskInfo_t;
+    typedef struct QueueMessage_s {
+      Base_t messageBytes;
+      Byte_t messageValue[CONFIG_MESSAGE_VALUE_BYTES];
+    } QueueMessage_t;
+    typedef struct SystemInfo_s {
+      Byte_t productName[OS_PRODUCT_NAME_SIZE];
+      Base_t majorVersion;
+      Base_t minorVersion;
+      Base_t patchVersion;
+      Base_t numberOfTasks;
+      Base_t littleEndian;
+    } SystemInfo_t;
+  #endif /* ifndef HELIOS_PUBLIC_STRUCTURES_DEFINED_ */
   typedef struct Task_s {
     Base_t id;
     Byte_t name[CONFIG_TASK_NAME_BYTES];
@@ -134,27 +171,6 @@
   #endif /* if defined(CONFIG_TASK_WD_TIMER_ENABLE) */
     struct Task_s *next;
   } Task_t;
-  typedef struct TaskRunTimeStats_s {
-    Base_t id;
-    Ticks_t lastRunTime;
-    Ticks_t totalRunTime;
-  } TaskRunTimeStats_t;
-  typedef struct MemoryRegionStats_s {
-    Word_t largestFreeEntryInBytes;
-    Word_t smallestFreeEntryInBytes;
-    Word_t numberOfFreeBlocks;
-    Word_t availableSpaceInBytes;
-    Word_t successfulAllocations;
-    Word_t successfulFrees;
-    Word_t minimumEverFreeBytesRemaining;
-  } MemoryRegionStats_t;
-  typedef struct TaskInfo_s {
-    Base_t id;
-    Byte_t name[CONFIG_TASK_NAME_BYTES];
-    TaskState_t state;
-    Ticks_t lastRunTime;
-    Ticks_t totalRunTime;
-  } TaskInfo_t;
   typedef struct TaskList_s {
     Base_t nextId;
     Base_t length;
@@ -179,10 +195,6 @@
     Base_t memfault;
     Base_t littleend;
   } Flags_t;
-  typedef struct QueueMessage_s {
-    Base_t messageBytes;
-    Byte_t messageValue[CONFIG_MESSAGE_VALUE_BYTES];
-  } QueueMessage_t;
   typedef struct Message_s {
     Base_t messageBytes;
     Byte_t messageValue[CONFIG_MESSAGE_VALUE_BYTES];
@@ -195,14 +207,6 @@
     Message_t *head;
     Message_t *tail;
   } Queue_t;
-  typedef struct SystemInfo_s {
-    Byte_t productName[OS_PRODUCT_NAME_SIZE];
-    Base_t majorVersion;
-    Base_t minorVersion;
-    Base_t patchVersion;
-    Base_t numberOfTasks;
-    Base_t littleEndian;
-  } SystemInfo_t;
   typedef struct StreamBuffer_s {
     Byte_t buffer[CONFIG_STREAM_BUFFER_BYTES];
     HalfWord_t length;

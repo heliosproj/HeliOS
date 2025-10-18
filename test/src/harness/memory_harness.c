@@ -47,6 +47,7 @@
 #define LARGE_ALLOC_SIZE 512 /* Large allocation size */
 #define FRAG_BLOCK_SIZE 1024 /* Fragmentation test block size */
 #define MAX_SIZE_TEST ((CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS + 100) * CONFIG_MEMORY_REGION_BLOCK_SIZE) /*
+                                                                                                       *
                                                                                                        * Oversized
                                                                                                        * allocation
                                                                                                        * test
