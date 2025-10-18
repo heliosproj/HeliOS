@@ -1,20 +1,20 @@
 /*UNCRUSTIFY-OFF*/
 /**
- * @file memory_1_harness.c
+ * @file memory_harness.c
  * @author Manny Peterson <manny@heliosproj.org>
  * @brief Unit testing sources
  * @version 0.5.0
  * @date 2023-03-19
- * 
+ *
  * @copyright
  * HeliOS Embedded Operating System Copyright (C) 2020-2026 HeliOS Project <license@heliosproj.org>
- *  
+ *
  *  SPDX-License-Identifier: GPL-2.0-or-later
- *  
- * 
+ *
+ *
  */
 /*UNCRUSTIFY-ON*/
-#include "memory_1_harness.h"
+#include "memory_harness.h"
 
 
 /* Calculate entry size in blocks (matches logic in mem.c) */
@@ -57,7 +57,7 @@ static Size_t order[NUM_TEST_ALLOCS] = {
 static MemoryTest_t tests[NUM_TEST_ALLOCS];
 
 
-void memory_1_harness(void) {
+void memory_harness(void) {
   Size_t i;
   Size_t used;
   Size_t actual;
@@ -136,7 +136,7 @@ void memory_1_harness(void) {
   unit_begin("Kernel statistics track internal allocations");
   mem03 = null;
   mem04 = null;
-  unit_assert_ok(xTaskCreate(&mem04, (Byte_t *) "NONE", memory_1_harness_task, null));
+  unit_assert_ok(xTaskCreate(&mem04, (Byte_t *) "NONE", memory_harness_task, null));
   unit_assert_not_null(mem04);
   unit_assert_ok(xTaskDelete(mem04));
   unit_assert_ok(xMemGetKernelStats(&mem03));
@@ -360,7 +360,7 @@ void test_memory_edge_cases(void) {
 }
 
 
-void memory_1_harness_task(Task_t *task_, TaskParm_t *parm_) {
+void memory_harness_task(Task_t *task_, TaskParm_t *parm_) {
   xTaskSuspendAll();
 
   return;
@@ -1205,7 +1205,7 @@ void test_kernel_memory(void) {
     unit_assert_ok(xMemFree(kernelStats));
 
     /* Create task - should allocate from kernel */
-    unit_assert_ok(xTaskCreate(&task1, (Byte_t *) "TEST1", memory_1_harness_task, null));
+    unit_assert_ok(xTaskCreate(&task1, (Byte_t *) "TEST1", memory_harness_task, null));
     unit_assert_not_null(task1);
 
     unit_assert_ok(xMemGetKernelStats(&kernelStats));
@@ -1221,9 +1221,9 @@ void test_kernel_memory(void) {
   unit_begin("Kernel Memory - Multiple task allocations");
   {
     /* Create multiple tasks */
-    unit_assert_ok(xTaskCreate(&task1, (Byte_t *) "TEST1", memory_1_harness_task, null));
-    unit_assert_ok(xTaskCreate(&task2, (Byte_t *) "TEST2", memory_1_harness_task, null));
-    unit_assert_ok(xTaskCreate(&task3, (Byte_t *) "TEST3", memory_1_harness_task, null));
+    unit_assert_ok(xTaskCreate(&task1, (Byte_t *) "TEST1", memory_harness_task, null));
+    unit_assert_ok(xTaskCreate(&task2, (Byte_t *) "TEST2", memory_harness_task, null));
+    unit_assert_ok(xTaskCreate(&task3, (Byte_t *) "TEST3", memory_harness_task, null));
 
     unit_assert_not_null(task1);
     unit_assert_not_null(task2);
@@ -1456,7 +1456,7 @@ void test_cross_region_protection(void) {
     unit_assert_ok(xMemGetUsed(&heapUsedBefore));
 
     /* Allocate from kernel (via task) */
-    unit_assert_ok(xTaskCreate(&kernelTask, (Byte_t *) "TEST", memory_1_harness_task, null));
+    unit_assert_ok(xTaskCreate(&kernelTask, (Byte_t *) "TEST", memory_harness_task, null));
 
     /* Get heap usage - should only change due to stats allocations */
     unit_assert_ok(xMemGetUsed(&heapUsedAfter));

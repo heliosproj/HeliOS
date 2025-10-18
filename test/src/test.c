@@ -28,7 +28,7 @@ int main(int argc, char **argv) {
   reset();
   sys_harness();
   reset();
-  memory_1_harness();
+  memory_harness();
   reset();
   queue_harness();
   reset();

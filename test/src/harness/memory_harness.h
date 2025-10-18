@@ -1,21 +1,21 @@
 /*UNCRUSTIFY-OFF*/
 /**
- * @file memory_1_harness.h
+ * @file memory_harness.h
  * @author Manny Peterson <manny@heliosproj.org>
  * @brief Unit testing sources
  * @version 0.5.0
  * @date 2023-03-19
- * 
+ *
  * @copyright
  * HeliOS Embedded Operating System Copyright (C) 2020-2026 HeliOS Project <license@heliosproj.org>
- *  
+ *
  *  SPDX-License-Identifier: GPL-2.0-or-later
- *  
- * 
+ *
+ *
  */
 /*UNCRUSTIFY-ON*/
-#ifndef MEMORY_1_HARNESS_H_
-  #define MEMORY_1_HARNESS_H_
+#ifndef MEMORY_HARNESS_H_
+  #define MEMORY_HARNESS_H_
 
   #include "config.h"
   #include "defines.h"
@@ -40,8 +40,8 @@
   #ifdef __cplusplus
     extern "C" {
   #endif /* ifdef __cplusplus */
-  void memory_1_harness(void);
-  void memory_1_harness_task(Task_t *task_, TaskParm_t *parm_);
+  void memory_harness(void);
+  void memory_harness_task(Task_t *task_, TaskParm_t *parm_);
   void test_memory_edge_cases(void);
   void test_memcpy_memcmp(void);
   void test_freed_pointer_operations(void);
@@ -62,4 +62,4 @@
   #ifdef __cplusplus
     }
   #endif /* ifdef __cplusplus */
-#endif /* ifndef MEMORY_1_HARNESS_H_ */
+#endif /* ifndef MEMORY_HARNESS_H_ */
