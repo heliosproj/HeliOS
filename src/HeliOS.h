@@ -376,7 +376,11 @@
    * @sa xTaskDelete()
    *
    */
-  typedef VOID_TYPE Task_t;
+
+  #ifndef TASK_T_
+    #define TASK_T_
+    typedef VOID_TYPE Task_t;
+  #endif /* ifndef TASK_T_ */
 
 
   /**
@@ -397,7 +401,11 @@
    * @sa xTimerDelete()
    *
    */
-  typedef VOID_TYPE Timer_t;
+
+  #ifndef TIMER_T_
+    #define TIMER_T_
+    typedef VOID_TYPE Timer_t;
+  #endif /* ifndef TIMER_T_ */
 
 
   /**
@@ -418,7 +426,11 @@
    * @sa xQueueDelete()
    *
    */
-  typedef VOID_TYPE Queue_t;
+
+  #ifndef QUEUE_T_
+    #define QUEUE_T_
+    typedef VOID_TYPE Queue_t;
+  #endif /* ifndef QUEUE_T_ */
 
 
   /**

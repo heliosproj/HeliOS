@@ -222,7 +222,10 @@
       Base_t littleEndian;
     } SystemInfo_t;
   #endif /* ifndef SYSTEMINFO_T_ */
-  typedef struct Task_s {
+
+  #ifndef TASK_T_
+    #define TASK_T_
+    typedef struct Task_s {
     Base_t id;
     Byte_t name[CONFIG_TASK_NAME_BYTES];
     TaskState_t state;
@@ -249,8 +252,10 @@
 
 
   #endif /* if defined(CONFIG_TASK_WD_TIMER_ENABLE) */
-    struct Task_s *next;
-  } Task_t;
+      struct Task_s *next;
+    } Task_t;
+  #endif /* ifndef TASK_T_ */
+
   typedef struct TaskList_s {
     Base_t nextId;
     Base_t length;
@@ -260,11 +265,16 @@
     Base_t length;
     Device_t *head;
   } DeviceList_t;
-  typedef struct Timer_s {
-    TimerState_t state;
-    Ticks_t timerPeriod;
-    Ticks_t timerStartTime;
-  } Timer_t;
+
+  #ifndef TIMER_T_
+    #define TIMER_T_
+    typedef struct Timer_s {
+      TimerState_t state;
+      Ticks_t timerPeriod;
+      Ticks_t timerStartTime;
+    } Timer_t;
+  #endif /* ifndef TIMER_T_ */
+
   typedef struct TimerList_s {
     Base_t length;
     Timer_t *head;
@@ -280,13 +290,17 @@
     Byte_t messageValue[CONFIG_MESSAGE_VALUE_BYTES];
     struct Message_s *next;
   } Message_t;
-  typedef struct Queue_s {
-    Base_t length;
-    Base_t limit;
-    Base_t locked;
-    Message_t *head;
-    Message_t *tail;
-  } Queue_t;
+
+  #ifndef QUEUE_T_
+    #define QUEUE_T_
+    typedef struct Queue_s {
+      Base_t length;
+      Base_t limit;
+      Base_t locked;
+      Message_t *head;
+      Message_t *tail;
+    } Queue_t;
+  #endif /* ifndef QUEUE_T_ */
 
   #ifndef STREAMBUFFER_T_
     #define STREAMBUFFER_T_

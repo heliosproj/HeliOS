@@ -31,7 +31,7 @@ void taskSender_main(Task_t *task_, TaskParm_t *parm_) {
 
 void taskReceiver_main(Task_t *task_, TaskParm_t *parm_) {
   String str;
-  xTaskNotification notif;
+  TaskNotification_t *notif;
 
 
   if(OK(xTaskNotifyTake(task_, &notif))) {
