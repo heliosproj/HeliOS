@@ -102,14 +102,13 @@
   #endif /* ifdef __cplusplus */
   /* Driver interface functions - DO NOT CALL DIRECTLY */
   /* Use xDevice* syscalls instead */
-  Return_t RAMDISK0_self_register(void);
-  Return_t RAMDISK0_init(Device_t *device_);
-  Return_t RAMDISK0_config(Device_t *device_, Size_t *size_, Addr_t *config_);
-  Return_t RAMDISK0_read(Device_t *device_, Size_t *size_, Addr_t **data_);
-  Return_t RAMDISK0_write(Device_t *device_, Size_t *size_, Addr_t *data_);
-  Return_t RAMDISK0_simple_read(Device_t *device_, Byte_t *data_);
-  Return_t RAMDISK0_simple_write(Device_t *device_, Byte_t data_);
-
+  Return_t TO_FUNCTION(DEVICE_NAME, _self_register)(void);
+  Return_t TO_FUNCTION(DEVICE_NAME, _init)(Device_t *device_);
+  Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Addr_t *config_);
+  Return_t TO_FUNCTION(DEVICE_NAME, _read)(Device_t *device_, Size_t *size_, Addr_t **data_);
+  Return_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t *device_, Size_t *size_, Addr_t *data_);
+  Return_t TO_FUNCTION(DEVICE_NAME, _simple_read)(Device_t *device_, Byte_t *data_);
+  Return_t TO_FUNCTION(DEVICE_NAME, _simple_write)(Device_t *device_, Byte_t data_);
   #if defined(POSIX_ARCH_OTHER)
     void __RAMDiskStateClear__(void);
   #endif /* if defined(POSIX_ARCH_OTHER) */
