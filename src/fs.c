@@ -2551,6 +2551,8 @@ static Return_t __FindFreeCluster__(const Volume_t *vol_, Word_t startHint_, Wor
 
   if(__PointerIsNotNull__(vol_) && __PointerIsNotNull__(freeCluster_)) {
     /* Calculate maximum cluster number based on FAT size */
+
+
     /* Each FAT entry is 4 bytes, so total clusters = (sectorsPerFAT *
      * bytesPerSector) / 4 */
     maxCluster = (vol_->sectorsPerFAT * vol_->bytesPerSector) / 4u;

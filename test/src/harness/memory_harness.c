@@ -19,11 +19,13 @@
 
 /* Calculate entry size in blocks (matches logic in mem.c) */
 #define ENTRY_SIZE_IN_BLOCKS ((HalfWord_t) ((sizeof(MemoryEntry_t) / CONFIG_MEMORY_REGION_BLOCK_SIZE) + \
-                                            (((sizeof(MemoryEntry_t) % CONFIG_MEMORY_REGION_BLOCK_SIZE) > 0) ? 1 : 0)))
+        (((sizeof(MemoryEntry_t) % CONFIG_MEMORY_REGION_BLOCK_SIZE) > 0) ? 1 : 0)))
+
 
 /* Macro to convert allocated address to memory entry (for corruption tests) */
 /* Note: This duplicates internal logic from mem.c for testing purposes */
 #define ADDR2ENTRY(ptr_) ((MemoryEntry_t *) (((Byte_t *) (ptr_)) - (ENTRY_SIZE_IN_BLOCKS * CONFIG_MEMORY_REGION_BLOCK_SIZE)))
+
 
 /* Test constants */
 #define NUM_TEST_ALLOCS 0x20u /* Number of allocation test iterations */
@@ -44,7 +46,11 @@
 #define MEDIUM_ALLOC_SIZE 256 /* Medium allocation size */
 #define LARGE_ALLOC_SIZE 512 /* Large allocation size */
 #define FRAG_BLOCK_SIZE 1024 /* Fragmentation test block size */
-#define MAX_SIZE_TEST ((CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS + 100) * CONFIG_MEMORY_REGION_BLOCK_SIZE) /* Oversized allocation test */
+#define MAX_SIZE_TEST ((CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS + 100) * CONFIG_MEMORY_REGION_BLOCK_SIZE) /*
+                                                                                                       * Oversized
+                                                                                                       * allocation
+                                                                                                       * test
+                                                                                                       */
 #define MAX_TEST_ALLOCS 100 /* Maximum test allocations */
 static Size_t sizes[NUM_TEST_ALLOCS] = {
   0x2532u, 0x1832u, 0x132u, 0x2932u, 0x332u, 0x1432u, 0x1332u, 0x532u, 0x1732u, 0x932u, 0x1432u, 0x2232u, 0x1432u, 0x3132u, 0x032u, 0x1132u, 0x632u, 0x932u,
@@ -391,26 +397,22 @@ void test_memcpy_memcmp(void) {
     unit_assert_ok(__memcpy__(dest, src, 128));
     unit_assert_ok(__memcmp__(dest, src, 128, &result));
     unit_assert_true(result);
-  }
-  unit_end();
+  } unit_end();
   unit_begin("Memory Utility - __memcpy__() NULL Source");
   {
     /* Negative: NULL source */
     unit_assert_not_ok(__memcpy__(dest, null, 128));
-  }
-  unit_end();
+  } unit_end();
   unit_begin("Memory Utility - __memcpy__() NULL Destination");
   {
     /* Negative: NULL destination */
     unit_assert_not_ok(__memcpy__(null, src, 128));
-  }
-  unit_end();
+  } unit_end();
   unit_begin("Memory Utility - __memcpy__() Zero Size");
   {
     /* Negative: Zero size */
     unit_assert_not_ok(__memcpy__(dest, src, 0));
-  }
-  unit_end();
+  } unit_end();
   unit_begin("Memory Utility - __memcmp__() Equal Buffers");
   {
     /* Test __memcmp__ with equal buffers */
@@ -422,8 +424,7 @@ void test_memcpy_memcmp(void) {
     result = false;
     unit_assert_ok(__memcmp__(src, dest, 128, &result));
     unit_assert_true(result);
-  }
-  unit_end();
+  } unit_end();
   unit_begin("Memory Utility - __memcmp__() Different Buffers");
   {
     /* Test __memcmp__ with different buffers */
@@ -431,8 +432,7 @@ void test_memcpy_memcmp(void) {
     result = true;
     unit_assert_ok(__memcmp__(src, dest, 128, &result));
     unit_assert_false(result);
-  }
-  unit_end();
+  } unit_end();
   unit_begin("Memory Utility - __memcmp__() NULL Parameters");
   {
     /* Negative: NULL parameters */
@@ -440,8 +440,7 @@ void test_memcpy_memcmp(void) {
     unit_assert_not_ok(__memcmp__(src, null, 128, &result));
     unit_assert_not_ok(__memcmp__(src, dest, 128, null));
     unit_assert_not_ok(__memcmp__(src, dest, 0, &result));
-  }
-  unit_end();
+  } unit_end();
   unit_begin("Memory Utility - __memcmp__() Early Difference");
   {
     /* Test difference at start */
@@ -454,8 +453,7 @@ void test_memcpy_memcmp(void) {
     result = true;
     unit_assert_ok(__memcmp__(src, dest, 128, &result));
     unit_assert_false(result);
-  }
-  unit_end();
+  } unit_end();
   unit_begin("Memory Utility - __memset__() Explicit Test");
   {
     volatile Addr_t *ptr = null;
@@ -464,6 +462,7 @@ void test_memcpy_memcmp(void) {
 
     unit_assert_ok(xMemAlloc(&ptr, 256));
     bytes = (Byte_t *) ptr;
+
 
     /* Set to pattern */
     unit_assert_ok(__memset__(ptr, 0xAA, 256));
@@ -482,13 +481,11 @@ void test_memcpy_memcmp(void) {
     }
 
     unit_assert_ok(xMemFree(ptr));
-  }
-  unit_end();
+  } unit_end();
   unit_begin("Memory Utility - __memset__() NULL Pointer");
   {
     unit_assert_not_ok(__memset__(null, 0xAA, 128));
-  }
-  unit_end();
+  } unit_end();
   unit_begin("Memory Utility - __memset__() Zero Size");
   {
     volatile Addr_t *ptr = null;
@@ -497,8 +494,7 @@ void test_memcpy_memcmp(void) {
     unit_assert_ok(xMemAlloc(&ptr, 64));
     unit_assert_not_ok(__memset__(ptr, 0xAA, 0));
     unit_assert_ok(xMemFree(ptr));
-  }
-  unit_end();
+  } unit_end();
 
   return;
 }
@@ -515,10 +511,10 @@ void test_freed_pointer_operations(void) {
     unit_assert_not_null(ptr);
     unit_assert_ok(xMemFree(ptr));
 
+
     /* Should fail - pointer was freed */
     unit_assert_not_ok(xMemGetSize(ptr, &size));
-  }
-  unit_end();
+  } unit_end();
   unit_begin("Negative - Double free detection");
   {
     ptr = null;
@@ -526,10 +522,10 @@ void test_freed_pointer_operations(void) {
     unit_assert_not_null(ptr);
     unit_assert_ok(xMemFree(ptr));
 
+
     /* Second free should fail */
     unit_assert_not_ok(xMemFree(ptr));
-  }
-  unit_end();
+  } unit_end();
   unit_begin("Negative - Use after free detection");
   {
     volatile Addr_t *ptr1 = null;
@@ -541,15 +537,15 @@ void test_freed_pointer_operations(void) {
     unit_assert_ok(xMemAlloc(&ptr1, 128));
     unit_assert_ok(xMemFree(ptr1));
 
+
     /* Allocate second pointer (might reuse same memory) */
     unit_assert_ok(xMemAlloc(&ptr2, 128));
 
+
     /* Trying to get size of freed pointer should still fail */
     unit_assert_not_ok(xMemGetSize(ptr1, &size1));
-
     unit_assert_ok(xMemFree(ptr2));
-  }
-  unit_end();
+  } unit_end();
 
   return;
 }
@@ -575,11 +571,11 @@ void test_boundary_allocations(void) {
     unit_assert_not_null(ptr);
     unit_assert_ok(xMemGetSize(ptr, &size));
 
+
     /* Should round up to entry size plus at least one block */
     unit_assert_true(size >= CONFIG_MEMORY_REGION_BLOCK_SIZE);
     unit_assert_ok(xMemFree(ptr));
-  }
-  unit_end();
+  } unit_end();
   unit_begin("Boundary - Exact block size allocation");
   {
     ptr = null;
@@ -587,8 +583,7 @@ void test_boundary_allocations(void) {
     unit_assert_not_null(ptr);
     unit_assert_ok(xMemGetSize(ptr, &size));
     unit_assert_ok(xMemFree(ptr));
-  }
-  unit_end();
+  } unit_end();
   unit_begin("Boundary - Block size minus one");
   {
     ptr = null;
@@ -596,11 +591,11 @@ void test_boundary_allocations(void) {
     unit_assert_not_null(ptr);
     unit_assert_ok(xMemGetSize(ptr, &size));
 
+
     /* Should round up */
     unit_assert_true(size >= CONFIG_MEMORY_REGION_BLOCK_SIZE);
     unit_assert_ok(xMemFree(ptr));
-  }
-  unit_end();
+  } unit_end();
   unit_begin("Boundary - Block size plus one");
   {
     ptr = null;
@@ -608,11 +603,11 @@ void test_boundary_allocations(void) {
     unit_assert_not_null(ptr);
     unit_assert_ok(xMemGetSize(ptr, &size));
 
+
     /* Should round up to at least 2 blocks plus entry */
     unit_assert_true(size >= CONFIG_MEMORY_REGION_BLOCK_SIZE * 2);
     unit_assert_ok(xMemFree(ptr));
-  }
-  unit_end();
+  } unit_end();
   unit_begin("Boundary - Multiple of block size");
   {
     ptr = null;
@@ -620,8 +615,7 @@ void test_boundary_allocations(void) {
     unit_assert_not_null(ptr);
     unit_assert_ok(xMemGetSize(ptr, &size));
     unit_assert_ok(xMemFree(ptr));
-  }
-  unit_end();
+  } unit_end();
   unit_begin("Boundary - Large allocation near limit");
   {
     Size_t largeSize = (CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS - entrySize - 10) * CONFIG_MEMORY_REGION_BLOCK_SIZE;
@@ -634,8 +628,7 @@ void test_boundary_allocations(void) {
       unit_assert_not_null(ptr);
       unit_assert_ok(xMemFree(ptr));
     }
-  }
-  unit_end();
+  } unit_end();
 
   return;
 }
@@ -658,14 +651,17 @@ void test_statistics_accuracy(void) {
     unit_assert_not_null(stats1);
     min1 = stats1->minimumEverFreeBytesRemaining;
 
+
     /* Allocate to reduce free space */
     unit_assert_ok(xMemAlloc(&ptr, 1024));
     unit_assert_ok(xMemGetHeapStats(&stats2));
     unit_assert_not_null(stats2);
     min2 = stats2->minimumEverFreeBytesRemaining;
 
+
     /* Minimum should have decreased or stayed same */
     unit_assert_true(min2 <= min1);
+
 
     /* Free memory */
     unit_assert_ok(xMemFree(ptr));
@@ -673,15 +669,16 @@ void test_statistics_accuracy(void) {
     unit_assert_not_null(stats3);
     min3 = stats3->minimumEverFreeBytesRemaining;
 
+
     /* Minimum should remain at lowest point */
     unit_assert_equal(min2, min3);
+
 
     /* Cleanup */
     unit_assert_ok(xMemFree(stats1));
     unit_assert_ok(xMemFree(stats2));
     unit_assert_ok(xMemFree(stats3));
-  }
-  unit_end();
+  } unit_end();
   unit_begin("Statistics - Allocation counter accuracy");
   {
     MemoryRegionStats_t *before = null;
@@ -693,21 +690,20 @@ void test_statistics_accuracy(void) {
     unit_assert_ok(xMemGetHeapStats(&before));
     beforeAllocs = before->successfulAllocations;
 
+
     /* Perform allocation */
     ptr = null;
     unit_assert_ok(xMemAlloc(&ptr, 128));
-
     unit_assert_ok(xMemGetHeapStats(&after));
     afterAllocs = after->successfulAllocations;
 
+
     /* Count should have increased (accounting for stats allocation) */
     unit_assert_true(afterAllocs > beforeAllocs);
-
     unit_assert_ok(xMemFree(ptr));
     unit_assert_ok(xMemFree(before));
     unit_assert_ok(xMemFree(after));
-  }
-  unit_end();
+  } unit_end();
   unit_begin("Statistics - Free counter accuracy");
   {
     MemoryRegionStats_t *before = null;
@@ -718,23 +714,21 @@ void test_statistics_accuracy(void) {
 
     ptr = null;
     unit_assert_ok(xMemAlloc(&ptr, 128));
-
     unit_assert_ok(xMemGetHeapStats(&before));
     beforeFrees = before->successfulFrees;
 
+
     /* Perform free */
     unit_assert_ok(xMemFree(ptr));
-
     unit_assert_ok(xMemGetHeapStats(&after));
     afterFrees = after->successfulFrees;
 
+
     /* Count should have increased */
     unit_assert_true(afterFrees > beforeFrees);
-
     unit_assert_ok(xMemFree(before));
     unit_assert_ok(xMemFree(after));
-  }
-  unit_end();
+  } unit_end();
   unit_begin("Statistics - Available space consistency");
   {
     MemoryRegionStats_t *stats = null;
@@ -747,20 +741,19 @@ void test_statistics_accuracy(void) {
     before = stats->availableSpaceInBytes;
     unit_assert_ok(xMemFree(stats));
 
+
     /* Allocate known size */
     ptr = null;
     unit_assert_ok(xMemAlloc(&ptr, allocated));
-
     unit_assert_ok(xMemGetHeapStats(&stats));
     after = stats->availableSpaceInBytes;
 
+
     /* Available should have decreased */
     unit_assert_true(after < before);
-
     unit_assert_ok(xMemFree(ptr));
     unit_assert_ok(xMemFree(stats));
-  }
-  unit_end();
+  } unit_end();
 
   return;
 }
@@ -784,8 +777,7 @@ void test_data_integrity(void) {
     }
 
     unit_assert_ok(xMemFree(ptr));
-  }
-  unit_end();
+  } unit_end();
   unit_begin("Data Integrity - Write and read back");
   {
     unit_assert_ok(xMemAlloc(&ptr, 128));
@@ -802,8 +794,7 @@ void test_data_integrity(void) {
     }
 
     unit_assert_ok(xMemFree(ptr));
-  }
-  unit_end();
+  } unit_end();
   unit_begin("Data Integrity - Multiple allocations independence");
   {
     volatile Addr_t *ptr1 = null;
@@ -814,7 +805,6 @@ void test_data_integrity(void) {
 
     unit_assert_ok(xMemAlloc(&ptr1, 64));
     unit_assert_ok(xMemAlloc(&ptr2, 64));
-
     bytes1 = (Byte_t *) ptr1;
     bytes2 = (Byte_t *) ptr2;
 
@@ -832,8 +822,7 @@ void test_data_integrity(void) {
 
     unit_assert_ok(xMemFree(ptr1));
     unit_assert_ok(xMemFree(ptr2));
-  }
-  unit_end();
+  } unit_end();
   unit_begin("Data Integrity - Data survives across operations");
   {
     volatile Addr_t *ptr1 = null;
@@ -859,8 +848,7 @@ void test_data_integrity(void) {
 
     unit_assert_ok(xMemFree(ptr1));
     unit_assert_ok(xMemFree(ptr2));
-  }
-  unit_end();
+  } unit_end();
 
   return;
 }
@@ -896,8 +884,7 @@ void test_fragmentation_stress(void) {
     for(i = 0; i < 20; i++) {
       unit_assert_ok(xMemFree(ptrs[i]));
     }
-  }
-  unit_end();
+  } unit_end();
   unit_begin("Stress - Worst case fragmentation");
   {
     volatile Addr_t *ptrs[10];
@@ -926,8 +913,7 @@ void test_fragmentation_stress(void) {
     if(OK(xMemAlloc(&ptrs[0], 1024))) {
       unit_assert_ok(xMemFree(ptrs[0]));
     }
-  }
-  unit_end();
+  } unit_end();
   unit_begin("Stress - Mixed size fragmentation");
   {
     volatile Addr_t *small[5];
@@ -959,6 +945,7 @@ void test_fragmentation_stress(void) {
     unit_assert_ok(xMemFree(large[0]));
     unit_assert_ok(xMemFree(small[4]));
 
+
     /* Reallocate freed spaces */
     small[0] = null;
     unit_assert_ok(xMemAlloc(&small[0], 32));
@@ -979,8 +966,7 @@ void test_fragmentation_stress(void) {
     }
 
     unit_assert_ok(xMemFree(large[1]));
-  }
-  unit_end();
+  } unit_end();
 
   return;
 }
@@ -995,14 +981,12 @@ void test_invalid_pointers(void) {
   {
     /* Attempt to free stack address - should fail */
     unit_assert_not_ok(xMemFree(&stack_var));
-  }
-  unit_end();
+  } unit_end();
   unit_begin("Negative - Get size of invalid pointer");
   {
     /* Attempt to get size of stack address - should fail */
     unit_assert_not_ok(xMemGetSize(&stack_var, &size));
-  }
-  unit_end();
+  } unit_end();
   unit_begin("Negative - Free arbitrary pointer");
   {
     volatile Addr_t *arbitrary = (volatile Addr_t *) 0x12345678;
@@ -1010,8 +994,7 @@ void test_invalid_pointers(void) {
 
     /* Should fail safely */
     unit_assert_not_ok(xMemFree(arbitrary));
-  }
-  unit_end();
+  } unit_end();
   unit_begin("Negative - Operations on unaligned pointer");
   {
     volatile Addr_t *ptr = null;
@@ -1020,17 +1003,19 @@ void test_invalid_pointers(void) {
 
     unit_assert_ok(xMemAlloc(&ptr, 128));
 
+
     /* Create offset pointer (not at block start) */
     offset_ptr = (volatile Addr_t *) (((Byte_t *) ptr) + 5);
+
 
     /* Operations should fail on offset pointer */
     unit_assert_not_ok(xMemGetSize(offset_ptr, &size));
     unit_assert_not_ok(xMemFree(offset_ptr));
 
+
     /* Original pointer should still work */
     unit_assert_ok(xMemFree(ptr));
-  }
-  unit_end();
+  } unit_end();
 
   return;
 }
@@ -1051,29 +1036,33 @@ void test_state_consistency(void) {
     /* Ensure clean state */
     unit_assert_ok(xMemFreeAll());
 
+
     /* Get baseline (should be 0 after FreeAll) */
     unit_assert_ok(xMemGetUsed(&used1));
     unit_assert_equal(used1, 0x0u);
 
+
     /* Request more than available - use region size + 1 block */
     tooLarge = (CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS + 1) * CONFIG_MEMORY_REGION_BLOCK_SIZE;
+
 
     /* Failed allocation should not affect state */
     ptr1 = null;
     unit_assert_not_ok(xMemAlloc(&ptr1, tooLarge));
     unit_assert_null(ptr1);
 
+
     /* Verify memory usage unchanged */
     unit_assert_ok(xMemGetUsed(&used2));
     unit_assert_equal(used1, used2);
+
 
     /* Subsequent allocation should succeed */
     ptr2 = null;
     unit_assert_ok(xMemAlloc(&ptr2, 128));
     unit_assert_not_null(ptr2);
     unit_assert_ok(xMemFree(ptr2));
-  }
-  unit_end();
+  } unit_end();
   unit_begin("State - Consistency after failed free");
   {
     Byte_t stack_var;
@@ -1081,19 +1070,21 @@ void test_state_consistency(void) {
 
     unit_assert_ok(xMemGetUsed(&used1));
 
+
     /* Failed free should not affect state */
     unit_assert_not_ok(xMemFree(&stack_var));
+
 
     /* State should be unchanged */
     unit_assert_ok(xMemGetUsed(&used2));
     unit_assert_equal(used1, used2);
 
+
     /* Normal operations should continue */
     ptr1 = null;
     unit_assert_ok(xMemAlloc(&ptr1, 64));
     unit_assert_ok(xMemFree(ptr1));
-  }
-  unit_end();
+  } unit_end();
   unit_begin("State - Recovery after multiple failures");
   {
     int i;
@@ -1111,8 +1102,7 @@ void test_state_consistency(void) {
     unit_assert_ok(xMemAlloc(&ptr1, 256));
     unit_assert_not_null(ptr1);
     unit_assert_ok(xMemFree(ptr1));
-  }
-  unit_end();
+  } unit_end();
 
   return;
 }
@@ -1128,23 +1118,26 @@ void test_memfreeall_idempotency(void) {
     unit_assert_ok(xMemAlloc(&ptr, 128));
     unit_assert_ok(xMemFreeAll());
 
+
     /* Verify memory freed */
     unit_assert_ok(xMemGetUsed(&size));
     unit_assert_equal(size, 0x0u);
 
+
     /* Second call should still succeed */
     unit_assert_ok(xMemFreeAll());
 
+
     /* Third call */
     unit_assert_ok(xMemFreeAll());
+
 
     /* Memory should still be usable */
     ptr = null;
     unit_assert_ok(xMemAlloc(&ptr, 64));
     unit_assert_not_null(ptr);
     unit_assert_ok(xMemFree(ptr));
-  }
-  unit_end();
+  } unit_end();
   unit_begin("Idempotency - xMemFreeAll() with no allocations");
   {
     /* FreeAll with clean slate */
@@ -1152,10 +1145,10 @@ void test_memfreeall_idempotency(void) {
     unit_assert_ok(xMemGetUsed(&size));
     unit_assert_equal(size, 0x0u);
 
+
     /* Should still work */
     unit_assert_ok(xMemFreeAll());
-  }
-  unit_end();
+  } unit_end();
   unit_begin("Idempotency - Allocate after xMemFreeAll()");
   {
     Byte_t *bytes;
@@ -1166,13 +1159,16 @@ void test_memfreeall_idempotency(void) {
     ptr = null;
     unit_assert_ok(xMemAlloc(&ptr, 256));
 
+
     /* Free all */
     unit_assert_ok(xMemFreeAll());
+
 
     /* Allocate after - should get fresh memory */
     ptr = null;
     unit_assert_ok(xMemAlloc(&ptr, 256));
     unit_assert_not_null(ptr);
+
 
     /* Verify it's zeroed */
     bytes = (Byte_t *) ptr;
@@ -1182,8 +1178,7 @@ void test_memfreeall_idempotency(void) {
     }
 
     unit_assert_ok(xMemFree(ptr));
-  }
-  unit_end();
+  } unit_end();
 
   return;
 }
@@ -1204,48 +1199,46 @@ void test_kernel_memory(void) {
     allocsBefore = kernelStats->successfulAllocations;
     unit_assert_ok(xMemFree(kernelStats));
 
+
     /* Create task - should allocate from kernel */
     unit_assert_ok(xTaskCreate(&task1, (Byte_t *) "TEST1", memory_harness_task, null));
     unit_assert_not_null(task1);
-
     unit_assert_ok(xMemGetKernelStats(&kernelStats));
     allocsAfter = kernelStats->successfulAllocations;
 
+
     /* Allocation count should increase */
     unit_assert_true(allocsAfter > allocsBefore);
-
     unit_assert_ok(xTaskDelete(task1));
     unit_assert_ok(xMemFree(kernelStats));
-  }
-  unit_end();
+  } unit_end();
   unit_begin("Kernel Memory - Multiple task allocations");
   {
     /* Create multiple tasks */
     unit_assert_ok(xTaskCreate(&task1, (Byte_t *) "TEST1", memory_harness_task, null));
     unit_assert_ok(xTaskCreate(&task2, (Byte_t *) "TEST2", memory_harness_task, null));
     unit_assert_ok(xTaskCreate(&task3, (Byte_t *) "TEST3", memory_harness_task, null));
-
     unit_assert_not_null(task1);
     unit_assert_not_null(task2);
     unit_assert_not_null(task3);
+
 
     /* Verify kernel stats */
     unit_assert_ok(xMemGetKernelStats(&kernelStats));
     unit_assert_not_null(kernelStats);
     unit_assert_true(kernelStats->successfulAllocations > 0);
 
+
     /* Cleanup */
     unit_assert_ok(xTaskDelete(task1));
     unit_assert_ok(xTaskDelete(task2));
     unit_assert_ok(xTaskDelete(task3));
     unit_assert_ok(xMemFree(kernelStats));
-  }
-  unit_end();
+  } unit_end();
   unit_begin("Kernel Memory - Stats NULL parameter");
   {
     unit_assert_not_ok(xMemGetKernelStats(null));
-  }
-  unit_end();
+  } unit_end();
 
   return;
 }
@@ -1265,8 +1258,7 @@ void test_performance_stress(void) {
       unit_assert_not_null(ptr);
       unit_assert_ok(xMemFree(ptr));
     }
-  }
-  unit_end();
+  } unit_end();
   unit_begin("Performance - Maximum small allocations");
   {
     volatile Addr_t *ptrs[100];
@@ -1292,8 +1284,7 @@ void test_performance_stress(void) {
     for(i = 0; i < allocCount; i++) {
       unit_assert_ok(xMemFree(ptrs[i]));
     }
-  }
-  unit_end();
+  } unit_end();
   unit_begin("Performance - Growing allocations");
   {
     volatile Addr_t *ptr = null;
@@ -1313,8 +1304,7 @@ void test_performance_stress(void) {
         break;
       }
     }
-  }
-  unit_end();
+  } unit_end();
 
   return;
 }
@@ -1324,8 +1314,12 @@ void test_randomized_patterns(void) {
   unit_begin("Randomized - Pseudo-random allocation pattern");
   {
     volatile Addr_t *ptrs[16];
-    Size_t sizes[16] = {64, 128, 32, 256, 96, 48, 512, 80, 160, 40, 192, 72, 144, 88, 112, 56};
-    int freeOrder[16] = {5, 12, 3, 9, 1, 14, 7, 0, 11, 4, 15, 2, 13, 6, 10, 8};
+    Size_t sizes[16] = {
+      64, 128, 32, 256, 96, 48, 512, 80, 160, 40, 192, 72, 144, 88, 112, 56
+    };
+    int freeOrder[16] = {
+      5, 12, 3, 9, 1, 14, 7, 0, 11, 4, 15, 2, 13, 6, 10, 8
+    };
     int i;
 
 
@@ -1344,8 +1338,7 @@ void test_randomized_patterns(void) {
         unit_assert_ok(xMemFree(ptrs[freeOrder[i]]));
       }
     }
-  }
-  unit_end();
+  } unit_end();
   unit_begin("Randomized - Interleaved operations");
   {
     volatile Addr_t *ptr1 = null;
@@ -1362,8 +1355,7 @@ void test_randomized_patterns(void) {
     unit_assert_ok(xMemAlloc(&ptr1, 150));
     unit_assert_ok(xMemFree(ptr3));
     unit_assert_ok(xMemFree(ptr1));
-  }
-  unit_end();
+  } unit_end();
 
   return;
 }
@@ -1385,17 +1377,18 @@ void test_alignment_verification(void) {
       unit_assert_ok(xMemAlloc(&ptr, 64));
       unit_assert_not_null(ptr);
 
+
       /* Check that address is reasonable (not null, not obviously invalid) */
       address = (Size_t) ptr;
       unit_assert_true(address != 0);
-
       unit_assert_ok(xMemFree(ptr));
     }
-  }
-  unit_end();
+  } unit_end();
   unit_begin("Alignment - Various sizes");
   {
-    Size_t sizes[] = {1, 4, 8, 16, 32, 64, 128, 256, 512, 1024};
+    Size_t sizes[] = {
+      1, 4, 8, 16, 32, 64, 128, 256, 512, 1024
+    };
     int i;
 
 
@@ -1409,8 +1402,7 @@ void test_alignment_verification(void) {
         unit_assert_ok(xMemFree(ptr));
       }
     }
-  }
-  unit_end();
+  } unit_end();
 
   return;
 }
@@ -1435,36 +1427,39 @@ void test_cross_region_protection(void) {
     unit_assert_ok(xMemGetKernelStats(&kernelStats1));
     kernelAvail1 = kernelStats1->availableSpaceInBytes;
 
+
     /* Allocate from heap */
     unit_assert_ok(xMemAlloc(&heapPtr, 512));
+
 
     /* Check kernel unchanged */
     unit_assert_ok(xMemGetKernelStats(&kernelStats2));
     kernelAvail2 = kernelStats2->availableSpaceInBytes;
 
+
     /* Kernel available space should be same (or less if stats allocated) */
     unit_assert_true(kernelAvail2 <= kernelAvail1);
-
     unit_assert_ok(xMemFree(heapPtr));
     unit_assert_ok(xMemFree(kernelStats1));
     unit_assert_ok(xMemFree(kernelStats2));
-  }
-  unit_end();
+  } unit_end();
   unit_begin("Cross-region - Kernel allocation doesn't affect heap");
   {
     /* Get heap baseline */
     unit_assert_ok(xMemGetUsed(&heapUsedBefore));
 
+
     /* Allocate from kernel (via task) */
     unit_assert_ok(xTaskCreate(&kernelTask, (Byte_t *) "TEST", memory_harness_task, null));
+
 
     /* Get heap usage - should only change due to stats allocations */
     unit_assert_ok(xMemGetUsed(&heapUsedAfter));
 
+
     /* Cleanup */
     unit_assert_ok(xTaskDelete(kernelTask));
-  }
-  unit_end();
+  } unit_end();
   unit_begin("Cross-region - Independent statistics");
   {
     MemoryRegionStats_t *heapStats = null;
@@ -1474,17 +1469,15 @@ void test_cross_region_protection(void) {
     /* Both stat queries should succeed */
     unit_assert_ok(xMemGetHeapStats(&heapStats));
     unit_assert_ok(xMemGetKernelStats(&kernelStats));
-
     unit_assert_not_null(heapStats);
     unit_assert_not_null(kernelStats);
 
+
     /* Stats should be different objects */
     unit_assert_true(heapStats != kernelStats);
-
     unit_assert_ok(xMemFree(heapStats));
     unit_assert_ok(xMemFree(kernelStats));
-  }
-  unit_end();
+  } unit_end();
 
   return;
 }
@@ -1492,12 +1485,11 @@ void test_cross_region_protection(void) {
 
 void test_memory_corruption_detection(void) {
   /*
-   * Enhanced memory corruption detection tests
-   * Tests internal consistency checking by intentionally corrupting:
-   * 1) magic field (XOR'd address validation)
-   * 2) free field (INUSE/FREE flag)
-   * 3) blocks field (allocation size tracking)
-   * 4) next pointer (linked list integrity)
+   * Enhanced memory corruption detection tests Tests internal consistency
+   * checking by intentionally corrupting:
+   * 1) magic field (XOR'd address validation) 2) free field (INUSE/FREE flag)
+   * 3) blocks field (allocation size tracking) 4) next pointer (linked list
+   * integrity)
    */
   unit_begin("Corruption Detection - Magic field corruption");
   {
@@ -1512,19 +1504,19 @@ void test_memory_corruption_detection(void) {
     unit_assert_equal(160, size);
     unit_assert_true(__FlagIsNotSet__(MEMFAULT));
 
+
     /* Corrupt magic field */
     entry = ADDR2ENTRY(ptr);
     entry->magic = MAGIC_CONST; /* Should be XOR'd with address */
-
     /* Verify corruption detected */
     unit_assert_not_ok(xMemGetUsed(&size));
     unit_assert_true(__FlagIsSet__(MEMFAULT));
 
+
     /* Cleanup and reset */
     __MemoryClear__();
     __SysStateClear__();
-  }
-  unit_end();
+  } unit_end();
   unit_begin("Corruption Detection - Free field corruption");
   {
     volatile Addr_t *ptr = null;
@@ -1537,19 +1529,19 @@ void test_memory_corruption_detection(void) {
     unit_assert_ok(xMemGetUsed(&size));
     unit_assert_true(__FlagIsNotSet__(MEMFAULT));
 
+
     /* Corrupt free field (should be INUSE=0xAA or FREE=0xD5) */
     entry = ADDR2ENTRY(ptr);
     entry->free = 123; /* Invalid value */
-
     /* Verify corruption detected */
     unit_assert_not_ok(xMemGetUsed(&size));
     unit_assert_true(__FlagIsSet__(MEMFAULT));
 
+
     /* Cleanup and reset */
     __MemoryClear__();
     __SysStateClear__();
-  }
-  unit_end();
+  } unit_end();
   unit_begin("Corruption Detection - Blocks field corruption");
   {
     volatile Addr_t *ptr = null;
@@ -1562,19 +1554,19 @@ void test_memory_corruption_detection(void) {
     unit_assert_ok(xMemGetUsed(&size));
     unit_assert_true(__FlagIsNotSet__(MEMFAULT));
 
+
     /* Corrupt blocks field */
     entry = ADDR2ENTRY(ptr);
     entry->blocks = 12345; /* Invalid - doesn't add up to region size */
-
     /* Verify corruption detected */
     unit_assert_not_ok(xMemGetUsed(&size));
     unit_assert_true(__FlagIsSet__(MEMFAULT));
 
+
     /* Cleanup and reset */
     __MemoryClear__();
     __SysStateClear__();
-  }
-  unit_end();
+  } unit_end();
   unit_begin("Corruption Detection - Next pointer corruption");
   {
     volatile Addr_t *ptr = null;
@@ -1587,19 +1579,21 @@ void test_memory_corruption_detection(void) {
     unit_assert_ok(xMemGetUsed(&size));
     unit_assert_true(__FlagIsNotSet__(MEMFAULT));
 
+
     /* Corrupt next pointer (point outside memory region) */
     entry = ADDR2ENTRY(ptr);
     entry->next = (MemoryEntry_t *) 0x12345678;
+
 
     /* Verify corruption detected */
     unit_assert_not_ok(xMemGetUsed(&size));
     unit_assert_true(__FlagIsSet__(MEMFAULT));
 
+
     /* Cleanup and reset */
     __MemoryClear__();
     __SysStateClear__();
-  }
-  unit_end();
+  } unit_end();
   unit_begin("Corruption Detection - xMemFree detects corruption");
   {
     volatile Addr_t *ptr = null;
@@ -1610,19 +1604,21 @@ void test_memory_corruption_detection(void) {
     unit_assert_ok(xMemAlloc(&ptr, 256));
     unit_assert_true(__FlagIsNotSet__(MEMFAULT));
 
+
     /* Corrupt magic field */
     entry = ADDR2ENTRY(ptr);
     entry->magic = 0xDEADBEEF;
+
 
     /* xMemFree should detect corruption */
     unit_assert_not_ok(xMemFree(ptr));
     unit_assert_true(__FlagIsSet__(MEMFAULT));
 
+
     /* Cleanup and reset */
     __MemoryClear__();
     __SysStateClear__();
-  }
-  unit_end();
+  } unit_end();
   unit_begin("Corruption Detection - xMemGetSize detects corruption");
   {
     volatile Addr_t *ptr = null;
@@ -1634,19 +1630,21 @@ void test_memory_corruption_detection(void) {
     unit_assert_ok(xMemAlloc(&ptr, 128));
     unit_assert_true(__FlagIsNotSet__(MEMFAULT));
 
+
     /* Corrupt blocks field */
     entry = ADDR2ENTRY(ptr);
     entry->blocks = 9999;
+
 
     /* xMemGetSize should detect corruption */
     unit_assert_not_ok(xMemGetSize(ptr, &size));
     unit_assert_true(__FlagIsSet__(MEMFAULT));
 
+
     /* Cleanup and reset */
     __MemoryClear__();
     __SysStateClear__();
-  }
-  unit_end();
+  } unit_end();
   unit_begin("Corruption Detection - Multiple field corruption");
   {
     volatile Addr_t *ptr = null;
@@ -1658,21 +1656,23 @@ void test_memory_corruption_detection(void) {
     unit_assert_ok(xMemAlloc(&ptr, 128));
     unit_assert_true(__FlagIsNotSet__(MEMFAULT));
 
+
     /* Corrupt multiple fields */
     entry = ADDR2ENTRY(ptr);
     entry->magic = 0xBADBAD;
     entry->free = 0xFF;
     entry->blocks = 0;
 
+
     /* Should detect corruption */
     unit_assert_not_ok(xMemGetUsed(&size));
     unit_assert_true(__FlagIsSet__(MEMFAULT));
 
+
     /* Cleanup and reset */
     __MemoryClear__();
     __SysStateClear__();
-  }
-  unit_end();
+  } unit_end();
   unit_begin("Corruption Detection - MEMFAULT flag persistence");
   {
     volatile Addr_t *ptr = null;
@@ -1685,22 +1685,25 @@ void test_memory_corruption_detection(void) {
     entry = ADDR2ENTRY(ptr);
     entry->magic = 0;
 
+
     /* First call sets MEMFAULT */
     unit_assert_not_ok(xMemGetUsed(&size));
     unit_assert_true(__FlagIsSet__(MEMFAULT));
+
 
     /* MEMFAULT should persist across calls */
     unit_assert_not_ok(xMemGetUsed(&size));
     unit_assert_true(__FlagIsSet__(MEMFAULT));
 
+
     /* Cleanup and reset */
     __MemoryClear__();
     __SysStateClear__();
 
+
     /* After reset, flag should be clear */
     unit_assert_true(__FlagIsNotSet__(MEMFAULT));
-  }
-  unit_end();
+  } unit_end();
   unit_begin("Corruption Detection - Recovery after cleanup");
   {
     volatile Addr_t *ptr1 = null;
@@ -1714,13 +1717,16 @@ void test_memory_corruption_detection(void) {
     entry = ADDR2ENTRY(ptr1);
     entry->free = 0x42;
 
+
     /* Trigger corruption detection */
     unit_assert_not_ok(xMemGetUsed(&size));
     unit_assert_true(__FlagIsSet__(MEMFAULT));
 
+
     /* Cleanup */
     __MemoryClear__();
     __SysStateClear__();
+
 
     /* System should be usable again */
     unit_assert_true(__FlagIsNotSet__(MEMFAULT));
@@ -1728,8 +1734,7 @@ void test_memory_corruption_detection(void) {
     unit_assert_not_null(ptr2);
     unit_assert_ok(xMemGetUsed(&size));
     unit_assert_ok(xMemFree(ptr2));
-  }
-  unit_end();
+  } unit_end();
   unit_begin("Corruption Detection - Heap stats with corruption");
   {
     volatile Addr_t *ptr = null;
@@ -1742,15 +1747,16 @@ void test_memory_corruption_detection(void) {
     entry = ADDR2ENTRY(ptr);
     entry->next = (MemoryEntry_t *) 0xFFFFFFFF;
 
+
     /* Heap stats should detect corruption */
     unit_assert_not_ok(xMemGetHeapStats(&stats));
     unit_assert_true(__FlagIsSet__(MEMFAULT));
 
+
     /* Cleanup and reset */
     __MemoryClear__();
     __SysStateClear__();
-  }
-  unit_end();
+  } unit_end();
   unit_begin("Corruption Detection - Free flag manipulation");
   {
     volatile Addr_t *ptr = null;
@@ -1762,22 +1768,21 @@ void test_memory_corruption_detection(void) {
     unit_assert_ok(xMemAlloc(&ptr, 128));
     unit_assert_true(__FlagIsNotSet__(MEMFAULT));
 
+
     /* Manually set to FREE while still allocated */
     entry = ADDR2ENTRY(ptr);
     entry->free = FREE; /* 0xD5 - should be INUSE */
-
     /* This corruption might be detected differently */
     /* Since it's a valid value, check behavior */
     unit_assert_ok(xMemGetUsed(&size));
 
+
     /* But trying to free should work since it looks valid */
     /* Note: This tests that valid magic values still work */
-
     /* Cleanup */
     __MemoryClear__();
     __SysStateClear__();
-  }
-  unit_end();
+  } unit_end();
   unit_begin("Corruption Detection - Zero magic value");
   {
     volatile Addr_t *ptr = null;
@@ -1790,15 +1795,16 @@ void test_memory_corruption_detection(void) {
     entry = ADDR2ENTRY(ptr);
     entry->magic = 0;
 
+
     /* Should detect corruption */
     unit_assert_not_ok(xMemGetUsed(&size));
     unit_assert_true(__FlagIsSet__(MEMFAULT));
 
+
     /* Cleanup and reset */
     __MemoryClear__();
     __SysStateClear__();
-  }
-  unit_end();
+  } unit_end();
   unit_begin("Corruption Detection - Blocks underflow");
   {
     volatile Addr_t *ptr = null;
@@ -1811,15 +1817,16 @@ void test_memory_corruption_detection(void) {
     entry = ADDR2ENTRY(ptr);
     entry->blocks = 0;
 
+
     /* Should detect corruption */
     unit_assert_not_ok(xMemGetUsed(&size));
     unit_assert_true(__FlagIsSet__(MEMFAULT));
 
+
     /* Cleanup and reset */
     __MemoryClear__();
     __SysStateClear__();
-  }
-  unit_end();
+  } unit_end();
   unit_begin("Corruption Detection - Blocks overflow");
   {
     volatile Addr_t *ptr = null;
@@ -1832,15 +1839,16 @@ void test_memory_corruption_detection(void) {
     entry = ADDR2ENTRY(ptr);
     entry->blocks = 0xFFFF;
 
+
     /* Should detect corruption */
     unit_assert_not_ok(xMemGetUsed(&size));
     unit_assert_true(__FlagIsSet__(MEMFAULT));
 
+
     /* Cleanup and reset */
     __MemoryClear__();
     __SysStateClear__();
-  }
-  unit_end();
+  } unit_end();
   unit_begin("Corruption Detection - NULL next pointer");
   {
     volatile Addr_t *ptr1 = null;
@@ -1853,19 +1861,23 @@ void test_memory_corruption_detection(void) {
     unit_assert_ok(xMemAlloc(&ptr1, 128));
     unit_assert_ok(xMemAlloc(&ptr2, 128));
 
+
     /* Corrupt first entry's next to NULL prematurely */
     entry = ADDR2ENTRY(ptr1);
     entry->next = null;
+
 
     /* Should detect corruption (blocks won't add up) */
     unit_assert_not_ok(xMemGetUsed(&size));
     unit_assert_true(__FlagIsSet__(MEMFAULT));
 
+
     /* Cleanup and reset */
     __MemoryClear__();
     __SysStateClear__();
-  }
-  unit_end();
+  } unit_end();
+
+
   /* NOTE: Circular next pointer test disabled - causes infinite loop
    * unit_begin("Corruption Detection - Circular next pointer");
    * {
@@ -1883,6 +1895,5 @@ void test_memory_corruption_detection(void) {
    * }
    * unit_end();
    */
-
   return;
 }

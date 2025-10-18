@@ -134,7 +134,7 @@
  * a single message. Larger values increase flexibility but consume more memory
  * per message.
  *
- * @sa xQueueMessage
+ * @sa QueueMessage_t
  * @sa xQueueSend()
  * @sa xQueueReceive()
  *
@@ -164,7 +164,7 @@
  * @note Direct-to-task notifications are faster than message queues but limited
  * to one pending notification per task.
  *
- * @sa xTaskNotification
+ * @sa TaskNotification_t
  * @sa xTaskNotify()
  * @sa xTaskNotifyTake()
  *
@@ -195,7 +195,7 @@
  * @note Setting this value too small may make task names difficult to read in
  * debugging output. Setting it too large wastes memory on each task.
  *
- * @sa xTaskInfo
+ * @sa TaskInfo_t
  * @sa xTaskCreate()
  *
  */

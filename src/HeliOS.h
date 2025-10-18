@@ -100,9 +100,6 @@
    * @sa TaskState_t
    *
    */
-  // Removed: typedef TaskState_t TaskState_t; - use TaskState_t directly
-
-
   /**
    * @brief Enumerated type for scheduler state
    *
@@ -138,9 +135,6 @@
    * @sa SchedulerState_t
    *
    */
-  // Removed: typedef SchedulerState_t SchedulerState_t; - use SchedulerState_t directly
-
-
   /**
    * @brief Enumerated type for syscall return type
    *
@@ -166,9 +160,6 @@
    * @sa Return_t
    *
    */
-  // Removed: typedef Return_t Return_t; - use Return_t directly
-
-
   /**
    * @brief Data type for the task paramater
    *
@@ -194,9 +185,6 @@
    * @sa TaskParm_t
    *
    */
-  // Removed: typedef TaskParm_t *TaskParm_t *; - use TaskParm_t* directly
-
-
   /**
    * @brief Data type for the base type
    *
@@ -219,9 +207,6 @@
    * @sa Base_t
    *
    */
-  // Removed: typedef Base_t Base_t; - use Base_t directly
-
-
   /**
    * @brief Data type for an 8-bit wide byte
    *
@@ -240,9 +225,6 @@
    * @sa Byte_t
    *
    */
-  // Removed: typedef Byte_t Byte_t; - use Byte_t directly
-
-
   /**
    * @brief Data type for a pointer to a memory address
    *
@@ -263,9 +245,6 @@
    * @sa Addr_t
    *
    */
-  // Removed: typedef Addr_t *Addr_t *; - use Addr_t* directly
-
-
   /**
    * @brief Data type for the storage requirements of an object in memory
    *
@@ -284,9 +263,6 @@
    * @sa Size_t
    *
    */
-  // Removed: typedef Size_t Size_t; - use Size_t directly
-
-
   /**
    * @brief Data type for a 16-bit half word
    *
@@ -305,9 +281,6 @@
    * @sa HalfWord_t
    *
    */
-  // Removed: typedef HalfWord_t HalfWord_t; - use HalfWord_t directly
-
-
   /**
    * @brief Data type for a 32-bit word
    *
@@ -326,9 +299,6 @@
    * @sa Word_t
    *
    */
-  // Removed: typedef Word_t Word_t; - use Word_t directly
-
-
   /**
    * @brief Data type for system ticks
    *
@@ -349,9 +319,6 @@
    * @sa Ticks_t
    *
    */
-  // Removed: typedef Ticks_t Ticks_t; - use Ticks_t directly
-
-
   /**
    * @brief Data type for a task
    *
@@ -373,9 +340,6 @@
    * @sa Task_t
    *
    */
-  // Removed: typedef Task_t *Task_t *; - use Task_t* directly
-
-
   /**
    * @brief Data type for a timer
    *
@@ -397,9 +361,6 @@
    * @sa Timer_t
    *
    */
-  // Removed: typedef Timer_t *Timer_t *; - use Timer_t* directly
-
-
   /**
    * @brief Data type for a queue
    *
@@ -421,9 +382,6 @@
    * @sa Queue_t
    *
    */
-  // Removed: typedef Queue_t *Queue_t *; - use Queue_t* directly
-
-
   /**
    * @brief Data type for a stream buffer
    *
@@ -446,9 +404,6 @@
    * @sa StreamBuffer_t
    *
    */
-  // Removed: typedef StreamBuffer_t *StreamBuffer_t *; - use StreamBuffer_t* directly
-
-
   /**
    * @brief Data structure for FAT32 volume metadata
    *
@@ -479,9 +434,6 @@
    * @sa xFSUnmount()
    *
    */
-  // Removed: typedef Volume_t *Volume_t *; - use Volume_t* directly
-
-
   /**
    * @brief Data structure for file handle
    *
@@ -510,9 +462,6 @@
    * @sa xFileClose()
    *
    */
-  // Removed: typedef File_t *File_t *; - use File_t* directly
-
-
   /**
    * @brief Data structure for directory handle
    *
@@ -537,9 +486,6 @@
    * @sa xDirClose()
    *
    */
-  // Removed: typedef Dir_t *Dir_t *; - use Dir_t* directly
-
-
   /**
    * @brief Data structure for directory entry information
    *
@@ -567,9 +513,6 @@
    * @sa xFileGetInfo()
    *
    */
-  // Removed: typedef DirEntry_t *DirEntry_t *; - use DirEntry_t* directly
-
-
   /**
    * @brief Data structure for volume information
    *
@@ -595,9 +538,6 @@
    * @sa xFSGetVolumeInfo()
    *
    */
-  // Removed: typedef VolumeInfo_t *VolumeInfo_t *; - use VolumeInfo_t* directly
-
-
   /**
    * @brief Data structure for a direct to task notification
    *
@@ -639,9 +579,6 @@
    * @sa TaskNotification_t
    *
    */
-  // Removed: typedef TaskNotification_t *TaskNotification_t *; - use TaskNotification_t* directly
-
-
   /**
    * @brief Data structure for task runtime statistics
    *
@@ -667,9 +604,6 @@
    * @brief Data structure for task runtime statistics
    *
    */
-  // Removed: typedef TaskRunTimeStats_t *TaskRunTimeStats_t *; - use TaskRunTimeStats_t* directly
-
-
   /**
    * @brief Data structure for memory region statistics
    *
@@ -704,9 +638,6 @@
    * @brief Data structure for memory region statistics
    *
    */
-  // Removed: typedef MemoryRegionStats_t *MemoryRegionStats_t *; - use MemoryRegionStats_t* directly
-
-
   /**
    * @brief Data structure for information about a task
    *
@@ -743,9 +674,6 @@
    * @brief Data structure for information about a task
    *
    */
-  // Removed: typedef TaskInfo_t *TaskInfo_t *; - use TaskInfo_t* directly
-
-
   /**
    * @brief Data structure for a queue message
    *
@@ -771,9 +699,6 @@
    * @brief Data structure for a queue message
    *
    */
-  // Removed: typedef QueueMessage_t *QueueMessage_t *; - use QueueMessage_t* directly
-
-
   /**
    * @brief Data structure for information about the HeliOS system
    *
@@ -802,7 +727,6 @@
    * @brief Data structure for information about the HeliOS system
    *
    */
-  // Removed: typedef SystemInfo_t *SystemInfo_t *; - use SystemInfo_t* directly
 
   #ifdef __cplusplus
     extern "C" {
@@ -1028,8 +952,8 @@
    *
    *     // Check availability if (OK(xDeviceIsAvailable(FLASH_UID,
    * &isAvailable)) && isAvailable) {
-   *       // Try write operation if (OK(xDeviceWrite(FLASH_UID, &len,
-   * (Addr_t *)data))) {
+   *       // Try write operation if (OK(xDeviceWrite(FLASH_UID, &len, (Addr_t
+   * *)data))) {
    *         return ReturnOK;  // Success
    *       }
    *     }
@@ -1256,12 +1180,13 @@
    * Size_t messageLen = strlen(message);
    * Byte_t *buffer = NULL;
    *
-   * // Allocate buffer from heap (required!) if (OK(xMemAlloc((volatile Addr_t *
+   * // Allocate buffer from heap (required!) if (OK(xMemAlloc((volatile Addr_t
+   * *
    * *)&buffer, messageLen))) {
    *   // Copy data to heap buffer memcpy(buffer, message, messageLen);
    *
-   *   // Write to device if (OK(xDeviceWrite(UART0_UID, &messageLen,
-   * (Addr_t *)buffer))) {
+   *   // Write to device if (OK(xDeviceWrite(UART0_UID, &messageLen, (Addr_t
+   * *)buffer))) {
    *     // Data written successfully
    *   }
    *
@@ -1275,8 +1200,8 @@
    *   // Fill sector data...
    *   prepareSectorData(sectorData, sectorSize);
    *
-   *   // Write to block device if (OK(xDeviceWrite(0x1000, &sectorSize,
-   * (Addr_t *)sectorData))) {
+   *   // Write to block device if (OK(xDeviceWrite(0x1000, &sectorSize, (Addr_t
+   * *)sectorData))) {
    *     // Sector written
    *   }
    *
@@ -1356,7 +1281,7 @@
    * }
    *
    * // Read a line of text character-by-character Return_t readLine(char
-   * *buffer, Size_t maxLen) {
+   * buffer, Size_t maxLen) {
    *   Size_t idx = 0;
    *   Byte_t c;
    *
@@ -1510,8 +1435,8 @@
    *     // Process received data processUARTData(rxBuffer, rxSize);
    *   }
    *
-   *   // IMPORTANT: Free the buffer allocated by driver
-   * xMemFree((Addr_t *)rxBuffer);
+   *   // IMPORTANT: Free the buffer allocated by driver xMemFree((Addr_t
+   * *)rxBuffer);
    * }
    *
    * // Reading from a block device
@@ -1746,8 +1671,8 @@
    *   UARTConfig_t *config = NULL;
    *   Size_t configSize = sizeof(UARTConfig_t);
    *
-   *   // Allocate config from heap if (OK(xMemAlloc((volatile Addr_t **)&config,
-   * configSize))) {
+   *   // Allocate config from heap if (OK(xMemAlloc((volatile Addr_t
+   * **)&config, configSize))) {
    *     // Set desired configuration config->baudRate = baud;
    *     config->dataBits = 8;
    *     config->stopBits = 1;
@@ -1999,7 +1924,8 @@
    *   }
    * }
    *
-   * // Freeing memory returned by HeliOS functions MemoryRegionStats_t **stats =
+   * // Freeing memory returned by HeliOS functions MemoryRegionStats_t **stats
+   * =
    * NULL;
    * if (OK(xMemGetHeapStats(&stats))) {
    *   // Use stats...
@@ -2334,7 +2260,8 @@
    * @code Return_t safeCopy(Byte_t *dest, const Byte_t *src, Size_t copySize) {
    *   Size_t destSize, srcSize;
    *
-   *   // Verify destination has enough space if (ERROR(xMemGetSize((Addr_t *)dest,
+   *   // Verify destination has enough space if (ERROR(xMemGetSize((Addr_t
+   * *)dest,
    * &destSize))) {
    *     return ReturnError;
    *   }
@@ -2358,7 +2285,8 @@
    * @code Return_t serializeToStream(Byte_t *data, StreamBuffer_t *stream) {
    *   Size_t dataSize;
    *
-   *   // Get actual data size if (ERROR(xMemGetSize((Addr_t *)data, &dataSize))) {
+   *   // Get actual data size if (ERROR(xMemGetSize((Addr_t *)data,
+   * &dataSize))) {
    *     return ReturnError;
    *   }
    *
@@ -2559,9 +2487,9 @@
    * }
    * @endcode
    *
-   * @param[out] stats_ Pointer to MemoryRegionStats_t *pointer that will receive
-   *                    the allocated statistics structure. Caller MUST free
-   *                    with xMemFree() after use.
+   * @param[out] stats_ Pointer to MemoryRegionStats_t *pointer that will
+   *                    receive the allocated statistics structure. Caller MUST
+   *                    free with xMemFree() after use.
    *
    * @return            ReturnOK if statistics retrieved successfully,
    *                    ReturnError if operation failed (memory allocation error
@@ -2657,7 +2585,8 @@
    *
    *     printf("Memory Comparison:\n");
    *     printf("  Heap   - Used: %lu / Total: %lu (%u%%)\n",
-   * heapStats->usedSpace, heapStats->totalSize, (Byte_t)((heapStats->usedSpace *
+   * heapStats->usedSpace, heapStats->totalSize, (Byte_t)((heapStats->usedSpace
+   * *
    * 100) / heapStats->totalSize));
    *     printf("  Kernel - Used: %lu / Total: %lu (%u%%)\n",
    * kernelStats->usedSpace, kernelStats->totalSize,
@@ -2720,9 +2649,10 @@
    * }
    * @endcode
    *
-   * @param[out] stats_ Pointer to MemoryRegionStats_t *pointer that will receive
-   *                    the allocated statistics structure. Allocated from user
-   *                    heap. Caller MUST free with xMemFree() after use.
+   * @param[out] stats_ Pointer to MemoryRegionStats_t *pointer that will
+   *                    receive the allocated statistics structure. Allocated
+   *                    from user heap. Caller MUST free with xMemFree() after
+   *                    use.
    *
    * @return            ReturnOK if statistics retrieved successfully,
    *                    ReturnError if operation failed (memory allocation error
@@ -2821,8 +2751,8 @@
    *     }
    *   }
    *
-   *   // Consumer task: Process sensor readings void processingTask(Task_t *task,
-   * TaskParm_t *parm) {
+   *   // Consumer task: Process sensor readings void processingTask(Task_t
+   * *task, TaskParm_t *parm) {
    *     QueueMessage_t *message;
    *
    *     // Check if messages available Base_t messagesWaiting;
@@ -3546,8 +3476,8 @@
    *     Byte_t priority = msg.value[0];  // Assume first byte is priority
    *
    *     if (priority == MSG_PRIORITY_HIGH) {
-   *       // High priority - receive and process immediately
-   * xMemFree((Addr_t *)msg.value);  // Free peek copy xQueueReceive(eventQueue,
+   *       // High priority - receive and process immediately xMemFree((Addr_t
+   * *)msg.value);  // Free peek copy xQueueReceive(eventQueue,
    * &msg);
    *       handleHighPriority(&msg);
    *       xMemFree((Addr_t *)msg.value);
@@ -3576,8 +3506,8 @@
    *
    * @param[in]  queue_   Handle to the queue to peek. Must be a valid queue
    *                      created with xQueueCreate().
-   * @param[out] message_ Pointer to QueueMessage_t *structure receiving a copy of
-   *                      the message. Memory is allocated for message->value
+   * @param[out] message_ Pointer to QueueMessage_t *structure receiving a copy
+   *                      of the message. Memory is allocated for message->value
    *                      and must be freed with xMemFree() after use.
    *
    * @return              ReturnOK if message peeked successfully, ReturnError
@@ -3813,10 +3743,10 @@
    *
    * @param[in]  queue_   Handle of the queue to receive from. Must be a valid
    *                      queue handle previously returned by xQueueCreate().
-   * @param[out] message_ Pointer to QueueMessage_t *pointer variable. On success,
-   *                      receives a pointer to the message structure containing
-   *                      the message data and size. Caller MUST free this with
-   *                      xMemFree().
+   * @param[out] message_ Pointer to QueueMessage_t *pointer variable. On
+   *                      success, receives a pointer to the message structure
+   *                      containing the message data and size. Caller MUST free
+   *                      this with xMemFree().
    *
    * @return              ReturnOK if a message was successfully received and
    *                      removed from the queue, ReturnError if the receive
@@ -3948,7 +3878,8 @@
    *
    *   Base_t count;
    *   if (OK(xQueueMessagesWaiting(dataQueue, &count))) {
-   *     // Process exactly this many messages for (Base_t i = 0; i < count; i++)
+   *     // Process exactly this many messages for (Base_t i = 0; i < count;
+   * i++)
    * {
    *       QueueMessage_t *msg;
    *       if (OK(xQueueReceive(dataQueue, &msg))) {
@@ -4079,7 +4010,8 @@
    *   xStreamCreate(&protocolStream);
    * }
    *
-   * // Producer accumulates bytes void receiveTask(Task_t *task, TaskParm_t *parm)
+   * // Producer accumulates bytes void receiveTask(Task_t *task, TaskParm_t
+   * *parm)
    * {
    *   Byte_t receivedByte = getByteFromSource();
    *   xStreamSend(protocolStream, receivedByte);
@@ -4090,7 +4022,8 @@
    *   }
    * }
    *
-   * // Consumer processes complete frames void parserTask(Task_t *task, TaskParm_t *
+   * // Consumer processes complete frames void parserTask(Task_t *task,
+   * TaskParm_t *
    * parm) {
    *   HalfWord_t frameSize;
    *   Byte_t *frame;
@@ -4111,7 +4044,8 @@
    *   xStreamCreate(&sensorStream);
    * }
    *
-   * // High-frequency sensor sampling void sampleSensor(Task_t *task, TaskParm_t *
+   * // High-frequency sensor sampling void sampleSensor(Task_t *task,
+   * TaskParm_t *
    * parm) {
    *   Byte_t sample = readADC();
    *
@@ -4124,7 +4058,8 @@
    *   xStreamSend(sensorStream, sample);
    * }
    *
-   * // Lower-frequency processing void processSamples(Task_t *task, TaskParm_t *
+   * // Lower-frequency processing void processSamples(Task_t *task, TaskParm_t
+   * *
    * parm) {
    *   HalfWord_t sampleCount;
    *   Byte_t *samples;
@@ -4485,7 +4420,8 @@
    *
    *   if (OK(xStreamReceive(uartRxStream, &byteCount, &rxData))) {
    *     if (byteCount > 0) {
-   *       // Process received bytes for (HalfWord_t i = 0; i < byteCount; i++) {
+   *       // Process received bytes for (HalfWord_t i = 0; i < byteCount; i++)
+   * {
    *         processCharacter(rxData[i]);
    *       }
    *
@@ -4566,7 +4502,8 @@
    * @code StreamBuffer_t *dataStream;
    * Task_t *producerTask, consumerTask;
    *
-   * // Producer accumulates data void producer(Task_t *task, TaskParm_t *parm) {
+   * // Producer accumulates data void producer(Task_t *task, TaskParm_t *parm)
+   * {
    *   Byte_t dataPoint = collectData();
    *
    *   if (OK(xStreamSend(dataStream, dataPoint))) {
@@ -4579,7 +4516,8 @@
    *   }
    * }
    *
-   * // Consumer processes batches void consumer(Task_t *task, TaskParm_t *parm) {
+   * // Consumer processes batches void consumer(Task_t *task, TaskParm_t *parm)
+   * {
    *   xTaskWait(1);  // Wait for notification from producer
    *
    *   HalfWord_t count;
@@ -5250,7 +5188,8 @@
    *   // Assert size is reasonable __AssertOnElse__(size > 0 && size <=
    * MAX_BUFFER_SIZE, return);
    *
-   *   // Proceed with processing - preconditions verified for (Size_t i = 0; i <
+   *   // Proceed with processing - preconditions verified for (Size_t i = 0; i
+   * <
    * size; i++) {
    *     processBuffer(buffer[i]);
    *   }
@@ -5573,7 +5512,7 @@
    * Example 1: Assertion failure handler
    * @code
    * // Custom assertion behavior using halt void assertionHandler(const char
-   * *file, int line) {
+   * file, int line) {
    *   // Log assertion information if possible
    *   #ifdef DEBUG_UART printf("ASSERTION FAILED: %s:%d\n", file, line);
    *   #endif
@@ -5700,7 +5639,8 @@
    * @brief Retrieve comprehensive system information and runtime statistics
    *
    * Obtains detailed information about the HeliOS system configuration and
-   * current runtime state. The function allocates and populates a SystemInfo_t *
+   * current runtime state. The function allocates and populates a SystemInfo_t
+   * *
    * structure containing the operating system name, version string, and task
    * count. This information is useful for diagnostics, logging, runtime
    * monitoring, and version verification.
@@ -5712,8 +5652,8 @@
    * - **numberOfTasks**: Current count of tasks registered with the scheduler,
    * including both running and suspended tasks
    *
-   * Memory for the SystemInfo_t *structure is allocated from the user heap using
-   * xMemAlloc(). The caller is responsible for freeing this memory using
+   * Memory for the SystemInfo_t *structure is allocated from the user heap
+   * using xMemAlloc(). The caller is responsible for freeing this memory using
    * xMemFree() when the information is no longer needed. Failure to free the
    * structure will result in a memory leak.
    *
@@ -5923,9 +5863,9 @@
    * }
    * @endcode
    *
-   * @param[out] task_          Pointer to Task_t *variable that will receive the
-   *                            task handle. This handle is used in subsequent
-   *                            operations on the task.
+   * @param[out] task_          Pointer to Task_t *variable that will receive
+   *                            the task handle. This handle is used in
+   *                            subsequent operations on the task.
    * @param[in]  name_          Task name string, exactly CONFIG_TASK_NAME_BYTES
    *                            bytes. Common pattern: "TaskName" (8 bytes with
    *                            space padding).
@@ -6340,9 +6280,9 @@
    * system workload distribution. The statistics are essential for performance
    * analysis, optimization, and debugging.
    *
-   * The function allocates an array of TaskRunTimeStats_t *structures, one entry
-   * for each task in the system. Each structure contains detailed timing and
-   * execution metrics:
+   * The function allocates an array of TaskRunTimeStats_t *structures, one
+   * entry for each task in the system. Each structure contains detailed timing
+   * and execution metrics:
    * - **totalRunTime**: Total accumulated execution time in system ticks
    * - **lastRunTime**: Duration of the most recent execution in ticks
    * - **taskId**: Unique identifier for the task
@@ -6633,7 +6573,8 @@
    *   unsigned long totalAfter;
    * } OptimizationResults;
    *
-   * void measureOptimizationImpact(Task_t *task, OptimizationResults *results) {
+   * void measureOptimizationImpact(Task_t *task, OptimizationResults *results)
+   * {
    *   TaskRunTimeStats_t **stats = NULL;
    *
    *   // Measure before optimization if (OK(xTaskGetTaskRunTimeStats(task,
@@ -6978,7 +6919,8 @@
    *         // Attempt to resume xTaskResume(watchdogTask);
    *       }
    *
-   *       // Check if watchdog is executing regularly static Word_t lastRunCount
+   *       // Check if watchdog is executing regularly static Word_t
+   * lastRunCount
    * = 0;
    *       if (info->runCount == lastRunCount) {
    *         logWarning("Watchdog task may be stuck");
@@ -7039,9 +6981,9 @@
    * @brief Retrieve comprehensive information about all tasks
    *
    * Returns detailed information for all tasks in the system in a single
-   * efficient call. Allocates an array of TaskInfo_t *structures containing name,
-   * state, and runtime statistics for every task, providing a complete system
-   * snapshot for monitoring, diagnostics, or reporting.
+   * efficient call. Allocates an array of TaskInfo_t *structures containing
+   * name, state, and runtime statistics for every task, providing a complete
+   * system snapshot for monitoring, diagnostics, or reporting.
    *
    * This function allocates a single contiguous array from the user heap
    * containing one TaskInfo_t *structure per task. The array is indexed by task
@@ -7126,7 +7068,8 @@
    *     if (totalRuntime > 0) {
    *       printf("CPU Usage by Task:\n");
    *
-   *       // Calculate and display percentage for each task for (Base_t i = 0; i
+   *       // Calculate and display percentage for each task for (Base_t i = 0;
+   * i
    * < taskCount; i++) {
    *         Byte_t percentage = (Byte_t)((allInfo[i].totalRunTime * 100) /
    *                                     totalRuntime);
@@ -7938,7 +7881,8 @@
    *   // Check if notification is waiting if
    * (OK(xTaskNotificationIsWaiting(task, &hasNotification))) {
    *     if (hasNotification) {
-   *       // Notification present - process it TaskNotification_t *notification;
+   *       // Notification present - process it TaskNotification_t
+   * *notification;
    *       if (OK(xTaskNotifyTake(task, &notification))) {
    *         processNotification(&notification);
    *       }
@@ -8357,10 +8301,10 @@
    *                           obtained from xTaskCreate() or
    *                           xTaskGetHandleByName(). Must not be NULL or refer
    *                           to a deleted task.
-   * @param[out] notification_ Pointer to TaskNotification_t *structure that will
-   *                           receive the notification data. Must not be NULL.
-   *                           On success, contains the notification value and
-   *                           byte count. On failure, remains unchanged.
+   * @param[out] notification_ Pointer to TaskNotification_t *structure that
+   *                           will receive the notification data. Must not be
+   *                           NULL. On success, contains the notification value
+   *                           and byte count. On failure, remains unchanged.
    *
    * @return                   ReturnOK if a notification was pending and has
    *                           been retrieved. ReturnError if no notification
@@ -8456,7 +8400,8 @@
    *
    * // Start scheduler - both tasks will now execute xTaskStartScheduler();
    *
-   * // Can also resume tasks while scheduler is running void controlTask(Task_t *
+   * // Can also resume tasks while scheduler is running void controlTask(Task_t
+   * *
    * task, TaskParm_t *parm) {
    *   if (systemReady) {
    *     xTaskResume(sensorTask);  // Activate sensor readings
@@ -9128,8 +9073,8 @@
    * }
    * @endcode
    *
-   * @param[out] timer_  Pointer to Timer_t *variable that will receive the timer
-   *                     handle. This handle is used in subsequent timer
+   * @param[out] timer_  Pointer to Timer_t *variable that will receive the
+   *                     timer handle. This handle is used in subsequent timer
    *                     operations.
    * @param[in]  period_ Timer period in system ticks. The timer expires when
    *                     elapsed ticks exceed this value. Must be greater than
@@ -10633,7 +10578,8 @@
    * configDeviceUID))) {
    *       // Both volumes mounted - use different handles xFileOpen(&file1,
    * dataVolume, (Byte_t*)"/data.bin", FS_MODE_READ);
-   *       xFileOpen(&file2, configVolume, (Byte_t*)"/config.txt", FS_MODE_READ);
+   *       xFileOpen(&file2, configVolume, (Byte_t*)"/config.txt",
+   * FS_MODE_READ);
    *     }
    *   }
    * }
@@ -10656,10 +10602,11 @@
    * }
    * @endcode
    *
-   * @param[out] volume_         Pointer to Volume_t *handle to be initialized. On
-   *                             success, this handle is used in all subsequent
-   *                             file and directory operations. The handle
-   *                             remains valid until xFSUnmount() is called.
+   * @param[out] volume_         Pointer to Volume_t *handle to be initialized.
+   *                             On success, this handle is used in all
+   *                             subsequent file and directory operations. The
+   *                             handle remains valid until xFSUnmount() is
+   *                             called.
    * @param[in]  blockDeviceUID_ UID of the block device containing the FAT32
    *                             filesystem. Must be a registered block device
    *                             that has been formatted with xFSFormat().
@@ -11030,10 +10977,10 @@
    * }
    * @endcode
    *
-   * @param[out] file_   Pointer to File_t *handle to be initialized. On success,
-   *                     this handle is used for all subsequent operations on
-   *                     the opened file. The handle remains valid until
-   *                     xFileClose() is called.
+   * @param[out] file_   Pointer to File_t *handle to be initialized. On
+   *                     success, this handle is used for all subsequent
+   *                     operations on the opened file. The handle remains valid
+   *                     until xFileClose() is called.
    * @param[in]  volume_ Handle to mounted volume containing the file. Must be a
    *                     valid volume from xFSMount().
    * @param[in]  path_   Pointer to null-terminated string containing file path.
@@ -11124,8 +11071,8 @@
    * @endcode
    *
    * Example 2: Error handling with guaranteed close
-   * @code Return_t writeData(Volume_t *vol, const char *path, Byte_t *data, Size_t
-   * size) {
+   * @code Return_t writeData(Volume_t *vol, const char *path, Byte_t *data,
+   * Size_t size) {
    *   File_t *file;
    *   Return_t result = ReturnError;
    *
@@ -11455,7 +11402,8 @@
    * newData);
    * }
    *
-   * // Usage if (OK(xFileOpen(&file, vol, (Byte_t*)"/config.dat", FS_MODE_READ |
+   * // Usage if (OK(xFileOpen(&file, vol, (Byte_t*)"/config.dat", FS_MODE_READ
+   * |
    * FS_MODE_WRITE))) {
    *   Byte_t newValue = 0x42;
    *   updateFileBytes(file, 100, &newValue, 1);  // Update byte at offset 100
@@ -11602,7 +11550,8 @@
    *   Byte_t data[64];
    * } Record_t;
    *
-   * Return_t updateRecord(File_t *file, Word_t recordIndex, Record_t *newRecord) {
+   * Return_t updateRecord(File_t *file, Word_t recordIndex, Record_t
+   * *newRecord) {
    *   Word_t recordOffset = recordIndex * sizeof(Record_t);
    *
    *   // Seek to record position if (ERROR(xFileSeek(file, recordOffset,
@@ -11913,7 +11862,8 @@
    *   xFileGetSize(src, &totalSize);
    *
    *   while (bytesProcessed < totalSize) {
-   *     Size_t chunkSize = (totalSize - bytesProcessed > 512) ? 512 : (totalSize
+   *     Size_t chunkSize = (totalSize - bytesProcessed > 512) ? 512 :
+   * (totalSize
    * - bytesProcessed);
    *
    *     if (OK(xFileRead(src, chunkSize, &buffer))) {
@@ -12001,7 +11951,8 @@
    * - **Real-time logging**: Guarantee log entries are stored immediately
    *
    * Example 1: Write critical configuration with sync
-   * @code Return_t saveConfig(Volume_t *vol, Byte_t *configData, Size_t dataSize) {
+   * @code Return_t saveConfig(Volume_t *vol, Byte_t *configData, Size_t
+   * dataSize) {
    *   File_t *file;
    *
    *   if (OK(xFileOpen(&file, vol, (Byte_t*)"/config.dat", FS_MODE_WRITE |
@@ -12064,7 +12015,8 @@
    * @endcode
    *
    * Example 4: Transaction-style write with rollback
-   * @code Return_t atomicUpdate(File_t *file, Byte_t *newData, Size_t dataSize) {
+   * @code Return_t atomicUpdate(File_t *file, Byte_t *newData, Size_t dataSize)
+   * {
    *   Word_t originalPos;
    *   Word_t originalSize;
    *
@@ -12559,7 +12511,8 @@
    * void cleanupTempFile(void) {
    *   Base_t exists;
    *
-   *   // Check if temp file exists if (OK(xFileExists(vol, (Byte_t*)"/temp.dat",
+   *   // Check if temp file exists if (OK(xFileExists(vol,
+   * (Byte_t*)"/temp.dat",
    * &exists)) && exists) {
    *     // Delete temp file if (OK(xFileUnlink(vol, (Byte_t*)"/temp.dat"))) {
    *       logInfo("Temp file deleted");
@@ -12569,7 +12522,8 @@
    * @endcode
    *
    * Example 2: Replace file with new version
-   * @code Return_t updateConfigFile(Volume_t *vol, Byte_t *newConfig, Size_t size) {
+   * @code Return_t updateConfigFile(Volume_t *vol, Byte_t *newConfig, Size_t
+   * size) {
    *   Base_t exists;
    *
    *   // Check if old config exists if (OK(xFileExists(vol,
@@ -12742,7 +12696,8 @@
    * @endcode
    *
    * Example 3: Atomic file replacement
-   * @code Return_t atomicConfigUpdate(Volume_t *vol, Byte_t *newConfig, Size_t size)
+   * @code Return_t atomicConfigUpdate(Volume_t *vol, Byte_t *newConfig, Size_t
+   * size)
    * {
    *   File_t *tmpFile;
    *
@@ -12752,7 +12707,8 @@
    *       xFileSync(tmpFile);  // Ensure written to disk xFileClose(tmpFile);
    *
    *       // Rename old config to backup Base_t exists;
-   *       if (OK(xFileExists(vol, (Byte_t*)"/config.dat", &exists)) && exists) {
+   *       if (OK(xFileExists(vol, (Byte_t*)"/config.dat", &exists)) && exists)
+   * {
    *         xFileRename(vol, (Byte_t*)"/config.dat", (Byte_t*)"/config.bak");
    *       }
    *
