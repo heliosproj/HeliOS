@@ -80,13 +80,13 @@
   #if defined(__SetFlag__)
     #undef __SetFlag__
   #endif /* if defined(__SetFlag__) */
-  #define __SetFlag__(flag_) ((flag_) = 0xFFu)
+  #define __SetFlag__(flag_) (flag_) = 0xFFu
 
 
   #if defined(__UnsetFlag__)
     #undef __UnsetFlag__
   #endif /* if defined(__UnsetFlag__) */
-  #define __UnsetFlag__(flag_) ((flag_) = 0x0u)
+  #define __UnsetFlag__(flag_) (flag_) = 0x0u
 
 
   #if defined(__FlagIsSet__)
@@ -100,11 +100,11 @@
   #endif /* if defined(__FlagIsNotSet__) */
   #define __FlagIsNotSet__(flag_) (0x0u == (flag_))
 
-  extern Flags_t flag;
-
   #ifdef __cplusplus
     extern "C" {
   #endif /* ifdef __cplusplus */
+
+  extern Flags_t flag;
   Return_t xSystemAssert(const char *file_, const int line_);
   Return_t xSystemInit(void);
   Return_t xSystemHalt(void);
