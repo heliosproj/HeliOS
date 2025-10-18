@@ -279,12 +279,17 @@
     Base_t length;
     Timer_t *head;
   } TimerList_t;
-  typedef struct Flags_s {
-    Base_t running;
-    Base_t overflow;
-    Base_t memfault;
-    Base_t littleend;
-  } Flags_t;
+
+  #ifndef FLAGS_T_
+    #define FLAGS_T_
+    typedef struct Flags_s {
+      Base_t running;
+      Base_t overflow;
+      Base_t memfault;
+      Base_t littleend;
+    } Flags_t;
+  #endif /* ifndef FLAGS_T_ */
+
   typedef struct Message_s {
     Base_t messageBytes;
     Byte_t messageValue[CONFIG_MESSAGE_VALUE_BYTES];
