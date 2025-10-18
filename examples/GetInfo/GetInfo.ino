@@ -21,8 +21,8 @@
 
 void taskPrint_main(Task_t *task_, TaskParm_t *parm_) {
   String str;
-  xTaskInfo tinfo;
-  xSystemInfo sinfo;
+  TaskInfo_t *tinfo;
+  SystemInfo_t *sinfo;
 
 
   if(OK(xTaskGetTaskInfo(task_, &tinfo))) {
