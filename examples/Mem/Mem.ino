@@ -21,9 +21,9 @@
 void taskPrint_main(Task_t *task_, TaskParm_t *parm_) {
   String str;
   Size_t size;
-  xTaskInfo tinfo1;
-  xTaskInfo tinfo2;
-  xTaskInfo tinfo3;
+  TaskInfo_t *tinfo1;
+  TaskInfo_t *tinfo2;
+  TaskInfo_t *tinfo3;
 
 
   if(OK(xMemGetUsed(&size))) {
@@ -34,8 +34,8 @@ void taskPrint_main(Task_t *task_, TaskParm_t *parm_) {
   }
 
   if(OK(xTaskGetTaskInfo(task_, &tinfo1)) && OK(xTaskGetTaskInfo(task_, &tinfo2)) && OK(xTaskGetTaskInfo(task_, &tinfo3))) {
-    if(OK(xMemGetSize((const volatile xAddr) tinfo1, &size))) {
-      str = "taskPrint_main(): xTaskInfo is using ";
+    if(OK(xMemGetSize((const volatile Addr_t *) tinfo1, &size))) {
+      str = "taskPrint_main(): TaskInfo_t is using ";
       str += size;
       str += " bytes of heap memory.";
       Serial.println(str);
