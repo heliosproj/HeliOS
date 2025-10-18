@@ -41,7 +41,7 @@ static Return_t __BlockDeviceWriteBlockRAW__(const Word_t blockNum_, const HalfW
 
 
 /*UNCRUSTIFY-OFF*/
-Return_t BLOCKDEV_self_register(void) {
+Return_t TO_FUNCTION(DEVICE_NAME, _self_register)(void) {
   FUNCTION_ENTER;
 
   if(OK(__RegisterDevice__(DEVICE_UID,
@@ -63,7 +63,7 @@ Return_t BLOCKDEV_self_register(void) {
 }
 
 
-Return_t BLOCKDEV_init(Device_t *device_) {
+Return_t TO_FUNCTION(DEVICE_NAME, _init)(Device_t *device_) {
   FUNCTION_ENTER;
 
   /* Initialization happens in config after I/O driver is configured */
@@ -80,7 +80,7 @@ Return_t BLOCKDEV_init(Device_t *device_) {
 }
 
 
-Return_t BLOCKDEV_config(Device_t *device_, Size_t *size_, Addr_t *config_) {
+Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Addr_t *config_) {
   FUNCTION_ENTER;
 
   if(__PointerIsNotNull__(config_) && __PointerIsNotNull__(size_)) {
@@ -145,7 +145,7 @@ Return_t BLOCKDEV_config(Device_t *device_, Size_t *size_, Addr_t *config_) {
 }
 
 
-Return_t BLOCKDEV_read(Device_t *device_, Size_t *size_, Addr_t **data_) {
+Return_t TO_FUNCTION(DEVICE_NAME, _read)(Device_t *device_, Size_t *size_, Addr_t **data_) {
   FUNCTION_ENTER;
 
   Byte_t *blockData = null;
@@ -175,7 +175,7 @@ Return_t BLOCKDEV_read(Device_t *device_, Size_t *size_, Addr_t **data_) {
 }
 
 
-Return_t BLOCKDEV_write(Device_t *device_, Size_t *size_, Addr_t *data_) {
+Return_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t *device_, Size_t *size_, Addr_t *data_) {
   FUNCTION_ENTER;
 
   if(__PointerIsNotNull__(size_) && __PointerIsNotNull__(data_) && state.initialized) {
@@ -201,14 +201,14 @@ Return_t BLOCKDEV_write(Device_t *device_, Size_t *size_, Addr_t *data_) {
 }
 
 
-Return_t BLOCKDEV_simple_read(Device_t *device_, Byte_t *data_) {
+Return_t TO_FUNCTION(DEVICE_NAME, _simple_read)(Device_t *device_, Byte_t *data_) {
   FUNCTION_ENTER;
   /* Not typically used for block devices */
   FUNCTION_EXIT;
 }
 
 
-Return_t BLOCKDEV_simple_write(Device_t *device_, Byte_t data_) {
+Return_t TO_FUNCTION(DEVICE_NAME, _simple_write)(Device_t *device_, Byte_t data_) {
   FUNCTION_ENTER;
   /* Not typically used for block devices */
   FUNCTION_EXIT;
