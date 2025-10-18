@@ -77,17 +77,22 @@
  * @sa xTaskGetTaskState()
  *
  */
-  typedef enum TaskState_e {
-    TaskStateSuspended, /**< Task is inactive and will not be scheduled. This is
-                         * the initial state after task creation and the state
-                         * after calling xTaskSuspend(). */
-    TaskStateRunning, /**< Task is active and will be scheduled for execution
-                       * according to its period. Set by calling xTaskResume().
-                       */
-    TaskStateWaiting /**< Task is waiting for an event and will only be
-                      * scheduled when that event occurs (timer, notification,
-                      * etc.). Set by calling xTaskWait(). */
-  } TaskState_t;
+
+  #ifndef TASKSTATE_T_
+    #define TASKSTATE_T_
+    typedef enum TaskState_e {
+      TaskStateSuspended, /**< Task is inactive and will not be scheduled. This
+                           * is the initial state after task creation and the
+                           * state after calling xTaskSuspend(). */
+      TaskStateRunning, /**< Task is active and will be scheduled for execution
+                         * according to its period. Set by calling
+                         * xTaskResume().
+                         */
+      TaskStateWaiting /**< Task is waiting for an event and will only be
+                        * scheduled when that event occurs (timer, notification,
+                        * etc.). Set by calling xTaskWait(). */
+    } TaskState_t;
+  #endif /* ifndef TASKSTATE_T_ */
 
 
   /**
@@ -115,18 +120,22 @@
    * @sa xTaskStartScheduler()
    *
    */
-  typedef enum SchedulerState_e {
-    SchedulerStateSuspended,
+
+  #ifndef SCHEDULERSTATE_T_
+    #define SCHEDULERSTATE_T_
+    typedef enum SchedulerState_e {
+      SchedulerStateSuspended,
 
 
-    /**< State the scheduler is in after calling xTaskSuspendAll().
-     * TaskStartScheduler() will stop scheduling tasks for execution and
-     * relinquish control when xTaskSuspendAll() is called. */
-    SchedulerStateRunning /**< State the scheduler is in after calling
-                           * xTaskResumeAll(). xTaskStartScheduler() will
-                           * continue to schedule tasks for execution until
-                           * xTaskSuspendAll() is called. */
-  } SchedulerState_t;
+      /**< State the scheduler is in after calling xTaskSuspendAll().
+       * TaskStartScheduler() will stop scheduling tasks for execution and
+       * relinquish control when xTaskSuspendAll() is called. */
+      SchedulerStateRunning /**< State the scheduler is in after calling
+                             * xTaskResumeAll(). xTaskStartScheduler() will
+                             * continue to schedule tasks for execution until
+                             * xTaskSuspendAll() is called. */
+    } SchedulerState_t;
+  #endif /* ifndef SCHEDULERSTATE_T_ */
 
 
   /**
@@ -148,10 +157,14 @@
    * @sa Return_t
    *
    */
-  typedef enum Return_e {
-    ReturnOK, /**< Return value if the syscall was successful. */
-    ReturnError /**< Return value if the syscall failed. */
-  } Return_t;
+
+  #ifndef RETURN_T_
+    #define RETURN_T_
+    typedef enum Return_e {
+      ReturnOK, /**< Return value if the syscall was successful. */
+      ReturnError /**< Return value if the syscall failed. */
+    } Return_t;
+  #endif /* ifndef RETURN_T_ */
 
 
   /**
@@ -176,7 +189,11 @@
    * @sa xMemFree()
    *
    */
-  typedef VOID_TYPE TaskParm_t;
+
+  #ifndef TASKPARM_T_
+    #define TASKPARM_T_
+    typedef VOID_TYPE TaskParm_t;
+  #endif /* ifndef TASKPARM_T_ */
 
 
   /**
@@ -198,7 +215,11 @@
    * @sa Byte_t
    *
    */
-  typedef UINT8_TYPE Base_t;
+
+  #ifndef BASE_T_
+    #define BASE_T_
+    typedef UINT8_TYPE Base_t;
+  #endif /* ifndef BASE_T_ */
 
 
   /**
@@ -216,7 +237,11 @@
    * @sa Byte_t
    *
    */
-  typedef UINT8_TYPE Byte_t;
+
+  #ifndef BYTE_T_
+    #define BYTE_T_
+    typedef UINT8_TYPE Byte_t;
+  #endif /* ifndef BYTE_T_ */
 
 
   /**
@@ -236,7 +261,11 @@
    * @sa Addr_t *
    *
    */
-  typedef VOID_TYPE Addr_t;
+
+  #ifndef ADDR_T_
+    #define ADDR_T_
+    typedef VOID_TYPE Addr_t;
+  #endif /* ifndef ADDR_T_ */
 
 
   /**
@@ -254,7 +283,11 @@
    * @sa Size_t
    *
    */
-  typedef SIZE_TYPE Size_t;
+
+  #ifndef SIZE_T_
+    #define SIZE_T_
+    typedef SIZE_TYPE Size_t;
+  #endif /* ifndef SIZE_T_ */
 
 
   /**
@@ -272,7 +305,11 @@
    * @sa HalfWord_t
    *
    */
-  typedef UINT16_TYPE HalfWord_t;
+
+  #ifndef HALFWORD_T_
+    #define HALFWORD_T_
+    typedef UINT16_TYPE HalfWord_t;
+  #endif /* ifndef HALFWORD_T_ */
 
 
   /**
@@ -290,7 +327,11 @@
    * @sa Word_t
    *
    */
-  typedef UINT32_TYPE Word_t;
+
+  #ifndef WORD_T_
+    #define WORD_T_
+    typedef UINT32_TYPE Word_t;
+  #endif /* ifndef WORD_T_ */
 
 
   /**
@@ -310,7 +351,11 @@
    * @sa Ticks_t
    *
    */
-  typedef UINT32_TYPE Ticks_t;
+
+  #ifndef TICKS_T_
+    #define TICKS_T_
+    typedef UINT32_TYPE Ticks_t;
+  #endif /* ifndef TICKS_T_ */
 
 
   /**
@@ -395,7 +440,11 @@
    * @sa xStreamDelete()
    *
    */
-  typedef VOID_TYPE StreamBuffer_t;
+
+  #ifndef STREAMBUFFER_T_
+    #define STREAMBUFFER_T_
+    typedef VOID_TYPE StreamBuffer_t;
+  #endif /* ifndef STREAMBUFFER_T_ */
 
 
   /**
@@ -412,18 +461,22 @@
    * @sa xFSUnmount()
    *
    */
-  typedef struct Volume_s {
-    HalfWord_t blockDeviceUID;
-    Word_t fatStartSector;
-    Word_t dataStartSector;
-    Word_t rootDirCluster;
-    Byte_t sectorsPerCluster;
-    HalfWord_t bytesPerSector;
-    HalfWord_t reservedSectors;
-    Byte_t numFATs;
-    Word_t sectorsPerFAT;
-    Base_t mounted;
-  } Volume_t;
+
+  #ifndef VOLUME_T_
+    #define VOLUME_T_
+    typedef struct Volume_s {
+      HalfWord_t blockDeviceUID;
+      Word_t fatStartSector;
+      Word_t dataStartSector;
+      Word_t rootDirCluster;
+      Byte_t sectorsPerCluster;
+      HalfWord_t bytesPerSector;
+      HalfWord_t reservedSectors;
+      Byte_t numFATs;
+      Word_t sectorsPerFAT;
+      Base_t mounted;
+    } Volume_t;
+  #endif /* ifndef VOLUME_T_ */
 
 
   /**
@@ -442,16 +495,20 @@
    * @sa xFileClose()
    *
    */
-  typedef struct File_s {
-    struct Volume_s *volume;
-    Word_t firstCluster;
-    Word_t currentCluster;
-    Word_t fileSize;
-    Word_t position;
-    Byte_t mode;
-    Base_t isOpen;
-    Base_t isDirty;
-  } File_t;
+
+  #ifndef FILE_T_
+    #define FILE_T_
+    typedef struct File_s {
+      struct Volume_s *volume;
+      Word_t firstCluster;
+      Word_t currentCluster;
+      Word_t fileSize;
+      Word_t position;
+      Byte_t mode;
+      Base_t isOpen;
+      Base_t isDirty;
+    } File_t;
+  #endif /* ifndef FILE_T_ */
 
 
   /**
@@ -470,12 +527,16 @@
    * @sa xDirClose()
    *
    */
-  typedef struct Dir_s {
-    struct Volume_s *volume;
-    Word_t currentCluster;
-    HalfWord_t entryIndex;
-    Base_t isOpen;
-  } Dir_t;
+
+  #ifndef DIR_T_
+    #define DIR_T_
+    typedef struct Dir_s {
+      struct Volume_s *volume;
+      Word_t currentCluster;
+      HalfWord_t entryIndex;
+      Base_t isOpen;
+    } Dir_t;
+  #endif /* ifndef DIR_T_ */
 
 
   /**
@@ -494,15 +555,19 @@
    * @sa xFileGetInfo()
    *
    */
-  typedef struct DirEntry_s {
-    Byte_t name[256];
-    Word_t size;
-    Word_t firstCluster;
-    Base_t isDirectory;
-    Base_t isReadOnly;
-    Base_t isHidden;
-    Base_t isSystem;
-  } DirEntry_t;
+
+  #ifndef DIRENTRY_T_
+    #define DIRENTRY_T_
+    typedef struct DirEntry_s {
+      Byte_t name[256];
+      Word_t size;
+      Word_t firstCluster;
+      Base_t isDirectory;
+      Base_t isReadOnly;
+      Base_t isHidden;
+      Base_t isSystem;
+    } DirEntry_t;
+  #endif /* ifndef DIRENTRY_T_ */
 
 
   /**
@@ -520,15 +585,19 @@
    * @sa xFSGetVolumeInfo()
    *
    */
-  typedef struct VolumeInfo_s {
-    Word_t totalClusters;
-    Word_t freeClusters;
-    Word_t totalBytes;
-    Word_t freeBytes;
-    HalfWord_t bytesPerSector;
-    Byte_t sectorsPerCluster;
-    Word_t bytesPerCluster;
-  } VolumeInfo_t;
+
+  #ifndef VOLUMEINFO_T_
+    #define VOLUMEINFO_T_
+    typedef struct VolumeInfo_s {
+      Word_t totalClusters;
+      Word_t freeClusters;
+      Word_t totalBytes;
+      Word_t freeBytes;
+      HalfWord_t bytesPerSector;
+      Byte_t sectorsPerCluster;
+      Word_t bytesPerCluster;
+    } VolumeInfo_t;
+  #endif /* ifndef VOLUMEINFO_T_ */
 
 
   /**
@@ -558,8 +627,9 @@
    *
    */
 
-  #ifndef HELIOS_PUBLIC_STRUCTURES_DEFINED_
-    #define HELIOS_PUBLIC_STRUCTURES_DEFINED_
+
+  #ifndef TASKNOTIFICATION_T_
+    #define TASKNOTIFICATION_T_
     typedef struct TaskNotification_s {
       Base_t notificationBytes; /**< The length in bytes of the notification
                                  * value which cannot exceed
@@ -575,27 +645,30 @@
                                                                   * member.
                                                                   */
     } TaskNotification_t;
+  #endif /* ifndef TASKNOTIFICATION_T_ */
 
 
-    /**
-     * @brief Data structure for a direct to task notification
-     *
-     * @sa TaskNotification_t
-     *
-     */
-    /**
-     * @brief Data structure for task runtime statistics
-     *
-     * The TaskRunTimeStats_t data structure is used by
-     * xTaskGetTaskRunTimeStats() and xTaskGetAllRuntimeStats() to obtain
-     * runtime statistics about a task.
-     *
-     * @sa TaskRunTimeStats_t *
-     * @sa xTaskGetTaskRunTimeStats()
-     * @sa xTaskGetAllRunTimeStats()
-     * @sa xMemFree()
-     *
-     */
+  /**
+   * @brief Data structure for a direct to task notification
+   *
+   * @sa TaskNotification_t
+   *
+   */
+  /**
+   * @brief Data structure for task runtime statistics
+   *
+   * The TaskRunTimeStats_t data structure is used by xTaskGetTaskRunTimeStats()
+   * and xTaskGetAllRuntimeStats() to obtain runtime statistics about a task.
+   *
+   * @sa TaskRunTimeStats_t *
+   * @sa xTaskGetTaskRunTimeStats()
+   * @sa xTaskGetAllRunTimeStats()
+   * @sa xMemFree()
+   *
+   */
+
+  #ifndef TASKRUNTIMESTATS_T_
+    #define TASKRUNTIMESTATS_T_
     typedef struct TaskRunTimeStats_s {
       Base_t id; /**< The ID of the task. */
       Ticks_t lastRunTime; /**< The duration in ticks of the task's last
@@ -604,24 +677,28 @@
       Ticks_t totalRunTime; /**< The duration in ticks of the task's total
                              * runtime. */
     } TaskRunTimeStats_t;
+  #endif /* ifndef TASKRUNTIMESTATS_T_ */
 
 
-    /**
-     * @brief Data structure for task runtime statistics
-     *
-     */
-    /**
-     * @brief Data structure for memory region statistics
-     *
-     * The MemoryRegionStats_t data structure is used by xMemGetHeapStats() and
-     * xMemGetKernelStats() to obtain statistics about either memory region.
-     *
-     * @sa MemoryRegionStats_t *
-     * @sa xMemGetHeapStats()
-     * @sa xMemGetKernelStats()
-     * @sa xMemFree()
-     *
-     */
+  /**
+   * @brief Data structure for task runtime statistics
+   *
+   */
+  /**
+   * @brief Data structure for memory region statistics
+   *
+   * The MemoryRegionStats_t data structure is used by xMemGetHeapStats() and
+   * xMemGetKernelStats() to obtain statistics about either memory region.
+   *
+   * @sa MemoryRegionStats_t *
+   * @sa xMemGetHeapStats()
+   * @sa xMemGetKernelStats()
+   * @sa xMemFree()
+   *
+   */
+
+  #ifndef MEMORYREGIONSTATS_T_
+    #define MEMORYREGIONSTATS_T_
     typedef struct MemoryRegionStats_s {
       Word_t largestFreeEntryInBytes; /**< The largest free entry in bytes. */
       Word_t smallestFreeEntryInBytes; /**< The smallest free entry in bytes. */
@@ -639,30 +716,33 @@
                                              * initialization of free bytes of
                                              * memory. */
     } MemoryRegionStats_t;
+  #endif /* ifndef MEMORYREGIONSTATS_T_ */
 
 
-    /**
-     * @brief Data structure for memory region statistics
-     *
-     */
-    /**
-     * @brief Data structure for information about a task
-     *
-     * The TaskInfo_t structure is similar to xTaskRuntimeStats_t in that it
-     * contains runtime statistics for a task. However, TaskInfo_t also contains
-     * additional details about a task such as its name and state. The
-     * TaskInfo_t structure is returned by xTaskGetTaskInfo() and
-     * xTaskGetAllTaskInfo(). If only runtime statistics are needed, then
-     * TaskRunTimeStats_t should be used because of its smaller memory
-     * footprint.
-     *
-     * @sa TaskInfo_t *
-     * @sa xTaskGetTaskInfo()
-     * @sa xTaskGetAllTaskInfo()
-     * @sa CONFIG_TASK_NAME_BYTES
-     * @sa xMemFree()
-     *
-     */
+  /**
+   * @brief Data structure for memory region statistics
+   *
+   */
+  /**
+   * @brief Data structure for information about a task
+   *
+   * The TaskInfo_t structure is similar to xTaskRuntimeStats_t in that it
+   * contains runtime statistics for a task. However, TaskInfo_t also contains
+   * additional details about a task such as its name and state. The TaskInfo_t
+   * structure is returned by xTaskGetTaskInfo() and xTaskGetAllTaskInfo(). If
+   * only runtime statistics are needed, then TaskRunTimeStats_t should be used
+   * because of its smaller memory footprint.
+   *
+   * @sa TaskInfo_t *
+   * @sa xTaskGetTaskInfo()
+   * @sa xTaskGetAllTaskInfo()
+   * @sa CONFIG_TASK_NAME_BYTES
+   * @sa xMemFree()
+   *
+   */
+
+  #ifndef TASKINFO_T_
+    #define TASKINFO_T_
     typedef struct TaskInfo_s {
       Base_t id; /**< The ID of the task. */
       Byte_t name[CONFIG_TASK_NAME_BYTES]; /**< The name of the task which must
@@ -678,25 +758,29 @@
       Ticks_t totalRunTime; /**< The duration in ticks of the task's total
                              * runtime. */
     } TaskInfo_t;
+  #endif /* ifndef TASKINFO_T_ */
 
 
-    /**
-     * @brief Data structure for information about a task
-     *
-     */
-    /**
-     * @brief Data structure for a queue message
-     *
-     * The QueueMessage_t stucture is used to store a queue message and is
-     * returned by xQueueReceive() and xQueuePeek().
-     *
-     * @sa QueueMessage_t *
-     * @sa xQueueReceive()
-     * @sa xQueuePeek()
-     * @sa CONFIG_MESSAGE_VALUE_BYTES
-     * @sa xMemFree()
-     *
-     */
+  /**
+   * @brief Data structure for information about a task
+   *
+   */
+  /**
+   * @brief Data structure for a queue message
+   *
+   * The QueueMessage_t stucture is used to store a queue message and is
+   * returned by xQueueReceive() and xQueuePeek().
+   *
+   * @sa QueueMessage_t *
+   * @sa xQueueReceive()
+   * @sa xQueuePeek()
+   * @sa CONFIG_MESSAGE_VALUE_BYTES
+   * @sa xMemFree()
+   *
+   */
+
+  #ifndef QUEUEMESSAGE_T_
+    #define QUEUEMESSAGE_T_
     typedef struct QueueMessage_s {
       Base_t messageBytes; /**< The number of bytes contained in the message
                             * value which cannot exceed
@@ -704,24 +788,28 @@
       Byte_t messageValue[CONFIG_MESSAGE_VALUE_BYTES]; /**< The queue message
                                                         * value. */
     } QueueMessage_t;
+  #endif /* ifndef QUEUEMESSAGE_T_ */
 
 
-    /**
-     * @brief Data structure for a queue message
-     *
-     */
-    /**
-     * @brief Data structure for information about the HeliOS system
-     *
-     * The SystemInfo_t data structure is used to store information about the
-     * HeliOS system and is returned by xSystemGetSystemInfo().
-     *
-     * @sa SystemInfo_t *
-     * @sa xSystemGetSystemInfo()
-     * @sa OS_PRODUCT_NAME_SIZE
-     * @sa xMemFree()
-     *
-     */
+  /**
+   * @brief Data structure for a queue message
+   *
+   */
+  /**
+   * @brief Data structure for information about the HeliOS system
+   *
+   * The SystemInfo_t data structure is used to store information about the
+   * HeliOS system and is returned by xSystemGetSystemInfo().
+   *
+   * @sa SystemInfo_t *
+   * @sa xSystemGetSystemInfo()
+   * @sa OS_PRODUCT_NAME_SIZE
+   * @sa xMemFree()
+   *
+   */
+
+  #ifndef SYSTEMINFO_T_
+    #define SYSTEMINFO_T_
     typedef struct SystemInfo_s {
       Byte_t productName[OS_PRODUCT_NAME_SIZE]; /**< The product name of the
                                                  * operating system (always
@@ -734,7 +822,7 @@
       Base_t littleEndian; /**< True if the system byte order is little endian.
                             */
     } SystemInfo_t;
-  #endif /* ifndef HELIOS_PUBLIC_STRUCTURES_DEFINED_ */
+  #endif /* ifndef SYSTEMINFO_T_ */
 
 
   /**
