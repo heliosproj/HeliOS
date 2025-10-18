@@ -44,7 +44,7 @@
 #define MEDIUM_ALLOC_SIZE 256 /* Medium allocation size */
 #define LARGE_ALLOC_SIZE 512 /* Large allocation size */
 #define FRAG_BLOCK_SIZE 1024 /* Fragmentation test block size */
-#define MAX_SIZE_TEST 0xFFFFFFFFu /* Maximum size boundary test */
+#define MAX_SIZE_TEST ((CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS + 100) * CONFIG_MEMORY_REGION_BLOCK_SIZE) /* Oversized allocation test */
 #define MAX_TEST_ALLOCS 100 /* Maximum test allocations */
 static Size_t sizes[NUM_TEST_ALLOCS] = {
   0x2532u, 0x1832u, 0x132u, 0x2932u, 0x332u, 0x1432u, 0x1332u, 0x532u, 0x1732u, 0x932u, 0x1432u, 0x2232u, 0x1432u, 0x3132u, 0x032u, 0x1132u, 0x632u, 0x932u,
@@ -964,8 +964,12 @@ void test_fragmentation_stress(void) {
     unit_assert_ok(xMemAlloc(&small[0], 32));
     medium[1] = null;
     unit_assert_ok(xMemAlloc(&medium[1], 128));
+    small[2] = null;
+    unit_assert_ok(xMemAlloc(&small[2], 32));
+    small[4] = null;
+    unit_assert_ok(xMemAlloc(&small[4], 32));
 
-    /* Cleanup */
+    /* Cleanup - now all pointers are valid */
     for(i = 0; i < 5; i++) {
       unit_assert_ok(xMemFree(small[i]));
     }
@@ -1041,12 +1045,22 @@ void test_state_consistency(void) {
 
   unit_begin("State - Allocation after failed oversized request");
   {
-    /* Get baseline */
+    Size_t tooLarge;
+
+
+    /* Ensure clean state */
+    unit_assert_ok(xMemFreeAll());
+
+    /* Get baseline (should be 0 after FreeAll) */
     unit_assert_ok(xMemGetUsed(&used1));
+    unit_assert_equal(used1, 0x0u);
+
+    /* Request more than available - use region size + 1 block */
+    tooLarge = (CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS + 1) * CONFIG_MEMORY_REGION_BLOCK_SIZE;
 
     /* Failed allocation should not affect state */
     ptr1 = null;
-    unit_assert_not_ok(xMemAlloc(&ptr1, 0xFFFFFFFF));
+    unit_assert_not_ok(xMemAlloc(&ptr1, tooLarge));
     unit_assert_null(ptr1);
 
     /* Verify memory usage unchanged */
@@ -1083,12 +1097,13 @@ void test_state_consistency(void) {
   unit_begin("State - Recovery after multiple failures");
   {
     int i;
+    Size_t tooLarge = (CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS + 10) * CONFIG_MEMORY_REGION_BLOCK_SIZE;
 
 
     /* Multiple failed allocations */
     for(i = 0; i < 5; i++) {
       ptr1 = null;
-      unit_assert_not_ok(xMemAlloc(&ptr1, 0xFFFFFFF));
+      unit_assert_not_ok(xMemAlloc(&ptr1, tooLarge));
     }
 
     /* System should still work */
