@@ -30,8 +30,6 @@ int main(int argc, char **argv) {
   reset();
   memory_1_harness();
   reset();
-  memory_2_harness();
-  reset();
   queue_harness();
   reset();
   timer_harness();

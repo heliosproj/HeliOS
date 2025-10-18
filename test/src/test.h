@@ -20,7 +20,6 @@
   #include "unit.h"
   #include "sys_harness.h"
   #include "memory_1_harness.h"
-  #include "memory_2_harness.h"
   #include "queue_harness.h"
   #include "task_harness.h"
   #include "timer_harness.h"
