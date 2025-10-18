@@ -16,9 +16,10 @@
 /*UNCRUSTIFY-ON*/
 #include "stream_harness.h"
 
+
 /* Test constants */
-#define STREAM_BUFFER_SIZE      0x20u   /* 32 bytes - stream buffer capacity */
-#define STREAM_LAST_BYTE_INDEX  0x1Fu   /* Index of last byte in buffer */
+#define STREAM_BUFFER_SIZE 0x20u /* 32 bytes - stream buffer capacity */
+#define STREAM_LAST_BYTE_INDEX 0x1Fu /* Index of last byte in buffer */
 
 
 void stream_harness(void) {

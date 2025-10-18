@@ -146,9 +146,8 @@ void unit_print(const char *msg_) {
 }
 
 
-void unit_assert_equal_impl(const char *file_, int line_,
-                            unsigned long actual_, unsigned long expected_,
-                            const char *actual_expr_, const char *expected_expr_) {
+void unit_assert_equal_impl(const char *file_, int line_, unsigned long actual_, unsigned long expected_, const char *actual_expr_, const char *expected_expr_)
+    {
   if((null != unit) && (true == unit->begun)) {
     if(actual_ != expected_) {
       unit->failed = true;
@@ -174,9 +173,8 @@ void unit_assert_equal_impl(const char *file_, int line_,
 }
 
 
-void unit_assert_not_equal_impl(const char *file_, int line_,
-                                unsigned long actual_, unsigned long expected_,
-                                const char *actual_expr_, const char *expected_expr_) {
+void unit_assert_not_equal_impl(const char *file_, int line_, unsigned long actual_, unsigned long expected_, const char *actual_expr_, const char *
+  expected_expr_) {
   if((null != unit) && (true == unit->begun)) {
     if(actual_ == expected_) {
       unit->failed = true;
@@ -202,8 +200,7 @@ void unit_assert_not_equal_impl(const char *file_, int line_,
 }
 
 
-void unit_assert_null_impl(const char *file_, int line_,
-                           const void *ptr_, const char *ptr_expr_) {
+void unit_assert_null_impl(const char *file_, int line_, const void *ptr_, const char *ptr_expr_) {
   if((null != unit) && (true == unit->begun)) {
     if(null != ptr_) {
       unit->failed = true;
@@ -229,8 +226,7 @@ void unit_assert_null_impl(const char *file_, int line_,
 }
 
 
-void unit_assert_not_null_impl(const char *file_, int line_,
-                               const void *ptr_, const char *ptr_expr_) {
+void unit_assert_not_null_impl(const char *file_, int line_, const void *ptr_, const char *ptr_expr_) {
   if((null != unit) && (true == unit->begun)) {
     if(null == ptr_) {
       unit->failed = true;
@@ -256,8 +252,7 @@ void unit_assert_not_null_impl(const char *file_, int line_,
 }
 
 
-void unit_assert_true_impl(const char *file_, int line_,
-                           int condition_, const char *condition_expr_) {
+void unit_assert_true_impl(const char *file_, int line_, int condition_, const char *condition_expr_) {
   if((null != unit) && (true == unit->begun)) {
     if(false == condition_) {
       unit->failed = true;
@@ -283,8 +278,7 @@ void unit_assert_true_impl(const char *file_, int line_,
 }
 
 
-void unit_assert_false_impl(const char *file_, int line_,
-                            int condition_, const char *condition_expr_) {
+void unit_assert_false_impl(const char *file_, int line_, int condition_, const char *condition_expr_) {
   if((null != unit) && (true == unit->begun)) {
     if(true == condition_) {
       unit->failed = true;

@@ -122,17 +122,17 @@
  * the greater impact there will be on system performance and memory usage. The
  * default size is 8 bytes.
  *
- * This value determines the maximum payload size that can be sent through message
- * queues. Each message in a queue will allocate this amount of memory for its
- * value field. Consider the trade-off between message capacity and memory
- * efficiency when setting this value.
+ * This value determines the maximum payload size that can be sent through
+ * message queues. Each message in a queue will allocate this amount of memory
+ * for its value field. Consider the trade-off between message capacity and
+ * memory efficiency when setting this value.
  *
  * @note The value should be set as a hexadecimal constant with the 'u' suffix
  * (e.g., 0x8u for 8 bytes).
  *
- * @note Smaller values conserve memory but limit the data that can be passed
- * in a single message. Larger values increase flexibility but consume more
- * memory per message.
+ * @note Smaller values conserve memory but limit the data that can be passed in
+ * a single message. Larger values increase flexibility but consume more memory
+ * per message.
  *
  * @sa xQueueMessage
  * @sa xQueueSend()
@@ -154,8 +154,9 @@
  *
  * This value determines the maximum payload size for direct-to-task
  * notifications. Direct-to-task notifications are a lightweight alternative to
- * message queues for simple inter-task communication. Each task that can receive
- * notifications will allocate this amount of memory for its notification value.
+ * message queues for simple inter-task communication. Each task that can
+ * receive notifications will allocate this amount of memory for its
+ * notification value.
  *
  * @note The value should be set as a hexadecimal constant with the 'u' suffix
  * (e.g., 0x8u for 8 bytes).
@@ -258,10 +259,10 @@
  *
  * @par Tuning Guidelines:
  * - Smaller block sizes (8-16 bytes): Better for many small allocations, less
- *   internal fragmentation, but higher overhead from block management
+ * internal fragmentation, but higher overhead from block management
  * - Medium block sizes (32-64 bytes): Good general-purpose balance
  * - Larger block sizes (128+ bytes): Better for large allocations, lower
- *   management overhead, but more internal fragmentation for small allocations
+ * management overhead, but more internal fragmentation for small allocations
  *
  * @note The value should be set as a hexadecimal constant with the 'u' suffix
  * (e.g., 0x20u for 32 bytes).
@@ -286,10 +287,11 @@
  * @brief Define the minimum value for a message queue limit
  *
  * Setting the CONFIG_QUEUE_MINIMUM_LIMIT allows the end-user to define the
- * MINIMUM length limit a message queue can be created with using xQueueCreate().
- * When a message queue length equals its limit, the message queue will be
- * considered full and return true when xQueueIsQueueFull() is called. A full
- * queue will also not accept messages from xQueueSend(). The default value is 5.
+ * MINIMUM length limit a message queue can be created with using
+ * xQueueCreate(). When a message queue length equals its limit, the message
+ * queue will be considered full and return true when xQueueIsQueueFull() is
+ * called. A full queue will also not accept messages from xQueueSend(). The
+ * default value is 5.
  *
  * This setting enforces a minimum queue depth to prevent creating queues that
  * are too small to be useful. Attempts to create queues with a limit smaller

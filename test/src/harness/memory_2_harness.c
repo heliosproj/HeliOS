@@ -16,11 +16,12 @@
 /*UNCRUSTIFY-ON*/
 #include "memory_2_harness.h"
 
+
 /* Test constants */
-#define TEST_ALLOC_SIZE         128         /* Allocation size for consistency tests */
-#define EXPECTED_USED_SIZE      160         /* Expected memory used (128 + overhead) */
-#define CORRUPT_VALUE           123         /* Arbitrary value for corruption tests */
-#define CORRUPT_POINTER         823829342   /* Arbitrary invalid pointer value */
+#define TEST_ALLOC_SIZE 128 /* Allocation size for consistency tests */
+#define EXPECTED_USED_SIZE 160 /* Expected memory used (128 + overhead) */
+#define CORRUPT_VALUE 123 /* Arbitrary value for corruption tests */
+#define CORRUPT_POINTER 823829342 /* Arbitrary invalid pointer value */
 
 
 void memory_2_harness(void) {
@@ -115,6 +116,8 @@ void test_free(void) {
   /* 4) Modify some part of the memory entry */
   entry = ADDR2ENTRY(ptr);
   entry->free = CORRUPT_VALUE;
+
+
   /* 5) Call a memory syscall like xMemGetUsed() which should return ReturnError
    */
   unit_assert_not_ok(xMemGetUsed(&size));
@@ -154,6 +157,8 @@ void test_blocks(void) {
   /* 4) Modify some part of the memory entry */
   entry = ADDR2ENTRY(ptr);
   entry->blocks = CORRUPT_VALUE;
+
+
   /* 5) Call a memory syscall like xMemGetUsed() which should return ReturnError
    */
   unit_assert_not_ok(xMemGetUsed(&size));
@@ -193,6 +198,8 @@ void test_next(void) {
   /* 4) Modify some part of the memory entry */
   entry = ADDR2ENTRY(ptr);
   entry->next = (MemoryEntry_t *) CORRUPT_POINTER;
+
+
   /* 5) Call a memory syscall like xMemGetUsed() which should return ReturnError
    */
   unit_assert_not_ok(xMemGetUsed(&size));

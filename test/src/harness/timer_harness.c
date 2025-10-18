@@ -16,10 +16,11 @@
 /*UNCRUSTIFY-ON*/
 #include "timer_harness.h"
 
+
 /* Test constants for timer periods (in ticks/milliseconds) */
-#define TIMER_PERIOD_1_SECOND   0x3E8   /* 1000 ms */
-#define TIMER_PERIOD_2_SECONDS  0x7D0   /* 2000 ms */
-#define TIMER_WAIT_SECONDS      3       /* Sleep duration for expiration tests */
+#define TIMER_PERIOD_1_SECOND 0x3E8 /* 1000 ms */
+#define TIMER_PERIOD_2_SECONDS 0x7D0 /* 2000 ms */
+#define TIMER_WAIT_SECONDS 3 /* Sleep duration for expiration tests */
 
 
 void timer_harness(void) {

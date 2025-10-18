@@ -252,7 +252,8 @@ Return_t xMemFree(const volatile Addr_t *addr_) {
       __AssertOnElse__();
     }
   } else {
-    /* Silently succeed when null pointer is passed (matches standard C free() behavior) */
+    /* Silently succeed when null pointer is passed (matches standard C free()
+     * behavior) */
     __ReturnOk__();
   }
 

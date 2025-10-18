@@ -16,16 +16,17 @@
 /*UNCRUSTIFY-ON*/
 #include "task_harness.h"
 
+
 /* Test constants */
-#define TASK_NAME_LENGTH        0x6     /* Length of "TASK01" string */
-#define MESSAGE_TEXT            "MESSAGE"
-#define MESSAGE_LENGTH          0x7     /* Length of MESSAGE string */
-#define EXPECTED_TASK_ID        0x1     /* First task ID */
-#define TASK_PERIOD_3333_MS     0xD05   /* 3333 milliseconds */
-#define TASK_PERIOD_7777_MS     0x1E61  /* 7777 milliseconds */
-#define TASK_PERIOD_3000_MS     0xBB8   /* 3000 milliseconds */
-#define TASK_WD_PERIOD_2000_MS  0x7D0u  /* 2000 milliseconds watchdog */
-#define TASK_WAIT_SECONDS       3       /* Sleep duration for task tests */
+#define TASK_NAME_LENGTH 0x6 /* Length of "TASK01" string */
+#define MESSAGE_TEXT "MESSAGE"
+#define MESSAGE_LENGTH 0x7 /* Length of MESSAGE string */
+#define EXPECTED_TASK_ID 0x1 /* First task ID */
+#define TASK_PERIOD_3333_MS 0xD05 /* 3333 milliseconds */
+#define TASK_PERIOD_7777_MS 0x1E61 /* 7777 milliseconds */
+#define TASK_PERIOD_3000_MS 0xBB8 /* 3000 milliseconds */
+#define TASK_WD_PERIOD_2000_MS 0x7D0u /* 2000 milliseconds watchdog */
+#define TASK_WAIT_SECONDS 3 /* Sleep duration for task tests */
 
 
 void task_harness(void) {

@@ -16,13 +16,14 @@
 /*UNCRUSTIFY-ON*/
 #include "queue_harness.h"
 
+
 /* Test constants */
-#define QUEUE_MIN_CAPACITY      0x7     /* Minimum queue capacity in bytes */
-#define QUEUE_TEST_CAPACITY     5       /* Test queue capacity for lock tests */
-#define MESSAGE_SIZE            0x8     /* Size of test messages */
-#define QUEUE_EXPECTED_LENGTH   0x7     /* Expected number of messages */
-#define QUEUE_AFTER_DROP        0x5     /* Messages remaining after drop */
-#define QUEUE_AFTER_UNLOCK      0x2     /* Messages after unlock test */
+#define QUEUE_MIN_CAPACITY 0x7 /* Minimum queue capacity in bytes */
+#define QUEUE_TEST_CAPACITY 5 /* Test queue capacity for lock tests */
+#define MESSAGE_SIZE 0x8 /* Size of test messages */
+#define QUEUE_EXPECTED_LENGTH 0x7 /* Expected number of messages */
+#define QUEUE_AFTER_DROP 0x5 /* Messages remaining after drop */
+#define QUEUE_AFTER_UNLOCK 0x2 /* Messages after unlock test */
 
 
 void queue_harness(void) {
@@ -33,7 +34,7 @@ void queue_harness(void) {
 
   unit_begin("Queue creation enforces minimum capacity of 7 bytes");
   queue01 = null;
-  unit_assert_not_ok(xQueueCreate(&queue01, 0x4)  /* Too small - below minimum */);
+  unit_assert_not_ok(xQueueCreate(&queue01, 0x4) /* Too small - below minimum */);
   unit_assert_null(queue01);
   unit_assert_ok(xQueueCreate(&queue01, QUEUE_MIN_CAPACITY));
   unit_assert_not_null(queue01);

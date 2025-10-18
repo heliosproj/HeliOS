@@ -16,11 +16,12 @@
 /*UNCRUSTIFY-ON*/
 #include "device_harness.h"
 
+
 /* Test constants */
-#define LOOPBACK_DEVICE_ID      0xFFu                                   /* Loopback device identifier */
-#define TEST_DATA_SIZE          0x26u                                   /* 38 bytes - size of test string */
-#define TEST_MESSAGE            "THIS IS A TEST OF THE LOOPBACK DEVICE\0"
-#define SIMPLE_TEST_BYTE        0xFAu                                   /* Test byte for simple read/write */
+#define LOOPBACK_DEVICE_ID 0xFFu /* Loopback device identifier */
+#define TEST_DATA_SIZE 0x26u /* 38 bytes - size of test string */
+#define TEST_MESSAGE "THIS IS A TEST OF THE LOOPBACK DEVICE\0"
+#define SIMPLE_TEST_BYTE 0xFAu /* Test byte for simple read/write */
 
 
 void device_harness(void) {
