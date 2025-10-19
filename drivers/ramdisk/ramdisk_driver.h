@@ -39,24 +39,11 @@
 
 
   /* RAM disk size - 1MB for testing */
-  #if defined(RAMDISK_SIZE_BYTES)
-    #undef RAMDISK_SIZE_BYTES
-  #endif /* if defined(RAMDISK_SIZE_BYTES) */
   #define RAMDISK_SIZE_BYTES 0x100000u /* 1048576 (1MB) */
+
   /* Configuration commands - used with xDeviceConfigDevice() */
-  #if defined(RAMDISK_CMD_SET_POSITION)
-    #undef RAMDISK_CMD_SET_POSITION
-  #endif /* if defined(RAMDISK_CMD_SET_POSITION) */
   #define RAMDISK_CMD_SET_POSITION 0x01u /* 1 */
-
-  #if defined(RAMDISK_CMD_CLEAR_DISK)
-    #undef RAMDISK_CMD_CLEAR_DISK
-  #endif /* if defined(RAMDISK_CMD_CLEAR_DISK) */
   #define RAMDISK_CMD_CLEAR_DISK 0x02u /* 2 */
-
-  #if defined(RAMDISK_CMD_GET_STATS)
-    #undef RAMDISK_CMD_GET_STATS
-  #endif /* if defined(RAMDISK_CMD_GET_STATS) */
   #define RAMDISK_CMD_GET_STATS 0x03u /* 3 */
 
 

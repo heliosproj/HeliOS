@@ -39,44 +39,15 @@
 
 
   /* Storage device protocols - determines command sequences */
-  #if defined(BLOCK_PROTOCOL_SD_CARD)
-    #undef BLOCK_PROTOCOL_SD_CARD
-  #endif /* if defined(BLOCK_PROTOCOL_SD_CARD) */
   #define BLOCK_PROTOCOL_SD_CARD 0x01u /* 1 */
-
-  #if defined(BLOCK_PROTOCOL_MMC)
-    #undef BLOCK_PROTOCOL_MMC
-  #endif /* if defined(BLOCK_PROTOCOL_MMC) */
   #define BLOCK_PROTOCOL_MMC 0x02u /* 2 */
-
-  #if defined(BLOCK_PROTOCOL_EMMC)
-    #undef BLOCK_PROTOCOL_EMMC
-  #endif /* if defined(BLOCK_PROTOCOL_EMMC) */
   #define BLOCK_PROTOCOL_EMMC 0x03u /* 3 */
-
-  #if defined(BLOCK_PROTOCOL_RAW)
-    #undef BLOCK_PROTOCOL_RAW
-  #endif /* if defined(BLOCK_PROTOCOL_RAW) */
   #define BLOCK_PROTOCOL_RAW 0xFFu /* 255 - Direct I/O, no protocol */
+
   /* Block operation commands - internal use */
-  #if defined(BLOCK_CMD_READ_SINGLE)
-    #undef BLOCK_CMD_READ_SINGLE
-  #endif /* if defined(BLOCK_CMD_READ_SINGLE) */
   #define BLOCK_CMD_READ_SINGLE 0x01u /* 1 */
-
-  #if defined(BLOCK_CMD_READ_MULTIPLE)
-    #undef BLOCK_CMD_READ_MULTIPLE
-  #endif /* if defined(BLOCK_CMD_READ_MULTIPLE) */
   #define BLOCK_CMD_READ_MULTIPLE 0x02u /* 2 */
-
-  #if defined(BLOCK_CMD_WRITE_SINGLE)
-    #undef BLOCK_CMD_WRITE_SINGLE
-  #endif /* if defined(BLOCK_CMD_WRITE_SINGLE) */
   #define BLOCK_CMD_WRITE_SINGLE 0x03u /* 3 */
-
-  #if defined(BLOCK_CMD_WRITE_MULTIPLE)
-    #undef BLOCK_CMD_WRITE_MULTIPLE
-  #endif /* if defined(BLOCK_CMD_WRITE_MULTIPLE) */
   #define BLOCK_CMD_WRITE_MULTIPLE 0x04u /* 4 */
 
 

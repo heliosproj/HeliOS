@@ -41,6 +41,21 @@ static RAMDiskState_t state = {
 };
 
 
+/* Helper macros for statistics tracking */
+#define __UpdateReadStats__(bytes_) \
+  do { \
+    state.currentPosition += (bytes_); \
+    state.bytesRead += (bytes_); \
+    state.readOperations++; \
+  } while(0)
+
+#define __UpdateWriteStats__(bytes_) \
+  do { \
+    state.currentPosition += (bytes_); \
+    state.bytesWritten += (bytes_); \
+    state.writeOperations++; \
+  } while(0)
+
 
 /*UNCRUSTIFY-OFF*/
 Return_t TO_FUNCTION(DEVICE_NAME, _self_register)(void) {
@@ -58,6 +73,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _self_register)(void) {
                           RAMDISK0_simple_write))) {
     __ReturnOk__();
   } else {
+    __ReturnError__();
     __AssertOnElse__();
   }
 
@@ -108,6 +124,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Add
           state.currentPosition = byteOffset;
           __ReturnOk__();
         } else {
+          __ReturnError__();
           __AssertOnElse__();
         }
       }
@@ -137,6 +154,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Add
           state.currentPosition = cfg->position;
           __ReturnOk__();
         } else {
+          __ReturnError__();
           __AssertOnElse__();
         }
       }
@@ -176,6 +194,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Add
       }
     }
   } else {
+    __ReturnError__();
     __AssertOnElse__();
   }
 
@@ -198,8 +217,8 @@ Return_t TO_FUNCTION(DEVICE_NAME, _read)(Device_t *device_, Size_t *size_, Addr_
 
       if(nil == bytesToRead) {
         /* Already at end of disk */
+        __ReturnError__();
         __AssertOnElse__();
-        FUNCTION_EXIT;
       }
     }
 
@@ -209,10 +228,8 @@ Return_t TO_FUNCTION(DEVICE_NAME, _read)(Device_t *device_, Size_t *size_, Addr_
       /* Copy data from RAM disk to buffer */
       __memcpy__(buffer, &ramdisk[state.currentPosition], bytesToRead);
 
-      /* Update state */
-      state.currentPosition += bytesToRead;
-      state.bytesRead += bytesToRead;
-      state.readOperations++;
+      /* Update statistics */
+      __UpdateReadStats__(bytesToRead);
 
       /* Return buffer and actual size read */
       *data_ = buffer;
@@ -220,9 +237,11 @@ Return_t TO_FUNCTION(DEVICE_NAME, _read)(Device_t *device_, Size_t *size_, Addr_
 
       __ReturnOk__();
     } else {
+      __ReturnError__();
       __AssertOnElse__();
     }
   } else {
+    __ReturnError__();
     __AssertOnElse__();
   }
 
@@ -244,24 +263,23 @@ Return_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t *device_, Size_t *size_, Addr
 
       if(nil == bytesToWrite) {
         /* Already at end of disk */
+        __ReturnError__();
         __AssertOnElse__();
-        FUNCTION_EXIT;
       }
     }
 
     /* Copy data from buffer to RAM disk */
     __memcpy__(&ramdisk[state.currentPosition], data_, bytesToWrite);
 
-    /* Update state */
-    state.currentPosition += bytesToWrite;
-    state.bytesWritten += bytesToWrite;
-    state.writeOperations++;
+    /* Update statistics */
+    __UpdateWriteStats__(bytesToWrite);
 
     /* Update actual size written */
     *size_ = bytesToWrite;
 
     __ReturnOk__();
   } else {
+    __ReturnError__();
     __AssertOnElse__();
   }
 
@@ -280,16 +298,16 @@ Return_t TO_FUNCTION(DEVICE_NAME, _simple_read)(Device_t *device_, Byte_t *data_
       /* Read single byte from current position */
       *data_ = ramdisk[state.currentPosition];
 
-      /* Update state */
-      state.currentPosition++;
-      state.bytesRead++;
-      state.readOperations++;
+      /* Update statistics */
+      __UpdateReadStats__(1);
 
       __ReturnOk__();
     } else {
+      __ReturnError__();
       __AssertOnElse__();
     }
   } else {
+    __ReturnError__();
     __AssertOnElse__();
   }
 
@@ -306,13 +324,12 @@ Return_t TO_FUNCTION(DEVICE_NAME, _simple_write)(Device_t *device_, Byte_t data_
     /* Write single byte to current position */
     ramdisk[state.currentPosition] = data_;
 
-    /* Update state */
-    state.currentPosition++;
-    state.bytesWritten++;
-    state.writeOperations++;
+    /* Update statistics */
+    __UpdateWriteStats__(1);
 
     __ReturnOk__();
   } else {
+    __ReturnError__();
     __AssertOnElse__();
   }
 

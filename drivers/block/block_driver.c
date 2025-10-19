@@ -36,6 +36,7 @@ static BlockDeviceState_t state = {
 
 
 /* Forward declarations */
+static Return_t __PrepareBlockIORequest__(const Word_t blockNum_, const HalfWord_t blockCount_, const Byte_t operation_, BlockIORequest_t **request_, Size_t *configSize_);
 static Return_t __BlockDeviceReadBlockRAW__(const Word_t blockNum_, const HalfWord_t blockCount_, Byte_t **data_);
 static Return_t __BlockDeviceWriteBlockRAW__(const Word_t blockNum_, const HalfWord_t blockCount_, const Byte_t *data_);
 
@@ -56,6 +57,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _self_register)(void) {
                           BLOCKDEV_simple_write))) {
     __ReturnOk__();
   } else {
+    __ReturnError__();
     __AssertOnElse__();
   }
 
@@ -108,6 +110,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Add
       /* SD/MMC protocols would initialize here */
       else {
         /* Not implemented yet */
+        __ReturnError__();
         __AssertOnElse__();
       }
     }
@@ -135,9 +138,11 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Add
 
       __ReturnOk__();
     } else {
+      __ReturnError__();
       __AssertOnElse__();
     }
   } else {
+    __ReturnError__();
     __AssertOnElse__();
   }
 
@@ -161,13 +166,16 @@ Return_t TO_FUNCTION(DEVICE_NAME, _read)(Device_t *device_, Size_t *size_, Addr_
         *size_ = (Size_t)state.blockSize * state.currentBlockCount;
         __ReturnOk__();
       } else {
+        __ReturnError__();
         __AssertOnElse__();
       }
     } else {
       /* SD/MMC protocols not implemented yet */
+      __ReturnError__();
       __AssertOnElse__();
     }
   } else {
+    __ReturnError__();
     __AssertOnElse__();
   }
 
@@ -187,13 +195,16 @@ Return_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t *device_, Size_t *size_, Addr
                                         (Byte_t *)data_))) {
         __ReturnOk__();
       } else {
+        __ReturnError__();
         __AssertOnElse__();
       }
     } else {
       /* SD/MMC protocols not implemented yet */
+      __ReturnError__();
       __AssertOnElse__();
     }
   } else {
+    __ReturnError__();
     __AssertOnElse__();
   }
 
@@ -203,14 +214,18 @@ Return_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t *device_, Size_t *size_, Addr
 
 Return_t TO_FUNCTION(DEVICE_NAME, _simple_read)(Device_t *device_, Byte_t *data_) {
   FUNCTION_ENTER;
-  /* Not typically used for block devices */
+  /* Block devices don't support simple byte-level operations */
+  __ReturnError__();
+  __AssertOnElse__();
   FUNCTION_EXIT;
 }
 
 
 Return_t TO_FUNCTION(DEVICE_NAME, _simple_write)(Device_t *device_, Byte_t data_) {
   FUNCTION_ENTER;
-  /* Not typically used for block devices */
+  /* Block devices don't support simple byte-level operations */
+  __ReturnError__();
+  __AssertOnElse__();
   FUNCTION_EXIT;
 }
 
@@ -219,15 +234,15 @@ Return_t TO_FUNCTION(DEVICE_NAME, _simple_write)(Device_t *device_, Byte_t data_
  * Protocol-Specific Implementation: RAW (Direct I/O)
  * ========================================================================== */
 
-static Return_t __BlockDeviceReadBlockRAW__(const Word_t blockNum_,
-                                           const HalfWord_t blockCount_,
-                                           Byte_t **data_) {
+/* Helper function to prepare generic block I/O request */
+static Return_t __PrepareBlockIORequest__(const Word_t blockNum_,
+                                         const HalfWord_t blockCount_,
+                                         const Byte_t operation_,
+                                         BlockIORequest_t **request_,
+                                         Size_t *configSize_) {
   FUNCTION_ENTER;
 
-  Size_t totalSize = (Size_t)state.blockSize * blockCount_;
-  Byte_t *buffer = null;
   Byte_t *ioConfig = null;
-  Size_t configSize = 0;
 
   /* Allocate generic block I/O request from kernel heap */
   if(OK(__KernelAllocateMemory__((volatile Addr_t **)&ioConfig, sizeof(BlockIORequest_t)))) {
@@ -235,30 +250,57 @@ static Return_t __BlockDeviceReadBlockRAW__(const Word_t blockNum_,
 
     /* Fill generic request structure */
     request->command = BLOCK_IO_CMD_SET_REQUEST;
-    request->operation = BLOCK_IO_OP_READ;
+    request->operation = operation_;
     request->blockNumber = blockNum_;
     request->blockCount = blockCount_;
     request->blockSize = state.blockSize;
 
-    configSize = sizeof(BlockIORequest_t);
+    *request_ = request;
+    *configSize_ = sizeof(BlockIORequest_t);
+
+    __ReturnOk__();
+  } else {
+    __ReturnError__();
+    __AssertOnElse__();
+  }
+
+  FUNCTION_EXIT;
+}
+
+
+static Return_t __BlockDeviceReadBlockRAW__(const Word_t blockNum_,
+                                           const HalfWord_t blockCount_,
+                                           Byte_t **data_) {
+  FUNCTION_ENTER;
+
+  Size_t totalSize = (Size_t)state.blockSize * blockCount_;
+  Byte_t *buffer = null;
+  BlockIORequest_t *request = null;
+  Size_t configSize = 0;
+
+  /* Prepare block I/O request */
+  if(OK(__PrepareBlockIORequest__(blockNum_, blockCount_, BLOCK_IO_OP_READ, &request, &configSize))) {
 
     /* Send request to I/O driver - it handles translation to native format */
-    if(OK(__DeviceConfigDevice__(state.ioDriverUID, &configSize, (Addr_t *)ioConfig))) {
+    if(OK(__DeviceConfigDevice__(state.ioDriverUID, &configSize, (Addr_t *)request))) {
 
       /* Read data from I/O driver using kernel-level API (returns kernel memory) */
       if(OK(__DeviceRead__(state.ioDriverUID, &totalSize, (Addr_t **)&buffer))) {
         *data_ = buffer;
-        __KernelFreeMemory__(ioConfig);
+        __KernelFreeMemory__(request);
         __ReturnOk__();
       } else {
-        __KernelFreeMemory__(ioConfig);
+        __KernelFreeMemory__(request);
+        __ReturnError__();
         __AssertOnElse__();
       }
     } else {
-      __KernelFreeMemory__(ioConfig);
+      __KernelFreeMemory__(request);
+      __ReturnError__();
       __AssertOnElse__();
     }
   } else {
+    __ReturnError__();
     __AssertOnElse__();
   }
 
@@ -272,38 +314,31 @@ static Return_t __BlockDeviceWriteBlockRAW__(const Word_t blockNum_,
   FUNCTION_ENTER;
 
   Size_t totalSize = (Size_t)state.blockSize * blockCount_;
-  Byte_t *ioConfig = null;
+  BlockIORequest_t *request = null;
   Size_t configSize = 0;
 
-  /* Allocate generic block I/O request from kernel heap */
-  if(OK(__KernelAllocateMemory__((volatile Addr_t **)&ioConfig, sizeof(BlockIORequest_t)))) {
-    BlockIORequest_t *request = (BlockIORequest_t *)ioConfig;
-
-    /* Fill generic request structure */
-    request->command = BLOCK_IO_CMD_SET_REQUEST;
-    request->operation = BLOCK_IO_OP_WRITE;
-    request->blockNumber = blockNum_;
-    request->blockCount = blockCount_;
-    request->blockSize = state.blockSize;
-
-    configSize = sizeof(BlockIORequest_t);
+  /* Prepare block I/O request */
+  if(OK(__PrepareBlockIORequest__(blockNum_, blockCount_, BLOCK_IO_OP_WRITE, &request, &configSize))) {
 
     /* Send request to I/O driver - it handles translation to native format */
-    if(OK(__DeviceConfigDevice__(state.ioDriverUID, &configSize, (Addr_t *)ioConfig))) {
+    if(OK(__DeviceConfigDevice__(state.ioDriverUID, &configSize, (Addr_t *)request))) {
 
       /* Write data to I/O driver using kernel-level API (data already in kernel memory) */
       if(OK(__DeviceWrite__(state.ioDriverUID, &totalSize, (Addr_t *)data_))) {
-        __KernelFreeMemory__(ioConfig);
+        __KernelFreeMemory__(request);
         __ReturnOk__();
       } else {
-        __KernelFreeMemory__(ioConfig);
+        __KernelFreeMemory__(request);
+        __ReturnError__();
         __AssertOnElse__();
       }
     } else {
-      __KernelFreeMemory__(ioConfig);
+      __KernelFreeMemory__(request);
+      __ReturnError__();
       __AssertOnElse__();
     }
   } else {
+    __ReturnError__();
     __AssertOnElse__();
   }
 
