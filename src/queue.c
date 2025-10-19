@@ -27,19 +27,19 @@ static Return_t __QueuePeek__(const Queue_t *queue_, QueueMessage_t **message_);
         }
 
 
-#define __QueueLengthCorrect__() (messages == queue_->length)
+#define __QueueLengthCorrect__() (queue_->length == messages)
 
 
-#define __QueueLengthZero__() (nil == messages)
+#define __QueueLengthZero__() (messages == nil)
 
 
 #define __QueueLengthNonZero__() (nil < messages)
 
 
-#define __QueueLengthAtLimit__() (messages >= queue_->limit)
+#define __QueueLengthAtLimit__() (queue_->limit <= messages)
 
 
-#define __QueueLengthNotAtLimit__() (messages < queue_->limit)
+#define __QueueLengthNotAtLimit__() (queue_->limit > messages)
 
 
 Return_t xQueueCreate(Queue_t **queue_, const Base_t limit_) {

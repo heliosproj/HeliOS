@@ -122,7 +122,7 @@ Return_t xTaskDelete(const Task_t *task_) {
     if(OK(__TaskListFindTask__(task_))) {
       cursor = tlist->head;
 
-      if(__PointerIsNotNull__(cursor) && (cursor == task_)) {
+      if(__PointerIsNotNull__(cursor) && (task_ == cursor)) {
         tlist->head = cursor->next;
 
         if(OK(__KernelFreeMemory__(cursor))) {
@@ -131,8 +131,8 @@ Return_t xTaskDelete(const Task_t *task_) {
         } else {
           __AssertOnElse__();
         }
-      } else if(__PointerIsNotNull__(cursor) && (cursor != task_)) {
-        while(__PointerIsNotNull__(cursor) && (cursor != task_)) {
+      } else if(__PointerIsNotNull__(cursor) && (task_ != cursor)) {
+        while(__PointerIsNotNull__(cursor) && (task_ != cursor)) {
           previous = cursor;
           cursor = cursor->next;
         }
@@ -207,7 +207,7 @@ Return_t xTaskGetHandleById(Task_t **task_, const Base_t id_) {
     cursor = tlist->head;
 
     while(__PointerIsNotNull__(cursor)) {
-      if(id_ == cursor->id) {
+      if(cursor->id == id_) {
         *task_ = cursor;
         __ReturnOk__();
         break;
@@ -240,7 +240,7 @@ Return_t xTaskGetAllRunTimeStats(TaskRunTimeStats_t **stats_, Base_t *tasks_) {
       cursor = cursor->next;
     }
 
-    if((nil < tasks) && (tasks == tlist->length)) {
+    if((nil < tasks) && (tlist->length == tasks)) {
       if(OK(__HeapAllocateMemory__((volatile Addr_t **) stats_, tasks * sizeof(TaskRunTimeStats_t)))) {
         if(__PointerIsNotNull__(*stats_)) {
           cursor = tlist->head;
@@ -309,9 +309,9 @@ Return_t xTaskGetNumberOfTasks(Base_t *tasks_) {
 
 
   if(__PointerIsNotNull__(tasks_)) {
-    /* If tlist is null, no tasks have been created yet - return 0 */
+    /* If tlist is null, no tasks have been created yet - return 0x0 */
     if(__PointerIsNull__(tlist)) {
-      *tasks_ = 0;
+      *tasks_ = 0x0;
       __ReturnOk__();
       FUNCTION_EXIT;
     }
@@ -323,7 +323,7 @@ Return_t xTaskGetNumberOfTasks(Base_t *tasks_) {
       cursor = cursor->next;
     }
 
-    if(tasks == tlist->length) {
+    if(tlist->length == tasks) {
       *tasks_ = tasks;
       __ReturnOk__();
     } else {
@@ -391,7 +391,7 @@ Return_t xTaskGetAllTaskInfo(TaskInfo_t **info_, Base_t *tasks_) {
       cursor = cursor->next;
     }
 
-    if((nil < tasks) && (tasks == tlist->length)) {
+    if((nil < tasks) && (tlist->length == tasks)) {
       if(OK(__HeapAllocateMemory__((volatile Addr_t **) info_, tasks * sizeof(TaskInfo_t)))) {
         if(__PointerIsNotNull__(*info_)) {
           cursor = tlist->head;
@@ -739,7 +739,7 @@ static Return_t __TaskListFindTask__(const Task_t *task_) {
     if(OK(__MemoryRegionCheckKernel__(task_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
       cursor = tlist->head;
 
-      while(__PointerIsNotNull__(cursor) && (cursor != task_)) {
+      while(__PointerIsNotNull__(cursor) && (task_ != cursor)) {
         cursor = cursor->next;
       }
 
@@ -788,7 +788,7 @@ Return_t xTaskStartScheduler(void) {
 
 
   /* Intentionally underflow to get the maximum value of Ticks_t. */
-  Ticks_t least = -1;
+  Ticks_t least = -0x1;
 
 
   if(__FlagIsNotSet__(RUNNING) && __PointerIsNotNull__(tlist)) {
@@ -836,7 +836,7 @@ Return_t xTaskStartScheduler(void) {
       }
 
       /* Intentionally underflow to get the maximum value of Ticks_t. */
-      least = -1;
+      least = -0x1;
     }
 
     __UnsetFlag__(RUNNING);

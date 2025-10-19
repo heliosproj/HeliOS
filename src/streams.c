@@ -19,7 +19,7 @@
 #define __StreamLengthNonZero__() (nil < stream_->length)
 
 
-#define __StreamLengthAtLimit__() (CONFIG_STREAM_BUFFER_BYTES == stream_->length)
+#define __StreamLengthAtLimit__() (stream_->length == CONFIG_STREAM_BUFFER_BYTES)
 
 
 Return_t xStreamCreate(StreamBuffer_t **stream_) {

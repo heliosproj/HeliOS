@@ -28,50 +28,50 @@ typedef struct BlockDeviceCommand_s {
 
 /* FAT32 Boot Sector Structure (aligned for direct memory mapping) */
 typedef struct __attribute__ ((packed)) FAT32BootSector_s {
-  Byte_t jumpBoot[3];               /* 0x00: Jump instruction */
-  Byte_t oemName[8]; /* 0x03: OEM name */
-  Byte_t bytesPerSector[2]; /* 0x0B: Bytes per sector (little-endian) */
+  Byte_t jumpBoot[0x3];               /* 0x00: Jump instruction */
+  Byte_t oemName[0x8]; /* 0x03: OEM name */
+  Byte_t bytesPerSector[0x2]; /* 0x0B: Bytes per sector (little-endian) */
   Byte_t sectorsPerCluster; /* 0x0D: Sectors per cluster */
-  Byte_t reservedSectors[2]; /* 0x0E: Reserved sectors */
+  Byte_t reservedSectors[0x2]; /* 0x0E: Reserved sectors */
   Byte_t numFATs; /* 0x10: Number of FATs */
-  Byte_t rootEntryCount[2]; /* 0x11: Root entries (0 for FAT32) */
-  Byte_t totalSectors16[2]; /* 0x13: Total sectors (0 for FAT32) */
+  Byte_t rootEntryCount[0x2]; /* 0x11: Root entries (0x0 for FAT32) */
+  Byte_t totalSectors16[0x2]; /* 0x13: Total sectors (0x0 for FAT32) */
   Byte_t mediaType; /* 0x15: Media descriptor */
-  Byte_t FATSize16[2]; /* 0x16: FAT size (0 for FAT32) */
-  Byte_t sectorsPerTrack[2]; /* 0x18: Sectors per track */
-  Byte_t numHeads[2]; /* 0x1A: Number of heads */
-  Byte_t hiddenSectors[4]; /* 0x1C: Hidden sectors */
-  Byte_t totalSectors32[4]; /* 0x20: Total sectors */
-  Byte_t FATSize32[4]; /* 0x24: FAT size */
-  Byte_t extFlags[2]; /* 0x28: Extended flags */
-  Byte_t fsVersion[2]; /* 0x2A: Filesystem version */
-  Byte_t rootCluster[4]; /* 0x2C: Root directory cluster */
-  Byte_t fsInfo[2]; /* 0x30: FSInfo sector */
-  Byte_t backupBootSector[2]; /* 0x32: Backup boot sector */
-  Byte_t reserved[12]; /* 0x34: Reserved */
+  Byte_t FATSize16[0x2]; /* 0x16: FAT size (0x0 for FAT32) */
+  Byte_t sectorsPerTrack[0x2]; /* 0x18: Sectors per track */
+  Byte_t numHeads[0x2]; /* 0x1A: Number of heads */
+  Byte_t hiddenSectors[0x4]; /* 0x1C: Hidden sectors */
+  Byte_t totalSectors32[0x4]; /* 0x20: Total sectors */
+  Byte_t FATSize32[0x4]; /* 0x24: FAT size */
+  Byte_t extFlags[0x2]; /* 0x28: Extended flags */
+  Byte_t fsVersion[0x2]; /* 0x2A: Filesystem version */
+  Byte_t rootCluster[0x4]; /* 0x2C: Root directory cluster */
+  Byte_t fsInfo[0x2]; /* 0x30: FSInfo sector */
+  Byte_t backupBootSector[0x2]; /* 0x32: Backup boot sector */
+  Byte_t reserved[0xC]; /* 0x34: Reserved */
   Byte_t driveNumber; /* 0x40: Drive number */
   Byte_t reserved1; /* 0x41: Reserved */
   Byte_t bootSignature; /* 0x42: Boot signature (0x29) */
-  Byte_t volumeID[4]; /* 0x43: Volume ID */
-  Byte_t volumeLabel[11]; /* 0x47: Volume label */
-  Byte_t fsType[8]; /* 0x52: Filesystem type */
+  Byte_t volumeID[0x4]; /* 0x43: Volume ID */
+  Byte_t volumeLabel[0xB]; /* 0x47: Volume label */
+  Byte_t fsType[0x8]; /* 0x52: Filesystem type */
 } FAT32BootSector_t;
 
 
-/* FAT32 Directory Entry Structure (32 bytes) */
+/* FAT32 Directory Entry Structure (0x20 bytes) */
 typedef struct __attribute__ ((packed)) FAT32DirEntry_s {
-  Byte_t name[11];                  /* 0x00: 8.3 filename */
+  Byte_t name[0xB];                  /* 0x00: 8.3 filename */
   Byte_t attr; /* 0x0B: File attributes */
   Byte_t ntReserved; /* 0x0C: Reserved for Windows NT */
   Byte_t createTimeTenth; /* 0x0D: Creation time (tenths of second) */
-  Byte_t createTime[2]; /* 0x0E: Creation time */
-  Byte_t createDate[2]; /* 0x10: Creation date */
-  Byte_t lastAccessDate[2]; /* 0x12: Last access date */
-  Byte_t firstClusterHigh[2]; /* 0x14: High word of first cluster */
-  Byte_t writeTime[2]; /* 0x16: Last write time */
-  Byte_t writeDate[2]; /* 0x18: Last write date */
-  Byte_t firstClusterLow[2]; /* 0x1A: Low word of first cluster */
-  Byte_t fileSize[4]; /* 0x1C: File size */
+  Byte_t createTime[0x2]; /* 0x0E: Creation time */
+  Byte_t createDate[0x2]; /* 0x10: Creation date */
+  Byte_t lastAccessDate[0x2]; /* 0x12: Last access date */
+  Byte_t firstClusterHigh[0x2]; /* 0x14: High word of first cluster */
+  Byte_t writeTime[0x2]; /* 0x16: Last write time */
+  Byte_t writeDate[0x2]; /* 0x18: Last write date */
+  Byte_t firstClusterLow[0x2]; /* 0x1A: Low word of first cluster */
+  Byte_t fileSize[0x4]; /* 0x1C: File size */
 } FAT32DirEntry_t;
 
 
@@ -95,7 +95,7 @@ typedef struct __attribute__ ((packed)) FAT32DirEntry_s {
 
 /* Helper function to read 16-bit little-endian value */
 static HalfWord_t __ReadLE16__(const Byte_t *data_) {
-  return((HalfWord_t) data_[0] | ((HalfWord_t) data_[1] << 8));
+  return((HalfWord_t) data_[0x0] | ((HalfWord_t) data_[0x1] << 0x8));
 }
 
 
@@ -467,7 +467,7 @@ Return_t xFileOpen(File_t **file_, Volume_t *volume_, const Byte_t *path_, const
       if(__PointerIsNotNull__(lastSlash)) {
         parentPathLen = lastSlash - path_;
 
-        if(parentPathLen == 0) {
+        if(parentPathLen == 0x0) {
           /* Parent is root */
           parentCluster = volume_->rootDirCluster;
         } else {
@@ -512,7 +512,7 @@ Return_t xFileOpen(File_t **file_, Volume_t *volume_, const Byte_t *path_, const
         file->fileSize = __ReadLE32__(entry.fileSize);
 
         /* If append mode, seek to end */
-        if((mode_ & FS_MODE_APPEND) != 0) {
+        if((mode_ & FS_MODE_APPEND) != 0x0) {
           file->position = file->fileSize;
 
           /* Need to navigate to last cluster for append */
@@ -539,7 +539,7 @@ Return_t xFileOpen(File_t **file_, Volume_t *volume_, const Byte_t *path_, const
         }
       } else {
         /* File doesn't exist - check if CREATE mode is set */
-        if((mode_ & FS_MODE_CREATE) == 0) {
+        if((mode_ & FS_MODE_CREATE) == 0x0) {
           /* Cannot open non-existent file without CREATE mode */
           __KernelFreeMemory__(file);
           __ReturnError__();
@@ -678,7 +678,7 @@ Return_t xFileRead(File_t *file_, const Size_t size_, Byte_t **data_) {
     /* Allocate buffer for read data from user heap (returned to caller) */
     if(OK(xMemAlloc((volatile Addr_t **) &buffer, bytesToRead))) {
       /* If not at start of file, navigate to correct cluster */
-      if(file_->currentCluster == 0) {
+      if(file_->currentCluster == 0x0) {
         file_->currentCluster = file_->firstCluster;
       }
 
@@ -757,18 +757,18 @@ Return_t xFileWrite(File_t *file_, const Size_t size_, const Byte_t *data_) {
     clusterSize = (Word_t) file_->volume->bytesPerSector * file_->volume->sectorsPerCluster;
 
     /* Check write mode */
-    if(((file_->mode & FS_MODE_WRITE) == 0) && ((file_->mode & FS_MODE_APPEND) == 0)) {
+    if(((file_->mode & FS_MODE_WRITE) == 0x0) && ((file_->mode & FS_MODE_APPEND) == 0x0)) {
       __AssertOnElse__();
       FUNCTION_EXIT;
     }
 
     /* If append mode, seek to end */
-    if((file_->mode & FS_MODE_APPEND) != 0) {
+    if((file_->mode & FS_MODE_APPEND) != 0x0) {
       file_->position = file_->fileSize;
     }
 
     /* If at start and no clusters allocated, allocate first cluster */
-    if(file_->firstCluster == 0) {
+    if(file_->firstCluster == 0x0) {
       /* Find a free cluster starting from cluster 3 */
       Word_t freeCluster = 0;
 
@@ -786,7 +786,7 @@ Return_t xFileWrite(File_t *file_, const Size_t size_, const Byte_t *data_) {
     }
 
     /* Navigate to correct cluster if needed */
-    if(file_->currentCluster == 0) {
+    if(file_->currentCluster == 0x0) {
       file_->currentCluster = file_->firstCluster;
 
 
@@ -995,7 +995,7 @@ Return_t xFileTruncate(File_t *file_, const Word_t size_) {
     currentCluster = file_->firstCluster;
 
     /* Navigate to last needed cluster */
-    for(i = 1; i < clustersNeeded && currentCluster != 0; i++) {
+    for(i = 1; i < clustersNeeded && currentCluster != 0x0; i++) {
       if(OK(__GetFATEntry__(file_->volume, currentCluster, &nextCluster))) {
         if(nextCluster >= FAT32_EOC_MIN) {
           break;
@@ -1070,7 +1070,7 @@ Return_t xDirOpen(Dir_t **dir_, Volume_t *volume_, const Byte_t *path_) {
       /* Find the directory by path */
       if(OK(__FindFileByPath__(volume_, path_, &entry, null, null, null))) {
         /* Verify it's a directory */
-        if((entry.attr & FAT_ATTR_DIRECTORY) == 0) {
+        if((entry.attr & FAT_ATTR_DIRECTORY) == 0x0) {
           /* Not a directory */
           __ReturnError__();
           FUNCTION_EXIT;
@@ -1149,8 +1149,8 @@ Return_t xDirRead(Dir_t *dir_, DirEntry_t **entry_) {
 
       /* Skip deleted entries (first byte = 0xE5) and end marker (first byte =
        * 0x00) */
-      while(fatEntry->name[0] == 0xE5u || fatEntry->name[0] == 0x00u) {
-        if(fatEntry->name[0] == 0x00u) {
+      while(fatEntry->name[0x0] == 0xE5u || fatEntry->name[0x0] == 0x00u) {
+        if(fatEntry->name[0x0] == 0x00u) {
           /* End of directory */
           __KernelFreeMemory__(clusterData);
           __AssertOnElse__();
@@ -1161,7 +1161,7 @@ Return_t xDirRead(Dir_t *dir_, DirEntry_t **entry_) {
         entryOffsetInCluster = dir_->entryIndex % entriesPerCluster;
 
         /* Check if we need to read next cluster */
-        if(entryOffsetInCluster == 0) {
+        if(entryOffsetInCluster == 0x0) {
           if(OK(__GetFATEntry__(dir_->volume, dir_->currentCluster, &nextCluster))) {
             if(nextCluster >= FAT32_EOC_MIN) {
               /* End of directory chain */
@@ -1305,7 +1305,7 @@ Return_t xDirMake(Volume_t *volume_, const Byte_t *path_) {
       /* Extract parent path */
       parentPathLen = lastSlash - path_;
 
-      if(parentPathLen == 0) {
+      if(parentPathLen == 0x0) {
         /* Parent is root */
         parentPath[0] = '/';
         parentPath[1] = '\0';
@@ -1430,7 +1430,7 @@ Return_t xDirRemove(Volume_t *volume_, const Byte_t *path_) {
     /* Find the directory entry */
     if(OK(__FindFileByPath__(volume_, path_, &entry, null, &entryCluster, &entryOffset))) {
       /* Must be a directory */
-      if((entry.attr & FAT_ATTR_DIRECTORY) == 0) {
+      if((entry.attr & FAT_ATTR_DIRECTORY) == 0x0) {
         __AssertOnElse__();
         FUNCTION_EXIT;
       }
@@ -1452,14 +1452,14 @@ Return_t xDirRemove(Volume_t *volume_, const Byte_t *path_) {
             fatEntry = (FAT32DirEntry_t *) (clusterData + (entryIdx * sizeof(FAT32DirEntry_t)));
 
             /* End of directory? */
-            if(fatEntry->name[0] == 0x00u) {
+            if(fatEntry->name[0x0] == 0x00u) {
               __KernelFreeMemory__(clusterData);
               goto check_empty;
             }
 
             /* Skip deleted, . and .. entries */
-            if((fatEntry->name[0] == 0xE5u) || __ByteCompare__(fatEntry->name, (const Byte_t *) ".          ", 11) || __ByteCompare__(fatEntry->name, (const
-              Byte_t *) "..         ", 11)) {
+            if((fatEntry->name[0x0] == 0xE5u) || __ByteCompare__(fatEntry->name, (const Byte_t *) ".          ", 0xB) || __ByteCompare__(fatEntry->name, (const
+              Byte_t *) "..         ", 0xB)) {
               continue;
             }
 
@@ -1593,7 +1593,7 @@ Return_t xFileUnlink(Volume_t *volume_, const Byte_t *path_) {
     /* Find the file and get its location */
     if(OK(__FindFileByPath__(volume_, path_, &entry, null, &entryCluster, &entryOffset))) {
       /* Don't allow deleting directories with this function */
-      if((entry.attr & FAT_ATTR_DIRECTORY) != 0) {
+      if((entry.attr & FAT_ATTR_DIRECTORY) != 0x0) {
         __AssertOnElse__();
         FUNCTION_EXIT;
       }
@@ -1947,14 +1947,14 @@ static Return_t __FindDirEntry__(const Volume_t *vol_, Word_t dirCluster_, const
       fatEntry = (FAT32DirEntry_t *) (clusterData + (entryIdx * sizeof(FAT32DirEntry_t)));
 
       /* Check for end of directory */
-      if(fatEntry->name[0] == 0x00u) {
+      if(fatEntry->name[0x0] == 0x00u) {
         __KernelFreeMemory__(clusterData);
 
         return(ReturnError); /* Not found */
       }
 
       /* Skip deleted entries and long filename entries */
-      if((fatEntry->name[0] == 0xE5u) || ((fatEntry->attr & FAT_ATTR_LONG_NAME) == FAT_ATTR_LONG_NAME)) {
+      if((fatEntry->name[0x0] == 0xE5u) || ((fatEntry->attr & FAT_ATTR_LONG_NAME) == FAT_ATTR_LONG_NAME)) {
         continue;
       }
 
@@ -2094,7 +2094,7 @@ static Return_t __FindFileByPath__(const Volume_t *vol_, const Byte_t *path_, FA
     }
 
     /* Otherwise, move into this directory (must be a directory) */
-    if((dirEntry.attr & FAT_ATTR_DIRECTORY) == 0) {
+    if((dirEntry.attr & FAT_ATTR_DIRECTORY) == 0x0) {
       return(ReturnError); /* Not a directory, can't traverse further */
     }
 
@@ -2180,11 +2180,11 @@ static Return_t __CreateDirEntry__(const Volume_t *vol_, Word_t parentCluster_, 
       fatEntry = (FAT32DirEntry_t *) (clusterData + (entryIdx * sizeof(FAT32DirEntry_t)));
 
       /* Check for free entry (deleted or end marker) */
-      if((fatEntry->name[0] == 0x00u) || (fatEntry->name[0] == 0xE5u)) {
+      if((fatEntry->name[0x0] == 0x00u) || (fatEntry->name[0x0] == 0xE5u)) {
         /* Found free entry! Fill it in */
-        __memcpy__(fatEntry->name, name83_, 11);
+        __memcpy__(fatEntry->name, name83_, 0xB);
         fatEntry->attr = attr_;
-        fatEntry->ntReserved = 0;
+        fatEntry->ntReserved = 0x0;
         fatEntry->createTimeTenth = 0;
         __WriteLE16__(fatEntry->createTime, 0);
         __WriteLE16__(fatEntry->createDate, 0);

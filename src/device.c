@@ -532,7 +532,7 @@ static Return_t __DeviceListFind__(const HalfWord_t uid_, Device_t **device_) {
     /* Traverse the device list while the cursor is not null and the unique
      * identifier passed to __DeviceListFind__() doesn't match the device
      * pointed to by the cursor. */
-    while(__PointerIsNotNull__(cursor) && (cursor->uid != uid_)) {
+    while(__PointerIsNotNull__(cursor) && (uid_ != cursor->uid)) {
       cursor = cursor->next;
     }
 

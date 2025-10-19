@@ -367,7 +367,7 @@
       Byte_t mode;
       Base_t isOpen;
       Base_t isDirty;
-      Byte_t path[256];
+      Byte_t path[0x100];
       Word_t parentDirCluster;
     } File_t;
   #endif /* ifndef FILE_T_ */
@@ -375,7 +375,7 @@
   #ifndef DIRENTRY_T_
     #define DIRENTRY_T_
     typedef struct DirEntry_s {
-      Byte_t name[256];
+      Byte_t name[0x100];
       Word_t size;
       Word_t firstCluster;
       Base_t isDirectory;

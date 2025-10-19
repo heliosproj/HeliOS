@@ -425,7 +425,7 @@ static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, co
 
     /* Check that the number of blocks we visited matches what we expect to see
      */
-    if(CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS == blocks) {
+    if(blocks == CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS) {
       __ReturnOk__();
     } else {
       __AssertOnElse__();
@@ -472,7 +472,7 @@ static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, co
             /* If the cursor points to the memory entry we are looking for *AND*
              * the memory entry is marked as in-use, then set "found" to true
              * because we found the memory entry we are looking for. */
-            if((entry == cursor) && __MemEntryIsInUse__(cursor)) {
+            if((cursor == entry) && __MemEntryIsInUse__(cursor)) {
               found = true;
             }
           } else {
@@ -520,11 +520,11 @@ static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, co
 
     /* Check that the number of blocks we visited matches what we expect to see
      */
-    if(CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS == blocks) {
+    if(blocks == CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS) {
       /* Before we can __ReturnOk__(), we just need to check to make sure we
        * found the address we were looking for as we traversed the memory
        * region. */
-      if(true == found) {
+      if(found == true) {
         __ReturnOk__();
       } else {
         __AssertOnElse__();
@@ -608,7 +608,7 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
 
   /* Intentionally underflow the unsigned type so we get the max value of a
    * HalfWord_t. */
-  HalfWord_t fewest = -1;
+  HalfWord_t fewest = -0x1;
   MemoryEntry_t *cursor = null;
   MemoryEntry_t *candidate = null;
   MemoryEntry_t *next = null;
@@ -661,11 +661,11 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
          * at least one additional block then we are going to split the memory
          * entry into two. If not, we will just go ahead and use the memory
          * entry as is. */
-        if((region_->entrySize + 1) <= (candidate->blocks - requested)) {
+        if((region_->entrySize + 0x1) <= (candidate->blocks - requested)) {
           /* This block of code splits the block in two and uses the first of
            * the two blocks for the requested memory. */
           next = candidate->next;
-          candidate->next = (MemoryEntry_t *) ((Byte_t *) candidate + (requested * CONFIG_MEMORY_REGION_BLOCK_SIZE));
+          candidate->next = (MemoryEntry_t *) (((Byte_t *) candidate) + (requested * CONFIG_MEMORY_REGION_BLOCK_SIZE));
 
 
           /* __CalculateMemEntryMagic__() calculates the memory entry's magic
@@ -1048,7 +1048,7 @@ static Return_t __MemGetRegionStats__(const volatile MemoryRegion_t *region_, Me
         if(OK(__memset__(*stats_, nil, sizeof(MemoryRegionStats_t)))) {
           /* We intentionally underflow a word (an unsigned type) to get its
            * maximum value. */
-          (*stats_)->smallestFreeEntryInBytes = -1;
+          (*stats_)->smallestFreeEntryInBytes = -0x1;
 
 
           /* Copy in the statistics we already have from the memory region. */
@@ -1160,7 +1160,7 @@ static Return_t __DetectByteOrder__(ByteOrder_t *order_) {
   FUNCTION_ENTER;
 
   if(__PointerIsNotNull__(order_)) {
-    if(0x100 > (*(uint16_t *) "\xFF\x00")) {
+    if((*(uint16_t *) "\xFF\x00") < 0x100) {
       *order_ = ByteOrderLittleEndian;
       __ReturnOk__();
     } else {

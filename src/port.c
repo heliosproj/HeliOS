@@ -44,7 +44,7 @@ Ticks_t __PortGetSysTicks__(void) {
 
 #elif defined(ARDUINO_ARCH_ESP32) || defined(ESP32)
 
-    return(0);
+    return(0x0);
 
 #elif defined(CMSIS_ARCH_CORTEXM)
 
@@ -58,7 +58,7 @@ Ticks_t __PortGetSysTicks__(void) {
 
     gettimeofday(&t, null);
 
-    return((t.tv_sec) * 1000 + (t.tv_usec) / 1000);
+    return((t.tv_sec) * 0x3E8 + (t.tv_usec) / 0x3E8);
 
 #endif /* if defined(ARDUINO_ARCH_AVR) || defined(ARDUINO_ARCH_SAM) ||
         * defined(ARDUINO_ARCH_SAMD) || defined(ARDUINO_ARCH_ESP8266) ||
