@@ -56,21 +56,6 @@ void unit_begin(const char *name_) {
 }
 
 
-void unit_try(int expr_) {
-  if((null != unit) && (true == unit->begun) && (false == expr_)) {
-    unit->failed = true;
-  } else if(false == unit->begun) {
-
-#if defined(UNIT_TEST_COLORIZE)
-      printf("\033[95munit:\033[91m error: unit_try() called outside a unit test\n\033[39m");
-#else  /* if defined(UNIT_TEST_COLORIZE) */
-      printf("unit: error: unit_try() called outside a unit test\n");
-#endif /* if defined(UNIT_TEST_COLORIZE) */
-  }
-
-  return;
-}
-
 
 void unit_end(void) {
   if((null != unit) && (true == unit->begun)) {
