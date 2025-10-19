@@ -20,11 +20,6 @@
 
   #include "../unit/unit.h"
   void sys_harness(void);
-  void test_system_init(void);
-  void test_system_info(void);
-  void test_system_halt(void);
-  void test_system_assert(void);
-  void test_enhanced_assertions(void);
 
 
 #endif /* ifndef SYS_HARNESS_H_ */
