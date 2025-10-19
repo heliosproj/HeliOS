@@ -40,7 +40,7 @@ HeliOS provides three powerful IPC mechanisms:
 3. **Stream Buffers** - Byte-oriented circular buffers optimized for serial data and protocol parsing
 
 ### Memory Management
-- **Private heap implementation** using statically allocated memory—no reliance on `malloc()/free()`
+- **Private heap implementation** using statically allocated memory—no reliance on **`malloc()/free()`**
 - **Separate kernel memory region** protects critical kernel objects from user code corruption
 - **Automatic defragmentation** maintains memory efficiency over long run times
 - **Consistency checking** detects memory corruption early
@@ -50,7 +50,7 @@ HeliOS provides three powerful IPC mechanisms:
 - Kernel-mode device driver support with self-registration pattern
 - Abstract device layer enables portable driver development
 - Essential for systems with MMU/MPU memory protection
-- Template drivers provided in `/drivers/template/`
+- Template drivers provided in **`/drivers/template/`**
 
 ### FAT32 Filesystem (New in 0.5.0)
 - **Full FAT32 implementation** with support for files and directories
@@ -91,7 +91,7 @@ HeliOS uses cooperative multitasking without context switching. This design:
 - Long-running tasks can impact system responsiveness if not properly designed
 
 ### Configurable and Customizable
-Many kernel parameters are easily configured through `/src/config.h`:
+Many kernel parameters are easily configured through **`/src/config.h`**:
 
 ***
 
@@ -110,7 +110,6 @@ HeliOS now includes a complete FAT32 filesystem implementation:
 - **Comprehensive file API**: Full POSIX-style file operations
 - **Directory support**: Create, remove, and traverse directory hierarchies
 - **RAM disk driver**: Built-in RAM-based storage for testing and embedded applications
-- **Internal kernel APIs**: Pattern `__Function__()` for kernel-to-kernel calls
 
 Example filesystem usage:
 ```c
@@ -144,7 +143,7 @@ The testing framework has been significantly enhanced with modern development pr
 - **Named constants** replacing magic numbers throughout test code for better readability
 - **Color-coded output** for easy visual scanning of test results
 - **147 comprehensive test cases** covering all kernel subsystems including edge cases
-- **C90 compliance** with strict `-ansi -pedantic` compilation
+- **C90 compliance** with strict **`-ansi -pedantic`** compilation
 
 ***
 
@@ -163,7 +162,7 @@ The testing framework has been significantly enhanced with modern development pr
 
 ## Documentation
 
-The complete HeliOS syscall API is documented in the [HeliOS Developer's Guide](/doc/HeliOS_Developers_Guide.pdf). All API functions are also documented with detailed Doxygen comments in `/src/HeliOS.h`.
+The complete HeliOS syscall API is documented in the [HeliOS Developer's Guide](/doc/HeliOS_Developers_Guide.pdf). All API functions are also documented with detailed Doxygen comments in **`/src/HeliOS.h`**.
 
 For support and help, see [SUPPORT.md](/SUPPORT.md).
 
@@ -179,7 +178,7 @@ Complete installation instructions are available in the [Arduino Library documen
 
 ## Quick Start: PlatformIO
 
-Add HeliOS to your `platformio.ini`:
+Add HeliOS to your **`platformio.ini`**:
 ```ini
 [env:myboard]
 platform = ...
@@ -206,22 +205,22 @@ The build guide demonstrates building and deploying HeliOS 0.5.0 on an **ST NUCL
 1. Download the [latest release](https://github.com/heliosproj/HeliOS/releases)
 2. Extract into your project's source directory
 3. Download CMSIS headers and your vendor's HAL/BSP headers
-4. Edit `/src/port.h` line 52 to include your vendor's HAL header:
+4. Edit **`/src/port.h`** line 52 to include your vendor's HAL header:
    ```c
    #elif defined(CMSIS_ARCH_CORTEXM)
    #include "stm32f4xx_hal.h"  // Example for STM32F4
    ```
-5. Configure `/src/config.h`:
-   - Set `SYSTEM_CORE_CLOCK_FREQUENCY` to your core clock frequency
-   - Set `SYSTEM_CORE_CLOCK_PRESCALER` to your desired prescaler value
-6. Add `-DCMSIS_ARCH_CORTEXM` to your compiler flags
+5. Configure **`/src/config.h`**:
+   - Set **`SYSTEM_CORE_CLOCK_FREQUENCY`** to your core clock frequency
+   - Set **`SYSTEM_CORE_CLOCK_PRESCALER`** to your desired prescaler value
+6. Add **`-DCMSIS_ARCH_CORTEXM`** to your compiler flags
 
 ## ESP32
 **Important:** HeliOS is **not compatible** with the ESP32 Arduino core because it is built on FreeRTOS. HeliOS and FreeRTOS cannot coexist in the same application.
 
 To use HeliOS on ESP32, you must:
 - Use Espressif's ESP-IDF directly (without Arduino core)
-- Update `/src/port.h` and `/src/port.c` with ESP32-specific interrupt and timer code
+- Update **`/src/port.h`** and **`/src/port.c`** with ESP32-specific interrupt and timer code
 - Use the [ESP-IDF toolchain](https://idf.espressif.com/)
 
 ***
@@ -246,7 +245,7 @@ void loop() {
 ```
 
 **Problems with this approach:**
-- `delay()` blocks all other operations
+- **`delay()`** blocks all other operations
 - Difficult to add additional tasks
 - Hard to implement different timing for multiple tasks
 - No way to respond to events while waiting
@@ -424,28 +423,6 @@ This project is not affiliated with:
 - Axel Muhr's [Helios-NG](https://github.com/axelmuhr/Helios-NG) project
 
 Any similarities are purely coincidental.
-
-***
-
-# :question: FAQ
-
-**Q: Can I use HeliOS on ESP32?**
-A: Not with the Arduino core. ESP32 Arduino uses FreeRTOS, which conflicts with HeliOS. Use ESP-IDF directly instead.
-
-**Q: Does HeliOS support preemptive multitasking?**
-A: No, HeliOS uses cooperative multitasking. Tasks must voluntarily yield control to the scheduler.
-
-**Q: Is HeliOS real-time?**
-A: HeliOS provides soft real-time guarantees but is not a hard real-time operating system.
-
-**Q: Can I use Arduino libraries with HeliOS?**
-A: Yes, most Arduino libraries work fine with HeliOS. Avoid using `delay()` inside tasks.
-
-**Q: How much memory does HeliOS require?**
-A: Depends on configuration, but typical footprint is 2-8 KB RAM and 8-16 KB flash. Configure in `/src/config.h`.
-
-**Q: Can I use global variables?**
-A: Yes, but task parameters are preferred for sharing data between tasks to maintain clean architecture.
 
 ***
 

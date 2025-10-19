@@ -2,7 +2,7 @@
 
 ## Overview
 
-The purpose of this guide is to demonstrate how **HeliOS 0.5.0** can be built and deployed to other MCUs without the Arduino Core. This guide is meant for more advanced use cases and provides step-by-step instructions for building and deploying **HeliOS 0.5.0** (a lightweight embedded operating system) on the **ST NUCLEO-H723ZG** development board. While this guide is specific to the **ST NUCLEO-H723ZG**, these same steps may be taken to build and deploye **HeliOS 0.5.0** on other ST MCUs and development boards.
+The purpose of this guide is to demonstrate how **HeliOS 0.5.0** can be built and deployed to other MCUs without the Arduino Core. This guide is meant for more advanced use cases and provides step-by-step instructions for building and deploying **HeliOS 0.5.0** on the **ST NUCLEO-H723ZG** development board. While this guide is specific to the **ST NUCLEO-H723ZG**, these same steps may be taken to build and deploy **HeliOS 0.5.0** on other ST MCUs and development boards.
 
 ### Target Hardware
 
@@ -15,14 +15,6 @@ The purpose of this guide is to demonstrate how **HeliOS 0.5.0** can be built an
 - **Clock**: HSI at 64 MHz (default at reset)
 - **LED**: LD1 (Green) on PB0
 
-### HeliOS Configuration
-
-- **Version**: 0.5.0
-- **System tick**: 1 ms (SysTick at 1000 Hz)
-- **Scheduler**: Cooperative multitasking
-- **Core clock frequency**: 64 MHz (0x3D09000u)
-- **Core clock prescaler**: 1000 (0x3E8u)
-
 ---
 
 ## Prerequisites
@@ -31,9 +23,8 @@ Before starting, ensure you have:
 
 1. A Windows, macOS, or Linux computer
 2. ST NUCLEO-H723ZG development board
-3. USB cable (USB A to Micro USB)
-4. Internet connection for downloads
-5. ST account (free registration required)
+3. USB cable (USB A/C to Micro USB)
+4. ST account (free registration required)
 
 ---
 
@@ -46,10 +37,7 @@ Before starting, ensure you have:
 
 2. Create an ST account if you don't have one, then log in
 
-3. Download the appropriate version for your operating system:
-   - Windows
-   - macOS
-   - Linux
+3. Download the appropriate version for your operating system
 
 4. Note the download location for installation
 
@@ -71,7 +59,7 @@ Before starting, ensure you have:
 
 ### Linux
 1. Extract the downloaded archive
-2. Run the installer script with appropriate permissions
+2. Run the installer script as the root user (sudo)
 3. Follow the on-screen instructions
 
 ---
@@ -85,7 +73,7 @@ Before starting, ensure you have:
    https://github.com/STMicroelectronics/cmsis-device-h7
    ```
 
-2. Download the latest release (e.g., `cmsis-device-h7-1.10.6.zip`)
+2. Download the latest release (e.g., **`cmsis-device-h7-1.10.6.zip`**)
    - Click "Releases" on the right side
    - Download the source code archive
 
@@ -96,7 +84,7 @@ Before starting, ensure you have:
    https://github.com/STMicroelectronics/STM32CubeH7
    ```
 
-2. Download the latest release (e.g., `STM32CubeH7-1.12.1.zip`)
+2. Download the latest release (e.g., **`STM32CubeH7-1.12.1.zip`**)
    - Click "Releases" on the right side
    - Download the source code archive
 
@@ -123,7 +111,7 @@ Before starting, ensure you have:
    - Click **Next**
 
 4. Configure project settings:
-   - **Project Name**: Enter your desired project name (e.g., `helios_h723`)
+   - **Project Name**: Enter your desired project name (e.g., **`helios_h723`**)
    - **Targeted Project Type**: Select **Empty**
    - **Targeted Language**: Ensure **C** is selected
    - Click **Finish**
@@ -136,8 +124,8 @@ Before starting, ensure you have:
 
 ### Extract Archives
 
-1. Extract `cmsis-device-h7-1.10.6.zip` to a temporary location
-2. Extract `STM32CubeH7-1.12.1.zip` to a temporary location
+1. Extract **`cmsis-device-h7-1.10.6.zip`** to a temporary location
+2. Extract **`STM32CubeH7-1.12.1.zip`** to a temporary location
 
 ### Copy CMSIS Device Files
 
@@ -146,15 +134,15 @@ Before starting, ensure you have:
    cmsis-device-h7-1.10.6/Include
    ```
 
-2. Copy **all files** from this directory to your project's `Inc` directory:
+2. Copy **all files** from this directory to your project's **`Inc`** directory:
    ```
    <workspace>/your_project_name/Inc/
    ```
 
    Files include:
-   - `stm32h723xx.h`
-   - `stm32h7xx.h`
-   - `system_stm32h7xx.h`
+   - **`stm32h723xx.h`**
+   - **`stm32h7xx.h`**
+   - **`system_stm32h7xx.h`**
    - And other device-specific headers
 
 ### Copy CMSIS Core Files
@@ -164,16 +152,16 @@ Before starting, ensure you have:
    STM32CubeH7-1.12.1/Drivers/CMSIS/Core/Include
    ```
 
-2. Copy **all files** from this directory to your project's `Inc` directory:
+2. Copy **all files** from this directory to your project's **`Inc`** directory:
    ```
    <workspace>/your_project_name/Inc/
    ```
 
    Files include:
-   - `core_cm7.h`
-   - `cmsis_version.h`
-   - `cmsis_compiler.h`
-   - `cmsis_gcc.h`
+   - **`core_cm7.h`**
+   - **`cmsis_version.h`**
+   - **`cmsis_compiler.h`**
+   - **`cmsis_gcc.h`**
    - And other CMSIS core headers
 
 ---
@@ -182,28 +170,28 @@ Before starting, ensure you have:
 
 1. Locate the HeliOS source files directory (where you have the HeliOS distribution)
 
-2. Copy **all files** from the HeliOS `src` directory to your project's `Src` directory:
+2. Copy **all files** from the HeliOS **`src`** directory to your project's **`Src`** directory:
    ```
    <workspace>/your_project_name/Src/
    ```
 
    Files include:
-   - `HeliOS.h` (main header)
-   - `config.h`
-   - `defines.h`
-   - `device.c` / `device.h`
-   - `fs.c` / `fs.h`
-   - `mem.c` / `mem.h`
-   - `port.c` / `port.h`
-   - `posix.h`
-   - `queue.c` / `queue.h`
-   - `streams.c` / `streams.h`
-   - `sys.c` / `sys.h`
-   - `task.c` / `task.h`
-   - `timer.c` / `timer.h`
-   - `types.h`
-   - `syscalls.c`
-   - `sysmem.c`
+   - **`HeliOS.h`**
+   - **`config.h`**
+   - **`defines.h`**
+   - **`device.c`** & **`device.h`**
+   - **`fs.c`** & **`fs.h`**
+   - **`mem.c`** & **`mem.h`**
+   - **`port.c`** & **`port.h`**
+   - **`posix.h`**
+   - **`queue.c`** & **`queue.h`**
+   - **`streams.c`** & **`streams.h`**
+   - **`sys.c`** & **`sys.h`**
+   - **`task.c`** & **`task.h`**
+   - **`timer.c`** & **`timer.h`**
+   - **`types.h`**
+   - **`syscalls.c`**
+   - **`sysmem.c`**
 
 ---
 
@@ -214,9 +202,7 @@ Before starting, ensure you have:
 2. Select **Properties**
 
 3. Navigate to:
-   ```
-   C/C++ Build → Settings → MCU/MPU GCC Compiler → Preprocessor
-   ```
+   - **C/C++ Build** → **Settings** → **MCU/MPU GCC Compiler** → **Preprocessor**
 
 4. In the **"Define symbols (-D)"** section:
    - Click the **+** (plus) button
@@ -237,7 +223,7 @@ Before starting, ensure you have:
 
 2. Open the file **`port.h`**
 
-3. Locate **line 52** (or search for `stm32f429xx.h`):
+3. Locate **line 52** (or search for **`stm32f429xx.h`**):
    ```c
    #include "stm32f429xx.h"
    ```
@@ -249,7 +235,7 @@ Before starting, ensure you have:
 
 ### Update System Core Clock Frequency
 
-5. In the same file **`port.h`**, locate **line 58** (or search for `SYSTEM_CORE_CLOCK_FREQUENCY`):
+5. In the same file **`port.h`**, locate **line 58** (or search for **`SYSTEM_CORE_CLOCK_FREQUENCY`**):
    ```c
    #define SYSTEM_CORE_CLOCK_FREQUENCY 0xF42400u /* 16000000u */
    ```
@@ -261,13 +247,13 @@ Before starting, ensure you have:
 
    This sets the system clock to 64 MHz (the default HSI frequency for STM32H723)
 
-7. **Save** the file (`Ctrl+S` or `Cmd+S`)
+7. **Save** the file (**`Ctrl+S`** or **`Cmd+S`**)
 
 ---
 
 ## Step 9: Create Main Application Code
 
-1. In **Project Explorer**, open **`main.c`** from the **Src** directory
+1. In **Project Explorer**, open **`main.c`** from the **`Src`** directory
 
 2. Replace the entire contents with the following code:
 
@@ -455,15 +441,15 @@ int main(void)
 }
 ```
 
-3. **Save** the file (`Ctrl+S` or `Cmd+S`)
+3. **Save** the file (**`Ctrl+S`** or **`Cmd+S`**)
 
 ---
 
 ## Step 10: Build the Project
 
 1. In STM32CubeIDE, click the **hammer icon** (Build) in the toolbar, or:
-   - Press `Ctrl+B` (Windows/Linux)
-   - Press `Cmd+B` (macOS)
+   - Press **`Ctrl+B`** (Windows/Linux)
+   - Press **`Cmd+B`** (macOS)
    - Or select **Project** → **Build Project**
 
 2. Monitor the **Console** tab for build output
@@ -480,8 +466,8 @@ int main(void)
 
 4. If build errors occur:
    - Check that all CMSIS files were copied correctly
-   - Verify `CMSIS_ARCH_CORTEXM` preprocessor symbol is defined
-   - Ensure `port.h` modifications are correct
+   - Verify **`CMSIS_ARCH_CORTEXM`** preprocessor symbol is defined
+   - Ensure **`port.h`** modifications are correct
    - Review the Console output for specific error messages
 
 ---
@@ -498,7 +484,7 @@ int main(void)
 3. Wait for the operating system to recognize the device:
    - **Windows**: Check Device Manager for "STMicroelectronics STLink Virtual COM Port"
    - **macOS**: The device should mount automatically
-   - **Linux**: Check `dmesg` for USB device recognition
+   - **Linux**: Check **`dmesg`** for USB device recognition
 
 4. Verify the power LED on the board is lit
 
@@ -507,9 +493,7 @@ int main(void)
 ## Step 12: Flash and Run the Application
 
 1. In STM32CubeIDE, select:
-   ```
-   Run → Run As → STM32 C/C++ Application
-   ```
+   - **Run** → **Run As** → **STM32 C/C++ Application**
 
 2. If prompted to create a new launch configuration:
    - Select **STM32 Cortex-M C/C++ Application**
@@ -521,9 +505,9 @@ int main(void)
 
 4. Observe the output:
    - The **Debug** perspective will open
-   - Execution will pause at the beginning of `main()`
+   - Execution will pause at the beginning of **`main()`**
 
-5. Click the **Resume** button (green play icon with "F8") to continue execution
+5. Click the **Resume** button (green play icon with **`F8`**) to continue execution
 
 ---
 
@@ -566,5 +550,3 @@ your_project_name/
 ├── .project                    # Eclipse project file
 └── STM32H723ZGTX_FLASH.ld     # Linker script
 ```
-
----
