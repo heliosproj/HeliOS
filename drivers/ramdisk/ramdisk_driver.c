@@ -92,8 +92,44 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Add
     /* All config structures start with command byte */
     Byte_t command = *(Byte_t *)config_;
 
-    /* Set read/write position */
-    if(RAMDISK_CMD_SET_POSITION == command) {
+    /* Handle generic block I/O request (NEW - preferred interface) */
+    if(BLOCK_IO_CMD_SET_REQUEST == command) {
+      if(*size_ == sizeof(BlockIORequest_t)) {
+        BlockIORequest_t *request = (BlockIORequest_t *)config_;
+
+        /* Translate block address to byte offset */
+        Word_t byteOffset = request->blockNumber * request->blockSize;
+
+        /* Validate bounds */
+        Word_t totalBytes = (Word_t)request->blockCount * request->blockSize;
+
+        if((byteOffset + totalBytes) <= RAMDISK_SIZE_BYTES) {
+          /* Set position for subsequent read/write */
+          state.currentPosition = byteOffset;
+          __ReturnOk__();
+        } else {
+          __AssertOnElse__();
+        }
+      }
+    }
+
+    /* Get block I/O info (NEW - optional capability query) */
+    else if(BLOCK_IO_CMD_GET_INFO == command) {
+      if(*size_ == sizeof(BlockIOInfo_t)) {
+        BlockIOInfo_t *info = (BlockIOInfo_t *)config_;
+
+        info->command = BLOCK_IO_CMD_GET_INFO;
+        info->totalSizeBytes = RAMDISK_SIZE_BYTES;
+        info->nativeBlockSize = 1; /* Byte-addressable */
+        info->supportsRandomAccess = true;
+        info->requiresErase = false;
+
+        __ReturnOk__();
+      }
+    }
+
+    /* Set read/write position (LEGACY - for backward compatibility) */
+    else if(RAMDISK_CMD_SET_POSITION == command) {
       if(*size_ == sizeof(RAMDiskPositionConfig_t)) {
         RAMDiskPositionConfig_t *cfg = (RAMDiskPositionConfig_t *)config_;
 

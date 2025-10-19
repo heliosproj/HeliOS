@@ -28,6 +28,7 @@
   #include "sys.h"
   #include "task.h"
   #include "timer.h"
+  #include "../block/block_io_interface.h"
 
 
   /* Device name must be exactly CONFIG_DEVICE_NAME_BYTES (8 bytes) */

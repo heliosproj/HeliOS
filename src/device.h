@@ -5,13 +5,42 @@
  * @brief Kernel source for device I/O
  * @version 0.5.0
  * @date 2023-03-19
- * 
+ *
  * @copyright
  * HeliOS Embedded Operating System Copyright (C) 2020-2026 HeliOS Project <license@heliosproj.org>
- *  
+ *
  *  SPDX-License-Identifier: GPL-2.0-or-later
- *  
- * 
+ *
+ * @details
+ * HeliOS Device Driver Framework
+ * ==============================
+ *
+ * HeliOS supports two types of device drivers:
+ *
+ * BLOCK DEVICES:
+ *   - Use drivers/block/block_driver.c as an abstraction layer
+ *   - Underlying I/O drivers implement block_io_interface.h
+ *   - Examples: RAM disk, SD card, EEPROM, Flash memory
+ *   - Addressed by block/sector number
+ *   - Primary operations: read/write (buffer-based)
+ *   - Block driver translates block operations to I/O driver commands
+ *
+ * CHARACTER DEVICES:
+ *   - Register directly with the device framework (no abstraction layer)
+ *   - Implement simple_read/simple_write for byte-stream operations
+ *   - Examples: UART, USB CDC, console, pipes
+ *   - Sequential byte access
+ *   - Primary operations: simple_read/simple_write (byte-based)
+ *   - May also implement read/write for buffered operations
+ *
+ * Device Function Pointers:
+ *   init()         - Initialize device hardware and state
+ *   config()       - Configure device settings or query capabilities
+ *   read()         - Read buffer of data (returns kernel memory)
+ *   write()        - Write buffer of data (accepts kernel memory)
+ *   simple_read()  - Read single byte (character devices)
+ *   simple_write() - Write single byte (character devices)
+ *
  */
 /*UNCRUSTIFY-ON*/
 #ifndef DEVICE_H_

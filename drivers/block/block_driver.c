@@ -225,39 +225,37 @@ static Return_t __BlockDeviceReadBlockRAW__(const Word_t blockNum_,
   FUNCTION_ENTER;
 
   Size_t totalSize = (Size_t)state.blockSize * blockCount_;
-  Word_t byteOffset = (Word_t)state.blockSize * blockNum_;
   Byte_t *buffer = null;
-  Byte_t *posConfig = null;
-  Size_t posSize = 0;
+  Byte_t *ioConfig = null;
+  Size_t configSize = 0;
 
-  /* For RAW protocol, we need to tell the I/O driver where to seek */
-  typedef struct RAMDiskPositionConfig_s {
-    Byte_t command;
-    Word_t position;
-  } RAMDiskPositionConfig_t;
+  /* Allocate generic block I/O request from kernel heap */
+  if(OK(__KernelAllocateMemory__((volatile Addr_t **)&ioConfig, sizeof(BlockIORequest_t)))) {
+    BlockIORequest_t *request = (BlockIORequest_t *)ioConfig;
 
-  /* Allocate position config from kernel heap (drivers use kernel memory) */
-  if(OK(__KernelAllocateMemory__((volatile Addr_t **)&posConfig, sizeof(RAMDiskPositionConfig_t)))) {
-    RAMDiskPositionConfig_t *cfg = (RAMDiskPositionConfig_t *)posConfig;
-    cfg->command = 0x01u;  /* RAMDISK_CMD_SET_POSITION */
-    cfg->position = byteOffset;
+    /* Fill generic request structure */
+    request->command = BLOCK_IO_CMD_SET_REQUEST;
+    request->operation = BLOCK_IO_OP_READ;
+    request->blockNumber = blockNum_;
+    request->blockCount = blockCount_;
+    request->blockSize = state.blockSize;
 
-    posSize = sizeof(RAMDiskPositionConfig_t);
+    configSize = sizeof(BlockIORequest_t);
 
-    /* Set I/O driver position using kernel-level device API (no heap memory copy) */
-    if(OK(__DeviceConfigDevice__(state.ioDriverUID, &posSize, (Addr_t *)posConfig))) {
+    /* Send request to I/O driver - it handles translation to native format */
+    if(OK(__DeviceConfigDevice__(state.ioDriverUID, &configSize, (Addr_t *)ioConfig))) {
 
       /* Read data from I/O driver using kernel-level API (returns kernel memory) */
       if(OK(__DeviceRead__(state.ioDriverUID, &totalSize, (Addr_t **)&buffer))) {
         *data_ = buffer;
-        __KernelFreeMemory__(posConfig);
+        __KernelFreeMemory__(ioConfig);
         __ReturnOk__();
       } else {
-        __KernelFreeMemory__(posConfig);
+        __KernelFreeMemory__(ioConfig);
         __AssertOnElse__();
       }
     } else {
-      __KernelFreeMemory__(posConfig);
+      __KernelFreeMemory__(ioConfig);
       __AssertOnElse__();
     }
   } else {
@@ -274,37 +272,35 @@ static Return_t __BlockDeviceWriteBlockRAW__(const Word_t blockNum_,
   FUNCTION_ENTER;
 
   Size_t totalSize = (Size_t)state.blockSize * blockCount_;
-  Word_t byteOffset = (Word_t)state.blockSize * blockNum_;
-  Byte_t *posConfig = null;
-  Size_t posSize = 0;
+  Byte_t *ioConfig = null;
+  Size_t configSize = 0;
 
-  /* For RAW protocol, we need to tell the I/O driver where to seek */
-  typedef struct RAMDiskPositionConfig_s {
-    Byte_t command;
-    Word_t position;
-  } RAMDiskPositionConfig_t;
+  /* Allocate generic block I/O request from kernel heap */
+  if(OK(__KernelAllocateMemory__((volatile Addr_t **)&ioConfig, sizeof(BlockIORequest_t)))) {
+    BlockIORequest_t *request = (BlockIORequest_t *)ioConfig;
 
-  /* Allocate position config from kernel heap (drivers use kernel memory) */
-  if(OK(__KernelAllocateMemory__((volatile Addr_t **)&posConfig, sizeof(RAMDiskPositionConfig_t)))) {
-    RAMDiskPositionConfig_t *cfg = (RAMDiskPositionConfig_t *)posConfig;
-    cfg->command = 0x01u;  /* RAMDISK_CMD_SET_POSITION */
-    cfg->position = byteOffset;
+    /* Fill generic request structure */
+    request->command = BLOCK_IO_CMD_SET_REQUEST;
+    request->operation = BLOCK_IO_OP_WRITE;
+    request->blockNumber = blockNum_;
+    request->blockCount = blockCount_;
+    request->blockSize = state.blockSize;
 
-    posSize = sizeof(RAMDiskPositionConfig_t);
+    configSize = sizeof(BlockIORequest_t);
 
-    /* Set I/O driver position using kernel-level device API (no heap memory copy) */
-    if(OK(__DeviceConfigDevice__(state.ioDriverUID, &posSize, (Addr_t *)posConfig))) {
+    /* Send request to I/O driver - it handles translation to native format */
+    if(OK(__DeviceConfigDevice__(state.ioDriverUID, &configSize, (Addr_t *)ioConfig))) {
 
       /* Write data to I/O driver using kernel-level API (data already in kernel memory) */
       if(OK(__DeviceWrite__(state.ioDriverUID, &totalSize, (Addr_t *)data_))) {
-        __KernelFreeMemory__(posConfig);
+        __KernelFreeMemory__(ioConfig);
         __ReturnOk__();
       } else {
-        __KernelFreeMemory__(posConfig);
+        __KernelFreeMemory__(ioConfig);
         __AssertOnElse__();
       }
     } else {
-      __KernelFreeMemory__(posConfig);
+      __KernelFreeMemory__(ioConfig);
       __AssertOnElse__();
     }
   } else {
