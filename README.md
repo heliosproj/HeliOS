@@ -197,7 +197,11 @@ See the [PlatformIO installation guide](https://registry.platformio.org/librarie
 
 ## Advanced: ARM Cortex-M with CMSIS
 
-For ARM Cortex-M microcontrollers using CMSIS:
+For advanced use cases where you want to build HeliOS on top of CMSIS **without the Arduino Core**, see the [ST Build Guide](/BUILD_GUIDE_ST.md) for a complete example.
+
+The build guide demonstrates building and deploying HeliOS 0.5.0 on an **ST NUCLEO-H723ZG** development board using STM32CubeIDE. While this example is specific to ST hardware, the same process applies to other ST microcontrollers and development boards. For microcontrollers and development boards from other vendors (e.g., NXP, Microchip, Nordic, etc.), the steps will differ, but the build guide still provides valuable background on the general process of integrating HeliOS with CMSIS-based toolchains.
+
+**Quick reference for other ARM Cortex-M platforms:**
 
 1. Download the [latest release](https://github.com/heliosproj/HeliOS/releases)
 2. Extract into your project's source directory
