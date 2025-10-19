@@ -33,10 +33,9 @@ typedef struct BlockDeviceState_s {
 static BlockDeviceState_t state = {
   0
 };
-
-
 /* Forward declarations */
-static Return_t __PrepareBlockIORequest__(const Word_t blockNum_, const HalfWord_t blockCount_, const Byte_t operation_, BlockIORequest_t **request_, Size_t *configSize_);
+static Return_t __PrepareBlockIORequest__(const Word_t blockNum_, const HalfWord_t blockCount_, const Byte_t operation_, BlockIORequest_t **request_, Size_t *
+  configSize_);
 static Return_t __BlockDeviceReadBlockRAW__(const Word_t blockNum_, const HalfWord_t blockCount_, Byte_t **data_);
 static Return_t __BlockDeviceWriteBlockRAW__(const Word_t blockNum_, const HalfWord_t blockCount_, const Byte_t *data_);
 
@@ -72,7 +71,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _init)(Device_t *device_) {
   state.initialized = false;
   state.ioDriverUID = 0;
   state.protocol = 0;
-  state.blockSize = 512;  /* Default */
+  state.blockSize = BLOCK_DEFAULT_SECTOR_SIZE;
   state.totalBlocks = 0;
   state.currentBlockNumber = 0;
   state.currentBlockCount = 0;
@@ -88,7 +87,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Add
   if(__PointerIsNotNull__(config_) && __PointerIsNotNull__(size_)) {
 
     /* Initial configuration - receive BlockDeviceConfig_t */
-    if(*size_ == sizeof(BlockDeviceConfig_t)) {
+    if(*size_ >= sizeof(BlockDeviceConfig_t)) {
       BlockDeviceConfig_t *cfg = (BlockDeviceConfig_t *)config_;
 
       /* Store I/O driver UID and protocol type */
@@ -116,7 +115,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Add
     }
 
     /* Block addressing - set current block for read/write */
-    else if(*size_ == sizeof(BlockDeviceCommand_t)) {
+    else if(*size_ >= sizeof(BlockDeviceCommand_t)) {
       BlockDeviceCommand_t *cmd = (BlockDeviceCommand_t *)config_;
 
       state.currentBlockNumber = cmd->blockNumber;
@@ -126,7 +125,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Add
     }
 
     /* Get device info */
-    else if(*size_ == sizeof(BlockDeviceInfo_t)) {
+    else if(*size_ >= sizeof(BlockDeviceInfo_t)) {
       BlockDeviceInfo_t *info = (BlockDeviceInfo_t *)config_;
 
       info->blockSize = state.blockSize;
@@ -353,7 +352,7 @@ static Return_t __BlockDeviceWriteBlockRAW__(const Word_t blockNum_,
 void __BlockDeviceStateClear__(void) {
   state.ioDriverUID = 0;
   state.protocol = 0;
-  state.blockSize = 512;
+  state.blockSize = BLOCK_DEFAULT_SECTOR_SIZE;
   state.totalBlocks = 0;
   state.initialized = false;
   state.currentBlockNumber = 0;

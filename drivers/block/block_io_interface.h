@@ -24,6 +24,7 @@
 
   #include "types.h"
 
+
   /* Block I/O operation types */
   #if defined(BLOCK_IO_OP_READ)
     #undef BLOCK_IO_OP_READ
@@ -45,6 +46,7 @@
   #endif /* if defined(BLOCK_IO_CMD_GET_INFO) */
   #define BLOCK_IO_CMD_GET_INFO 0x11u /* 17 */
 
+
   /**
    * @brief Generic block I/O request structure
    *
@@ -59,10 +61,10 @@
    */
   typedef struct BlockIORequest_s {
     Byte_t command;         /* BLOCK_IO_CMD_SET_REQUEST */
-    Byte_t operation;       /* BLOCK_IO_OP_READ or BLOCK_IO_OP_WRITE */
-    Word_t blockNumber;     /* Starting block number */
-    HalfWord_t blockCount;  /* Number of blocks */
-    HalfWord_t blockSize;   /* Bytes per block */
+    Byte_t operation; /* BLOCK_IO_OP_READ or BLOCK_IO_OP_WRITE */
+    Word_t blockNumber; /* Starting block number */
+    HalfWord_t blockCount; /* Number of blocks */
+    HalfWord_t blockSize; /* Bytes per block */
   } BlockIORequest_t;
 
 
@@ -73,15 +75,15 @@
    * characteristics. Used to determine optimal block sizes and validate
    * operations.
    *
-   * Usage: Set command to BLOCK_IO_CMD_GET_INFO and pass to I/O driver's
-   * config function. The driver fills in the remaining fields.
+   * Usage: Set command to BLOCK_IO_CMD_GET_INFO and pass to I/O driver's config
+   * function. The driver fills in the remaining fields.
    */
   typedef struct BlockIOInfo_s {
     Byte_t command;              /* BLOCK_IO_CMD_GET_INFO */
-    Word_t totalSizeBytes;       /* Total capacity in bytes */
-    HalfWord_t nativeBlockSize;  /* Native block/sector/page size */
+    Word_t totalSizeBytes; /* Total capacity in bytes */
+    HalfWord_t nativeBlockSize; /* Native block/sector/page size */
     Base_t supportsRandomAccess; /* true for RAM/Flash, false for sequential */
-    Base_t requiresErase;        /* true for Flash, false for RAM/EEPROM */
+    Base_t requiresErase; /* true for Flash, false for RAM/EEPROM */
   } BlockIOInfo_t;
 
 #endif /* ifndef BLOCK_IO_INTERFACE_H_ */

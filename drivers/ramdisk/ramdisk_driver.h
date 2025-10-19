@@ -40,7 +40,6 @@
 
   /* RAM disk size - 1MB for testing */
   #define RAMDISK_SIZE_BYTES 0x100000u /* 1048576 (1MB) */
-
   /* Configuration commands - used with xDeviceConfigDevice() */
   #define RAMDISK_CMD_SET_POSITION 0x01u /* 1 */
   #define RAMDISK_CMD_CLEAR_DISK 0x02u /* 2 */

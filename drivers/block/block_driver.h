@@ -43,12 +43,13 @@
   #define BLOCK_PROTOCOL_MMC 0x02u /* 2 */
   #define BLOCK_PROTOCOL_EMMC 0x03u /* 3 */
   #define BLOCK_PROTOCOL_RAW 0xFFu /* 255 - Direct I/O, no protocol */
-
   /* Block operation commands - internal use */
   #define BLOCK_CMD_READ_SINGLE 0x01u /* 1 */
   #define BLOCK_CMD_READ_MULTIPLE 0x02u /* 2 */
   #define BLOCK_CMD_WRITE_SINGLE 0x03u /* 3 */
   #define BLOCK_CMD_WRITE_MULTIPLE 0x04u /* 4 */
+  /* Default block size - standard disk sector size */
+  #define BLOCK_DEFAULT_SECTOR_SIZE 512u
 
 
   /**

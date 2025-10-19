@@ -43,18 +43,27 @@ static RAMDiskState_t state = {
 
 /* Helper macros for statistics tracking */
 #define __UpdateReadStats__(bytes_) \
-  do { \
-    state.currentPosition += (bytes_); \
-    state.bytesRead += (bytes_); \
-    state.readOperations++; \
-  } while(0)
+        do { \
+          state.currentPosition += (bytes_); \
+          state.bytesRead += (bytes_); \
+          state.readOperations++; \
+        } while (0)
 
 #define __UpdateWriteStats__(bytes_) \
-  do { \
-    state.currentPosition += (bytes_); \
-    state.bytesWritten += (bytes_); \
-    state.writeOperations++; \
-  } while(0)
+        do { \
+          state.currentPosition += (bytes_); \
+          state.bytesWritten += (bytes_); \
+          state.writeOperations++; \
+        } while (0)
+
+
+/* Helper macro for parameter validation */
+#define __ValidateBufferParams__(size_, data_) \
+        (__PointerIsNotNull__(size_) && __PointerIsNotNull__(data_) && (nil < *(size_)))
+
+
+/* Forward declaration for bounds checking helper */
+static Return_t __ValidateAndTruncateSize__(Size_t requested_, Size_t *actual_);
 
 
 /*UNCRUSTIFY-OFF*/
@@ -110,7 +119,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Add
 
     /* Handle generic block I/O request (NEW - preferred interface) */
     if(BLOCK_IO_CMD_SET_REQUEST == command) {
-      if(*size_ == sizeof(BlockIORequest_t)) {
+      if(*size_ >= sizeof(BlockIORequest_t)) {
         BlockIORequest_t *request = (BlockIORequest_t *)config_;
 
         /* Translate block address to byte offset */
@@ -132,7 +141,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Add
 
     /* Get block I/O info (NEW - optional capability query) */
     else if(BLOCK_IO_CMD_GET_INFO == command) {
-      if(*size_ == sizeof(BlockIOInfo_t)) {
+      if(*size_ >= sizeof(BlockIOInfo_t)) {
         BlockIOInfo_t *info = (BlockIOInfo_t *)config_;
 
         info->command = BLOCK_IO_CMD_GET_INFO;
@@ -147,7 +156,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Add
 
     /* Set read/write position (LEGACY - for backward compatibility) */
     else if(RAMDISK_CMD_SET_POSITION == command) {
-      if(*size_ == sizeof(RAMDiskPositionConfig_t)) {
+      if(*size_ >= sizeof(RAMDiskPositionConfig_t)) {
         RAMDiskPositionConfig_t *cfg = (RAMDiskPositionConfig_t *)config_;
 
         if(cfg->position < RAMDISK_SIZE_BYTES) {
@@ -162,7 +171,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Add
 
     /* Clear disk with pattern */
     else if(RAMDISK_CMD_CLEAR_DISK == command) {
-      if(*size_ == sizeof(RAMDiskClearConfig_t)) {
+      if(*size_ >= sizeof(RAMDiskClearConfig_t)) {
         RAMDiskClearConfig_t *cfg = (RAMDiskClearConfig_t *)config_;
 
         __memset__(ramdisk, cfg->fillPattern, RAMDISK_SIZE_BYTES);
@@ -178,7 +187,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Add
 
     /* Get statistics - bidirectional config */
     else if(RAMDISK_CMD_GET_STATS == command) {
-      if(*size_ == sizeof(RAMDiskStats_t)) {
+      if(*size_ >= sizeof(RAMDiskStats_t)) {
         RAMDiskStats_t *stats = (RAMDiskStats_t *)config_;
 
         /* Fill in statistics (config is bidirectional) */
@@ -206,36 +215,31 @@ Return_t TO_FUNCTION(DEVICE_NAME, _read)(Device_t *device_, Size_t *size_, Addr_
   FUNCTION_ENTER;
 
   Byte_t *buffer = null;
-  Size_t bytesToRead = *size_;
+  Size_t bytesToRead = nil;
 
-  if(__PointerIsNotNull__(size_) && __PointerIsNotNull__(data_) && (nil < *size_)) {
+  if(__ValidateBufferParams__(size_, data_)) {
 
-    /* Validate read is within disk bounds */
-    if((state.currentPosition + bytesToRead) > RAMDISK_SIZE_BYTES) {
-      /* Truncate read to disk size */
-      bytesToRead = RAMDISK_SIZE_BYTES - state.currentPosition;
+    /* Validate and truncate size to disk bounds */
+    if(OK(__ValidateAndTruncateSize__(*size_, &bytesToRead))) {
 
-      if(nil == bytesToRead) {
-        /* Already at end of disk */
+      /* Allocate kernel memory for read data */
+      if(OK(__KernelAllocateMemory__((volatile Addr_t **)&buffer, bytesToRead))) {
+
+        /* Copy data from RAM disk to buffer */
+        __memcpy__(buffer, &ramdisk[state.currentPosition], bytesToRead);
+
+        /* Update statistics */
+        __UpdateReadStats__(bytesToRead);
+
+        /* Return buffer and actual size read */
+        *data_ = buffer;
+        *size_ = bytesToRead;
+
+        __ReturnOk__();
+      } else {
         __ReturnError__();
         __AssertOnElse__();
       }
-    }
-
-    /* Allocate kernel memory for read data */
-    if(OK(__KernelAllocateMemory__((volatile Addr_t **)&buffer, bytesToRead))) {
-
-      /* Copy data from RAM disk to buffer */
-      __memcpy__(buffer, &ramdisk[state.currentPosition], bytesToRead);
-
-      /* Update statistics */
-      __UpdateReadStats__(bytesToRead);
-
-      /* Return buffer and actual size read */
-      *data_ = buffer;
-      *size_ = bytesToRead;
-
-      __ReturnOk__();
     } else {
       __ReturnError__();
       __AssertOnElse__();
@@ -252,32 +256,27 @@ Return_t TO_FUNCTION(DEVICE_NAME, _read)(Device_t *device_, Size_t *size_, Addr_
 Return_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t *device_, Size_t *size_, Addr_t *data_) {
   FUNCTION_ENTER;
 
-  Size_t bytesToWrite = *size_;
+  Size_t bytesToWrite = nil;
 
-  if(__PointerIsNotNull__(size_) && __PointerIsNotNull__(data_) && (nil < *size_)) {
+  if(__ValidateBufferParams__(size_, data_)) {
 
-    /* Validate write is within disk bounds */
-    if((state.currentPosition + bytesToWrite) > RAMDISK_SIZE_BYTES) {
-      /* Truncate write to disk size */
-      bytesToWrite = RAMDISK_SIZE_BYTES - state.currentPosition;
+    /* Validate and truncate size to disk bounds */
+    if(OK(__ValidateAndTruncateSize__(*size_, &bytesToWrite))) {
 
-      if(nil == bytesToWrite) {
-        /* Already at end of disk */
-        __ReturnError__();
-        __AssertOnElse__();
-      }
+      /* Copy data from buffer to RAM disk */
+      __memcpy__(&ramdisk[state.currentPosition], data_, bytesToWrite);
+
+      /* Update statistics */
+      __UpdateWriteStats__(bytesToWrite);
+
+      /* Update actual size written */
+      *size_ = bytesToWrite;
+
+      __ReturnOk__();
+    } else {
+      __ReturnError__();
+      __AssertOnElse__();
     }
-
-    /* Copy data from buffer to RAM disk */
-    __memcpy__(&ramdisk[state.currentPosition], data_, bytesToWrite);
-
-    /* Update statistics */
-    __UpdateWriteStats__(bytesToWrite);
-
-    /* Update actual size written */
-    *size_ = bytesToWrite;
-
-    __ReturnOk__();
   } else {
     __ReturnError__();
     __AssertOnElse__();
@@ -333,6 +332,28 @@ Return_t TO_FUNCTION(DEVICE_NAME, _simple_write)(Device_t *device_, Byte_t data_
     __AssertOnElse__();
   }
 
+  FUNCTION_EXIT;
+}
+
+
+/* Helper function to validate and truncate size to disk bounds */
+static Return_t __ValidateAndTruncateSize__(Size_t requested_, Size_t *actual_) {
+  FUNCTION_ENTER;
+
+  if((state.currentPosition + requested_) > RAMDISK_SIZE_BYTES) {
+    /* Truncate to remaining space */
+    *actual_ = RAMDISK_SIZE_BYTES - state.currentPosition;
+
+    if(nil == *actual_) {
+      /* Already at end of disk */
+      __ReturnError__();
+      __AssertOnElse__();
+    }
+  } else {
+    *actual_ = requested_;
+  }
+
+  __ReturnOk__();
   FUNCTION_EXIT;
 }
 
