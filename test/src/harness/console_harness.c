@@ -263,12 +263,6 @@ static void test_echo_command(void) {
 
   xMockUSARTGetOutput(output, TEST_OUTPUT_BUFFER_SIZE, &outputLen);
   output[outputLen] = 0x00u;
-
-  /* Debug: print what we got */
-  if(outputLen > 0x0u) {
-    unit_print("--- Echo test output (length: varies) ---");
-  }
-
   unit_assert_true(__OutputContains__(output, (const Byte_t *) "test message"));
   unit_end();
 
