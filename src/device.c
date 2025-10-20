@@ -17,7 +17,6 @@
 #include "device.h"
 
 static DeviceList_t *dlist = null;
-static Return_t __DeviceListFind__(const HalfWord_t uid_, Device_t **device_);
 
 
 #define __DeviceUidNonZero__() (nil < uid_)
@@ -519,7 +518,7 @@ Return_t __DeviceRead__(const HalfWord_t uid_, Size_t *size_, Addr_t **data_) {
 }
 
 
-static Return_t __DeviceListFind__(const HalfWord_t uid_, Device_t **device_) {
+Return_t __DeviceListFind__(const HalfWord_t uid_, Device_t **device_) {
   FUNCTION_ENTER;
 
 

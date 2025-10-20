@@ -17,6 +17,7 @@
                 "-I${workspaceFolder}/src",
                 "-I${workspaceFolder}/drivers/ramdisk",
                 "-I${workspaceFolder}/drivers/block",
+                "-I${workspaceFolder}/drivers/char",
                 "-I${workspaceFolder}/test/src",
                 "-I${workspaceFolder}/test/src/harness",
                 "-I${workspaceFolder}/test/src/unit",
@@ -28,6 +29,7 @@
                 "${workspaceFolder}/src/*.c",
                 "${workspaceFolder}/drivers/ramdisk/*.c",
                 "${workspaceFolder}/drivers/block/*.c",
+                "${workspaceFolder}/drivers/char/*.c",
                 "${workspaceFolder}/test/src/*.c",
                 "${workspaceFolder}/test/src/harness/*.c",
                 "${workspaceFolder}/test/src/unit/*.c"

@@ -97,6 +97,7 @@
   Return_t xDeviceRead(const HalfWord_t uid_, Size_t *size_, Addr_t **data_);
   Return_t xDeviceInitDevice(const HalfWord_t uid_);
   Return_t xDeviceConfigDevice(const HalfWord_t uid_, Size_t *size_, Addr_t *config_);
+  Return_t __DeviceListFind__(const HalfWord_t uid_, Device_t **device_);
   /* Internal kernel-level device APIs (for driver-to-driver communication) */
   Return_t __DeviceWrite__(const HalfWord_t uid_, Size_t *size_, Addr_t *data_);
   Return_t __DeviceRead__(const HalfWord_t uid_, Size_t *size_, Addr_t **data_);

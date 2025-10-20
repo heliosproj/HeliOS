@@ -21,6 +21,8 @@
 extern void __FSStateClear__(void);
 extern void __BlockDeviceStateClear__(void);
 extern void __RAMDiskStateClear__(void);
+extern void __ConsoleStateClear__(void);
+extern void __CharDeviceStateClear__(void);
 
 
 int main(int argc, char **argv) {
@@ -41,6 +43,8 @@ int main(int argc, char **argv) {
   device_harness();
   reset();
   fs_harness();
+  reset();
+  console_harness();
   unit_exit();
 
   return(0);
@@ -55,6 +59,8 @@ void reset(void) {
   __FSStateClear__();
   __BlockDeviceStateClear__();
   __RAMDiskStateClear__();
+  __ConsoleStateClear__();
+  __CharDeviceStateClear__();
 
   return;
 }

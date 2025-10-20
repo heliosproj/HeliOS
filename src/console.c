@@ -193,17 +193,15 @@ static Return_t __ConsoleCheckDevice__(void) {
   FUNCTION_ENTER;
 
 
-  CharDeviceCommand_t cmd;
-  Size_t size = sizeof(CharDeviceCommand_t);
+  Device_t *device = null;
 
-
-  /* Try to configure device to verify it's ready */
-  cmd.command = 0x00u;  /* No-op command */
-  cmd.byteCount = 0x0u;
-  cmd.transferMode = 0x00u;
-
-  if(OK(xDeviceWrite(CONFIG_CONSOLE_DEVICE_UID, &size, (Addr_t *) &cmd))) {
-    __ReturnOk__();
+  /* Use internal device API to check if device exists and is running */
+  if(OK(__DeviceListFind__(CONFIG_CONSOLE_DEVICE_UID, &device))) {
+    if(__PointerIsNotNull__(device) && (DeviceStateRunning == device->state)) {
+      __ReturnOk__();
+    } else {
+      __ReturnError__();
+    }
   } else {
     __ReturnError__();
   }
@@ -222,15 +220,37 @@ static Return_t __ConsoleWriteString__(const Byte_t *str_) {
 
   Word_t len = 0x0u;
   Size_t size = 0x0u;
+  Device_t *device = null;
+  CharDeviceCommand_t cmd;
 
   if(__PointerIsNotNull__(str_)) {
     len = __StringLength__(str_);
 
     if(0x0u < len) {
-      size = len;
+      /* Use internal device API instead of public API */
+      if(OK(__DeviceListFind__(CONFIG_CONSOLE_DEVICE_UID, &device))) {
+        if(__PointerIsNotNull__(device)) {
+          /* Step 1: Configure byte count for write operation */
+          cmd.command = CHAR_CMD_SET_PARAMS;
+          cmd.byteCount = (HalfWord_t)len;
+          cmd.transferMode = CHAR_IO_MODE_BLOCKING;
+          size = sizeof(CharDeviceCommand_t);
 
-      if(OK(xDeviceWrite(CONFIG_CONSOLE_DEVICE_UID, &size, (Addr_t *) str_))) {
-        __ReturnOk__();
+          if(OK((*device->config)(device, &size, (Addr_t *) &cmd))) {
+            /* Step 2: Perform the write operation */
+            size = len;
+
+            if(OK((*device->write)(device, &size, (Addr_t *) str_))) {
+              __ReturnOk__();
+            } else {
+              __AssertOnElse__();
+            }
+          } else {
+            __AssertOnElse__();
+          }
+        } else {
+          __AssertOnElse__();
+        }
       } else {
         __AssertOnElse__();
       }
@@ -255,18 +275,42 @@ static Return_t __ConsoleReadChar__(Byte_t *ch_) {
 
   Size_t size = 0x1u;
   Addr_t *readData = null;
+  Device_t *device = null;
+  CharDeviceCommand_t cmd;
 
   if(__PointerIsNotNull__(ch_)) {
-    if(OK(xDeviceRead(CONFIG_CONSOLE_DEVICE_UID, &size, &readData))) {
-      if(__PointerIsNotNull__(readData) && (0x0u < size)) {
-        *ch_ = *((Byte_t *) readData);
-        xMemFree(readData);
-        __ReturnOk__();
-      } else {
-        if(__PointerIsNotNull__(readData)) {
-          xMemFree(readData);
-        }
+    /* Use internal device API instead of public API */
+    if(OK(__DeviceListFind__(CONFIG_CONSOLE_DEVICE_UID, &device))) {
+      if(__PointerIsNotNull__(device)) {
+        /* Step 1: Configure byte count for read operation */
+        cmd.command = CHAR_CMD_SET_PARAMS;
+        cmd.byteCount = 0x1u;
+        cmd.transferMode = CHAR_IO_MODE_BLOCKING;
+        size = sizeof(CharDeviceCommand_t);
 
+        if(OK((*device->config)(device, &size, (Addr_t *) &cmd))) {
+          /* Step 2: Perform the read operation */
+          size = 0x1u;
+
+          if(OK((*device->read)(device, &size, &readData))) {
+            if(__PointerIsNotNull__(readData) && (0x0u < size)) {
+              *ch_ = *((Byte_t *) readData);
+              __KernelFreeMemory__(readData);
+              __ReturnOk__();
+            } else {
+              if(__PointerIsNotNull__(readData)) {
+                __KernelFreeMemory__(readData);
+              }
+
+              __AssertOnElse__();
+            }
+          } else {
+            __AssertOnElse__();
+          }
+        } else {
+          __AssertOnElse__();
+        }
+      } else {
         __AssertOnElse__();
       }
     } else {
