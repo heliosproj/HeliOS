@@ -25,15 +25,15 @@ static Volume_t *mountedVolume = null;
 
 
 /* Forward declarations for command handlers */
-static Return_t __ConsoleCmdHelp__(void);
-static Return_t __ConsoleCmdVersion__(void);
-static Return_t __ConsoleCmdTasks__(void);
-static Return_t __ConsoleCmdMem__(void);
-static Return_t __ConsoleCmdClear__(void);
+static Return_t __ConsoleCmdHelp__(const Byte_t *args_);
+static Return_t __ConsoleCmdVersion__(const Byte_t *args_);
+static Return_t __ConsoleCmdTasks__(const Byte_t *args_);
+static Return_t __ConsoleCmdMem__(const Byte_t *args_);
+static Return_t __ConsoleCmdClear__(const Byte_t *args_);
 static Return_t __ConsoleCmdEcho__(const Byte_t *args_);
 static Return_t __ConsoleCmdLs__(const Byte_t *args_);
 static Return_t __ConsoleCmdCd__(const Byte_t *args_);
-static Return_t __ConsoleCmdPwd__(void);
+static Return_t __ConsoleCmdPwd__(const Byte_t *args_);
 static Return_t __ConsoleCmdCat__(const Byte_t *args_);
 static Return_t __ConsoleCmdMv__(const Byte_t *args_);
 static Return_t __ConsoleCmdRm__(const Byte_t *args_);
@@ -64,15 +64,15 @@ typedef struct ConsoleCommand_s {
 
 /* Command table */
 static const ConsoleCommand_t commandTable[] = {
-  { (const Byte_t *) "help", (Return_t (*)(const Byte_t *)) __ConsoleCmdHelp__, (const Byte_t *) "Display available commands" },
-  { (const Byte_t *) "version", (Return_t (*)(const Byte_t *)) __ConsoleCmdVersion__, (const Byte_t *) "Display version information" },
-  { (const Byte_t *) "tasks", (Return_t (*)(const Byte_t *)) __ConsoleCmdTasks__, (const Byte_t *) "List running tasks" },
-  { (const Byte_t *) "mem", (Return_t (*)(const Byte_t *)) __ConsoleCmdMem__, (const Byte_t *) "Display memory statistics" },
-  { (const Byte_t *) "clear", (Return_t (*)(const Byte_t *)) __ConsoleCmdClear__, (const Byte_t *) "Clear the screen" },
+  { (const Byte_t *) "help", __ConsoleCmdHelp__, (const Byte_t *) "Display available commands" },
+  { (const Byte_t *) "version", __ConsoleCmdVersion__, (const Byte_t *) "Display version information" },
+  { (const Byte_t *) "tasks", __ConsoleCmdTasks__, (const Byte_t *) "List running tasks" },
+  { (const Byte_t *) "mem", __ConsoleCmdMem__, (const Byte_t *) "Display memory statistics" },
+  { (const Byte_t *) "clear", __ConsoleCmdClear__, (const Byte_t *) "Clear the screen" },
   { (const Byte_t *) "echo", __ConsoleCmdEcho__, (const Byte_t *) "Toggle echo mode or print message" },
   { (const Byte_t *) "ls", __ConsoleCmdLs__, (const Byte_t *) "List directory contents" },
   { (const Byte_t *) "cd", __ConsoleCmdCd__, (const Byte_t *) "Change directory" },
-  { (const Byte_t *) "pwd", (Return_t (*)(const Byte_t *)) __ConsoleCmdPwd__, (const Byte_t *) "Print working directory" },
+  { (const Byte_t *) "pwd", __ConsoleCmdPwd__, (const Byte_t *) "Print working directory" },
   { (const Byte_t *) "cat", __ConsoleCmdCat__, (const Byte_t *) "Display file contents" },
   { (const Byte_t *) "mv", __ConsoleCmdMv__, (const Byte_t *) "Move/rename file" },
   { (const Byte_t *) "rm", __ConsoleCmdRm__, (const Byte_t *) "Remove file" },
@@ -175,8 +175,10 @@ void vConsoleTask(Task_t *task_, TaskParm_t *parm_) {
 
         /* Echo character if enabled */
         if(consoleState.echoEnabled) {
-          Byte_t echoChar[0x2] = { ch, 0x00u };
+          Byte_t echoChar[0x2];
 
+          echoChar[0x0] = ch;
+          echoChar[0x1] = 0x00u;
           __ConsoleWriteString__(echoChar);
         }
       }
@@ -418,11 +420,12 @@ static Return_t __ConsoleProcessCommand__(void) {
  * @brief Command: help - Display available commands
  * @return Return_t OK
  */
-static Return_t __ConsoleCmdHelp__(void) {
+static Return_t __ConsoleCmdHelp__(const Byte_t *args_) {
   FUNCTION_ENTER;
 
-
   Word_t i = 0x0u;
+
+  (void) args_;
 
 
   __ConsoleWriteString__((const Byte_t *) "Available commands:\r\n");
@@ -444,9 +447,10 @@ static Return_t __ConsoleCmdHelp__(void) {
  * @brief Command: version - Display version information
  * @return Return_t OK
  */
-static Return_t __ConsoleCmdVersion__(void) {
+static Return_t __ConsoleCmdVersion__(const Byte_t *args_) {
   FUNCTION_ENTER;
 
+  (void) args_;
   __ConsoleWriteString__((const Byte_t *) "HeliOS Embedded Operating System\r\n");
   __ConsoleWriteString__((const Byte_t *) "Version: 0.5.0\r\n");
   __ConsoleWriteString__((const Byte_t *) "Copyright (C) 2020-2026 HeliOS Project\r\n");
@@ -461,14 +465,15 @@ static Return_t __ConsoleCmdVersion__(void) {
  * @brief Command: tasks - List running tasks
  * @return Return_t OK or error
  */
-static Return_t __ConsoleCmdTasks__(void) {
+static Return_t __ConsoleCmdTasks__(const Byte_t *args_) {
   FUNCTION_ENTER;
-
 
   TaskInfo_t *taskList = null;
   Base_t taskCount = 0x0u;
   Base_t i = 0x0u;
   Byte_t numBuf[0x10];
+
+  (void) args_;
 
 
   __ConsoleWriteString__((const Byte_t *) "Task List:\r\n");
@@ -524,12 +529,13 @@ static Return_t __ConsoleCmdTasks__(void) {
  * @brief Command: mem - Display memory statistics
  * @return Return_t OK or error
  */
-static Return_t __ConsoleCmdMem__(void) {
+static Return_t __ConsoleCmdMem__(const Byte_t *args_) {
   FUNCTION_ENTER;
-
 
   MemoryRegionStats_t *memState = null;
   Byte_t numBuf[0x10];
+
+  (void) args_;
 
 
   __ConsoleWriteString__((const Byte_t *) "Memory Statistics:\r\n");
@@ -571,9 +577,10 @@ static Return_t __ConsoleCmdMem__(void) {
  * @brief Command: clear - Clear the screen
  * @return Return_t OK
  */
-static Return_t __ConsoleCmdClear__(void) {
+static Return_t __ConsoleCmdClear__(const Byte_t *args_) {
   FUNCTION_ENTER;
 
+  (void) args_;
   /* ANSI escape sequence to clear screen and move cursor to home */
   __ConsoleWriteString__((const Byte_t *) "\x1b[2J\x1b[H");
 
@@ -754,9 +761,10 @@ static Return_t __ConsoleCmdCd__(const Byte_t *args_) {
  * @brief Command: pwd - Print working directory
  * @return Return_t OK
  */
-static Return_t __ConsoleCmdPwd__(void) {
+static Return_t __ConsoleCmdPwd__(const Byte_t *args_) {
   FUNCTION_ENTER;
 
+  (void) args_;
   __ConsoleWriteString__(consoleState.currentWorkingDirectory);
   __ConsoleWriteString__((const Byte_t *) "\r\n");
   __ReturnOk__();
