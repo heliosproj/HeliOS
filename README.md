@@ -61,10 +61,9 @@ HeliOS provides three powerful IPC mechanisms:
 - **File metadata**: timestamps, attributes, file size tracking
 - **Internal kernel API** for filesystem drivers and device access
 
-### Safety and Robustness
-- Static analysis tested with commercial tools
-- MISRA C:2012 compliance checking
+### Code Quality and Robustness
 - Comprehensive error handling with consistent return types
+- Extensive unit test coverage (147+ test cases)
 - Extensive documentation and code examples
 - **Not certified for safety-critical applications**
 
