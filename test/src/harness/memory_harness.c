@@ -54,24 +54,25 @@
                                                                                                        *
                                                                                                        *
                                                                                                        *
+                                                                                                       *
                                                                                                        * Oversized
                                                                                                        * allocation
                                                                                                        * test
                                                                                                        */
 #define MAX_TEST_ALLOCS 100 /* Maximum test allocations */
-
 /* Corruption test constants */
-#define INVALID_FREE_VALUE 123 /* Invalid value for free field corruption test */
-#define INVALID_BLOCKS_VALUE 12345 /* Invalid blocks value for corruption test */
+#define INVALID_FREE_VALUE 123 /* Invalid value for free field corruption test
+                                */
+#define INVALID_BLOCKS_VALUE 12345 /* Invalid blocks value for corruption test
+                                    */
 #define CORRUPTION_MAGIC_1 0xDEADBEEFu /* Corruption magic value test 1 */
 #define CORRUPTION_MAGIC_2 0xBADBADu /* Corruption magic value test 2 */
 #define CORRUPTION_FREE_FLAG 0xFFu /* Invalid free flag value */
 #define CORRUPTION_FREE_FLAG_2 0x42u /* Another invalid free flag value */
-#define CORRUPTION_BLOCKS_MAX 0xFFFFu /* Maximum blocks value for overflow test */
+#define CORRUPTION_BLOCKS_MAX 0xFFFFu /* Maximum blocks value for overflow test
+                                       */
 #define CORRUPTION_NEXT_INVALID 0xFFFFFFFFu /* Invalid next pointer value */
 #define TEST_ARBITRARY_ADDR 0x12345678u /* Arbitrary test address */
-
-
 static Size_t sizes[NUM_TEST_ALLOCS] = {
   0x2532u, 0x1832u, 0x132u, 0x2932u, 0x332u, 0x1432u, 0x1332u, 0x532u, 0x1732u, 0x932u, 0x1432u, 0x2232u, 0x1432u, 0x3132u, 0x032u, 0x1132u, 0x632u, 0x932u,
     0x1532u, 0x632u, 0x1832u, 0x132u, 0x1332u, 0x3132u, 0x2732u, 0x1532u, 0x2432u, 0x2932u, 0x2432u, 0x2932u, 0x3032u, 0x2332u
@@ -81,8 +82,6 @@ static Size_t order[NUM_TEST_ALLOCS] = {
     0x1Au, 0x04u, 0x13u, 0x11u, 0x1Fu, 0x12u, 0x17u, 0x15u, 0x14u, 0x1Bu
 };
 static MemoryTest_t tests[NUM_TEST_ALLOCS];
-
-
 /* Helper function prototypes */
 static void test_memory_edge_cases(void);
 static void test_memcpy_memcmp(void);
@@ -114,6 +113,7 @@ void memory_harness(void) {
 
 
   unit_print("=== COMPREHENSIVE MEMORY MANAGEMENT TEST SUITE ===");
+
 
   /* Test 1: Memory region defragmentation routine */
   unit_begin("Test 1: Memory region defragmentation routine");
@@ -153,6 +153,7 @@ void memory_harness(void) {
   unit_assert_ok(xMemFree(mem05));
   unit_end();
 
+
   /* Test 2: Memory allocation for large block */
   unit_begin("Test 2: Memory allocation succeeds for large block");
   mem01 = null;
@@ -160,17 +161,20 @@ void memory_harness(void) {
   unit_assert_not_null(mem01);
   unit_end();
 
+
   /* Test 3: Used memory tracking */
   unit_begin("Test 3: Used memory tracking reflects allocations");
   unit_assert_ok(xMemGetUsed(&actual));
   unit_assert_equal(actual, LARGE_BLOCK_USED);
   unit_end();
 
+
   /* Test 4: Allocated block size retrieval */
   unit_begin("Test 4: Allocated block size retrieval is accurate");
   unit_assert_ok(xMemGetSize(mem01, &actual));
   unit_assert_equal(actual, LARGE_BLOCK_USED);
   unit_end();
+
 
   /* Test 5: Heap statistics */
   unit_begin("Test 5: Heap statistics reflect current memory state");
@@ -189,6 +193,7 @@ void memory_harness(void) {
                                                                * xSystemGetSystemInfo
                                                                */
   unit_end();
+
 
   /* Test 6: Kernel statistics */
   unit_begin("Test 6: Kernel statistics track internal allocations");
@@ -229,14 +234,14 @@ void memory_harness(void) {
   test_alignment_verification();
   test_cross_region_protection();
   test_memory_corruption_detection();
-
   unit_print("=== MEMORY MANAGEMENT TEST SUITE COMPLETE ===");
 }
 
 
 /* ============================================================================
  * SECTION 1: MEMORY EDGE CASES
- * ============================================================================ */
+ * ============================================================================
+ */
 static void test_memory_edge_cases(void) {
   volatile Addr_t *ptr1 = null;
   volatile Addr_t *ptr2 = null;
@@ -244,6 +249,7 @@ static void test_memory_edge_cases(void) {
 
 
   unit_print("--- Section 1: Memory Edge Cases ---");
+
 
   /* Test NULL pointer handling */
   unit_begin("Edge Case - xMemAlloc() NULL Pointer");
@@ -426,7 +432,8 @@ void memory_harness_task(Task_t *task_, TaskParm_t *parm_) {
 
 /* ============================================================================
  * SECTION 2: MEMORY UTILITY FUNCTIONS (memcpy, memcmp, memset)
- * ============================================================================ */
+ * ============================================================================
+ */
 static void test_memcpy_memcmp(void) {
   Byte_t src[128];
   Byte_t dest[128];
@@ -435,6 +442,7 @@ static void test_memcpy_memcmp(void) {
 
 
   unit_print("--- Section 2: Memory Utility Functions ---");
+
 
   /* Test __memcpy__ functionality */
   unit_begin("Memory Utility - __memcpy__() Basic Copy");
@@ -558,14 +566,14 @@ static void test_memcpy_memcmp(void) {
 
 /* ============================================================================
  * SECTION 3: FREED POINTER OPERATIONS
- * ============================================================================ */
+ * ============================================================================
+ */
 static void test_freed_pointer_operations(void) {
   volatile Addr_t *ptr = null;
   Size_t size;
 
 
   unit_print("--- Section 3: Freed Pointer Operations ---");
-
   unit_begin("Negative - Get size of freed pointer");
   {
     unit_assert_ok(xMemAlloc(&ptr, 128));
@@ -614,7 +622,8 @@ static void test_freed_pointer_operations(void) {
 
 /* ============================================================================
  * SECTION 4: BOUNDARY ALLOCATIONS
- * ============================================================================ */
+ * ============================================================================
+ */
 static void test_boundary_allocations(void) {
   volatile Addr_t *ptr = null;
   Size_t size;
@@ -622,6 +631,7 @@ static void test_boundary_allocations(void) {
 
 
   unit_print("--- Section 4: Boundary Allocations ---");
+
 
   /* Calculate entry size in blocks */
   entrySize = ((HalfWord_t) (sizeof(MemoryEntry_t) / CONFIG_MEMORY_REGION_BLOCK_SIZE));
@@ -702,7 +712,8 @@ static void test_boundary_allocations(void) {
 
 /* ============================================================================
  * SECTION 5: STATISTICS ACCURACY
- * ============================================================================ */
+ * ============================================================================
+ */
 static void test_statistics_accuracy(void) {
   MemoryRegionStats_t *stats1 = null;
   MemoryRegionStats_t *stats2 = null;
@@ -714,7 +725,6 @@ static void test_statistics_accuracy(void) {
 
 
   unit_print("--- Section 5: Statistics Accuracy ---");
-
   unit_begin("Statistics - minimumEverFreeBytesRemaining tracking");
   {
     /* Get initial stats */
@@ -832,7 +842,8 @@ static void test_statistics_accuracy(void) {
 
 /* ============================================================================
  * SECTION 6: DATA INTEGRITY
- * ============================================================================ */
+ * ============================================================================
+ */
 static void test_data_integrity(void) {
   volatile Addr_t *ptr = null;
   Byte_t *bytes;
@@ -840,7 +851,6 @@ static void test_data_integrity(void) {
 
 
   unit_print("--- Section 6: Data Integrity ---");
-
   unit_begin("Data Integrity - Memory zero initialization");
   {
     unit_assert_ok(xMemAlloc(&ptr, 256));
@@ -932,10 +942,10 @@ static void test_data_integrity(void) {
 
 /* ============================================================================
  * SECTION 7: FRAGMENTATION STRESS TESTING
- * ============================================================================ */
+ * ============================================================================
+ */
 static void test_fragmentation_stress(void) {
   unit_print("--- Section 7: Fragmentation Stress Testing ---");
-
   unit_begin("Stress - Alternating allocation/free pattern");
   {
     volatile Addr_t *ptrs[20];
@@ -1055,14 +1065,14 @@ static void test_fragmentation_stress(void) {
 
 /* ============================================================================
  * SECTION 8: INVALID POINTER HANDLING
- * ============================================================================ */
+ * ============================================================================
+ */
 static void test_invalid_pointers(void) {
   Byte_t stack_var;
   Size_t size;
 
 
   unit_print("--- Section 8: Invalid Pointer Handling ---");
-
   unit_begin("Negative - Free invalid stack pointer");
   {
     /* Attempt to free stack address - should fail */
@@ -1109,7 +1119,8 @@ static void test_invalid_pointers(void) {
 
 /* ============================================================================
  * SECTION 9: STATE CONSISTENCY
- * ============================================================================ */
+ * ============================================================================
+ */
 static void test_state_consistency(void) {
   volatile Addr_t *ptr1 = null;
   volatile Addr_t *ptr2 = null;
@@ -1118,7 +1129,6 @@ static void test_state_consistency(void) {
 
 
   unit_print("--- Section 9: State Consistency ---");
-
   unit_begin("State - Allocation after failed oversized request");
   {
     Size_t tooLarge;
@@ -1201,14 +1211,14 @@ static void test_state_consistency(void) {
 
 /* ============================================================================
  * SECTION 10: MEMFREEALL IDEMPOTENCY
- * ============================================================================ */
+ * ============================================================================
+ */
 static void test_memfreeall_idempotency(void) {
   volatile Addr_t *ptr = null;
   Size_t size;
 
 
   unit_print("--- Section 10: MemFreeAll Idempotency ---");
-
   unit_begin("Idempotency - Multiple xMemFreeAll() calls");
   {
     unit_assert_ok(xMemAlloc(&ptr, 128));
@@ -1282,7 +1292,8 @@ static void test_memfreeall_idempotency(void) {
 
 /* ============================================================================
  * SECTION 11: KERNEL MEMORY MANAGEMENT
- * ============================================================================ */
+ * ============================================================================
+ */
 static void test_kernel_memory(void) {
   Task_t *task1 = null;
   Task_t *task2 = null;
@@ -1293,7 +1304,6 @@ static void test_kernel_memory(void) {
 
 
   unit_print("--- Section 11: Kernel Memory Management ---");
-
   unit_begin("Kernel Memory - Task allocation uses kernel region");
   {
     unit_assert_ok(xMemGetKernelStats(&kernelStats));
@@ -1347,10 +1357,10 @@ static void test_kernel_memory(void) {
 
 /* ============================================================================
  * SECTION 12: PERFORMANCE STRESS TESTING
- * ============================================================================ */
+ * ============================================================================
+ */
 static void test_performance_stress(void) {
   unit_print("--- Section 12: Performance Stress Testing ---");
-
   unit_begin("Performance - Rapid allocation/deallocation");
   {
     volatile Addr_t *ptr = null;
@@ -1418,10 +1428,10 @@ static void test_performance_stress(void) {
 
 /* ============================================================================
  * SECTION 13: RANDOMIZED ALLOCATION PATTERNS
- * ============================================================================ */
+ * ============================================================================
+ */
 static void test_randomized_patterns(void) {
   unit_print("--- Section 13: Randomized Allocation Patterns ---");
-
   unit_begin("Randomized - Pseudo-random allocation pattern");
   {
     volatile Addr_t *ptrs[16];
@@ -1474,14 +1484,14 @@ static void test_randomized_patterns(void) {
 
 /* ============================================================================
  * SECTION 14: ALIGNMENT VERIFICATION
- * ============================================================================ */
+ * ============================================================================
+ */
 static void test_alignment_verification(void) {
   volatile Addr_t *ptr = null;
   Size_t address;
 
 
   unit_print("--- Section 14: Alignment Verification ---");
-
   unit_begin("Alignment - Allocated addresses");
   {
     int i;
@@ -1526,7 +1536,8 @@ static void test_alignment_verification(void) {
 
 /* ============================================================================
  * SECTION 15: CROSS-REGION PROTECTION
- * ============================================================================ */
+ * ============================================================================
+ */
 static void test_cross_region_protection(void) {
   volatile Addr_t *heapPtr = null;
   Task_t *kernelTask = null;
@@ -1535,7 +1546,6 @@ static void test_cross_region_protection(void) {
 
 
   unit_print("--- Section 15: Cross-Region Protection ---");
-
   unit_begin("Cross-region - Heap allocation doesn't affect kernel");
   {
     MemoryRegionStats_t *kernelStats1 = null;
@@ -1606,7 +1616,8 @@ static void test_cross_region_protection(void) {
 
 /* ============================================================================
  * SECTION 16: MEMORY CORRUPTION DETECTION
- * ============================================================================ */
+ * ============================================================================
+ */
 static void test_memory_corruption_detection(void) {
   /*
    * Enhanced memory corruption detection tests Tests internal consistency
@@ -1616,7 +1627,6 @@ static void test_memory_corruption_detection(void) {
    * integrity)
    */
   unit_print("--- Section 16: Memory Corruption Detection ---");
-
   unit_begin("Corruption Detection - Magic field corruption");
   {
     volatile Addr_t *ptr = null;
@@ -1659,6 +1669,8 @@ static void test_memory_corruption_detection(void) {
     /* Corrupt free field (should be INUSE=0xAA or FREE=0xD5) */
     entry = ADDR2ENTRY(ptr);
     entry->free = INVALID_FREE_VALUE;
+
+
     /* Verify corruption detected */
     unit_assert_not_ok(xMemGetUsed(&size));
     unit_assert_true(__FlagIsSet__(MEMFAULT));
@@ -1683,7 +1695,8 @@ static void test_memory_corruption_detection(void) {
 
     /* Corrupt blocks field */
     entry = ADDR2ENTRY(ptr);
-    entry->blocks = INVALID_BLOCKS_VALUE; /* Invalid - doesn't add up to region size */
+    entry->blocks = INVALID_BLOCKS_VALUE; /* Invalid - doesn't add up to region
+                                           * size */
     /* Verify corruption detected */
     unit_assert_not_ok(xMemGetUsed(&size));
     unit_assert_true(__FlagIsSet__(MEMFAULT));

@@ -27,14 +27,14 @@ static Byte_t loopbackBuffer[LOOPBACK_BUFFER_SIZE] = {
 /* Driver state - tracks position, availability, and statistics */
 typedef struct LoopbackState_s {
   HalfWord_t writePosition;    /* Current write position */
-  HalfWord_t readPosition;     /* Current read position */
-  HalfWord_t bytesAvailable;   /* Bytes available to read */
-  Word_t bytesRead;            /* Total bytes read */
-  Word_t bytesWritten;         /* Total bytes written */
-  Word_t readOperations;       /* Number of read ops */
-  Word_t writeOperations;      /* Number of write ops */
-  Byte_t mode;                 /* Operation mode (FIFO/ECHO) */
-  Base_t initialized;          /* Initialization flag */
+  HalfWord_t readPosition; /* Current read position */
+  HalfWord_t bytesAvailable; /* Bytes available to read */
+  Word_t bytesRead; /* Total bytes read */
+  Word_t bytesWritten; /* Total bytes written */
+  Word_t readOperations; /* Number of read ops */
+  Word_t writeOperations; /* Number of write ops */
+  Byte_t mode; /* Operation mode (FIFO/ECHO) */
+  Base_t initialized; /* Initialization flag */
 } LoopbackState_t;
 
 

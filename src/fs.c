@@ -389,8 +389,8 @@ Return_t xFSFormat(const Byte_t *volumeLabel_) {
            * - Cluster 0x0: Media descriptor (0x0FFFFFF8)
            * - Cluster 0x1: Clean/dirty flag (0x0FFFFFFF)
            * - Cluster 0x2: Root directory (EOC marker 0x0FFFFFFF) */
-          if(OK(__SetFATEntry__(&tempVol, 0x0u, 0x0FFFFFF8u)) && OK(__SetFATEntry__(&tempVol, 0x1u, 0x0FFFFFFFu)) && OK(__SetFATEntry__(&tempVol, 0x2u, FAT32_EOC_MAX)))
-              {
+          if(OK(__SetFATEntry__(&tempVol, 0x0u, 0x0FFFFFF8u)) && OK(__SetFATEntry__(&tempVol, 0x1u, 0x0FFFFFFFu)) && OK(__SetFATEntry__(&tempVol, 0x2u,
+            FAT32_EOC_MAX))) {
             /* Initialize root directory cluster to zeros */
             Word_t rootFirstSector = __ClusterToSector__(&tempVol, rootDirCluster);
 

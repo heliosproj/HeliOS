@@ -25,7 +25,6 @@
   #ifdef __cplusplus
     extern "C" {
   #endif /* ifdef __cplusplus */
-
   /* Console harness entry point */
   void console_harness(void);
 

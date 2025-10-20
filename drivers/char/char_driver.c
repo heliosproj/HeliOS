@@ -20,20 +20,20 @@
 /* Driver state - NO hardware-specific fields */
 typedef struct CharDeviceState_s {
   HalfWord_t ioDriverUID;           /* I/O driver to use for communication */
-  Byte_t protocol;                  /* Character protocol (UART/USART/USB/RAW) */
-  Byte_t lineMode;                  /* Line discipline mode */
-  Word_t baudRate;                  /* Current baud rate */
-  Base_t initialized;               /* Initialization flag */
-  HalfWord_t rxBufferSize;          /* RX buffer size */
-  HalfWord_t txBufferSize;          /* TX buffer size */
-  Byte_t *rxBuffer;                 /* Receive buffer (for cooked mode) */
-  Byte_t *txBuffer;                 /* Transmit buffer (for cooked mode) */
-  HalfWord_t rxHead;                /* RX buffer head index */
-  HalfWord_t rxTail;                /* RX buffer tail index */
-  HalfWord_t txHead;                /* TX buffer head index */
-  HalfWord_t txTail;                /* TX buffer tail index */
-  HalfWord_t currentByteCount;      /* Current operation byte count */
-  Byte_t currentTransferMode;       /* Current transfer mode */
+  Byte_t protocol; /* Character protocol (UART/USART/USB/RAW) */
+  Byte_t lineMode; /* Line discipline mode */
+  Word_t baudRate; /* Current baud rate */
+  Base_t initialized; /* Initialization flag */
+  HalfWord_t rxBufferSize; /* RX buffer size */
+  HalfWord_t txBufferSize; /* TX buffer size */
+  Byte_t *rxBuffer; /* Receive buffer (for cooked mode) */
+  Byte_t *txBuffer; /* Transmit buffer (for cooked mode) */
+  HalfWord_t rxHead; /* RX buffer head index */
+  HalfWord_t rxTail; /* RX buffer tail index */
+  HalfWord_t txHead; /* TX buffer head index */
+  HalfWord_t txTail; /* TX buffer tail index */
+  HalfWord_t currentByteCount; /* Current operation byte count */
+  Byte_t currentTransferMode; /* Current transfer mode */
 } CharDeviceState_t;
 
 
@@ -41,6 +41,8 @@ typedef struct CharDeviceState_s {
 static CharDeviceState_t state = {
   0
 };
+
+
 /* Forward declarations */
 static Return_t __PrepareCharIORequest__(const Byte_t operation_, CharIORequest_t **request_, Size_t *configSize_);
 static Return_t __CharDeviceReadRAW__(Byte_t **data_, Size_t *bytesRead_);

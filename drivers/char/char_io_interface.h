@@ -140,8 +140,8 @@
   /**
    * @brief Generic character I/O request structure
    *
-   * Used by character drivers to communicate operations to I/O drivers.
-   * Each I/O driver translates this to its native hardware commands:
+   * Used by character drivers to communicate operations to I/O drivers. Each
+   * I/O driver translates this to its native hardware commands:
    * - UART: configures baud rate, starts TX/RX
    * - USB CDC: sends to USB endpoint
    * - SPI: configures SPI and sends data
@@ -151,10 +151,10 @@
    */
   typedef struct CharIORequest_s {
     Byte_t command;        /* CHAR_IO_CMD_SET_REQUEST */
-    Byte_t operation;      /* CHAR_IO_OP_READ or CHAR_IO_OP_WRITE */
-    HalfWord_t byteCount;  /* Number of bytes to transfer */
-    Byte_t transferMode;   /* CHAR_IO_MODE_* constant */
-    Word_t timeoutMs;      /* Timeout in milliseconds (0 = no timeout) */
+    Byte_t operation; /* CHAR_IO_OP_READ or CHAR_IO_OP_WRITE */
+    HalfWord_t byteCount; /* Number of bytes to transfer */
+    Byte_t transferMode; /* CHAR_IO_MODE_* constant */
+    Word_t timeoutMs; /* Timeout in milliseconds (0 = no timeout) */
   } CharIORequest_t;
 
 
@@ -170,12 +170,12 @@
    */
   typedef struct CharIOInfo_s {
     Byte_t command;                /* CHAR_IO_CMD_GET_INFO */
-    HalfWord_t rxBufferSize;       /* Receive buffer size in bytes */
-    HalfWord_t txBufferSize;       /* Transmit buffer size in bytes */
-    Base_t supportsDMA;            /* true if DMA supported */
-    Base_t supportsInterrupt;      /* true if interrupt-driven I/O supported */
-    Base_t isFullDuplex;           /* true for full-duplex, false for half-duplex */
-    Word_t maxBaudRate;            /* Maximum supported baud rate */
+    HalfWord_t rxBufferSize; /* Receive buffer size in bytes */
+    HalfWord_t txBufferSize; /* Transmit buffer size in bytes */
+    Base_t supportsDMA; /* true if DMA supported */
+    Base_t supportsInterrupt; /* true if interrupt-driven I/O supported */
+    Base_t isFullDuplex; /* true for full-duplex, false for half-duplex */
+    Word_t maxBaudRate; /* Maximum supported baud rate */
   } CharIOInfo_t;
 
 
@@ -189,10 +189,10 @@
    */
   typedef struct CharIOUARTParams_s {
     Byte_t command;          /* CHAR_IO_CMD_SET_PARAMS */
-    Word_t baudRate;         /* Baud rate (9600, 115200, etc.) */
-    Byte_t dataBits;         /* CHAR_IO_DATA_BITS_* */
-    Byte_t parity;           /* CHAR_IO_PARITY_* */
-    Byte_t stopBits;         /* CHAR_IO_STOP_BITS_* */
+    Word_t baudRate; /* Baud rate (9600, 115200, etc.) */
+    Byte_t dataBits; /* CHAR_IO_DATA_BITS_* */
+    Byte_t parity; /* CHAR_IO_PARITY_* */
+    Byte_t stopBits; /* CHAR_IO_STOP_BITS_* */
     Base_t hardwareFlowCtrl; /* Hardware flow control enable (RTS/CTS) */
   } CharIOUARTParams_t;
 
@@ -200,8 +200,8 @@
   /**
    * @brief Character I/O status structure
    *
-   * Returns current status of the I/O driver including buffer levels and
-   * error conditions.
+   * Returns current status of the I/O driver including buffer levels and error
+   * conditions.
    *
    * Usage: Set command to CHAR_IO_CMD_GET_STATUS and pass to I/O driver's
    * config function. The driver fills in the status fields.
@@ -209,10 +209,10 @@
   typedef struct CharIOStatus_s {
     Byte_t command;              /* CHAR_IO_CMD_GET_STATUS */
     HalfWord_t rxBytesAvailable; /* Bytes available in RX buffer */
-    HalfWord_t txBytesFree;      /* Free space in TX buffer */
-    Base_t isTransmitting;       /* Transmission in progress */
-    Base_t isReceiving;          /* Reception in progress */
-    Byte_t errorFlags;           /* Error flags (overrun, parity, framing) */
+    HalfWord_t txBytesFree; /* Free space in TX buffer */
+    Base_t isTransmitting; /* Transmission in progress */
+    Base_t isReceiving; /* Reception in progress */
+    Byte_t errorFlags; /* Error flags (overrun, parity, framing) */
   } CharIOStatus_t;
 
 #endif /* ifndef CHAR_IO_INTERFACE_H_ */

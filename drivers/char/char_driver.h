@@ -58,29 +58,30 @@
   /**
    * @brief Character device configuration structure
    *
-   * Configures the character device with I/O driver details and protocol.
-   * All hardware-specific details are handled by the I/O driver.
+   * Configures the character device with I/O driver details and protocol. All
+   * hardware-specific details are handled by the I/O driver.
    */
   typedef struct CharDeviceConfig_s {
     Byte_t command;              /* CHAR_CMD_CONFIG */
-    HalfWord_t ioDriverUID;      /* UID of I/O driver (USART/UART/etc.) */
-    Byte_t protocol;             /* CHAR_PROTOCOL_* constant */
-    Byte_t lineMode;             /* CHAR_LINE_* constant */
-    Word_t baudRate;             /* Baud rate for UART/USART */
-    HalfWord_t rxBufferSize;     /* Receive buffer size (0 = use default) */
-    HalfWord_t txBufferSize;     /* Transmit buffer size (0 = use default) */
+    HalfWord_t ioDriverUID; /* UID of I/O driver (USART/UART/etc.) */
+    Byte_t protocol; /* CHAR_PROTOCOL_* constant */
+    Byte_t lineMode; /* CHAR_LINE_* constant */
+    Word_t baudRate; /* Baud rate for UART/USART */
+    HalfWord_t rxBufferSize; /* Receive buffer size (0 = use default) */
+    HalfWord_t txBufferSize; /* Transmit buffer size (0 = use default) */
   } CharDeviceConfig_t;
 
 
   /**
    * @brief Character device command structure
    *
-   * Specifies character-level operations. Used to set parameters before read/write.
+   * Specifies character-level operations. Used to set parameters before
+   * read/write.
    */
   typedef struct CharDeviceCommand_s {
     Byte_t command;              /* CHAR_CMD_SET_PARAMS */
-    HalfWord_t byteCount;        /* Number of bytes for operation */
-    Byte_t transferMode;         /* CHAR_IO_MODE_* constant */
+    HalfWord_t byteCount; /* Number of bytes for operation */
+    Byte_t transferMode; /* CHAR_IO_MODE_* constant */
   } CharDeviceCommand_t;
 
 
@@ -91,13 +92,13 @@
    */
   typedef struct CharDeviceInfo_s {
     Byte_t command;              /* CHAR_CMD_GET_INFO */
-    Byte_t protocol;             /* CHAR_PROTOCOL_* constant */
-    Byte_t lineMode;             /* Current line discipline mode */
-    Word_t baudRate;             /* Current baud rate */
+    Byte_t protocol; /* CHAR_PROTOCOL_* constant */
+    Byte_t lineMode; /* Current line discipline mode */
+    Word_t baudRate; /* Current baud rate */
     HalfWord_t rxBytesAvailable; /* Bytes available to read */
-    HalfWord_t txBytesFree;      /* Free space in TX buffer */
-    Base_t isInitialized;        /* Initialization status */
-    Base_t isConnected;          /* Connection status (for USB CDC, etc.) */
+    HalfWord_t txBytesFree; /* Free space in TX buffer */
+    Base_t isInitialized; /* Initialization status */
+    Base_t isConnected; /* Connection status (for USB CDC, etc.) */
   } CharDeviceInfo_t;
 
   #ifdef __cplusplus

@@ -56,7 +56,6 @@ void unit_begin(const char *name_) {
 }
 
 
-
 void unit_end(void) {
   if((null != unit) && (true == unit->begun)) {
     if(true == unit->failed) {

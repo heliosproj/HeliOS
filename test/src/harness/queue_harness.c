@@ -25,7 +25,6 @@
 #define QUEUE_EXPECTED_LENGTH 0x7 /* Expected number of messages */
 #define QUEUE_AFTER_DROP 0x5 /* Messages remaining after drop */
 #define QUEUE_AFTER_UNLOCK 0x2 /* Messages after unlock test */
-
 /* Test message strings */
 #define TEST_MESSAGE_1 "MESSAGE1"
 #define TEST_MESSAGE_2 "MESSAGE2"
@@ -49,7 +48,6 @@ static void test_queue_delete(void);
 
 void queue_harness(void) {
   unit_print("=== COMPREHENSIVE QUEUE TEST SUITE ===");
-
   test_queue_creation();
   test_queue_send_and_capacity();
   test_queue_status_checks();
@@ -57,31 +55,35 @@ void queue_harness(void) {
   test_queue_drop();
   test_queue_lock_unlock();
   test_queue_delete();
-
   unit_print("=== QUEUE TEST SUITE COMPLETE ===");
 }
 
 
 /* ============================================================================
  * SECTION 1: QUEUE CREATION
- * ============================================================================ */
+ * ============================================================================
+ */
 static void test_queue_creation(void) {
   Queue_t *queue = null;
 
 
   unit_print("--- Section 1: Queue Creation ---");
 
+
   /* Test 1.1: Queue creation enforces minimum capacity */
   unit_begin("Queue creation enforces minimum capacity of 7 bytes");
+
 
   /* Too small - should fail */
   unit_assert_not_ok(xQueueCreate(&queue, QUEUE_INVALID_CAPACITY));
   unit_assert_null(queue);
 
+
   /* Valid size - should succeed */
   unit_assert_ok(xQueueCreate(&queue, QUEUE_MIN_CAPACITY));
   unit_assert_not_null(queue);
   unit_end();
+
 
   /* Cleanup for next section */
   xQueueDelete(queue);
@@ -90,12 +92,14 @@ static void test_queue_creation(void) {
 
 /* ============================================================================
  * SECTION 2: QUEUE SEND AND CAPACITY
- * ============================================================================ */
+ * ============================================================================
+ */
 static void test_queue_send_and_capacity(void) {
   Queue_t *queue = null;
 
 
   unit_print("--- Section 2: Queue Send and Capacity ---");
+
 
   /* Test 2.1: Queue accepts messages until reaching capacity */
   unit_begin("Queue accepts messages until reaching capacity");
@@ -108,9 +112,11 @@ static void test_queue_send_and_capacity(void) {
   unit_assert_ok(xQueueSend(queue, MESSAGE_SIZE, (Byte_t *) TEST_MESSAGE_6));
   unit_assert_ok(xQueueSend(queue, MESSAGE_SIZE, (Byte_t *) TEST_MESSAGE_7));
 
+
   /* Should reject additional messages when full */
   unit_assert_not_ok(xQueueSend(queue, MESSAGE_SIZE, (Byte_t *) TEST_MESSAGE_8));
   unit_end();
+
 
   /* Cleanup for next section */
   xQueueDelete(queue);
@@ -119,13 +125,15 @@ static void test_queue_send_and_capacity(void) {
 
 /* ============================================================================
  * SECTION 3: QUEUE STATUS CHECKS
- * ============================================================================ */
+ * ============================================================================
+ */
 static void test_queue_status_checks(void) {
   Queue_t *queue = null;
   Base_t result;
 
 
   unit_print("--- Section 3: Queue Status Checks ---");
+
 
   /* Test 3.1: Queue length */
   unit_begin("Queue length reflects number of messages");
@@ -141,11 +149,13 @@ static void test_queue_status_checks(void) {
   unit_assert_equal(result, QUEUE_EXPECTED_LENGTH);
   unit_end();
 
+
   /* Test 3.2: Queue empty check */
   unit_begin("Queue empty check correctly identifies non-empty queue");
   unit_assert_ok(xQueueIsQueueEmpty(queue, &result));
   unit_assert_false(result);
   unit_end();
+
 
   /* Test 3.3: Queue full check */
   unit_begin("Queue full check correctly identifies full queue");
@@ -153,11 +163,13 @@ static void test_queue_status_checks(void) {
   unit_assert_true(result);
   unit_end();
 
+
   /* Test 3.4: Messages waiting check */
   unit_begin("Queue messages waiting check returns true when messages present");
   unit_assert_ok(xQueueMessagesWaiting(queue, &result));
   unit_assert_true(result);
   unit_end();
+
 
   /* Cleanup for next section */
   xQueueDelete(queue);
@@ -166,13 +178,15 @@ static void test_queue_status_checks(void) {
 
 /* ============================================================================
  * SECTION 4: QUEUE PEEK AND RECEIVE
- * ============================================================================ */
+ * ============================================================================
+ */
 static void test_queue_peek_and_receive(void) {
   Queue_t *queue = null;
   QueueMessage_t *message = null;
 
 
   unit_print("--- Section 4: Queue Peek and Receive ---");
+
 
   /* Test 4.1: Queue peek */
   unit_begin("Queue peek returns first message without removing it");
@@ -185,6 +199,7 @@ static void test_queue_peek_and_receive(void) {
   unit_assert_ok(xMemFree(message));
   unit_end();
 
+
   /* Test 4.2: Queue receive */
   unit_begin("Queue receive returns and removes first message");
   message = null;
@@ -195,6 +210,7 @@ static void test_queue_peek_and_receive(void) {
   unit_assert_ok(xMemFree(message));
   unit_end();
 
+
   /* Cleanup for next section */
   xQueueDelete(queue);
 }
@@ -202,7 +218,8 @@ static void test_queue_peek_and_receive(void) {
 
 /* ============================================================================
  * SECTION 5: QUEUE DROP OPERATIONS
- * ============================================================================ */
+ * ============================================================================
+ */
 static void test_queue_drop(void) {
   Queue_t *queue = null;
   Base_t length;
@@ -210,6 +227,7 @@ static void test_queue_drop(void) {
 
 
   unit_print("--- Section 5: Queue Drop Operations ---");
+
 
   /* Test 5.1: Drop message */
   unit_begin("Queue drop message removes first message");
@@ -228,6 +246,7 @@ static void test_queue_drop(void) {
   unit_assert_equal(length, QUEUE_AFTER_DROP);
   unit_end();
 
+
   /* Cleanup for next section */
   xQueueDelete(queue);
 }
@@ -235,13 +254,15 @@ static void test_queue_drop(void) {
 
 /* ============================================================================
  * SECTION 6: QUEUE LOCK AND UNLOCK
- * ============================================================================ */
+ * ============================================================================
+ */
 static void test_queue_lock_unlock(void) {
   Queue_t *queue = null;
   Base_t length;
 
 
   unit_print("--- Section 6: Queue Lock and Unlock ---");
+
 
   /* Test 6.1: Queue lock */
   unit_begin("Queue lock prevents new messages from being sent");
@@ -251,6 +272,7 @@ static void test_queue_lock_unlock(void) {
   unit_assert_not_ok(xQueueSend(queue, MESSAGE_SIZE, (Byte_t *) TEST_MESSAGE_2));
   unit_end();
 
+
   /* Test 6.2: Queue unlock */
   unit_begin("Queue unlock allows messages to be sent again");
   unit_assert_ok(xQueueUnLockQueue(queue));
@@ -259,6 +281,7 @@ static void test_queue_lock_unlock(void) {
   unit_assert_equal(length, QUEUE_AFTER_UNLOCK);
   unit_end();
 
+
   /* Cleanup for next section */
   xQueueDelete(queue);
 }
@@ -266,19 +289,23 @@ static void test_queue_lock_unlock(void) {
 
 /* ============================================================================
  * SECTION 7: QUEUE DELETE AND CLEANUP
- * ============================================================================ */
+ * ============================================================================
+ */
 static void test_queue_delete(void) {
   Queue_t *queue = null;
 
 
   unit_print("--- Section 7: Queue Delete and Cleanup ---");
 
+
   /* Test 7.1: Queue delete invalidates handle */
   unit_begin("Queue delete invalidates queue handle");
   unit_assert_ok(xQueueCreate(&queue, QUEUE_TEST_CAPACITY));
 
+
   /* Delete should succeed */
   unit_assert_ok(xQueueDelete(queue));
+
 
   /* Operations on deleted queue should fail */
   unit_assert_not_ok(xQueueSend(queue, MESSAGE_SIZE, (Byte_t *) TEST_MESSAGE_4));

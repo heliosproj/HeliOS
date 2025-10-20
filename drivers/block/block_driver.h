@@ -64,7 +64,7 @@
    */
   typedef struct BlockDeviceConfig_s {
     Byte_t command;                  /* BLOCK_CMD_CONFIG */
-    HalfWord_t ioDriverUID;          /* UID of I/O driver (SPI/I2C/etc.) */
+    HalfWord_t ioDriverUID; /* UID of I/O driver (SPI/I2C/etc.) */
     Byte_t protocol; /* BLOCK_PROTOCOL_* constant */
     HalfWord_t blockSize; /* Block/sector size (typically 512) */
     Word_t totalBlocks; /* Total capacity in blocks (0 = auto-detect) */
@@ -91,7 +91,7 @@
    */
   typedef struct BlockDeviceInfo_s {
     Byte_t command;                   /* BLOCK_CMD_GET_INFO */
-    HalfWord_t blockSize;             /* Block/sector size in bytes */
+    HalfWord_t blockSize; /* Block/sector size in bytes */
     Word_t totalBlocks; /* Total capacity in blocks */
     Word_t totalBytes; /* Total capacity in bytes */
     Byte_t protocol; /* BLOCK_PROTOCOL_* constant */

@@ -37,7 +37,6 @@ typedef struct BlockDeviceConfig_s {
 #define TEST_BLOCK_SIZE 512 /* 512 bytes per sector */
 #define TEST_TOTAL_BLOCKS 2048 /* 1MB / 512 = 2048 blocks */
 #define TEST_VOLUME_LABEL "HELIOS     " /* FAT32 volume label */
-
 /* Test constants - File and Directory Operations */
 #define TEST_FILE_DATA "Hello, HeliOS Filesystem!"
 #define TEST_FILE_SIZE 26 /* Including null terminator */
@@ -54,6 +53,7 @@ typedef struct BlockDeviceConfig_s {
 #define TEST_MANAGE_DATA "Management!!\0"
 #define TEST_MANAGE_SIZE 13
 
+
 /* Test constants - Large File Operations */
 #define LARGE_FILE_SIZE 8192 /* 8KB - spans multiple clusters */
 #define CLUSTER_SIZE 4096 /* 512 bytes/sector * 8 sectors/cluster */
@@ -61,7 +61,6 @@ typedef struct BlockDeviceConfig_s {
 #define CLUSTER_SPAN_SIZE 200 /* Size crossing cluster boundary */
 #define CLUSTER_BOUNDARY_READ_OFFSET 50 /* Read offset from boundary */
 #define CLUSTER_BOUNDARY_READ_SIZE 100 /* Read size crossing boundary */
-
 /* Test constants - Partial I/O Operations */
 #define PARTIAL_IO_DATA "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 #define PARTIAL_IO_SIZE 36
@@ -70,12 +69,10 @@ typedef struct BlockDeviceConfig_s {
 #define PARTIAL_READ_POSITION_20 20 /* Expected position after two reads */
 #define PARTIAL_SEEK_OFFSET_15 15 /* Seek to middle */
 #define PARTIAL_READ_MIDDLE_SIZE 5 /* Read 5 bytes from middle */
-
 /* Test constants - Volume Information */
 #define EXPECTED_BYTES_PER_SECTOR 512
 #define EXPECTED_SECTORS_PER_CLUSTER 8
 #define EXPECTED_BYTES_PER_CLUSTER 4096 /* 512 * 8 */
-
 /* Test constants - File Mode Validation */
 #define MODE_TEST_DATA "test data\0"
 #define MODE_TEST_SIZE 10
@@ -86,6 +83,7 @@ typedef struct BlockDeviceConfig_s {
 #define EXPECTED_MODE_APPEND_POS 17 /* 10 + 7 */
 #define MODE_READ_SIZE 9
 
+
 /* Test constants - Multiple File Operations */
 #define MULTI_FILE_COUNT 3
 #define MULTI_FILE1_DATA "File One Data"
@@ -94,6 +92,7 @@ typedef struct BlockDeviceConfig_s {
 #define MULTI_FILE2_SIZE 14
 #define MULTI_FILE3_DATA "File Three Data"
 #define MULTI_FILE3_SIZE 16
+
 
 /* Test constants - Closed File Operations */
 #define CLOSED_FILE_DATA "test data!!\0"
@@ -128,7 +127,6 @@ static void test_multiple_file_operations(void);
 
 void fs_harness(void) {
   unit_print("=== COMPREHENSIVE FILESYSTEM TEST SUITE ===");
-
   test_driver_registration_and_mount();
   test_basic_file_operations();
   test_directory_operations();
@@ -141,8 +139,8 @@ void fs_harness(void) {
   test_file_mode_validation();
   test_closed_file_operations();
   test_multiple_file_operations();
-
   unit_print("=== FILESYSTEM TEST SUITE COMPLETE ===");
+
 
   /* Cleanup */
   __FSStateClear__();
@@ -153,7 +151,8 @@ void fs_harness(void) {
 
 /* ============================================================================
  * SECTION 1: DRIVER REGISTRATION AND FILESYSTEM MOUNT
- * ============================================================================ */
+ * ============================================================================
+ */
 static void test_driver_registration_and_mount(void) {
   BlockDeviceConfig_t *blockConfig = null;
   Size_t configSize = 0;
@@ -163,17 +162,20 @@ static void test_driver_registration_and_mount(void) {
 
   unit_print("--- Section 1: Driver Registration and Filesystem Mount ---");
 
+
   /* Test 1.1: RAM disk driver registration */
   unit_begin("Register and initialize RAM disk driver");
   unit_assert_ok(xDeviceRegisterDevice(RAMDISK0_self_register));
   unit_assert_ok(xDeviceInitDevice(RAMDISK_UID));
   unit_end();
 
+
   /* Test 1.2: Block device driver registration */
   unit_begin("Register and initialize block device driver");
   unit_assert_ok(xDeviceRegisterDevice(BLOCKDEV_self_register));
   unit_assert_ok(xDeviceInitDevice(BLOCKDEV_UID));
   unit_end();
+
 
   /* Test 1.3: Block device configuration */
   unit_begin("Configure block device with RAM disk backend");
@@ -188,10 +190,12 @@ static void test_driver_registration_and_mount(void) {
   xMemFree((Addr_t *) blockConfig);
   unit_end();
 
+
   /* Test 1.4: Format filesystem */
   unit_begin("Format block device with FAT32 filesystem");
   unit_assert_ok(xFSFormat((const Byte_t *) TEST_VOLUME_LABEL));
   unit_end();
+
 
   /* Test 1.5: Mount filesystem */
   unit_begin("Mount filesystem and verify mount state");
@@ -201,12 +205,14 @@ static void test_driver_registration_and_mount(void) {
   unit_assert_equal(vol->blockDeviceUID, BLOCKDEV_UID);
   unit_end();
 
+
   /* Test 1.6: Get volume information */
   unit_begin("Retrieve volume information after mount");
   unit_assert_ok(xFSGetVolumeInfo(vol, &volInfo));
   unit_assert_not_null(volInfo);
   unit_assert_ok(xMemFree(volInfo));
   unit_end();
+
 
   /* Test 1.7: Unmount filesystem */
   unit_begin("Unmount filesystem successfully");
@@ -217,7 +223,8 @@ static void test_driver_registration_and_mount(void) {
 
 /* ============================================================================
  * SECTION 2: BASIC FILE OPERATIONS
- * ============================================================================ */
+ * ============================================================================
+ */
 static void test_basic_file_operations(void) {
   Volume_t *vol = null;
   File_t *file = null;
@@ -228,6 +235,7 @@ static void test_basic_file_operations(void) {
 
 
   unit_print("--- Section 2: Basic File Operations ---");
+
 
   /* Mount filesystem first */
   if(!OK(xFSMount(&vol)) || (null == vol)) {
@@ -244,10 +252,12 @@ static void test_basic_file_operations(void) {
   unit_assert_true(file->isOpen);
   unit_end();
 
+
   /* Test 2.2: File write */
   unit_begin("File write operation stores data successfully");
   unit_assert_ok(xFileWrite(file, TEST_FILE_SIZE, (const Byte_t *) TEST_FILE_DATA));
   unit_end();
+
 
   /* Test 2.3: File tell */
   unit_begin("File position retrieval returns correct offset");
@@ -255,10 +265,12 @@ static void test_basic_file_operations(void) {
   unit_assert_equal(TEST_FILE_SIZE, position);
   unit_end();
 
+
   /* Test 2.4: File sync */
   unit_begin("File sync flushes data to storage");
   unit_assert_ok(xFileSync(file));
   unit_end();
+
 
   /* Test 2.5: File get size */
   unit_begin("File size retrieval returns correct size");
@@ -266,12 +278,14 @@ static void test_basic_file_operations(void) {
   unit_assert_equal(TEST_FILE_SIZE, fileSize);
   unit_end();
 
+
   /* Test 2.6: Seek to beginning */
   unit_begin("File seek to start positions at beginning");
   unit_assert_ok(xFileSeek(file, 0, FS_SEEK_SET));
   unit_assert_ok(xFileTell(file, &position));
   unit_assert_equal(0, position);
   unit_end();
+
 
   /* Test 2.7: File read */
   unit_begin("File read retrieves previously written data");
@@ -289,12 +303,14 @@ static void test_basic_file_operations(void) {
   unit_assert_equal(0, position);
   unit_end();
 
+
   /* Test 2.9: File seek from current */
   unit_begin("File seek from current advances position");
   unit_assert_ok(xFileSeek(file, TEST_SEEK_OFFSET_7, FS_SEEK_CUR));
   unit_assert_ok(xFileTell(file, &position));
   unit_assert_equal(TEST_SEEK_OFFSET_7, position);
   unit_end();
+
 
   /* Test 2.10: File seek from end */
   unit_begin("File seek from end positions at file end");
@@ -303,14 +319,17 @@ static void test_basic_file_operations(void) {
   unit_assert_equal(TEST_FILE_SIZE, position);
   unit_end();
 
+
   /* Test 2.11: EOF detection */
   unit_begin("File EOF detection identifies end of file");
   unit_assert_ok(xFileEOF(file, &eof));
   unit_assert_true(eof);
   unit_end();
 
+
   /* Close file */
   xFileClose(file);
+
 
   /* Test 2.12: File truncate */
   unit_begin("File truncate reduces file size");
@@ -323,6 +342,7 @@ static void test_basic_file_operations(void) {
   unit_assert_ok(xFileClose(file));
   unit_end();
 
+
   /* Test 2.13: File append mode */
   unit_begin("File open in append mode adds data at end");
   file = null;
@@ -334,6 +354,7 @@ static void test_basic_file_operations(void) {
   unit_assert_ok(xFileClose(file));
   unit_end();
 
+
   /* Unmount filesystem */
   xFSUnmount(vol);
 }
@@ -341,7 +362,8 @@ static void test_basic_file_operations(void) {
 
 /* ============================================================================
  * SECTION 3: DIRECTORY OPERATIONS
- * ============================================================================ */
+ * ============================================================================
+ */
 static void test_directory_operations(void) {
   Volume_t *vol = null;
   Dir_t *dir = null;
@@ -352,6 +374,7 @@ static void test_directory_operations(void) {
 
 
   unit_print("--- Section 3: Directory Operations ---");
+
 
   /* Mount filesystem first */
   if(!OK(xFSMount(&vol)) || (null == vol)) {
@@ -366,11 +389,13 @@ static void test_directory_operations(void) {
   unit_assert_ok(xDirMake(vol, (const Byte_t *) "/testdir"));
   unit_end();
 
+
   /* Test 3.2: Directory exists */
   unit_begin("Directory existence check confirms creation");
   unit_assert_ok(xFileExists(vol, (const Byte_t *) "/testdir", &exists));
   unit_assert_true(exists);
   unit_end();
+
 
   /* Test 3.3: Create files in directory */
   unit_begin("Create test files in directory");
@@ -392,9 +417,11 @@ static void test_directory_operations(void) {
   unit_assert_not_null(dir);
   unit_end();
 
+
   /* Test 3.5: Directory read */
   unit_begin("Directory read returns all entries");
   entryCount = 0;
+
 
   /* Read all directory entries */
   while(OK(xDirRead(dir, &entry))) {
@@ -404,9 +431,11 @@ static void test_directory_operations(void) {
     entry = null;
   }
 
+
   /* Should have at least 2 files (may have . and .. entries too) */
   unit_assert_true(entryCount >= MIN_DIR_ENTRIES);
   unit_end();
+
 
   /* Test 3.6: Directory rewind */
   unit_begin("Directory rewind resets read position to start");
@@ -417,10 +446,12 @@ static void test_directory_operations(void) {
   unit_assert_ok(xMemFree(entry));
   unit_end();
 
+
   /* Test 3.7: Directory close */
   unit_begin("Directory close releases resources");
   unit_assert_ok(xDirClose(dir));
   unit_end();
+
 
   /* Test 3.8: Root directory open */
   unit_begin("Root directory open succeeds");
@@ -429,6 +460,7 @@ static void test_directory_operations(void) {
   unit_assert_not_null(dir);
   unit_assert_ok(xDirClose(dir));
   unit_end();
+
 
   /* Test 3.9: Remove non-empty directory fails */
   unit_begin("Directory removal fails for non-empty directory");
@@ -443,7 +475,8 @@ static void test_directory_operations(void) {
 
 /* ============================================================================
  * SECTION 4: FILE MANAGEMENT OPERATIONS
- * ============================================================================ */
+ * ============================================================================
+ */
 static void test_file_management(void) {
   Volume_t *vol = null;
   File_t *file = null;
@@ -453,12 +486,14 @@ static void test_file_management(void) {
 
   unit_print("--- Section 4: File Management Operations ---");
 
+
   /* Mount filesystem first */
   if(!OK(xFSMount(&vol)) || (null == vol)) {
     unit_print("xFSMount() failed - skipping file management tests");
 
     return;
   }
+
 
   /* Test 4.1: Create test file */
   unit_begin("Create test file for management operations");
@@ -468,11 +503,13 @@ static void test_file_management(void) {
   unit_assert_ok(xFileClose(file));
   unit_end();
 
+
   /* Test 4.2: File exists check */
   unit_begin("File existence check confirms existing file");
   unit_assert_ok(xFileExists(vol, (const Byte_t *) "/manage.txt", &exists));
   unit_assert_true(exists);
   unit_end();
+
 
   /* Test 4.3: Non-existing file check */
   unit_begin("File existence check returns false for non-existing file");
@@ -489,14 +526,17 @@ static void test_file_management(void) {
   unit_assert_ok(xMemFree(info));
   unit_end();
 
+
   /* Test 4.5: File rename */
   unit_begin("File rename updates filename successfully");
   unit_assert_ok(xFileRename(vol, (const Byte_t *) "/manage.txt", (const Byte_t *) "/renamed.txt"));
+
 
   /* Verify old name doesn't exist */
   exists = nil;
   unit_assert_ok(xFileExists(vol, (const Byte_t *) "/manage.txt", &exists));
   unit_assert_false(exists);
+
 
   /* Verify new name exists */
   exists = nil;
@@ -504,9 +544,11 @@ static void test_file_management(void) {
   unit_assert_true(exists);
   unit_end();
 
+
   /* Test 4.6: File unlink */
   unit_begin("File unlink removes file from filesystem");
   unit_assert_ok(xFileUnlink(vol, (const Byte_t *) "/renamed.txt"));
+
 
   /* Verify file no longer exists */
   exists = nil;
@@ -522,7 +564,8 @@ static void test_file_management(void) {
 
 /* ============================================================================
  * SECTION 5: NULL POINTER AND EDGE CASES
- * ============================================================================ */
+ * ============================================================================
+ */
 static void test_null_pointer_and_edge_cases(void) {
   Volume_t *vol = null;
   File_t *file = null;
@@ -532,12 +575,14 @@ static void test_null_pointer_and_edge_cases(void) {
 
   unit_print("--- Section 5: NULL Pointer and Edge Cases ---");
 
+
   /* Mount filesystem first */
   if(!OK(xFSMount(&vol)) || (null == vol)) {
     unit_print("xFSMount() failed - skipping edge case tests");
 
     return;
   }
+
 
   /* Test 5.1: NULL pointer handling */
   unit_begin("Edge Case - NULL Pointers");
@@ -625,6 +670,7 @@ static void test_null_pointer_and_edge_cases(void) {
     unit_assert_not_ok(xFSMount(&vol2));
   } unit_end();
 
+
   /* Test 5.3: Operations on unmounted volume */
   unit_begin("Edge Case - Operations After Unmount");
   xFSUnmount(vol);
@@ -643,7 +689,8 @@ static void test_null_pointer_and_edge_cases(void) {
 
 /* ============================================================================
  * SECTION 6: LARGE FILE OPERATIONS
- * ============================================================================ */
+ * ============================================================================
+ */
 static void test_large_file_operations(void) {
   Volume_t *vol = null;
   File_t *file = null;
@@ -656,12 +703,14 @@ static void test_large_file_operations(void) {
 
   unit_print("--- Section 6: Large File Operations ---");
 
+
   /* Mount filesystem first */
   if(!OK(xFSMount(&vol)) || (null == vol)) {
     unit_print("xFSMount() failed - skipping large file operations tests");
 
     return;
   }
+
 
   /* Test 6.1: Multi-cluster write */
   unit_begin("Large File Operations - Multi-cluster Write");
@@ -671,34 +720,42 @@ static void test_large_file_operations(void) {
   unit_assert_ok(xMemAlloc((volatile Addr_t **) &writeData, LARGE_FILE_SIZE));
   unit_assert_not_null(writeData);
 
+
   /* Fill with pattern (repeating 0-255) */
   for(i = 0; i < LARGE_FILE_SIZE; i++) {
     writeData[i] = (Byte_t) (i & 0xFFu);
   }
+
 
   /* Create and write large file */
   unit_assert_ok(xFileOpen(&file, vol, (const Byte_t *) "/largefile.dat", FS_MODE_CREATE | FS_MODE_WRITE));
   unit_assert_not_null(file);
   unit_assert_ok(xFileWrite(file, LARGE_FILE_SIZE, writeData));
 
+
   /* Verify file size */
   unit_assert_ok(xFileGetSize(file, &fileSize));
   unit_assert_equal(LARGE_FILE_SIZE, fileSize);
+
 
   /* Verify position */
   unit_assert_ok(xFileTell(file, &position));
   unit_assert_equal(LARGE_FILE_SIZE, position);
   unit_end();
 
+
   /* Test 6.2: Multi-cluster read */
   unit_begin("Large File Operations - Multi-cluster Read");
+
 
   /* Seek back to start */
   unit_assert_ok(xFileSeek(file, 0, FS_SEEK_SET));
 
+
   /* Read entire file */
   unit_assert_ok(xFileRead(file, LARGE_FILE_SIZE, &readData));
   unit_assert_not_null(readData);
+
 
   /* Verify data matches */
   for(i = 0; i < LARGE_FILE_SIZE; i++) {
@@ -722,7 +779,8 @@ static void test_large_file_operations(void) {
 
 /* ============================================================================
  * SECTION 7: CLUSTER BOUNDARY OPERATIONS
- * ============================================================================ */
+ * ============================================================================
+ */
 static void test_cluster_boundary_operations(void) {
   Volume_t *vol = null;
   File_t *file = null;
@@ -735,12 +793,14 @@ static void test_cluster_boundary_operations(void) {
 
   unit_print("--- Section 7: Cluster Boundary Operations ---");
 
+
   /* Mount filesystem first */
   if(!OK(xFSMount(&vol)) || (null == vol)) {
     unit_print("xFSMount() failed - skipping cluster boundary tests");
 
     return;
   }
+
 
   /* Test 7.1: Write at cluster boundary */
   unit_begin("Cluster Boundary - Write at Boundary");
@@ -750,31 +810,38 @@ static void test_cluster_boundary_operations(void) {
   unit_assert_ok(xMemAlloc((volatile Addr_t **) &writeData, CLUSTER_SIZE + CLUSTER_SPAN_SIZE));
   unit_assert_not_null(writeData);
 
+
   /* Fill with pattern */
   for(i = 0; i < CLUSTER_SIZE + CLUSTER_SPAN_SIZE; i++) {
     writeData[i] = (Byte_t) ((i * 7) & 0xFFu);
   }
+
 
   /* Create file and write up to near cluster boundary */
   unit_assert_ok(xFileOpen(&file, vol, (const Byte_t *) "/boundary.dat", FS_MODE_CREATE | FS_MODE_WRITE));
   unit_assert_not_null(file);
   unit_assert_ok(xFileWrite(file, testSize, writeData));
 
+
   /* Write more data to cross cluster boundary */
   unit_assert_ok(xFileWrite(file, CLUSTER_SPAN_SIZE, writeData + testSize));
   unit_end();
 
+
   /* Test 7.2: Read across cluster boundary */
   unit_begin("Cluster Boundary - Read Across Boundary");
+
 
   /* Seek to position near cluster boundary */
   unit_assert_ok(xFileSeek(file, CLUSTER_SIZE - CLUSTER_BOUNDARY_READ_OFFSET, FS_SEEK_SET));
   unit_assert_ok(xFileTell(file, &position));
   unit_assert_equal(CLUSTER_SIZE - CLUSTER_BOUNDARY_READ_OFFSET, position);
 
+
   /* Read data that spans cluster boundary */
   unit_assert_ok(xFileRead(file, CLUSTER_BOUNDARY_READ_SIZE, &readData));
   unit_assert_not_null(readData);
+
 
   /* Verify data */
   for(i = 0; i < CLUSTER_BOUNDARY_READ_SIZE; i++) {
@@ -798,7 +865,8 @@ static void test_cluster_boundary_operations(void) {
 
 /* ============================================================================
  * SECTION 8: PARTIAL I/O OPERATIONS
- * ============================================================================ */
+ * ============================================================================
+ */
 static void test_partial_io_operations(void) {
   Volume_t *vol = null;
   File_t *file = null;
@@ -808,12 +876,14 @@ static void test_partial_io_operations(void) {
 
   unit_print("--- Section 8: Partial I/O Operations ---");
 
+
   /* Mount filesystem first */
   if(!OK(xFSMount(&vol)) || (null == vol)) {
     unit_print("xFSMount() failed - skipping partial I/O tests");
 
     return;
   }
+
 
   /* Test 8.1: Write and partial reads */
   unit_begin("Partial I/O - Write and Partial Reads");
@@ -826,6 +896,7 @@ static void test_partial_io_operations(void) {
   unit_assert_ok(xFileSeek(file, 0, FS_SEEK_SET));
   unit_end();
 
+
   /* Test 8.2: Read first 10 bytes */
   unit_begin("Partial I/O - Read First 10 Bytes");
   unit_assert_ok(xFileRead(file, PARTIAL_READ_FIRST, &readData));
@@ -835,6 +906,7 @@ static void test_partial_io_operations(void) {
   unit_assert_equal(PARTIAL_READ_FIRST, position);
   unit_assert_ok(xMemFree(readData));
   unit_end();
+
 
   /* Test 8.3: Read middle 10 bytes */
   unit_begin("Partial I/O - Read Middle 10 Bytes");
@@ -847,6 +919,7 @@ static void test_partial_io_operations(void) {
   unit_assert_ok(xMemFree(readData));
   unit_end();
 
+
   /* Test 8.4: Seek and read from middle */
   unit_begin("Partial I/O - Seek and Read from Middle");
   unit_assert_ok(xFileSeek(file, PARTIAL_SEEK_OFFSET_15, FS_SEEK_SET));
@@ -857,11 +930,13 @@ static void test_partial_io_operations(void) {
   unit_assert_ok(xMemFree(readData));
   unit_end();
 
+
   /* Test 8.5: Read at EOF */
   unit_begin("Partial I/O - Read at EOF");
   unit_assert_ok(xFileSeek(file, 0, FS_SEEK_END));
   unit_assert_ok(xFileTell(file, &position));
   unit_assert_equal(PARTIAL_IO_SIZE, position);
+
 
   /* Try to read at EOF - should fail */
   readData = null;
@@ -877,13 +952,15 @@ static void test_partial_io_operations(void) {
 
 /* ============================================================================
  * SECTION 9: VOLUME INFORMATION VALIDATION
- * ============================================================================ */
+ * ============================================================================
+ */
 static void test_volume_info_validation(void) {
   Volume_t *vol = null;
   VolumeInfo_t *volInfo = null;
 
 
   unit_print("--- Section 9: Volume Information Validation ---");
+
 
   /* Mount filesystem first */
   if(!OK(xFSMount(&vol)) || (null == vol)) {
@@ -892,12 +969,15 @@ static void test_volume_info_validation(void) {
     return;
   }
 
+
   /* Test 9.1: Get and validate volume information */
   unit_begin("Volume Info - Get and Validate");
+
 
   /* Get volume information */
   unit_assert_ok(xFSGetVolumeInfo(vol, &volInfo));
   unit_assert_not_null(volInfo);
+
 
   /* Validate volume parameters */
   unit_assert_equal(EXPECTED_BYTES_PER_SECTOR, volInfo->bytesPerSector);
@@ -905,6 +985,7 @@ static void test_volume_info_validation(void) {
   unit_assert_equal(EXPECTED_BYTES_PER_CLUSTER, volInfo->bytesPerCluster);
   unit_assert_ok(xMemFree(volInfo));
   unit_end();
+
 
   /* Test 9.2: NULL pointer handling */
   unit_begin("Volume Info - NULL Pointer Handling");
@@ -926,7 +1007,8 @@ static void test_volume_info_validation(void) {
 
 /* ============================================================================
  * SECTION 10: FILE MODE VALIDATION
- * ============================================================================ */
+ * ============================================================================
+ */
 static void test_file_mode_validation(void) {
   Volume_t *vol = null;
   File_t *file1 = null;
@@ -937,12 +1019,14 @@ static void test_file_mode_validation(void) {
 
   unit_print("--- Section 10: File Mode Validation ---");
 
+
   /* Mount filesystem first */
   if(!OK(xFSMount(&vol)) || (null == vol)) {
     unit_print("xFSMount() failed - skipping file mode tests");
 
     return;
   }
+
 
   /* Test 10.1: Create without write mode */
   unit_begin("File Mode - Create Without Write Mode");
@@ -952,10 +1036,12 @@ static void test_file_mode_validation(void) {
   unit_assert_ok(xFileOpen(&file1, vol, (const Byte_t *) "/modetest1.txt", FS_MODE_CREATE));
   unit_assert_not_null(file1);
 
+
   /* Write should fail without WRITE or APPEND mode */
   unit_assert_not_ok(xFileWrite(file1, MODE_TEST_SIZE, (const Byte_t *) MODE_TEST_DATA));
   unit_assert_ok(xFileClose(file1));
   unit_end();
+
 
   /* Test 10.2: Write mode */
   unit_begin("File Mode - Write Mode");
@@ -966,12 +1052,14 @@ static void test_file_mode_validation(void) {
   unit_assert_ok(xFileClose(file1));
   unit_end();
 
+
   /* Test 10.3: Append mode */
   unit_begin("File Mode - Append Mode");
   file1 = null;
   unit_assert_ok(xFileOpen(&file1, vol, (const Byte_t *) "/modetest2.txt", FS_MODE_APPEND | FS_MODE_WRITE));
   unit_assert_not_null(file1);
   unit_assert_ok(xFileWrite(file1, MODE_APPEND_SIZE, (const Byte_t *) MODE_APPEND_DATA));
+
 
   /* Verify position at end after append */
   position = nil;
@@ -980,11 +1068,13 @@ static void test_file_mode_validation(void) {
   unit_assert_ok(xFileClose(file1));
   unit_end();
 
+
   /* Test 10.4: Read mode */
   unit_begin("File Mode - Read Mode");
   file2 = null;
   unit_assert_ok(xFileOpen(&file2, vol, (const Byte_t *) "/modetest2.txt", FS_MODE_READ));
   unit_assert_not_null(file2);
+
 
   /* Read should work */
   unit_assert_ok(xFileRead(file2, MODE_READ_SIZE, &readData));
@@ -1001,13 +1091,15 @@ static void test_file_mode_validation(void) {
 
 /* ============================================================================
  * SECTION 11: CLOSED FILE OPERATIONS
- * ============================================================================ */
+ * ============================================================================
+ */
 static void test_closed_file_operations(void) {
   Volume_t *vol = null;
   File_t *file = null;
 
 
   unit_print("--- Section 11: Closed File Operations ---");
+
 
   /* Mount filesystem first */
   if(!OK(xFSMount(&vol)) || (null == vol)) {
@@ -1016,8 +1108,10 @@ static void test_closed_file_operations(void) {
     return;
   }
 
+
   /* Test 11.1: Create and close */
   unit_begin("Closed File Operations - Create and Close");
+
 
   /* Create a file and immediately close it */
   unit_assert_ok(xFileOpen(&file, vol, (const Byte_t *) "/closedtest.txt", FS_MODE_CREATE | FS_MODE_WRITE));
@@ -1025,6 +1119,7 @@ static void test_closed_file_operations(void) {
   unit_assert_ok(xFileWrite(file, CLOSED_FILE_SIZE, (const Byte_t *) CLOSED_FILE_DATA));
   unit_assert_ok(xFileClose(file));
   unit_end();
+
 
   /* Test 11.2: Operations on closed file */
   unit_begin("Closed File Operations - Operations on Closed File");
@@ -1060,7 +1155,8 @@ static void test_closed_file_operations(void) {
 
 /* ============================================================================
  * SECTION 12: MULTIPLE FILE OPERATIONS
- * ============================================================================ */
+ * ============================================================================
+ */
 static void test_multiple_file_operations(void) {
   Volume_t *vol = null;
   File_t *file1 = null;
@@ -1073,12 +1169,14 @@ static void test_multiple_file_operations(void) {
 
   unit_print("--- Section 12: Multiple File Operations ---");
 
+
   /* Mount filesystem first */
   if(!OK(xFSMount(&vol)) || (null == vol)) {
     unit_print("xFSMount() failed - skipping multiple file tests");
 
     return;
   }
+
 
   /* Test 12.1: Create three files */
   unit_begin("Multiple Files - Create Three Files");
@@ -1093,6 +1191,7 @@ static void test_multiple_file_operations(void) {
   unit_assert_not_null(file3);
   unit_end();
 
+
   /* Test 12.2: Write to all files */
   unit_begin("Multiple Files - Write to All Files");
   unit_assert_ok(xFileWrite(file1, MULTI_FILE1_SIZE, (const Byte_t *) MULTI_FILE1_DATA));
@@ -1100,12 +1199,14 @@ static void test_multiple_file_operations(void) {
   unit_assert_ok(xFileWrite(file3, MULTI_FILE3_SIZE, (const Byte_t *) MULTI_FILE3_DATA));
   unit_end();
 
+
   /* Test 12.3: Seek all files */
   unit_begin("Multiple Files - Seek All Files");
   unit_assert_ok(xFileSeek(file1, 0, FS_SEEK_SET));
   unit_assert_ok(xFileSeek(file2, 0, FS_SEEK_SET));
   unit_assert_ok(xFileSeek(file3, 0, FS_SEEK_SET));
   unit_end();
+
 
   /* Test 12.4: Read and verify all files */
   unit_begin("Multiple Files - Read and Verify All Files");
@@ -1122,6 +1223,7 @@ static void test_multiple_file_operations(void) {
   unit_assert_ok(xMemFree(readData2));
   unit_assert_ok(xMemFree(readData3));
   unit_end();
+
 
   /* Test 12.5: Close all files */
   unit_begin("Multiple Files - Close All Files");

@@ -10572,15 +10572,15 @@
    * }
    * @endcode
    *
-   * @param[in] volumeLabel_    Pointer to null-terminated string containing
-   *                            volume label (max 11 characters). Can be null
-   *                            for no label. Label is stored in boot sector and
-   *                            visible in volume information queries.
+   * @param[in] volumeLabel_ Pointer to null-terminated string containing volume
+   *                         label (max 11 characters). Can be null for no
+   *                         label. Label is stored in boot sector and visible
+   *                         in volume information queries.
    *
-   * @return                    ReturnOK if format succeeded, ReturnError if
-   *                            format failed due to invalid block device UID,
-   *                            device not available, insufficient device size,
-   *                            or write errors during format operation.
+   * @return                 ReturnOK if format succeeded, ReturnError if format
+   *                         failed due to invalid block device UID, device not
+   *                         available, insufficient device size, or write
+   *                         errors during format operation.
    *
    * @warning This operation is DESTRUCTIVE. All existing data on the block
    * device will be permanently lost. Ensure any important data is backed up
@@ -10715,17 +10715,15 @@
    * }
    * @endcode
    *
-   * @param[out] volume_         Pointer to Volume_t *handle to be initialized.
-   *                             On success, this handle is used in all
-   *                             subsequent file and directory operations. The
-   *                             handle remains valid until xFSUnmount() is
-   *                             called.
+   * @param[out] volume_ Pointer to Volume_t *handle to be initialized. On
+   *                     success, this handle is used in all subsequent file and
+   *                     directory operations. The handle remains valid until
+   *                     xFSUnmount() is called.
    *
-   * @return                     ReturnOK if mount succeeded, ReturnError if
-   *                             mount failed due to invalid block device UID,
-   *                             device not available, invalid FAT32 filesystem,
-   *                             corrupted boot sector, or memory allocation
-   *                             failure.
+   * @return             ReturnOK if mount succeeded, ReturnError if mount
+   *                     failed due to invalid block device UID, device not
+   *                     available, invalid FAT32 filesystem, corrupted boot
+   *                     sector, or memory allocation failure.
    *
    * @warning The block device must contain a valid FAT32 filesystem created by
    * xFSFormat() or another FAT32-compatible tool. Attempting to mount an
@@ -13424,10 +13422,10 @@
     /**
      * @brief Initialize the console subsystem
      *
-     * Initializes the console subsystem state including command buffer,
-     * working directory, and device connection status. This function is
-     * automatically called by the scheduler when CONFIG_ENABLE_CONSOLE
-     * is defined and xTaskStartScheduler() is invoked.
+     * Initializes the console subsystem state including command buffer, working
+     * directory, and device connection status. This function is automatically
+     * called by the scheduler when CONFIG_ENABLE_CONSOLE is defined and
+     * xTaskStartScheduler() is invoked.
      *
      * The console provides a UNIX-like command-line interface for:
      * - System diagnostics (tasks, memory, version)
@@ -13482,8 +13480,8 @@
      * @param[in] task_ Task handle for this console task
      * @param[in] parm_ Task parameter (unused, can be null)
      *
-     * @note Do not call this function directly. It is invoked automatically
-     * by the scheduler.
+     * @note Do not call this function directly. It is invoked automatically by
+     * the scheduler.
      *
      * @note The console gracefully handles character device connect/disconnect
      * events, resetting state and remounting filesystem as needed.

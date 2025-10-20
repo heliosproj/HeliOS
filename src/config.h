@@ -504,8 +504,8 @@
  *
  * The console task priority determines when it receives CPU time relative to
  * other tasks in the system. For interactive responsiveness, a moderate
- * priority is recommended. For systems where console is primarily diagnostic,
- * a lower priority may be appropriate.
+ * priority is recommended. For systems where console is primarily diagnostic, a
+ * lower priority may be appropriate.
  *
  * @note The value should be set as a hexadecimal constant with the 'u' suffix
  * (e.g., 0x5u for priority 5).
@@ -525,8 +525,8 @@
  * @brief Define the console task scheduling mode
  *
  * Setting CONFIG_CONSOLE_TASK_MODE specifies whether the console task runs
- * continuously with normal task scheduling or event-driven via a timer.
- * Valid values:
+ * continuously with normal task scheduling or event-driven via a timer. Valid
+ * values:
  * - 0: Continuous mode - task runs every scheduler iteration
  * - 1: Event-driven mode - task runs on timer events only
  *
@@ -552,8 +552,8 @@
  * @brief Define the console timer period in milliseconds
  *
  * Setting CONFIG_CONSOLE_TIMER_PERIOD_MS specifies how often the console task
- * runs when in event-driven mode (CONFIG_CONSOLE_TASK_MODE = 1). The default
- * is 50ms, providing responsive interactive performance while minimizing CPU
+ * runs when in event-driven mode (CONFIG_CONSOLE_TASK_MODE = 1). The default is
+ * 50ms, providing responsive interactive performance while minimizing CPU
  * overhead. The default is 50 milliseconds.
  *
  * This value represents the polling interval for checking user input. Lower

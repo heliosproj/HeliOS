@@ -36,8 +36,11 @@
   #include "sys.h"
   #include "../char/char_io_interface.h"
 
+
   /* Only include STM32 HAL when not in POSIX test mode */
   #if !defined(POSIX_ARCH_OTHER)
+
+
     /* Include the appropriate STM32 HAL header for your chip family */
     /* Uncomment the one that matches your target */
     /* #include "stm32f0xx_hal.h" */
@@ -56,8 +59,6 @@
     /* #include "stm32wbxx_hal.h" */
     /* #include "stm32wlxx_hal.h" */
   #endif /* if !defined(POSIX_ARCH_OTHER) */
-
-
   /* Device name must be exactly CONFIG_DEVICE_NAME_BYTES (8 bytes) */
   #define DEVICE_NAME USART_TX
   #define DEVICE_UID 0x0200u
@@ -75,6 +76,8 @@
     #undef USART_TX_BUFFER_SIZE
   #endif /* if defined(USART_TX_BUFFER_SIZE) */
   #define USART_TX_BUFFER_SIZE 512u
+
+
   /* Error flags - match HAL error definitions */
   #if defined(USART_ERROR_NONE)
     #undef USART_ERROR_NONE
@@ -111,17 +114,23 @@
    * Usage: Pass this structure to the init function during driver setup.
    */
   typedef struct USARTSTMInitConfig_s {
-    #if !defined(POSIX_ARCH_OTHER)
+  #if !defined(POSIX_ARCH_OTHER)
       USART_TypeDef *usartInstance; /* USART1, USART2, USART3, etc. */
-      IRQn_Type irqNumber;          /* USARTx_IRQn from device header */
-    #else
-      void *usartInstance;          /* Placeholder for POSIX testing */
-      int irqNumber;                /* Placeholder for POSIX testing */
-    #endif /* if !defined(POSIX_ARCH_OTHER) */
-    Word_t baudRate;                /* Initial baud rate (e.g., 115200) */
-    Byte_t dataBits;                /* CHAR_IO_DATA_BITS_* */
-    Byte_t parity;                  /* CHAR_IO_PARITY_* */
-    Byte_t stopBits;                /* CHAR_IO_STOP_BITS_* */
+      IRQn_Type irqNumber; /* USARTx_IRQn from device header */
+
+
+
+  #else  /* if !defined(POSIX_ARCH_OTHER) */
+      void *usartInstance; /* Placeholder for POSIX testing */
+      int irqNumber; /* Placeholder for POSIX testing */
+
+
+
+  #endif /* if !defined(POSIX_ARCH_OTHER) */
+    Word_t baudRate; /* Initial baud rate (e.g., 115200) */
+    Byte_t dataBits; /* CHAR_IO_DATA_BITS_* */
+    Byte_t parity; /* CHAR_IO_PARITY_* */
+    Byte_t stopBits; /* CHAR_IO_STOP_BITS_* */
   } USARTSTMInitConfig_t;
 
   #ifdef __cplusplus
@@ -136,6 +145,7 @@
   Return_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t *device_, Size_t *size_, Addr_t *data_);
   Return_t TO_FUNCTION(DEVICE_NAME, _simple_read)(Device_t *device_, Byte_t *data_);
   Return_t TO_FUNCTION(DEVICE_NAME, _simple_write)(Device_t *device_, Byte_t data_);
+
 
   /* IRQ handler - call this from your STM32 interrupt vector table */
   /* Example: void USART2_IRQHandler(void) { USART_TX_IRQHandler(); } */

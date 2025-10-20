@@ -36,7 +36,9 @@
  */
 /*UNCRUSTIFY-ON*/
 /* Global system flags - zero-initialized by C standard for static storage */
-Flags_t flag = { 0 };
+Flags_t flag = {
+  0
+};
 
 
 Return_t xSystemAssert(const char *file_, const int line_) {

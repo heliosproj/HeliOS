@@ -20,16 +20,16 @@
 
 
 /* Character constants for better readability */
-#define CHAR_NULL          0x00u
-#define CHAR_TAB           0x09u
-#define CHAR_LF            0x0Au
-#define CHAR_CR            0x0Du
-#define CHAR_SPACE         0x20u
-#define CHAR_SLASH         0x2Fu
-#define CHAR_ZERO          0x30u
-#define CHAR_LOWERCASE_X   0x78u
-#define CHAR_BACKSPACE     0x08u
-#define CHAR_DEL           0x7Fu
+#define CHAR_NULL 0x00u
+#define CHAR_TAB 0x09u
+#define CHAR_LF 0x0Au
+#define CHAR_CR 0x0Du
+#define CHAR_SPACE 0x20u
+#define CHAR_SLASH 0x2Fu
+#define CHAR_ZERO 0x30u
+#define CHAR_LOWERCASE_X 0x78u
+#define CHAR_BACKSPACE 0x08u
+#define CHAR_DEL 0x7Fu
 #define CHAR_PRINTABLE_MIN 0x20u
 #define CHAR_PRINTABLE_MAX 0x7Eu
 
@@ -72,28 +72,48 @@ static void __uitoah__(Word_t value_, Byte_t *buffer_, Word_t bufferSize_);
 /* Command table structure */
 typedef struct ConsoleCommand_s {
   const Byte_t *name;
+
+
+
   Return_t (* handler)(const Byte_t *);
+
+
+
   const Byte_t *description;
 } ConsoleCommand_t;
 
 
+
 /* Command table */
-static const ConsoleCommand_t commandTable[] = {
-  { (const Byte_t *) "help", __ConsoleCmdHelp__, (const Byte_t *) "Display available commands" },
-  { (const Byte_t *) "version", __ConsoleCmdVersion__, (const Byte_t *) "Display version information" },
-  { (const Byte_t *) "tasks", __ConsoleCmdTasks__, (const Byte_t *) "List running tasks" },
-  { (const Byte_t *) "mem", __ConsoleCmdMem__, (const Byte_t *) "Display memory statistics" },
-  { (const Byte_t *) "clear", __ConsoleCmdClear__, (const Byte_t *) "Clear the screen" },
-  { (const Byte_t *) "echo", __ConsoleCmdEcho__, (const Byte_t *) "Toggle echo mode or print message" },
-  { (const Byte_t *) "ls", __ConsoleCmdLs__, (const Byte_t *) "List directory contents" },
-  { (const Byte_t *) "cd", __ConsoleCmdCd__, (const Byte_t *) "Change directory" },
-  { (const Byte_t *) "pwd", __ConsoleCmdPwd__, (const Byte_t *) "Print working directory" },
-  { (const Byte_t *) "cat", __ConsoleCmdCat__, (const Byte_t *) "Display file contents" },
-  { (const Byte_t *) "mv", __ConsoleCmdMv__, (const Byte_t *) "Move/rename file" },
-  { (const Byte_t *) "rm", __ConsoleCmdRm__, (const Byte_t *) "Remove file" },
-  { (const Byte_t *) "mkdir", __ConsoleCmdMkdir__, (const Byte_t *) "Create directory" },
-  { null, null, null }
-};
+static const ConsoleCommand_t commandTable[] = {{
+                                                  (const Byte_t *) "help", __ConsoleCmdHelp__, (const Byte_t *) "Display available commands"
+                                                }, {
+                                                  (const Byte_t *) "version", __ConsoleCmdVersion__, (const Byte_t *) "Display version information"
+                                                }, {
+                                                  (const Byte_t *) "tasks", __ConsoleCmdTasks__, (const Byte_t *) "List running tasks"
+                                                }, {
+                                                  (const Byte_t *) "mem", __ConsoleCmdMem__, (const Byte_t *) "Display memory statistics"
+                                                }, {
+                                                  (const Byte_t *) "clear", __ConsoleCmdClear__, (const Byte_t *) "Clear the screen"
+                                                }, {
+                                                  (const Byte_t *) "echo", __ConsoleCmdEcho__, (const Byte_t *) "Toggle echo mode or print message"
+                                                }, {
+                                                  (const Byte_t *) "ls", __ConsoleCmdLs__, (const Byte_t *) "List directory contents"
+                                                }, {
+                                                  (const Byte_t *) "cd", __ConsoleCmdCd__, (const Byte_t *) "Change directory"
+                                                }, {
+                                                  (const Byte_t *) "pwd", __ConsoleCmdPwd__, (const Byte_t *) "Print working directory"
+                                                }, {
+                                                  (const Byte_t *) "cat", __ConsoleCmdCat__, (const Byte_t *) "Display file contents"
+                                                }, {
+                                                  (const Byte_t *) "mv", __ConsoleCmdMv__, (const Byte_t *) "Move/rename file"
+                                                }, {
+                                                  (const Byte_t *) "rm", __ConsoleCmdRm__, (const Byte_t *) "Remove file"
+                                                }, {
+                                                  (const Byte_t *) "mkdir", __ConsoleCmdMkdir__, (const Byte_t *) "Create directory"
+                                                }, {
+                                                  null, null, null
+                                                }};
 
 
 /**
@@ -103,18 +123,18 @@ static const ConsoleCommand_t commandTable[] = {
 Return_t xConsoleInit(void) {
   FUNCTION_ENTER;
 
+
   /* Initialize console state */
   consoleState.deviceReady = false;
-  #if defined(CONFIG_CONSOLE_ECHO_ENABLED)
+#if defined(CONFIG_CONSOLE_ECHO_ENABLED)
     consoleState.echoEnabled = true;
-  #else /* if defined(CONFIG_CONSOLE_ECHO_ENABLED) */
+#else /* if defined(CONFIG_CONSOLE_ECHO_ENABLED) */
     consoleState.echoEnabled = false;
-  #endif /* if defined(CONFIG_CONSOLE_ECHO_ENABLED) */
+#endif /* if defined(CONFIG_CONSOLE_ECHO_ENABLED) */
   consoleState.bufferPosition = 0x0u;
   __memset__(consoleState.commandBuffer, CHAR_NULL, CONFIG_CONSOLE_MAX_COMMAND_LENGTH);
   __StringCopy__(consoleState.currentWorkingDirectory, (const Byte_t *) "/", CONFIG_FS_MAX_PATH_LENGTH);
   mountedVolume = null;
-
   __ReturnOk__();
   FUNCTION_EXIT;
 }
@@ -130,8 +150,7 @@ void vConsoleTask(Task_t *task_, TaskParm_t *parm_) {
 
 
   (void) task_;   /* Unused parameter */
-  (void) parm_;   /* Unused parameter */
-
+  (void) parm_; /* Unused parameter */
 
   /* Check device status */
   if(OK(__ConsoleCheckDevice__())) {
@@ -139,6 +158,7 @@ void vConsoleTask(Task_t *task_, TaskParm_t *parm_) {
     if(!consoleState.deviceReady) {
       consoleState.deviceReady = true;
       __ConsoleWriteString__((const Byte_t *) CONSOLE_BANNER);
+
 
       /* Try to mount filesystem */
       if(OK(xFSMount(&mountedVolume))) {
@@ -155,6 +175,7 @@ void vConsoleTask(Task_t *task_, TaskParm_t *parm_) {
       consoleState.deviceReady = false;
       consoleState.bufferPosition = 0x0u;
 
+
       /* Unmount filesystem if it was mounted */
       if(__PointerIsNotNull__(mountedVolume)) {
         xFSUnmount(mountedVolume);
@@ -165,15 +186,17 @@ void vConsoleTask(Task_t *task_, TaskParm_t *parm_) {
     return;
   }
 
+
   /* Read character from device */
   if(OK(__ConsoleReadChar__(&ch))) {
     /* Handle special characters */
-    if(CHAR_BACKSPACE == ch || CHAR_DEL == ch) {
+    if((CHAR_BACKSPACE == ch) || (CHAR_DEL == ch)) {
       /* Backspace or DEL */
       __ConsoleHandleBackspace__();
-    } else if(CHAR_CR == ch || CHAR_LF == ch) {
+    } else if((CHAR_CR == ch) || (CHAR_LF == ch)) {
       /* Carriage return or line feed */
       __ConsoleWriteString__((const Byte_t *) "\r\n");
+
 
       /* Process command if buffer is not empty */
       if(consoleState.bufferPosition > 0x0u) {
@@ -183,14 +206,16 @@ void vConsoleTask(Task_t *task_, TaskParm_t *parm_) {
       }
 
       __ConsolePrintPrompt__();
-    } else if(ch >= CHAR_PRINTABLE_MIN && ch <= CHAR_PRINTABLE_MAX) {
+    } else if((ch >= CHAR_PRINTABLE_MIN) && (ch <= CHAR_PRINTABLE_MAX)) {
       /* Printable character */
       if(consoleState.bufferPosition < (CONFIG_CONSOLE_MAX_COMMAND_LENGTH - 0x1u)) {
         consoleState.commandBuffer[consoleState.bufferPosition++] = ch;
 
+
         /* Echo character if enabled */
         if(consoleState.echoEnabled) {
           Byte_t echoChar[0x2];
+
 
           echoChar[0x0] = ch;
           echoChar[0x1] = CHAR_NULL;
@@ -212,6 +237,7 @@ static Return_t __ConsoleCheckDevice__(void) {
 
   Device_t *device = null;
 
+
   /* Use internal device API to check if device exists and is running */
   if(OK(__DeviceListFind__(CONFIG_CONSOLE_DEVICE_UID, &device))) {
     if(__PointerIsNotNull__(device) && (DeviceStateRunning == device->state)) {
@@ -229,16 +255,18 @@ static Return_t __ConsoleCheckDevice__(void) {
 
 /**
  * @brief Write string to console
- * @param str_ String to write
- * @return Return_t OK or error
+ * @param  str_ String to write
+ * @return      Return_t OK or error
  */
 static Return_t __ConsoleWriteString__(const Byte_t *str_) {
   FUNCTION_ENTER;
+
 
   Word_t len = 0x0u;
   Size_t size = 0x0u;
   Device_t *device = null;
   CharDeviceCommand_t cmd;
+
 
   if(__PointerIsNotNull__(str_)) {
     len = __StringLength__(str_);
@@ -249,7 +277,7 @@ static Return_t __ConsoleWriteString__(const Byte_t *str_) {
         if(__PointerIsNotNull__(device)) {
           /* Step 1: Configure byte count for write operation */
           cmd.command = CHAR_CMD_SET_PARAMS;
-          cmd.byteCount = (HalfWord_t)len;
+          cmd.byteCount = (HalfWord_t) len;
           cmd.transferMode = CHAR_IO_MODE_BLOCKING;
           size = sizeof(CharDeviceCommand_t);
 
@@ -284,16 +312,18 @@ static Return_t __ConsoleWriteString__(const Byte_t *str_) {
 
 /**
  * @brief Read single character from console
- * @param ch_ Pointer to store character
- * @return Return_t OK or error
+ * @param  ch_ Pointer to store character
+ * @return     Return_t OK or error
  */
 static Return_t __ConsoleReadChar__(Byte_t *ch_) {
   FUNCTION_ENTER;
+
 
   Size_t size = 0x1u;
   Addr_t *readData = null;
   Device_t *device = null;
   CharDeviceCommand_t cmd;
+
 
   if(__PointerIsNotNull__(ch_)) {
     /* Use internal device API instead of public API */
@@ -360,6 +390,7 @@ static Return_t __ConsoleHandleBackspace__(void) {
     consoleState.bufferPosition--;
     consoleState.commandBuffer[consoleState.bufferPosition] = 0x00u;
 
+
     /* Echo backspace sequence if enabled */
     if(consoleState.echoEnabled) {
       __ConsoleWriteString__((const Byte_t *) "\b \b");
@@ -390,6 +421,7 @@ static Return_t __ConsoleProcessCommand__(void) {
   /* Skip leading whitespace */
   __SkipWhitespace__((const Byte_t **) &cmdName);
 
+
   /* Find space to separate command from arguments */
   for(i = 0x0u; cmdName[i] != CHAR_NULL; i++) {
     if(CHAR_SPACE == cmdName[i]) {
@@ -400,11 +432,13 @@ static Return_t __ConsoleProcessCommand__(void) {
     }
   }
 
+
   /* Empty command */
   if(CHAR_NULL == cmdName[0x0]) {
     __ReturnOk__();
     FUNCTION_EXIT;
   }
+
 
   /* Search command table */
   for(i = 0x0u; __PointerIsNotNull__(commandTable[i].name); i++) {
@@ -421,11 +455,11 @@ static Return_t __ConsoleProcessCommand__(void) {
     }
   }
 
+
   /* Unknown command */
   __ConsoleWriteString__((const Byte_t *) "Unknown command: ");
   __ConsoleWriteString__(cmdName);
   __ConsoleWriteString__((const Byte_t *) "\r\nType 'help' for available commands.\r\n");
-
   __ReturnError__();
   FUNCTION_EXIT;
 }
@@ -438,11 +472,11 @@ static Return_t __ConsoleProcessCommand__(void) {
 static Return_t __ConsoleCmdHelp__(const Byte_t *args_) {
   FUNCTION_ENTER;
 
+
   Word_t i = 0x0u;
 
+
   (void) args_;
-
-
   __ConsoleWriteString__((const Byte_t *) "Available commands:\r\n");
 
   for(i = 0x0u; __PointerIsNotNull__(commandTable[i].name); i++) {
@@ -464,13 +498,11 @@ static Return_t __ConsoleCmdHelp__(const Byte_t *args_) {
  */
 static Return_t __ConsoleCmdVersion__(const Byte_t *args_) {
   FUNCTION_ENTER;
-
   (void) args_;
   __ConsoleWriteString__((const Byte_t *) "HeliOS Embedded Operating System\r\n");
   __ConsoleWriteString__((const Byte_t *) "Version: 0.5.0\r\n");
   __ConsoleWriteString__((const Byte_t *) "Copyright (C) 2020-2026 HeliOS Project\r\n");
   __ConsoleWriteString__((const Byte_t *) "License: GPL-2.0-or-later\r\n");
-
   __ReturnOk__();
   FUNCTION_EXIT;
 }
@@ -483,14 +515,14 @@ static Return_t __ConsoleCmdVersion__(const Byte_t *args_) {
 static Return_t __ConsoleCmdTasks__(const Byte_t *args_) {
   FUNCTION_ENTER;
 
+
   TaskInfo_t *taskList = null;
   Base_t taskCount = 0x0u;
   Base_t i = 0x0u;
   Byte_t numBuf[0x10];
 
+
   (void) args_;
-
-
   __ConsoleWriteString__((const Byte_t *) "Task List:\r\n");
   __ConsoleWriteString__((const Byte_t *) "  ID   State      Runtime\r\n");
   __ConsoleWriteString__((const Byte_t *) "  ---- ---------- --------\r\n");
@@ -503,30 +535,26 @@ static Return_t __ConsoleCmdTasks__(const Byte_t *args_) {
       __ConsoleWriteString__(numBuf);
       __ConsoleWriteString__((const Byte_t *) "   ");
 
+
       /* Print task state */
       switch(taskList[i].state) {
-      case TaskStateSuspended:
-        __ConsoleWriteString__((const Byte_t *) "Suspended  ");
+      case TaskStateSuspended: __ConsoleWriteString__((const Byte_t *) "Suspended  ");
         break;
-
-      case TaskStateRunning:
-        __ConsoleWriteString__((const Byte_t *) "Running    ");
+      case TaskStateRunning: __ConsoleWriteString__((const Byte_t *) "Running    ");
         break;
-
-      case TaskStateWaiting:
-        __ConsoleWriteString__((const Byte_t *) "Waiting    ");
+      case TaskStateWaiting: __ConsoleWriteString__((const Byte_t *) "Waiting    ");
         break;
-
-      default:
-        __ConsoleWriteString__((const Byte_t *) "Unknown    ");
+      default: __ConsoleWriteString__((const Byte_t *) "Unknown    ");
         break;
       }
+
 
       /* Print runtime */
       __uitoah__((Word_t) taskList[i].totalRunTime, numBuf, sizeof(numBuf));
       __ConsoleWriteString__(numBuf);
       __ConsoleWriteString__((const Byte_t *) "\r\n");
     }
+
 
     /* Free task list */
     xMemFree(taskList);
@@ -547,12 +575,12 @@ static Return_t __ConsoleCmdTasks__(const Byte_t *args_) {
 static Return_t __ConsoleCmdMem__(const Byte_t *args_) {
   FUNCTION_ENTER;
 
+
   MemoryRegionStats_t *memState = null;
   Byte_t numBuf[0x10];
 
+
   (void) args_;
-
-
   __ConsoleWriteString__((const Byte_t *) "Memory Statistics:\r\n");
 
   if(OK(xMemGetHeapStats(&memState))) {
@@ -560,21 +588,19 @@ static Return_t __ConsoleCmdMem__(const Byte_t *args_) {
     __uitoah__((Word_t) memState->availableSpaceInBytes, numBuf, sizeof(numBuf));
     __ConsoleWriteString__(numBuf);
     __ConsoleWriteString__((const Byte_t *) " bytes\r\n");
-
     __ConsoleWriteString__((const Byte_t *) "  Free Blocks:      ");
     __uitoah__((Word_t) memState->numberOfFreeBlocks, numBuf, sizeof(numBuf));
     __ConsoleWriteString__(numBuf);
     __ConsoleWriteString__((const Byte_t *) "\r\n");
-
     __ConsoleWriteString__((const Byte_t *) "  Largest Free:     ");
     __uitoah__((Word_t) memState->largestFreeEntryInBytes, numBuf, sizeof(numBuf));
     __ConsoleWriteString__(numBuf);
     __ConsoleWriteString__((const Byte_t *) " bytes\r\n");
-
     __ConsoleWriteString__((const Byte_t *) "  Smallest Free:    ");
     __uitoah__((Word_t) memState->smallestFreeEntryInBytes, numBuf, sizeof(numBuf));
     __ConsoleWriteString__(numBuf);
     __ConsoleWriteString__((const Byte_t *) " bytes\r\n");
+
 
     /* Free memory state */
     xMemFree(memState);
@@ -594,11 +620,11 @@ static Return_t __ConsoleCmdMem__(const Byte_t *args_) {
  */
 static Return_t __ConsoleCmdClear__(const Byte_t *args_) {
   FUNCTION_ENTER;
-
   (void) args_;
+
+
   /* ANSI escape sequence to clear screen and move cursor to home */
   __ConsoleWriteString__((const Byte_t *) "\x1b[2J\x1b[H");
-
   __ReturnOk__();
   FUNCTION_EXIT;
 }
@@ -606,13 +632,13 @@ static Return_t __ConsoleCmdClear__(const Byte_t *args_) {
 
 /**
  * @brief Command: echo - Toggle echo mode or print message
- * @param args_ Command arguments
- * @return Return_t OK
+ * @param  args_ Command arguments
+ * @return       Return_t OK
  */
 static Return_t __ConsoleCmdEcho__(const Byte_t *args_) {
   FUNCTION_ENTER;
 
-  if(__PointerIsNotNull__(args_) && CHAR_NULL != args_[0x0]) {
+  if(__PointerIsNotNull__(args_) && (CHAR_NULL != args_[0x0])) {
     /* Print the arguments */
     __ConsoleWriteString__(args_);
     __ConsoleWriteString__((const Byte_t *) "\r\n");
@@ -634,8 +660,8 @@ static Return_t __ConsoleCmdEcho__(const Byte_t *args_) {
 
 /**
  * @brief Command: ls - List directory contents
- * @param args_ Command arguments (directory path, optional)
- * @return Return_t OK or error
+ * @param  args_ Command arguments (directory path, optional)
+ * @return       Return_t OK or error
  */
 static Return_t __ConsoleCmdLs__(const Byte_t *args_) {
   FUNCTION_ENTER;
@@ -653,18 +679,21 @@ static Return_t __ConsoleCmdLs__(const Byte_t *args_) {
     FUNCTION_EXIT;
   }
 
+
   /* Determine path */
-  if(__PointerIsNotNull__(args_) && CHAR_NULL != args_[0x0]) {
+  if(__PointerIsNotNull__(args_) && (CHAR_NULL != args_[0x0])) {
     __StringCopy__(path, args_, CONFIG_FS_MAX_PATH_LENGTH);
   } else {
     __StringCopy__(path, consoleState.currentWorkingDirectory, CONFIG_FS_MAX_PATH_LENGTH);
   }
+
 
   /* Open directory */
   if(OK(xDirOpen(&dir, mountedVolume, path))) {
     __ConsoleWriteString__((const Byte_t *) "Directory listing for: ");
     __ConsoleWriteString__(path);
     __ConsoleWriteString__((const Byte_t *) "\r\n");
+
 
     /* Read directory entries */
     while(OK(xDirRead(dir, &entry))) {
@@ -680,6 +709,7 @@ static Return_t __ConsoleCmdLs__(const Byte_t *args_) {
 
         __ConsoleWriteString__(entry->name);
 
+
         /* Print file size for files */
         if(!entry->isDirectory) {
           __ConsoleWriteString__((const Byte_t *) " (");
@@ -690,10 +720,12 @@ static Return_t __ConsoleCmdLs__(const Byte_t *args_) {
 
         __ConsoleWriteString__((const Byte_t *) "\r\n");
 
+
         /* Free entry */
         xMemFree(entry);
       }
     }
+
 
     /* Close directory */
     xDirClose(dir);
@@ -709,23 +741,26 @@ static Return_t __ConsoleCmdLs__(const Byte_t *args_) {
 
 /**
  * @brief Command: cd - Change directory
- * @param args_ Command arguments (directory path)
- * @return Return_t OK or error
+ * @param  args_ Command arguments (directory path)
+ * @return       Return_t OK or error
  */
 static Return_t __ConsoleCmdCd__(const Byte_t *args_) {
   FUNCTION_ENTER;
 
+
   Base_t exists = false;
   Byte_t newPath[CONFIG_FS_MAX_PATH_LENGTH];
 
+
   if(__PointerIsNotNull__(mountedVolume)) {
-    if(!__PointerIsNotNull__(args_) || 0x00u == args_[0x0]) {
+    if(!__PointerIsNotNull__(args_) || (0x00u == args_[0x0])) {
       /* No argument - go to root */
       __StringCopy__(newPath, (const Byte_t *) "/", CONFIG_FS_MAX_PATH_LENGTH);
     } else if(__StringCompare__(args_, (const Byte_t *) "..")) {
       /* Go up one directory */
       Word_t len = __StringLength__(consoleState.currentWorkingDirectory);
       Word_t i = len;
+
 
       /* Find last slash */
       while(i > 0x0u && CHAR_SLASH != consoleState.currentWorkingDirectory[i]) {
@@ -748,12 +783,14 @@ static Return_t __ConsoleCmdCd__(const Byte_t *args_) {
       if(CHAR_SLASH != newPath[__StringLength__(newPath) - 0x1u]) {
         Word_t len = __StringLength__(newPath);
 
+
         newPath[len] = CHAR_SLASH;
         newPath[len + 0x1u] = CHAR_NULL;
       }
 
       __StringCopy__(newPath + __StringLength__(newPath), args_, CONFIG_FS_MAX_PATH_LENGTH - __StringLength__(newPath));
     }
+
 
     /* Verify directory exists */
     if(OK(xFileExists(mountedVolume, newPath, &exists)) && exists) {
@@ -778,28 +815,28 @@ static Return_t __ConsoleCmdCd__(const Byte_t *args_) {
  */
 static Return_t __ConsoleCmdPwd__(const Byte_t *args_) {
   FUNCTION_ENTER;
-
   (void) args_;
   __ConsoleWriteString__(consoleState.currentWorkingDirectory);
   __ConsoleWriteString__((const Byte_t *) "\r\n");
   __ReturnOk__();
-
   FUNCTION_EXIT;
 }
 
 
 /**
  * @brief Command: cat - Display file contents
- * @param args_ Command arguments (file path)
- * @return Return_t OK or error
+ * @param  args_ Command arguments (file path)
+ * @return       Return_t OK or error
  */
 static Return_t __ConsoleCmdCat__(const Byte_t *args_) {
   FUNCTION_ENTER;
+
 
   File_t *file = null;
   Byte_t *data = null;
   Word_t fileSize = 0x0u;
   Byte_t path[CONFIG_FS_MAX_PATH_LENGTH];
+
 
   if(__PointerIsNotNull__(mountedVolume) && __PointerIsNotNull__(args_) && (0x00u != args_[0x0])) {
     /* Build full path */
@@ -811,12 +848,14 @@ static Return_t __ConsoleCmdCat__(const Byte_t *args_) {
       if(CHAR_SLASH != path[__StringLength__(path) - 0x1u]) {
         Word_t len = __StringLength__(path);
 
+
         path[len] = CHAR_SLASH;
         path[len + 0x1u] = CHAR_NULL;
       }
 
       __StringCopy__(path + __StringLength__(path), args_, CONFIG_FS_MAX_PATH_LENGTH - __StringLength__(path));
     }
+
 
     /* Open file for reading */
     if(OK(xFileOpen(&file, mountedVolume, path, FS_MODE_READ))) {
@@ -827,10 +866,14 @@ static Return_t __ConsoleCmdCat__(const Byte_t *args_) {
           if(OK(xFileRead(file, fileSize, &data))) {
             /* Display contents */
             Word_t i = 0x0u;
-            Byte_t ch[0x2] = { 0x00u, 0x00u };
+            Byte_t ch[0x2] = {
+              0x00u, 0x00u
+            };
+
 
             for(i = 0x0u; i < fileSize; i++) {
               ch[0x0] = data[i];
+
 
               /* Convert LF to CRLF for terminal */
               if(0x0Au == ch[0x0]) {
@@ -842,6 +885,7 @@ static Return_t __ConsoleCmdCat__(const Byte_t *args_) {
 
             __ConsoleWriteString__((const Byte_t *) "\r\n");
 
+
             /* Free data buffer */
             xMemFree(data);
           }
@@ -849,6 +893,7 @@ static Return_t __ConsoleCmdCat__(const Byte_t *args_) {
           __ConsoleWriteString__((const Byte_t *) "(empty file)\r\n");
         }
       }
+
 
       /* Close file */
       xFileClose(file);
@@ -873,17 +918,19 @@ static Return_t __ConsoleCmdCat__(const Byte_t *args_) {
 
 /**
  * @brief Command: mv - Move/rename file
- * @param args_ Command arguments (source and destination paths)
- * @return Return_t OK or error
+ * @param  args_ Command arguments (source and destination paths)
+ * @return       Return_t OK or error
  */
 static Return_t __ConsoleCmdMv__(const Byte_t *args_) {
   FUNCTION_ENTER;
+
 
   Byte_t oldPath[CONFIG_FS_MAX_PATH_LENGTH];
   Byte_t newPath[CONFIG_FS_MAX_PATH_LENGTH];
   const Byte_t *src = args_;
   const Byte_t *dst = null;
   Word_t i = 0x0u;
+
 
   if(__PointerIsNotNull__(mountedVolume) && __PointerIsNotNull__(args_) && (CHAR_NULL != args_[0x0])) {
     /* Find space separating source and destination */
@@ -900,8 +947,10 @@ static Return_t __ConsoleCmdMv__(const Byte_t *args_) {
       __memcpy__(oldPath, src, i);
       oldPath[i] = CHAR_NULL;
 
+
       /* Build destination path */
       __StringCopy__(newPath, dst, CONFIG_FS_MAX_PATH_LENGTH);
+
 
       /* Rename file */
       if(OK(xFileRename(mountedVolume, oldPath, newPath))) {
@@ -930,13 +979,15 @@ static Return_t __ConsoleCmdMv__(const Byte_t *args_) {
 
 /**
  * @brief Command: rm - Remove file
- * @param args_ Command arguments (file path)
- * @return Return_t OK or error
+ * @param  args_ Command arguments (file path)
+ * @return       Return_t OK or error
  */
 static Return_t __ConsoleCmdRm__(const Byte_t *args_) {
   FUNCTION_ENTER;
 
+
   Byte_t path[CONFIG_FS_MAX_PATH_LENGTH];
+
 
   if(__PointerIsNotNull__(mountedVolume) && __PointerIsNotNull__(args_) && (0x00u != args_[0x0])) {
     /* Build full path */
@@ -948,12 +999,14 @@ static Return_t __ConsoleCmdRm__(const Byte_t *args_) {
       if(CHAR_SLASH != path[__StringLength__(path) - 0x1u]) {
         Word_t len = __StringLength__(path);
 
+
         path[len] = CHAR_SLASH;
         path[len + 0x1u] = CHAR_NULL;
       }
 
       __StringCopy__(path + __StringLength__(path), args_, CONFIG_FS_MAX_PATH_LENGTH - __StringLength__(path));
     }
+
 
     /* Remove file */
     if(OK(xFileUnlink(mountedVolume, path))) {
@@ -978,13 +1031,15 @@ static Return_t __ConsoleCmdRm__(const Byte_t *args_) {
 
 /**
  * @brief Command: mkdir - Create directory
- * @param args_ Command arguments (directory path)
- * @return Return_t OK or error
+ * @param  args_ Command arguments (directory path)
+ * @return       Return_t OK or error
  */
 static Return_t __ConsoleCmdMkdir__(const Byte_t *args_) {
   FUNCTION_ENTER;
 
+
   Byte_t path[CONFIG_FS_MAX_PATH_LENGTH];
+
 
   if(__PointerIsNotNull__(mountedVolume) && __PointerIsNotNull__(args_) && (0x00u != args_[0x0])) {
     /* Build full path */
@@ -996,12 +1051,14 @@ static Return_t __ConsoleCmdMkdir__(const Byte_t *args_) {
       if(CHAR_SLASH != path[__StringLength__(path) - 0x1u]) {
         Word_t len = __StringLength__(path);
 
+
         path[len] = CHAR_SLASH;
         path[len + 0x1u] = CHAR_NULL;
       }
 
       __StringCopy__(path + __StringLength__(path), args_, CONFIG_FS_MAX_PATH_LENGTH - __StringLength__(path));
     }
+
 
     /* Create directory */
     if(OK(xDirMake(mountedVolume, path))) {
@@ -1026,17 +1083,18 @@ static Return_t __ConsoleCmdMkdir__(const Byte_t *args_) {
 
 /**
  * @brief Copy string from source to destination with bounds checking
- * @param dest_ Destination buffer
- * @param src_ Source string
+ * @param dest_     Destination buffer
+ * @param src_      Source string
  * @param destSize_ Size of destination buffer
  */
 static void __StringCopy__(Byte_t *dest_, const Byte_t *src_, Word_t destSize_) {
   Word_t i = 0x0u;
 
 
-  if(__PointerIsNull__(dest_) || __PointerIsNull__(src_) || destSize_ == 0x0u) {
+  if(__PointerIsNull__(dest_) || __PointerIsNull__(src_) || (destSize_ == 0x0u)) {
     return;
   }
+
 
   /* Copy up to destSize_ - 1 characters to leave room for null terminator */
   while((CHAR_NULL != src_[i]) && (i < (destSize_ - 0x1u))) {
@@ -1050,8 +1108,8 @@ static void __StringCopy__(Byte_t *dest_, const Byte_t *src_, Word_t destSize_) 
 
 /**
  * @brief Get length of string
- * @param str_ String
- * @return Word_t Length
+ * @param  str_ String
+ * @return      Word_t Length
  */
 static Word_t __StringLength__(const Byte_t *str_) {
   Word_t len = 0x0u;
@@ -1069,9 +1127,9 @@ static Word_t __StringLength__(const Byte_t *str_) {
 
 /**
  * @brief Compare two strings
- * @param s1_ First string
- * @param s2_ Second string
- * @return Base_t true if equal, false otherwise
+ * @param  s1_ First string
+ * @param  s2_ Second string
+ * @return     Base_t true if equal, false otherwise
  */
 static Base_t __StringCompare__(const Byte_t *s1_, const Byte_t *s2_) {
   Word_t i = 0x0u;
@@ -1108,8 +1166,8 @@ static void __SkipWhitespace__(const Byte_t **str_) {
 
 /**
  * @brief Convert unsigned integer to hexadecimal string
- * @param value_ Value to convert
- * @param buffer_ Buffer to store result
+ * @param value_      Value to convert
+ * @param buffer_     Buffer to store result
  * @param bufferSize_ Size of buffer
  */
 static void __uitoah__(Word_t value_, Byte_t *buffer_, Word_t bufferSize_) {
@@ -1118,13 +1176,14 @@ static void __uitoah__(Word_t value_, Byte_t *buffer_, Word_t bufferSize_) {
   Word_t temp = value_;
 
 
-  if(!__PointerIsNotNull__(buffer_) || bufferSize_ < 0x3u) {
+  if(!__PointerIsNotNull__(buffer_) || (bufferSize_ < 0x3u)) {
     return;
   }
 
+
   /* Add "0x" prefix */
-  buffer_[i++] = CHAR_ZERO;  /* '0' */
-  buffer_[i++] = CHAR_LOWERCASE_X;  /* 'x' */
+  buffer_[i++] = CHAR_ZERO; /* '0' */
+  buffer_[i++] = CHAR_LOWERCASE_X; /* 'x' */
 
   /* Handle zero specially */
   if(0x0u == value_) {
@@ -1133,8 +1192,10 @@ static void __uitoah__(Word_t value_, Byte_t *buffer_, Word_t bufferSize_) {
     }
 
     buffer_[i] = CHAR_NULL;
+
     return;
   }
+
 
   /* Convert to hex digits (will be in reverse order initially) */
   {
@@ -1148,6 +1209,7 @@ static void __uitoah__(Word_t value_, Byte_t *buffer_, Word_t bufferSize_) {
       temp >>= 0x4;
     }
 
+
     /* Reverse the hex digits */
     end = i - 0x1u;
 
@@ -1158,9 +1220,7 @@ static void __uitoah__(Word_t value_, Byte_t *buffer_, Word_t bufferSize_) {
       start++;
       end--;
     }
-  }
-
-  buffer_[i] = CHAR_NULL;
+  } buffer_[i] = CHAR_NULL;
 }
 
 
@@ -1170,18 +1230,18 @@ static void __uitoah__(Word_t value_, Byte_t *buffer_, Word_t bufferSize_) {
 /**
  * @brief Clear console state for testing
  */
-void __ConsoleStateClear__(void) {
-  consoleState.deviceReady = false;
+  void __ConsoleStateClear__(void) {
+    consoleState.deviceReady = false;
   #if defined(CONFIG_CONSOLE_ECHO_ENABLED)
-    consoleState.echoEnabled = true;
+      consoleState.echoEnabled = true;
   #else /* if defined(CONFIG_CONSOLE_ECHO_ENABLED) */
-    consoleState.echoEnabled = false;
+      consoleState.echoEnabled = false;
   #endif /* if defined(CONFIG_CONSOLE_ECHO_ENABLED) */
-  consoleState.bufferPosition = 0x0u;
-  __memset__(consoleState.commandBuffer, CHAR_NULL, CONFIG_CONSOLE_MAX_COMMAND_LENGTH);
-  __StringCopy__(consoleState.currentWorkingDirectory, (const Byte_t *) "/", CONFIG_FS_MAX_PATH_LENGTH);
-  mountedVolume = null;
-}
+    consoleState.bufferPosition = 0x0u;
+    __memset__(consoleState.commandBuffer, CHAR_NULL, CONFIG_CONSOLE_MAX_COMMAND_LENGTH);
+    __StringCopy__(consoleState.currentWorkingDirectory, (const Byte_t *) "/", CONFIG_FS_MAX_PATH_LENGTH);
+    mountedVolume = null;
+  }
 
 
 #endif /* if defined(POSIX_ARCH_OTHER) */

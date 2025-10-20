@@ -155,8 +155,12 @@
  */
 /*UNCRUSTIFY-ON*/
 /* Memory region structures - explicitly zero-initialized */
-static volatile MemoryRegion_t heap = { 0 };
-static volatile MemoryRegion_t kernel = { 0 };
+static volatile MemoryRegion_t heap = {
+  0
+};
+static volatile MemoryRegion_t kernel = {
+  0
+};
 static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, const volatile Addr_t *addr_, const Base_t option_);
 static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **addr_, const Size_t size_);
 static Return_t __free__(volatile MemoryRegion_t *region_, const volatile Addr_t *addr_);

@@ -33,19 +33,19 @@
 
   /* Console banner displayed on connect */
   #define CONSOLE_BANNER \
-    "\r\n" \
-    "   _    _      _ _  ____   _____ \r\n" \
-    "  | |  | |    | (_)/ __ \\ / ____|\r\n" \
-    "  | |__| | ___| |_| |  | | (___  \r\n" \
-    "  |  __  |/ _ \\ | | |  | |\\___ \\ \r\n" \
-    "  | |  | |  __/ | | |__| |____) |\r\n" \
-    "  |_|  |_|\\___|_|_|\\____/|_____/ \r\n" \
-    "\r\n" \
-    "  HeliOS Embedded Operating System\r\n" \
-    "  Version 0.5.0\r\n" \
-    "  Copyright (C) 2020-2026 HeliOS Project\r\n" \
-    "  Licensed under GPL-2.0-or-later\r\n" \
-    "\r\n"
+          "\r\n" \
+          "   _    _      _ _  ____   _____ \r\n" \
+          "  | |  | |    | (_)/ __ \\ / ____|\r\n" \
+          "  | |__| | ___| |_| |  | | (___  \r\n" \
+          "  |  __  |/ _ \\ | | |  | |\\___ \\ \r\n" \
+          "  | |  | |  __/ | | |__| |____) |\r\n" \
+          "  |_|  |_|\\___|_|_|\\____/|_____/ \r\n" \
+          "\r\n" \
+          "  HeliOS Embedded Operating System\r\n" \
+          "  Version 0.5.0\r\n" \
+          "  Copyright (C) 2020-2026 HeliOS Project\r\n" \
+          "  Licensed under GPL-2.0-or-later\r\n" \
+          "\r\n"
 
 
   /* Console return codes */
@@ -80,6 +80,7 @@
   #endif /* ifdef __cplusplus */
   /* Console Initialization */
   Return_t xConsoleInit(void);
+
 
   /* Console Task Entry Point */
   void vConsoleTask(Task_t *task_, TaskParm_t *parm_);

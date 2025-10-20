@@ -99,7 +99,8 @@ Return_t xStreamReceive(const StreamBuffer_t *stream_, HalfWord_t *bytes_, Byte_
             *bytes_ = stream_->length;
 
             if(OK(__memcpy__(*data_, stream_->buffer, stream_->length * sizeof(Byte_t)))) {
-              /* Reset stream buffer and length (cast away const for modification) */
+              /* Reset stream buffer and length (cast away const for
+               * modification) */
               if(OK(__memset__((Addr_t *) stream_->buffer, nil, CONFIG_STREAM_BUFFER_BYTES))) {
                 ((StreamBuffer_t *) stream_)->length = nil;
                 __ReturnOk__();

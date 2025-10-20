@@ -47,7 +47,8 @@
   #define LOOPBACK_CMD_SET_MODE 0x04u /* 4 */
   /* Loopback modes */
   #define LOOPBACK_MODE_FIFO 0x00u /* 0 - FIFO mode (default) */
-  #define LOOPBACK_MODE_ECHO 0x01u /* 1 - Echo mode (data immediately available) */
+  #define LOOPBACK_MODE_ECHO 0x01u /* 1 - Echo mode (data immediately available)
+                                    */
 
 
   /**
@@ -57,7 +58,7 @@
    */
   typedef struct LoopbackPositionConfig_s {
     Byte_t command;       /* LOOPBACK_CMD_SET_POSITION */
-    HalfWord_t position;  /* Byte offset to set */
+    HalfWord_t position; /* Byte offset to set */
   } LoopbackPositionConfig_t;
 
 
@@ -68,7 +69,7 @@
    */
   typedef struct LoopbackClearConfig_s {
     Byte_t command;       /* LOOPBACK_CMD_CLEAR_BUFFER */
-    Byte_t fillPattern;   /* Pattern to fill with */
+    Byte_t fillPattern; /* Pattern to fill with */
   } LoopbackClearConfig_t;
 
 
@@ -79,7 +80,7 @@
    */
   typedef struct LoopbackModeConfig_s {
     Byte_t command;       /* LOOPBACK_CMD_SET_MODE */
-    Byte_t mode;          /* LOOPBACK_MODE_* constant */
+    Byte_t mode; /* LOOPBACK_MODE_* constant */
   } LoopbackModeConfig_t;
 
 
@@ -90,14 +91,14 @@
    */
   typedef struct LoopbackStats_s {
     Byte_t command;           /* LOOPBACK_CMD_GET_STATS */
-    HalfWord_t bufferSize;    /* Total buffer size in bytes */
+    HalfWord_t bufferSize; /* Total buffer size in bytes */
     HalfWord_t currentPosition; /* Current read/write position */
-    HalfWord_t bytesAvailable;  /* Bytes available to read */
-    Word_t bytesRead;         /* Total bytes read since init */
-    Word_t bytesWritten;      /* Total bytes written since init */
-    Word_t readOperations;    /* Number of read operations */
-    Word_t writeOperations;   /* Number of write operations */
-    Byte_t mode;              /* Current operation mode */
+    HalfWord_t bytesAvailable; /* Bytes available to read */
+    Word_t bytesRead; /* Total bytes read since init */
+    Word_t bytesWritten; /* Total bytes written since init */
+    Word_t readOperations; /* Number of read operations */
+    Word_t writeOperations; /* Number of write operations */
+    Byte_t mode; /* Current operation mode */
   } LoopbackStats_t;
 
   #ifdef __cplusplus

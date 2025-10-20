@@ -20,7 +20,13 @@
   #include "console.h"
 #endif /* if defined(CONFIG_ENABLE_CONSOLE) */
 
+#if defined(CONFIG_ENABLE_IDLE_HOOK)
+  /* User-provided idle hook function when no tasks are ready to run */
+  extern void vApplicationIdleHook(void);
 
+
+
+#endif /* if defined(CONFIG_ENABLE_IDLE_HOOK) */
 static TaskList_t *tlist = null;
 static void __RunTimeReset__(void);
 static Return_t __TaskListFindTask__(const Task_t *task_);
@@ -320,10 +326,10 @@ Return_t xTaskGetNumberOfTasks(Base_t *tasks_) {
     } else {
       cursor = tlist->head;
 
-    while(__PointerIsNotNull__(cursor)) {
-      tasks++;
-      cursor = cursor->next;
-    }
+      while(__PointerIsNotNull__(cursor)) {
+        tasks++;
+        cursor = cursor->next;
+      }
 
       if(tlist->length == tasks) {
         *tasks_ = tasks;
@@ -802,8 +808,11 @@ Return_t xTaskStartScheduler(void) {
 
 
   if(__FlagIsNotSet__(RUNNING) && __PointerIsNotNull__(tlist)) {
-    #if defined(CONFIG_ENABLE_CONSOLE)
-      /* Initialize and start console task if enabled */
+#if defined(CONFIG_ENABLE_CONSOLE)
+
+
+      /* Initialize and start console task if enabled (must happen before
+       * RUNNING flag set) */
       {
         Task_t *consoleTask = null;
 
@@ -812,19 +821,23 @@ Return_t xTaskStartScheduler(void) {
           if(OK(xTaskCreate(&consoleTask, "Console", vConsoleTask, null))) {
             /* Note: Task priority not currently implemented in HeliOS */
 
-            #if (0x0u == CONFIG_CONSOLE_TASK_MODE)
+  #if (0x0u == CONFIG_CONSOLE_TASK_MODE)
+
+
               /* Continuous mode - task runs every clock tick */
               xTaskResume(consoleTask);
-            #else /* if (0x0u == CONFIG_CONSOLE_TASK_MODE) */
+  #else /* if (0x0u == CONFIG_CONSOLE_TASK_MODE) */
               /* Event-driven mode - task runs on timer */
               xTaskWait(consoleTask);
               xTaskChangePeriod(consoleTask, CONFIG_CONSOLE_TIMER_PERIOD_MS);
               xTaskResetTimer(consoleTask);
-            #endif /* if (0x0u == CONFIG_CONSOLE_TASK_MODE) */
+  #endif /* if (0x0u == CONFIG_CONSOLE_TASK_MODE) */
           }
         }
       }
-    #endif /* if defined(CONFIG_ENABLE_CONSOLE) */
+#endif /* if defined(CONFIG_ENABLE_CONSOLE) */
+    /* Set RUNNING flag to prevent task creation/deletion during scheduling */
+    __SetFlag__(RUNNING);
 
     while(SchedulerStateRunning == scheduler) {
       /* If the total runtime on a task has overflowed, reset the total runtime
@@ -837,23 +850,34 @@ Return_t xTaskStartScheduler(void) {
 
       while(__PointerIsNotNull__(cursor)) {
         /* If the task is in a waiting state *AND* has a waiting notification,
-         * then run the task. */
+         * then run the task. Note: Task callback is responsible for clearing
+         * the notification via xTaskNotifyTake() to prevent repeated execution.
+         */
         if((TaskStateWaiting == cursor->state) && (nil < cursor->notificationBytes)) {
           __TaskRun__(cursor);
 
 
           /* If the task is in a waiting state *AND* the task timer has elapsed,
-           * then run the task. */
-        } else if((TaskStateWaiting == cursor->state) && (nil < cursor->timerPeriod) && ((__PortGetSysTicks__() - cursor->timerStartTime) > cursor->timerPeriod)
-          ) {
-          __TaskRun__(cursor);
-          cursor->timerStartTime = __PortGetSysTicks__();
+           * then run the task. Uses safe arithmetic for timer overflow
+           * handling. */
+        } else if((TaskStateWaiting == cursor->state) && (nil < cursor->timerPeriod)) {
+          Ticks_t elapsed = __PortGetSysTicks__() - cursor->timerStartTime;
 
+
+          if(elapsed > cursor->timerPeriod) {
+            __TaskRun__(cursor);
+
+
+            /* Note: Timer reset after task execution causes period to include
+             * task execution time (drift accumulation by design). */
+            cursor->timerStartTime = __PortGetSysTicks__();
+          }
 
           /* If the task is in the running state *AND* its total runtime is less
-           * than the least runtime of the tasks thus far, then update lest
+           * than the least runtime of the tasks thus far, then update least
            * runtime and remember the task because it will get ran later if it
-           * is in fact the task with the least runtime. */
+           * is in fact the task with the least runtime. This implements fair
+           * scheduling by selecting the task that has executed the least. */
         } else if((TaskStateRunning == cursor->state) && (least > cursor->totalRunTime)) {
           least = cursor->totalRunTime;
           task = cursor;
@@ -869,6 +893,13 @@ Return_t xTaskStartScheduler(void) {
         task = null;
       }
 
+#if defined(CONFIG_ENABLE_IDLE_HOOK)
+        else {
+          /* No tasks were ready to run - call idle hook if configured. This
+          * allows for power management, watchdog feeding, etc. */
+          vApplicationIdleHook();
+        }
+#endif /* if defined(CONFIG_ENABLE_IDLE_HOOK) */
       /* Intentionally underflow to get the maximum value of Ticks_t. */
       least = -0x1;
     }
@@ -886,6 +917,11 @@ Return_t xTaskStartScheduler(void) {
 static void __RunTimeReset__(void) {
   Task_t *cursor = null;
 
+
+  /* Defensive check: ensure task list exists before accessing */
+  if(__PointerIsNull__(tlist)) {
+    return;
+  }
 
   cursor = tlist->head;
 

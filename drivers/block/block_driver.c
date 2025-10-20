@@ -34,6 +34,8 @@ typedef struct BlockDeviceState_s {
 static BlockDeviceState_t state = {
   0
 };
+
+
 /* Forward declarations */
 static Return_t __PrepareBlockIORequest__(const Byte_t operation_, BlockIORequest_t **request_, Size_t *configSize_);
 static Return_t __BlockDeviceReadBlockRAW__(Byte_t **data_);

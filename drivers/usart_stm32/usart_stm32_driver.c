@@ -19,27 +19,31 @@
 #if !defined(POSIX_ARCH_OTHER)
   #include <unistd.h> /* For POSIX write() in simulation mode */
 #endif /* if !defined(POSIX_ARCH_OTHER) */
-
-
 /* Driver state */
 typedef struct USARTDriverState_s {
-  #if !defined(POSIX_ARCH_OTHER)
-    UART_HandleTypeDef huart;       /* STM32 HAL UART handle */
-  #else
-    void *huart;                    /* Placeholder for testing */
-  #endif /* if !defined(POSIX_ARCH_OTHER) */
+#if !defined(POSIX_ARCH_OTHER)
+    UART_HandleTypeDef huart; /* STM32 HAL UART handle */
+
+
+
+#else  /* if !defined(POSIX_ARCH_OTHER) */
+    void *huart; /* Placeholder for testing */
+
+
+
+#endif /* if !defined(POSIX_ARCH_OTHER) */
   Byte_t rxBuffer[USART_RX_BUFFER_SIZE]; /* Circular RX buffer */
   Byte_t txBuffer[USART_TX_BUFFER_SIZE]; /* Circular TX buffer */
-  volatile HalfWord_t rxHead;            /* RX buffer write position */
-  volatile HalfWord_t rxTail;            /* RX buffer read position */
-  volatile HalfWord_t txHead;            /* TX buffer write position */
-  volatile HalfWord_t txTail;            /* TX buffer read position */
-  volatile Base_t txBusy;                /* TX operation in progress */
-  volatile Base_t rxBusy;                /* RX operation in progress */
-  volatile Byte_t errorFlags;            /* Accumulated error flags */
-  CharIORequest_t currentRequest;        /* Current I/O request */
-  Base_t initialized;                    /* Initialization flag */
-  Byte_t rxSingleByte;                   /* Single byte for interrupt RX */
+  volatile HalfWord_t rxHead; /* RX buffer write position */
+  volatile HalfWord_t rxTail; /* RX buffer read position */
+  volatile HalfWord_t txHead; /* TX buffer write position */
+  volatile HalfWord_t txTail; /* TX buffer read position */
+  volatile Base_t txBusy; /* TX operation in progress */
+  volatile Base_t rxBusy; /* RX operation in progress */
+  volatile Byte_t errorFlags; /* Accumulated error flags */
+  CharIORequest_t currentRequest; /* Current I/O request */
+  Base_t initialized; /* Initialization flag */
+  Byte_t rxSingleByte; /* Single byte for interrupt RX */
 } USARTDriverState_t;
 
 
@@ -47,6 +51,8 @@ typedef struct USARTDriverState_s {
 static USARTDriverState_t state = {
   0
 };
+
+
 /* Forward declarations */
 static HalfWord_t __CircularBufferSpace__(const HalfWord_t head_, const HalfWord_t tail_, const HalfWord_t size_);
 static HalfWord_t __CircularBufferAvailable__(const HalfWord_t head_, const HalfWord_t tail_, const HalfWord_t size_);
@@ -58,8 +64,6 @@ static Byte_t __CircularBufferGet__(const Byte_t *buffer_, HalfWord_t *tail_, co
   static Return_t __TranslateHALToStopBits__(const Byte_t stopBits_, Word_t *halStopBits_);
   static Return_t __TranslateHALToWordLength__(const Byte_t dataBits_, Word_t *halWordLength_);
 #endif /* if !defined(POSIX_ARCH_OTHER) */
-
-
 /*UNCRUSTIFY-OFF*/
 Return_t TO_FUNCTION(DEVICE_NAME, _self_register)(void) {
   FUNCTION_ENTER;

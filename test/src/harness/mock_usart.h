@@ -25,13 +25,16 @@
   #include "mem.h"
   #include "../../../drivers/char/char_io_interface.h"
 
+
   /* Mock USART device identifier and name */
   #define MOCK_USART_DEVICE_UID 0x0100u
   #define MOCK_USART_DEVICE_NAME "MOCKUSRT"
 
+
   /* Buffer sizes */
   #define MOCK_USART_RX_BUFFER_SIZE 2048u
   #define MOCK_USART_TX_BUFFER_SIZE 2048u
+
 
   /* Mock USART device state */
   typedef struct MockUSARTState_s {
@@ -48,7 +51,6 @@
   #ifdef __cplusplus
     extern "C" {
   #endif /* ifdef __cplusplus */
-
   /* Device interface functions */
   Return_t MOCKUSRT_self_register(void);
   Return_t MOCKUSRT_init(Device_t *device_);
@@ -57,6 +59,7 @@
   Return_t MOCKUSRT_write(Device_t *device_, Size_t *size_, Addr_t *data_);
   Return_t MOCKUSRT_simple_read(Device_t *device_, Byte_t *data_);
   Return_t MOCKUSRT_simple_write(Device_t *device_, Byte_t data_);
+
 
   /* Test helper functions */
   void xMockUSARTInjectInput(const Byte_t *input_);
