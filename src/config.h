@@ -409,4 +409,248 @@
   #if !defined(CONFIG_DEVICE_NAME_BYTES)
     #define CONFIG_DEVICE_NAME_BYTES 0x8u /* 8 */
   #endif /* if !defined(CONFIG_DEVICE_NAME_BYTES) */
+
+
+/**
+ * @brief Define the block device UID for filesystem operations
+ *
+ * Setting CONFIG_FS_BLOCK_DEVICE_UID specifies which block device the
+ * filesystem will use for all operations. This UID must match a registered
+ * block device driver in the system. The default is 0x1000u (BLOCKDEV).
+ *
+ * The filesystem uses this device for mounting, formatting, reading, and
+ * writing file data. The block device must be properly initialized and
+ * configured before filesystem operations can succeed.
+ *
+ * @note The value should be set as a hexadecimal constant with the 'u' suffix
+ * (e.g., 0x1000u).
+ *
+ * @note The block device must be registered and initialized before calling
+ * xFSMount() or xFSFormat().
+ *
+ * @sa xFSMount()
+ * @sa xFSFormat()
+ *
+ */
+  #if !defined(CONFIG_FS_BLOCK_DEVICE_UID)
+    #define CONFIG_FS_BLOCK_DEVICE_UID 0x1000u /* BLOCKDEV */
+  #endif /* if !defined(CONFIG_FS_BLOCK_DEVICE_UID) */
+
+
+/**
+ * @brief Enable the console subsystem
+ *
+ * Defining CONFIG_ENABLE_CONSOLE will enable the interactive console feature.
+ * When enabled, a console task will automatically start when the scheduler
+ * begins, providing a UNIX-like command-line interface over a character device.
+ * The default is disabled.
+ *
+ * The console provides interactive access to system diagnostics, filesystem
+ * operations, task management, and memory statistics through a minimal shell.
+ *
+ * @note Enabling the console requires a properly configured character device
+ * driver as specified by CONFIG_CONSOLE_DEVICE_UID.
+ *
+ * @note The console task will only start after xStartScheduler() is called.
+ *
+ * @note To disable this feature, comment out or remove the definition of
+ * CONFIG_ENABLE_CONSOLE.
+ *
+ * @sa CONFIG_CONSOLE_DEVICE_UID
+ * @sa CONFIG_CONSOLE_TASK_PRIORITY
+ * @sa CONFIG_CONSOLE_TASK_MODE
+ *
+ */
+  #if defined(DOXYGEN)
+    #if !defined(CONFIG_ENABLE_CONSOLE)
+      #define CONFIG_ENABLE_CONSOLE
+    #endif /* if !defined(CONFIG_ENABLE_CONSOLE) */
+  #endif /* if defined(DOXYGEN) */
+
+
+/**
+ * @brief Define the character device UID for console operations
+ *
+ * Setting CONFIG_CONSOLE_DEVICE_UID specifies which character device the
+ * console will use for input and output. This UID must match a registered
+ * character device driver in the system. The default is 0x2000u (CHARDEV0).
+ *
+ * The console requires a bidirectional character device, typically a UART,
+ * USART, or USB CDC virtual COM port, to communicate with the user.
+ *
+ * @note The value should be set as a hexadecimal constant with the 'u' suffix
+ * (e.g., 0x2000u).
+ *
+ * @note The character device must be registered and initialized before the
+ * scheduler starts for the console to function properly.
+ *
+ * @note This setting only has effect when CONFIG_ENABLE_CONSOLE is defined.
+ *
+ * @sa CONFIG_ENABLE_CONSOLE
+ *
+ */
+  #if !defined(CONFIG_CONSOLE_DEVICE_UID)
+    #define CONFIG_CONSOLE_DEVICE_UID 0x2000u /* CHARDEV0 */
+  #endif /* if !defined(CONFIG_CONSOLE_DEVICE_UID) */
+
+
+/**
+ * @brief Define the console task priority
+ *
+ * Setting CONFIG_CONSOLE_TASK_PRIORITY specifies the scheduling priority for
+ * the console task. Lower values indicate higher priority. The default is 5
+ * (medium-low priority) as the console is typically an interactive,
+ * non-critical task.
+ *
+ * The console task priority determines when it receives CPU time relative to
+ * other tasks in the system. For interactive responsiveness, a moderate
+ * priority is recommended. For systems where console is primarily diagnostic,
+ * a lower priority may be appropriate.
+ *
+ * @note The value should be set as a hexadecimal constant with the 'u' suffix
+ * (e.g., 0x5u for priority 5).
+ *
+ * @note This setting only has effect when CONFIG_ENABLE_CONSOLE is defined.
+ *
+ * @sa CONFIG_ENABLE_CONSOLE
+ * @sa CONFIG_CONSOLE_TASK_MODE
+ *
+ */
+  #if !defined(CONFIG_CONSOLE_TASK_PRIORITY)
+    #define CONFIG_CONSOLE_TASK_PRIORITY 0x5u /* 5 - medium-low priority */
+  #endif /* if !defined(CONFIG_CONSOLE_TASK_PRIORITY) */
+
+
+/**
+ * @brief Define the console task scheduling mode
+ *
+ * Setting CONFIG_CONSOLE_TASK_MODE specifies whether the console task runs
+ * continuously with normal task scheduling or event-driven via a timer.
+ * Valid values:
+ * - 0: Continuous mode - task runs every scheduler iteration
+ * - 1: Event-driven mode - task runs on timer events only
+ *
+ * The default is 1 (event-driven) to reduce CPU usage when the console is idle.
+ *
+ * @note The value should be 0 or 1.
+ *
+ * @note In event-driven mode, the timer period is set by
+ * CONFIG_CONSOLE_TIMER_PERIOD_MS.
+ *
+ * @note This setting only has effect when CONFIG_ENABLE_CONSOLE is defined.
+ *
+ * @sa CONFIG_ENABLE_CONSOLE
+ * @sa CONFIG_CONSOLE_TIMER_PERIOD_MS
+ *
+ */
+  #if !defined(CONFIG_CONSOLE_TASK_MODE)
+    #define CONFIG_CONSOLE_TASK_MODE 0x1u /* 1 - event-driven */
+  #endif /* if !defined(CONFIG_CONSOLE_TASK_MODE) */
+
+
+/**
+ * @brief Define the console timer period in milliseconds
+ *
+ * Setting CONFIG_CONSOLE_TIMER_PERIOD_MS specifies how often the console task
+ * runs when in event-driven mode (CONFIG_CONSOLE_TASK_MODE = 1). The default
+ * is 50ms, providing responsive interactive performance while minimizing CPU
+ * overhead. The default is 50 milliseconds.
+ *
+ * This value represents the polling interval for checking user input. Lower
+ * values provide more responsive input but increase CPU usage. Higher values
+ * reduce overhead but may make the console feel sluggish.
+ *
+ * @note The value should be set as a hexadecimal constant with the 'u' suffix
+ * (e.g., 0x32u for 50 milliseconds).
+ *
+ * @note This setting only has effect when CONFIG_ENABLE_CONSOLE is defined and
+ * CONFIG_CONSOLE_TASK_MODE is set to 1 (event-driven).
+ *
+ * @note Typical values range from 10ms (very responsive) to 100ms (low
+ * overhead).
+ *
+ * @sa CONFIG_ENABLE_CONSOLE
+ * @sa CONFIG_CONSOLE_TASK_MODE
+ *
+ */
+  #if !defined(CONFIG_CONSOLE_TIMER_PERIOD_MS)
+    #define CONFIG_CONSOLE_TIMER_PERIOD_MS 0x32u /* 50 milliseconds */
+  #endif /* if !defined(CONFIG_CONSOLE_TIMER_PERIOD_MS) */
+
+
+/**
+ * @brief Define the maximum command line length
+ *
+ * Setting CONFIG_CONSOLE_MAX_COMMAND_LENGTH specifies the maximum number of
+ * characters that can be entered in a single command line, including arguments.
+ * The default is 80 characters, matching traditional terminal line lengths.
+ *
+ * This buffer size limits the total input line. Commands exceeding this length
+ * will be rejected or truncated. Consider increasing this value for scripts or
+ * commands with long file paths.
+ *
+ * @note The value should be set as a hexadecimal constant with the 'u' suffix
+ * (e.g., 0x50u for 80 characters).
+ *
+ * @note Larger values increase RAM usage for the input buffer.
+ *
+ * @note This setting only has effect when CONFIG_ENABLE_CONSOLE is defined.
+ *
+ * @sa CONFIG_ENABLE_CONSOLE
+ *
+ */
+  #if !defined(CONFIG_CONSOLE_MAX_COMMAND_LENGTH)
+    #define CONFIG_CONSOLE_MAX_COMMAND_LENGTH 0x50u /* 80 characters */
+  #endif /* if !defined(CONFIG_CONSOLE_MAX_COMMAND_LENGTH) */
+
+
+/**
+ * @brief Enable character echo by default
+ *
+ * Defining CONFIG_CONSOLE_ECHO_ENABLED will cause the console to echo typed
+ * characters back to the user terminal by default. This can be toggled at
+ * runtime through the console. The default is enabled for typical interactive
+ * terminal use.
+ *
+ * Echo allows users to see what they are typing. This is standard behavior for
+ * interactive terminals but may be undesirable for password entry or automated
+ * input.
+ *
+ * @note This setting only defines the initial/default state. Echo can be
+ * toggled on and off through console commands during runtime.
+ *
+ * @note This setting only has effect when CONFIG_ENABLE_CONSOLE is defined.
+ *
+ * @note To disable echo by default, comment out or remove the definition of
+ * CONFIG_CONSOLE_ECHO_ENABLED.
+ *
+ * @sa CONFIG_ENABLE_CONSOLE
+ *
+ */
+  #if !defined(CONFIG_CONSOLE_ECHO_ENABLED)
+    #define CONFIG_CONSOLE_ECHO_ENABLED
+  #endif /* if !defined(CONFIG_CONSOLE_ECHO_ENABLED) */
+
+
+/**
+ * @brief Define the console command prompt
+ *
+ * Setting CONFIG_CONSOLE_PROMPT specifies the string displayed as the command
+ * prompt. The default is "$" to match UNIX shell conventions.
+ *
+ * The prompt is displayed after the console banner and after each command
+ * completes, indicating the console is ready for input.
+ *
+ * @note The value should be a string literal (e.g., "$ " or "HeliOS> ").
+ *
+ * @note Keep the prompt short to conserve screen space and bandwidth.
+ *
+ * @note This setting only has effect when CONFIG_ENABLE_CONSOLE is defined.
+ *
+ * @sa CONFIG_ENABLE_CONSOLE
+ *
+ */
+  #if !defined(CONFIG_CONSOLE_PROMPT)
+    #define CONFIG_CONSOLE_PROMPT "$ "
+  #endif /* if !defined(CONFIG_CONSOLE_PROMPT) */
 #endif /* ifndef CONFIG_H_ */

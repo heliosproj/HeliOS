@@ -149,7 +149,7 @@ static Return_t __FreeClusters__(const Volume_t *vol_, Word_t startCluster_);
 static Return_t __CreateDirEntry__(const Volume_t *vol_, Word_t parentCluster_, const Byte_t *name83_, Byte_t attr_, Word_t firstCluster_, Word_t size_);
 
 
-Return_t xFSMount(Volume_t **volume_, const HalfWord_t blockDeviceUID_) {
+Return_t xFSMount(Volume_t **volume_) {
   FUNCTION_ENTER;
 
 
@@ -160,7 +160,7 @@ Return_t xFSMount(Volume_t **volume_, const HalfWord_t blockDeviceUID_) {
 
   if(__PointerIsNotNull__(volume_)) {
     /* Check if device is already mounted */
-    if(__IsDeviceMounted__(blockDeviceUID_)) {
+    if(__IsDeviceMounted__(CONFIG_FS_BLOCK_DEVICE_UID)) {
       __ReturnError__();
       FUNCTION_EXIT;
     }
@@ -168,7 +168,7 @@ Return_t xFSMount(Volume_t **volume_, const HalfWord_t blockDeviceUID_) {
     /* Allocate volume structure in kernel heap memory */
     if(OK(__KernelAllocateMemory__((volatile Addr_t **) &vol, sizeof(Volume_t)))) {
       /* Store block device UID for all I/O operations */
-      vol->blockDeviceUID = blockDeviceUID_;
+      vol->blockDeviceUID = CONFIG_FS_BLOCK_DEVICE_UID;
       vol->mounted = false;
 
       /* Read boot sector (sector 0) */
@@ -194,7 +194,7 @@ Return_t xFSMount(Volume_t **volume_, const HalfWord_t blockDeviceUID_) {
           vol->mounted = true;
 
           /* Add device to mounted list */
-          if(OK(__AddMountedDevice__(blockDeviceUID_))) {
+          if(OK(__AddMountedDevice__(CONFIG_FS_BLOCK_DEVICE_UID))) {
             /* Free boot sector buffer */
             if(OK(__KernelFreeMemory__(bootSectorData))) {
               *volume_ = vol;
@@ -288,7 +288,7 @@ Return_t xFSGetVolumeInfo(const Volume_t *volume_, VolumeInfo_t **info_) {
 }
 
 
-Return_t xFSFormat(const HalfWord_t blockDeviceUID_, const Byte_t *volumeLabel_) {
+Return_t xFSFormat(const Byte_t *volumeLabel_) {
   FUNCTION_ENTER;
 
 
@@ -306,7 +306,7 @@ Return_t xFSFormat(const HalfWord_t blockDeviceUID_, const Byte_t *volumeLabel_)
 
 
   /* Temporary volume structure for formatting */
-  tempVol.blockDeviceUID = blockDeviceUID_;
+  tempVol.blockDeviceUID = CONFIG_FS_BLOCK_DEVICE_UID;
   tempVol.bytesPerSector = bytesPerSector;
   tempVol.sectorsPerCluster = sectorsPerCluster;
   tempVol.reservedSectors = reservedSectors;

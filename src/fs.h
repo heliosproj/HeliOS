@@ -74,10 +74,10 @@
     extern "C" {
   #endif /* ifdef __cplusplus */
   /* Volume Management */
-  Return_t xFSMount(Volume_t **volume_, const HalfWord_t blockDeviceUID_);
+  Return_t xFSMount(Volume_t **volume_);
   Return_t xFSUnmount(Volume_t *volume_);
   Return_t xFSGetVolumeInfo(const Volume_t *volume_, VolumeInfo_t **info_);
-  Return_t xFSFormat(const HalfWord_t blockDeviceUID_, const Byte_t *volumeLabel_);
+  Return_t xFSFormat(const Byte_t *volumeLabel_);
 
 
   /* File Operations */

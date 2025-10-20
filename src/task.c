@@ -16,6 +16,10 @@
 /*UNCRUSTIFY-ON*/
 #include "task.h"
 
+#if defined(CONFIG_ENABLE_CONSOLE)
+  #include "console.h"
+#endif /* if defined(CONFIG_ENABLE_CONSOLE) */
+
 
 static TaskList_t *tlist = null;
 static void __RunTimeReset__(void);
@@ -792,6 +796,29 @@ Return_t xTaskStartScheduler(void) {
 
 
   if(__FlagIsNotSet__(RUNNING) && __PointerIsNotNull__(tlist)) {
+    #if defined(CONFIG_ENABLE_CONSOLE)
+      /* Initialize and start console task if enabled */
+      {
+        Task_t *consoleTask = null;
+
+
+        if(OK(xConsoleInit())) {
+          if(OK(xTaskCreate(&consoleTask, "Console", vConsoleTask, null))) {
+            xTaskChangePriority(consoleTask, CONFIG_CONSOLE_TASK_PRIORITY);
+
+            #if (0x0u == CONFIG_CONSOLE_TASK_MODE)
+              /* Continuous mode - task runs every clock tick */
+              xTaskChangeTaskState(consoleTask, TaskStateRunning);
+            #else /* if (0x0u == CONFIG_CONSOLE_TASK_MODE) */
+              /* Event-driven mode - task runs on timer */
+              xTaskChangeTaskState(consoleTask, TaskStateWaiting);
+              xTaskStartTimer(consoleTask, CONFIG_CONSOLE_TIMER_PERIOD_MS);
+            #endif /* if (0x0u == CONFIG_CONSOLE_TASK_MODE) */
+          }
+        }
+      }
+    #endif /* if defined(CONFIG_ENABLE_CONSOLE) */
+
     while(SchedulerStateRunning == scheduler) {
       /* If the total runtime on a task has overflowed, reset the total runtime
        * for all tasks to their last runtime. */

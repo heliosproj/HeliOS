@@ -190,12 +190,12 @@ static void test_driver_registration_and_mount(void) {
 
   /* Test 1.4: Format filesystem */
   unit_begin("Format block device with FAT32 filesystem");
-  unit_assert_ok(xFSFormat(BLOCKDEV_UID, (const Byte_t *) TEST_VOLUME_LABEL));
+  unit_assert_ok(xFSFormat((const Byte_t *) TEST_VOLUME_LABEL));
   unit_end();
 
   /* Test 1.5: Mount filesystem */
   unit_begin("Mount filesystem and verify mount state");
-  unit_assert_ok(xFSMount(&vol, BLOCKDEV_UID));
+  unit_assert_ok(xFSMount(&vol));
   unit_assert_not_null(vol);
   unit_assert_true(vol->mounted);
   unit_assert_equal(vol->blockDeviceUID, BLOCKDEV_UID);
@@ -230,7 +230,7 @@ static void test_basic_file_operations(void) {
   unit_print("--- Section 2: Basic File Operations ---");
 
   /* Mount filesystem first */
-  if(!OK(xFSMount(&vol, BLOCKDEV_UID)) || (null == vol)) {
+  if(!OK(xFSMount(&vol)) || (null == vol)) {
     unit_print("xFSMount() failed - skipping file operations tests");
 
     return;
@@ -354,7 +354,7 @@ static void test_directory_operations(void) {
   unit_print("--- Section 3: Directory Operations ---");
 
   /* Mount filesystem first */
-  if(!OK(xFSMount(&vol, BLOCKDEV_UID)) || (null == vol)) {
+  if(!OK(xFSMount(&vol)) || (null == vol)) {
     unit_print("xFSMount() failed - skipping directory operations tests");
 
     return;
@@ -454,7 +454,7 @@ static void test_file_management(void) {
   unit_print("--- Section 4: File Management Operations ---");
 
   /* Mount filesystem first */
-  if(!OK(xFSMount(&vol, BLOCKDEV_UID)) || (null == vol)) {
+  if(!OK(xFSMount(&vol)) || (null == vol)) {
     unit_print("xFSMount() failed - skipping file management tests");
 
     return;
@@ -533,7 +533,7 @@ static void test_null_pointer_and_edge_cases(void) {
   unit_print("--- Section 5: NULL Pointer and Edge Cases ---");
 
   /* Mount filesystem first */
-  if(!OK(xFSMount(&vol, BLOCKDEV_UID)) || (null == vol)) {
+  if(!OK(xFSMount(&vol)) || (null == vol)) {
     unit_print("xFSMount() failed - skipping edge case tests");
 
     return;
@@ -622,7 +622,7 @@ static void test_null_pointer_and_edge_cases(void) {
     Volume_t *vol2 = null;
 
 
-    unit_assert_not_ok(xFSMount(&vol2, BLOCKDEV_UID));
+    unit_assert_not_ok(xFSMount(&vol2));
   } unit_end();
 
   /* Test 5.3: Operations on unmounted volume */
@@ -657,7 +657,7 @@ static void test_large_file_operations(void) {
   unit_print("--- Section 6: Large File Operations ---");
 
   /* Mount filesystem first */
-  if(!OK(xFSMount(&vol, BLOCKDEV_UID)) || (null == vol)) {
+  if(!OK(xFSMount(&vol)) || (null == vol)) {
     unit_print("xFSMount() failed - skipping large file operations tests");
 
     return;
@@ -736,7 +736,7 @@ static void test_cluster_boundary_operations(void) {
   unit_print("--- Section 7: Cluster Boundary Operations ---");
 
   /* Mount filesystem first */
-  if(!OK(xFSMount(&vol, BLOCKDEV_UID)) || (null == vol)) {
+  if(!OK(xFSMount(&vol)) || (null == vol)) {
     unit_print("xFSMount() failed - skipping cluster boundary tests");
 
     return;
@@ -809,7 +809,7 @@ static void test_partial_io_operations(void) {
   unit_print("--- Section 8: Partial I/O Operations ---");
 
   /* Mount filesystem first */
-  if(!OK(xFSMount(&vol, BLOCKDEV_UID)) || (null == vol)) {
+  if(!OK(xFSMount(&vol)) || (null == vol)) {
     unit_print("xFSMount() failed - skipping partial I/O tests");
 
     return;
@@ -886,7 +886,7 @@ static void test_volume_info_validation(void) {
   unit_print("--- Section 9: Volume Information Validation ---");
 
   /* Mount filesystem first */
-  if(!OK(xFSMount(&vol, BLOCKDEV_UID)) || (null == vol)) {
+  if(!OK(xFSMount(&vol)) || (null == vol)) {
     unit_print("xFSMount() failed - skipping volume info tests");
 
     return;
@@ -938,7 +938,7 @@ static void test_file_mode_validation(void) {
   unit_print("--- Section 10: File Mode Validation ---");
 
   /* Mount filesystem first */
-  if(!OK(xFSMount(&vol, BLOCKDEV_UID)) || (null == vol)) {
+  if(!OK(xFSMount(&vol)) || (null == vol)) {
     unit_print("xFSMount() failed - skipping file mode tests");
 
     return;
@@ -1010,7 +1010,7 @@ static void test_closed_file_operations(void) {
   unit_print("--- Section 11: Closed File Operations ---");
 
   /* Mount filesystem first */
-  if(!OK(xFSMount(&vol, BLOCKDEV_UID)) || (null == vol)) {
+  if(!OK(xFSMount(&vol)) || (null == vol)) {
     unit_print("xFSMount() failed - skipping closed file tests");
 
     return;
@@ -1074,7 +1074,7 @@ static void test_multiple_file_operations(void) {
   unit_print("--- Section 12: Multiple File Operations ---");
 
   /* Mount filesystem first */
-  if(!OK(xFSMount(&vol, BLOCKDEV_UID)) || (null == vol)) {
+  if(!OK(xFSMount(&vol)) || (null == vol)) {
     unit_print("xFSMount() failed - skipping multiple file tests");
 
     return;

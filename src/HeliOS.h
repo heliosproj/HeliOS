@@ -19,6 +19,7 @@
  * - Queues: Inter-task message passing with FIFO semantics
  * - Streams: Byte-oriented data buffers for streaming I/O
  * - Filesystem: FAT32 filesystem support with block device abstraction
+ * - Console: UNIX-like command-line interface for system diagnostics and filesystem operations
  *
  * All HeliOS system calls follow the naming convention xSubsystem*() where
  * x is the prefix for public APIs and Subsystem identifies the functional area
@@ -10571,10 +10572,6 @@
    * }
    * @endcode
    *
-   * @param[in] blockDeviceUID_ UID of the block device to format. Must be a
-   *                            registered block device obtained from block
-   *                            device driver registration. The device must
-   *                            support read and write operations.
    * @param[in] volumeLabel_    Pointer to null-terminated string containing
    *                            volume label (max 11 characters). Can be null
    *                            for no label. Label is stored in boot sector and
@@ -10586,8 +10583,8 @@
    *                            or write errors during format operation.
    *
    * @warning This operation is DESTRUCTIVE. All existing data on the block
-   * device will be permanently lost. Ensure the correct device UID is specified
-   * and any important data is backed up before formatting.
+   * device will be permanently lost. Ensure any important data is backed up
+   * before formatting.
    *
    * @warning The block device must be large enough to hold FAT32 structures.
    * Very small devices may fail to format. Minimum practical size depends on
@@ -10605,12 +10602,15 @@
    * @note The volume label is optional but recommended for identifying storage
    * volumes in systems with multiple devices.
    *
+   * @note The block device UID is configured via CONFIG_FS_BLOCK_DEVICE_UID in
+   * config.h and must be set to a registered block device.
+   *
    * @sa xFSMount() - Mount formatted volume for file operations
    * @sa xFSUnmount() - Unmount volume before reformatting
    * @sa xFSGetVolumeInfo() - Query volume information including label
    * @sa __BlockDeviceRegister__() - Register block device before formatting
    */
-  Return_t xFSFormat(const HalfWord_t blockDeviceUID_, const Byte_t *volumeLabel_);
+  Return_t xFSFormat(const Byte_t *volumeLabel_);
 
 
   /**
@@ -10720,9 +10720,6 @@
    *                             subsequent file and directory operations. The
    *                             handle remains valid until xFSUnmount() is
    *                             called.
-   * @param[in]  blockDeviceUID_ UID of the block device containing the FAT32
-   *                             filesystem. Must be a registered block device
-   *                             that has been formatted with xFSFormat().
    *
    * @return                     ReturnOK if mount succeeded, ReturnError if
    *                             mount failed due to invalid block device UID,
@@ -10744,11 +10741,12 @@
    * xFSUnmount() is called. Always unmount volumes when finished to free kernel
    * resources.
    *
-   * @note Multiple volumes can be mounted simultaneously if you have multiple
-   * block devices, each with its own volume handle.
-   *
    * @note After mounting, use xFSGetVolumeInfo() to query volume capacity, free
    * space, and other filesystem parameters.
+   *
+   * @note The block device UID is configured via CONFIG_FS_BLOCK_DEVICE_UID in
+   * config.h and must be set to a registered block device that has been
+   * formatted with xFSFormat().
    *
    * @sa xFSUnmount() - Unmount volume and free resources
    * @sa xFSFormat() - Format block device with FAT32 filesystem
@@ -10756,7 +10754,7 @@
    * @sa xFileOpen() - Open file on mounted volume
    * @sa xDirOpen() - Open directory on mounted volume
    */
-  Return_t xFSMount(Volume_t **volume_, const HalfWord_t blockDeviceUID_);
+  Return_t xFSMount(Volume_t **volume_);
 
 
   /**
@@ -13418,6 +13416,85 @@
    * @sa xFileUnlink() - Delete file
    */
   Return_t xDirRemove(Volume_t *volume_, const Byte_t *path_);
+
+
+  #if defined(CONFIG_ENABLE_CONSOLE)
+
+
+    /**
+     * @brief Initialize the console subsystem
+     *
+     * Initializes the console subsystem state including command buffer,
+     * working directory, and device connection status. This function is
+     * automatically called by the scheduler when CONFIG_ENABLE_CONSOLE
+     * is defined and xTaskStartScheduler() is invoked.
+     *
+     * The console provides a UNIX-like command-line interface for:
+     * - System diagnostics (tasks, memory, version)
+     * - Filesystem operations (ls, cd, pwd, cat, mv, rm, mkdir)
+     * - Configuration (echo mode)
+     *
+     * Console behavior is configured via config.h settings:
+     * - CONFIG_CONSOLE_DEVICE_UID: Character device for console I/O
+     * - CONFIG_CONSOLE_TASK_PRIORITY: Console task priority
+     * - CONFIG_CONSOLE_TASK_MODE: Continuous (0) or event-driven (1)
+     * - CONFIG_CONSOLE_TIMER_PERIOD_MS: Timer period for event-driven mode
+     * - CONFIG_CONSOLE_MAX_COMMAND_LENGTH: Maximum command buffer size
+     * - CONFIG_CONSOLE_ECHO_ENABLED: Initial echo mode state
+     * - CONFIG_CONSOLE_PROMPT: Command prompt string
+     *
+     * @return ReturnOK if initialization succeeded, ReturnError on failure.
+     *
+     * @note This function is automatically called by the scheduler; manual
+     * initialization is not required in typical applications.
+     *
+     * @note The console task auto-starts when xTaskStartScheduler() is called
+     * if CONFIG_ENABLE_CONSOLE is defined.
+     *
+     * @note The console automatically mounts the filesystem using
+     * CONFIG_FS_BLOCK_DEVICE_UID when the character device becomes ready.
+     *
+     * @sa vConsoleTask() - Console task entry point
+     * @sa xTaskStartScheduler() - Starts scheduler and console task
+     */
+    Return_t xConsoleInit(void);
+
+
+    /**
+     * @brief Console task entry point
+     *
+     * Main execution loop for the console task. Handles character input,
+     * command parsing, execution, and output. This task is automatically
+     * created and started by the scheduler when CONFIG_ENABLE_CONSOLE is
+     * defined.
+     *
+     * The task manages:
+     * - Character device connection monitoring
+     * - Input buffering with backspace support
+     * - Command line parsing and execution
+     * - Filesystem volume mounting/unmounting
+     * - Display of console banner on connect
+     *
+     * Task scheduling mode is determined by CONFIG_CONSOLE_TASK_MODE:
+     * - Continuous mode (0x0u): Runs every scheduler tick
+     * - Event-driven mode (0x1u): Runs on timer events
+     *
+     * @param[in] task_ Task handle for this console task
+     * @param[in] parm_ Task parameter (unused, can be null)
+     *
+     * @note Do not call this function directly. It is invoked automatically
+     * by the scheduler.
+     *
+     * @note The console gracefully handles character device connect/disconnect
+     * events, resetting state and remounting filesystem as needed.
+     *
+     * @sa xConsoleInit() - Initialize console subsystem
+     * @sa xTaskStartScheduler() - Start scheduler and console task
+     */
+    void vConsoleTask(xTask task_, xTaskParm parm_);
+
+
+  #endif /* if defined(CONFIG_ENABLE_CONSOLE) */
 
   #ifdef __cplusplus
     }
