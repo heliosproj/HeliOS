@@ -55,6 +55,7 @@
                                                                                                        *
                                                                                                        *
                                                                                                        *
+                                                                                                       *
                                                                                                        * Oversized
                                                                                                        * allocation
                                                                                                        * test
@@ -1697,6 +1698,8 @@ static void test_memory_corruption_detection(void) {
     entry = ADDR2ENTRY(ptr);
     entry->blocks = INVALID_BLOCKS_VALUE; /* Invalid - doesn't add up to region
                                            * size */
+
+
     /* Verify corruption detected */
     unit_assert_not_ok(xMemGetUsed(&size));
     unit_assert_true(__FlagIsSet__(MEMFAULT));

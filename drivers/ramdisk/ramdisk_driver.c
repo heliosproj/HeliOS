@@ -74,12 +74,12 @@ Return_t TO_FUNCTION(DEVICE_NAME, _self_register)(void) {
                           (Byte_t *)TO_LITERAL(DEVICE_NAME),
                           DEVICE_STATE,
                           DEVICE_MODE,
-                          RAMDISK0_init,
-                          RAMDISK0_config,
-                          RAMDISK0_read,
-                          RAMDISK0_write,
-                          RAMDISK0_simple_read,
-                          RAMDISK0_simple_write))) {
+                          TO_FUNCTION(DEVICE_NAME, _init),
+                          TO_FUNCTION(DEVICE_NAME, _config),
+                          TO_FUNCTION(DEVICE_NAME, _read),
+                          TO_FUNCTION(DEVICE_NAME, _write),
+                          TO_FUNCTION(DEVICE_NAME, _simple_read),
+                          TO_FUNCTION(DEVICE_NAME, _simple_write)))) {
     __ReturnOk__();
   } else {
     __ReturnError__();

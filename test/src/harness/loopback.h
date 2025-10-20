@@ -49,8 +49,6 @@
   #define LOOPBACK_MODE_FIFO 0x00u /* 0 - FIFO mode (default) */
   #define LOOPBACK_MODE_ECHO 0x01u /* 1 - Echo mode (data immediately available)
                                     */
-
-
   /**
    * @brief Loopback position configuration
    *

@@ -50,12 +50,12 @@ Return_t TO_FUNCTION(DEVICE_NAME, _self_register)(void) {
                           (Byte_t *)TO_LITERAL(DEVICE_NAME),
                           DEVICE_STATE,
                           DEVICE_MODE,
-                          BLOCKDEV_init,
-                          BLOCKDEV_config,
-                          BLOCKDEV_read,
-                          BLOCKDEV_write,
-                          BLOCKDEV_simple_read,
-                          BLOCKDEV_simple_write))) {
+                          TO_FUNCTION(DEVICE_NAME, _init),
+                          TO_FUNCTION(DEVICE_NAME, _config),
+                          TO_FUNCTION(DEVICE_NAME, _read),
+                          TO_FUNCTION(DEVICE_NAME, _write),
+                          TO_FUNCTION(DEVICE_NAME, _simple_read),
+                          TO_FUNCTION(DEVICE_NAME, _simple_write)))) {
     __ReturnOk__();
   } else {
     __ReturnError__();

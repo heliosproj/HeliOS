@@ -896,7 +896,7 @@ Return_t xTaskStartScheduler(void) {
 #if defined(CONFIG_ENABLE_IDLE_HOOK)
         else {
           /* No tasks were ready to run - call idle hook if configured. This
-          * allows for power management, watchdog feeding, etc. */
+           * allows for power management, watchdog feeding, etc. */
           vApplicationIdleHook();
         }
 #endif /* if defined(CONFIG_ENABLE_IDLE_HOOK) */

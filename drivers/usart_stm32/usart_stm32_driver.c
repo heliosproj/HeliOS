@@ -72,12 +72,12 @@ Return_t TO_FUNCTION(DEVICE_NAME, _self_register)(void) {
                           (Byte_t *)TO_LITERAL(DEVICE_NAME),
                           DEVICE_STATE,
                           DEVICE_MODE,
-                          USART_TX_init,
-                          USART_TX_config,
-                          USART_TX_read,
-                          USART_TX_write,
-                          USART_TX_simple_read,
-                          USART_TX_simple_write))) {
+                          TO_FUNCTION(DEVICE_NAME, _init),
+                          TO_FUNCTION(DEVICE_NAME, _config),
+                          TO_FUNCTION(DEVICE_NAME, _read),
+                          TO_FUNCTION(DEVICE_NAME, _write),
+                          TO_FUNCTION(DEVICE_NAME, _simple_read),
+                          TO_FUNCTION(DEVICE_NAME, _simple_write)))) {
     __ReturnOk__();
   } else {
     __ReturnError__();

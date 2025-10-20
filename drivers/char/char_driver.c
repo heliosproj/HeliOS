@@ -59,12 +59,12 @@ Return_t TO_FUNCTION(DEVICE_NAME, _self_register)(void) {
                           (Byte_t *)TO_LITERAL(DEVICE_NAME),
                           DEVICE_STATE,
                           DEVICE_MODE,
-                          CHARDEV0_init,
-                          CHARDEV0_config,
-                          CHARDEV0_read,
-                          CHARDEV0_write,
-                          CHARDEV0_simple_read,
-                          CHARDEV0_simple_write))) {
+                          TO_FUNCTION(DEVICE_NAME, _init),
+                          TO_FUNCTION(DEVICE_NAME, _config),
+                          TO_FUNCTION(DEVICE_NAME, _read),
+                          TO_FUNCTION(DEVICE_NAME, _write),
+                          TO_FUNCTION(DEVICE_NAME, _simple_read),
+                          TO_FUNCTION(DEVICE_NAME, _simple_write)))) {
     __ReturnOk__();
   } else {
     __ReturnError__();
