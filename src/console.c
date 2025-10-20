@@ -190,6 +190,9 @@ void vConsoleTask(Task_t *task_, TaskParm_t *parm_) {
  * @return Return_t OK if ready, error otherwise
  */
 static Return_t __ConsoleCheckDevice__(void) {
+  FUNCTION_ENTER;
+
+
   CharDeviceCommand_t cmd;
   Size_t size = sizeof(CharDeviceCommand_t);
 
@@ -200,10 +203,12 @@ static Return_t __ConsoleCheckDevice__(void) {
   cmd.transferMode = 0x00u;
 
   if(OK(xDeviceWrite(CONFIG_CONSOLE_DEVICE_UID, &size, (Addr_t *) &cmd))) {
-    return(ReturnOK);
+    __ReturnOk__();
+  } else {
+    __ReturnError__();
   }
 
-  return(ReturnError);
+  FUNCTION_EXIT;
 }
 
 
@@ -213,21 +218,30 @@ static Return_t __ConsoleCheckDevice__(void) {
  * @return Return_t OK or error
  */
 static Return_t __ConsoleWriteString__(const Byte_t *str_) {
-  Word_t len = __StringLength__(str_);
+  FUNCTION_ENTER;
+
+  Word_t len = 0x0u;
   Size_t size = 0x0u;
 
+  if(__PointerIsNotNull__(str_)) {
+    len = __StringLength__(str_);
 
-  if(0x0u == len || !__PointerIsNotNull__(str_)) {
-    return(ReturnError);
+    if(0x0u < len) {
+      size = len;
+
+      if(OK(xDeviceWrite(CONFIG_CONSOLE_DEVICE_UID, &size, (Addr_t *) str_))) {
+        __ReturnOk__();
+      } else {
+        __AssertOnElse__();
+      }
+    } else {
+      __AssertOnElse__();
+    }
+  } else {
+    __AssertOnElse__();
   }
 
-  size = len;
-
-  if(OK(xDeviceWrite(CONFIG_CONSOLE_DEVICE_UID, &size, (Addr_t *) str_))) {
-    return(ReturnOK);
-  }
-
-  return(ReturnError);
+  FUNCTION_EXIT;
 }
 
 
@@ -237,27 +251,32 @@ static Return_t __ConsoleWriteString__(const Byte_t *str_) {
  * @return Return_t OK or error
  */
 static Return_t __ConsoleReadChar__(Byte_t *ch_) {
+  FUNCTION_ENTER;
+
   Size_t size = 0x1u;
   Addr_t *readData = null;
 
+  if(__PointerIsNotNull__(ch_)) {
+    if(OK(xDeviceRead(CONFIG_CONSOLE_DEVICE_UID, &size, &readData))) {
+      if(__PointerIsNotNull__(readData) && (0x0u < size)) {
+        *ch_ = *((Byte_t *) readData);
+        xMemFree(readData);
+        __ReturnOk__();
+      } else {
+        if(__PointerIsNotNull__(readData)) {
+          xMemFree(readData);
+        }
 
-  if(!__PointerIsNotNull__(ch_)) {
-    return(ReturnError);
+        __AssertOnElse__();
+      }
+    } else {
+      __AssertOnElse__();
+    }
+  } else {
+    __AssertOnElse__();
   }
 
-  if(OK(xDeviceRead(CONFIG_CONSOLE_DEVICE_UID, &size, &readData))) {
-    if(__PointerIsNotNull__(readData) && size > 0x0u) {
-      *ch_ = *((Byte_t *) readData);
-      xMemFree(readData);
-      return(ReturnOK);
-    }
-
-    if(__PointerIsNotNull__(readData)) {
-      xMemFree(readData);
-    }
-  }
-
-  return(ReturnError);
+  FUNCTION_EXIT;
 }
 
 
@@ -274,6 +293,8 @@ static void __ConsolePrintPrompt__(void) {
  * @return Return_t OK or error
  */
 static Return_t __ConsoleHandleBackspace__(void) {
+  FUNCTION_ENTER;
+
   if(consoleState.bufferPosition > 0x0u) {
     consoleState.bufferPosition--;
     consoleState.commandBuffer[consoleState.bufferPosition] = 0x00u;
@@ -283,10 +304,12 @@ static Return_t __ConsoleHandleBackspace__(void) {
       __ConsoleWriteString__((const Byte_t *) "\b \b");
     }
 
-    return(ReturnOK);
+    __ReturnOk__();
+  } else {
+    __ReturnError__();
   }
 
-  return(ReturnError);
+  FUNCTION_EXIT;
 }
 
 
@@ -295,6 +318,9 @@ static Return_t __ConsoleHandleBackspace__(void) {
  * @return Return_t OK or error
  */
 static Return_t __ConsoleProcessCommand__(void) {
+  FUNCTION_ENTER;
+
+
   Byte_t *cmdName = consoleState.commandBuffer;
   Byte_t *cmdArgs = null;
   Word_t i = 0x0u;
@@ -315,14 +341,21 @@ static Return_t __ConsoleProcessCommand__(void) {
 
   /* Empty command */
   if(0x00u == cmdName[0x0]) {
-    return(ReturnOK);
+    __ReturnOk__();
+    FUNCTION_EXIT;
   }
 
   /* Search command table */
   for(i = 0x0u; __PointerIsNotNull__(commandTable[i].name); i++) {
     if(__StringCompare__(cmdName, commandTable[i].name)) {
       if(__PointerIsNotNull__(commandTable[i].handler)) {
-        return(commandTable[i].handler((const Byte_t *) cmdArgs));
+        if(OK(commandTable[i].handler((const Byte_t *) cmdArgs))) {
+          __ReturnOk__();
+        } else {
+          __ReturnError__();
+        }
+
+        FUNCTION_EXIT;
       }
     }
   }
@@ -332,7 +365,8 @@ static Return_t __ConsoleProcessCommand__(void) {
   __ConsoleWriteString__(cmdName);
   __ConsoleWriteString__((const Byte_t *) "\r\nType 'help' for available commands.\r\n");
 
-  return(ReturnError);
+  __ReturnError__();
+  FUNCTION_EXIT;
 }
 
 
@@ -341,6 +375,9 @@ static Return_t __ConsoleProcessCommand__(void) {
  * @return Return_t OK
  */
 static Return_t __ConsoleCmdHelp__(void) {
+  FUNCTION_ENTER;
+
+
   Word_t i = 0x0u;
 
 
@@ -354,7 +391,8 @@ static Return_t __ConsoleCmdHelp__(void) {
     __ConsoleWriteString__((const Byte_t *) "\r\n");
   }
 
-  return(ReturnOK);
+  __ReturnOk__();
+  FUNCTION_EXIT;
 }
 
 
@@ -363,12 +401,15 @@ static Return_t __ConsoleCmdHelp__(void) {
  * @return Return_t OK
  */
 static Return_t __ConsoleCmdVersion__(void) {
+  FUNCTION_ENTER;
+
   __ConsoleWriteString__((const Byte_t *) "HeliOS Embedded Operating System\r\n");
   __ConsoleWriteString__((const Byte_t *) "Version: 0.5.0\r\n");
   __ConsoleWriteString__((const Byte_t *) "Copyright (C) 2020-2026 HeliOS Project\r\n");
   __ConsoleWriteString__((const Byte_t *) "License: GPL-2.0-or-later\r\n");
 
-  return(ReturnOK);
+  __ReturnOk__();
+  FUNCTION_EXIT;
 }
 
 
@@ -377,6 +418,9 @@ static Return_t __ConsoleCmdVersion__(void) {
  * @return Return_t OK or error
  */
 static Return_t __ConsoleCmdTasks__(void) {
+  FUNCTION_ENTER;
+
+
   TaskInfo_t *taskList = null;
   Base_t taskCount = 0x0u;
   Base_t i = 0x0u;
@@ -422,12 +466,13 @@ static Return_t __ConsoleCmdTasks__(void) {
 
     /* Free task list */
     xMemFree(taskList);
+    __ReturnOk__();
   } else {
     __ConsoleWriteString__((const Byte_t *) "Error: Unable to retrieve task information.\r\n");
-    return(ReturnError);
+    __ReturnError__();
   }
 
-  return(ReturnOK);
+  FUNCTION_EXIT;
 }
 
 
@@ -436,6 +481,9 @@ static Return_t __ConsoleCmdTasks__(void) {
  * @return Return_t OK or error
  */
 static Return_t __ConsoleCmdMem__(void) {
+  FUNCTION_ENTER;
+
+
   MemoryRegionStats_t *memState = null;
   Byte_t numBuf[0x10];
 
@@ -465,12 +513,13 @@ static Return_t __ConsoleCmdMem__(void) {
 
     /* Free memory state */
     xMemFree(memState);
+    __ReturnOk__();
   } else {
     __ConsoleWriteString__((const Byte_t *) "Error: Unable to retrieve memory information.\r\n");
-    return(ReturnError);
+    __ReturnError__();
   }
 
-  return(ReturnOK);
+  FUNCTION_EXIT;
 }
 
 
@@ -479,9 +528,13 @@ static Return_t __ConsoleCmdMem__(void) {
  * @return Return_t OK
  */
 static Return_t __ConsoleCmdClear__(void) {
+  FUNCTION_ENTER;
+
   /* ANSI escape sequence to clear screen and move cursor to home */
   __ConsoleWriteString__((const Byte_t *) "\x1b[2J\x1b[H");
-  return(ReturnOK);
+
+  __ReturnOk__();
+  FUNCTION_EXIT;
 }
 
 
@@ -491,6 +544,8 @@ static Return_t __ConsoleCmdClear__(void) {
  * @return Return_t OK
  */
 static Return_t __ConsoleCmdEcho__(const Byte_t *args_) {
+  FUNCTION_ENTER;
+
   if(__PointerIsNotNull__(args_) && 0x00u != args_[0x0]) {
     /* Print the arguments */
     __ConsoleWriteString__(args_);
@@ -506,7 +561,8 @@ static Return_t __ConsoleCmdEcho__(const Byte_t *args_) {
     }
   }
 
-  return(ReturnOK);
+  __ReturnOk__();
+  FUNCTION_EXIT;
 }
 
 
@@ -516,6 +572,9 @@ static Return_t __ConsoleCmdEcho__(const Byte_t *args_) {
  * @return Return_t OK or error
  */
 static Return_t __ConsoleCmdLs__(const Byte_t *args_) {
+  FUNCTION_ENTER;
+
+
   Dir_t *dir = null;
   DirEntry_t *entry = null;
   Byte_t path[CONFIG_FS_MAX_PATH_LENGTH];
@@ -524,7 +583,8 @@ static Return_t __ConsoleCmdLs__(const Byte_t *args_) {
 
   if(!__PointerIsNotNull__(mountedVolume)) {
     __ConsoleWriteString__((const Byte_t *) "Error: No filesystem mounted.\r\n");
-    return(ReturnError);
+    __ReturnError__();
+    FUNCTION_EXIT;
   }
 
   /* Determine path */
@@ -571,12 +631,13 @@ static Return_t __ConsoleCmdLs__(const Byte_t *args_) {
 
     /* Close directory */
     xDirClose(dir);
+    __ReturnOk__();
   } else {
     __ConsoleWriteString__((const Byte_t *) "Error: Unable to open directory.\r\n");
-    return(ReturnError);
+    __ReturnError__();
   }
 
-  return(ReturnOK);
+  FUNCTION_EXIT;
 }
 
 
@@ -586,60 +647,62 @@ static Return_t __ConsoleCmdLs__(const Byte_t *args_) {
  * @return Return_t OK or error
  */
 static Return_t __ConsoleCmdCd__(const Byte_t *args_) {
+  FUNCTION_ENTER;
+
   Base_t exists = false;
   Byte_t newPath[CONFIG_FS_MAX_PATH_LENGTH];
 
-
-  if(!__PointerIsNotNull__(mountedVolume)) {
-    __ConsoleWriteString__((const Byte_t *) "Error: No filesystem mounted.\r\n");
-    return(ReturnError);
-  }
-
-  if(!__PointerIsNotNull__(args_) || 0x00u == args_[0x0]) {
-    /* No argument - go to root */
-    __StringCopy__(newPath, (const Byte_t *) "/");
-  } else if(__StringCompare__(args_, (const Byte_t *) "..")) {
-    /* Go up one directory */
-    Word_t len = __StringLength__(consoleState.currentWorkingDirectory);
-    Word_t i = len;
-
-
-    /* Find last slash */
-    while(i > 0x0u && 0x2Fu != consoleState.currentWorkingDirectory[i]) {
-      i--;
-    }
-
-    if(0x0u == i) {
+  if(__PointerIsNotNull__(mountedVolume)) {
+    if(!__PointerIsNotNull__(args_) || 0x00u == args_[0x0]) {
+      /* No argument - go to root */
       __StringCopy__(newPath, (const Byte_t *) "/");
+    } else if(__StringCompare__(args_, (const Byte_t *) "..")) {
+      /* Go up one directory */
+      Word_t len = __StringLength__(consoleState.currentWorkingDirectory);
+      Word_t i = len;
+
+      /* Find last slash */
+      while(i > 0x0u && 0x2Fu != consoleState.currentWorkingDirectory[i]) {
+        i--;
+      }
+
+      if(0x0u == i) {
+        __StringCopy__(newPath, (const Byte_t *) "/");
+      } else {
+        __memcpy__(newPath, consoleState.currentWorkingDirectory, i);
+        newPath[i] = 0x00u;
+      }
+    } else if(0x2Fu == args_[0x0]) {
+      /* Absolute path */
+      __StringCopy__(newPath, args_);
     } else {
-      __memcpy__(newPath, consoleState.currentWorkingDirectory, i);
-      newPath[i] = 0x00u;
-    }
-  } else if(0x2Fu == args_[0x0]) {
-    /* Absolute path */
-    __StringCopy__(newPath, args_);
-  } else {
-    /* Relative path */
-    __StringCopy__(newPath, consoleState.currentWorkingDirectory);
+      /* Relative path */
+      __StringCopy__(newPath, consoleState.currentWorkingDirectory);
 
-    if(0x2Fu != newPath[__StringLength__(newPath) - 0x1u]) {
-      Word_t len = __StringLength__(newPath);
+      if(0x2Fu != newPath[__StringLength__(newPath) - 0x1u]) {
+        Word_t len = __StringLength__(newPath);
 
-      newPath[len] = 0x2Fu;
-      newPath[len + 0x1u] = 0x00u;
+        newPath[len] = 0x2Fu;
+        newPath[len + 0x1u] = 0x00u;
+      }
+
+      __StringCopy__(newPath + __StringLength__(newPath), args_);
     }
 
-    __StringCopy__(newPath + __StringLength__(newPath), args_);
+    /* Verify directory exists */
+    if(OK(xFileExists(mountedVolume, newPath, &exists)) && exists) {
+      __StringCopy__(consoleState.currentWorkingDirectory, newPath);
+      __ReturnOk__();
+    } else {
+      __ConsoleWriteString__((const Byte_t *) "Error: Directory not found.\r\n");
+      __AssertOnElse__();
+    }
+  } else {
+    __ConsoleWriteString__((const Byte_t *) "Error: No filesystem mounted.\r\n");
+    __AssertOnElse__();
   }
 
-  /* Verify directory exists */
-  if(OK(xFileExists(mountedVolume, newPath, &exists)) && exists) {
-    __StringCopy__(consoleState.currentWorkingDirectory, newPath);
-    return(ReturnOK);
-  } else {
-    __ConsoleWriteString__((const Byte_t *) "Error: Directory not found.\r\n");
-    return(ReturnError);
-  }
+  FUNCTION_EXIT;
 }
 
 
@@ -648,9 +711,13 @@ static Return_t __ConsoleCmdCd__(const Byte_t *args_) {
  * @return Return_t OK
  */
 static Return_t __ConsoleCmdPwd__(void) {
+  FUNCTION_ENTER;
+
   __ConsoleWriteString__(consoleState.currentWorkingDirectory);
   __ConsoleWriteString__((const Byte_t *) "\r\n");
-  return(ReturnOK);
+  __ReturnOk__();
+
+  FUNCTION_EXIT;
 }
 
 
@@ -660,79 +727,80 @@ static Return_t __ConsoleCmdPwd__(void) {
  * @return Return_t OK or error
  */
 static Return_t __ConsoleCmdCat__(const Byte_t *args_) {
+  FUNCTION_ENTER;
+
   File_t *file = null;
   Byte_t *data = null;
   Word_t fileSize = 0x0u;
   Byte_t path[CONFIG_FS_MAX_PATH_LENGTH];
 
+  if(__PointerIsNotNull__(mountedVolume) && __PointerIsNotNull__(args_) && (0x00u != args_[0x0])) {
+    /* Build full path */
+    if(0x2Fu == args_[0x0]) {
+      __StringCopy__(path, args_);
+    } else {
+      __StringCopy__(path, consoleState.currentWorkingDirectory);
 
-  if(!__PointerIsNotNull__(mountedVolume)) {
-    __ConsoleWriteString__((const Byte_t *) "Error: No filesystem mounted.\r\n");
-    return(ReturnError);
-  }
+      if(0x2Fu != path[__StringLength__(path) - 0x1u]) {
+        Word_t len = __StringLength__(path);
 
-  if(!__PointerIsNotNull__(args_) || 0x00u == args_[0x0]) {
-    __ConsoleWriteString__((const Byte_t *) "Error: No file specified.\r\n");
-    return(ReturnError);
-  }
-
-  /* Build full path */
-  if(0x2Fu == args_[0x0]) {
-    __StringCopy__(path, args_);
-  } else {
-    __StringCopy__(path, consoleState.currentWorkingDirectory);
-
-    if(0x2Fu != path[__StringLength__(path) - 0x1u]) {
-      Word_t len = __StringLength__(path);
-
-      path[len] = 0x2Fu;
-      path[len + 0x1u] = 0x00u;
-    }
-
-    __StringCopy__(path + __StringLength__(path), args_);
-  }
-
-  /* Open file for reading */
-  if(OK(xFileOpen(&file, mountedVolume, path, FS_MODE_READ))) {
-    /* Get file size */
-    if(OK(xFileGetSize(file, &fileSize))) {
-      if(fileSize > 0x0u) {
-        /* Read entire file */
-        if(OK(xFileRead(file, fileSize, &data))) {
-          /* Display contents */
-          Word_t i = 0x0u;
-          Byte_t ch[0x2] = { 0x00u, 0x00u };
-
-
-          for(i = 0x0u; i < fileSize; i++) {
-            ch[0x0] = data[i];
-
-            /* Convert LF to CRLF for terminal */
-            if(0x0Au == ch[0x0]) {
-              __ConsoleWriteString__((const Byte_t *) "\r\n");
-            } else {
-              __ConsoleWriteString__(ch);
-            }
-          }
-
-          __ConsoleWriteString__((const Byte_t *) "\r\n");
-
-          /* Free data buffer */
-          xMemFree(data);
-        }
-      } else {
-        __ConsoleWriteString__((const Byte_t *) "(empty file)\r\n");
+        path[len] = 0x2Fu;
+        path[len + 0x1u] = 0x00u;
       }
+
+      __StringCopy__(path + __StringLength__(path), args_);
     }
 
-    /* Close file */
-    xFileClose(file);
+    /* Open file for reading */
+    if(OK(xFileOpen(&file, mountedVolume, path, FS_MODE_READ))) {
+      /* Get file size */
+      if(OK(xFileGetSize(file, &fileSize))) {
+        if(0x0u < fileSize) {
+          /* Read entire file */
+          if(OK(xFileRead(file, fileSize, &data))) {
+            /* Display contents */
+            Word_t i = 0x0u;
+            Byte_t ch[0x2] = { 0x00u, 0x00u };
+
+            for(i = 0x0u; i < fileSize; i++) {
+              ch[0x0] = data[i];
+
+              /* Convert LF to CRLF for terminal */
+              if(0x0Au == ch[0x0]) {
+                __ConsoleWriteString__((const Byte_t *) "\r\n");
+              } else {
+                __ConsoleWriteString__(ch);
+              }
+            }
+
+            __ConsoleWriteString__((const Byte_t *) "\r\n");
+
+            /* Free data buffer */
+            xMemFree(data);
+          }
+        } else {
+          __ConsoleWriteString__((const Byte_t *) "(empty file)\r\n");
+        }
+      }
+
+      /* Close file */
+      xFileClose(file);
+      __ReturnOk__();
+    } else {
+      __ConsoleWriteString__((const Byte_t *) "Error: Unable to open file.\r\n");
+      __AssertOnElse__();
+    }
   } else {
-    __ConsoleWriteString__((const Byte_t *) "Error: Unable to open file.\r\n");
-    return(ReturnError);
+    if(!__PointerIsNotNull__(mountedVolume)) {
+      __ConsoleWriteString__((const Byte_t *) "Error: No filesystem mounted.\r\n");
+    } else {
+      __ConsoleWriteString__((const Byte_t *) "Error: No file specified.\r\n");
+    }
+
+    __AssertOnElse__();
   }
 
-  return(ReturnOK);
+  FUNCTION_EXIT;
 }
 
 
@@ -742,51 +810,54 @@ static Return_t __ConsoleCmdCat__(const Byte_t *args_) {
  * @return Return_t OK or error
  */
 static Return_t __ConsoleCmdMv__(const Byte_t *args_) {
+  FUNCTION_ENTER;
+
   Byte_t oldPath[CONFIG_FS_MAX_PATH_LENGTH];
   Byte_t newPath[CONFIG_FS_MAX_PATH_LENGTH];
   const Byte_t *src = args_;
   const Byte_t *dst = null;
   Word_t i = 0x0u;
 
-
-  if(!__PointerIsNotNull__(mountedVolume)) {
-    __ConsoleWriteString__((const Byte_t *) "Error: No filesystem mounted.\r\n");
-    return(ReturnError);
-  }
-
-  if(!__PointerIsNotNull__(args_) || 0x00u == args_[0x0]) {
-    __ConsoleWriteString__((const Byte_t *) "Error: Usage: mv <source> <destination>\r\n");
-    return(ReturnError);
-  }
-
-  /* Find space separating source and destination */
-  for(i = 0x0u; args_[i] != 0x00u; i++) {
-    if(0x20u == args_[i]) {
-      dst = &args_[i + 0x1u];
-      __SkipWhitespace__(&dst);
-      break;
+  if(__PointerIsNotNull__(mountedVolume) && __PointerIsNotNull__(args_) && (0x00u != args_[0x0])) {
+    /* Find space separating source and destination */
+    for(i = 0x0u; args_[i] != 0x00u; i++) {
+      if(0x20u == args_[i]) {
+        dst = &args_[i + 0x1u];
+        __SkipWhitespace__(&dst);
+        break;
+      }
     }
-  }
 
-  if(!__PointerIsNotNull__(dst) || 0x00u == dst[0x0]) {
-    __ConsoleWriteString__((const Byte_t *) "Error: Usage: mv <source> <destination>\r\n");
-    return(ReturnError);
-  }
+    if(__PointerIsNotNull__(dst) && (0x00u != dst[0x0])) {
+      /* Build source path */
+      __memcpy__(oldPath, src, i);
+      oldPath[i] = 0x00u;
 
-  /* Build source path */
-  __memcpy__(oldPath, src, i);
-  oldPath[i] = 0x00u;
+      /* Build destination path */
+      __StringCopy__(newPath, dst);
 
-  /* Build destination path */
-  __StringCopy__(newPath, dst);
-
-  /* Rename file */
-  if(OK(xFileRename(mountedVolume, oldPath, newPath))) {
-    return(ReturnOK);
+      /* Rename file */
+      if(OK(xFileRename(mountedVolume, oldPath, newPath))) {
+        __ReturnOk__();
+      } else {
+        __ConsoleWriteString__((const Byte_t *) "Error: Unable to rename/move file.\r\n");
+        __AssertOnElse__();
+      }
+    } else {
+      __ConsoleWriteString__((const Byte_t *) "Error: Usage: mv <source> <destination>\r\n");
+      __AssertOnElse__();
+    }
   } else {
-    __ConsoleWriteString__((const Byte_t *) "Error: Unable to rename/move file.\r\n");
-    return(ReturnError);
+    if(!__PointerIsNotNull__(mountedVolume)) {
+      __ConsoleWriteString__((const Byte_t *) "Error: No filesystem mounted.\r\n");
+    } else {
+      __ConsoleWriteString__((const Byte_t *) "Error: Usage: mv <source> <destination>\r\n");
+    }
+
+    __AssertOnElse__();
   }
+
+  FUNCTION_EXIT;
 }
 
 
@@ -796,42 +867,45 @@ static Return_t __ConsoleCmdMv__(const Byte_t *args_) {
  * @return Return_t OK or error
  */
 static Return_t __ConsoleCmdRm__(const Byte_t *args_) {
+  FUNCTION_ENTER;
+
   Byte_t path[CONFIG_FS_MAX_PATH_LENGTH];
 
+  if(__PointerIsNotNull__(mountedVolume) && __PointerIsNotNull__(args_) && (0x00u != args_[0x0])) {
+    /* Build full path */
+    if(0x2Fu == args_[0x0]) {
+      __StringCopy__(path, args_);
+    } else {
+      __StringCopy__(path, consoleState.currentWorkingDirectory);
 
-  if(!__PointerIsNotNull__(mountedVolume)) {
-    __ConsoleWriteString__((const Byte_t *) "Error: No filesystem mounted.\r\n");
-    return(ReturnError);
-  }
+      if(0x2Fu != path[__StringLength__(path) - 0x1u]) {
+        Word_t len = __StringLength__(path);
 
-  if(!__PointerIsNotNull__(args_) || 0x00u == args_[0x0]) {
-    __ConsoleWriteString__((const Byte_t *) "Error: No file specified.\r\n");
-    return(ReturnError);
-  }
+        path[len] = 0x2Fu;
+        path[len + 0x1u] = 0x00u;
+      }
 
-  /* Build full path */
-  if(0x2Fu == args_[0x0]) {
-    __StringCopy__(path, args_);
-  } else {
-    __StringCopy__(path, consoleState.currentWorkingDirectory);
-
-    if(0x2Fu != path[__StringLength__(path) - 0x1u]) {
-      Word_t len = __StringLength__(path);
-
-      path[len] = 0x2Fu;
-      path[len + 0x1u] = 0x00u;
+      __StringCopy__(path + __StringLength__(path), args_);
     }
 
-    __StringCopy__(path + __StringLength__(path), args_);
+    /* Remove file */
+    if(OK(xFileUnlink(mountedVolume, path))) {
+      __ReturnOk__();
+    } else {
+      __ConsoleWriteString__((const Byte_t *) "Error: Unable to remove file.\r\n");
+      __AssertOnElse__();
+    }
+  } else {
+    if(!__PointerIsNotNull__(mountedVolume)) {
+      __ConsoleWriteString__((const Byte_t *) "Error: No filesystem mounted.\r\n");
+    } else {
+      __ConsoleWriteString__((const Byte_t *) "Error: No file specified.\r\n");
+    }
+
+    __AssertOnElse__();
   }
 
-  /* Remove file */
-  if(OK(xFileUnlink(mountedVolume, path))) {
-    return(ReturnOK);
-  } else {
-    __ConsoleWriteString__((const Byte_t *) "Error: Unable to remove file.\r\n");
-    return(ReturnError);
-  }
+  FUNCTION_EXIT;
 }
 
 
@@ -841,42 +915,45 @@ static Return_t __ConsoleCmdRm__(const Byte_t *args_) {
  * @return Return_t OK or error
  */
 static Return_t __ConsoleCmdMkdir__(const Byte_t *args_) {
+  FUNCTION_ENTER;
+
   Byte_t path[CONFIG_FS_MAX_PATH_LENGTH];
 
+  if(__PointerIsNotNull__(mountedVolume) && __PointerIsNotNull__(args_) && (0x00u != args_[0x0])) {
+    /* Build full path */
+    if(0x2Fu == args_[0x0]) {
+      __StringCopy__(path, args_);
+    } else {
+      __StringCopy__(path, consoleState.currentWorkingDirectory);
 
-  if(!__PointerIsNotNull__(mountedVolume)) {
-    __ConsoleWriteString__((const Byte_t *) "Error: No filesystem mounted.\r\n");
-    return(ReturnError);
-  }
+      if(0x2Fu != path[__StringLength__(path) - 0x1u]) {
+        Word_t len = __StringLength__(path);
 
-  if(!__PointerIsNotNull__(args_) || 0x00u == args_[0x0]) {
-    __ConsoleWriteString__((const Byte_t *) "Error: No directory specified.\r\n");
-    return(ReturnError);
-  }
+        path[len] = 0x2Fu;
+        path[len + 0x1u] = 0x00u;
+      }
 
-  /* Build full path */
-  if(0x2Fu == args_[0x0]) {
-    __StringCopy__(path, args_);
-  } else {
-    __StringCopy__(path, consoleState.currentWorkingDirectory);
-
-    if(0x2Fu != path[__StringLength__(path) - 0x1u]) {
-      Word_t len = __StringLength__(path);
-
-      path[len] = 0x2Fu;
-      path[len + 0x1u] = 0x00u;
+      __StringCopy__(path + __StringLength__(path), args_);
     }
 
-    __StringCopy__(path + __StringLength__(path), args_);
+    /* Create directory */
+    if(OK(xDirMake(mountedVolume, path))) {
+      __ReturnOk__();
+    } else {
+      __ConsoleWriteString__((const Byte_t *) "Error: Unable to create directory.\r\n");
+      __AssertOnElse__();
+    }
+  } else {
+    if(!__PointerIsNotNull__(mountedVolume)) {
+      __ConsoleWriteString__((const Byte_t *) "Error: No filesystem mounted.\r\n");
+    } else {
+      __ConsoleWriteString__((const Byte_t *) "Error: No directory specified.\r\n");
+    }
+
+    __AssertOnElse__();
   }
 
-  /* Create directory */
-  if(OK(xDirMake(mountedVolume, path))) {
-    return(ReturnOK);
-  } else {
-    __ConsoleWriteString__((const Byte_t *) "Error: Unable to create directory.\r\n");
-    return(ReturnError);
-  }
+  FUNCTION_EXIT;
 }
 
 
