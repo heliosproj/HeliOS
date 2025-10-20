@@ -38,6 +38,10 @@
 static ConsoleState_t consoleState;
 static Volume_t *mountedVolume = null;
 
+/* Performance optimization: Cache for device lookup */
+static Device_t *cachedDevice = null;
+static HalfWord_t cachedDeviceUID = 0x0u;
+
 
 /* Forward declarations for command handlers */
 static Return_t __ConsoleCmdHelp__(const Byte_t *args_);
@@ -62,9 +66,6 @@ static Return_t __ConsoleCheckDevice__(void);
 static Return_t __ConsoleProcessCommand__(void);
 static void __ConsolePrintPrompt__(void);
 static Return_t __ConsoleHandleBackspace__(void);
-static void __StringCopy__(Byte_t *dest_, const Byte_t *src_, Word_t destSize_);
-static Word_t __StringLength__(const Byte_t *str_);
-static Base_t __StringCompare__(const Byte_t *s1_, const Byte_t *s2_);
 static void __SkipWhitespace__(const Byte_t **str_);
 static void __uitoah__(Word_t value_, Byte_t *buffer_, Word_t bufferSize_);
 
@@ -133,7 +134,7 @@ Return_t xConsoleInit(void) {
 #endif /* if defined(CONFIG_CONSOLE_ECHO_ENABLED) */
   consoleState.bufferPosition = 0x0u;
   __memset__(consoleState.commandBuffer, CHAR_NULL, CONFIG_CONSOLE_MAX_COMMAND_LENGTH);
-  __StringCopy__(consoleState.currentWorkingDirectory, (const Byte_t *) "/", CONFIG_FS_MAX_PATH_LENGTH);
+  __strcpy__(consoleState.currentWorkingDirectory, (const Byte_t *) "/", CONFIG_FS_MAX_PATH_LENGTH);
   mountedVolume = null;
   __ReturnOk__();
   FUNCTION_EXIT;
@@ -228,24 +229,38 @@ void vConsoleTask(Task_t *task_, TaskParm_t *parm_) {
 
 
 /**
- * @brief Check if character device is ready
+ * @brief Check if character device is ready with caching
  * @return Return_t OK if ready, error otherwise
  */
 static Return_t __ConsoleCheckDevice__(void) {
   FUNCTION_ENTER;
 
+  /* Performance optimization: Use cached device if UID matches */
+  if(__PointerIsNotNull__(cachedDevice) && (CONFIG_CONSOLE_DEVICE_UID == cachedDeviceUID)) {
+    if(DeviceStateRunning == cachedDevice->state) {
+      __ReturnOk__();
+      FUNCTION_EXIT;
+    } else {
+      /* Device state changed, invalidate cache */
+      cachedDevice = null;
+      cachedDeviceUID = 0x0u;
+    }
+  }
 
-  Device_t *device = null;
-
-
-  /* Use internal device API to check if device exists and is running */
-  if(OK(__DeviceListFind__(CONFIG_CONSOLE_DEVICE_UID, &device))) {
-    if(__PointerIsNotNull__(device) && (DeviceStateRunning == device->state)) {
+  /* Cache miss or invalid - look up device */
+  if(OK(__DeviceListFind__(CONFIG_CONSOLE_DEVICE_UID, &cachedDevice))) {
+    if(__PointerIsNotNull__(cachedDevice) && (DeviceStateRunning == cachedDevice->state)) {
+      /* Update cache */
+      cachedDeviceUID = CONFIG_CONSOLE_DEVICE_UID;
       __ReturnOk__();
     } else {
+      cachedDevice = null;
+      cachedDeviceUID = 0x0u;
       __ReturnError__();
     }
   } else {
+    cachedDevice = null;
+    cachedDeviceUID = 0x0u;
     __ReturnError__();
   }
 
@@ -254,55 +269,84 @@ static Return_t __ConsoleCheckDevice__(void) {
 
 
 /**
- * @brief Write string to console
+ * @brief Write string to console with cached device
  * @param  str_ String to write
  * @return      Return_t OK or error
  */
 static Return_t __ConsoleWriteString__(const Byte_t *str_) {
   FUNCTION_ENTER;
 
-
   Word_t len = 0x0u;
   Size_t size = 0x0u;
   Device_t *device = null;
   CharDeviceCommand_t cmd;
 
-
   if(__PointerIsNotNull__(str_)) {
-    len = __StringLength__(str_);
+    len = __strlen__(str_);
 
     if(0x0u < len) {
-      /* Use internal device API instead of public API */
-      if(OK(__DeviceListFind__(CONFIG_CONSOLE_DEVICE_UID, &device))) {
-        if(__PointerIsNotNull__(device)) {
-          /* Step 1: Configure byte count for write operation */
-          cmd.command = CHAR_CMD_SET_PARAMS;
-          cmd.byteCount = (HalfWord_t) len;
-          cmd.transferMode = CHAR_IO_MODE_BLOCKING;
-          size = sizeof(CharDeviceCommand_t);
+      /* Performance optimization: Try cached device first */
+      if(__PointerIsNotNull__(cachedDevice) && (CONFIG_CONSOLE_DEVICE_UID == cachedDeviceUID)) {
+        device = cachedDevice;
+      } else {
+        /* Cache miss - look up device */
+        if(OK(__DeviceListFind__(CONFIG_CONSOLE_DEVICE_UID, &device))) {
+          /* Update cache */
+          cachedDevice = device;
+          cachedDeviceUID = CONFIG_CONSOLE_DEVICE_UID;
+        } else {
+          __ReturnError__();
+          __AssertOnElse__();
+          FUNCTION_EXIT;
+        }
+      }
 
-          if(OK((*device->config)(device, &size, (Addr_t *) &cmd))) {
-            /* Step 2: Perform the write operation */
-            size = len;
+      if(__PointerIsNotNull__(device)) {
+        /* Step 1: Configure byte count for write operation */
+        cmd.command = CHAR_CMD_SET_PARAMS;
+        cmd.byteCount = (HalfWord_t) len;
+        /* Performance: Use interrupt mode if available, else blocking */
+        cmd.transferMode = CHAR_IO_MODE_INTERRUPT;
+        size = sizeof(CharDeviceCommand_t);
 
-            if(OK((*device->write)(device, &size, (Addr_t *) str_))) {
-              __ReturnOk__();
+        if(OK((*device->config)(device, &size, (Addr_t *) &cmd))) {
+          /* Step 2: Perform the write operation */
+          size = len;
+
+          if(OK((*device->write)(device, &size, (Addr_t *) str_))) {
+            __ReturnOk__();
+          } else {
+            /* Fall back to blocking mode if interrupt fails */
+            cmd.transferMode = CHAR_IO_MODE_BLOCKING;
+            size = sizeof(CharDeviceCommand_t);
+
+            if(OK((*device->config)(device, &size, (Addr_t *) &cmd))) {
+              size = len;
+              if(OK((*device->write)(device, &size, (Addr_t *) str_))) {
+                __ReturnOk__();
+              } else {
+                __ReturnError__();
+                __AssertOnElse__();
+              }
             } else {
+              __ReturnError__();
               __AssertOnElse__();
             }
-          } else {
-            __AssertOnElse__();
           }
         } else {
+          __ReturnError__();
           __AssertOnElse__();
         }
       } else {
+        __ReturnError__();
         __AssertOnElse__();
       }
     } else {
+      __ReturnError__();
       __AssertOnElse__();
     }
   } else {
+    __ReturnError__();
     __AssertOnElse__();
   }
 
@@ -311,59 +355,73 @@ static Return_t __ConsoleWriteString__(const Byte_t *str_) {
 
 
 /**
- * @brief Read single character from console
+ * @brief Read single character from console with cached device
  * @param  ch_ Pointer to store character
  * @return     Return_t OK or error
  */
 static Return_t __ConsoleReadChar__(Byte_t *ch_) {
   FUNCTION_ENTER;
 
-
   Size_t size = 0x1u;
   Addr_t *readData = null;
   Device_t *device = null;
   CharDeviceCommand_t cmd;
 
-
   if(__PointerIsNotNull__(ch_)) {
-    /* Use internal device API instead of public API */
-    if(OK(__DeviceListFind__(CONFIG_CONSOLE_DEVICE_UID, &device))) {
-      if(__PointerIsNotNull__(device)) {
-        /* Step 1: Configure byte count for read operation */
-        cmd.command = CHAR_CMD_SET_PARAMS;
-        cmd.byteCount = 0x1u;
-        cmd.transferMode = CHAR_IO_MODE_BLOCKING;
-        size = sizeof(CharDeviceCommand_t);
+    /* Performance optimization: Try cached device first */
+    if(__PointerIsNotNull__(cachedDevice) && (CONFIG_CONSOLE_DEVICE_UID == cachedDeviceUID)) {
+      device = cachedDevice;
+    } else {
+      /* Cache miss - look up device */
+      if(OK(__DeviceListFind__(CONFIG_CONSOLE_DEVICE_UID, &device))) {
+        /* Update cache */
+        cachedDevice = device;
+        cachedDeviceUID = CONFIG_CONSOLE_DEVICE_UID;
+      } else {
+        __ReturnError__();
+        __AssertOnElse__();
+        FUNCTION_EXIT;
+      }
+    }
 
-        if(OK((*device->config)(device, &size, (Addr_t *) &cmd))) {
-          /* Step 2: Perform the read operation */
-          size = 0x1u;
+    if(__PointerIsNotNull__(device)) {
+      /* Step 1: Configure byte count for read operation */
+      cmd.command = CHAR_CMD_SET_PARAMS;
+      cmd.byteCount = 0x1u;
+      /* Use blocking mode for reliable operation */
+      cmd.transferMode = CHAR_IO_MODE_BLOCKING;
+      size = sizeof(CharDeviceCommand_t);
 
-          if(OK((*device->read)(device, &size, &readData))) {
-            if(__PointerIsNotNull__(readData) && (0x0u < size)) {
-              *ch_ = *((Byte_t *) readData);
-              __KernelFreeMemory__(readData);
-              __ReturnOk__();
-            } else {
-              if(__PointerIsNotNull__(readData)) {
-                __KernelFreeMemory__(readData);
-              }
+      if(OK((*device->config)(device, &size, (Addr_t *) &cmd))) {
+        /* Step 2: Perform the read operation */
+        size = 0x1u;
 
-              __AssertOnElse__();
-            }
+        if(OK((*device->read)(device, &size, &readData))) {
+          if(__PointerIsNotNull__(readData) && (0x0u < size)) {
+            *ch_ = *((Byte_t *) readData);
+            __KernelFreeMemory__(readData);
+            __ReturnOk__();
           } else {
-            __AssertOnElse__();
+            if(__PointerIsNotNull__(readData)) {
+              __KernelFreeMemory__(readData);
+            }
+            /* No data available - normal condition */
+            __ReturnError__();
           }
         } else {
-          __AssertOnElse__();
+          /* Read failed - could be no data or device issue */
+          __ReturnError__();
         }
       } else {
+        __ReturnError__();
         __AssertOnElse__();
       }
     } else {
+      __ReturnError__();
       __AssertOnElse__();
     }
   } else {
+    __ReturnError__();
     __AssertOnElse__();
   }
 
@@ -442,7 +500,7 @@ static Return_t __ConsoleProcessCommand__(void) {
 
   /* Search command table */
   for(i = 0x0u; __PointerIsNotNull__(commandTable[i].name); i++) {
-    if(__StringCompare__(cmdName, commandTable[i].name)) {
+    if(__strcmp__(cmdName, commandTable[i].name)) {
       if(__PointerIsNotNull__(commandTable[i].handler)) {
         if(OK(commandTable[i].handler((const Byte_t *) cmdArgs))) {
           __ReturnOk__();
@@ -682,9 +740,9 @@ static Return_t __ConsoleCmdLs__(const Byte_t *args_) {
 
   /* Determine path */
   if(__PointerIsNotNull__(args_) && (CHAR_NULL != args_[0x0])) {
-    __StringCopy__(path, args_, CONFIG_FS_MAX_PATH_LENGTH);
+    __strcpy__(path, args_, CONFIG_FS_MAX_PATH_LENGTH);
   } else {
-    __StringCopy__(path, consoleState.currentWorkingDirectory, CONFIG_FS_MAX_PATH_LENGTH);
+    __strcpy__(path, consoleState.currentWorkingDirectory, CONFIG_FS_MAX_PATH_LENGTH);
   }
 
 
@@ -747,61 +805,54 @@ static Return_t __ConsoleCmdLs__(const Byte_t *args_) {
 static Return_t __ConsoleCmdCd__(const Byte_t *args_) {
   FUNCTION_ENTER;
 
-
   Base_t exists = false;
   Byte_t newPath[CONFIG_FS_MAX_PATH_LENGTH];
 
-
   if(__PointerIsNotNull__(mountedVolume)) {
-    if(!__PointerIsNotNull__(args_) || (0x00u == args_[0x0])) {
+    if(!__PointerIsNotNull__(args_) || (CHAR_NULL == args_[0x0])) {
       /* No argument - go to root */
-      __StringCopy__(newPath, (const Byte_t *) "/", CONFIG_FS_MAX_PATH_LENGTH);
-    } else if(__StringCompare__(args_, (const Byte_t *) "..")) {
-      /* Go up one directory */
-      Word_t len = __StringLength__(consoleState.currentWorkingDirectory);
-      Word_t i = len;
-
-
-      /* Find last slash */
-      while(i > 0x0u && CHAR_SLASH != consoleState.currentWorkingDirectory[i]) {
-        i--;
-      }
-
-      if(0x0u == i) {
-        __StringCopy__(newPath, (const Byte_t *) "/", CONFIG_FS_MAX_PATH_LENGTH);
+      __strcpy__(newPath, (const Byte_t *) "/", CONFIG_FS_MAX_PATH_LENGTH);
+    } else if(__strcmp__(args_, (const Byte_t *) "..")) {
+      /* Go up one directory - use path utility */
+      if(OK(__path_dirname__(newPath, consoleState.currentWorkingDirectory, CONFIG_FS_MAX_PATH_LENGTH))) {
+        /* Successfully got parent directory */
       } else {
-        __memcpy__(newPath, consoleState.currentWorkingDirectory, i);
-        newPath[i] = 0x00u;
+        __strcpy__(newPath, (const Byte_t *) "/", CONFIG_FS_MAX_PATH_LENGTH);
       }
-    } else if(CHAR_SLASH == args_[0x0]) {
+    } else if(__path_is_absolute__(args_)) {
       /* Absolute path */
-      __StringCopy__(newPath, args_, CONFIG_FS_MAX_PATH_LENGTH);
+      __strcpy__(newPath, args_, CONFIG_FS_MAX_PATH_LENGTH);
     } else {
-      /* Relative path */
-      __StringCopy__(newPath, consoleState.currentWorkingDirectory, CONFIG_FS_MAX_PATH_LENGTH);
-
-      if(CHAR_SLASH != newPath[__StringLength__(newPath) - 0x1u]) {
-        Word_t len = __StringLength__(newPath);
-
-
-        newPath[len] = CHAR_SLASH;
-        newPath[len + 0x1u] = CHAR_NULL;
+      /* Relative path - use path join */
+      if(OK(__path_join__(newPath, consoleState.currentWorkingDirectory, args_, CONFIG_FS_MAX_PATH_LENGTH))) {
+        /* Path joined successfully */
+      } else {
+        __ConsoleWriteString__((const Byte_t *) "Error: Path too long.\r\n");
+        __ReturnError__();
+        __AssertOnElse__();
+        FUNCTION_EXIT;
       }
-
-      __StringCopy__(newPath + __StringLength__(newPath), args_, CONFIG_FS_MAX_PATH_LENGTH - __StringLength__(newPath));
     }
 
-
-    /* Verify directory exists */
-    if(OK(xFileExists(mountedVolume, newPath, &exists)) && exists) {
-      __StringCopy__(consoleState.currentWorkingDirectory, newPath, CONFIG_FS_MAX_PATH_LENGTH);
-      __ReturnOk__();
+    /* Normalize the path to remove . and .. references */
+    if(OK(__path_normalize__(newPath, CONFIG_FS_MAX_PATH_LENGTH))) {
+      /* Verify directory exists */
+      if(OK(xFileExists(mountedVolume, newPath, &exists)) && exists) {
+        __strcpy__(consoleState.currentWorkingDirectory, newPath, CONFIG_FS_MAX_PATH_LENGTH);
+        __ReturnOk__();
+      } else {
+        __ConsoleWriteString__((const Byte_t *) "Error: Directory not found.\r\n");
+        __ReturnError__();
+        __AssertOnElse__();
+      }
     } else {
-      __ConsoleWriteString__((const Byte_t *) "Error: Directory not found.\r\n");
+      __ConsoleWriteString__((const Byte_t *) "Error: Invalid path.\r\n");
+      __ReturnError__();
       __AssertOnElse__();
     }
   } else {
     __ConsoleWriteString__((const Byte_t *) "Error: No filesystem mounted.\r\n");
+    __ReturnError__();
     __AssertOnElse__();
   }
 
@@ -823,83 +874,111 @@ static Return_t __ConsoleCmdPwd__(const Byte_t *args_) {
 }
 
 
+/* Magic number for cat command buffer size */
+#define CAT_BUFFER_SIZE 0x100u  /* 256 bytes */
+
 /**
- * @brief Command: cat - Display file contents
+ * @brief Command: cat - Display file contents with buffered reading
  * @param  args_ Command arguments (file path)
  * @return       Return_t OK or error
  */
 static Return_t __ConsoleCmdCat__(const Byte_t *args_) {
   FUNCTION_ENTER;
 
-
   File_t *file = null;
-  Byte_t *data = null;
+  Byte_t *buffer = null;
+  Word_t bytesToRead = 0x0u;
   Word_t fileSize = 0x0u;
+  Word_t totalRead = 0x0u;
   Byte_t path[CONFIG_FS_MAX_PATH_LENGTH];
 
-
   if(__PointerIsNotNull__(mountedVolume) && __PointerIsNotNull__(args_) && (0x00u != args_[0x0])) {
-    /* Build full path */
-    if(0x2Fu == args_[0x0]) {
-      __StringCopy__(path, args_, CONFIG_FS_MAX_PATH_LENGTH);
+    /* Use path utility to build full path */
+    if(__path_is_absolute__(args_)) {
+      __strcpy__(path, args_, CONFIG_FS_MAX_PATH_LENGTH);
     } else {
-      __StringCopy__(path, consoleState.currentWorkingDirectory, CONFIG_FS_MAX_PATH_LENGTH);
-
-      if(CHAR_SLASH != path[__StringLength__(path) - 0x1u]) {
-        Word_t len = __StringLength__(path);
-
-
-        path[len] = CHAR_SLASH;
-        path[len + 0x1u] = CHAR_NULL;
+      if(OK(__path_join__(path, consoleState.currentWorkingDirectory, args_, CONFIG_FS_MAX_PATH_LENGTH))) {
+        /* Path joined successfully */
+      } else {
+        __ConsoleWriteString__((const Byte_t *) "Error: Path too long.\r\n");
+        __ReturnError__();
+        __AssertOnElse__();
+        FUNCTION_EXIT;
       }
-
-      __StringCopy__(path + __StringLength__(path), args_, CONFIG_FS_MAX_PATH_LENGTH - __StringLength__(path));
     }
-
 
     /* Open file for reading */
     if(OK(xFileOpen(&file, mountedVolume, path, FS_MODE_READ))) {
-      /* Get file size */
+      /* Get file size for progress tracking */
       if(OK(xFileGetSize(file, &fileSize))) {
         if(0x0u < fileSize) {
-          /* Read entire file */
-          if(OK(xFileRead(file, fileSize, &data))) {
-            /* Display contents */
-            Word_t i = 0x0u;
-            Byte_t ch[0x2] = {
-              0x00u, 0x00u
-            };
+          /* Allocate buffer for chunked reading */
+          if(OK(xMemAlloc((volatile Addr_t **)&buffer, CAT_BUFFER_SIZE))) {
+            /* Read file in chunks */
+            while(totalRead < fileSize) {
+              /* Calculate bytes to read in this chunk */
+              bytesToRead = (fileSize - totalRead) > CAT_BUFFER_SIZE ?
+                           CAT_BUFFER_SIZE : (fileSize - totalRead);
 
+              /* Read chunk from file */
+              if(OK(xFileRead(file, bytesToRead, &buffer))) {
+                /* Display chunk contents */
+                Word_t i = 0x0u;
+                Byte_t ch[0x2] = {0x00u, 0x00u};
 
-            for(i = 0x0u; i < fileSize; i++) {
-              ch[0x0] = data[i];
+                for(i = 0x0u; i < bytesToRead; i++) {
+                  ch[0x0] = buffer[i];
 
+                  /* Convert LF to CRLF for terminal */
+                  if(CHAR_LF == ch[0x0]) {
+                    __ConsoleWriteString__((const Byte_t *) "\r\n");
+                  } else {
+                    __ConsoleWriteString__(ch);
+                  }
+                }
 
-              /* Convert LF to CRLF for terminal */
-              if(0x0Au == ch[0x0]) {
-                __ConsoleWriteString__((const Byte_t *) "\r\n");
+                totalRead += bytesToRead;
               } else {
-                __ConsoleWriteString__(ch);
+                __ConsoleWriteString__((const Byte_t *) "Error: Failed to read file.\r\n");
+                xMemFree(buffer);
+                xFileClose(file);
+                __ReturnError__();
+                __AssertOnElse__();
+                FUNCTION_EXIT;
               }
             }
 
-            __ConsoleWriteString__((const Byte_t *) "\r\n");
+            /* Ensure final newline */
+            if(buffer[bytesToRead - 0x1u] != CHAR_LF) {
+              __ConsoleWriteString__((const Byte_t *) "\r\n");
+            }
 
-
-            /* Free data buffer */
-            xMemFree(data);
+            /* Free buffer */
+            xMemFree(buffer);
+          } else {
+            __ConsoleWriteString__((const Byte_t *) "Error: Unable to allocate buffer.\r\n");
+            xFileClose(file);
+            __ReturnError__();
+            __AssertOnElse__();
+            FUNCTION_EXIT;
           }
         } else {
           __ConsoleWriteString__((const Byte_t *) "(empty file)\r\n");
         }
+      } else {
+        __ConsoleWriteString__((const Byte_t *) "Error: Unable to get file size.\r\n");
+        xFileClose(file);
+        __ReturnError__();
+        __AssertOnElse__();
+        FUNCTION_EXIT;
       }
-
 
       /* Close file */
       xFileClose(file);
       __ReturnOk__();
     } else {
       __ConsoleWriteString__((const Byte_t *) "Error: Unable to open file.\r\n");
+      __ReturnError__();
       __AssertOnElse__();
     }
   } else {
@@ -909,6 +988,7 @@ static Return_t __ConsoleCmdCat__(const Byte_t *args_) {
       __ConsoleWriteString__((const Byte_t *) "Error: No file specified.\r\n");
     }
 
+    __ReturnError__();
     __AssertOnElse__();
   }
 
@@ -949,7 +1029,7 @@ static Return_t __ConsoleCmdMv__(const Byte_t *args_) {
 
 
       /* Build destination path */
-      __StringCopy__(newPath, dst, CONFIG_FS_MAX_PATH_LENGTH);
+      __strcpy__(newPath, dst, CONFIG_FS_MAX_PATH_LENGTH);
 
 
       /* Rename file */
@@ -985,34 +1065,29 @@ static Return_t __ConsoleCmdMv__(const Byte_t *args_) {
 static Return_t __ConsoleCmdRm__(const Byte_t *args_) {
   FUNCTION_ENTER;
 
-
   Byte_t path[CONFIG_FS_MAX_PATH_LENGTH];
 
-
-  if(__PointerIsNotNull__(mountedVolume) && __PointerIsNotNull__(args_) && (0x00u != args_[0x0])) {
-    /* Build full path */
-    if(0x2Fu == args_[0x0]) {
-      __StringCopy__(path, args_, CONFIG_FS_MAX_PATH_LENGTH);
+  if(__PointerIsNotNull__(mountedVolume) && __PointerIsNotNull__(args_) && (CHAR_NULL != args_[0x0])) {
+    /* Build full path using path utilities */
+    if(__path_is_absolute__(args_)) {
+      __strcpy__(path, args_, CONFIG_FS_MAX_PATH_LENGTH);
     } else {
-      __StringCopy__(path, consoleState.currentWorkingDirectory, CONFIG_FS_MAX_PATH_LENGTH);
-
-      if(CHAR_SLASH != path[__StringLength__(path) - 0x1u]) {
-        Word_t len = __StringLength__(path);
-
-
-        path[len] = CHAR_SLASH;
-        path[len + 0x1u] = CHAR_NULL;
+      if(OK(__path_join__(path, consoleState.currentWorkingDirectory, args_, CONFIG_FS_MAX_PATH_LENGTH))) {
+        /* Path joined successfully */
+      } else {
+        __ConsoleWriteString__((const Byte_t *) "Error: Path too long.\r\n");
+        __ReturnError__();
+        __AssertOnElse__();
+        FUNCTION_EXIT;
       }
-
-      __StringCopy__(path + __StringLength__(path), args_, CONFIG_FS_MAX_PATH_LENGTH - __StringLength__(path));
     }
-
 
     /* Remove file */
     if(OK(xFileUnlink(mountedVolume, path))) {
       __ReturnOk__();
     } else {
       __ConsoleWriteString__((const Byte_t *) "Error: Unable to remove file.\r\n");
+      __ReturnError__();
       __AssertOnElse__();
     }
   } else {
@@ -1022,6 +1097,7 @@ static Return_t __ConsoleCmdRm__(const Byte_t *args_) {
       __ConsoleWriteString__((const Byte_t *) "Error: No file specified.\r\n");
     }
 
+    __ReturnError__();
     __AssertOnElse__();
   }
 
@@ -1037,34 +1113,29 @@ static Return_t __ConsoleCmdRm__(const Byte_t *args_) {
 static Return_t __ConsoleCmdMkdir__(const Byte_t *args_) {
   FUNCTION_ENTER;
 
-
   Byte_t path[CONFIG_FS_MAX_PATH_LENGTH];
 
-
-  if(__PointerIsNotNull__(mountedVolume) && __PointerIsNotNull__(args_) && (0x00u != args_[0x0])) {
-    /* Build full path */
-    if(0x2Fu == args_[0x0]) {
-      __StringCopy__(path, args_, CONFIG_FS_MAX_PATH_LENGTH);
+  if(__PointerIsNotNull__(mountedVolume) && __PointerIsNotNull__(args_) && (CHAR_NULL != args_[0x0])) {
+    /* Build full path using path utilities */
+    if(__path_is_absolute__(args_)) {
+      __strcpy__(path, args_, CONFIG_FS_MAX_PATH_LENGTH);
     } else {
-      __StringCopy__(path, consoleState.currentWorkingDirectory, CONFIG_FS_MAX_PATH_LENGTH);
-
-      if(CHAR_SLASH != path[__StringLength__(path) - 0x1u]) {
-        Word_t len = __StringLength__(path);
-
-
-        path[len] = CHAR_SLASH;
-        path[len + 0x1u] = CHAR_NULL;
+      if(OK(__path_join__(path, consoleState.currentWorkingDirectory, args_, CONFIG_FS_MAX_PATH_LENGTH))) {
+        /* Path joined successfully */
+      } else {
+        __ConsoleWriteString__((const Byte_t *) "Error: Path too long.\r\n");
+        __ReturnError__();
+        __AssertOnElse__();
+        FUNCTION_EXIT;
       }
-
-      __StringCopy__(path + __StringLength__(path), args_, CONFIG_FS_MAX_PATH_LENGTH - __StringLength__(path));
     }
-
 
     /* Create directory */
     if(OK(xDirMake(mountedVolume, path))) {
       __ReturnOk__();
     } else {
       __ConsoleWriteString__((const Byte_t *) "Error: Unable to create directory.\r\n");
+      __ReturnError__();
       __AssertOnElse__();
     }
   } else {
@@ -1074,80 +1145,11 @@ static Return_t __ConsoleCmdMkdir__(const Byte_t *args_) {
       __ConsoleWriteString__((const Byte_t *) "Error: No directory specified.\r\n");
     }
 
+    __ReturnError__();
     __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
-}
-
-
-/**
- * @brief Copy string from source to destination with bounds checking
- * @param dest_     Destination buffer
- * @param src_      Source string
- * @param destSize_ Size of destination buffer
- */
-static void __StringCopy__(Byte_t *dest_, const Byte_t *src_, Word_t destSize_) {
-  Word_t i = 0x0u;
-
-
-  if(__PointerIsNull__(dest_) || __PointerIsNull__(src_) || (destSize_ == 0x0u)) {
-    return;
-  }
-
-
-  /* Copy up to destSize_ - 1 characters to leave room for null terminator */
-  while((CHAR_NULL != src_[i]) && (i < (destSize_ - 0x1u))) {
-    dest_[i] = src_[i];
-    i++;
-  }
-
-  dest_[i] = CHAR_NULL;
-}
-
-
-/**
- * @brief Get length of string
- * @param  str_ String
- * @return      Word_t Length
- */
-static Word_t __StringLength__(const Byte_t *str_) {
-  Word_t len = 0x0u;
-
-
-  if(__PointerIsNotNull__(str_)) {
-    while(CHAR_NULL != str_[len]) {
-      len++;
-    }
-  }
-
-  return(len);
-}
-
-
-/**
- * @brief Compare two strings
- * @param  s1_ First string
- * @param  s2_ Second string
- * @return     Base_t true if equal, false otherwise
- */
-static Base_t __StringCompare__(const Byte_t *s1_, const Byte_t *s2_) {
-  Word_t i = 0x0u;
-
-
-  if(!__PointerIsNotNull__(s1_) || !__PointerIsNotNull__(s2_)) {
-    return(false);
-  }
-
-  while(s1_[i] != CHAR_NULL && s2_[i] != CHAR_NULL) {
-    if(s1_[i] != s2_[i]) {
-      return(false);
-    }
-
-    i++;
-  }
-
-  return(s1_[i] == s2_[i]);
 }
 
 
@@ -1239,7 +1241,7 @@ static void __uitoah__(Word_t value_, Byte_t *buffer_, Word_t bufferSize_) {
   #endif /* if defined(CONFIG_CONSOLE_ECHO_ENABLED) */
     consoleState.bufferPosition = 0x0u;
     __memset__(consoleState.commandBuffer, CHAR_NULL, CONFIG_CONSOLE_MAX_COMMAND_LENGTH);
-    __StringCopy__(consoleState.currentWorkingDirectory, (const Byte_t *) "/", CONFIG_FS_MAX_PATH_LENGTH);
+    __strcpy__(consoleState.currentWorkingDirectory, (const Byte_t *) "/", CONFIG_FS_MAX_PATH_LENGTH);
     mountedVolume = null;
   }
 

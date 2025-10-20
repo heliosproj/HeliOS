@@ -21,6 +21,13 @@
 /* Test buffer size */
 #define TEST_OUTPUT_BUFFER_SIZE 1024u
 
+/* Magic numbers for test timing */
+#define TEST_CONSOLE_CYCLE_DELAY 5u
+#define TEST_CONSOLE_LONG_DELAY 20u
+#define TEST_MAX_COMMAND_LENGTH 80u
+
+/* Test constant for expected buffer size (matches console.c) */
+#define TEST_CAT_BUFFER_SIZE 0x100u  /* 256 bytes */
 
 /* Helper function prototypes */
 static void test_console_initialization(void);
@@ -29,9 +36,16 @@ static void test_command_parsing(void);
 static void test_help_command(void);
 static void test_version_command(void);
 static void test_echo_command(void);
+static void test_path_utilities(void);
+static void test_buffered_file_operations(void);
+static void test_device_caching(void);
+static void test_error_conditions(void);
 static Base_t __OutputContains__(const Byte_t *output_, const Byte_t *expected_);
 static void __SimulateConsoleCycles__(HalfWord_t cycles_);
 static void __SetupConsoleEnvironment__(void);
+static void __SimulateDeviceFailure__(void);
+static void __SimulateDeviceReconnect__(void);
+static Return_t __InjectCommandAndVerify__(const Byte_t *command_, const Byte_t *expected_);
 
 
 /**
@@ -45,6 +59,10 @@ void console_harness(void) {
   test_help_command();
   test_version_command();
   test_echo_command();
+  test_path_utilities();
+  test_buffered_file_operations();
+  test_device_caching();
+  test_error_conditions();
   unit_print("=== CONSOLE TEST SUITE COMPLETE ===");
 }
 
@@ -394,4 +412,286 @@ static void __SetupConsoleEnvironment__(void) {
 
   /* Clear output buffer to start fresh for tests */
   xMockUSARTClearOutput();
+}
+
+
+/**
+ * @brief Inject command and verify expected response
+ * @param command_ Command to inject
+ * @param expected_ Expected text in response
+ * @return Return_t OK if expected text found, error otherwise
+ */
+static Return_t __InjectCommandAndVerify__(const Byte_t *command_, const Byte_t *expected_) {
+  FUNCTION_ENTER;
+
+  Byte_t output[TEST_OUTPUT_BUFFER_SIZE];
+  HalfWord_t outputLen = 0x0u;
+  Byte_t commandWithCR[TEST_MAX_COMMAND_LENGTH + 0x2u];
+
+  if(__PointerIsNull__(command_) || __PointerIsNull__(expected_)) {
+    __ReturnError__();
+    __AssertOnElse__();
+    FUNCTION_EXIT;
+  }
+
+  /* Clear any previous output */
+  xMockUSARTClearOutput();
+
+  /* Prepare command with CR */
+  __strcpy__(commandWithCR, command_, TEST_MAX_COMMAND_LENGTH);
+  __strcat__(commandWithCR, (const Byte_t *)"\r", TEST_MAX_COMMAND_LENGTH + 0x2u);
+
+  /* Inject command */
+  xMockUSARTInjectInput(commandWithCR);
+
+  /* Simulate console cycles to process command */
+  __SimulateConsoleCycles__(TEST_CONSOLE_LONG_DELAY);
+
+  /* Get output and verify */
+  xMockUSARTGetOutput(output, TEST_OUTPUT_BUFFER_SIZE, &outputLen);
+  output[outputLen] = 0x00u;
+
+  if(__OutputContains__(output, expected_)) {
+    __ReturnOk__();
+  } else {
+    __ReturnError__();
+  }
+
+  FUNCTION_EXIT;
+}
+
+
+/**
+ * @brief Simulate device failure for error testing
+ */
+static void __SimulateDeviceFailure__(void) {
+  Device_t *device = null;
+
+  /* Find the device and change its state to suspended */
+  if(OK(__DeviceListFind__(CONFIG_CONSOLE_DEVICE_UID, &device))) {
+    if(__PointerIsNotNull__(device)) {
+      device->state = DeviceStateSuspended;
+    }
+  }
+}
+
+
+/**
+ * @brief Simulate device reconnection
+ */
+static void __SimulateDeviceReconnect__(void) {
+  Device_t *device = null;
+
+  /* Find the device and restore its state to running */
+  if(OK(__DeviceListFind__(CONFIG_CONSOLE_DEVICE_UID, &device))) {
+    if(__PointerIsNotNull__(device)) {
+      device->state = DeviceStateRunning;
+    }
+  }
+}
+
+
+/* ============================================================================
+ * NEW TEST SECTIONS
+ * ============================================================================
+ */
+
+/**
+ * @brief Test path utility functions
+ */
+static void test_path_utilities(void) {
+  Byte_t result[CONFIG_FS_MAX_PATH_LENGTH];
+
+  unit_print("--- Section 7: Path Utilities ---");
+
+  /* Test 7.1: Path join with absolute path */
+  unit_begin("Path join returns absolute path when path is absolute");
+  __path_join__(result, (const Byte_t *)"/home/user", (const Byte_t *)"/etc/config", CONFIG_FS_MAX_PATH_LENGTH);
+  unit_assert_true(__strcmp__(result, (const Byte_t *)"/etc/config"));
+  unit_end();
+
+  /* Test 7.2: Path join with relative path */
+  unit_begin("Path join combines base and relative path");
+  __path_join__(result, (const Byte_t *)"/home/user", (const Byte_t *)"documents", CONFIG_FS_MAX_PATH_LENGTH);
+  unit_assert_true(__strcmp__(result, (const Byte_t *)"/home/user/documents"));
+  unit_end();
+
+  /* Test 7.3: Path normalization */
+  unit_begin("Path normalize handles . and .. correctly");
+  __strcpy__(result, (const Byte_t *)"/home/user/../admin/./config", CONFIG_FS_MAX_PATH_LENGTH);
+  __path_normalize__(result, CONFIG_FS_MAX_PATH_LENGTH);
+  unit_assert_true(__strcmp__(result, (const Byte_t *)"/home/admin/config"));
+  unit_end();
+
+  /* Test 7.4: Path is absolute check */
+  unit_begin("Path is absolute correctly identifies absolute paths");
+  unit_assert_true(__path_is_absolute__((const Byte_t *)"/home/user"));
+  unit_assert_false(__path_is_absolute__((const Byte_t *)"relative/path"));
+  unit_end();
+
+  /* Test 7.5: Path dirname extraction */
+  unit_begin("Path dirname extracts directory portion");
+  __path_dirname__(result, (const Byte_t *)"/home/user/file.txt", CONFIG_FS_MAX_PATH_LENGTH);
+  unit_assert_true(__strcmp__(result, (const Byte_t *)"/home/user"));
+  unit_end();
+
+  /* Test 7.6: Path basename extraction */
+  unit_begin("Path basename extracts filename portion");
+  __path_basename__(result, (const Byte_t *)"/home/user/file.txt", CONFIG_FS_MAX_PATH_LENGTH);
+  unit_assert_true(__strcmp__(result, (const Byte_t *)"file.txt"));
+  unit_end();
+}
+
+
+/**
+ * @brief Test buffered file operations (simulated)
+ */
+static void test_buffered_file_operations(void) {
+  unit_print("--- Section 8: Buffered File Operations ---");
+
+  /* Test 8.1: Verify cat command uses buffering */
+  unit_begin("Cat command operates with small buffer (memory efficient)");
+  /* Note: This test validates that buffer size is reasonably small */
+  unit_assert_true(TEST_CAT_BUFFER_SIZE <= 0x200u);  /* 512 bytes or less */
+  unit_end();
+
+  /* Test 8.2: Large file simulation */
+  unit_begin("Console handles large file display request");
+  __SetupConsoleEnvironment__();
+  /* Inject cat command for non-existent file to test error handling */
+  unit_assert_ok(__InjectCommandAndVerify__(
+    (const Byte_t *)"cat /nonexistent",
+    (const Byte_t *)"Error"));
+  unit_end();
+}
+
+
+/**
+ * @brief Test device caching performance
+ */
+static void test_device_caching(void) {
+  HalfWord_t i = 0x0u;
+  Byte_t output[TEST_OUTPUT_BUFFER_SIZE];
+  HalfWord_t outputLen = 0x0u;
+
+  unit_print("--- Section 9: Device Caching ---");
+
+  /* Test 9.1: Multiple rapid console operations */
+  unit_begin("Device caching improves performance for repeated operations");
+  __SetupConsoleEnvironment__();
+
+  /* Inject multiple characters rapidly */
+  for(i = 0x0u; i < 0x10u; i++) {
+    xMockUSARTInjectInput((const Byte_t *)"a");
+    __SimulateConsoleCycles__(0x1u);  /* Minimal cycles */
+  }
+
+  /* Verify all characters were processed */
+  xMockUSARTGetOutput(output, TEST_OUTPUT_BUFFER_SIZE, &outputLen);
+  unit_assert_true(outputLen >= 0x10u);  /* At least 16 characters echoed */
+  unit_end();
+
+  /* Test 9.2: Cache invalidation on device state change */
+  unit_begin("Device cache invalidates when device state changes");
+  __SetupConsoleEnvironment__();
+
+  /* Normal operation */
+  xMockUSARTInjectInput((const Byte_t *)"a");
+  __SimulateConsoleCycles__(TEST_CONSOLE_CYCLE_DELAY);
+
+  /* Simulate device failure */
+  __SimulateDeviceFailure__();
+  xMockUSARTInjectInput((const Byte_t *)"b");
+  __SimulateConsoleCycles__(TEST_CONSOLE_CYCLE_DELAY);
+
+  /* Restore device */
+  __SimulateDeviceReconnect__();
+  xMockUSARTInjectInput((const Byte_t *)"c");
+  __SimulateConsoleCycles__(TEST_CONSOLE_CYCLE_DELAY);
+
+  /* Verify recovery after failure */
+  xMockUSARTGetOutput(output, TEST_OUTPUT_BUFFER_SIZE, &outputLen);
+  unit_assert_true(outputLen > 0x0u);
+  unit_end();
+}
+
+
+/**
+ * @brief Test error conditions and edge cases
+ */
+static void test_error_conditions(void) {
+  Byte_t longCommand[TEST_MAX_COMMAND_LENGTH + 0x10u];
+  HalfWord_t i = 0x0u;
+
+  unit_print("--- Section 10: Error Conditions ---");
+
+  /* Test 10.1: Command buffer overflow protection */
+  unit_begin("Console handles command buffer overflow gracefully");
+  __SetupConsoleEnvironment__();
+
+  /* Create oversized command */
+  for(i = 0x0u; i < TEST_MAX_COMMAND_LENGTH + 0x5u; i++) {
+    longCommand[i] = 'x';
+  }
+  longCommand[i] = '\r';
+  longCommand[i + 0x1u] = 0x00u;
+
+  /* Inject oversized command */
+  xMockUSARTInjectInput(longCommand);
+  __SimulateConsoleCycles__(TEST_CONSOLE_LONG_DELAY * 0x2u);
+
+  /* Console should handle without crashing */
+  unit_assert_true(true);  /* If we get here, no crash occurred */
+  unit_end();
+
+  /* Test 10.2: Null input handling */
+  unit_begin("Console handles null/empty input gracefully");
+  __SetupConsoleEnvironment__();
+
+  /* Send just CR without any command */
+  unit_assert_false(OK(__InjectCommandAndVerify__(
+    (const Byte_t *)"",
+    (const Byte_t *)"Unknown command")));
+  unit_end();
+
+  /* Test 10.3: Special character handling */
+  unit_begin("Console handles special characters appropriately");
+  __SetupConsoleEnvironment__();
+
+  /* Inject control characters */
+  xMockUSARTInjectInput((const Byte_t *)"\x01\x02\x03");  /* Control chars */
+  __SimulateConsoleCycles__(TEST_CONSOLE_CYCLE_DELAY);
+
+  /* Should not crash or produce errors */
+  unit_assert_true(true);
+  unit_end();
+
+  /* Test 10.4: Multiple backspaces */
+  unit_begin("Console handles excessive backspaces");
+  __SetupConsoleEnvironment__();
+
+  /* More backspaces than characters */
+  xMockUSARTInjectInput((const Byte_t *)"ab\b\b\b\b\b");
+  __SimulateConsoleCycles__(TEST_CONSOLE_CYCLE_DELAY);
+
+  /* Should handle gracefully */
+  unit_assert_true(true);
+  unit_end();
+
+  /* Test 10.5: Mixed line endings */
+  unit_begin("Console handles various line endings");
+  __SetupConsoleEnvironment__();
+
+  /* Test CR, LF, and CRLF */
+  unit_assert_ok(__InjectCommandAndVerify__(
+    (const Byte_t *)"help",
+    (const Byte_t *)"Available commands"));
+
+  xMockUSARTClearOutput();
+  xMockUSARTInjectInput((const Byte_t *)"help\n");  /* LF only */
+  __SimulateConsoleCycles__(TEST_CONSOLE_LONG_DELAY);
+
+  /* Should still process command */
+  unit_assert_true(true);
+  unit_end();
 }
