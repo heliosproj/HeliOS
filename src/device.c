@@ -348,7 +348,7 @@ Return_t xDeviceSimpleRead(const HalfWord_t uid_, Byte_t *data_) {
            * in kernel memory. */
           if(OK((*device->simple_read)(device, &data))) {
             *data_ = data;
-            device->bytesWritten += sizeof(Byte_t);
+            device->bytesRead += sizeof(Byte_t);
             __ReturnOk__();
           } else {
             __AssertOnElse__();

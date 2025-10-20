@@ -154,8 +154,9 @@
  * +----+ +--------------------------------------+
  */
 /*UNCRUSTIFY-ON*/
-static volatile MemoryRegion_t heap;
-static volatile MemoryRegion_t kernel;
+/* Memory region structures - explicitly zero-initialized */
+static volatile MemoryRegion_t heap = { 0 };
+static volatile MemoryRegion_t kernel = { 0 };
 static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, const volatile Addr_t *addr_, const Base_t option_);
 static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **addr_, const Size_t size_);
 static Return_t __free__(volatile MemoryRegion_t *region_, const volatile Addr_t *addr_);
@@ -1081,7 +1082,7 @@ static Return_t __MemGetRegionStats__(const volatile MemoryRegion_t *region_, Me
 
 
           /* Free the heap memory because the call to __memset__() failed. */
-          __HeapFreeMemory__(stats_);
+          __HeapFreeMemory__(*stats_);
         }
       } else {
         __AssertOnElse__();

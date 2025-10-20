@@ -21,7 +21,7 @@ Return_t xTimerCreate(Timer_t **timer_, const Ticks_t period_) {
   FUNCTION_ENTER;
 
   if(__PointerIsNotNull__(timer_)) {
-    if(OK(__KernelAllocateMemory__((volatile Addr_t **) timer_, sizeof(Task_t)))) {
+    if(OK(__KernelAllocateMemory__((volatile Addr_t **) timer_, sizeof(Timer_t)))) {
       if(__PointerIsNotNull__(*timer_)) {
         (*timer_)->state = TimerStateSuspended;
         (*timer_)->timerPeriod = period_;

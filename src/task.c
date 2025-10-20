@@ -317,21 +317,20 @@ Return_t xTaskGetNumberOfTasks(Base_t *tasks_) {
     if(__PointerIsNull__(tlist)) {
       *tasks_ = 0x0;
       __ReturnOk__();
-      FUNCTION_EXIT;
-    }
-
-    cursor = tlist->head;
+    } else {
+      cursor = tlist->head;
 
     while(__PointerIsNotNull__(cursor)) {
       tasks++;
       cursor = cursor->next;
     }
 
-    if(tlist->length == tasks) {
-      *tasks_ = tasks;
-      __ReturnOk__();
-    } else {
-      __AssertOnElse__();
+      if(tlist->length == tasks) {
+        *tasks_ = tasks;
+        __ReturnOk__();
+      } else {
+        __AssertOnElse__();
+      }
     }
   } else {
     __AssertOnElse__();
@@ -408,6 +407,13 @@ Return_t xTaskGetAllTaskInfo(TaskInfo_t **info_, Base_t *tasks_) {
               (*info_)[task].totalRunTime = cursor->totalRunTime;
               cursor = cursor->next;
               task++;
+            } else {
+              __AssertOnElse__();
+
+
+              /* Free heap memory because __memcpy__() failed. */
+              __HeapFreeMemory__(*info_);
+              FUNCTION_EXIT;
             }
           }
 
@@ -804,15 +810,16 @@ Return_t xTaskStartScheduler(void) {
 
         if(OK(xConsoleInit())) {
           if(OK(xTaskCreate(&consoleTask, "Console", vConsoleTask, null))) {
-            xTaskChangePriority(consoleTask, CONFIG_CONSOLE_TASK_PRIORITY);
+            /* Note: Task priority not currently implemented in HeliOS */
 
             #if (0x0u == CONFIG_CONSOLE_TASK_MODE)
               /* Continuous mode - task runs every clock tick */
-              xTaskChangeTaskState(consoleTask, TaskStateRunning);
+              xTaskResume(consoleTask);
             #else /* if (0x0u == CONFIG_CONSOLE_TASK_MODE) */
               /* Event-driven mode - task runs on timer */
-              xTaskChangeTaskState(consoleTask, TaskStateWaiting);
-              xTaskStartTimer(consoleTask, CONFIG_CONSOLE_TIMER_PERIOD_MS);
+              xTaskWait(consoleTask);
+              xTaskChangePeriod(consoleTask, CONFIG_CONSOLE_TIMER_PERIOD_MS);
+              xTaskResetTimer(consoleTask);
             #endif /* if (0x0u == CONFIG_CONSOLE_TASK_MODE) */
           }
         }
