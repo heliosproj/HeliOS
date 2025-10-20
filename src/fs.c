@@ -104,30 +104,30 @@ static HalfWord_t __ReadLE16__(const Byte_t *data_) {
 
 /* Helper function to read 32-bit little-endian value */
 static Word_t __ReadLE32__(const Byte_t *data_) {
-  return((Word_t) data_[0] | ((Word_t) data_[1] << 8) | ((Word_t) data_[2] << 16) | ((Word_t) data_[3] << 24));
+  return((Word_t) data_[0x0] | ((Word_t) data_[0x1] << 0x8) | ((Word_t) data_[0x2] << 0x10) | ((Word_t) data_[0x3] << 0x18));
 }
 
 
 /* Helper function to write 16-bit little-endian value */
 static void __WriteLE16__(Byte_t *data_, HalfWord_t value_) {
-  data_[0] = (Byte_t) (value_ & 0xFFu);
-  data_[1] = (Byte_t) ((value_ >> 8) & 0xFFu);
+  data_[0x0] = (Byte_t) (value_ & 0xFFu);
+  data_[0x1] = (Byte_t) ((value_ >> 0x8) & 0xFFu);
 }
 
 
 /* Helper function to write 32-bit little-endian value */
 static void __WriteLE32__(Byte_t *data_, Word_t value_) {
-  data_[0] = (Byte_t) (value_ & 0xFFu);
-  data_[1] = (Byte_t) ((value_ >> 8) & 0xFFu);
-  data_[2] = (Byte_t) ((value_ >> 16) & 0xFFu);
-  data_[3] = (Byte_t) ((value_ >> 24) & 0xFFu);
+  data_[0x0] = (Byte_t) (value_ & 0xFFu);
+  data_[0x1] = (Byte_t) ((value_ >> 0x8) & 0xFFu);
+  data_[0x2] = (Byte_t) ((value_ >> 0x10) & 0xFFu);
+  data_[0x3] = (Byte_t) ((value_ >> 0x18) & 0xFFu);
 }
 
 
 /* Mount tracking - tracks which block devices are currently mounted */
-#define MAX_MOUNTED_VOLUMES 8
+#define MAX_MOUNTED_VOLUMES 0x8u
 static HalfWord_t mountedDevices[MAX_MOUNTED_VOLUMES];
-static Byte_t mountedDeviceCount = 0;
+static Byte_t mountedDeviceCount = 0x0u;
 /* Forward declarations for helper functions */
 static Return_t __ReadSector__(const Volume_t *vol_, Word_t sector_, Byte_t **data_);
 static Return_t __WriteSector__(const Volume_t *vol_, Word_t sector_, const Byte_t *data_);
@@ -171,8 +171,8 @@ Return_t xFSMount(Volume_t **volume_) {
       vol->blockDeviceUID = CONFIG_FS_BLOCK_DEVICE_UID;
       vol->mounted = false;
 
-      /* Read boot sector (sector 0) */
-      if(OK(__ReadSector__(vol, 0, &bootSectorData))) {
+      /* Read boot sector (sector 0x0) */
+      if(OK(__ReadSector__(vol, 0x0u, &bootSectorData))) {
         bs = (FAT32BootSector_t *) bootSectorData;
 
 
@@ -190,7 +190,7 @@ Return_t xFSMount(Volume_t **volume_) {
         vol->dataStartSector = vol->reservedSectors + (vol->numFATs * vol->sectorsPerFAT);
 
         /* Validate FAT32 filesystem */
-        if((vol->bytesPerSector >= 512) && (vol->sectorsPerCluster > 0) && (vol->rootDirCluster >= 2)) {
+        if((vol->bytesPerSector >= 0x200u) && (vol->sectorsPerCluster > 0x0u) && (vol->rootDirCluster >= 0x2u)) {
           vol->mounted = true;
 
           /* Add device to mounted list */
@@ -271,10 +271,10 @@ Return_t xFSGetVolumeInfo(const Volume_t *volume_, VolumeInfo_t **info_) {
       info->bytesPerSector = volume_->bytesPerSector;
       info->sectorsPerCluster = volume_->sectorsPerCluster;
       info->bytesPerCluster = (Word_t) volume_->bytesPerSector * volume_->sectorsPerCluster;
-      info->totalClusters = 0;
-      info->freeClusters = 0;
-      info->totalBytes = 0;
-      info->freeBytes = 0;
+      info->totalClusters = 0x0u;
+      info->freeClusters = 0x0u;
+      info->totalBytes = 0x0u;
+      info->freeBytes = 0x0u;
       *info_ = info;
       __ReturnOk__();
     } else {
@@ -295,12 +295,12 @@ Return_t xFSFormat(const Byte_t *volumeLabel_) {
   Volume_t tempVol;
   Byte_t *bootSector = null;
   FAT32BootSector_t *bs = null;
-  HalfWord_t bytesPerSector = 512;
-  Byte_t sectorsPerCluster = 8;
-  HalfWord_t reservedSectors = 32;
-  Byte_t numFATs = 2;
-  Word_t sectorsPerFAT = 256;  /* 256 sectors for FAT (128KB per FAT) */
-  Word_t rootDirCluster = 2;
+  HalfWord_t bytesPerSector = 0x200u;
+  Byte_t sectorsPerCluster = 0x8u;
+  HalfWord_t reservedSectors = 0x20u;
+  Byte_t numFATs = 0x2u;
+  Word_t sectorsPerFAT = 0x100u;  /* 0x100 sectors for FAT (128KB per FAT) */
+  Word_t rootDirCluster = 0x2u;
   Word_t fatStart = reservedSectors;
   Word_t dataStart = reservedSectors + (numFATs * sectorsPerFAT);
 
@@ -327,41 +327,41 @@ Return_t xFSFormat(const Byte_t *volumeLabel_) {
     bs->jumpBoot[0] = 0xEBu; /* Jump instruction */
     bs->jumpBoot[1] = 0x58u;
     bs->jumpBoot[2] = 0x90u;
-    __memcpy__(bs->oemName, "HELIOS  ", 8);
+    __memcpy__(bs->oemName, "HELIOS  ", 0x8u);
     __WriteLE16__(bs->bytesPerSector, bytesPerSector);
     bs->sectorsPerCluster = sectorsPerCluster;
     __WriteLE16__(bs->reservedSectors, reservedSectors);
     bs->numFATs = numFATs;
-    __WriteLE16__(bs->rootEntryCount, 0);  /* 0 for FAT32 */
-    __WriteLE16__(bs->totalSectors16, 0); /* 0 for FAT32 */
+    __WriteLE16__(bs->rootEntryCount, 0x0u);  /* 0x0 for FAT32 */
+    __WriteLE16__(bs->totalSectors16, 0x0u); /* 0x0 for FAT32 */
     bs->mediaType = 0xF8u; /* Fixed disk */
-    __WriteLE16__(bs->FATSize16, 0); /* 0 for FAT32 */
-    __WriteLE16__(bs->sectorsPerTrack, 63);
-    __WriteLE16__(bs->numHeads, 16);
-    __WriteLE32__(bs->hiddenSectors, 0);
-    __WriteLE32__(bs->totalSectors32, 2048);  /* 1MB / 512 bytes */
+    __WriteLE16__(bs->FATSize16, 0x0u); /* 0x0 for FAT32 */
+    __WriteLE16__(bs->sectorsPerTrack, 0x3Fu);
+    __WriteLE16__(bs->numHeads, 0x10u);
+    __WriteLE32__(bs->hiddenSectors, 0x0u);
+    __WriteLE32__(bs->totalSectors32, 0x800u);  /* 1MB / 512 bytes */
     __WriteLE32__(bs->FATSize32, sectorsPerFAT);
-    __WriteLE16__(bs->extFlags, 0);
-    __WriteLE16__(bs->fsVersion, 0);
+    __WriteLE16__(bs->extFlags, 0x0u);
+    __WriteLE16__(bs->fsVersion, 0x0u);
     __WriteLE32__(bs->rootCluster, rootDirCluster);
-    __WriteLE16__(bs->fsInfo, 1);
-    __WriteLE16__(bs->backupBootSector, 6);
+    __WriteLE16__(bs->fsInfo, 0x1u);
+    __WriteLE16__(bs->backupBootSector, 0x6u);
     bs->driveNumber = 0x80u;
     bs->bootSignature = 0x29u;
     __WriteLE32__(bs->volumeID, 0x12345678u);
-    __memcpy__(bs->volumeLabel, volumeLabel_, 11);
-    __memcpy__(bs->fsType, "FAT32   ", 8);
+    __memcpy__(bs->volumeLabel, volumeLabel_, 0xBu);
+    __memcpy__(bs->fsType, "FAT32   ", 0x8u);
 
 
     /* Boot sector signature */
-    bootSector[510] = 0x55u;
-    bootSector[511] = 0xAAu;
+    bootSector[0x1FEu] = 0x55u;
+    bootSector[0x1FFu] = 0xAAu;
 
     /* Write boot sector */
-    if(OK(__WriteSector__(&tempVol, 0, bootSector))) {
+    if(OK(__WriteSector__(&tempVol, 0x0u, bootSector))) {
       Byte_t *fatSector = null;
-      Word_t sector = 0;
-      Word_t fat = 0;
+      Word_t sector = 0x0u;
+      Word_t fat = 0x0u;
       Base_t fatInitSuccess = true;
 
 
@@ -373,11 +373,11 @@ Return_t xFSFormat(const Byte_t *volumeLabel_) {
         __memset__(fatSector, 0x00u, bytesPerSector);
 
         /* Write zeros to all sectors of all FAT copies */
-        for(fat = 0; fat < numFATs && fatInitSuccess; fat++) {
+        for(fat = 0x0u; fat < numFATs && fatInitSuccess; fat++) {
           Word_t fatStartSector = fatStart + (fat * sectorsPerFAT);
 
 
-          for(sector = 0; sector < sectorsPerFAT && fatInitSuccess; sector++) {
+          for(sector = 0x0u; sector < sectorsPerFAT && fatInitSuccess; sector++) {
             if(ERROR(__WriteSector__(&tempVol, fatStartSector + sector, fatSector))) {
               fatInitSuccess = false;
             }
@@ -386,16 +386,16 @@ Return_t xFSFormat(const Byte_t *volumeLabel_) {
 
         if(fatInitSuccess) {
           /* Now set special FAT entries:
-           * - Cluster 0: Media descriptor (0x0FFFFFF8)
-           * - Cluster 1: Clean/dirty flag (0x0FFFFFFF)
-           * - Cluster 2: Root directory (EOC marker 0x0FFFFFFF) */
-          if(OK(__SetFATEntry__(&tempVol, 0, 0x0FFFFFF8u)) && OK(__SetFATEntry__(&tempVol, 1, 0x0FFFFFFFu)) && OK(__SetFATEntry__(&tempVol, 2, FAT32_EOC_MAX)))
+           * - Cluster 0x0: Media descriptor (0x0FFFFFF8)
+           * - Cluster 0x1: Clean/dirty flag (0x0FFFFFFF)
+           * - Cluster 0x2: Root directory (EOC marker 0x0FFFFFFF) */
+          if(OK(__SetFATEntry__(&tempVol, 0x0u, 0x0FFFFFF8u)) && OK(__SetFATEntry__(&tempVol, 0x1u, 0x0FFFFFFFu)) && OK(__SetFATEntry__(&tempVol, 0x2u, FAT32_EOC_MAX)))
               {
             /* Initialize root directory cluster to zeros */
             Word_t rootFirstSector = __ClusterToSector__(&tempVol, rootDirCluster);
 
 
-            for(sector = 0; sector < sectorsPerCluster && fatInitSuccess; sector++) {
+            for(sector = 0x0u; sector < sectorsPerCluster && fatInitSuccess; sector++) {
               if(ERROR(__WriteSector__(&tempVol, rootFirstSector + sector, fatSector))) {
                 fatInitSuccess = false;
               }
@@ -480,7 +480,7 @@ Return_t xFileOpen(File_t **file_, Volume_t *volume_, const Byte_t *path_, const
           /* Find the parent directory and get its cluster number */
           if(OK(__FindFileByPath__(volume_, parentPath, &parentEntry, null, null, null))) {
             /* Get the cluster number of the parent directory itself */
-            parentCluster = ((Word_t) __ReadLE16__(parentEntry.firstClusterHigh) << 16) | __ReadLE16__(parentEntry.firstClusterLow);
+            parentCluster = ((Word_t) __ReadLE16__(parentEntry.firstClusterHigh) << 0x10) | __ReadLE16__(parentEntry.firstClusterLow);
           } else {
             parentCluster = volume_->rootDirCluster;
           }
@@ -510,7 +510,7 @@ Return_t xFileOpen(File_t **file_, Volume_t *volume_, const Byte_t *path_, const
 
       if(fileExists) {
         /* Open existing file - get cluster and size from directory entry */
-        file->firstCluster = ((Word_t) __ReadLE16__(entry.firstClusterHigh) << 16) | __ReadLE16__(entry.firstClusterLow);
+        file->firstCluster = ((Word_t) __ReadLE16__(entry.firstClusterHigh) << 0x10) | __ReadLE16__(entry.firstClusterLow);
         file->currentCluster = file->firstCluster;
         file->fileSize = __ReadLE32__(entry.fileSize);
 
@@ -519,7 +519,7 @@ Return_t xFileOpen(File_t **file_, Volume_t *volume_, const Byte_t *path_, const
           file->position = file->fileSize;
 
           /* Need to navigate to last cluster for append */
-          if((file->firstCluster >= 2) && (file->firstCluster < FAT32_EOC_MIN)) {
+          if((file->firstCluster >= 0x2u) && (file->firstCluster < FAT32_EOC_MIN)) {
             Word_t nextCluster = 0;
             Word_t clusterSize = (Word_t) volume_->bytesPerSector * volume_->sectorsPerCluster;
             Word_t clustersToSkip = file->fileSize / clusterSize;
@@ -1080,7 +1080,7 @@ Return_t xDirOpen(Dir_t **dir_, Volume_t *volume_, const Byte_t *path_) {
         }
 
         /* Get directory's first cluster */
-        dirCluster = ((Word_t) __ReadLE16__(entry.firstClusterHigh) << 16) | __ReadLE16__(entry.firstClusterLow);
+        dirCluster = ((Word_t) __ReadLE16__(entry.firstClusterHigh) << 0x10) | __ReadLE16__(entry.firstClusterLow);
       } else {
         /* Directory not found */
         __ReturnError__();
@@ -1226,7 +1226,7 @@ Return_t xDirRead(Dir_t *dir_, DirEntry_t **entry_) {
 
         /* Fill in file attributes */
         dirEntry->size = __ReadLE32__(fatEntry->fileSize);
-        dirEntry->firstCluster = ((Word_t) __ReadLE16__(fatEntry->firstClusterHigh) << 16) | __ReadLE16__(fatEntry->firstClusterLow);
+        dirEntry->firstCluster = ((Word_t) __ReadLE16__(fatEntry->firstClusterHigh) << 0x10) | __ReadLE16__(fatEntry->firstClusterLow);
         dirEntry->isDirectory = (fatEntry->attr & FAT_ATTR_DIRECTORY) ? true : false;
         dirEntry->isReadOnly = (fatEntry->attr & FAT_ATTR_READ_ONLY) ? true : false;
         dirEntry->isHidden = (fatEntry->attr & FAT_ATTR_HIDDEN) ? true : false;
@@ -1516,7 +1516,7 @@ check_empty:
         __KernelFreeMemory__(clusterData);
 
         /* Free directory's cluster chain */
-        if((dirCluster >= 2) && (dirCluster < FAT32_EOC_MIN)) {
+        if((dirCluster >= 0x2u) && (dirCluster < FAT32_EOC_MIN)) {
           if(OK(__FreeClusters__(volume_, dirCluster))) {
             __ReturnOk__();
           } else {
@@ -1602,7 +1602,7 @@ Return_t xFileUnlink(Volume_t *volume_, const Byte_t *path_) {
       }
 
       /* Get first cluster to free */
-      firstCluster = ((Word_t) __ReadLE16__(entry.firstClusterHigh) << 16) | __ReadLE16__(entry.firstClusterLow);
+      firstCluster = ((Word_t) __ReadLE16__(entry.firstClusterHigh) << 0x10) | __ReadLE16__(entry.firstClusterLow);
 
       /* Read directory cluster containing the entry */
       if(OK(__ReadCluster__(volume_, entryCluster, &clusterData))) {
@@ -1624,7 +1624,7 @@ Return_t xFileUnlink(Volume_t *volume_, const Byte_t *path_) {
         __KernelFreeMemory__(clusterData);
 
         /* Free file's cluster chain if it has one */
-        if((firstCluster >= 2) && (firstCluster < FAT32_EOC_MIN)) {
+        if((firstCluster >= 0x2u) && (firstCluster < FAT32_EOC_MIN)) {
           if(OK(__FreeClusters__(volume_, firstCluster))) {
             __ReturnOk__();
           } else {
@@ -1706,7 +1706,7 @@ Return_t xFileRename(Volume_t *volume_, const Byte_t *oldPath_, const Byte_t *ne
       }
 
       /* Get file attributes and cluster info from old entry */
-      firstCluster = ((Word_t) __ReadLE16__(oldEntry.firstClusterHigh) << 16) | __ReadLE16__(oldEntry.firstClusterLow);
+      firstCluster = ((Word_t) __ReadLE16__(oldEntry.firstClusterHigh) << 0x10) | __ReadLE16__(oldEntry.firstClusterLow);
       fileSize = __ReadLE32__(oldEntry.fileSize);
       attr = oldEntry.attr;
 
@@ -1793,7 +1793,7 @@ Return_t xFileGetInfo(Volume_t *volume_, const Byte_t *path_, DirEntry_t **entry
 
         /* Fill in file attributes */
         dirEntry->size = __ReadLE32__(fatEntry.fileSize);
-        dirEntry->firstCluster = ((Word_t) __ReadLE16__(fatEntry.firstClusterHigh) << 16) | __ReadLE16__(fatEntry.firstClusterLow);
+        dirEntry->firstCluster = ((Word_t) __ReadLE16__(fatEntry.firstClusterHigh) << 0x10) | __ReadLE16__(fatEntry.firstClusterLow);
         dirEntry->isDirectory = (fatEntry.attr & FAT_ATTR_DIRECTORY) ? true : false;
         dirEntry->isReadOnly = (fatEntry.attr & FAT_ATTR_READ_ONLY) ? true : false;
         dirEntry->isHidden = (fatEntry.attr & FAT_ATTR_HIDDEN) ? true : false;
@@ -2102,7 +2102,7 @@ static Return_t __FindFileByPath__(const Volume_t *vol_, const Byte_t *path_, FA
     }
 
     /* Update parent and current cluster for next iteration */
-    currentCluster = ((Word_t) __ReadLE16__(dirEntry.firstClusterHigh) << 16) | __ReadLE16__(dirEntry.firstClusterLow);
+    currentCluster = ((Word_t) __ReadLE16__(dirEntry.firstClusterHigh) << 0x10) | __ReadLE16__(dirEntry.firstClusterLow);
   }
 
   return(result);

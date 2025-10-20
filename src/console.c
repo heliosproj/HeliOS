@@ -95,7 +95,7 @@ Return_t xConsoleInit(void) {
   #else /* if defined(CONFIG_CONSOLE_ECHO_ENABLED) */
     consoleState.echoEnabled = false;
   #endif /* if defined(CONFIG_CONSOLE_ECHO_ENABLED) */
-  consoleState.bufferPosition = 0;
+  consoleState.bufferPosition = 0x0u;
   __memset__(consoleState.commandBuffer, 0x00u, CONFIG_CONSOLE_MAX_COMMAND_LENGTH);
   __StringCopy__(consoleState.currentWorkingDirectory, (const Byte_t *) "/");
   mountedVolume = null;
@@ -138,7 +138,7 @@ void vConsoleTask(Task_t *task_, TaskParm_t *parm_) {
     /* Device not ready - reset state */
     if(consoleState.deviceReady) {
       consoleState.deviceReady = false;
-      consoleState.bufferPosition = 0;
+      consoleState.bufferPosition = 0x0u;
 
       /* Unmount filesystem if it was mounted */
       if(__PointerIsNotNull__(mountedVolume)) {
