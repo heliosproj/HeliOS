@@ -35,6 +35,26 @@
     #undef BLOCK_IO_OP_WRITE
   #endif /* if defined(BLOCK_IO_OP_WRITE) */
   #define BLOCK_IO_OP_WRITE 0x02u /* 2 */
+  /* Block I/O transfer modes */
+  #if defined(BLOCK_IO_MODE_BLOCKING)
+    #undef BLOCK_IO_MODE_BLOCKING
+  #endif /* if defined(BLOCK_IO_MODE_BLOCKING) */
+  #define BLOCK_IO_MODE_BLOCKING 0x00u /* 0 */
+
+  #if defined(BLOCK_IO_MODE_NONBLOCKING)
+    #undef BLOCK_IO_MODE_NONBLOCKING
+  #endif /* if defined(BLOCK_IO_MODE_NONBLOCKING) */
+  #define BLOCK_IO_MODE_NONBLOCKING 0x01u /* 1 */
+
+  #if defined(BLOCK_IO_MODE_DMA)
+    #undef BLOCK_IO_MODE_DMA
+  #endif /* if defined(BLOCK_IO_MODE_DMA) */
+  #define BLOCK_IO_MODE_DMA 0x02u /* 2 */
+
+  #if defined(BLOCK_IO_MODE_INTERRUPT)
+    #undef BLOCK_IO_MODE_INTERRUPT
+  #endif /* if defined(BLOCK_IO_MODE_INTERRUPT) */
+  #define BLOCK_IO_MODE_INTERRUPT 0x03u /* 3 */
   /* Generic configuration commands for block I/O drivers */
   #if defined(BLOCK_IO_CMD_SET_REQUEST)
     #undef BLOCK_IO_CMD_SET_REQUEST
@@ -65,6 +85,8 @@
     Word_t blockNumber; /* Starting block number */
     HalfWord_t blockCount; /* Number of blocks */
     HalfWord_t blockSize; /* Bytes per block */
+    Byte_t transferMode; /* BLOCK_IO_MODE_* constant */
+    Byte_t reserved; /* Reserved for alignment */
   } BlockIORequest_t;
 
 

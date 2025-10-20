@@ -38,6 +38,10 @@
   #define DEVICE_STATE DeviceStateRunning
 
 
+  /* Character device commands - for config() function discrimination */
+  #define CHAR_CMD_CONFIG 0x01u /* 1 - Initial configuration */
+  #define CHAR_CMD_SET_PARAMS 0x02u /* 2 - Set parameters for read/write */
+  #define CHAR_CMD_GET_INFO 0x03u /* 3 - Query device info */
   /* Character device protocols - determines command sequences */
   #define CHAR_PROTOCOL_UART 0x01u /* 1 - Standard UART */
   #define CHAR_PROTOCOL_USART 0x02u /* 2 - USART (synchronous capable) */
@@ -58,25 +62,25 @@
    * All hardware-specific details are handled by the I/O driver.
    */
   typedef struct CharDeviceConfig_s {
+    Byte_t command;              /* CHAR_CMD_CONFIG */
     HalfWord_t ioDriverUID;      /* UID of I/O driver (USART/UART/etc.) */
     Byte_t protocol;             /* CHAR_PROTOCOL_* constant */
     Byte_t lineMode;             /* CHAR_LINE_* constant */
     Word_t baudRate;             /* Baud rate for UART/USART */
     HalfWord_t rxBufferSize;     /* Receive buffer size (0 = use default) */
     HalfWord_t txBufferSize;     /* Transmit buffer size (0 = use default) */
-    Byte_t _padding[2];          /* Padding to distinguish from other config types */
   } CharDeviceConfig_t;
 
 
   /**
    * @brief Character device command structure
    *
-   * Specifies character-level operations. Used to control device behavior.
+   * Specifies character-level operations. Used to set parameters before read/write.
    */
   typedef struct CharDeviceCommand_s {
-    Byte_t command;              /* Command type */
-    Byte_t parameter;            /* Command parameter */
-    HalfWord_t reserved;         /* Reserved for future use */
+    Byte_t command;              /* CHAR_CMD_SET_PARAMS */
+    HalfWord_t byteCount;        /* Number of bytes for operation */
+    Byte_t transferMode;         /* CHAR_IO_MODE_* constant */
   } CharDeviceCommand_t;
 
 
@@ -86,6 +90,7 @@
    * Returns device capabilities and statistics.
    */
   typedef struct CharDeviceInfo_s {
+    Byte_t command;              /* CHAR_CMD_GET_INFO */
     Byte_t protocol;             /* CHAR_PROTOCOL_* constant */
     Byte_t lineMode;             /* Current line discipline mode */
     Word_t baudRate;             /* Current baud rate */

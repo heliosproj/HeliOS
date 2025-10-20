@@ -38,6 +38,10 @@
   #define DEVICE_STATE DeviceStateRunning
 
 
+  /* Block device commands - for config() function discrimination */
+  #define BLOCK_CMD_CONFIG 0x01u /* 1 - Initial configuration */
+  #define BLOCK_CMD_SET_ADDRESS 0x02u /* 2 - Set addressing for read/write */
+  #define BLOCK_CMD_GET_INFO 0x03u /* 3 - Query device info */
   /* Storage device protocols - determines command sequences */
   #define BLOCK_PROTOCOL_SD_CARD 0x01u /* 1 */
   #define BLOCK_PROTOCOL_MMC 0x02u /* 2 */
@@ -59,11 +63,11 @@
    * All hardware-specific details are handled by the I/O driver.
    */
   typedef struct BlockDeviceConfig_s {
+    Byte_t command;                  /* BLOCK_CMD_CONFIG */
     HalfWord_t ioDriverUID;          /* UID of I/O driver (SPI/I2C/etc.) */
     Byte_t protocol; /* BLOCK_PROTOCOL_* constant */
     HalfWord_t blockSize; /* Block/sector size (typically 512) */
     Word_t totalBlocks; /* Total capacity in blocks (0 = auto-detect) */
-    Byte_t _padding[3]; /* Padding to distinguish from BlockDeviceCommand_t */
   } BlockDeviceConfig_t;
 
 
@@ -73,10 +77,10 @@
    * Specifies block-level operations. Used to set addressing before read/write.
    */
   typedef struct BlockDeviceCommand_s {
-    Byte_t command;                   /* BLOCK_CMD_* constant */
+    Byte_t command;                   /* BLOCK_CMD_SET_ADDRESS */
     Word_t blockNumber; /* Starting block/sector number */
     HalfWord_t blockCount; /* Number of blocks to read/write */
-    Byte_t reserved; /* Padding */
+    Byte_t transferMode; /* BLOCK_IO_MODE_* constant */
   } BlockDeviceCommand_t;
 
 
@@ -86,6 +90,7 @@
    * Returns device capabilities and statistics.
    */
   typedef struct BlockDeviceInfo_s {
+    Byte_t command;                   /* BLOCK_CMD_GET_INFO */
     HalfWord_t blockSize;             /* Block/sector size in bytes */
     Word_t totalBlocks; /* Total capacity in blocks */
     Word_t totalBytes; /* Total capacity in bytes */

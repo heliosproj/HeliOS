@@ -18,11 +18,14 @@
 
 
 /* Forward declaration of block device command structure */
+#define BLOCK_CMD_SET_ADDRESS 0x02u
+#define BLOCK_IO_MODE_BLOCKING 0x00u
+
 typedef struct BlockDeviceCommand_s {
   Byte_t command;
   Word_t blockNumber;
   HalfWord_t blockCount;
-  Byte_t reserved;
+  Byte_t transferMode;
 } BlockDeviceCommand_t;
 
 
@@ -2280,10 +2283,10 @@ static Return_t __ReadSector__(const Volume_t *vol_, Word_t sector_, Byte_t **da
      * device API) */
     if(OK(__KernelAllocateMemory__((volatile Addr_t **) &cmd, blockSize))) {
       /* Set up block device command to read single sector */
-      cmd->command = 0x01u; /* BLOCK_CMD_READ_SINGLE */
+      cmd->command = BLOCK_CMD_SET_ADDRESS;
       cmd->blockNumber = sector_;
       cmd->blockCount = 1;
-      cmd->reserved = 0;
+      cmd->transferMode = BLOCK_IO_MODE_BLOCKING;
 
       /* Configure block device to address this sector */
       if(OK(__DeviceConfigDevice__(vol_->blockDeviceUID, &blockSize, (Addr_t *) cmd))) {
@@ -2333,10 +2336,10 @@ static Return_t __WriteSector__(const Volume_t *vol_, Word_t sector_, const Byte
      * device API) */
     if(OK(__KernelAllocateMemory__((volatile Addr_t **) &cmd, blockSize))) {
       /* Set up block device command to write single sector */
-      cmd->command = 0x03u; /* BLOCK_CMD_WRITE_SINGLE */
+      cmd->command = BLOCK_CMD_SET_ADDRESS;
       cmd->blockNumber = sector_;
       cmd->blockCount = 1;
-      cmd->reserved = 0;
+      cmd->transferMode = BLOCK_IO_MODE_BLOCKING;
 
       /* Configure block device to address this sector */
       if(OK(__DeviceConfigDevice__(vol_->blockDeviceUID, &blockSize, (Addr_t *) cmd))) {

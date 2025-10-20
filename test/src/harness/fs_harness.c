@@ -20,13 +20,14 @@
 
 /* Block device structures - forward declarations to avoid duplicate includes */
 #define BLOCK_PROTOCOL_RAW 0xFFu
+#define BLOCK_CMD_CONFIG 0x01u
 
 typedef struct BlockDeviceConfig_s {
+  Byte_t command;          /* BLOCK_CMD_CONFIG */
   HalfWord_t ioDriverUID;
   Byte_t protocol;
   HalfWord_t blockSize;
   Word_t totalBlocks;
-  Byte_t _padding[3];
 } BlockDeviceConfig_t;
 
 
@@ -177,6 +178,7 @@ static void test_driver_registration_and_mount(void) {
   /* Test 1.3: Block device configuration */
   unit_begin("Configure block device with RAM disk backend");
   unit_assert_ok(xMemAlloc((volatile Addr_t **) &blockConfig, sizeof(BlockDeviceConfig_t)));
+  blockConfig->command = BLOCK_CMD_CONFIG;
   blockConfig->ioDriverUID = RAMDISK_UID;
   blockConfig->protocol = BLOCK_PROTOCOL_RAW;
   blockConfig->blockSize = TEST_BLOCK_SIZE;
