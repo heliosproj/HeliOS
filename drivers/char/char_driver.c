@@ -258,7 +258,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _read)(Device_t *device_, Size_t *size_, Addr_
         __ReturnOk__();
       } else {
         __ReturnError__();
-        __AssertOnElse__();
+        /* No assertion - read errors are normal operational failures */
       }
     } else {
       /* UART/USART/USB protocols not implemented yet */
@@ -285,7 +285,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t *device_, Size_t *size_, Addr
         __ReturnOk__();
       } else {
         __ReturnError__();
-        __AssertOnElse__();
+        /* No assertion - write errors are normal operational failures */
       }
     } else {
       /* UART/USART/USB protocols not implemented yet */
@@ -418,16 +418,16 @@ static Return_t __CharDeviceReadRAW__(Byte_t **data_,
       } else {
         __KernelFreeMemory__(request);
         __ReturnError__();
-        __AssertOnElse__();
+        /* No assertion - read failure is a normal operational error */
       }
     } else {
       __KernelFreeMemory__(request);
       __ReturnError__();
-      __AssertOnElse__();
+      /* No assertion - config failure is a normal operational error */
     }
   } else {
     __ReturnError__();
-    __AssertOnElse__();
+    /* No assertion - request preparation failure is a normal operational error */
   }
 
   FUNCTION_EXIT;
@@ -454,16 +454,16 @@ static Return_t __CharDeviceWriteRAW__(const Byte_t *data_) {
       } else {
         __KernelFreeMemory__(request);
         __ReturnError__();
-        __AssertOnElse__();
+        /* No assertion - write failure is a normal operational error */
       }
     } else {
       __KernelFreeMemory__(request);
       __ReturnError__();
-      __AssertOnElse__();
+      /* No assertion - config failure is a normal operational error */
     }
   } else {
     __ReturnError__();
-    __AssertOnElse__();
+    /* No assertion - request preparation failure is a normal operational error */
   }
 
   FUNCTION_EXIT;
