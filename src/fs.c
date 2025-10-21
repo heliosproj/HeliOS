@@ -257,6 +257,11 @@ Return_t xFSGetVolumeInfo(const Volume_t *volume_, VolumeInfo_t **info_) {
 
 
   VolumeInfo_t *info = null;
+  Word_t cluster = 0;
+  Word_t fatEntry = 0;
+  Word_t totalClusters = 0;
+  Word_t freeClusters = 0;
+  Word_t maxCluster = 0;
 
 
   if(__PointerIsNotNull__(volume_) && __PointerIsNotNull__(info_)) {
@@ -271,10 +276,34 @@ Return_t xFSGetVolumeInfo(const Volume_t *volume_, VolumeInfo_t **info_) {
       info->bytesPerSector = volume_->bytesPerSector;
       info->sectorsPerCluster = volume_->sectorsPerCluster;
       info->bytesPerCluster = (Word_t) volume_->bytesPerSector * volume_->sectorsPerCluster;
-      info->totalClusters = 0x0u;
-      info->freeClusters = 0x0u;
-      info->totalBytes = 0x0u;
-      info->freeBytes = 0x0u;
+
+      /* Calculate total clusters based on FAT size */
+      /* Each FAT entry is 4 bytes, so total clusters = (sectorsPerFAT * bytesPerSector) / 4 */
+      maxCluster = (volume_->sectorsPerFAT * volume_->bytesPerSector) / 4u;
+
+      /* Limit to reasonable maximum to avoid excessive scanning */
+      if(maxCluster > 0x1000u) {
+        maxCluster = 0x1000u; /* Limit scan to 4K clusters for performance */
+      }
+
+      /* Count free and total clusters */
+      /* Start from cluster 2 (0 and 1 are reserved) */
+      for(cluster = 2u; cluster < maxCluster; cluster++) {
+        if(OK(__GetFATEntry__(volume_, cluster, &fatEntry))) {
+          totalClusters++;
+          if(fatEntry == FAT32_FREE_CLUSTER) {
+            freeClusters++;
+          }
+        } else {
+          /* Stop counting if we can't read FAT entries */
+          break;
+        }
+      }
+
+      info->totalClusters = totalClusters;
+      info->freeClusters = freeClusters;
+      info->totalBytes = totalClusters * info->bytesPerCluster;
+      info->freeBytes = freeClusters * info->bytesPerCluster;
       *info_ = info;
       __ReturnOk__();
     } else {
@@ -793,7 +822,27 @@ Return_t xFileWrite(File_t *file_, const Size_t size_, const Byte_t *data_) {
       file_->currentCluster = file_->firstCluster;
 
 
-      /* TODO: Seek to correct cluster based on position */
+      /* Seek to correct cluster based on position */
+      if(file_->position > 0) {
+        Word_t targetCluster = file_->position / clusterSize;
+        Word_t currentClusterIdx = 0;
+
+        /* Follow the FAT chain to reach the target cluster */
+        while(currentClusterIdx < targetCluster) {
+          if(OK(__GetFATEntry__(file_->volume, file_->currentCluster, &nextCluster))) {
+            if(nextCluster >= FAT32_EOC_MIN) {
+              /* Reached end of chain before target - need to extend the file */
+              break;
+            }
+            file_->currentCluster = nextCluster;
+            currentClusterIdx++;
+          } else {
+            /* Error following FAT chain */
+            __AssertOnElse__();
+            FUNCTION_EXIT;
+          }
+        }
+      }
     }
 
     /* Write data cluster by cluster */
@@ -965,8 +1014,79 @@ Return_t xFileSync(File_t *file_) {
   FUNCTION_ENTER;
 
 
-  /* Stub implementation */
-  __ReturnOk__();
+  FAT32DirEntry_t entry;
+  Word_t entryCluster = 0;
+  Word_t entryOffset = 0;
+  Byte_t *clusterData = null;
+  Word_t firstSector = 0;
+  Word_t i = 0;
+  const Byte_t *lastSlash = null;
+  const Byte_t *fileName = null;
+  Byte_t name83[11];
+
+
+  if(__PointerIsNotNull__(file_)) {
+    /* If file is dirty, update directory entry */
+    if(file_->isDirty && (file_->path[0] != '\0')) {
+      /* Extract just the filename from path */
+      fileName = file_->path;
+
+      for(i = 0; file_->path[i] != '\0'; i++) {
+        if(file_->path[i] == '/') {
+          lastSlash = &file_->path[i];
+        }
+      }
+
+      if(__PointerIsNotNull__(lastSlash)) {
+        fileName = lastSlash + 1;
+      }
+
+      /* Convert to 8.3 format */
+      if(OK(__ConvertToFAT83__(fileName, name83))) {
+        /* Find the existing directory entry */
+        if(OK(__FindDirEntry__(file_->volume, file_->parentDirCluster, name83, &entry, &entryCluster, &entryOffset))) {
+          /* Update the directory entry with new size and cluster info */
+          __WriteLE32__(entry.fileSize, file_->fileSize);
+          __WriteLE16__(entry.firstClusterLow, (HalfWord_t) (file_->firstCluster & 0xFFFFu));
+          __WriteLE16__(entry.firstClusterHigh, (HalfWord_t) ((file_->firstCluster >> 16) & 0xFFFFu));
+
+          /* Read the cluster containing the directory entry */
+          if(OK(__ReadCluster__(file_->volume, entryCluster, &clusterData))) {
+            /* Update the entry in the cluster */
+            __memcpy__(clusterData + entryOffset, &entry, sizeof(FAT32DirEntry_t));
+
+            /* Write the cluster back */
+            firstSector = __ClusterToSector__(file_->volume, entryCluster);
+
+            for(i = 0; i < file_->volume->sectorsPerCluster; i++) {
+              if(ERROR(__WriteSector__(file_->volume, firstSector + i, clusterData + (i * file_->volume->bytesPerSector)))) {
+                __KernelFreeMemory__(clusterData);
+                __ReturnError__();
+                FUNCTION_EXIT;
+              }
+            }
+
+            __KernelFreeMemory__(clusterData);
+            file_->isDirty = false;
+            __ReturnOk__();
+          } else {
+            __AssertOnElse__();
+          }
+        } else {
+          /* Entry not found - may be a new file that wasn't written yet */
+          __ReturnOk__();
+        }
+      } else {
+        __AssertOnElse__();
+      }
+    } else {
+      /* File not dirty or no path - nothing to sync */
+      __ReturnOk__();
+    }
+  } else {
+    __AssertOnElse__();
+  }
+
   FUNCTION_EXIT;
 }
 

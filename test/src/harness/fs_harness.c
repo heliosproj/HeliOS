@@ -123,6 +123,9 @@ static void test_volume_info_validation(void);
 static void test_file_mode_validation(void);
 static void test_closed_file_operations(void);
 static void test_multiple_file_operations(void);
+static void test_file_sync_operations(void);
+static void test_file_write_seek_cluster(void);
+static void test_volume_info_with_files(void);
 
 
 void fs_harness(void) {
@@ -139,6 +142,9 @@ void fs_harness(void) {
   test_file_mode_validation();
   test_closed_file_operations();
   test_multiple_file_operations();
+  test_file_sync_operations();
+  test_file_write_seek_cluster();
+  test_volume_info_with_files();
   unit_print("=== FILESYSTEM TEST SUITE COMPLETE ===");
 
 
@@ -1235,6 +1241,251 @@ static void test_multiple_file_operations(void) {
   unit_assert_ok(xFileClose(file3));
   unit_end();
 
+
+  /* Unmount filesystem */
+  xFSUnmount(vol);
+}
+
+
+/* ============================================================================
+ * SECTION 13: FILE SYNC OPERATIONS
+ * ============================================================================
+ */
+static void test_file_sync_operations(void) {
+  Volume_t *vol = null;
+  File_t *file = null;
+  Byte_t *readData = null;
+  Word_t fileSize = nil;
+
+  unit_print("--- Section 13: File Sync Operations ---");
+
+  /* Mount filesystem first */
+  if(!OK(xFSMount(&vol)) || (null == vol)) {
+    unit_print("xFSMount() failed - skipping file sync tests");
+    return;
+  }
+
+  /* Test 13.1: File sync after write */
+  unit_begin("File sync after write updates directory entry");
+
+  /* Create and write to a file */
+  unit_assert_ok(xFileOpen(&file, vol, (const Byte_t *) "/synctest.txt", FS_MODE_CREATE | FS_MODE_WRITE));
+  unit_assert_not_null(file);
+  unit_assert_ok(xFileWrite(file, 15, (const Byte_t *) "Sync test data!"));
+
+  /* Sync the file */
+  unit_assert_ok(xFileSync(file));
+
+  /* Close and reopen to verify data was persisted */
+  unit_assert_ok(xFileClose(file));
+  file = null;
+
+  unit_assert_ok(xFileOpen(&file, vol, (const Byte_t *) "/synctest.txt", FS_MODE_READ));
+  unit_assert_not_null(file);
+  unit_assert_ok(xFileGetSize(file, &fileSize));
+  unit_assert_equal(15, fileSize);
+
+  /* Read and verify content */
+  unit_assert_ok(xFileRead(file, 15, &readData));
+  unit_assert_not_null(readData);
+  unit_assert_equal(0, strncmp("Sync test data!", (char *) readData, 15));
+  unit_assert_ok(xMemFree(readData));
+  unit_assert_ok(xFileClose(file));
+  unit_end();
+
+  /* Test 13.2: Multiple syncs */
+  unit_begin("Multiple file syncs maintain consistency");
+  file = null;
+  unit_assert_ok(xFileOpen(&file, vol, (const Byte_t *) "/multisync.txt", FS_MODE_CREATE | FS_MODE_WRITE));
+  unit_assert_not_null(file);
+
+  /* Write, sync, write more, sync again */
+  unit_assert_ok(xFileWrite(file, 5, (const Byte_t *) "Part1"));
+  unit_assert_ok(xFileSync(file));
+  unit_assert_ok(xFileWrite(file, 5, (const Byte_t *) "Part2"));
+  unit_assert_ok(xFileSync(file));
+
+  unit_assert_ok(xFileGetSize(file, &fileSize));
+  unit_assert_equal(10, fileSize);
+  unit_assert_ok(xFileClose(file));
+  unit_end();
+
+  /* Unmount filesystem */
+  xFSUnmount(vol);
+}
+
+
+/* ============================================================================
+ * SECTION 14: FILE WRITE SEEK CLUSTER
+ * ============================================================================
+ */
+static void test_file_write_seek_cluster(void) {
+  Volume_t *vol = null;
+  File_t *file = null;
+  Byte_t *writeData = null;
+  Byte_t *readData = null;
+  Word_t i = 0;
+  Word_t position = nil;
+  Word_t clusterSize = 4096; /* 512 bytes/sector * 8 sectors/cluster */
+
+  unit_print("--- Section 14: File Write Seek Cluster ---");
+
+  /* Mount filesystem first */
+  if(!OK(xFSMount(&vol)) || (null == vol)) {
+    unit_print("xFSMount() failed - skipping write seek cluster tests");
+    return;
+  }
+
+  /* Test 14.1: Write after seeking to different clusters */
+  unit_begin("Write after seeking to different clusters");
+
+  /* Create a file and write initial data */
+  unit_assert_ok(xFileOpen(&file, vol, (const Byte_t *) "/seekcluster.txt", FS_MODE_CREATE | FS_MODE_WRITE));
+  unit_assert_not_null(file);
+
+  /* Allocate buffer for multi-cluster data */
+  unit_assert_ok(xMemAlloc((volatile Addr_t **) &writeData, clusterSize * 2));
+  unit_assert_not_null(writeData);
+
+  /* Fill with pattern */
+  for(i = 0; i < clusterSize * 2; i++) {
+    writeData[i] = (Byte_t) (i & 0xFFu);
+  }
+
+  /* Write data spanning multiple clusters */
+  unit_assert_ok(xFileWrite(file, clusterSize * 2, writeData));
+  unit_assert_ok(xFileTell(file, &position));
+  unit_assert_equal(clusterSize * 2, position);
+
+  /* Seek back to first cluster and overwrite */
+  unit_assert_ok(xFileSeek(file, 100, FS_SEEK_SET));
+  unit_assert_ok(xFileWrite(file, 10, (const Byte_t *) "OVERWRITE!"));
+
+  /* Seek to second cluster and overwrite */
+  unit_assert_ok(xFileSeek(file, clusterSize + 100, FS_SEEK_SET));
+  unit_assert_ok(xFileWrite(file, 10, (const Byte_t *) "CLUSTER2!!"));
+
+  /* Read back and verify overwrites */
+  unit_assert_ok(xFileSeek(file, 100, FS_SEEK_SET));
+  unit_assert_ok(xFileRead(file, 10, &readData));
+  unit_assert_not_null(readData);
+  unit_assert_equal(0, strncmp("OVERWRITE!", (char *) readData, 10));
+  unit_assert_ok(xMemFree(readData));
+
+  unit_assert_ok(xFileSeek(file, clusterSize + 100, FS_SEEK_SET));
+  unit_assert_ok(xFileRead(file, 10, &readData));
+  unit_assert_not_null(readData);
+  unit_assert_equal(0, strncmp("CLUSTER2!!", (char *) readData, 10));
+  unit_assert_ok(xMemFree(readData));
+
+  unit_assert_ok(xMemFree(writeData));
+  unit_assert_ok(xFileClose(file));
+  unit_end();
+
+  /* Test 14.2: Write extending file with proper cluster navigation */
+  unit_begin("Write extending file with cluster chain navigation");
+  file = null;
+  unit_assert_ok(xFileOpen(&file, vol, (const Byte_t *) "/extend.txt", FS_MODE_CREATE | FS_MODE_WRITE));
+  unit_assert_not_null(file);
+
+  /* Write small data first */
+  unit_assert_ok(xFileWrite(file, 100, (const Byte_t *) "Initial data for extending file test - this will be extended with more clusters as we write more data to test cluster chain"));
+
+  /* Seek past current size and write (should extend) */
+  unit_assert_ok(xFileSeek(file, clusterSize + 500, FS_SEEK_SET));
+  unit_assert_ok(xFileWrite(file, 20, (const Byte_t *) "Extended data here!!"));
+
+  /* Verify file was extended */
+  unit_assert_ok(xFileTell(file, &position));
+  unit_assert_equal(clusterSize + 520, position);
+
+  unit_assert_ok(xFileClose(file));
+  unit_end();
+
+  /* Unmount filesystem */
+  xFSUnmount(vol);
+}
+
+
+/* ============================================================================
+ * SECTION 15: VOLUME INFO WITH FILES
+ * ============================================================================
+ */
+static void test_volume_info_with_files(void) {
+  Volume_t *vol = null;
+  VolumeInfo_t *volInfo1 = null;
+  VolumeInfo_t *volInfo2 = null;
+  File_t *file = null;
+  Word_t initialFreeClusters = 0;
+  Word_t afterFreeClusters = 0;
+  Byte_t *largeData = null;
+  Word_t dataSize = 8192; /* 2 clusters worth */
+  Word_t i = 0;
+
+  unit_print("--- Section 15: Volume Info With Files ---");
+
+  /* Mount filesystem first */
+  if(!OK(xFSMount(&vol)) || (null == vol)) {
+    unit_print("xFSMount() failed - skipping volume info with files tests");
+    return;
+  }
+
+  /* Test 15.1: Volume info shows cluster usage */
+  unit_begin("Volume info reflects cluster allocation");
+
+  /* Get initial volume info */
+  unit_assert_ok(xFSGetVolumeInfo(vol, &volInfo1));
+  unit_assert_not_null(volInfo1);
+  initialFreeClusters = volInfo1->freeClusters;
+  unit_assert_ok(xMemFree(volInfo1));
+
+  /* Create a file that uses multiple clusters */
+  unit_assert_ok(xMemAlloc((volatile Addr_t **) &largeData, dataSize));
+  unit_assert_not_null(largeData);
+
+  /* Fill with data */
+  for(i = 0; i < dataSize; i++) {
+    largeData[i] = (Byte_t) ((i * 3) & 0xFFu);
+  }
+
+  unit_assert_ok(xFileOpen(&file, vol, (const Byte_t *) "/voltest.dat", FS_MODE_CREATE | FS_MODE_WRITE));
+  unit_assert_not_null(file);
+  unit_assert_ok(xFileWrite(file, dataSize, largeData));
+  unit_assert_ok(xFileClose(file));
+
+  /* Get volume info after file creation */
+  unit_assert_ok(xFSGetVolumeInfo(vol, &volInfo2));
+  unit_assert_not_null(volInfo2);
+  afterFreeClusters = volInfo2->freeClusters;
+
+  /* Should have fewer free clusters after creating file */
+  unit_assert_true(afterFreeClusters < initialFreeClusters);
+
+  /* Cluster count difference should be at least 2 (for 8KB file with 4KB clusters) */
+  unit_assert_true((initialFreeClusters - afterFreeClusters) >= 2);
+
+  unit_assert_ok(xMemFree(volInfo2));
+  unit_assert_ok(xMemFree(largeData));
+  unit_end();
+
+  /* Test 15.2: Volume info calculations are consistent */
+  unit_begin("Volume info calculations are internally consistent");
+
+  /* Get fresh volume info */
+  volInfo1 = null;
+  unit_assert_ok(xFSGetVolumeInfo(vol, &volInfo1));
+  unit_assert_not_null(volInfo1);
+
+  /* Verify calculations */
+  unit_assert_equal(volInfo1->bytesPerSector * volInfo1->sectorsPerCluster, volInfo1->bytesPerCluster);
+  unit_assert_equal(volInfo1->totalClusters * volInfo1->bytesPerCluster, volInfo1->totalBytes);
+  unit_assert_equal(volInfo1->freeClusters * volInfo1->bytesPerCluster, volInfo1->freeBytes);
+
+  /* Free clusters should not exceed total clusters */
+  unit_assert_true(volInfo1->freeClusters <= volInfo1->totalClusters);
+
+  unit_assert_ok(xMemFree(volInfo1));
+  unit_end();
 
   /* Unmount filesystem */
   xFSUnmount(vol);
