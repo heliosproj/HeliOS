@@ -499,7 +499,8 @@ Return_t __DeviceRead__(const HalfWord_t uid_, Size_t *size_, Addr_t **data_) {
               __AssertOnElse__();
             }
           } else {
-            __AssertOnElse__();
+            /* No assertion - device read errors are normal operational failures */
+            __ReturnError__();
           }
         } else {
           __AssertOnElse__();

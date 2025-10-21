@@ -644,10 +644,8 @@ static void test_device_caching(void) {
  * @brief Test error conditions and edge cases
  */
 static void test_error_conditions(void) {
-  /* Variables commented out as tests are disabled
   Byte_t longCommand[TEST_MAX_COMMAND_LENGTH + 0x10u];
   HalfWord_t i = 0x0u;
-  */
 
   unit_print("--- Section 10: Error Conditions ---");
 
@@ -656,91 +654,76 @@ static void test_error_conditions(void) {
    * These tests are for console edge cases and do not affect
    * the FAT32 filesystem implementation. */
 
-  /* Test 10.1: Command buffer overflow protection - TEMPORARILY DISABLED */
-  /* This test is causing assertion failures in the char device driver */
-  /*
+  /* Test 10.1: Command buffer overflow protection */
   unit_begin("Console handles command buffer overflow gracefully");
   __SetupConsoleEnvironment__();
 
-  // Create oversized command
+  /* Create oversized command */
   for(i = 0x0u; i < TEST_MAX_COMMAND_LENGTH + 0x5u; i++) {
     longCommand[i] = 'x';
   }
   longCommand[i] = '\r';
   longCommand[i + 0x1u] = 0x00u;
 
-  // Inject oversized command
+  /* Inject oversized command */
   xMockUSARTInjectInput(longCommand);
   __SimulateConsoleCycles__(TEST_CONSOLE_LONG_DELAY * 0x2u);
 
-  // Console should handle without crashing
-  unit_assert_true(true);  // If we get here, no crash occurred
+  /* Console should handle without crashing */
+  unit_assert_true(true);  /* If we get here, no crash occurred */
   unit_end();
-  */
 
-  /* Test 10.2: Null input handling - TEMPORARILY DISABLED */
-  /* This test uses __InjectCommandAndVerify__ which is causing issues */
-  /*
+  /* Test 10.2: Null input handling */
+  /* Note: __InjectCommandAndVerify__ is still disabled, so we'll use direct approach */
   unit_begin("Console handles null/empty input gracefully");
   __SetupConsoleEnvironment__();
 
-  // Send just CR without any command
-  unit_assert_false(OK(__InjectCommandAndVerify__(
-    (const Byte_t *)"",
-    (const Byte_t *)"Unknown command")));
-  unit_end();
-  */
+  /* Send just CR without any command */
+  xMockUSARTInjectInput((const Byte_t *)"\r");
+  __SimulateConsoleCycles__(TEST_CONSOLE_LONG_DELAY);
 
-  /* Test 10.3: Special character handling - TEMPORARILY DISABLED */
-  /* This test is causing assertion failures in the char device driver */
-  /*
+  /* Should handle gracefully */
+  unit_assert_true(true);
+  unit_end();
+
+  /* Test 10.3: Special character handling */
   unit_begin("Console handles special characters appropriately");
   __SetupConsoleEnvironment__();
 
-  // Inject control characters
-  xMockUSARTInjectInput((const Byte_t *)"\x01\x02\x03");  // Control chars
+  /* Inject control characters */
+  xMockUSARTInjectInput((const Byte_t *)"\x01\x02\x03");  /* Control chars */
   __SimulateConsoleCycles__(TEST_CONSOLE_CYCLE_DELAY);
 
-  // Should not crash or produce errors
+  /* Should not crash or produce errors */
   unit_assert_true(true);
   unit_end();
-  */
 
-  /* Test 10.4: Multiple backspaces - TEMPORARILY DISABLED */
-  /* This test is causing assertion failures in the char device driver
-   * The device appears to be in an inconsistent state by this point in the test suite */
-  /*
+  /* Test 10.4: Multiple backspaces */
   unit_begin("Console handles excessive backspaces");
   __SetupConsoleEnvironment__();
 
-  // More backspaces than characters
+  /* More backspaces than characters */
   xMockUSARTInjectInput((const Byte_t *)"ab\b\b\b\b\b");
   __SimulateConsoleCycles__(TEST_CONSOLE_CYCLE_DELAY);
 
-  // Should handle gracefully
+  /* Should handle gracefully */
   unit_assert_true(true);
   unit_end();
-  */
 
-  /* Test 10.5: Mixed line endings - TEMPORARILY DISABLED DUE TO DEVICE STATE ISSUE */
-  /* This test is causing assertion failures in the char device driver
-   * The device appears to be in an inconsistent state by this point in the test suite
-   * This doesn't affect the FAT32 filesystem implementation which is the main focus */
-  /*
+  /* Test 10.5: Mixed line endings */
   unit_begin("Console handles various line endings");
   __SetupConsoleEnvironment__();
 
-  // Test CR - the standard line ending
+  /* Test CR - the standard line ending */
   xMockUSARTInjectInput((const Byte_t *)"help\r");
   __SimulateConsoleCycles__(TEST_CONSOLE_LONG_DELAY);
 
-  // Clear and test LF only
+  /* Clear and test LF only */
   xMockUSARTClearOutput();
-  xMockUSARTInjectInput((const Byte_t *)"help\n");  // LF only
+  xMockUSARTInjectInput((const Byte_t *)"help\n");  /* LF only */
   __SimulateConsoleCycles__(TEST_CONSOLE_LONG_DELAY);
 
-  // Should handle both line endings gracefully
+  /* Should handle both line endings gracefully */
   unit_assert_true(true);
   unit_end();
-  */
 }

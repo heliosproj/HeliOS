@@ -285,6 +285,8 @@ Return_t xMemGetUsed(Size_t *size_) {
 
   MemoryEntry_t *cursor = null;
   HalfWord_t used = nil;
+  HalfWord_t iterations = nil;
+  HalfWord_t maxIterations = CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS;
 
 
   if(__PointerIsNotNull__(size_)) {
@@ -293,8 +295,9 @@ Return_t xMemGetUsed(Size_t *size_) {
       cursor = heap.start;
 
       /* Traverse, while the cursor is not null, the memory entries in the heap
-       * memory region and add up the in-use blocks as we go. */
-      while(__PointerIsNotNull__(cursor)) {
+       * memory region and add up the in-use blocks as we go.
+       * Added iteration limit to detect circular references. */
+      while(__PointerIsNotNull__(cursor) && (iterations < maxIterations)) {
         /* If the memory entry is *NOT* free, then add the number of blocks it
          * contains to the in-use count. */
         if(__MemEntryIsInUse__(cursor)) {
@@ -302,6 +305,14 @@ Return_t xMemGetUsed(Size_t *size_) {
         }
 
         cursor = cursor->next;
+        iterations++;
+      }
+
+      /* Check if we exited due to circular reference */
+      if((iterations >= maxIterations) && __PointerIsNotNull__(cursor)) {
+        /* Circular reference detected - set memory fault flag */
+        __SetFlag__(MEMFAULT);
+        __ReturnError__();
       }
 
       /* We need to give the user back bytes, not blocks, so multiply the in-use
@@ -362,13 +373,15 @@ static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, co
   HalfWord_t blocks = nil;
   MemoryEntry_t *entry = null;
   MemoryEntry_t *cursor = region_->start;
+  HalfWord_t iterations = nil;
+  HalfWord_t maxIterations = CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS;
 
 
   /* Check to see if we can proceed with checking the memory region without
    * looking for an address.*/
   if(MEMORY_REGION_CHECK_OPTION_WO_ADDR == option_) {
     /* Traverse the memory entries in the memory region while cursor is null. */
-    while(__PointerIsNotNull__(cursor)) {
+    while(__PointerIsNotNull__(cursor) && (iterations < maxIterations)) {
       /* __PointerInRegionBounds__() is a C macro that simply checks that the
        * address, in this case
        * "cursor", falls within the bounds of the memory region. */
@@ -413,6 +426,7 @@ static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, co
         }
 
         cursor = cursor->next;
+        iterations++;
       } else {
         __AssertOnElse__();
 
@@ -426,6 +440,13 @@ static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, co
         __SetFlag__(MEMFAULT);
         break;
       }
+    }
+
+    /* Check if we exited due to circular reference */
+    if((iterations >= maxIterations) && __PointerIsNotNull__(cursor)) {
+      /* Circular reference detected - set memory fault flag */
+      __SetFlag__(MEMFAULT);
+      __ReturnError__();
     }
 
     /* Check that the number of blocks we visited matches what we expect to see
@@ -455,8 +476,11 @@ static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, co
      * memory region. */
     entry = __OffsetPointerToMemEntry__(addr_, region_);
 
+    /* Reset iterations for this second traversal */
+    iterations = nil;
+
     /* Traverse the memory entries in the memory region while cursor is null. */
-    while(__PointerIsNotNull__(cursor)) {
+    while(__PointerIsNotNull__(cursor) && (iterations < maxIterations)) {
       /* __PointerInRegionBounds__() is a C macro that simply checks that the
        * address, in this case
        * "cursor", falls within the bounds of the memory region. */
@@ -508,6 +532,7 @@ static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, co
         }
 
         cursor = cursor->next;
+        iterations++;
       } else {
         __AssertOnElse__();
 
@@ -521,6 +546,13 @@ static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, co
         __SetFlag__(MEMFAULT);
         break;
       }
+    }
+
+    /* Check if we exited due to circular reference */
+    if((iterations >= maxIterations) && __PointerIsNotNull__(cursor)) {
+      /* Circular reference detected - set memory fault flag */
+      __SetFlag__(MEMFAULT);
+      __ReturnError__();
     }
 
     /* Check that the number of blocks we visited matches what we expect to see

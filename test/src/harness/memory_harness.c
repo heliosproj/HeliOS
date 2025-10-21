@@ -2020,22 +2020,23 @@ static void test_memory_corruption_detection(void) {
   } unit_end();
 
 
-  /* NOTE: Circular next pointer test disabled - causes infinite loop
-   * unit_begin("Corruption Detection - Circular next pointer");
-   * {
-   *   volatile Addr_t *ptr = null;
-   *   MemoryEntry_t *entry = null;
-   *   Size_t size;
-   *
-   *   unit_assert_ok(xMemAlloc(&ptr, 128));
-   *   entry = ADDR2ENTRY(ptr);
-   *   entry->next = entry;
-   *   unit_assert_not_ok(xMemGetUsed(&size));
-   *   unit_assert_true(__FlagIsSet__(MEMFAULT));
-   *   __MemoryClear__();
-   *   __SysStateClear__();
-   * }
-   * unit_end();
-   */
+  /* Test circular next pointer detection - TEMPORARILY DISABLED for debugging */
+  /*
+  unit_begin("Corruption Detection - Circular next pointer");
+  {
+    volatile Addr_t *ptr = null;
+    MemoryEntry_t *entry = null;
+    Size_t size;
+
+    unit_assert_ok(xMemAlloc(&ptr, 128));
+    entry = ADDR2ENTRY(ptr);
+    entry->next = entry;
+    unit_assert_not_ok(xMemGetUsed(&size));
+    unit_assert_true(__FlagIsSet__(MEMFAULT));
+    __MemoryClear__();
+    __SysStateClear__();
+  }
+  unit_end();
+  */
   return;
 }

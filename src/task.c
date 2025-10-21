@@ -969,7 +969,7 @@ Return_t xTaskSuspendAll(void) {
 Return_t xTaskGetSchedulerState(SchedulerState_t *state_) {
   FUNCTION_ENTER;
 
-  if(__PointerIsNotNull__(tlist)) {
+  if(__PointerIsNotNull__(state_) && __PointerIsNotNull__(tlist)) {
     *state_ = scheduler;
     __ReturnOk__();
   } else {
