@@ -948,8 +948,10 @@ Return_t xFileSeek(File_t *file_, const Word_t offset_, const Byte_t origin_) {
       FUNCTION_EXIT;
     }
 
-    /* Don't seek past EOF for reads */
-    if(newPosition > file_->fileSize) {
+    /* Don't seek past EOF for read-only files */
+    if((newPosition > file_->fileSize) &&
+       ((file_->mode & FS_MODE_WRITE) == 0x0) &&
+       ((file_->mode & FS_MODE_APPEND) == 0x0)) {
       newPosition = file_->fileSize;
     }
 
