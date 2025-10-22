@@ -429,24 +429,45 @@ static Return_t __free__(volatile MemoryRegion_t* region_, const volatile Addr_t
   __DisableInterrupts__();
 
   if (__FlagIsNotSet__(MEMFAULT) && __PointerIsNotNull__(region_) && __PointerIsNotNull__(addr_)) {
-    /* Verify region consistency before freeing */
-    if (OK(__VerifyRegionConsistency__(region_))) {
-      header = __OffsetPointerToBlockHeader__(addr_, region_);
+    /* First check if pointer is within the memory region bounds */
+    /* The pointer must be at least headerSize bytes from the start to have a valid header */
+    if ((const Byte_t*)addr_ >= (const Byte_t*)region_->mem + region_->headerSize &&
+        (const Byte_t*)addr_ < (const Byte_t*)region_->mem + MEMORY_REGION_SIZE_IN_BYTES) {
 
+      /* Verify region consistency before freeing */
+      if (OK(__VerifyRegionConsistency__(region_))) {
+        header = __OffsetPointerToBlockHeader__(addr_, region_);
 
-      /* Mark block as free */
-      header->free = FREE;
-      header->checksum = __checksum__(header);
-      region_->frees++;
+        /* Verify the header is also within bounds and has valid checksum */
+        if ((Byte_t*)header >= (Byte_t*)region_->mem &&
+            (Byte_t*)header < (Byte_t*)region_->mem + MEMORY_REGION_SIZE_IN_BYTES) {
 
+          /* Verify the block is actually in use before freeing */
+          if (header->free == INUSE && header->checksum == __checksum__(header)) {
+            /* Mark block as free */
+            header->free = FREE;
+            header->checksum = __checksum__(header);
+            region_->frees++;
 
-      /* Merge adjacent free blocks */
-      if (OK(__DefragMemoryRegion__(region_))) {
-        __ReturnOk__();
+            /* Merge adjacent free blocks */
+            if (OK(__DefragMemoryRegion__(region_))) {
+              __ReturnOk__();
+            } else {
+              __AssertOnElse__();
+            }
+          } else {
+            /* Invalid block state or checksum */
+            __AssertOnElse__();
+          }
+        } else {
+          /* Header pointer is out of bounds */
+          __AssertOnElse__();
+        }
       } else {
         __AssertOnElse__();
       }
     } else {
+      /* Pointer is not within memory region */
       __AssertOnElse__();
     }
   } else {
@@ -599,12 +620,29 @@ Return_t xMemGetSize(const volatile Addr_t* addr_, Size_t* size_) {
 
 
   if (__PointerIsNotNull__(addr_) && __PointerIsNotNull__(size_)) {
-    header = __OffsetPointerToBlockHeader__(addr_, &heap);
+    /* First check if pointer is within the heap memory region bounds */
+    /* The pointer must be at least headerSize bytes from the start to have a valid header */
+    if ((const Byte_t*)addr_ >= (const Byte_t*)heap.mem + heap.headerSize &&
+        (const Byte_t*)addr_ < (const Byte_t*)heap.mem + MEMORY_REGION_SIZE_IN_BYTES) {
 
-    if (__BlockHeaderIsInUse__(header)) {
-      *size_ = header->size;
-      __ReturnOk__();
+      header = __OffsetPointerToBlockHeader__(addr_, &heap);
+
+      /* Verify the header is also within bounds */
+      if ((Byte_t*)header >= (Byte_t*)heap.mem &&
+          (Byte_t*)header < (Byte_t*)heap.mem + MEMORY_REGION_SIZE_IN_BYTES) {
+
+        if (__BlockHeaderIsInUse__(header)) {
+          *size_ = header->size;
+          __ReturnOk__();
+        } else {
+          __AssertOnElse__();
+        }
+      } else {
+        /* Header pointer is out of bounds */
+        __AssertOnElse__();
+      }
     } else {
+      /* Pointer is not within memory region */
       __AssertOnElse__();
     }
   } else {
@@ -717,7 +755,7 @@ static Return_t __MemGetRegionStats__(const volatile MemoryRegion_t* region_, Me
   FUNCTION_ENTER;
 
 
-  static MemoryRegionStats_t stats;
+  MemoryRegionStats_t* stats = null;
   BlockHeader_t* cursor = null;
   Word_t largestFree = 0;
   Word_t smallestFree = (Word_t)-1;
@@ -726,34 +764,39 @@ static Return_t __MemGetRegionStats__(const volatile MemoryRegion_t* region_, Me
 
 
   if (__PointerIsNotNull__(region_) && __PointerIsNotNull__(stats_)) {
-    cursor = region_->first;
+    /* Allocate memory from heap for the stats structure */
+    if (OK(xMemAlloc((volatile Addr_t **)&stats, sizeof(MemoryRegionStats_t)))) {
+      cursor = region_->first;
 
-    while (__PointerIsNotNull__(cursor)) {
-      if (__BlockHeaderIsFree__(cursor)) {
-        freeBlocks++;
-        availableBytes += cursor->size;
+      while (__PointerIsNotNull__(cursor)) {
+        if (__BlockHeaderIsFree__(cursor)) {
+          freeBlocks++;
+          availableBytes += cursor->size;
 
-        if (cursor->size > largestFree) {
-          largestFree = cursor->size;
+          if (cursor->size > largestFree) {
+            largestFree = cursor->size;
+          }
+
+          if (cursor->size < smallestFree) {
+            smallestFree = cursor->size;
+          }
         }
 
-        if (cursor->size < smallestFree) {
-          smallestFree = cursor->size;
-        }
+        cursor = cursor->next;
       }
 
-      cursor = cursor->next;
+      stats->largestFreeEntryInBytes = largestFree;
+      stats->smallestFreeEntryInBytes = (smallestFree == (Word_t)-1) ? 0 : smallestFree;
+      stats->numberOfFreeBlocks = freeBlocks;
+      stats->availableSpaceInBytes = availableBytes;
+      stats->successfulAllocations = region_->allocations;
+      stats->successfulFrees = region_->frees;
+      stats->minimumEverFreeBytesRemaining = region_->minAvailableEver;
+      *stats_ = stats;
+      __ReturnOk__();
+    } else {
+      __ReturnError__();
     }
-
-    stats.largestFreeEntryInBytes = largestFree;
-    stats.smallestFreeEntryInBytes = (smallestFree == (Word_t)-1) ? 0 : smallestFree;
-    stats.numberOfFreeBlocks = freeBlocks;
-    stats.availableSpaceInBytes = availableBytes;
-    stats.successfulAllocations = region_->allocations;
-    stats.successfulFrees = region_->frees;
-    stats.minimumEverFreeBytesRemaining = region_->minAvailableEver;
-    *stats_ = &stats;
-    __ReturnOk__();
   } else {
     __AssertOnElse__();
   }
@@ -1018,7 +1061,7 @@ Base_t __strncmp__(const Byte_t* s1_, const Byte_t* s2_, const Size_t n_) {
 
   for (i = 0x0u; i < n_; i++) {
     if ((CHAR_NULL == s1_[i]) || (s1_[i] != s2_[i])) {
-      return ((s1_[i] < s2_[i]) ? -0x1 : ((s1_[i] > s2_[i]) ? 0x1 : 0x0u));
+      return ((s1_[i] < s2_[i]) ? (Base_t)-0x1 : ((s1_[i] > s2_[i]) ? (Base_t)0x1 : (Base_t)0x0));
     }
   }
 

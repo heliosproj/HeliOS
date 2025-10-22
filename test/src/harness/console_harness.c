@@ -551,14 +551,14 @@ static void test_path_utilities(void) {
   /* Test 7.1: Path join with absolute path */
   unit_begin("Path join returns absolute path when path is absolute");
   __path_join__(result, (const Byte_t *) "/home/user", (const Byte_t *) "/etc/config", CONFIG_FS_MAX_PATH_LENGTH);
-  unit_assert_true(__strcmp__(result, (const Byte_t *) "/etc/config"));
+  unit_assert_equal(__strcmp__(result, (const Byte_t *) "/etc/config"), 0);
   unit_end();
 
 
   /* Test 7.2: Path join with relative path */
   unit_begin("Path join combines base and relative path");
   __path_join__(result, (const Byte_t *) "/home/user", (const Byte_t *) "documents", CONFIG_FS_MAX_PATH_LENGTH);
-  unit_assert_true(__strcmp__(result, (const Byte_t *) "/home/user/documents"));
+  unit_assert_equal(__strcmp__(result, (const Byte_t *) "/home/user/documents"), 0);
   unit_end();
 
 
@@ -566,7 +566,7 @@ static void test_path_utilities(void) {
   unit_begin("Path normalize handles . and .. correctly");
   __strcpy__(result, (const Byte_t *) "/home/user/../admin/./config", CONFIG_FS_MAX_PATH_LENGTH);
   __path_normalize__(result, CONFIG_FS_MAX_PATH_LENGTH);
-  unit_assert_true(__strcmp__(result, (const Byte_t *) "/home/admin/config"));
+  unit_assert_equal(__strcmp__(result, (const Byte_t *) "/home/admin/config"), 0);
   unit_end();
 
 
@@ -580,14 +580,14 @@ static void test_path_utilities(void) {
   /* Test 7.5: Path dirname extraction */
   unit_begin("Path dirname extracts directory portion");
   __path_dirname__(result, (const Byte_t *) "/home/user/file.txt", CONFIG_FS_MAX_PATH_LENGTH);
-  unit_assert_true(__strcmp__(result, (const Byte_t *) "/home/user"));
+  unit_assert_equal(__strcmp__(result, (const Byte_t *) "/home/user"), 0);
   unit_end();
 
 
   /* Test 7.6: Path basename extraction */
   unit_begin("Path basename extracts filename portion");
   __path_basename__(result, (const Byte_t *) "/home/user/file.txt", CONFIG_FS_MAX_PATH_LENGTH);
-  unit_assert_true(__strcmp__(result, (const Byte_t *) "file.txt"));
+  unit_assert_equal(__strcmp__(result, (const Byte_t *) "file.txt"), 0);
   unit_end();
 }
 
