@@ -922,26 +922,6 @@ Return_t __HeapFreeMemory__(const volatile Addr_t *addr_) {
 }
 
 
-Return_t __MemoryRegionCheckHeap__(const volatile Addr_t *addr_, const Base_t option_) {
-  FUNCTION_ENTER;
-
-  if((__PointerIsNull__(addr_) && (MEMORY_REGION_CHECK_OPTION_WO_ADDR == option_)) || (__PointerIsNotNull__(addr_) && (MEMORY_REGION_CHECK_OPTION_W_ADDR ==
-    option_))) {
-    /* Simply passthrough the address pointer to __MemoryRegionCheck__() for the
-     * heap memory region and the region check option. */
-    if(OK(__MemoryRegionCheck__(&heap, addr_, option_))) {
-      __ReturnOk__();
-    } else {
-      __AssertOnElse__();
-    }
-  } else {
-    __AssertOnElse__();
-  }
-
-  FUNCTION_EXIT;
-}
-
-
 Return_t __memcpy__(const volatile Addr_t *dest_, const volatile Addr_t *src_, const Size_t size_) {
   FUNCTION_ENTER;
 

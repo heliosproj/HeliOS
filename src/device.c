@@ -213,16 +213,13 @@ Return_t xDeviceWrite(const HalfWord_t uid_, Size_t *size_, Addr_t *data_) {
 
 
   if(__DeviceUidNonZero__() && __PointerIsNotNull__(size_) && (nil < *size_) && __PointerIsNotNull__(data_) && __PointerIsNotNull__(dlist)) {
-    /* Confirm the data to be written to the device is waiting for us in heap
-     * memory. */
-    if(OK(__MemoryRegionCheckHeap__(data_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
-      /* Look-up the device by its unique identifier in the device list.
-       */
-      if(OK(__DeviceListFind__(uid_, &device))) {
-        if(__PointerIsNotNull__(device)) {
-          /* Check to make sure the device is running *AND*
-           * writable. */
-          if(((DeviceModeReadWrite == device->mode) || (DeviceModeWriteOnly == device->mode)) && (DeviceStateRunning == device->state)) {
+    /* Look-up the device by its unique identifier in the device list.
+     */
+    if(OK(__DeviceListFind__(uid_, &device))) {
+      if(__PointerIsNotNull__(device)) {
+        /* Check to make sure the device is running *AND*
+         * writable. */
+        if(((DeviceModeReadWrite == device->mode) || (DeviceModeWriteOnly == device->mode)) && (DeviceStateRunning == device->state)) {
             /* Allocate some kernel memory we will copy the data to be written
              * to the device from the heap into. */
             if(OK(__KernelAllocateMemory__((volatile Addr_t **) &data, *size_))) {
@@ -275,9 +272,6 @@ Return_t xDeviceWrite(const HalfWord_t uid_, Size_t *size_, Addr_t *data_) {
     } else {
       __AssertOnElse__();
     }
-  } else {
-    __AssertOnElse__();
-  }
 
   FUNCTION_EXIT;
 }
@@ -596,17 +590,14 @@ Return_t xDeviceConfigDevice(const HalfWord_t uid_, Size_t *size_, Addr_t *confi
 
 
   if(__DeviceUidNonZero__() && (nil < *size_) && __PointerIsNotNull__(config_) && __PointerIsNotNull__(dlist)) {
-    /* Confirm the data to be written to the device is waiting for us in heap
-     * memory. */
-    if(OK(__MemoryRegionCheckHeap__(config_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
-      /* Look-up the device by its unique identifier in the device list.
-       */
-      if(OK(__DeviceListFind__(uid_, &device))) {
-        if(__PointerIsNotNull__(device)) {
-          /* Allocate some kernel memory we will copy the configuration data to
-           * be written to the device from the heap into. */
-          if(OK(__KernelAllocateMemory__((volatile Addr_t **) &config, *size_))) {
-            if(__PointerIsNotNull__(config)) {
+    /* Look-up the device by its unique identifier in the device list.
+     */
+    if(OK(__DeviceListFind__(uid_, &device))) {
+      if(__PointerIsNotNull__(device)) {
+        /* Allocate some kernel memory we will copy the configuration data to
+         * be written to the device from the heap into. */
+        if(OK(__KernelAllocateMemory__((volatile Addr_t **) &config, *size_))) {
+          if(__PointerIsNotNull__(config)) {
               /* Copy the configuration data to be written to the device from
                * the heap into the kernel memory then call the device driver's
                * DEVICENAME_config() function.
@@ -666,9 +657,6 @@ Return_t xDeviceConfigDevice(const HalfWord_t uid_, Size_t *size_, Addr_t *confi
     } else {
       __AssertOnElse__();
     }
-  } else {
-    __AssertOnElse__();
-  }
 
   FUNCTION_EXIT;
 }
