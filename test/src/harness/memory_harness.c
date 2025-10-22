@@ -137,13 +137,12 @@ void memory_harness(void) {
     unit_assert_not_null(tests[i].ptr);
 
 
-    /* xMemGetUsed now returns only the allocated data size, not including
-     * headers */
-    used += sizes[i];
+    /* xMemGetUsed now returns the allocated data size INCLUDING headers */
+    used += sizes[i] + sizeof(BlockHeader_t);
     unit_assert_ok(xMemGetUsed(&actual));
 
 
-    /* The actual used should match exactly what we've allocated */
+    /* The actual used should match exactly what we've allocated including headers */
     unit_assert_equal(actual, used);
 
 
@@ -169,8 +168,8 @@ void memory_harness(void) {
   unit_assert_ok(xMemGetUsed(&actual));
 
 
-  /* xMemGetUsed returns the allocated size exactly */
-  unit_assert_equal(actual, large_alloc);
+  /* xMemGetUsed returns the allocated size INCLUDING header */
+  unit_assert_equal(actual, large_alloc + sizeof(BlockHeader_t));
   unit_assert_ok(xMemFree(mem05));
   unit_end();
 
@@ -188,8 +187,8 @@ void memory_harness(void) {
   unit_assert_ok(xMemGetUsed(&actual));
 
 
-  /* Should be LARGE_BLOCK_SIZE plus header overhead */
-  unit_assert_true(actual >= LARGE_BLOCK_SIZE && actual <= LARGE_BLOCK_SIZE + sizeof(BlockHeader_t));
+  /* Should be exactly LARGE_BLOCK_SIZE plus header overhead */
+  unit_assert_equal(actual, LARGE_BLOCK_SIZE + sizeof(BlockHeader_t));
   unit_end();
 
 

@@ -630,7 +630,8 @@ Return_t xMemGetUsed(Size_t *size_) {
 
     while(__PointerIsNotNull__(cursor)) {
       if(__BlockHeaderIsInUse__(cursor)) {
-        used += cursor->size;
+        /* Include both data size and header overhead */
+        used += cursor->size + sizeof(BlockHeader_t);
       }
 
       cursor = cursor->next;
