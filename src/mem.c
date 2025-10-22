@@ -483,13 +483,8 @@ static Return_t __DefragMemoryRegion__(volatile MemoryRegion_t *region_) {
           /* Update checksum for merged block */
           cursor->checksum = __checksum__(cursor);
 
-          /* Zero out the old block header */
-          if(OK(__memset__(nextBlock, nil, sizeof(BlockHeader_t)))) {
-            merged = true;
-          } else {
-            __AssertOnElse__();
-            break;
-          }
+          /* Block merged successfully */
+          merged = true;
         } else {
           cursor = cursor->next;
         }
