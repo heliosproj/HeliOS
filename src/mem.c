@@ -36,6 +36,7 @@ static volatile MemoryRegion_t kernel = {
 
 /* Private function prototypes */
 static Return_t __VerifyRegionConsistency__(const volatile MemoryRegion_t* region_);
+static Return_t __ValidateBlockHeader__(const BlockHeader_t* header_, const volatile MemoryRegion_t* region_);
 static Return_t __calloc__(volatile MemoryRegion_t* region_, volatile Addr_t** addr_, const Size_t size_);
 static Return_t __free__(volatile MemoryRegion_t* region_, const volatile Addr_t* addr_);
 static Return_t __MemGetRegionStats__(const volatile MemoryRegion_t* region_, MemoryRegionStats_t** stats_);
@@ -177,6 +178,47 @@ static Word_t __checksum__(const BlockHeader_t* header_) {
 }
 
 
+/* Validate block header integrity and location */
+static Return_t __ValidateBlockHeader__(const BlockHeader_t* header_, const volatile MemoryRegion_t* region_) {
+  FUNCTION_ENTER;
+
+  Word_t expectedChecksum = 0x0u;
+
+  /* Cannot validate without both header and region */
+  if (__PointerIsNull__(header_) || __PointerIsNull__(region_)) {
+    __ReturnError__();
+    FUNCTION_EXIT;
+  }
+
+  /* Quick bounds check - header must be within region memory */
+  if ((const Byte_t*)header_ < (const Byte_t*)region_->mem ||
+      (const Byte_t*)header_ >= ((const Byte_t*)region_->mem + MEMORY_REGION_SIZE_IN_BYTES - sizeof(BlockHeader_t))) {
+    /* Header is outside region bounds */
+    __ReturnError__();
+    FUNCTION_EXIT;
+  }
+
+  /* Validate checksum - this is the key integrity check */
+  expectedChecksum = __checksum__(header_);
+  if (header_->checksum != expectedChecksum) {
+    /* Checksum mismatch - corruption detected */
+    __ReturnError__();
+    FUNCTION_EXIT;
+  }
+
+  /* Validate the free/inuse field */
+  if ((header_->free != FREE) && (header_->free != INUSE)) {
+    /* Invalid state - corruption detected */
+    __ReturnError__();
+    FUNCTION_EXIT;
+  }
+
+  /* All validations passed */
+  __ReturnOk__();
+  FUNCTION_EXIT;
+}
+
+
 /* Initialize memory management system */
 Return_t __MemoryInit__(void) {
   FUNCTION_ENTER;
@@ -231,7 +273,7 @@ static Return_t __MemoryRegionInit__(volatile MemoryRegion_t* region_) {
 
 
     /* Zero out the memory region */
-    if (OK(__memset__(region_->mem, nil, MEMORY_REGION_SIZE_IN_BYTES))) {
+    if (OK(__memset__((volatile Addr_t*)region_->mem, nil, MEMORY_REGION_SIZE_IN_BYTES))) {
       /* Create the initial free block spanning the entire region */
       BlockHeader_t* initial = region_->first;
 
@@ -338,6 +380,15 @@ static Return_t __calloc__(volatile MemoryRegion_t* region_, volatile Addr_t** a
   __DisableInterrupts__();
 
   if (__FlagIsNotSet__(MEMFAULT) && __PointerIsNotNull__(region_) && __PointerIsNotNull__(addr_) && (nil < size_)) {
+    /* Lazy initialization: if region has never been initialized, do it now */
+    if (__PointerIsNull__(region_->first)) {
+      if (!OK(__MemoryRegionInit__(region_))) {
+        __EnableInterrupts__();
+        __ReturnError__();
+        FUNCTION_EXIT;
+      }
+    }
+
     /* Verify region consistency before allocation */
     if (OK(__VerifyRegionConsistency__(region_))) {
       cursor = region_->first;
@@ -400,8 +451,8 @@ static Return_t __calloc__(volatile MemoryRegion_t* region_, volatile Addr_t** a
           __AssertOnElse__();
         }
       } else {
-        /* No suitable block found */
-        __AssertOnElse__();
+        /* No suitable block found - out of memory */
+        __ReturnError__();
       }
     } else {
       __AssertOnElse__();
@@ -429,45 +480,37 @@ static Return_t __free__(volatile MemoryRegion_t* region_, const volatile Addr_t
   __DisableInterrupts__();
 
   if (__FlagIsNotSet__(MEMFAULT) && __PointerIsNotNull__(region_) && __PointerIsNotNull__(addr_)) {
-    /* First check if pointer is within the memory region bounds */
-    /* The pointer must be at least headerSize bytes from the start to have a valid header */
-    if ((const Byte_t*)addr_ >= (const Byte_t*)region_->mem + region_->headerSize &&
-        (const Byte_t*)addr_ < (const Byte_t*)region_->mem + MEMORY_REGION_SIZE_IN_BYTES) {
+    /* Get the block header from the user pointer */
+    header = __OffsetPointerToBlockHeader__(addr_, region_);
 
-      /* Verify region consistency before freeing */
-      if (OK(__VerifyRegionConsistency__(region_))) {
-        header = __OffsetPointerToBlockHeader__(addr_, region_);
+    /* Validate the block header - this checks:
+     * 1. Header is within region bounds
+     * 2. Header is properly aligned
+     * 3. Free field has valid value (FREE or INUSE)
+     * 4. Size is reasonable
+     * 5. Checksum is valid
+     * 6. Header is in the linked list
+     */
+    if (OK(__ValidateBlockHeader__(header, region_))) {
+      /* Additional check: block must be in use to free it */
+      if (__BlockHeaderIsInUse__(header)) {
+        /* Mark block as free */
+        header->free = FREE;
+        header->checksum = __checksum__(header);
+        region_->frees++;
 
-        /* Verify the header is also within bounds and has valid checksum */
-        if ((Byte_t*)header >= (Byte_t*)region_->mem &&
-            (Byte_t*)header < (Byte_t*)region_->mem + MEMORY_REGION_SIZE_IN_BYTES) {
-
-          /* Verify the block is actually in use before freeing */
-          if (header->free == INUSE && header->checksum == __checksum__(header)) {
-            /* Mark block as free */
-            header->free = FREE;
-            header->checksum = __checksum__(header);
-            region_->frees++;
-
-            /* Merge adjacent free blocks */
-            if (OK(__DefragMemoryRegion__(region_))) {
-              __ReturnOk__();
-            } else {
-              __AssertOnElse__();
-            }
-          } else {
-            /* Invalid block state or checksum */
-            __AssertOnElse__();
-          }
+        /* Merge adjacent free blocks */
+        if (OK(__DefragMemoryRegion__(region_))) {
+          __ReturnOk__();
         } else {
-          /* Header pointer is out of bounds */
           __AssertOnElse__();
         }
       } else {
+        /* Block is already free - double free error */
         __AssertOnElse__();
       }
     } else {
-      /* Pointer is not within memory region */
+      /* Invalid block header - bad pointer, not necessarily corruption */
       __AssertOnElse__();
     }
   } else {
@@ -620,29 +663,21 @@ Return_t xMemGetSize(const volatile Addr_t* addr_, Size_t* size_) {
 
 
   if (__PointerIsNotNull__(addr_) && __PointerIsNotNull__(size_)) {
-    /* First check if pointer is within the heap memory region bounds */
-    /* The pointer must be at least headerSize bytes from the start to have a valid header */
-    if ((const Byte_t*)addr_ >= (const Byte_t*)heap.mem + heap.headerSize &&
-        (const Byte_t*)addr_ < (const Byte_t*)heap.mem + MEMORY_REGION_SIZE_IN_BYTES) {
+    /* Get the block header from the user pointer */
+    header = __OffsetPointerToBlockHeader__(addr_, &heap);
 
-      header = __OffsetPointerToBlockHeader__(addr_, &heap);
-
-      /* Verify the header is also within bounds */
-      if ((Byte_t*)header >= (Byte_t*)heap.mem &&
-          (Byte_t*)header < (Byte_t*)heap.mem + MEMORY_REGION_SIZE_IN_BYTES) {
-
-        if (__BlockHeaderIsInUse__(header)) {
-          *size_ = header->size;
-          __ReturnOk__();
-        } else {
-          __AssertOnElse__();
-        }
+    /* Validate the block header - comprehensive validation */
+    if (OK(__ValidateBlockHeader__(header, &heap))) {
+      /* Additional check: block must be in use */
+      if (__BlockHeaderIsInUse__(header)) {
+        *size_ = header->size;
+        __ReturnOk__();
       } else {
-        /* Header pointer is out of bounds */
+        /* Block is not in use - invalid operation */
         __AssertOnElse__();
       }
     } else {
-      /* Pointer is not within memory region */
+      /* Invalid block header - corruption or bad pointer */
       __AssertOnElse__();
     }
   } else {
@@ -859,6 +894,7 @@ Return_t __memcpy__(const volatile Addr_t* dest_, const volatile Addr_t* src_, c
 
     __ReturnOk__();
   } else {
+    __ReturnError__();
     __AssertOnElse__();
   }
 
@@ -883,6 +919,7 @@ Return_t __memset__(const volatile Addr_t* dest_, const Byte_t val_, const Size_
 
     __ReturnOk__();
   } else {
+    __ReturnError__();
     __AssertOnElse__();
   }
 
@@ -916,6 +953,7 @@ Return_t __memcmp__(const volatile Addr_t* s1_, const volatile Addr_t* s2_, cons
 
     __ReturnOk__();
   } else {
+    __ReturnError__();
     __AssertOnElse__();
   }
 
