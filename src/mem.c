@@ -36,6 +36,7 @@ static volatile MemoryRegion_t kernel = {
 
 #define __BlockHeaderIsInUse__(header_) (INUSE == (header_)->free)
 #define __BlockHeaderIsFree__(header_) (FREE == (header_)->free)
+
 /* Private function prototypes */
 static Return_t __ValidateBlockHeader__(const BlockHeader_t *header_, const volatile MemoryRegion_t *region_);
 static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **addr_, const Size_t size_);
@@ -346,8 +347,8 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
       }
 
       if(__PointerIsNotNull__(candidate)) {
-        /* Check if we should split the block */
-        if((sizeof(BlockHeader_t) + 1) <= (candidate->size - requested)) {
+        /* Check if we should split the block - only split if remaining space is at least CONFIG_MEMORY_MINIMUM_BLOCK_SIZE */
+        if((sizeof(BlockHeader_t) + CONFIG_MEMORY_MINIMUM_BLOCK_SIZE) <= (candidate->size - requested)) {
           /* Split the block */
           next = candidate->next;
           candidate->next = (BlockHeader_t *) (((Byte_t *) candidate) + sizeof(BlockHeader_t) + requested);

@@ -205,82 +205,79 @@
 
 
 /**
- * @brief Define the number of memory blocks available in all memory regions
+ * @brief Define the memory region size in bytes for all memory regions
  *
  * The heap memory region is used by tasks, whereas the kernel memory region is
- * used solely by the kernel for kernel objects. The
- * CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS setting allows the end-user to define the
- * size, in blocks, of all memory regions thus affecting both the heap and
- * kernel memory regions. The size of a memory block is defined by the
- * CONFIG_MEMORY_REGION_BLOCK_SIZE setting. The size of all memory regions needs
- * to be adjusted to fit the memory requirements of the end-user's application.
- * The default value is 16 blocks.
+ * used solely by the kernel for kernel objects. CONFIG_MEMORY_REGION_SIZE
+ * allows the end-user to define the size, in bytes, of each memory region
+ * (heap and kernel). The size of all memory regions needs to be adjusted to
+ * fit the memory requirements of the end-user's application.
  *
- * @par Total Memory Calculation:
- * Total memory per region = CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS *
- * CONFIG_MEMORY_REGION_BLOCK_SIZE
+ * The memory implementation uses variable-sized blocks with headers, allowing
+ * efficient allocation of different sized objects without fixed block overhead.
+ * Each allocation includes a BlockHeader_t structure (typically 16-24 bytes
+ * depending on architecture) for metadata and integrity checking.
  *
+ * @par Memory Usage:
  * Since HeliOS maintains two separate memory regions (heap and kernel), the
  * total system memory usage is:
- * Total system memory = 2 * (CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS *
- * CONFIG_MEMORY_REGION_BLOCK_SIZE)
+ * Total system memory = 2 * CONFIG_MEMORY_REGION_SIZE
+ *
+ * @par Tuning Guidelines:
+ * - Embedded systems with limited RAM: 0x1000 - 0x4000 (4KB - 16KB)
+ * - Small microcontrollers: 0x4000 - 0x10000 (16KB - 64KB)
+ * - Larger embedded systems: 0x10000 - 0x40000 (64KB - 256KB)
+ * - Systems with external RAM: 0x40000+ (256KB+)
+ *
+ * The default value is 0x10000 (64KB) which provides a good balance for
+ * typical embedded applications.
  *
  * @note The value should be set as a hexadecimal constant with the 'u' suffix
- * (e.g., 0x10u for 16 blocks).
+ * (e.g., 0x10000u for 64KB).
  *
- * @note Setting this value too small may result in memory allocation failures.
- * Setting it too large may exceed the available RAM on the target platform.
+ * @warning Reducing this value below the minimum requirements of your
+ * application will lead to memory allocation failures.
+ *
+ * @note Increasing this value will increase the memory footprint of HeliOS,
+ * which may be limited on resource-constrained systems.
  *
  * @note This value affects both heap and kernel memory regions equally.
+ *
+ * @sa CONFIG_MEMORY_MINIMUM_BLOCK_SIZE
+ * @sa xMemAlloc()
+ * @sa xMemFree()
+ *
+ */
+  #if !defined(CONFIG_MEMORY_REGION_SIZE)
+    #define CONFIG_MEMORY_REGION_SIZE 0x10000u /* 64KB default */
+  #endif /* if !defined(CONFIG_MEMORY_REGION_SIZE) */
+
+/**
+ * @brief Define the minimum block size to prevent fragmentation
+ *
+ * Setting CONFIG_MEMORY_MINIMUM_BLOCK_SIZE determines the smallest memory
+ * fragment that will be created during block splitting. When allocating memory,
+ * if the remaining space after allocation would be smaller than this threshold
+ * plus the block header size, the entire block is allocated instead of being
+ * split. This prevents the creation of tiny, unusable memory fragments that
+ * increase fragmentation and reduce allocator efficiency.
+ *
+ * The default value is 32 bytes, which provides a good balance between memory
+ * utilization and fragmentation prevention. Increasing this value reduces
+ * fragmentation but may waste more memory. Decreasing it allows tighter memory
+ * packing but increases fragmentation overhead.
+ *
+ * @note This value should be at least as large as the smallest typical
+ * allocation size in your application.
  *
  * @sa CONFIG_MEMORY_REGION_BLOCK_SIZE
  * @sa xMemAlloc()
  * @sa xMemFree()
  *
  */
-  #if !defined(CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS)
-    #define CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS 0x10u /* 16 */
-  #endif /* if !defined(CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS) */
-
-
-/**
- * @brief Define the memory block size in bytes for all memory regions
- *
- * Setting CONFIG_MEMORY_REGION_BLOCK_SIZE allows the end-user to define the
- * size of a memory region block in bytes. The memory region block size should
- * be set to achieve the best possible utilization of the available memory. The
- * CONFIG_MEMORY_REGION_BLOCK_SIZE setting affects both the heap and kernel
- * memory regions. The default value is 32 bytes.
- *
- * This value represents the granularity of memory allocation. All memory
- * allocations will be rounded up to the nearest multiple of this block size.
- * Choosing an appropriate block size is crucial for minimizing internal
- * fragmentation while maintaining efficient memory utilization.
- *
- * @par Tuning Guidelines:
- * - Smaller block sizes (8-16 bytes): Better for many small allocations, less
- * internal fragmentation, but higher overhead from block management
- * - Medium block sizes (32-64 bytes): Good general-purpose balance
- * - Larger block sizes (128+ bytes): Better for large allocations, lower
- * management overhead, but more internal fragmentation for small allocations
- *
- * @note The value should be set as a hexadecimal constant with the 'u' suffix
- * (e.g., 0x20u for 32 bytes).
- *
- * @note Consider using a power-of-2 value for optimal memory alignment on most
- * architectures.
- *
- * @note This value should be chosen based on the typical size of objects
- * allocated by your application.
- *
- * @sa xMemAlloc()
- * @sa xMemFree()
- * @sa CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS
- *
- */
-  #if !defined(CONFIG_MEMORY_REGION_BLOCK_SIZE)
-    #define CONFIG_MEMORY_REGION_BLOCK_SIZE 0x20u /* 32 */
-  #endif /* if !defined(CONFIG_MEMORY_REGION_BLOCK_SIZE) */
+  #if !defined(CONFIG_MEMORY_MINIMUM_BLOCK_SIZE)
+    #define CONFIG_MEMORY_MINIMUM_BLOCK_SIZE 0x20u /* 32 bytes */
+  #endif /* if !defined(CONFIG_MEMORY_MINIMUM_BLOCK_SIZE) */
 
 
 /**

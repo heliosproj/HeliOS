@@ -17,17 +17,6 @@
 #include "memory_harness.h"
 
 
-/* Calculate entry size in blocks (matches logic in mem.c) */
-#define ENTRY_SIZE_IN_BLOCKS ((HalfWord_t) ((sizeof(BlockHeader_t) / CONFIG_MEMORY_REGION_BLOCK_SIZE) + \
-        (((sizeof(BlockHeader_t) % CONFIG_MEMORY_REGION_BLOCK_SIZE) > 0) ? 1 : 0)))
-
-
-/* Macro to convert allocated address to memory entry (for corruption tests) */
-/* Note: The new memory implementation uses BlockHeader_t with checksums instead
- * of MemoryEntry_t */
-/* Direct structure manipulation tests are disabled for now */
-/* #define ADDR2ENTRY(ptr_) ((MemoryEntry_t *) (((Byte_t *) (ptr_)) -
- * (ENTRY_SIZE_IN_BLOCKS * CONFIG_MEMORY_REGION_BLOCK_SIZE))) */
 /* Test constants */
 #define NUM_TEST_ALLOCS 0x20u /* Number of allocation test iterations */
 #define OVERSIZED_ALLOC 0x99999u /* Size that should fail allocation */
@@ -47,7 +36,7 @@
 #define MEDIUM_ALLOC_SIZE 256 /* Medium allocation size */
 #define LARGE_ALLOC_SIZE 512 /* Large allocation size */
 #define FRAG_BLOCK_SIZE 1024 /* Fragmentation test block size */
-#define MAX_SIZE_TEST ((CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS + 100) * CONFIG_MEMORY_REGION_BLOCK_SIZE) /*
+#define MAX_SIZE_TEST (CONFIG_MEMORY_REGION_SIZE + 100) /*
                                                                                                        *
                                                                                                        *
                                                                                                        *
@@ -161,15 +150,20 @@ void memory_harness(void) {
   unit_assert_equal(actual, 0x0u);
 
 
-  /* Allocate almost all available memory */
-  large_alloc = (CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS - 2) * CONFIG_MEMORY_REGION_BLOCK_SIZE;
+  /* Allocate almost all available memory, leaving just a small amount */
+  large_alloc = CONFIG_MEMORY_REGION_SIZE - 64; /* Leave 64 bytes */
   unit_assert_ok(xMemAlloc((volatile Addr_t **) &mem05, large_alloc));
   actual = nil;
   unit_assert_ok(xMemGetUsed(&actual));
 
 
-  /* xMemGetUsed returns the allocated size INCLUDING header */
-  unit_assert_equal(actual, large_alloc + sizeof(BlockHeader_t));
+  /* With minimum block size enforcement, the allocator will give us the entire
+   * remaining memory region if splitting would create a fragment smaller than
+   * CONFIG_MEMORY_MINIMUM_BLOCK_SIZE. In this case, requesting (size - 64) bytes
+   * would normally use (size - 64 + header) bytes, leaving only about 40 bytes.
+   * Since 40 - header_size < CONFIG_MEMORY_MINIMUM_BLOCK_SIZE, we get the
+   * entire memory region instead. */
+  unit_assert_equal(actual, CONFIG_MEMORY_REGION_SIZE);
   unit_assert_ok(xMemFree(mem05));
   unit_end();
 
@@ -651,18 +645,9 @@ static void test_freed_pointer_operations(void) {
 static void test_boundary_allocations(void) {
   volatile Addr_t *ptr = null;
   Size_t size;
-  Size_t entrySize;
 
 
   unit_print("--- Section 4: Boundary Allocations ---");
-
-
-  /* Calculate entry size in blocks */
-  entrySize = ((HalfWord_t) (sizeof(BlockHeader_t) / CONFIG_MEMORY_REGION_BLOCK_SIZE));
-
-  if(nil < ((HalfWord_t) (sizeof(BlockHeader_t) % CONFIG_MEMORY_REGION_BLOCK_SIZE))) {
-    entrySize++;
-  }
 
   unit_begin("Boundary - Single byte allocation");
   {
@@ -676,50 +661,51 @@ static void test_boundary_allocations(void) {
     unit_assert_equal(size, 1);
     unit_assert_ok(xMemFree(ptr));
   } unit_end();
-  unit_begin("Boundary - Exact block size allocation");
+  unit_begin("Boundary - Small allocation (32 bytes)");
   {
     ptr = null;
-    unit_assert_ok(xMemAlloc(&ptr, CONFIG_MEMORY_REGION_BLOCK_SIZE));
+    unit_assert_ok(xMemAlloc(&ptr, 32));
     unit_assert_not_null(ptr);
     unit_assert_ok(xMemGetSize(ptr, &size));
-    unit_assert_equal(size, CONFIG_MEMORY_REGION_BLOCK_SIZE);
+    unit_assert_equal(size, 32);
     unit_assert_ok(xMemFree(ptr));
   } unit_end();
-  unit_begin("Boundary - Block size minus one");
+  unit_begin("Boundary - Small allocation (31 bytes)");
   {
     ptr = null;
-    unit_assert_ok(xMemAlloc(&ptr, CONFIG_MEMORY_REGION_BLOCK_SIZE - 1));
+    unit_assert_ok(xMemAlloc(&ptr, 31));
     unit_assert_not_null(ptr);
     unit_assert_ok(xMemGetSize(ptr, &size));
 
 
     /* New implementation returns exact size */
-    unit_assert_equal(size, CONFIG_MEMORY_REGION_BLOCK_SIZE - 1);
+    unit_assert_equal(size, 31);
     unit_assert_ok(xMemFree(ptr));
   } unit_end();
-  unit_begin("Boundary - Block size plus one");
+  unit_begin("Boundary - Small allocation (33 bytes)");
   {
     ptr = null;
-    unit_assert_ok(xMemAlloc(&ptr, CONFIG_MEMORY_REGION_BLOCK_SIZE + 1));
+    unit_assert_ok(xMemAlloc(&ptr, 33));
     unit_assert_not_null(ptr);
     unit_assert_ok(xMemGetSize(ptr, &size));
 
 
     /* New implementation returns exact size */
-    unit_assert_equal(size, CONFIG_MEMORY_REGION_BLOCK_SIZE + 1);
+    unit_assert_equal(size, 33);
     unit_assert_ok(xMemFree(ptr));
   } unit_end();
-  unit_begin("Boundary - Multiple of block size");
+  unit_begin("Boundary - Medium allocation (128 bytes)");
   {
     ptr = null;
-    unit_assert_ok(xMemAlloc(&ptr, CONFIG_MEMORY_REGION_BLOCK_SIZE * 4));
+    unit_assert_ok(xMemAlloc(&ptr, 128));
     unit_assert_not_null(ptr);
     unit_assert_ok(xMemGetSize(ptr, &size));
+    unit_assert_equal(size, 128);
     unit_assert_ok(xMemFree(ptr));
   } unit_end();
   unit_begin("Boundary - Large allocation near limit");
   {
-    Size_t largeSize = (CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS - entrySize - 10) * CONFIG_MEMORY_REGION_BLOCK_SIZE;
+    Size_t largeSize = CONFIG_MEMORY_REGION_SIZE - sizeof(BlockHeader_t) - 320;
 
 
     ptr = null;
@@ -1168,8 +1154,8 @@ static void test_state_consistency(void) {
     unit_assert_equal(used1, 0x0u);
 
 
-    /* Request more than available - use region size + 1 block */
-    tooLarge = (CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS + 1) * CONFIG_MEMORY_REGION_BLOCK_SIZE;
+    /* Request more than available */
+    tooLarge = CONFIG_MEMORY_REGION_SIZE + 100;
 
 
     /* Failed allocation should not affect state */
@@ -1214,7 +1200,7 @@ static void test_state_consistency(void) {
   unit_begin("State - Recovery after multiple failures");
   {
     int i;
-    Size_t tooLarge = (CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS + 10) * CONFIG_MEMORY_REGION_BLOCK_SIZE;
+    Size_t tooLarge = CONFIG_MEMORY_REGION_SIZE + 1000;
 
 
     /* Multiple failed allocations */
@@ -1654,420 +1640,4 @@ static void test_memory_corruption_detection(void) {
   unit_print("NOTE: Corruption detection tests disabled - needs update for new memory implementation");
 
   return;
-
-#if 0 /* Disabled - needs update for new BlockHeader_t structure */
-    unit_begin("Corruption Detection - Magic field corruption");
-    {
-      volatile Addr_t *ptr = null;
-      MemoryEntry_t *entry = null;
-      Size_t size = nil;
-
-
-      /* Allocate and verify clean state */
-      unit_assert_ok(xMemAlloc(&ptr, 128));
-      unit_assert_ok(xMemGetUsed(&size));
-      unit_assert_equal(160, size);
-      unit_assert_true(__FlagIsNotSet__(MEMFAULT));
-
-
-      /* Corrupt magic field */
-      entry = ADDR2ENTRY(ptr);
-      entry->magic = MAGIC_CONST; /* Should be XOR'd with address */
-      /* Verify corruption detected */
-      unit_assert_not_ok(xMemGetUsed(&size));
-      unit_assert_true(__FlagIsSet__(MEMFAULT));
-
-
-      /* Cleanup and reset */
-      __MemoryClear__();
-      __SysStateClear__();
-    } unit_end();
-    unit_begin("Corruption Detection - Free field corruption");
-    {
-      volatile Addr_t *ptr = null;
-      MemoryEntry_t *entry = null;
-      Size_t size = nil;
-
-
-      /* Allocate and verify clean state */
-      unit_assert_ok(xMemAlloc(&ptr, 128));
-      unit_assert_ok(xMemGetUsed(&size));
-      unit_assert_true(__FlagIsNotSet__(MEMFAULT));
-
-
-      /* Corrupt free field (should be INUSE=0xAA or FREE=0xD5) */
-      entry = ADDR2ENTRY(ptr);
-      entry->free = INVALID_FREE_VALUE;
-
-
-      /* Verify corruption detected */
-      unit_assert_not_ok(xMemGetUsed(&size));
-      unit_assert_true(__FlagIsSet__(MEMFAULT));
-
-
-      /* Cleanup and reset */
-      __MemoryClear__();
-      __SysStateClear__();
-    } unit_end();
-    unit_begin("Corruption Detection - Blocks field corruption");
-    {
-      volatile Addr_t *ptr = null;
-      MemoryEntry_t *entry = null;
-      Size_t size = nil;
-
-
-      /* Allocate and verify clean state */
-      unit_assert_ok(xMemAlloc(&ptr, 128));
-      unit_assert_ok(xMemGetUsed(&size));
-      unit_assert_true(__FlagIsNotSet__(MEMFAULT));
-
-
-      /* Corrupt blocks field */
-      entry = ADDR2ENTRY(ptr);
-      entry->blocks = INVALID_BLOCKS_VALUE; /* Invalid - doesn't add up to
-                                             * region size */
-
-
-      /* Verify corruption detected */
-      unit_assert_not_ok(xMemGetUsed(&size));
-      unit_assert_true(__FlagIsSet__(MEMFAULT));
-
-
-      /* Cleanup and reset */
-      __MemoryClear__();
-      __SysStateClear__();
-    } unit_end();
-    unit_begin("Corruption Detection - Next pointer corruption");
-    {
-      volatile Addr_t *ptr = null;
-      MemoryEntry_t *entry = null;
-      Size_t size = nil;
-
-
-      /* Allocate and verify clean state */
-      unit_assert_ok(xMemAlloc(&ptr, 128));
-      unit_assert_ok(xMemGetUsed(&size));
-      unit_assert_true(__FlagIsNotSet__(MEMFAULT));
-
-
-      /* Corrupt next pointer (point outside memory region) */
-      entry = ADDR2ENTRY(ptr);
-      entry->next = (MemoryEntry_t *) TEST_ARBITRARY_ADDR;
-
-
-      /* Verify corruption detected */
-      unit_assert_not_ok(xMemGetUsed(&size));
-      unit_assert_true(__FlagIsSet__(MEMFAULT));
-
-
-      /* Cleanup and reset */
-      __MemoryClear__();
-      __SysStateClear__();
-    } unit_end();
-    unit_begin("Corruption Detection - xMemFree detects corruption");
-    {
-      volatile Addr_t *ptr = null;
-      MemoryEntry_t *entry = null;
-
-
-      /* Allocate and verify clean state */
-      unit_assert_ok(xMemAlloc(&ptr, 256));
-      unit_assert_true(__FlagIsNotSet__(MEMFAULT));
-
-
-      /* Corrupt magic field */
-      entry = ADDR2ENTRY(ptr);
-      entry->magic = CORRUPTION_MAGIC_1;
-
-
-      /* xMemFree should detect corruption */
-      unit_assert_not_ok(xMemFree(ptr));
-      unit_assert_true(__FlagIsSet__(MEMFAULT));
-
-
-      /* Cleanup and reset */
-      __MemoryClear__();
-      __SysStateClear__();
-    } unit_end();
-    unit_begin("Corruption Detection - xMemGetSize detects corruption");
-    {
-      volatile Addr_t *ptr = null;
-      MemoryEntry_t *entry = null;
-      Size_t size;
-
-
-      /* Allocate and verify clean state */
-      unit_assert_ok(xMemAlloc(&ptr, 128));
-      unit_assert_true(__FlagIsNotSet__(MEMFAULT));
-
-
-      /* Corrupt blocks field */
-      entry = ADDR2ENTRY(ptr);
-      entry->blocks = 9999;
-
-
-      /* xMemGetSize should detect corruption */
-      unit_assert_not_ok(xMemGetSize(ptr, &size));
-      unit_assert_true(__FlagIsSet__(MEMFAULT));
-
-
-      /* Cleanup and reset */
-      __MemoryClear__();
-      __SysStateClear__();
-    } unit_end();
-    unit_begin("Corruption Detection - Multiple field corruption");
-    {
-      volatile Addr_t *ptr = null;
-      MemoryEntry_t *entry = null;
-      Size_t size;
-
-
-      /* Allocate and verify clean state */
-      unit_assert_ok(xMemAlloc(&ptr, 128));
-      unit_assert_true(__FlagIsNotSet__(MEMFAULT));
-
-
-      /* Corrupt multiple fields */
-      entry = ADDR2ENTRY(ptr);
-      entry->magic = CORRUPTION_MAGIC_2;
-      entry->free = CORRUPTION_FREE_FLAG;
-      entry->blocks = 0;
-
-
-      /* Should detect corruption */
-      unit_assert_not_ok(xMemGetUsed(&size));
-      unit_assert_true(__FlagIsSet__(MEMFAULT));
-
-
-      /* Cleanup and reset */
-      __MemoryClear__();
-      __SysStateClear__();
-    } unit_end();
-    unit_begin("Corruption Detection - MEMFAULT flag persistence");
-    {
-      volatile Addr_t *ptr = null;
-      MemoryEntry_t *entry = null;
-      Size_t size;
-
-
-      /* Allocate and corrupt */
-      unit_assert_ok(xMemAlloc(&ptr, 128));
-      entry = ADDR2ENTRY(ptr);
-      entry->magic = 0;
-
-
-      /* First call sets MEMFAULT */
-      unit_assert_not_ok(xMemGetUsed(&size));
-      unit_assert_true(__FlagIsSet__(MEMFAULT));
-
-
-      /* MEMFAULT should persist across calls */
-      unit_assert_not_ok(xMemGetUsed(&size));
-      unit_assert_true(__FlagIsSet__(MEMFAULT));
-
-
-      /* Cleanup and reset */
-      __MemoryClear__();
-      __SysStateClear__();
-
-
-      /* After reset, flag should be clear */
-      unit_assert_true(__FlagIsNotSet__(MEMFAULT));
-    } unit_end();
-    unit_begin("Corruption Detection - Recovery after cleanup");
-    {
-      volatile Addr_t *ptr1 = null;
-      volatile Addr_t *ptr2 = null;
-      MemoryEntry_t *entry = null;
-      Size_t size;
-
-
-      /* Allocate and corrupt */
-      unit_assert_ok(xMemAlloc(&ptr1, 128));
-      entry = ADDR2ENTRY(ptr1);
-      entry->free = CORRUPTION_FREE_FLAG_2;
-
-
-      /* Trigger corruption detection */
-      unit_assert_not_ok(xMemGetUsed(&size));
-      unit_assert_true(__FlagIsSet__(MEMFAULT));
-
-
-      /* Cleanup */
-      __MemoryClear__();
-      __SysStateClear__();
-
-
-      /* System should be usable again */
-      unit_assert_true(__FlagIsNotSet__(MEMFAULT));
-      unit_assert_ok(xMemAlloc(&ptr2, 256));
-      unit_assert_not_null(ptr2);
-      unit_assert_ok(xMemGetUsed(&size));
-      unit_assert_ok(xMemFree(ptr2));
-    } unit_end();
-    unit_begin("Corruption Detection - Heap stats with corruption");
-    {
-      volatile Addr_t *ptr = null;
-      MemoryEntry_t *entry = null;
-      MemoryRegionStats_t *stats = null;
-
-
-      /* Allocate and corrupt */
-      unit_assert_ok(xMemAlloc(&ptr, 128));
-      entry = ADDR2ENTRY(ptr);
-      entry->next = (MemoryEntry_t *) CORRUPTION_NEXT_INVALID;
-
-
-      /* Heap stats should detect corruption */
-      unit_assert_not_ok(xMemGetHeapStats(&stats));
-      unit_assert_true(__FlagIsSet__(MEMFAULT));
-
-
-      /* Cleanup and reset */
-      __MemoryClear__();
-      __SysStateClear__();
-    } unit_end();
-    unit_begin("Corruption Detection - Free flag manipulation");
-    {
-      volatile Addr_t *ptr = null;
-      MemoryEntry_t *entry = null;
-      Size_t size;
-
-
-      /* Allocate memory */
-      unit_assert_ok(xMemAlloc(&ptr, 128));
-      unit_assert_true(__FlagIsNotSet__(MEMFAULT));
-
-
-      /* Manually set to FREE while still allocated */
-      entry = ADDR2ENTRY(ptr);
-      entry->free = FREE; /* 0xD5 - should be INUSE */
-      /* This corruption might be detected differently */
-      /* Since it's a valid value, check behavior */
-      unit_assert_ok(xMemGetUsed(&size));
-
-
-      /* But trying to free should work since it looks valid */
-      /* Note: This tests that valid magic values still work */
-      /* Cleanup */
-      __MemoryClear__();
-      __SysStateClear__();
-    } unit_end();
-    unit_begin("Corruption Detection - Zero magic value");
-    {
-      volatile Addr_t *ptr = null;
-      MemoryEntry_t *entry = null;
-      Size_t size;
-
-
-      /* Allocate and corrupt with zero */
-      unit_assert_ok(xMemAlloc(&ptr, 64));
-      entry = ADDR2ENTRY(ptr);
-      entry->magic = 0;
-
-
-      /* Should detect corruption */
-      unit_assert_not_ok(xMemGetUsed(&size));
-      unit_assert_true(__FlagIsSet__(MEMFAULT));
-
-
-      /* Cleanup and reset */
-      __MemoryClear__();
-      __SysStateClear__();
-    } unit_end();
-    unit_begin("Corruption Detection - Blocks underflow");
-    {
-      volatile Addr_t *ptr = null;
-      MemoryEntry_t *entry = null;
-      Size_t size;
-
-
-      /* Allocate and set blocks to zero */
-      unit_assert_ok(xMemAlloc(&ptr, 128));
-      entry = ADDR2ENTRY(ptr);
-      entry->blocks = 0;
-
-
-      /* Should detect corruption */
-      unit_assert_not_ok(xMemGetUsed(&size));
-      unit_assert_true(__FlagIsSet__(MEMFAULT));
-
-
-      /* Cleanup and reset */
-      __MemoryClear__();
-      __SysStateClear__();
-    } unit_end();
-    unit_begin("Corruption Detection - Blocks overflow");
-    {
-      volatile Addr_t *ptr = null;
-      MemoryEntry_t *entry = null;
-      Size_t size;
-
-
-      /* Allocate and set blocks beyond region size */
-      unit_assert_ok(xMemAlloc(&ptr, 128));
-      entry = ADDR2ENTRY(ptr);
-      entry->blocks = CORRUPTION_BLOCKS_MAX;
-
-
-      /* Should detect corruption */
-      unit_assert_not_ok(xMemGetUsed(&size));
-      unit_assert_true(__FlagIsSet__(MEMFAULT));
-
-
-      /* Cleanup and reset */
-      __MemoryClear__();
-      __SysStateClear__();
-    } unit_end();
-    unit_begin("Corruption Detection - NULL next pointer");
-    {
-      volatile Addr_t *ptr1 = null;
-      volatile Addr_t *ptr2 = null;
-      MemoryEntry_t *entry = null;
-      Size_t size;
-
-
-      /* Allocate two blocks to create a chain */
-      unit_assert_ok(xMemAlloc(&ptr1, 128));
-      unit_assert_ok(xMemAlloc(&ptr2, 128));
-
-
-      /* Corrupt first entry's next to NULL prematurely */
-      entry = ADDR2ENTRY(ptr1);
-      entry->next = null;
-
-
-      /* Should detect corruption (blocks won't add up) */
-      unit_assert_not_ok(xMemGetUsed(&size));
-      unit_assert_true(__FlagIsSet__(MEMFAULT));
-
-
-      /* Cleanup and reset */
-      __MemoryClear__();
-      __SysStateClear__();
-    } unit_end();
-
-
-    /* Test circular next pointer detection - TEMPORARILY DISABLED for debugging
-     */
-    /*
-     *  unit_begin("Corruption Detection - Circular next pointer");
-     *  {
-     *  volatile Addr_t *ptr = null;
-     *  MemoryEntry_t *entry = null;
-     *  Size_t size;
-     *
-     *  unit_assert_ok(xMemAlloc(&ptr, 128));
-     *  entry = ADDR2ENTRY(ptr);
-     *  entry->next = entry;
-     *  unit_assert_not_ok(xMemGetUsed(&size));
-     *  unit_assert_true(__FlagIsSet__(MEMFAULT));
-     *  __MemoryClear__();
-     *  __SysStateClear__();
-     *  }
-     *  unit_end();
-     */
-    return;
-
-#endif /* Disabled - old MemoryEntry_t tests */
 }
