@@ -189,31 +189,29 @@ static Return_t __ValidateBlockHeader__(const BlockHeader_t *header_, const vola
 
 
   /* Quick bounds check - header must be within region memory */
-  if(((const Byte_t *) header_ < (const Byte_t *) region_->mem) || ((const Byte_t *) header_ >= ((const Byte_t *) region_->mem + MEMORY_REGION_SIZE_IN_BYTES -
-    sizeof(BlockHeader_t)))) {
+  if(!(((const Byte_t *) header_ < (const Byte_t *) region_->mem) || ((const Byte_t *) header_ >= ((const Byte_t *) region_->mem + MEMORY_REGION_SIZE_IN_BYTES -
+    sizeof(BlockHeader_t))))) {
+    /* Validate checksum - this is the key integrity check */
+    expectedChecksum = __checksum__(header_);
+
+    if(header_->checksum == expectedChecksum) {
+      /* Validate the free/inuse field */
+      if((header_->free == FREE) || (header_->free == INUSE)) {
+        /* All validations passed */
+        __ReturnOk__();
+      } else {
+        /* Invalid state - corruption detected */
+        __AssertOnElse__();
+      }
+    } else {
+      /* Checksum mismatch - corruption detected */
+      __AssertOnElse__();
+    }
+  } else {
     /* Header is outside region bounds */
-    __ReturnError__();
-    FUNCTION_EXIT;
+    __AssertOnElse__();
   }
 
-  /* Validate checksum - this is the key integrity check */
-  expectedChecksum = __checksum__(header_);
-
-  if(header_->checksum != expectedChecksum) {
-    /* Checksum mismatch - corruption detected */
-    __ReturnError__();
-    FUNCTION_EXIT;
-  }
-
-  /* Validate the free/inuse field */
-  if((header_->free != FREE) && (header_->free != INUSE)) {
-    /* Invalid state - corruption detected */
-    __ReturnError__();
-    FUNCTION_EXIT;
-  }
-
-  /* All validations passed */
-  __ReturnOk__();
   FUNCTION_EXIT;
 }
 
@@ -755,7 +753,7 @@ static Return_t __MemGetRegionStats__(const volatile MemoryRegion_t *region_, Me
       *stats_ = stats;
       __ReturnOk__();
     } else {
-      __ReturnError__();
+      __AssertOnElse__();
     }
   } else {
     __AssertOnElse__();
@@ -819,7 +817,7 @@ Return_t __memcpy__(const volatile Addr_t *dest_, const volatile Addr_t *src_, c
 
     __ReturnOk__();
   } else {
-    __ReturnError__();
+    __AssertOnElse__();
     __AssertOnElse__();
   }
 
@@ -844,7 +842,7 @@ Return_t __memset__(const volatile Addr_t *dest_, const Byte_t val_, const Size_
 
     __ReturnOk__();
   } else {
-    __ReturnError__();
+    __AssertOnElse__();
     __AssertOnElse__();
   }
 
@@ -878,7 +876,7 @@ Return_t __memcmp__(const volatile Addr_t *s1_, const volatile Addr_t *s2_, cons
 
     __ReturnOk__();
   } else {
-    __ReturnError__();
+    __AssertOnElse__();
     __AssertOnElse__();
   }
 
@@ -948,7 +946,7 @@ Return_t __strcpy__(Byte_t *dest_, const Byte_t *src_, const Size_t destSize_) {
 
 
   if(__PointerIsNull__(dest_) || __PointerIsNull__(src_) || (0x0u == destSize_)) {
-    __ReturnError__();
+    __AssertOnElse__();
     __AssertOnElse__();
     FUNCTION_EXIT;
   }
@@ -972,7 +970,7 @@ Return_t __strncpy__(Byte_t *dest_, const Byte_t *src_, const Size_t n_) {
 
 
   if(__PointerIsNull__(dest_) || __PointerIsNull__(src_) || (0x0u == n_)) {
-    __ReturnError__();
+    __AssertOnElse__();
     __AssertOnElse__();
     FUNCTION_EXIT;
   }
@@ -1041,7 +1039,7 @@ Return_t __strcat__(Byte_t *dest_, const Byte_t *src_, const Size_t destSize_) {
 
 
   if(__PointerIsNull__(dest_) || __PointerIsNull__(src_) || (0x0u == destSize_)) {
-    __ReturnError__();
+    __AssertOnElse__();
     __AssertOnElse__();
     FUNCTION_EXIT;
   }
@@ -1049,7 +1047,7 @@ Return_t __strcat__(Byte_t *dest_, const Byte_t *src_, const Size_t destSize_) {
   destLen = __strlen__(dest_);
 
   if(destLen >= destSize_) {
-    __ReturnError__();
+    __AssertOnElse__();
     __AssertOnElse__();
     FUNCTION_EXIT;
   }
@@ -1125,7 +1123,7 @@ Return_t __path_join__(Byte_t *dest_, const Byte_t *base_, const Byte_t *path_, 
 
 
   if(__PointerIsNull__(dest_) || __PointerIsNull__(base_) || __PointerIsNull__(path_) || (0x0u == destSize_)) {
-    __ReturnError__();
+    __AssertOnElse__();
     __AssertOnElse__();
     FUNCTION_EXIT;
   }
@@ -1134,7 +1132,7 @@ Return_t __path_join__(Byte_t *dest_, const Byte_t *base_, const Byte_t *path_, 
   pathLen = __strlen__(path_);
 
   if((0x0u == baseLen) || (0x0u == pathLen)) {
-    __ReturnError__();
+    __AssertOnElse__();
     __AssertOnElse__();
     FUNCTION_EXIT;
   }
@@ -1142,7 +1140,7 @@ Return_t __path_join__(Byte_t *dest_, const Byte_t *base_, const Byte_t *path_, 
   /* If path is absolute, just return the path */
   if(CHAR_SLASH == path_[0x0u]) {
     if(pathLen >= destSize_) {
-      __ReturnError__();
+      __AssertOnElse__();
       __AssertOnElse__();
       FUNCTION_EXIT;
     }
@@ -1159,7 +1157,7 @@ Return_t __path_join__(Byte_t *dest_, const Byte_t *base_, const Byte_t *path_, 
   needSlash = (CHAR_SLASH != base_[baseLen - 0x1u]) && (CHAR_SLASH != path_[0x0u]);
 
   if((baseLen + pathLen + (needSlash ? 0x1u : 0x0u)) >= destSize_) {
-    __ReturnError__();
+    __AssertOnElse__();
     __AssertOnElse__();
     FUNCTION_EXIT;
   }
@@ -1199,7 +1197,7 @@ Return_t __path_normalize__(Byte_t *path_, const Size_t pathSize_) {
 
 
   if(__PointerIsNull__(path_) || (0x0u == pathSize_)) {
-    __ReturnError__();
+    __AssertOnElse__();
     __AssertOnElse__();
     FUNCTION_EXIT;
   }
@@ -1207,7 +1205,7 @@ Return_t __path_normalize__(Byte_t *path_, const Size_t pathSize_) {
   len = __strlen__(path_);
 
   if((0x0u == len) || (len >= CONFIG_FS_MAX_PATH_LENGTH)) {
-    __ReturnError__();
+    __AssertOnElse__();
     __AssertOnElse__();
     FUNCTION_EXIT;
   }
@@ -1302,7 +1300,7 @@ Return_t __path_dirname__(Byte_t *dest_, const Byte_t *path_, const Size_t destS
 
 
   if(__PointerIsNull__(dest_) || __PointerIsNull__(path_) || (0x0u == destSize_)) {
-    __ReturnError__();
+    __AssertOnElse__();
     __AssertOnElse__();
     FUNCTION_EXIT;
   }
@@ -1333,7 +1331,7 @@ Return_t __path_dirname__(Byte_t *dest_, const Byte_t *path_, const Size_t destS
     }
   } else {
     if(i > destSize_) {
-      __ReturnError__();
+      __AssertOnElse__();
       __AssertOnElse__();
       FUNCTION_EXIT;
     }
@@ -1360,7 +1358,7 @@ Return_t __path_basename__(Byte_t *dest_, const Byte_t *path_, const Size_t dest
 
 
   if(__PointerIsNull__(dest_) || __PointerIsNull__(path_) || (0x0u == destSize_)) {
-    __ReturnError__();
+    __AssertOnElse__();
     __AssertOnElse__();
     FUNCTION_EXIT;
   }
@@ -1385,7 +1383,7 @@ Return_t __path_basename__(Byte_t *dest_, const Byte_t *path_, const Size_t dest
   }
 
   if((len - start) >= destSize_) {
-    __ReturnError__();
+    __AssertOnElse__();
     __AssertOnElse__();
     FUNCTION_EXIT;
   }
