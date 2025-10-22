@@ -188,12 +188,6 @@ static Return_t __ValidateBlockHeader__(const BlockHeader_t *header_, const vola
   Word_t expectedChecksum = 0x0u;
 
 
-  /* Cannot validate without both header and region */
-  if(__PointerIsNull__(header_) || __PointerIsNull__(region_)) {
-    __ReturnError__();
-    FUNCTION_EXIT;
-  }
-
   /* Quick bounds check - header must be within region memory */
   if(((const Byte_t *) header_ < (const Byte_t *) region_->mem) || ((const Byte_t *) header_ >= ((const Byte_t *) region_->mem + MEMORY_REGION_SIZE_IN_BYTES -
     sizeof(BlockHeader_t)))) {
@@ -279,16 +273,16 @@ static Return_t __MemoryRegionInit__(volatile MemoryRegion_t *region_) {
     /* Zero out the memory region */
     if(OK(__memset__((volatile Addr_t *) region_->mem, nil, MEMORY_REGION_SIZE_IN_BYTES))) {
       /* Create the initial free block spanning the entire region */
-      BlockHeader_t *initial = region_->first;
+      BlockHeader_t *first = region_->first;
 
 
-      initial->next = null;
-      initial->size = MEMORY_REGION_SIZE_IN_BYTES - sizeof(BlockHeader_t);
-      initial->free = FREE;
+      first->next = null;
+      first->size = MEMORY_REGION_SIZE_IN_BYTES - sizeof(BlockHeader_t);
+      first->free = FREE;
 
 
       /* Set checksum for the initial block */
-      initial->checksum = __checksum__(initial);
+      first->checksum = __checksum__(first);
       __ReturnOk__();
     } else {
       __AssertOnElse__();
@@ -371,6 +365,7 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
   BlockHeader_t *cursor = null;
   BlockHeader_t *candidate = null;
   BlockHeader_t *next = null;
+  BlockHeader_t *first = null;
   Size_t candidateSize = (Size_t) -1;
 
 
@@ -380,11 +375,19 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
   if(__FlagIsNotSet__(MEMFAULT) && __PointerIsNotNull__(region_) && __PointerIsNotNull__(addr_) && (nil < size_)) {
     /* Lazy initialization: if region has never been initialized, do it now */
     if(__PointerIsNull__(region_->first)) {
-      if(!OK(__MemoryRegionInit__(region_))) {
-        __EnableInterrupts__();
-        __ReturnError__();
-        FUNCTION_EXIT;
-      }
+
+      first = region_->first;
+
+
+      first->next = null;
+      first->size = MEMORY_REGION_SIZE_IN_BYTES - sizeof(BlockHeader_t);
+      first->free = FREE;
+
+
+      /* Set checksum for the initial block */
+      first->checksum = __checksum__(first);
+
+
     }
 
     /* Verify region consistency before allocation */
@@ -446,8 +449,7 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
           __AssertOnElse__();
         }
       } else {
-        /* No suitable block found - out of memory */
-        __ReturnError__();
+        __AssertOnElse__();
       }
     } else {
       __AssertOnElse__();
