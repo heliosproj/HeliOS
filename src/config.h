@@ -279,6 +279,42 @@
     #define CONFIG_MEMORY_MINIMUM_BLOCK_SIZE 0x20u /* 32 bytes */
   #endif /* if !defined(CONFIG_MEMORY_MINIMUM_BLOCK_SIZE) */
 
+/**
+ * @brief Define memory alignment requirement for allocated memory
+ *
+ * Setting CONFIG_MEMORY_ALIGNMENT specifies the byte alignment requirement for
+ * memory addresses returned by xMemAlloc(). This is critical for architectures
+ * that require aligned memory access (ARM, RISC-V, MIPS, etc.) and for
+ * optimizing cache performance.
+ *
+ * Common alignment requirements:
+ * - 4 bytes: Minimum for 32-bit architectures
+ * - 8 bytes: Standard for 64-bit architectures and double precision floats
+ * - 16 bytes: Required for SIMD operations (SSE, NEON, etc.)
+ *
+ * The alignment must be a power of 2. The default value is 8 bytes, which
+ * provides compatibility with most data types on both 32-bit and 64-bit systems.
+ *
+ * @par Performance Impact:
+ * Proper alignment can significantly improve memory access performance by:
+ * - Avoiding unaligned access penalties (2-3x slower on some architectures)
+ * - Preventing bus errors on strict alignment architectures
+ * - Improving cache line utilization
+ * - Enabling compiler vectorization optimizations
+ *
+ * @note On architectures with strict alignment requirements (e.g., ARM Cortex-M0),
+ * misaligned access will cause a hard fault. Always use at least 4-byte alignment.
+ *
+ * @warning The alignment value must be a power of 2 (4, 8, 16, etc.)
+ *
+ * @sa xMemAlloc()
+ * @sa CONFIG_MEMORY_MINIMUM_BLOCK_SIZE
+ *
+ */
+  #if !defined(CONFIG_MEMORY_ALIGNMENT)
+    #define CONFIG_MEMORY_ALIGNMENT 0x8u /* 8-byte alignment */
+  #endif /* if !defined(CONFIG_MEMORY_ALIGNMENT) */
+
 
 /**
  * @brief Define the minimum value for a message queue limit

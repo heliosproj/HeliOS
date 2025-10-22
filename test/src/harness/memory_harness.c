@@ -118,6 +118,9 @@ void memory_harness(void) {
   actual = nil;
 
   for(i = 0; i < NUM_TEST_ALLOCS; i++) {
+    Size_t alignedSize;
+    Size_t alignedHeaderSize;
+
     tests[i].size = sizes[i];
 
 
@@ -126,18 +129,21 @@ void memory_harness(void) {
     unit_assert_not_null(tests[i].ptr);
 
 
-    /* xMemGetUsed now returns the allocated data size INCLUDING headers */
-    used += sizes[i] + sizeof(BlockHeader_t);
+    /* xMemGetUsed now returns the allocated data size INCLUDING aligned headers
+     * Sizes are aligned up to CONFIG_MEMORY_ALIGNMENT (8 bytes) */
+    alignedSize = ((sizes[i] + (CONFIG_MEMORY_ALIGNMENT - 1)) & ~(CONFIG_MEMORY_ALIGNMENT - 1));
+    alignedHeaderSize = ((sizeof(BlockHeader_t) + (CONFIG_MEMORY_ALIGNMENT - 1)) & ~(CONFIG_MEMORY_ALIGNMENT - 1));
+    used += alignedSize + alignedHeaderSize;
     unit_assert_ok(xMemGetUsed(&actual));
 
 
-    /* The actual used should match exactly what we've allocated including headers */
+    /* The actual used should match exactly what we've allocated including aligned headers */
     unit_assert_equal(actual, used);
 
 
-    /* xMemGetSize should return exactly what was requested */
+    /* xMemGetSize returns the aligned size that was actually allocated */
     unit_assert_ok(xMemGetSize(tests[i].ptr, &actual));
-    unit_assert_equal(sizes[i], actual);
+    unit_assert_equal(alignedSize, actual);
   }
 
   unit_assert_not_ok(xMemAlloc((volatile Addr_t **) &mem05, OVERSIZED_ALLOC));
@@ -178,21 +184,33 @@ void memory_harness(void) {
 
   /* Test 3: Used memory tracking */
   unit_begin("Test 3: Used memory tracking reflects allocations");
-  unit_assert_ok(xMemGetUsed(&actual));
+  {
+    Size_t alignedLargeSize;
+    Size_t alignedHeader;
+
+    unit_assert_ok(xMemGetUsed(&actual));
 
 
-  /* Should be exactly LARGE_BLOCK_SIZE plus header overhead */
-  unit_assert_equal(actual, LARGE_BLOCK_SIZE + sizeof(BlockHeader_t));
+    /* Should be aligned LARGE_BLOCK_SIZE plus aligned header overhead */
+    alignedLargeSize = ((LARGE_BLOCK_SIZE + (CONFIG_MEMORY_ALIGNMENT - 1)) & ~(CONFIG_MEMORY_ALIGNMENT - 1));
+    alignedHeader = ((sizeof(BlockHeader_t) + (CONFIG_MEMORY_ALIGNMENT - 1)) & ~(CONFIG_MEMORY_ALIGNMENT - 1));
+    unit_assert_equal(actual, alignedLargeSize + alignedHeader);
+  }
   unit_end();
 
 
   /* Test 4: Allocated block size retrieval */
   unit_begin("Test 4: Allocated block size retrieval is accurate");
-  unit_assert_ok(xMemGetSize(mem01, &actual));
+  {
+    Size_t alignedLargeSize;
+
+    unit_assert_ok(xMemGetSize(mem01, &actual));
 
 
-  /* xMemGetSize should return exactly what was requested */
-  unit_assert_equal(actual, LARGE_BLOCK_SIZE);
+    /* xMemGetSize returns the aligned size that was actually allocated */
+    alignedLargeSize = ((LARGE_BLOCK_SIZE + (CONFIG_MEMORY_ALIGNMENT - 1)) & ~(CONFIG_MEMORY_ALIGNMENT - 1));
+    unit_assert_equal(actual, alignedLargeSize);
+  }
   unit_end();
 
 
@@ -657,8 +675,8 @@ static void test_boundary_allocations(void) {
     unit_assert_ok(xMemGetSize(ptr, &size));
 
 
-    /* New implementation returns exact size requested */
-    unit_assert_equal(size, 1);
+    /* Implementation returns aligned size (1 aligned up to 8 = 8) */
+    unit_assert_equal(size, 8);
     unit_assert_ok(xMemFree(ptr));
   } unit_end();
   unit_begin("Boundary - Small allocation (32 bytes)");
@@ -667,6 +685,7 @@ static void test_boundary_allocations(void) {
     unit_assert_ok(xMemAlloc(&ptr, 32));
     unit_assert_not_null(ptr);
     unit_assert_ok(xMemGetSize(ptr, &size));
+    /* 32 is already aligned to 8 */
     unit_assert_equal(size, 32);
     unit_assert_ok(xMemFree(ptr));
   } unit_end();
@@ -678,8 +697,8 @@ static void test_boundary_allocations(void) {
     unit_assert_ok(xMemGetSize(ptr, &size));
 
 
-    /* New implementation returns exact size */
-    unit_assert_equal(size, 31);
+    /* Implementation returns aligned size (31 aligned up to 8 = 32) */
+    unit_assert_equal(size, 32);
     unit_assert_ok(xMemFree(ptr));
   } unit_end();
   unit_begin("Boundary - Small allocation (33 bytes)");
@@ -690,8 +709,8 @@ static void test_boundary_allocations(void) {
     unit_assert_ok(xMemGetSize(ptr, &size));
 
 
-    /* New implementation returns exact size */
-    unit_assert_equal(size, 33);
+    /* Implementation returns aligned size (33 aligned up to 8 = 40) */
+    unit_assert_equal(size, 40);
     unit_assert_ok(xMemFree(ptr));
   } unit_end();
   unit_begin("Boundary - Medium allocation (128 bytes)");

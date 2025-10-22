@@ -27,6 +27,20 @@ static volatile MemoryRegion_t kernel = {
 };
 
 
+/* Alignment macros - ensure addresses and sizes are properly aligned */
+#define __AlignUp__(value_, alignment_) \
+        (((value_) + ((alignment_) - 1)) & ~((alignment_) - 1))
+
+#define __AlignDown__(value_, alignment_) \
+        ((value_) & ~((alignment_) - 1))
+
+#define __IsAligned__(value_, alignment_) \
+        (((value_) & ((alignment_) - 1)) == 0)
+
+/* Calculate aligned header size to ensure user data starts at aligned address */
+#define __AlignedHeaderSize__() \
+        __AlignUp__(sizeof(BlockHeader_t), CONFIG_MEMORY_ALIGNMENT)
+
 /* Macros for pointer arithmetic and validation */
 #define __OffsetPointerToBlockHeader__(ptr_, region_) \
         ((BlockHeader_t *) (((Byte_t *) (ptr_)) - (region_)->headerSize))
@@ -190,7 +204,7 @@ static Return_t __ValidateBlockHeader__(const BlockHeader_t *header_, const vola
 
   /* Quick bounds check - header must be within region memory */
   if(!(((const Byte_t *) header_ < (const Byte_t *) region_->mem) || ((const Byte_t *) header_ >= ((const Byte_t *) region_->mem + MEMORY_REGION_SIZE_IN_BYTES -
-    sizeof(BlockHeader_t))))) {
+    region_->headerSize)))) {
     /* Validate checksum - this is the key integrity check */
     expectedChecksum = __checksum__(header_);
 
@@ -255,8 +269,8 @@ static Return_t __MemoryRegionInit__(volatile MemoryRegion_t *region_) {
   FUNCTION_ENTER;
 
   if(__PointerIsNotNull__(region_)) {
-    /* Calculate header size */
-    region_->headerSize = sizeof(BlockHeader_t);
+    /* Calculate aligned header size to ensure user data is properly aligned */
+    region_->headerSize = __AlignedHeaderSize__();
 
 
     /* Set the first block header at the start of the memory region */
@@ -275,7 +289,8 @@ static Return_t __MemoryRegionInit__(volatile MemoryRegion_t *region_) {
 
 
       first->next = null;
-      first->size = MEMORY_REGION_SIZE_IN_BYTES - sizeof(BlockHeader_t);
+      /* Account for aligned header size in available space calculation */
+      first->size = MEMORY_REGION_SIZE_IN_BYTES - region_->headerSize;
       first->free = FREE;
 
 
@@ -298,7 +313,7 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
   FUNCTION_ENTER;
 
 
-  Size_t requested = size_;
+  Size_t requested;
   Size_t available = 0;
   BlockHeader_t *cursor = null;
   BlockHeader_t *candidate = null;
@@ -306,19 +321,26 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
   BlockHeader_t *first = null;
   Size_t candidateSize = (Size_t) -1;
 
+  /* Align requested size to ensure next block (if created) starts at aligned address */
+  requested = __AlignUp__(size_, CONFIG_MEMORY_ALIGNMENT);
 
   /* Disable interrupts during allocation */
   __DisableInterrupts__();
 
   if(__FlagIsNotSet__(MEMFAULT) && __PointerIsNotNull__(region_) && __PointerIsNotNull__(addr_) && (nil < size_)) {
+    /* Ensure region has aligned header size set */
+    if(region_->headerSize == 0) {
+      region_->headerSize = __AlignedHeaderSize__();
+    }
+
     /* Lazy initialization: if region has never been initialized, do it now */
     if(__PointerIsNull__(region_->first)) {
-
+      region_->first = (BlockHeader_t *) region_->mem;
       first = region_->first;
 
 
       first->next = null;
-      first->size = MEMORY_REGION_SIZE_IN_BYTES - sizeof(BlockHeader_t);
+      first->size = MEMORY_REGION_SIZE_IN_BYTES - region_->headerSize;
       first->free = FREE;
 
 
@@ -345,16 +367,17 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
       }
 
       if(__PointerIsNotNull__(candidate)) {
-        /* Check if we should split the block - only split if remaining space is at least CONFIG_MEMORY_MINIMUM_BLOCK_SIZE */
-        if((sizeof(BlockHeader_t) + CONFIG_MEMORY_MINIMUM_BLOCK_SIZE) <= (candidate->size - requested)) {
-          /* Split the block */
+        /* Check if we should split the block - only split if remaining space is at least CONFIG_MEMORY_MINIMUM_BLOCK_SIZE
+         * Use aligned header size to ensure new block starts at aligned address */
+        if((region_->headerSize + CONFIG_MEMORY_MINIMUM_BLOCK_SIZE) <= (candidate->size - requested)) {
+          /* Split the block - ensure new block starts at aligned address */
           next = candidate->next;
-          candidate->next = (BlockHeader_t *) (((Byte_t *) candidate) + sizeof(BlockHeader_t) + requested);
+          candidate->next = (BlockHeader_t *) (((Byte_t *) candidate) + region_->headerSize + requested);
 
 
           /* Set up new free block */
           candidate->next->next = next;
-          candidate->next->size = candidate->size - requested - sizeof(BlockHeader_t);
+          candidate->next->size = candidate->size - requested - region_->headerSize;
           candidate->next->free = FREE;
           candidate->next->checksum = __checksum__(candidate->next);
 
@@ -371,6 +394,12 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
         if(OK(__memset__(__OffsetBlockHeaderToPointer__(candidate, region_), nil, requested))) {
           *addr_ = __OffsetBlockHeaderToPointer__(candidate, region_);
 
+          /* Verify alignment of returned pointer */
+          if(!__IsAligned__((Size_t)*addr_, CONFIG_MEMORY_ALIGNMENT)) {
+            /* Critical error: alignment guarantee violated */
+            __SetFlag__(MEMFAULT);
+            __AssertOnElse__();
+          }
 
           /* Update statistics */
           region_->allocations++;
@@ -557,12 +586,17 @@ Return_t xMemGetUsed(Size_t *size_) {
 
 
   if(__PointerIsNotNull__(size_)) {
+    /* Ensure heap has aligned header size set */
+    if(heap.headerSize == 0) {
+      heap.headerSize = __AlignedHeaderSize__();
+    }
+
     cursor = heap.first;
 
     while(__PointerIsNotNull__(cursor)) {
       if(__BlockHeaderIsInUse__(cursor)) {
-        /* Include both data size and header overhead */
-        used += cursor->size + sizeof(BlockHeader_t);
+        /* Include both data size and aligned header overhead */
+        used += cursor->size + heap.headerSize;
       }
 
       cursor = cursor->next;
