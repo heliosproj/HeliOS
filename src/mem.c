@@ -361,8 +361,10 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
 
       if(__PointerIsNotNull__(candidate)) {
         /* Check if we should split the block - only split if remaining space is at least CONFIG_MEMORY_MINIMUM_BLOCK_SIZE
-         * Use aligned header size to ensure new block starts at aligned address */
-        if((ALIGNED_HEADER_SIZE + CONFIG_MEMORY_MINIMUM_BLOCK_SIZE) <= (candidate->size - requested)) {
+         * Use aligned header size to ensure new block starts at aligned address
+         * Check candidate->size >= requested first to prevent integer underflow */
+        if(candidate->size >= requested &&
+           (candidate->size - requested) >= (ALIGNED_HEADER_SIZE + CONFIG_MEMORY_MINIMUM_BLOCK_SIZE)) {
           /* Split the block - ensure new block starts at aligned address */
           next = candidate->next;
           candidate->next = (BlockHeader_t *) (((Byte_t *) candidate) + ALIGNED_HEADER_SIZE + requested);
