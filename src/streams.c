@@ -48,12 +48,8 @@ Return_t xStreamDelete(const StreamBuffer_t *stream_) {
   FUNCTION_ENTER;
 
   if(__PointerIsNotNull__(stream_)) {
-    if(OK(__MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
-      if(OK(__KernelFreeMemory__(stream_))) {
-        __ReturnOk__();
-      } else {
-        __AssertOnElse__();
-      }
+    if(OK(__KernelFreeMemory__(stream_))) {
+      __ReturnOk__();
     } else {
       __AssertOnElse__();
     }
@@ -69,14 +65,10 @@ Return_t xStreamSend(StreamBuffer_t *stream_, const Byte_t byte_) {
   FUNCTION_ENTER;
 
   if(__PointerIsNotNull__(stream_)) {
-    if(OK(__MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
-      if(CONFIG_STREAM_BUFFER_BYTES > stream_->length) {
-        stream_->buffer[stream_->length] = byte_;
-        stream_->length++;
-        __ReturnOk__();
-      } else {
-        __AssertOnElse__();
-      }
+    if(CONFIG_STREAM_BUFFER_BYTES > stream_->length) {
+      stream_->buffer[stream_->length] = byte_;
+      stream_->length++;
+      __ReturnOk__();
     } else {
       __AssertOnElse__();
     }
@@ -92,10 +84,9 @@ Return_t xStreamReceive(const StreamBuffer_t *stream_, HalfWord_t *bytes_, Byte_
   FUNCTION_ENTER;
 
   if(__PointerIsNotNull__(stream_) && __PointerIsNotNull__(bytes_) && __PointerIsNotNull__(data_)) {
-    if(OK(__MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
-      if(__StreamLengthNonZero__()) {
-        if(OK(__HeapAllocateMemory__((volatile Addr_t **) data_, stream_->length * sizeof(Byte_t)))) {
-          if(__PointerIsNotNull__(*data_)) {
+    if(__StreamLengthNonZero__()) {
+      if(OK(__HeapAllocateMemory__((volatile Addr_t **) data_, stream_->length * sizeof(Byte_t)))) {
+        if(__PointerIsNotNull__(*data_)) {
             *bytes_ = stream_->length;
 
             if(OK(__memcpy__(*data_, stream_->buffer, stream_->length * sizeof(Byte_t)))) {
@@ -127,9 +118,6 @@ Return_t xStreamReceive(const StreamBuffer_t *stream_, HalfWord_t *bytes_, Byte_
       } else {
         __AssertOnElse__();
       }
-    } else {
-      __AssertOnElse__();
-    }
   } else {
     __AssertOnElse__();
   }
@@ -142,13 +130,9 @@ Return_t xStreamBytesAvailable(const StreamBuffer_t *stream_, HalfWord_t *bytes_
   FUNCTION_ENTER;
 
   if(__PointerIsNotNull__(stream_) && __PointerIsNotNull__(bytes_)) {
-    if(OK(__MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
-      if(__StreamLengthNonZero__()) {
-        *bytes_ = stream_->length;
-        __ReturnOk__();
-      } else {
-        __AssertOnElse__();
-      }
+    if(__StreamLengthNonZero__()) {
+      *bytes_ = stream_->length;
+      __ReturnOk__();
     } else {
       __AssertOnElse__();
     }
@@ -164,15 +148,11 @@ Return_t xStreamReset(const StreamBuffer_t *stream_) {
   FUNCTION_ENTER;
 
   if(__PointerIsNotNull__(stream_)) {
-    if(OK(__MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
-      if(__StreamLengthNonZero__()) {
-        /* Reset stream buffer and length (cast away const for modification) */
-        if(OK(__memset__((Addr_t *) stream_->buffer, nil, CONFIG_STREAM_BUFFER_BYTES))) {
-          ((StreamBuffer_t *) stream_)->length = nil;
-          __ReturnOk__();
-        } else {
-          __AssertOnElse__();
-        }
+    if(__StreamLengthNonZero__()) {
+      /* Reset stream buffer and length (cast away const for modification) */
+      if(OK(__memset__((Addr_t *) stream_->buffer, nil, CONFIG_STREAM_BUFFER_BYTES))) {
+        ((StreamBuffer_t *) stream_)->length = nil;
+        __ReturnOk__();
       } else {
         __AssertOnElse__();
       }
@@ -191,16 +171,12 @@ Return_t xStreamIsEmpty(const StreamBuffer_t *stream_, Base_t *res_) {
   FUNCTION_ENTER;
 
   if(__PointerIsNotNull__(stream_) && __PointerIsNotNull__(res_)) {
-    if(OK(__MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
-      if(__StreamLengthNonZero__()) {
-        *res_ = false;
-        __ReturnOk__();
-      } else {
-        *res_ = true;
-        __ReturnOk__();
-      }
+    if(__StreamLengthNonZero__()) {
+      *res_ = false;
+      __ReturnOk__();
     } else {
-      __AssertOnElse__();
+      *res_ = true;
+      __ReturnOk__();
     }
   } else {
     __AssertOnElse__();
@@ -214,16 +190,12 @@ Return_t xStreamIsFull(const StreamBuffer_t *stream_, Base_t *res_) {
   FUNCTION_ENTER;
 
   if(__PointerIsNotNull__(stream_) && __PointerIsNotNull__(res_)) {
-    if(OK(__MemoryRegionCheckKernel__(stream_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
-      if(__StreamLengthAtLimit__()) {
-        *res_ = true;
-        __ReturnOk__();
-      } else {
-        *res_ = false;
-        __ReturnOk__();
-      }
+    if(__StreamLengthAtLimit__()) {
+      *res_ = true;
+      __ReturnOk__();
     } else {
-      __AssertOnElse__();
+      *res_ = false;
+      __ReturnOk__();
     }
   } else {
     __AssertOnElse__();

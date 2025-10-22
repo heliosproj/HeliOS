@@ -71,23 +71,19 @@ Return_t xQueueCreate(Queue_t **queue_, const Base_t limit_) {
 Return_t xQueueDelete(Queue_t *queue_) {
   FUNCTION_ENTER;
 
-  if(OK(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
-    /* Loop through the queue while it contains messages and drop each message
-     * until there are no more messages. */
-    while(__PointerIsNotNull__(queue_->head)) {
-      if(OK(__QueueDropmessage__(queue_))) {
-        /* Do nothing - literally. */
-      } else {
-        __AssertOnElse__();
-        break;
-      }
-    }
-
-    if(OK(__KernelFreeMemory__(queue_))) {
-      __ReturnOk__();
+  /* Loop through the queue while it contains messages and drop each message
+   * until there are no more messages. */
+  while(__PointerIsNotNull__(queue_->head)) {
+    if(OK(__QueueDropmessage__(queue_))) {
+      /* Do nothing - literally. */
     } else {
       __AssertOnElse__();
+      break;
     }
+  }
+
+  if(OK(__KernelFreeMemory__(queue_))) {
+    __ReturnOk__();
   } else {
     __AssertOnElse__();
   }
@@ -105,8 +101,7 @@ Return_t xQueueGetLength(const Queue_t *queue_, Base_t *res_) {
 
 
   if(__PointerIsNotNull__(queue_) && __PointerIsNotNull__(res_)) {
-    if(OK(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
-      __GetQueueLength__();
+    __GetQueueLength__();
 
 
       /* Confirm the length of the queue matches the number of the messages we
@@ -118,9 +113,6 @@ Return_t xQueueGetLength(const Queue_t *queue_, Base_t *res_) {
       } else {
         __AssertOnElse__();
       }
-    } else {
-      __AssertOnElse__();
-    }
   } else {
     __AssertOnElse__();
   }
@@ -138,8 +130,7 @@ Return_t xQueueIsQueueEmpty(const Queue_t *queue_, Base_t *res_) {
 
 
   if(__PointerIsNotNull__(queue_) && __PointerIsNotNull__(res_)) {
-    if(OK(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
-      __GetQueueLength__();
+    __GetQueueLength__();
 
 
       /* Confirm the length of the queue matches the number of the messages we
@@ -157,9 +148,6 @@ Return_t xQueueIsQueueEmpty(const Queue_t *queue_, Base_t *res_) {
       } else {
         __AssertOnElse__();
       }
-    } else {
-      __AssertOnElse__();
-    }
   } else {
     __AssertOnElse__();
   }
@@ -177,8 +165,7 @@ Return_t xQueueIsQueueFull(const Queue_t *queue_, Base_t *res_) {
 
 
   if(__PointerIsNotNull__(queue_) && __PointerIsNotNull__(res_)) {
-    if(OK(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
-      __GetQueueLength__();
+    __GetQueueLength__();
 
 
       /* Confirm the length of the queue matches the number of the messages we
@@ -197,9 +184,6 @@ Return_t xQueueIsQueueFull(const Queue_t *queue_, Base_t *res_) {
       } else {
         __AssertOnElse__();
       }
-    } else {
-      __AssertOnElse__();
-    }
   } else {
     __AssertOnElse__();
   }
@@ -217,8 +201,7 @@ Return_t xQueueMessagesWaiting(const Queue_t *queue_, Base_t *res_) {
 
 
   if(__PointerIsNotNull__(queue_) && __PointerIsNotNull__(res_)) {
-    if(OK(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
-      __GetQueueLength__();
+    __GetQueueLength__();
 
 
       /* Confirm the length of the queue matches the number of the messages we
@@ -237,9 +220,6 @@ Return_t xQueueMessagesWaiting(const Queue_t *queue_, Base_t *res_) {
       } else {
         __AssertOnElse__();
       }
-    } else {
-      __AssertOnElse__();
-    }
   } else {
     __AssertOnElse__();
   }
@@ -258,13 +238,12 @@ Return_t xQueueSend(Queue_t *queue_, const Base_t bytes_, const Byte_t *value_) 
 
 
   if(__PointerIsNotNull__(queue_) && (nil < bytes_) && (CONFIG_MESSAGE_VALUE_BYTES >= bytes_) && __PointerIsNotNull__(value_)) {
-    if(OK(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
-      if(false == queue_->locked) {
-        __GetQueueLength__();
+    if(false == queue_->locked) {
+      __GetQueueLength__();
 
-        if((queue_->limit > queue_->length) && __QueueLengthCorrect__()) {
-          if(OK(__KernelAllocateMemory__((volatile Addr_t **) &message, sizeof(Message_t)))) {
-            if(__PointerIsNotNull__(message)) {
+      if((queue_->limit > queue_->length) && __QueueLengthCorrect__()) {
+        if(OK(__KernelAllocateMemory__((volatile Addr_t **) &message, sizeof(Message_t)))) {
+          if(__PointerIsNotNull__(message)) {
               if(OK(__memcpy__(message->messageValue, value_, CONFIG_MESSAGE_VALUE_BYTES))) {
                 message->messageBytes = bytes_;
                 message->next = null;
@@ -302,9 +281,6 @@ Return_t xQueueSend(Queue_t *queue_, const Base_t bytes_, const Byte_t *value_) 
       } else {
         __AssertOnElse__();
       }
-    } else {
-      __AssertOnElse__();
-    }
   } else {
     __AssertOnElse__();
   }
@@ -334,8 +310,7 @@ static Return_t __QueuePeek__(const Queue_t *queue_, QueueMessage_t **message_) 
   FUNCTION_ENTER;
 
   if(__PointerIsNotNull__(queue_) && __PointerIsNotNull__(message_)) {
-    if(OK(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
-      if(__PointerIsNotNull__(queue_->head)) {
+    if(__PointerIsNotNull__(queue_->head)) {
         if(OK(__HeapAllocateMemory__((volatile Addr_t **) message_, sizeof(QueueMessage_t)))) {
           if(__PointerIsNotNull__(*message_)) {
             (*message_)->messageBytes = queue_->head->messageBytes;
@@ -358,9 +333,6 @@ static Return_t __QueuePeek__(const Queue_t *queue_, QueueMessage_t **message_) 
       } else {
         __AssertOnElse__();
       }
-    } else {
-      __AssertOnElse__();
-    }
   } else {
     __AssertOnElse__();
   }
@@ -394,8 +366,7 @@ static Return_t __QueueDropmessage__(Queue_t *queue_) {
 
 
   if(__PointerIsNotNull__(queue_)) {
-    if(OK(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
-      if(__PointerIsNotNull__(queue_->head)) {
+    if(__PointerIsNotNull__(queue_->head)) {
         message = queue_->head;
         queue_->head = queue_->head->next;
 
@@ -412,9 +383,6 @@ static Return_t __QueueDropmessage__(Queue_t *queue_) {
       } else {
         __AssertOnElse__();
       }
-    } else {
-      __AssertOnElse__();
-    }
   } else {
     __AssertOnElse__();
   }
@@ -427,14 +395,10 @@ Return_t xQueueReceive(Queue_t *queue_, QueueMessage_t **message_) {
   FUNCTION_ENTER;
 
   if(__PointerIsNotNull__(queue_) && __PointerIsNotNull__(message_)) {
-    if(OK(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
-      if(OK(__QueuePeek__(queue_, message_))) {
-        if(__PointerIsNotNull__(*message_)) {
-          if(OK(__QueueDropmessage__(queue_))) {
-            __ReturnOk__();
-          } else {
-            __AssertOnElse__();
-          }
+    if(OK(__QueuePeek__(queue_, message_))) {
+      if(__PointerIsNotNull__(*message_)) {
+        if(OK(__QueueDropmessage__(queue_))) {
+          __ReturnOk__();
         } else {
           __AssertOnElse__();
         }
@@ -456,16 +420,12 @@ Return_t xQueueLockQueue(Queue_t *queue_) {
   FUNCTION_ENTER;
 
   if(__PointerIsNotNull__(queue_)) {
-    if(OK(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
-      if(false == queue_->locked) {
+    if(false == queue_->locked) {
         queue_->locked = true;
         __ReturnOk__();
       } else {
         __AssertOnElse__();
       }
-    } else {
-      __AssertOnElse__();
-    }
   } else {
     __AssertOnElse__();
   }
@@ -478,16 +438,12 @@ Return_t xQueueUnLockQueue(Queue_t *queue_) {
   FUNCTION_ENTER;
 
   if(__PointerIsNotNull__(queue_)) {
-    if(OK(__MemoryRegionCheckKernel__(queue_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
-      if(true == queue_->locked) {
+    if(true == queue_->locked) {
         queue_->locked = false;
         __ReturnOk__();
       } else {
         __AssertOnElse__();
       }
-    } else {
-      __AssertOnElse__();
-    }
   } else {
     __AssertOnElse__();
   }

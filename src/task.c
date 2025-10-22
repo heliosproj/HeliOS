@@ -752,18 +752,14 @@ static Return_t __TaskListFindTask__(const Task_t *task_) {
 
 
   if(__PointerIsNotNull__(task_) && __PointerIsNotNull__(tlist)) {
-    if(OK(__MemoryRegionCheckKernel__(task_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
-      cursor = tlist->head;
+    cursor = tlist->head;
 
-      while(__PointerIsNotNull__(cursor) && (task_ != cursor)) {
-        cursor = cursor->next;
-      }
+    while(__PointerIsNotNull__(cursor) && (task_ != cursor)) {
+      cursor = cursor->next;
+    }
 
-      if(__PointerIsNotNull__(cursor)) {
-        __ReturnOk__();
-      } else {
-        __AssertOnElse__();
-      }
+    if(__PointerIsNotNull__(cursor)) {
+      __ReturnOk__();
     } else {
       __AssertOnElse__();
     }

@@ -385,52 +385,48 @@ Return_t xDeviceRead(const HalfWord_t uid_, Size_t *size_, Addr_t **data_) {
            * memory. */
           if(OK((*device->read)(device, size_, &data))) {
             if((nil < *size_) && __PointerIsNotNull__(data)) {
-              if(OK(__MemoryRegionCheckKernel__(data, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
-                /* Allocate "size_" of heap memory to copy the data read from
-                 * the device in kernel memory into. */
-                if(OK(__HeapAllocateMemory__((volatile Addr_t **) data_, *size_))) {
-                  if(__PointerIsNotNull__(*data_)) {
-                    /* Perform the copy from kernel memory to heap memory. */
-                    if(OK(__memcpy__(*data_, data, *size_))) {
-                      /* Free the kernel memory now that we are done. It is up
-                       * to the end-user to free the heap memory the data
-                       * occupies.
-                       */
-                      if(OK(__KernelFreeMemory__(data))) {
-                        device->bytesRead += *size_;
-                        __ReturnOk__();
-                      }
-                    } else {
-                      __AssertOnElse__();
-
-
-                      /* Because __memcpy__() returned an error, we need to free
-                       * the kernel memory. */
-                      __KernelFreeMemory__(data);
-
-
-                      /* Because __memcpy__() returned an error, we also need to
-                       * free the heap memory. */
-                      __HeapFreeMemory__(*data_);
+              /* Allocate "size_" of heap memory to copy the data read from
+               * the device in kernel memory into. */
+              if(OK(__HeapAllocateMemory__((volatile Addr_t **) data_, *size_))) {
+                if(__PointerIsNotNull__(*data_)) {
+                  /* Perform the copy from kernel memory to heap memory. */
+                  if(OK(__memcpy__(*data_, data, *size_))) {
+                    /* Free the kernel memory now that we are done. It is up
+                     * to the end-user to free the heap memory the data
+                     * occupies.
+                     */
+                    if(OK(__KernelFreeMemory__(data))) {
+                      device->bytesRead += *size_;
+                      __ReturnOk__();
                     }
                   } else {
                     __AssertOnElse__();
 
 
-                    /* Because __HeapAllocateMemory__() returned a null pointer,
-                     * we need to free the kernel memory. */
+                    /* Because __memcpy__() returned an error, we need to free
+                     * the kernel memory. */
                     __KernelFreeMemory__(data);
+
+
+                    /* Because __memcpy__() returned an error, we also need to
+                     * free the heap memory. */
+                    __HeapFreeMemory__(*data_);
                   }
                 } else {
                   __AssertOnElse__();
 
 
-                  /* Because __HeapAllocateMemory__() returned an error, we need
-                   * to free the kernel memory. */
+                  /* Because __HeapAllocateMemory__() returned a null pointer,
+                   * we need to free the kernel memory. */
                   __KernelFreeMemory__(data);
                 }
               } else {
                 __AssertOnElse__();
+
+
+                /* Because __HeapAllocateMemory__() returned an error, we need
+                 * to free the kernel memory. */
+                __KernelFreeMemory__(data);
               }
             } else {
               __AssertOnElse__();
@@ -478,17 +474,12 @@ Return_t __DeviceRead__(const HalfWord_t uid_, Size_t *size_, Addr_t **data_) {
           /* Call driver read directly - returns kernel memory */
           if(OK((*device->read)(device, size_, data_))) {
             if((nil < *size_) && __PointerIsNotNull__(*data_)) {
-              /* Verify data is in kernel memory */
-              if(OK(__MemoryRegionCheckKernel__(*data_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
-                device->bytesRead += *size_;
+              device->bytesRead += *size_;
 
 
-                /* Note: Caller must free the kernel memory returned by driver
-                 */
-                __ReturnOk__();
-              } else {
-                __AssertOnElse__();
-              }
+              /* Note: Caller must free the kernel memory returned by driver
+               */
+              __ReturnOk__();
             } else {
               __AssertOnElse__();
             }

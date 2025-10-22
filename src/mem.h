@@ -69,7 +69,6 @@
   Return_t xMemGetSize(const volatile Addr_t *addr_, Size_t *size_);
   Return_t __KernelAllocateMemory__(volatile Addr_t **addr_, const Size_t size_);
   Return_t __KernelFreeMemory__(const volatile Addr_t *addr_);
-  Return_t __MemoryRegionCheckKernel__(const volatile Addr_t *addr_, const Base_t option_);
   Return_t __HeapAllocateMemory__(volatile Addr_t **addr_, const Size_t size_);
   Return_t __HeapFreeMemory__(const volatile Addr_t *addr_);
   Return_t __memcpy__(const volatile Addr_t *dest_, const volatile Addr_t *src_, const Size_t size_);
