@@ -20,8 +20,8 @@
 /* Test constants */
 #define NUM_TEST_ALLOCS 0x20u /* Number of allocation test iterations */
 #define OVERSIZED_ALLOC 0x99999u /* Size that should fail allocation */
-#define LARGE_BLOCK_SIZE 0x32000u /* 204,800 bytes - large allocation test */
-#define LARGE_BLOCK_USED 0x32020u /* Expected memory used after large alloc */
+#define LARGE_BLOCK_SIZE 0x8000u /* 32,768 bytes - large allocation test */
+#define LARGE_BLOCK_USED 0x8020u /* Expected memory used after large alloc (with header) */
 #define HEAP_AVAILABLE_BYTES 0x63A0u /* Expected heap available space */
 #define HEAP_FREE_BLOCKS 0x31Du /* Expected number of free blocks */
 #define HEAP_ALLOC_COUNT 0x24u /* Expected successful allocations */
@@ -69,8 +69,8 @@
 #define CORRUPTION_NEXT_INVALID 0xFFFFFFFFu /* Invalid next pointer value */
 #define TEST_ARBITRARY_ADDR 0x12345678u /* Arbitrary test address */
 static Size_t sizes[NUM_TEST_ALLOCS] = {
-  0x2532u, 0x1832u, 0x132u, 0x2932u, 0x332u, 0x1432u, 0x1332u, 0x532u, 0x1732u, 0x932u, 0x1432u, 0x2232u, 0x1432u, 0x3132u, 0x032u, 0x1132u, 0x632u, 0x932u,
-    0x1532u, 0x632u, 0x1832u, 0x132u, 0x1332u, 0x3132u, 0x2732u, 0x1532u, 0x2432u, 0x2932u, 0x2432u, 0x2932u, 0x3032u, 0x2332u
+  0x253u, 0x183u, 0x32u, 0x293u, 0x33u, 0x143u, 0x133u, 0x53u, 0x173u, 0x93u, 0x143u, 0x223u, 0x143u, 0x313u, 0x20u, 0x113u, 0x63u, 0x93u,
+    0x153u, 0x63u, 0x183u, 0x32u, 0x133u, 0x313u, 0x273u, 0x153u, 0x243u, 0x293u, 0x243u, 0x293u, 0x303u, 0x233u
 };
 static Size_t order[NUM_TEST_ALLOCS] = {
   0x02u, 0x16u, 0x07u, 0x0Cu, 0x06u, 0x00u, 0x0Du, 0x18u, 0x10u, 0x08u, 0x0Au, 0x1Eu, 0x0Bu, 0x0Eu, 0x03u, 0x09u, 0x19u, 0x05u, 0x1Cu, 0x1Du, 0x0Fu, 0x01u,
@@ -151,7 +151,7 @@ void memory_harness(void) {
 
 
   /* Allocate almost all available memory, leaving just a small amount */
-  large_alloc = CONFIG_MEMORY_REGION_SIZE - 64; /* Leave 64 bytes */
+  large_alloc = CONFIG_MEMORY_REGION_SIZE - sizeof(BlockHeader_t) - 40; /* Leave 40 bytes + header */
   unit_assert_ok(xMemAlloc((volatile Addr_t **) &mem05, large_alloc));
   actual = nil;
   unit_assert_ok(xMemGetUsed(&actual));
@@ -159,10 +159,10 @@ void memory_harness(void) {
 
   /* With minimum block size enforcement, the allocator will give us the entire
    * remaining memory region if splitting would create a fragment smaller than
-   * CONFIG_MEMORY_MINIMUM_BLOCK_SIZE. In this case, requesting (size - 64) bytes
-   * would normally use (size - 64 + header) bytes, leaving only about 40 bytes.
-   * Since 40 - header_size < CONFIG_MEMORY_MINIMUM_BLOCK_SIZE, we get the
-   * entire memory region instead. */
+   * CONFIG_MEMORY_MINIMUM_BLOCK_SIZE (32 bytes). In this case, requesting
+   * (size - header - 40) bytes would leave 40 bytes. After subtracting the
+   * header for the new free block, only ~16 bytes would remain, which is less
+   * than CONFIG_MEMORY_MINIMUM_BLOCK_SIZE, so we get the entire region. */
   unit_assert_equal(actual, CONFIG_MEMORY_REGION_SIZE);
   unit_assert_ok(xMemFree(mem05));
   unit_end();
