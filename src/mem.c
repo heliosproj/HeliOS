@@ -1176,6 +1176,21 @@ Return_t __path_join__(Byte_t* dest_, const Byte_t* base_, const Byte_t* path_, 
     FUNCTION_EXIT;
   }
 
+  /* If path is absolute, just return the path */
+  if (CHAR_SLASH == path_[0x0u]) {
+    if (pathLen >= destSize_) {
+      __ReturnError__();
+      __AssertOnElse__();
+      FUNCTION_EXIT;
+    }
+    if (OK(__strcpy__(dest_, path_, destSize_))) {
+      __ReturnOk__();
+    } else {
+      __AssertOnElse__();
+    }
+    FUNCTION_EXIT;
+  }
+
   needSlash = (CHAR_SLASH != base_[baseLen - 0x1u]) && (CHAR_SLASH != path_[0x0u]);
 
   if ((baseLen + pathLen + (needSlash ? 0x1u : 0x0u)) >= destSize_) {
@@ -1211,6 +1226,11 @@ Return_t __path_normalize__(Byte_t* path_, const Size_t pathSize_) {
   Size_t j = 0x0u;
   Size_t len = 0x0u;
   Byte_t temp[CONFIG_FS_MAX_PATH_LENGTH];
+  Byte_t segments[CONFIG_FS_MAX_PATH_LENGTH / 2][CONFIG_FS_MAX_PATH_LENGTH];
+  Size_t segmentCount = 0x0u;
+  Size_t k = 0x0u;
+  Size_t segLen = 0x0u;
+  Size_t segIdx = 0x0u;
 
 
   if (__PointerIsNull__(path_) || (0x0u == pathSize_)) {
@@ -1227,27 +1247,69 @@ Return_t __path_normalize__(Byte_t* path_, const Size_t pathSize_) {
     FUNCTION_EXIT;
   }
 
-  for (i = 0x0u; i < len; i++) {
-    if (CHAR_SLASH == path_[i]) {
-      if ((0x0u == j) || (CHAR_SLASH != temp[j - 0x1u])) {
-        temp[j++] = CHAR_SLASH;
+  /* Copy to temp buffer for processing */
+  for (i = 0x0u; i <= len; i++) {
+    temp[i] = path_[i];
+  }
+
+  /* Split path into segments */
+  i = 0x0u;
+  if (CHAR_SLASH == temp[0x0u]) {
+    i = 0x1u;  /* Skip leading slash for absolute paths */
+  }
+
+  segIdx = 0x0u;
+  for (; i <= len; i++) {
+    if ((CHAR_SLASH == temp[i]) || (CHAR_NULL == temp[i])) {
+      if (segIdx > 0x0u) {
+        segments[segmentCount][segIdx] = CHAR_NULL;
+
+        /* Check what kind of segment this is */
+        if ((segments[segmentCount][0x0u] == '.') && (segments[segmentCount][0x1u] == '.') && (segments[segmentCount][0x2u] == CHAR_NULL)) {
+          /* ".." - go up one directory if possible */
+          if (segmentCount > 0x0u) {
+            segmentCount--;
+          }
+        } else if (!((segments[segmentCount][0x0u] == '.') && (segments[segmentCount][0x1u] == CHAR_NULL))) {
+          /* Not "." (current directory), keep this segment */
+          segmentCount++;
+        }
+        /* "." is ignored (current directory) */
+
+        segIdx = 0x0u;
       }
     } else {
-      temp[j++] = path_[i];
+      segments[segmentCount][segIdx++] = temp[i];
     }
   }
 
-  if ((j > 0x1u) && (CHAR_SLASH == temp[j - 0x1u])) {
-    j--;
+  /* Rebuild the path */
+  j = 0x0u;
+  if (CHAR_SLASH == path_[0x0u]) {
+    path_[j++] = CHAR_SLASH;
   }
 
-  temp[j] = CHAR_NULL;
+  for (k = 0x0u; k < segmentCount; k++) {
+    Size_t m;
+    segLen = __strlen__(segments[k]);
 
-  if (OK(__strcpy__(path_, temp, pathSize_))) {
-    __ReturnOk__();
-  } else {
-    __AssertOnElse__();
+    if (k > 0x0u) {
+      path_[j++] = CHAR_SLASH;
+    }
+
+    for (m = 0x0u; m < segLen; m++) {
+      path_[j++] = segments[k][m];
+    }
   }
+
+  /* Handle empty result (root directory) */
+  if ((0x0u == j) || ((0x1u == j) && (CHAR_SLASH == path_[0x0u]))) {
+    path_[0x0u] = CHAR_SLASH;
+    j = 0x1u;
+  }
+
+  path_[j] = CHAR_NULL;
+  __ReturnOk__();
 
   FUNCTION_EXIT;
 }

@@ -514,7 +514,7 @@ static Return_t __ConsoleProcessCommand__(void) {
 
   /* Search command table */
   for(i = 0x0u; __PointerIsNotNull__(commandTable[i].name); i++) {
-    if(__strcmp__(cmdName, commandTable[i].name)) {
+    if(0 == __strcmp__(cmdName, commandTable[i].name)) {
       if(__PointerIsNotNull__(commandTable[i].handler)) {
         if(OK(commandTable[i].handler((const Byte_t *) cmdArgs))) {
           __ReturnOk__();
@@ -828,7 +828,7 @@ static Return_t __ConsoleCmdCd__(const Byte_t *args_) {
     if(!__PointerIsNotNull__(args_) || (CHAR_NULL == args_[0x0])) {
       /* No argument - go to root */
       __strcpy__(newPath, (const Byte_t *) "/", CONFIG_FS_MAX_PATH_LENGTH);
-    } else if(__strcmp__(args_, (const Byte_t *) "..")) {
+    } else if(0 == __strcmp__(args_, (const Byte_t *) "..")) {
       /* Go up one directory - use path utility */
       if(OK(__path_dirname__(newPath, consoleState.currentWorkingDirectory, CONFIG_FS_MAX_PATH_LENGTH))) {
         /* Successfully got parent directory */
