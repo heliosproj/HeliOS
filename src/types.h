@@ -152,25 +152,25 @@
     } Device_t;
   #endif /* ifndef DEVICE_T_ */
 
-  #ifndef MEMORYENTRY_T_
-    #define MEMORYENTRY_T_
-    typedef struct MemoryEntry_s {
-      Word_t magic;
-      Byte_t free;
-      HalfWord_t blocks;
-      struct MemoryEntry_s *next;
-    } MemoryEntry_t;
-  #endif /* ifndef MEMORYENTRY_T_ */
+  #ifndef BLOCKHEADER_T_
+    #define BLOCKHEADER_T_
+    typedef struct BlockHeader_s {
+      struct BlockHeader_s *next;  /* Pointer to the next block header within mem[] */
+      Word_t checksum; /* Checksum for integrity verification */
+      Word_t size; /* Number of bytes available for data (excludes header) */
+      Byte_t free; /* FREE or INUSE status */
+    } BlockHeader_t;
+  #endif /* ifndef BLOCKHEADER_T_ */
 
   #ifndef MEMORYREGION_T_
     #define MEMORYREGION_T_
     typedef struct MemoryRegion_s {
-      volatile Byte_t mem[MEMORY_REGION_SIZE_IN_BYTES];
-      MemoryEntry_t *start;
-      HalfWord_t entrySize;
-      HalfWord_t allocations;
-      HalfWord_t frees;
-      Word_t minAvailableEver;
+      volatile Byte_t mem[MEMORY_REGION_SIZE_IN_BYTES];  /* Memory pool */
+      BlockHeader_t *first; /* Pointer to first block header in mem[] */
+      HalfWord_t headerSize; /* Size of block header in bytes */
+      HalfWord_t allocations; /* Number of successful allocations */
+      HalfWord_t frees; /* Number of successful frees */
+      Word_t minAvailableEver; /* Lower water mark of free bytes */
     } MemoryRegion_t;
   #endif /* ifndef MEMORYREGION_T_ */
 

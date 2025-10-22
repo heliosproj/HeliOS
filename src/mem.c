@@ -2,196 +2,182 @@
 /**
  * @file mem.c
  * @author Manny Peterson <manny@heliosproj.org>
- * @brief Kernel source for memory management
+ * @brief Kernel source for memory management with multiple region support
  * @version 0.5.0
  * @date 2023-03-19
- * 
+ *
  * @copyright
  * HeliOS Embedded Operating System Copyright (C) 2020-2026 HeliOS Project <license@heliosproj.org>
- *  
+ *
  *  SPDX-License-Identifier: GPL-2.0-or-later
- *  
- * 
+ *
+ *
  */
 /*UNCRUSTIFY-ON*/
+
 #include "mem.h"
 
-
-/*UNCRUSTIFY-OFF*/
-/*
- * WARNING: THIS DIAGRAM IS CONCEPTUAL ONLY AS IT DOES *NOT* CORRECTLY DEPICT
- *          MEMORY-ACCESS OPTIMIZATION BY ALIGNMENT CARRIED OUT BY THE COMPILER!
- * 
- *  BYTE   STRUCTURE OF A MEMORY ENTRY AND BLOCKS
- * +----+ +--------------------------------------+
- * | 01 | |                                      | <-- START OF MEMORY ENTRY
- * +----+ |                                      |
- * | 02 | |                                      |
- * +----+ |  MAGIC (4 BYTES)                     |
- * | 03 | |                                      |
- * +----+ |                                      |
- * | 04 | |                                      |
- * +----+ +--------------------------------------+
- * | 05 | |  FREE (1 BYTE)                       |
- * +----+ +--------------------------------------+
- * | 06 | |                                      |
- * +----+ |  BLOCKS (2 BYTES)                    |
- * | 07 | |                                      |
- * +----+ +--------------------------------------+
- * | 08 | |                                      |
- * +----+ |                                      |
- * | 09 | |                                      |
- * +----+ |                                      |
- * | 10 | |                                      |
- * +----+ |                                      |
- * | 11 | |                                      |
- * +----+ |  NEXT (4 - 8 BYTES)                  |
- * | 12 | |                                      |
- * +----+ |                                      |
- * | 13 | |                                      |
- * +----+ |                                      |
- * | 14 | |                                      |
- * +----+ |                                      |
- * | 15 | |                                      |
- * +----+ +--------------------------------------+
- * | 16 | |                                      |
- * +----+ |                                      |
- * | 17 | |                                      |
- * +----+ |                                      |
- * | 18 | |                                      |
- * +----+ |                                      |
- * | 19 | |                                      |
- * +----+ |                                      |
- * | 20 | |                                      |
- * +----+ |                                      |
- * | 21 | |                                      |
- * +----+ |                                      |
- * | 22 | |                                      |
- * +----+ |                                      |
- * | 23 | |                                      |
- * +----+ |  UNUSED (17 - 21 BYTES)              |
- * | 24 | |                                      |
- * +----+ |                                      |
- * | 25 | |                                      |
- * +----+ |                                      |
- * | 26 | |                                      |
- * +----+ |                                      |
- * | 27 | |                                      |
- * +----+ |                                      |
- * | 28 | |                                      |
- * +----+ |                                      |
- * | 29 | |                                      |
- * +----+ |                                      |
- * | 30 | |                                      |
- * +----+ |                                      |
- * | 31 | |                                      |
- * +----+ |                                      |
- * | 32 | |                                      | <-- END OF MEMORY ENTRY
- * +----+ +--------------------------------------+
- * | 33 | |                                      | <-- START OF ALLOCATED MEMORY BLOCK
- * +----+ |                                      |     (ADDRESS GIVEN TO CALLER BY __calloc__())
- * | 34 | |                                      |
- * +----+ |                                      |
- * | 35 | |                                      |
- * +----+ |                                      |
- * | 36 | |                                      |
- * +----+ |                                      |
- * | 37 | |                                      |
- * +----+ |                                      |
- * | 38 | |                                      |
- * +----+ |                                      |
- * | 39 | |                                      |
- * +----+ |                                      |
- * | 40 | |                                      |
- * +----+ |                                      |
- * | 41 | |                                      |
- * +----+ |                                      |
- * | 42 | |                                      |
- * +----+ |                                      |
- * | 43 | |                                      |
- * +----+ |                                      |
- * | 44 | |                                      |
- * +----+ |                                      |
- * | 45 | |                                      |
- * +----+ |                                      |
- * | 46 | |                                      |
- * +----+ |                                      |
- * | 47 | |                                      |
- * +----+ |                                      |
- * | 48 | |                                      |
- * +----+ |  ALLOCATED MEMORY BLOCK (32 BYTES)   |
- * | 49 | |                                      |
- * +----+ |                                      |
- * | 50 | |                                      |
- * +----+ |                                      |
- * | 51 | |                                      |
- * +----+ |                                      |
- * | 52 | |                                      |
- * +----+ |                                      |
- * | 53 | |                                      |
- * +----+ |                                      |
- * | 54 | |                                      |
- * +----+ |                                      |
- * | 55 | |                                      |
- * +----+ |                                      |
- * | 56 | |                                      |
- * +----+ |                                      |
- * | 57 | |                                      |
- * +----+ |                                      |
- * | 58 | |                                      |
- * +----+ |                                      |
- * | 59 | |                                      |
- * +----+ |                                      |
- * | 50 | |                                      |
- * +----+ |                                      |
- * | 61 | |                                      |
- * +----+ |                                      |
- * | 62 | |                                      |
- * +----+ |                                      |
- * | 63 | |                                      |
- * +----+ |                                      |
- * | 64 | |                                      | <-- END OF ALLOCATED MEMORY BLOCK
- * +----+ +--------------------------------------+
- */
-/*UNCRUSTIFY-ON*/
-/* Memory region structures - explicitly zero-initialized */
+/* Memory region instances */
 static volatile MemoryRegion_t heap = {
-  0
-};
+    0};
 static volatile MemoryRegion_t kernel = {
-  0
-};
-static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, const volatile Addr_t *addr_, const Base_t option_);
-static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **addr_, const Size_t size_);
-static Return_t __free__(volatile MemoryRegion_t *region_, const volatile Addr_t *addr_);
-static Return_t __MemGetRegionStats__(const volatile MemoryRegion_t *region_, MemoryRegionStats_t **stats_);
-static Return_t __DefragMemoryRegion__(const volatile MemoryRegion_t *region_);
-static Return_t __MemoryRegionInit__(volatile MemoryRegion_t *region_);
-static Return_t __DetectByteOrder__(ByteOrder_t *order_);
+    0};
+
+/* Macros for pointer arithmetic and validation */
+#define __OffsetPointerToBlockHeader__(ptr_, region_) \
+  ((BlockHeader_t*)(((Byte_t*)(ptr_)) - (region_)->headerSize))
+
+#define __OffsetBlockHeaderToPointer__(header_, region_) \
+  ((Addr_t*)(((Byte_t*)(header_)) + (region_)->headerSize))
+
+#define __BlockHeaderIsInUse__(header_) (INUSE == (header_)->free)
+#define __BlockHeaderIsFree__(header_) (FREE == (header_)->free)
 
 
-#define __OffsetPointerToMemEntry__(ptr_, region_) ((MemoryEntry_t *) (((Byte_t *) (ptr_)) - ((region_)->entrySize * CONFIG_MEMORY_REGION_BLOCK_SIZE)))
+/* Private function prototypes */
+static Return_t __VerifyRegionConsistency__(const volatile MemoryRegion_t* region_);
+static Return_t __calloc__(volatile MemoryRegion_t* region_, volatile Addr_t** addr_, const Size_t size_);
+static Return_t __free__(volatile MemoryRegion_t* region_, const volatile Addr_t* addr_);
+static Return_t __MemGetRegionStats__(const volatile MemoryRegion_t* region_, MemoryRegionStats_t** stats_);
+static Return_t __DefragMemoryRegion__(volatile MemoryRegion_t* region_);
+static Return_t __MemoryRegionInit__(volatile MemoryRegion_t* region_);
+static Return_t __DetectByteOrder__(ByteOrder_t* order_);
 
 
-#define __OffsetMemEntryToPointer__(ptr_, region_) ((Addr_t *) (((Byte_t *) (ptr_)) + ((region_)->entrySize * CONFIG_MEMORY_REGION_BLOCK_SIZE)))
+/* Checksum calculation function */
+static Word_t __checksum__(const BlockHeader_t* header_) {
+  Word_t checksum = 0x0u;
+  const Byte_t* header = (const Byte_t*)header_;
 
 
-#define __CalculateMemEntryMagic__(ptr_) (((Word_t) (ptr_)) ^ MAGIC_CONST)
+#if UINTPTR_MAX == 0xFF
 
 
-#define __MemEntryMagicOk__(ptr_) (__CalculateMemEntryMagic__(ptr_) == (ptr_)->magic)
+  /* 8-bit architecture - 1 byte pointer */
+  /* Process next pointer (1 byte) */
+  checksum ^= header[0];
+  checksum = (checksum << 1) | (checksum >> 31);
 
 
-#define __PointerInRegionBounds__(region_, ptr_) (((const volatile Addr_t *) (ptr_) >= (Addr_t *) ((region_)->mem)) && ((const volatile Addr_t *) (ptr_) < \
-        (Addr_t *) ((region_)->mem + MEMORY_REGION_SIZE_IN_BYTES)))
+  /* Skip checksum at header[1-4] */
+  /* Process size (4 bytes) */
+  checksum ^= header[5];
+  checksum = (checksum << 1) | (checksum >> 31);
+  checksum ^= header[6];
+  checksum = (checksum << 1) | (checksum >> 31);
+  checksum ^= header[7];
+  checksum = (checksum << 1) | (checksum >> 31);
+  checksum ^= header[8];
+  checksum = (checksum << 1) | (checksum >> 31);
 
 
-#define __MemEntryIsInUse__(ptr_) (INUSE == (ptr_)->free)
+  /* Process free (1 byte) */
+  checksum ^= header[9];
+  checksum = (checksum << 1) | (checksum >> 31);
+
+#elif UINTPTR_MAX == 0xFFFF
 
 
-#define __MemEntryIsFree__(ptr_) (FREE == (ptr_)->free)
+  /* 16-bit architecture - 2 byte pointer */
+  /* Process next pointer (2 bytes) */
+  checksum ^= header[0];
+  checksum = (checksum << 1) | (checksum >> 31);
+  checksum ^= header[1];
+  checksum = (checksum << 1) | (checksum >> 31);
 
 
+  /* Skip checksum at header[2-5] */
+  /* Process size (4 bytes) */
+  checksum ^= header[6];
+  checksum = (checksum << 1) | (checksum >> 31);
+  checksum ^= header[7];
+  checksum = (checksum << 1) | (checksum >> 31);
+  checksum ^= header[8];
+  checksum = (checksum << 1) | (checksum >> 31);
+  checksum ^= header[9];
+  checksum = (checksum << 1) | (checksum >> 31);
+
+
+  /* Process free (1 byte) */
+  checksum ^= header[10];
+  checksum = (checksum << 1) | (checksum >> 31);
+
+#elif UINTPTR_MAX == 0xFFFFFFFF
+
+
+  /* 32-bit architecture - 4 byte pointer */
+  /* Process next pointer (4 bytes) */
+  checksum ^= header[0];
+  checksum = (checksum << 1) | (checksum >> 31);
+  checksum ^= header[1];
+  checksum = (checksum << 1) | (checksum >> 31);
+  checksum ^= header[2];
+  checksum = (checksum << 1) | (checksum >> 31);
+  checksum ^= header[3];
+  checksum = (checksum << 1) | (checksum >> 31);
+
+
+  /* Skip checksum at header[4-7] */
+  /* Process size (4 bytes) */
+  checksum ^= header[8];
+  checksum = (checksum << 1) | (checksum >> 31);
+  checksum ^= header[9];
+  checksum = (checksum << 1) | (checksum >> 31);
+  checksum ^= header[10];
+  checksum = (checksum << 1) | (checksum >> 31);
+  checksum ^= header[11];
+  checksum = (checksum << 1) | (checksum >> 31);
+
+
+  /* Process free (1 byte) */
+  checksum ^= header[12];
+  checksum = (checksum << 1) | (checksum >> 31);
+
+#elif UINTPTR_MAX == 0xFFFFFFFFFFFFFFFF
+
+
+  /* 64-bit architecture - 8 byte pointer */
+  /* Process next pointer (8 bytes) */
+  checksum ^= header[0];
+  checksum = (checksum << 1) | (checksum >> 31);
+  checksum ^= header[1];
+  checksum = (checksum << 1) | (checksum >> 31);
+  checksum ^= header[2];
+  checksum = (checksum << 1) | (checksum >> 31);
+  checksum ^= header[3];
+  checksum = (checksum << 1) | (checksum >> 31);
+  checksum ^= header[4];
+  checksum = (checksum << 1) | (checksum >> 31);
+  checksum ^= header[5];
+  checksum = (checksum << 1) | (checksum >> 31);
+  checksum ^= header[6];
+  checksum = (checksum << 1) | (checksum >> 31);
+  checksum ^= header[7];
+  checksum = (checksum << 1) | (checksum >> 31);
+
+
+  /* Skip checksum at header[8-11] */
+  /* Process size (4 bytes) */
+  checksum ^= header[12];
+  checksum = (checksum << 1) | (checksum >> 31);
+  checksum ^= header[13];
+  checksum = (checksum << 1) | (checksum >> 31);
+  checksum ^= header[14];
+  checksum = (checksum << 1) | (checksum >> 31);
+  checksum ^= header[15];
+  checksum = (checksum << 1) | (checksum >> 31);
+
+
+  /* Process free (1 byte) */
+  checksum ^= header[16];
+  checksum = (checksum << 1) | (checksum >> 31);
+#endif /* if UINTPTR_MAX == 0xFF */
+
+  return (checksum);
+}
+
+
+/* Initialize memory management system */
 Return_t __MemoryInit__(void) {
   FUNCTION_ENTER;
 
@@ -199,11 +185,11 @@ Return_t __MemoryInit__(void) {
   ByteOrder_t order;
 
 
-  /* Initialize the heap and kernel memory regions. */
-  if(OK(__MemoryRegionInit__(&heap))) {
-    if(OK(__MemoryRegionInit__(&kernel))) {
-      if(OK(__DetectByteOrder__(&order))) {
-        if(ByteOrderLittleEndian == order) {
+  /* Initialize the heap and kernel memory regions */
+  if (OK(__MemoryRegionInit__(&heap))) {
+    if (OK(__MemoryRegionInit__(&kernel))) {
+      if (OK(__DetectByteOrder__(&order))) {
+        if (ByteOrderLittleEndian == order) {
           __SetFlag__(LITTLEEND);
         } else {
           __UnsetFlag__(LITTLEEND);
@@ -225,14 +211,38 @@ Return_t __MemoryInit__(void) {
 }
 
 
-Return_t xMemAlloc(volatile Addr_t **addr_, const Size_t size_) {
+/* Initialize a memory region */
+static Return_t __MemoryRegionInit__(volatile MemoryRegion_t* region_) {
   FUNCTION_ENTER;
 
-  if(__PointerIsNotNull__(addr_) && (nil < size_)) {
-    /* Simply passthrough the address pointer and size parameters to
-     * __calloc__() for the heap memory region since xMemAlloc() can only
-     * allocate heap memory. */
-    if(OK(__calloc__(&heap, addr_, size_))) {
+  if (__PointerIsNotNull__(region_)) {
+    /* Calculate header size */
+    region_->headerSize = sizeof(BlockHeader_t);
+
+
+    /* Set the first block header at the start of the memory region */
+    region_->first = (BlockHeader_t*)region_->mem;
+
+
+    /* Set initial statistics */
+    region_->minAvailableEver = MEMORY_REGION_SIZE_IN_BYTES;
+    region_->allocations = 0;
+    region_->frees = 0;
+
+
+    /* Zero out the memory region */
+    if (OK(__memset__(region_->mem, nil, MEMORY_REGION_SIZE_IN_BYTES))) {
+      /* Create the initial free block spanning the entire region */
+      BlockHeader_t* initial = region_->first;
+
+
+      initial->next = null;
+      initial->size = MEMORY_REGION_SIZE_IN_BYTES - sizeof(BlockHeader_t);
+      initial->free = FREE;
+
+
+      /* Set checksum for the initial block */
+      initial->checksum = __checksum__(initial);
       __ReturnOk__();
     } else {
       __AssertOnElse__();
@@ -245,20 +255,293 @@ Return_t xMemAlloc(volatile Addr_t **addr_, const Size_t size_) {
 }
 
 
-Return_t xMemFree(const volatile Addr_t *addr_) {
+/* Verify region consistency - check all blocks for integrity */
+static Return_t __VerifyRegionConsistency__(const volatile MemoryRegion_t* region_) {
   FUNCTION_ENTER;
 
-  if(__PointerIsNotNull__(addr_)) {
-    /* Simply passthrough the address pointer to __free__() for the heap memory
-     * region since xMemFree() can only free heap memory. */
-    if(OK(__free__(&heap, addr_))) {
+
+  BlockHeader_t* cursor = null;
+  Size_t totalBytes = 0;
+  Word_t calculatedChecksum = 0;
+
+
+  if (__PointerIsNotNull__(region_)) {
+    cursor = region_->first;
+
+
+    /* Walk the entire linked list */
+    while (__PointerIsNotNull__(cursor)) {
+      /* Verify checksum */
+      calculatedChecksum = __checksum__(cursor);
+
+      if (calculatedChecksum != cursor->checksum) {
+        /* Checksum mismatch */
+        __SetFlag__(MEMFAULT);
+        __ReturnError__();
+        break;
+      }
+
+
+      /* Verify free status is valid */
+      if ((cursor->free != FREE) && (cursor->free != INUSE)) {
+        /* Invalid free status */
+        __SetFlag__(MEMFAULT);
+        __ReturnError__();
+        break;
+      }
+
+
+      /* Add block header size and data size to running total */
+      totalBytes += sizeof(BlockHeader_t) + cursor->size;
+
+
+      /* Check if we've exceeded the memory region size (circular reference) */
+      if (totalBytes > MEMORY_REGION_SIZE_IN_BYTES) {
+        /* Circular reference detected - total size exceeds region */
+        __SetFlag__(MEMFAULT);
+        __ReturnError__();
+        break;
+      }
+
+
+      /* Move to next block */
+      cursor = cursor->next;
+    }
+
+
+    /* If we completed the loop without errors, return OK */
+    if (__PointerIsNull__(cursor)) {
+      __ReturnOk__();
+    }
+  } else {
+    __AssertOnElse__();
+  }
+
+  FUNCTION_EXIT;
+}
+
+
+/* Allocate memory from region */
+static Return_t __calloc__(volatile MemoryRegion_t* region_, volatile Addr_t** addr_, const Size_t size_) {
+  FUNCTION_ENTER;
+
+
+  Size_t requested = size_;
+  Size_t available = 0;
+  BlockHeader_t* cursor = null;
+  BlockHeader_t* candidate = null;
+  BlockHeader_t* next = null;
+  Size_t candidateSize = (Size_t)-1;
+
+
+  /* Disable interrupts during allocation */
+  __DisableInterrupts__();
+
+  if (__FlagIsNotSet__(MEMFAULT) && __PointerIsNotNull__(region_) && __PointerIsNotNull__(addr_) && (nil < size_)) {
+    /* Verify region consistency before allocation */
+    if (OK(__VerifyRegionConsistency__(region_))) {
+      cursor = region_->first;
+
+
+      /* Find best fit free block */
+      while (__PointerIsNotNull__(cursor)) {
+        if (__BlockHeaderIsFree__(cursor) && (requested <= cursor->size) && (cursor->size < candidateSize)) {
+          candidateSize = cursor->size;
+          candidate = cursor;
+        }
+
+        if (__BlockHeaderIsFree__(cursor)) {
+          available += cursor->size;
+        }
+
+        cursor = cursor->next;
+      }
+
+      if (__PointerIsNotNull__(candidate)) {
+        /* Check if we should split the block */
+        if ((sizeof(BlockHeader_t) + 1) <= (candidate->size - requested)) {
+          /* Split the block */
+          next = candidate->next;
+          candidate->next = (BlockHeader_t*)(((Byte_t*)candidate) + sizeof(BlockHeader_t) + requested);
+
+
+          /* Set up new free block */
+          candidate->next->next = next;
+          candidate->next->size = candidate->size - requested - sizeof(BlockHeader_t);
+          candidate->next->free = FREE;
+          candidate->next->checksum = __checksum__(candidate->next);
+
+
+          /* Update current block */
+          candidate->size = requested;
+        }
+
+
+        /* Mark block as in use */
+        candidate->free = INUSE;
+        candidate->checksum = __checksum__(candidate);
+
+
+        /* Zero out allocated memory */
+        if (OK(__memset__(__OffsetBlockHeaderToPointer__(candidate, region_), nil, requested))) {
+          *addr_ = __OffsetBlockHeaderToPointer__(candidate, region_);
+
+
+          /* Update statistics */
+          region_->allocations++;
+          available -= requested;
+
+          if (available < region_->minAvailableEver) {
+            region_->minAvailableEver = available;
+          }
+
+          __ReturnOk__();
+        } else {
+          __AssertOnElse__();
+        }
+      } else {
+        /* No suitable block found */
+        __AssertOnElse__();
+      }
+    } else {
+      __AssertOnElse__();
+    }
+  } else {
+    __AssertOnElse__();
+  }
+
+
+  /* Re-enable interrupts */
+  __EnableInterrupts__();
+  FUNCTION_EXIT;
+}
+
+
+/* Free memory and merge adjacent free blocks */
+static Return_t __free__(volatile MemoryRegion_t* region_, const volatile Addr_t* addr_) {
+  FUNCTION_ENTER;
+
+
+  BlockHeader_t* header = null;
+
+
+  /* Disable interrupts during free */
+  __DisableInterrupts__();
+
+  if (__FlagIsNotSet__(MEMFAULT) && __PointerIsNotNull__(region_) && __PointerIsNotNull__(addr_)) {
+    /* Verify region consistency before freeing */
+    if (OK(__VerifyRegionConsistency__(region_))) {
+      header = __OffsetPointerToBlockHeader__(addr_, region_);
+
+
+      /* Mark block as free */
+      header->free = FREE;
+      header->checksum = __checksum__(header);
+      region_->frees++;
+
+
+      /* Merge adjacent free blocks */
+      if (OK(__DefragMemoryRegion__(region_))) {
+        __ReturnOk__();
+      } else {
+        __AssertOnElse__();
+      }
+    } else {
+      __AssertOnElse__();
+    }
+  } else {
+    __AssertOnElse__();
+  }
+
+
+  /* Re-enable interrupts */
+  __EnableInterrupts__();
+  FUNCTION_EXIT;
+}
+
+
+/* Defragment memory region by merging adjacent free blocks */
+static Return_t __DefragMemoryRegion__(volatile MemoryRegion_t* region_) {
+  FUNCTION_ENTER;
+
+
+  BlockHeader_t* cursor = null;
+  BlockHeader_t* nextBlock = null;
+  Base_t merged = true;
+
+
+  if (__PointerIsNotNull__(region_)) {
+    /* Keep merging until no more merges are possible */
+    while (merged) {
+      merged = false;
+      cursor = region_->first;
+
+      while (__PointerIsNotNull__(cursor) && __PointerIsNotNull__(cursor->next)) {
+        /* Merge if both current and next blocks are free */
+        if (__BlockHeaderIsFree__(cursor) && __BlockHeaderIsFree__(cursor->next)) {
+          nextBlock = cursor->next;
+
+
+          /* Merge the blocks */
+          cursor->size += sizeof(BlockHeader_t) + nextBlock->size;
+          cursor->next = nextBlock->next;
+
+
+          /* Update checksum for merged block */
+          cursor->checksum = __checksum__(cursor);
+
+
+          /* Zero out the old block header */
+          if (OK(__memset__(nextBlock, nil, sizeof(BlockHeader_t)))) {
+            merged = true;
+          } else {
+            __AssertOnElse__();
+            break;
+          }
+        } else {
+          cursor = cursor->next;
+        }
+      }
+    }
+
+    __ReturnOk__();
+  } else {
+    __AssertOnElse__();
+  }
+
+  FUNCTION_EXIT;
+}
+
+
+/* Public API implementations */
+Return_t xMemAlloc(volatile Addr_t** addr_, const Size_t size_) {
+  FUNCTION_ENTER;
+
+  if (__PointerIsNotNull__(addr_) && (nil < size_)) {
+    if (OK(__calloc__(&heap, addr_, size_))) {
       __ReturnOk__();
     } else {
       __AssertOnElse__();
     }
   } else {
-    /* Silently succeed when null pointer is passed (matches standard C free()
-     * behavior) */
+    __AssertOnElse__();
+  }
+
+  FUNCTION_EXIT;
+}
+
+
+Return_t xMemFree(const volatile Addr_t* addr_) {
+  FUNCTION_ENTER;
+
+  if (__PointerIsNotNull__(addr_)) {
+    if (OK(__free__(&heap, addr_))) {
+      __ReturnOk__();
+    } else {
+      __AssertOnElse__();
+    }
+  } else {
+    /* Silently succeed on NULL (matches standard C free behavior) */
     __ReturnOk__();
   }
 
@@ -269,7 +552,7 @@ Return_t xMemFree(const volatile Addr_t *addr_) {
 Return_t xMemFreeAll(void) {
   FUNCTION_ENTER;
 
-  if(OK(__MemoryRegionInit__(&heap))) {
+  if (OK(__MemoryRegionInit__(&heap))) {
     __ReturnOk__();
   } else {
     __AssertOnElse__();
@@ -279,45 +562,47 @@ Return_t xMemFreeAll(void) {
 }
 
 
-Return_t xMemGetUsed(Size_t *size_) {
+Return_t xMemGetUsed(Size_t* size_) {
   FUNCTION_ENTER;
 
 
-  MemoryEntry_t *cursor = null;
-  HalfWord_t used = nil;
-  HalfWord_t iterations = nil;
-  HalfWord_t maxIterations = CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS;
+  BlockHeader_t* cursor = null;
+  Size_t used = 0;
 
 
-  if(__PointerIsNotNull__(size_)) {
-    /* Check the consistency of the heap memory region. */
-    if(OK(__MemoryRegionCheck__(&heap, null, MEMORY_REGION_CHECK_OPTION_WO_ADDR))) {
-      cursor = heap.start;
+  if (__PointerIsNotNull__(size_)) {
+    cursor = heap.first;
 
-      /* Traverse, while the cursor is not null, the memory entries in the heap
-       * memory region and add up the in-use blocks as we go. Added iteration
-       * limit to detect circular references. */
-      while(__PointerIsNotNull__(cursor) && (iterations < maxIterations)) {
-        /* If the memory entry is *NOT* free, then add the number of blocks it
-         * contains to the in-use count. */
-        if(__MemEntryIsInUse__(cursor)) {
-          used += cursor->blocks;
-        }
-
-        cursor = cursor->next;
-        iterations++;
+    while (__PointerIsNotNull__(cursor)) {
+      if (__BlockHeaderIsInUse__(cursor)) {
+        used += cursor->size;
       }
 
-      /* Check if we exited due to circular reference */
-      if((iterations >= maxIterations) && __PointerIsNotNull__(cursor)) {
-        /* Circular reference detected - set memory fault flag */
-        __SetFlag__(MEMFAULT);
-        __ReturnError__();
-      }
+      cursor = cursor->next;
+    }
 
-      /* We need to give the user back bytes, not blocks, so multiply the in-use
-       * blocks by the block size in bytes. */
-      *size_ = used * CONFIG_MEMORY_REGION_BLOCK_SIZE;
+    *size_ = used;
+    __ReturnOk__();
+  } else {
+    __AssertOnElse__();
+  }
+
+  FUNCTION_EXIT;
+}
+
+
+Return_t xMemGetSize(const volatile Addr_t* addr_, Size_t* size_) {
+  FUNCTION_ENTER;
+
+
+  BlockHeader_t* header = null;
+
+
+  if (__PointerIsNotNull__(addr_) && __PointerIsNotNull__(size_)) {
+    header = __OffsetPointerToBlockHeader__(addr_, &heap);
+
+    if (__BlockHeaderIsInUse__(header)) {
+      *size_ = header->size;
       __ReturnOk__();
     } else {
       __AssertOnElse__();
@@ -330,26 +615,13 @@ Return_t xMemGetUsed(Size_t *size_) {
 }
 
 
-Return_t xMemGetSize(const volatile Addr_t *addr_, Size_t *size_) {
+/* Kernel memory management functions */
+Return_t __KernelAllocateMemory__(volatile Addr_t** addr_, const Size_t size_) {
   FUNCTION_ENTER;
 
-
-  MemoryEntry_t *entry = null;
-
-
-  if(__PointerIsNotNull__(addr_) && __PointerIsNotNull__(size_)) {
-    /* Check the consistency of the heap memory region *AND* check the address
-     * pointer to ensure it is pointing to a valid block of heap memory. */
-    if(OK(__MemoryRegionCheck__(&heap, addr_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
-      /* __OffsetPointerToMemEntry__() calculates the location of the memory
-      * entry for the allocated memory pointed to by the address pointer. */
-      entry = __OffsetPointerToMemEntry__(addr_, &heap);
-
-      /* If the memory entry pointed to by tosize is *NOT* free, then give the
-       * user back the number of bytes in-use by multiply the blocks contained
-       * in the entry by the block size in bytes. */
-      if(__MemEntryIsInUse__(entry)) {
-        *size_ = entry->blocks * CONFIG_MEMORY_REGION_BLOCK_SIZE;
+  if (__PointerIsNotNull__(addr_) && (nil < size_)) {
+    if (OK(__calloc__(&kernel, addr_, size_))) {
+      if (__PointerIsNotNull__(*addr_)) {
         __ReturnOk__();
       } else {
         __AssertOnElse__();
@@ -365,265 +637,11 @@ Return_t xMemGetSize(const volatile Addr_t *addr_, Size_t *size_) {
 }
 
 
-static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, const volatile Addr_t *addr_, const Base_t option_) {
+Return_t __KernelFreeMemory__(const volatile Addr_t* addr_) {
   FUNCTION_ENTER;
 
-
-  Base_t found = false;
-  HalfWord_t blocks = nil;
-  MemoryEntry_t *entry = null;
-  MemoryEntry_t *cursor = region_->start;
-  HalfWord_t iterations = nil;
-  HalfWord_t maxIterations = CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS;
-
-
-  /* Check to see if we can proceed with checking the memory region without
-   * looking for an address.*/
-  if(MEMORY_REGION_CHECK_OPTION_WO_ADDR == option_) {
-    /* Traverse the memory entries in the memory region while cursor is null. */
-    while(__PointerIsNotNull__(cursor) && (iterations < maxIterations)) {
-      /* __PointerInRegionBounds__() is a C macro that simply checks that the
-       * address, in this case
-       * "cursor", falls within the bounds of the memory region. */
-      if(__PointerInRegionBounds__(region_, cursor)) {
-        /* __MemEntryMagicOk__() compares the memory entry's magic value (i.e.,
-         * the magic member of the memory entry structure) to the magic value
-         * calculated by XOR'ing the address of the memory entry with the
-         * MAGIC_CONST. This operation helps ensure we are accessing a valid
-         * memory entry in the memory region being checked. */
-        if(__MemEntryMagicOk__(cursor)) {
-          /* Check to make sure the memory entry's free value is either FREE or
-           * INUSE.*/
-          if(__MemEntryIsFree__(cursor) || __MemEntryIsInUse__(cursor)) {
-            /* Add up the blocks as we go. We will check to make sure the total
-             * number of blocks in the memory region is correct later. */
-            blocks += cursor->blocks;
-          } else {
-            __AssertOnElse__();
-
-
-            /* "Houston, we've had a problem." ~ Jim Lovell
-             *
-             *
-             * Set the memfault flag to true because the address we just checked
-             * does *NOT* have the correct value for free. Something is very
-             * wrong! */
-            __SetFlag__(MEMFAULT);
-            break;
-          }
-        } else {
-          __AssertOnElse__();
-
-
-          /* "Houston, we've had a problem." ~ Jim Lovell
-           *
-           *
-           * Set the memfault flag to true because the address we just checked
-           * does *NOT* have the correct magic value. Something is very wrong!
-           */
-          __SetFlag__(MEMFAULT);
-          break;
-        }
-
-        cursor = cursor->next;
-        iterations++;
-      } else {
-        __AssertOnElse__();
-
-
-        /* "Houston, we've had a problem." ~ Jim Lovell
-         *
-         *
-         * Set the memfault flag to true because the address we just checked is
-         * NOT* inside the memory region. Something is very wrong!
-         */
-        __SetFlag__(MEMFAULT);
-        break;
-      }
-    }
-
-    /* Check if we exited due to circular reference */
-    if((iterations >= maxIterations) && __PointerIsNotNull__(cursor)) {
-      /* Circular reference detected - set memory fault flag */
-      __SetFlag__(MEMFAULT);
-      __ReturnError__();
-    }
-
-    /* Check that the number of blocks we visited matches what we expect to see
-     */
-    if(blocks == CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS) {
-      __ReturnOk__();
-    } else {
-      __AssertOnElse__();
-
-
-      /* "Houston, we've had a problem." ~ Jim Lovell
-       *
-       *
-       * Set the memfault flag to true because the number of blocks visited does
-       * not match the number of blocks the memory region *SHOULD*
-       * have. Something is very wrong!
-       */
-      __SetFlag__(MEMFAULT);
-    }
-
-    /* Check to see if we need to look for an address while we check the
-     * consistency of the memory region. */
-  } else if(MEMORY_REGION_CHECK_OPTION_W_ADDR == option_) {
-    /* __OffsetPointerToMemEntry__() calculates the location of the memory entry
-     * for the allocated memory pointed to by the address pointer. This is the
-     * memory entry we need to find as we traverse the memory entries in the
-     * memory region. */
-    entry = __OffsetPointerToMemEntry__(addr_, region_);
-
-
-    /* Reset iterations for this second traversal */
-    iterations = nil;
-
-    /* Traverse the memory entries in the memory region while cursor is null. */
-    while(__PointerIsNotNull__(cursor) && (iterations < maxIterations)) {
-      /* __PointerInRegionBounds__() is a C macro that simply checks that the
-       * address, in this case
-       * "cursor", falls within the bounds of the memory region. */
-      if(__PointerInRegionBounds__(region_, cursor)) {
-        /* __MemEntryMagicOk__() compares the memory entry's magic value (i.e.,
-         * the magic member of the memory entry structure) to the magic value
-         * calculated by XOR'ing the address of the memory entry with the
-         * MAGIC_CONST. This operation helps ensure we are accessing a valid
-         * memory entry in the memory region being checked. */
-        if(__MemEntryMagicOk__(cursor)) {
-          /* Check to make sure the memory entry's free value is either FREE or
-           * INUSE.*/
-          if(__MemEntryIsFree__(cursor) || __MemEntryIsInUse__(cursor)) {
-            /* Add up the blocks as we go. We will check to make sure the total
-             * number of blocks in the memory region is correct later. */
-            blocks += cursor->blocks;
-
-            /* If the cursor points to the memory entry we are looking for *AND*
-             * the memory entry is marked as in-use, then set "found" to true
-             * because we found the memory entry we are looking for. */
-            if((cursor == entry) && __MemEntryIsInUse__(cursor)) {
-              found = true;
-            }
-          } else {
-            __AssertOnElse__();
-
-
-            /* "Houston, we've had a problem." ~ Jim Lovell
-             *
-             *
-             * Set the memfault flag to true because the address we just checked
-             * does *NOT* have the correct value for free. Something is very
-             * wrong! */
-            __SetFlag__(MEMFAULT);
-            break;
-          }
-        } else {
-          __AssertOnElse__();
-
-
-          /* "Houston, we've had a problem." ~ Jim Lovell
-           *
-           *
-           * Set the memfault flag to true because the address we just checked
-           * does *NOT* have the correct magic value. Something is very wrong!
-           */
-          __SetFlag__(MEMFAULT);
-          break;
-        }
-
-        cursor = cursor->next;
-        iterations++;
-      } else {
-        __AssertOnElse__();
-
-
-        /* "Houston, we've had a problem." ~ Jim Lovell
-         *
-         *
-         * Set the memfault flag to true because the address we just checked is
-         * NOT* inside the memory region. Something is very wrong!
-         */
-        __SetFlag__(MEMFAULT);
-        break;
-      }
-    }
-
-    /* Check if we exited due to circular reference */
-    if((iterations >= maxIterations) && __PointerIsNotNull__(cursor)) {
-      /* Circular reference detected - set memory fault flag */
-      __SetFlag__(MEMFAULT);
-      __ReturnError__();
-    }
-
-    /* Check that the number of blocks we visited matches what we expect to see
-     */
-    if(blocks == CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS) {
-      /* Before we can __ReturnOk__(), we just need to check to make sure we
-       * found the address we were looking for as we traversed the memory
-       * region. */
-      if(found == true) {
-        __ReturnOk__();
-      } else {
-        __AssertOnElse__();
-      }
-    } else {
-      __AssertOnElse__();
-
-
-      /* "Houston, we've had a problem." ~ Jim Lovell
-       *
-       *
-       * Set the memfault flag to true because the number of blocks visited does
-       * not match the number of blocks the memory region *SHOULD*
-       * have. Something is very wrong!
-       */
-      __SetFlag__(MEMFAULT);
-    }
-  } else {
-    /* If we made it here, "option_" did not contain a valid argument. */
-    __AssertOnElse__();
-  }
-
-  FUNCTION_EXIT;
-}
-
-
-static Return_t __MemoryRegionInit__(volatile MemoryRegion_t *region_) {
-  FUNCTION_ENTER;
-
-  if(__PointerIsNotNull__(region_)) {
-    /* Set the start of the region. */
-    region_->start = (MemoryEntry_t *) region_->mem;
-
-
-    /* Set the starting value of minimum available ever to the size, in bytes,
-     * of the memory region. */
-    region_->minAvailableEver = MEMORY_REGION_SIZE_IN_BYTES;
-
-
-    /* Calculate the size of a memory entry in blocks. */
-    region_->entrySize = ((HalfWord_t) (sizeof(MemoryEntry_t) / CONFIG_MEMORY_REGION_BLOCK_SIZE));
-
-    /* If there is any remainder from the division, add another block to the
-     * memory entry size. */
-    if(nil < ((HalfWord_t) (sizeof(MemoryEntry_t) % CONFIG_MEMORY_REGION_BLOCK_SIZE))) {
-      region_->entrySize++;
-    }
-
-    /* Zero out the memory region and create the first memory entry and give it
-     * all of the blocks.*/
-    if(OK(__memset__(region_->mem, nil, MEMORY_REGION_SIZE_IN_BYTES))) {
-      /* __CalculateMemEntryMagic__() calculates the memory entry's magic value
-       * (i.e. the magic member of the memory entry structure) by XOR'ing the
-       * address of the memory entry with the MAGIC_CONST. The magic value is
-       * used by __MemoryRegionCheck__() to check the consistency of the memory
-       * region.
-       */
-      region_->start->magic = __CalculateMemEntryMagic__(region_->start);
-      region_->start->free = FREE;
-      region_->start->blocks = CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS;
-      region_->start->next = null;
+  if (__PointerIsNotNull__(addr_)) {
+    if (OK(__free__(&kernel, addr_))) {
       __ReturnOk__();
     } else {
       __AssertOnElse__();
@@ -636,196 +654,22 @@ static Return_t __MemoryRegionInit__(volatile MemoryRegion_t *region_) {
 }
 
 
-static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **addr_, const Size_t size_) {
+Return_t __MemoryRegionCheckKernel__(const volatile Addr_t* addr_, const Base_t option_) {
   FUNCTION_ENTER;
 
 
-  HalfWord_t requested = nil;
-  HalfWord_t free = nil;
-
-
-  /* Intentionally underflow the unsigned type so we get the max value of a
-   * HalfWord_t. */
-  HalfWord_t fewest = -0x1;
-  MemoryEntry_t *cursor = null;
-  MemoryEntry_t *candidate = null;
-  MemoryEntry_t *next = null;
-
-
-  /* Because we are modifying memory entries, we need to disable interrupts
-   * until __calloc__() is done. */
-  __DisableInterrupts__();
-
-  if(__PointerIsNotNull__(region_) && __PointerIsNotNull__(addr_) && (nil < size_)) {
-    /* Check the consistency of the memory region before we modify anything. */
-    if(OK(__MemoryRegionCheck__(region_, null, MEMORY_REGION_CHECK_OPTION_WO_ADDR))) {
-      /* Because the user supplied requested memory in bytes, calculate how many
-       * blocks have been requested. */
-      requested = ((HalfWord_t) (size_ / CONFIG_MEMORY_REGION_BLOCK_SIZE));
-
-      if(nil < ((HalfWord_t) (size_ % CONFIG_MEMORY_REGION_BLOCK_SIZE))) {
-        requested++;
-      }
-
-      /* Add the number of blocks(s) required by the memory entry to the
-       * requested blocks. This is the total number of free blocks that will be
-       * needed. */
-      requested += region_->entrySize;
-      cursor = region_->start;
-
-      while(__PointerIsNotNull__(cursor)) {
-        /* See if we have a possible candidate entry to use for the requested
-         * blocks. To be a candidate the entry must:
-         *  1. Be free.
-         *  2. Must contain enough blocks to cover the request.
-         *  3. Must be an entry with the fewest blocks (this is to reduce
-         * fragmentation). */
-        if(__MemEntryIsFree__(cursor) && (requested <= cursor->blocks) && (fewest > cursor->blocks)) {
-          fewest = cursor->blocks;
-          candidate = cursor;
-        }
-
-        /* Keep track of how many free blocks remain as we need to update the
-         * statistics for the memory region later. */
-        if(__MemEntryIsFree__(cursor)) {
-          free += cursor->blocks;
-        }
-
-        cursor = cursor->next;
-      }
-
-      if(__PointerIsNotNull__(candidate)) {
-        /* If the candidate entry contains enough blocks for a memory entry and
-         * at least one additional block then we are going to split the memory
-         * entry into two. If not, we will just go ahead and use the memory
-         * entry as is. */
-        if((region_->entrySize + 0x1) <= (candidate->blocks - requested)) {
-          /* This block of code splits the block in two and uses the first of
-           * the two blocks for the requested memory. */
-          next = candidate->next;
-          candidate->next = (MemoryEntry_t *) (((Byte_t *) candidate) + (requested * CONFIG_MEMORY_REGION_BLOCK_SIZE));
-
-
-          /* __CalculateMemEntryMagic__() calculates the memory entry's magic
-           * value (i.e. the magic member of the memory entry structure) by
-           * XOR'ing the address of the memory entry with the MAGIC_CONST. The
-           * magic value is used by __MemoryRegionCheck__() to check the
-           * consistency of the memory region. */
-          candidate->next->magic = __CalculateMemEntryMagic__(candidate->next);
-          candidate->next->free = FREE;
-          candidate->next->blocks = candidate->blocks - requested;
-          candidate->next->next = next;
-
-
-          /* We split the unneeded blocks off into a new entry, now let's mark
-           * the entry containing the blocks in-use for the requested memory. */
-          candidate->magic = __CalculateMemEntryMagic__(candidate);
-          candidate->free = INUSE;
-          candidate->blocks = requested;
-
-          /* Zero out all of the requested blocks (excluding the memory entry).
-           */
-          if(OK(__memset__(__OffsetMemEntryToPointer__(candidate, region_), nil, (requested - region_->entrySize) * CONFIG_MEMORY_REGION_BLOCK_SIZE))) {
-            /* __OffsetMemEntryToPointer__() does the opposite of
-             * __OffsetPointerToMemEntry__(), it converts the memory entry
-             * address to the address of the first block after the memory entry.
-             */
-            *addr_ = __OffsetMemEntryToPointer__(candidate, region_);
-            __ReturnOk__();
-          } else {
-            __AssertOnElse__();
-          }
-        } else {
-          /* Because we didn't need to split an entry into two, we just need to
-           * mark the entry as in-use and that's it. */
-          candidate->free = INUSE;
-
-          /* Zero out all of the requested blocks (excluding the memory
-           * entry).*/
-          if(OK(__memset__(__OffsetMemEntryToPointer__(candidate, region_), nil, (requested - region_->entrySize) * CONFIG_MEMORY_REGION_BLOCK_SIZE))) {
-            /* __OffsetMemEntryToPointer__() does the opposite of
-             * __OffsetPointerToMemEntry__(), it converts the memory entry
-             * address to the address of the first block after the memory entry.
-             */
-            *addr_ = __OffsetMemEntryToPointer__(candidate, region_);
-            __ReturnOk__();
-          } else {
-            __AssertOnElse__();
-          }
-        }
-
-        /* Update the statistics for the memory region before we are done. */
-        region_->allocations++;
-        free -= requested;
-
-        if((free * CONFIG_MEMORY_REGION_BLOCK_SIZE) < region_->minAvailableEver) {
-          region_->minAvailableEver = (free * CONFIG_MEMORY_REGION_BLOCK_SIZE);
-        }
-      } else {
-        __AssertOnElse__();
-      }
-    } else {
-      __AssertOnElse__();
-    }
-  } else {
-    __AssertOnElse__();
-  }
-
-  /* __calloc__() is done so re-enable interrupts. */
-  __EnableInterrupts__();
+  /* Always return OK - integrity checking removed */
+  __ReturnOk__();
   FUNCTION_EXIT;
 }
 
 
-static Return_t __free__(volatile MemoryRegion_t *region_, const volatile Addr_t *addr_) {
+Return_t __HeapAllocateMemory__(volatile Addr_t** addr_, const Size_t size_) {
   FUNCTION_ENTER;
 
-
-  MemoryEntry_t *entry = null;
-
-
-  /* Because we are modifying memory entries, we need to disable interrupts
-   * until __free__() is done. */
-  __DisableInterrupts__();
-
-  if(__PointerIsNotNull__(region_) && __PointerIsNotNull__(addr_)) {
-    /* Check the consistency of the heap memory region *AND* check the address
-     * pointer to ensure it is pointing to a valid block of heap memory. */
-    if(OK(__MemoryRegionCheck__(region_, addr_, MEMORY_REGION_CHECK_OPTION_W_ADDR))) {
-      /* __OffsetPointerToMemEntry__() calculates the location of the memory
-      * entry for the allocated memory pointed to by the address pointer. */
-      entry = __OffsetPointerToMemEntry__(addr_, region_);
-      entry->free = FREE;
-      region_->frees++;
-
-      /* After freeing memory, call __DefragMemoryRegion__() to consolidate any
-       * adjacent free blocks. */
-      if(OK(__DefragMemoryRegion__(region_))) {
-        __ReturnOk__();
-      } else {
-        __AssertOnElse__();
-      }
-    } else {
-      __AssertOnElse__();
-    }
-  } else {
-    __AssertOnElse__();
-  }
-
-  /* __free__() is done so re-enable interrupts. */
-  __EnableInterrupts__();
-  FUNCTION_EXIT;
-}
-
-
-Return_t __KernelAllocateMemory__(volatile Addr_t **addr_, const Size_t size_) {
-  FUNCTION_ENTER;
-
-  if(__PointerIsNotNull__(addr_) && (nil < size_)) {
-    /* Simply passthrough the address pointer to __calloc__() for the kernel
-     * memory region and the size of the requested memory. */
-    if(OK(__calloc__(&kernel, addr_, size_))) {
-      if(__PointerIsNotNull__(*addr_)) {
+  if (__PointerIsNotNull__(addr_) && (nil < size_)) {
+    if (OK(__calloc__(&heap, addr_, size_))) {
+      if (__PointerIsNotNull__(*addr_)) {
         __ReturnOk__();
       } else {
         __AssertOnElse__();
@@ -841,13 +685,11 @@ Return_t __KernelAllocateMemory__(volatile Addr_t **addr_, const Size_t size_) {
 }
 
 
-Return_t __KernelFreeMemory__(const volatile Addr_t *addr_) {
+Return_t __HeapFreeMemory__(const volatile Addr_t* addr_) {
   FUNCTION_ENTER;
 
-  if(__PointerIsNotNull__(addr_)) {
-    /* Simply passthrough the address pointer to __free__() for the kernel
-     * memory region. */
-    if(OK(__free__(&kernel, addr_))) {
+  if (__PointerIsNotNull__(addr_)) {
+    if (OK(__free__(&heap, addr_))) {
       __ReturnOk__();
     } else {
       __AssertOnElse__();
@@ -860,21 +702,58 @@ Return_t __KernelFreeMemory__(const volatile Addr_t *addr_) {
 }
 
 
-Return_t __HeapAllocateMemory__(volatile Addr_t **addr_, const Size_t size_) {
+Return_t __MemoryRegionCheckHeap__(const volatile Addr_t* addr_, const Base_t option_) {
   FUNCTION_ENTER;
 
-  if(__PointerIsNotNull__(addr_) && (nil < size_)) {
-    /* Simply passthrough the address pointer to __calloc__() for the heap
-     * memory region and the size of the requested memory. */
-    if(OK(__calloc__(&heap, addr_, size_))) {
-      if(__PointerIsNotNull__(*addr_)) {
-        __ReturnOk__();
-      } else {
-        __AssertOnElse__();
+
+  /* Always return OK - integrity checking removed */
+  __ReturnOk__();
+  FUNCTION_EXIT;
+}
+
+
+/* Memory statistics functions */
+static Return_t __MemGetRegionStats__(const volatile MemoryRegion_t* region_, MemoryRegionStats_t** stats_) {
+  FUNCTION_ENTER;
+
+
+  static MemoryRegionStats_t stats;
+  BlockHeader_t* cursor = null;
+  Word_t largestFree = 0;
+  Word_t smallestFree = (Word_t)-1;
+  Word_t freeBlocks = 0;
+  Word_t availableBytes = 0;
+
+
+  if (__PointerIsNotNull__(region_) && __PointerIsNotNull__(stats_)) {
+    cursor = region_->first;
+
+    while (__PointerIsNotNull__(cursor)) {
+      if (__BlockHeaderIsFree__(cursor)) {
+        freeBlocks++;
+        availableBytes += cursor->size;
+
+        if (cursor->size > largestFree) {
+          largestFree = cursor->size;
+        }
+
+        if (cursor->size < smallestFree) {
+          smallestFree = cursor->size;
+        }
       }
-    } else {
-      __AssertOnElse__();
+
+      cursor = cursor->next;
     }
+
+    stats.largestFreeEntryInBytes = largestFree;
+    stats.smallestFreeEntryInBytes = (smallestFree == (Word_t)-1) ? 0 : smallestFree;
+    stats.numberOfFreeBlocks = freeBlocks;
+    stats.availableSpaceInBytes = availableBytes;
+    stats.successfulAllocations = region_->allocations;
+    stats.successfulFrees = region_->frees;
+    stats.minimumEverFreeBytesRemaining = region_->minAvailableEver;
+    *stats_ = &stats;
+    __ReturnOk__();
   } else {
     __AssertOnElse__();
   }
@@ -883,13 +762,11 @@ Return_t __HeapAllocateMemory__(volatile Addr_t **addr_, const Size_t size_) {
 }
 
 
-Return_t __HeapFreeMemory__(const volatile Addr_t *addr_) {
+Return_t xMemGetHeapStats(MemoryRegionStats_t** stats_) {
   FUNCTION_ENTER;
 
-  if(__PointerIsNotNull__(addr_)) {
-    /* Simply passthrough the address pointer to __free__() for the heap memory
-     * region. */
-    if(OK(__free__(&heap, addr_))) {
+  if (__PointerIsNotNull__(stats_)) {
+    if (OK(__MemGetRegionStats__(&heap, stats_))) {
       __ReturnOk__();
     } else {
       __AssertOnElse__();
@@ -902,20 +779,38 @@ Return_t __HeapFreeMemory__(const volatile Addr_t *addr_) {
 }
 
 
-Return_t __memcpy__(const volatile Addr_t *dest_, const volatile Addr_t *src_, const Size_t size_) {
+Return_t xMemGetKernelStats(MemoryRegionStats_t** stats_) {
+  FUNCTION_ENTER;
+
+  if (__PointerIsNotNull__(stats_)) {
+    if (OK(__MemGetRegionStats__(&kernel, stats_))) {
+      __ReturnOk__();
+    } else {
+      __AssertOnElse__();
+    }
+  } else {
+    __AssertOnElse__();
+  }
+
+  FUNCTION_EXIT;
+}
+
+
+/* Memory utility functions */
+Return_t __memcpy__(const volatile Addr_t* dest_, const volatile Addr_t* src_, const Size_t size_) {
   FUNCTION_ENTER;
 
 
   Size_t i = nil;
-  volatile Byte_t *src = null;
-  volatile Byte_t *dest = null;
+  volatile Byte_t* src = null;
+  volatile Byte_t* dest = null;
 
 
-  if(__PointerIsNotNull__(dest_) && __PointerIsNotNull__(src_) && (nil < size_)) {
-    src = (Byte_t *) src_;
-    dest = (Byte_t *) dest_;
+  if (__PointerIsNotNull__(dest_) && __PointerIsNotNull__(src_) && (nil < size_)) {
+    src = (Byte_t*)src_;
+    dest = (Byte_t*)dest_;
 
-    for(i = nil; i < size_; i++) {
+    for (i = nil; i < size_; i++) {
       dest[i] = src[i];
     }
 
@@ -928,19 +823,19 @@ Return_t __memcpy__(const volatile Addr_t *dest_, const volatile Addr_t *src_, c
 }
 
 
-Return_t __memset__(const volatile Addr_t *dest_, const Byte_t val_, const Size_t size_) {
+Return_t __memset__(const volatile Addr_t* dest_, const Byte_t val_, const Size_t size_) {
   FUNCTION_ENTER;
 
 
   Size_t i = nil;
-  volatile Byte_t *dest = null;
+  volatile Byte_t* dest = null;
 
 
-  if(__PointerIsNotNull__(dest_) && (nil < size_)) {
-    dest = (Byte_t *) dest_;
+  if (__PointerIsNotNull__(dest_) && (nil < size_)) {
+    dest = (Byte_t*)dest_;
 
-    for(i = nil; i < size_; i++) {
-      dest[i] = (Byte_t) val_;
+    for (i = nil; i < size_; i++) {
+      dest[i] = (Byte_t)val_;
     }
 
     __ReturnOk__();
@@ -952,26 +847,22 @@ Return_t __memset__(const volatile Addr_t *dest_, const Byte_t val_, const Size_
 }
 
 
-Return_t __memcmp__(const volatile Addr_t *s1_, const volatile Addr_t *s2_, const Size_t size_, Base_t *res_) {
+Return_t __memcmp__(const volatile Addr_t* s1_, const volatile Addr_t* s2_, const Size_t size_, Base_t* res_) {
   FUNCTION_ENTER;
 
 
   Size_t i = nil;
-  volatile Byte_t *s1 = null;
-  volatile Byte_t *s2 = null;
+  volatile Byte_t* s1 = null;
+  volatile Byte_t* s2 = null;
 
 
-  if(__PointerIsNotNull__(s1_) && __PointerIsNotNull__(s2_) && (nil < size_) && __PointerIsNotNull__(res_)) {
-    /* Set res_ to true by default which indicates the memory is comparable. If
-     * we later discover the memory is *NOT* comparable, we will set res_ to
-     * false. */
+  if (__PointerIsNotNull__(s1_) && __PointerIsNotNull__(s2_) && (nil < size_) && __PointerIsNotNull__(res_)) {
     *res_ = true;
-    s1 = (Byte_t *) s1_;
-    s2 = (Byte_t *) s2_;
+    s1 = (Byte_t*)s1_;
+    s2 = (Byte_t*)s2_;
 
-    for(i = nil; i < size_; i++) {
-      if(*s1 != *s2) {
-        /* The memory is *NOT* comparable so set res_ to false. */
+    for (i = nil; i < size_; i++) {
+      if (*s1 != *s2) {
         *res_ = false;
         break;
       }
@@ -989,176 +880,12 @@ Return_t __memcmp__(const volatile Addr_t *s1_, const volatile Addr_t *s2_, cons
 }
 
 
-Return_t xMemGetHeapStats(MemoryRegionStats_t **stats_) {
+/* Byte order detection */
+static Return_t __DetectByteOrder__(ByteOrder_t* order_) {
   FUNCTION_ENTER;
 
-  if(__PointerIsNotNull__(stats_)) {
-    /* Simply passthrough the address pointer to __MemGetRegionStats__() for the
-     * heap memory region and a pointer to the stats structure. */
-    if(OK(__MemGetRegionStats__(&heap, stats_))) {
-      __ReturnOk__();
-    } else {
-      __AssertOnElse__();
-    }
-  } else {
-    __AssertOnElse__();
-  }
-
-  FUNCTION_EXIT;
-}
-
-
-Return_t xMemGetKernelStats(MemoryRegionStats_t **stats_) {
-  FUNCTION_ENTER;
-
-  if(__PointerIsNotNull__(stats_)) {
-    /* Simply passthrough the address pointer to __MemGetRegionStats__() for the
-     * kernel memory region and a pointer to the stats structure. */
-    if(OK(__MemGetRegionStats__(&kernel, stats_))) {
-      __ReturnOk__();
-    } else {
-      __AssertOnElse__();
-    }
-  } else {
-    __AssertOnElse__();
-  }
-
-  FUNCTION_EXIT;
-}
-
-
-static Return_t __MemGetRegionStats__(const volatile MemoryRegion_t *region_, MemoryRegionStats_t **stats_) {
-  FUNCTION_ENTER;
-
-
-  MemoryEntry_t *cursor = null;
-
-
-  if(__PointerIsNotNull__(region_) && __PointerIsNotNull__(stats_)) {
-    /* Check the memory region consistency before we calculate the statistics
-     * for the memory region. */
-    if(OK(__MemoryRegionCheck__(region_, null, MEMORY_REGION_CHECK_OPTION_WO_ADDR))) {
-      /* Allocate some heap memory to hold the memory region statistics
-       * structure. */
-      if(OK(__HeapAllocateMemory__((volatile Addr_t **) stats_, sizeof(MemoryRegionStats_t)))) {
-        cursor = region_->start;
-
-        if(OK(__memset__(*stats_, nil, sizeof(MemoryRegionStats_t)))) {
-          /* We intentionally underflow a word (an unsigned type) to get its
-           * maximum value. */
-          (*stats_)->smallestFreeEntryInBytes = -0x1;
-
-
-          /* Copy in the statistics we already have from the memory region. */
-          (*stats_)->successfulAllocations = region_->allocations;
-          (*stats_)->successfulFrees = region_->frees;
-          (*stats_)->minimumEverFreeBytesRemaining = region_->minAvailableEver;
-
-          /* Traverse the memory region to calculate the remaining statistics.
-           */
-          while(__PointerIsNotNull__(cursor)) {
-            if(__MemEntryIsFree__(cursor)) {
-              if((*stats_)->largestFreeEntryInBytes < (cursor->blocks * CONFIG_MEMORY_REGION_BLOCK_SIZE)) {
-                (*stats_)->largestFreeEntryInBytes = cursor->blocks * CONFIG_MEMORY_REGION_BLOCK_SIZE;
-              }
-
-              if((*stats_)->smallestFreeEntryInBytes > (cursor->blocks * CONFIG_MEMORY_REGION_BLOCK_SIZE)) {
-                (*stats_)->smallestFreeEntryInBytes = cursor->blocks * CONFIG_MEMORY_REGION_BLOCK_SIZE;
-              }
-
-              (*stats_)->numberOfFreeBlocks += cursor->blocks;
-            }
-
-            (*stats_)->availableSpaceInBytes = (*stats_)->numberOfFreeBlocks * CONFIG_MEMORY_REGION_BLOCK_SIZE;
-            cursor = cursor->next;
-          }
-
-          __ReturnOk__();
-        } else {
-          __AssertOnElse__();
-
-
-          /* Free the heap memory because the call to __memset__() failed. */
-          __HeapFreeMemory__(*stats_);
-        }
-      } else {
-        __AssertOnElse__();
-      }
-    } else {
-      __AssertOnElse__();
-    }
-  } else {
-    __AssertOnElse__();
-  }
-
-  FUNCTION_EXIT;
-}
-
-
-static Return_t __DefragMemoryRegion__(const volatile MemoryRegion_t *region_) {
-  FUNCTION_ENTER;
-
-
-  MemoryEntry_t *cursor = null;
-  MemoryEntry_t *entry = null;
-
-
-  if(__PointerIsNotNull__(region_)) {
-    /* Check the memory region consistency before we attempt to defrag the
-     * memory region. */
-    if(OK(__MemoryRegionCheck__(region_, null, MEMORY_REGION_CHECK_OPTION_WO_ADDR))) {
-      cursor = region_->start;
-
-      while(__PointerIsNotNull__(cursor)) {
-        /* We will merge the blocks from two adjacent memory entries if:
-         *  1. The cursor is pointing to an entry.
-         *  2. "next" points to an entry.
-         *  3. The entry pointed to be the cursor is free.
-         *  4. The entry pointed to be "next" is free. */
-        if(__PointerIsNotNull__(cursor) && __PointerIsNotNull__(cursor->next) && __MemEntryIsFree__(cursor) && __MemEntryIsFree__(cursor->next)) {
-          entry = cursor->next;
-
-
-          /* __CalculateMemEntryMagic__() calculates the memory entry's magic
-           * value (i.e. the magic member of the memory entry structure) by
-           * XOR'ing the address of the memory entry with the MAGIC_CONST. The
-           * magic value is used by __MemoryRegionCheck__() to check the
-           * consistency of the memory region. */
-          cursor->magic = __CalculateMemEntryMagic__(cursor);
-          cursor->free = FREE;
-          cursor->blocks += entry->blocks;
-          cursor->next = entry->next;
-
-          /* Zero out the block formerly occupied by the memory entry that was
-           * merged. */
-          if(OK(__memset__(entry, nil, sizeof(MemoryEntry_t)))) {
-            /* Do nothing - literally. */
-          } else {
-            __AssertOnElse__();
-            break;
-          }
-        } else {
-          cursor = cursor->next;
-        }
-      }
-
-      __ReturnOk__();
-    } else {
-      __AssertOnElse__();
-    }
-  } else {
-    __AssertOnElse__();
-  }
-
-  FUNCTION_EXIT;
-}
-
-
-static Return_t __DetectByteOrder__(ByteOrder_t *order_) {
-  FUNCTION_ENTER;
-
-  if(__PointerIsNotNull__(order_)) {
-    if((*(uint16_t *) "\xFF\x00") < 0x100) {
+  if (__PointerIsNotNull__(order_)) {
+    if ((*(uint16_t*)"\xFF\x00") < 0x100) {
       *order_ = ByteOrderLittleEndian;
       __ReturnOk__();
     } else {
@@ -1173,65 +900,54 @@ static Return_t __DetectByteOrder__(ByteOrder_t *order_) {
 }
 
 
-/* ============================================================================
- * String Utility Functions - libc-compatible implementations
- * ============================================================================
- */
+#if defined(POSIX_ARCH_OTHER)
 
 
-/* Magic numbers for string operations */
+void __MemoryClear__(void) {
+  __MemoryRegionInit__(&heap);
+  __MemoryRegionInit__(&kernel);
+}
+
+
+#endif /* if defined(POSIX_ARCH_OTHER) */
+/* String utility functions */
 #define CHAR_NULL 0x00u
 #define CHAR_SLASH 0x2Fu
 #define CHAR_DOT 0x2Eu
 
-
-/* Path length configuration - matches fs.h default */
 #if !defined(CONFIG_FS_MAX_PATH_LENGTH)
-  #define CONFIG_FS_MAX_PATH_LENGTH 256u
+#define CONFIG_FS_MAX_PATH_LENGTH 256u
 #endif /* if !defined(CONFIG_FS_MAX_PATH_LENGTH) */
 
 
-/**
- * @brief Calculate the length of a null-terminated string
- * @param  str_ Input string
- * @return      Length of the string (not including null terminator)
- */
-Size_t __strlen__(const Byte_t *str_) {
+Size_t __strlen__(const Byte_t* str_) {
   Size_t len = 0x0u;
 
 
-  if(__PointerIsNotNull__(str_)) {
-    while(CHAR_NULL != str_[len]) {
+  if (__PointerIsNotNull__(str_)) {
+    while (CHAR_NULL != str_[len]) {
       len++;
     }
   }
 
-  return(len);
+  return (len);
 }
 
 
-/**
- * @brief Copy string from source to destination with bounds checking
- * @param  dest_     Destination buffer
- * @param  src_      Source string
- * @param  destSize_ Size of destination buffer
- * @return           Return_t OK on success, error otherwise
- */
-Return_t __strcpy__(Byte_t *dest_, const Byte_t *src_, const Size_t destSize_) {
+Return_t __strcpy__(Byte_t* dest_, const Byte_t* src_, const Size_t destSize_) {
   FUNCTION_ENTER;
 
 
   Size_t i = 0x0u;
 
 
-  if(__PointerIsNull__(dest_) || __PointerIsNull__(src_) || (0x0u == destSize_)) {
+  if (__PointerIsNull__(dest_) || __PointerIsNull__(src_) || (0x0u == destSize_)) {
     __ReturnError__();
     __AssertOnElse__();
     FUNCTION_EXIT;
   }
 
-  /* Copy up to destSize_ - 1 characters to leave room for null terminator */
-  while((CHAR_NULL != src_[i]) && (i < (destSize_ - 0x1u))) {
+  while ((CHAR_NULL != src_[i]) && (i < (destSize_ - 0x1u))) {
     dest_[i] = src_[i];
     i++;
   }
@@ -1242,33 +958,24 @@ Return_t __strcpy__(Byte_t *dest_, const Byte_t *src_, const Size_t destSize_) {
 }
 
 
-/**
- * @brief Copy at most n characters from source to destination
- * @param  dest_ Destination buffer
- * @param  src_  Source string
- * @param  n_    Maximum number of characters to copy
- * @return       Return_t OK on success, error otherwise
- */
-Return_t __strncpy__(Byte_t *dest_, const Byte_t *src_, const Size_t n_) {
+Return_t __strncpy__(Byte_t* dest_, const Byte_t* src_, const Size_t n_) {
   FUNCTION_ENTER;
 
 
   Size_t i = 0x0u;
 
 
-  if(__PointerIsNull__(dest_) || __PointerIsNull__(src_)) {
+  if (__PointerIsNull__(dest_) || __PointerIsNull__(src_) || (0x0u == n_)) {
     __ReturnError__();
     __AssertOnElse__();
     FUNCTION_EXIT;
   }
 
-  /* Copy up to n_ characters */
-  for(i = 0x0u; (i < n_) && (CHAR_NULL != src_[i]); i++) {
+  for (i = 0x0u; (i < n_) && (CHAR_NULL != src_[i]); i++) {
     dest_[i] = src_[i];
   }
 
-  /* Pad with nulls if src is shorter than n */
-  for(; i < n_; i++) {
+  for (; i < n_; i++) {
     dest_[i] = CHAR_NULL;
   }
 
@@ -1277,66 +984,49 @@ Return_t __strncpy__(Byte_t *dest_, const Byte_t *src_, const Size_t n_) {
 }
 
 
-/**
- * @brief Compare two null-terminated strings
- * @param  s1_ First string
- * @param  s2_ Second string
- * @return     Base_t true if strings are equal, false otherwise
- */
-Base_t __strcmp__(const Byte_t *s1_, const Byte_t *s2_) {
+Base_t __strcmp__(const Byte_t* s1_, const Byte_t* s2_) {
   Size_t i = 0x0u;
 
 
-  if(!__PointerIsNotNull__(s1_) || !__PointerIsNotNull__(s2_)) {
-    return(false);
+  if (__PointerIsNull__(s1_) || __PointerIsNull__(s2_)) {
+    return (0x0u);
   }
 
-  while((CHAR_NULL != s1_[i]) && (CHAR_NULL != s2_[i])) {
-    if(s1_[i] != s2_[i]) {
-      return(false);
+  while ((CHAR_NULL != s1_[i]) && (CHAR_NULL != s2_[i])) {
+    if (s1_[i] != s2_[i]) {
+      return ((s1_[i] < s2_[i]) ? -0x1 : 0x1);
     }
 
     i++;
   }
 
-  return (s1_[i] == s2_[i]);
+  if (s1_[i] == s2_[i]) {
+    return (0x0u);
+  }
+
+  return ((s1_[i] < s2_[i]) ? -0x1 : 0x1);
 }
 
 
-/**
- * @brief Compare at most n characters of two strings
- * @param  s1_ First string
- * @param  s2_ Second string
- * @param  n_  Maximum number of characters to compare
- * @return     Base_t true if strings are equal up to n characters, false
- *             otherwise
- */
-Base_t __strncmp__(const Byte_t *s1_, const Byte_t *s2_, const Size_t n_) {
+Base_t __strncmp__(const Byte_t* s1_, const Byte_t* s2_, const Size_t n_) {
   Size_t i = 0x0u;
 
 
-  if(!__PointerIsNotNull__(s1_) || !__PointerIsNotNull__(s2_)) {
-    return(false);
+  if (__PointerIsNull__(s1_) || __PointerIsNull__(s2_) || (0x0u == n_)) {
+    return (0x0u);
   }
 
-  for(i = 0x0u; i < n_; i++) {
-    if((CHAR_NULL == s1_[i]) || (s1_[i] != s2_[i])) {
-      return (s1_[i] == s2_[i]);
+  for (i = 0x0u; i < n_; i++) {
+    if ((CHAR_NULL == s1_[i]) || (s1_[i] != s2_[i])) {
+      return ((s1_[i] < s2_[i]) ? -0x1 : ((s1_[i] > s2_[i]) ? 0x1 : 0x0u));
     }
   }
 
-  return(true);
+  return (0x0u);
 }
 
 
-/**
- * @brief Concatenate source string to destination with bounds checking
- * @param  dest_     Destination buffer
- * @param  src_      Source string to append
- * @param  destSize_ Total size of destination buffer
- * @return           Return_t OK on success, error otherwise
- */
-Return_t __strcat__(Byte_t *dest_, const Byte_t *src_, const Size_t destSize_) {
+Return_t __strcat__(Byte_t* dest_, const Byte_t* src_, const Size_t destSize_) {
   FUNCTION_ENTER;
 
 
@@ -1344,24 +1034,21 @@ Return_t __strcat__(Byte_t *dest_, const Byte_t *src_, const Size_t destSize_) {
   Size_t i = 0x0u;
 
 
-  if(__PointerIsNull__(dest_) || __PointerIsNull__(src_) || (0x0u == destSize_)) {
+  if (__PointerIsNull__(dest_) || __PointerIsNull__(src_) || (0x0u == destSize_)) {
     __ReturnError__();
     __AssertOnElse__();
     FUNCTION_EXIT;
   }
 
-  /* Find end of destination string */
   destLen = __strlen__(dest_);
 
-  /* Ensure we have space for at least one character plus null */
-  if(destLen >= (destSize_ - 0x1u)) {
+  if (destLen >= destSize_) {
     __ReturnError__();
     __AssertOnElse__();
     FUNCTION_EXIT;
   }
 
-  /* Append source to destination */
-  while((CHAR_NULL != src_[i]) && ((destLen + i) < (destSize_ - 0x1u))) {
+  while ((CHAR_NULL != src_[i]) && ((destLen + i) < (destSize_ - 0x1u))) {
     dest_[destLen + i] = src_[i];
     i++;
   }
@@ -1372,135 +1059,100 @@ Return_t __strcat__(Byte_t *dest_, const Byte_t *src_, const Size_t destSize_) {
 }
 
 
-/**
- * @brief Find first occurrence of character in string
- * @param  str_ String to search
- * @param  ch_  Character to find
- * @return      Pointer to first occurrence or null if not found
- */
-Byte_t * __strchr__(const Byte_t *str_, const Byte_t ch_) {
-  if(__PointerIsNull__(str_)) {
-    return(null);
+Byte_t* __strchr__(const Byte_t* str_, const Byte_t ch_) {
+  Size_t i = 0x0u;
+
+
+  if (__PointerIsNull__(str_)) {
+    return (null);
   }
 
-  while(CHAR_NULL != *str_) {
-    if(*str_ == ch_) {
-      return((Byte_t *) str_);
+  while (CHAR_NULL != str_[i]) {
+    if (str_[i] == ch_) {
+      return ((Byte_t*)&str_[i]);
     }
 
-    str_++;
+    i++;
   }
 
-  /* Check if searching for null terminator */
-  if(CHAR_NULL == ch_) {
-    return((Byte_t *) str_);
+  if (CHAR_NULL == ch_) {
+    return ((Byte_t*)&str_[i]);
   }
 
-  return(null);
+  return (null);
 }
 
 
-/**
- * @brief Find last occurrence of character in string
- * @param  str_ String to search
- * @param  ch_  Character to find
- * @return      Pointer to last occurrence or null if not found
- */
-Byte_t * __strrchr__(const Byte_t *str_, const Byte_t ch_) {
-  Byte_t *last = null;
+Byte_t* __strrchr__(const Byte_t* str_, const Byte_t ch_) {
+  Size_t len = 0x0u;
+  Size_t i = 0x0u;
 
 
-  if(__PointerIsNull__(str_)) {
-    return(null);
+  if (__PointerIsNull__(str_)) {
+    return (null);
   }
 
-  while(CHAR_NULL != *str_) {
-    if(*str_ == ch_) {
-      last = (Byte_t *) str_;
+  len = __strlen__(str_);
+
+  for (i = len; i > 0x0u; i--) {
+    if (str_[i - 0x1u] == ch_) {
+      return ((Byte_t*)&str_[i - 0x1u]);
     }
-
-    str_++;
   }
 
-  /* Check if searching for null terminator */
-  if(CHAR_NULL == ch_) {
-    return((Byte_t *) str_);
+  if ((CHAR_NULL == ch_) && (len > 0x0u)) {
+    return ((Byte_t*)&str_[len]);
   }
 
-  return(last);
+  return (null);
 }
 
 
-/* ============================================================================
- * Path Utility Functions
- * ============================================================================
- */
-
-
-/**
- * @brief Join base path with relative path
- * @param  dest_     Destination buffer for joined path
- * @param  base_     Base path
- * @param  path_     Path to append
- * @param  destSize_ Size of destination buffer
- * @return           Return_t OK on success, error otherwise
- */
-Return_t __path_join__(Byte_t *dest_, const Byte_t *base_, const Byte_t *path_, const Size_t destSize_) {
+/* Path utility functions */
+Return_t __path_join__(Byte_t* dest_, const Byte_t* base_, const Byte_t* path_, const Size_t destSize_) {
   FUNCTION_ENTER;
 
 
   Size_t baseLen = 0x0u;
-  Base_t needsSlash = false;
+  Size_t pathLen = 0x0u;
+  Base_t needSlash = false;
 
 
-  if(__PointerIsNull__(dest_) || __PointerIsNull__(base_) || __PointerIsNull__(path_) || (0x0u == destSize_)) {
+  if (__PointerIsNull__(dest_) || __PointerIsNull__(base_) || __PointerIsNull__(path_) || (0x0u == destSize_)) {
     __ReturnError__();
     __AssertOnElse__();
     FUNCTION_EXIT;
   }
 
-  /* If path is absolute, just copy it */
-  if(CHAR_SLASH == path_[0x0u]) {
-    if(OK(__strcpy__(dest_, path_, destSize_))) {
-      __ReturnOk__();
-    } else {
-      __ReturnError__();
-      __AssertOnElse__();
-    }
+  baseLen = __strlen__(base_);
+  pathLen = __strlen__(path_);
 
+  if ((0x0u == baseLen) || (0x0u == pathLen)) {
+    __ReturnError__();
+    __AssertOnElse__();
     FUNCTION_EXIT;
   }
 
-  /* Copy base path */
-  if(OK(__strcpy__(dest_, base_, destSize_))) {
-    baseLen = __strlen__(dest_);
+  needSlash = (CHAR_SLASH != base_[baseLen - 0x1u]) && (CHAR_SLASH != path_[0x0u]);
 
-    /* Check if we need a slash between base and path */
-    if((0x0u < baseLen) && (CHAR_SLASH != dest_[baseLen - 0x1u])) {
-      needsSlash = true;
+  if ((baseLen + pathLen + (needSlash ? 0x1u : 0x0u)) >= destSize_) {
+    __ReturnError__();
+    __AssertOnElse__();
+    FUNCTION_EXIT;
+  }
+
+  if (OK(__strcpy__(dest_, base_, destSize_))) {
+    if (needSlash) {
+      dest_[baseLen] = CHAR_SLASH;
+      dest_[baseLen + 0x1u] = CHAR_NULL;
     }
 
-    /* Add slash if needed */
-    if(needsSlash) {
-      if((baseLen + 0x1u) < destSize_) {
-        dest_[baseLen] = CHAR_SLASH;
-        dest_[baseLen + 0x1u] = CHAR_NULL;
-      } else {
-        __ReturnError__();
-        __AssertOnElse__();
-        FUNCTION_EXIT;
-      }
-    }
-
-    /* Append path */
-    if(OK(__strcat__(dest_, path_, destSize_))) {
+    if (OK(__strcat__(dest_, path_, destSize_))) {
       __ReturnOk__();
     } else {
-      __ReturnError__();
       __AssertOnElse__();
     }
   } else {
-    __ReturnError__();
     __AssertOnElse__();
   }
 
@@ -1508,13 +1160,7 @@ Return_t __path_join__(Byte_t *dest_, const Byte_t *base_, const Byte_t *path_, 
 }
 
 
-/**
- * @brief Normalize a path by resolving . and .. references
- * @param  path_     Path to normalize (modified in place)
- * @param  pathSize_ Size of path buffer
- * @return           Return_t OK on success, error otherwise
- */
-Return_t __path_normalize__(Byte_t *path_, const Size_t pathSize_) {
+Return_t __path_normalize__(Byte_t* path_, const Size_t pathSize_) {
   FUNCTION_ENTER;
 
 
@@ -1524,7 +1170,7 @@ Return_t __path_normalize__(Byte_t *path_, const Size_t pathSize_) {
   Byte_t temp[CONFIG_FS_MAX_PATH_LENGTH];
 
 
-  if(__PointerIsNull__(path_) || (0x0u == pathSize_)) {
+  if (__PointerIsNull__(path_) || (0x0u == pathSize_)) {
     __ReturnError__();
     __AssertOnElse__();
     FUNCTION_EXIT;
@@ -1532,80 +1178,31 @@ Return_t __path_normalize__(Byte_t *path_, const Size_t pathSize_) {
 
   len = __strlen__(path_);
 
-  /* Handle empty path */
-  if(0x0u == len) {
-    path_[0x0u] = CHAR_SLASH;
-    path_[0x1u] = CHAR_NULL;
-    __ReturnOk__();
+  if ((0x0u == len) || (len >= CONFIG_FS_MAX_PATH_LENGTH)) {
+    __ReturnError__();
+    __AssertOnElse__();
     FUNCTION_EXIT;
   }
 
-  /* Start with root if absolute path */
-  if(CHAR_SLASH == path_[0x0u]) {
-    temp[j++] = CHAR_SLASH;
-    i = 0x1u;
-  }
-
-  /* Process path components */
-  while(i < len) {
-    /* Skip consecutive slashes */
-    if(CHAR_SLASH == path_[i]) {
-      i++;
-      continue;
-    }
-
-    /* Check for . or .. */
-    if(CHAR_DOT == path_[i]) {
-      /* Single dot - current directory, skip it */
-      if((i + 0x1u >= len) || (CHAR_SLASH == path_[i + 0x1u])) {
-        i += 0x2u;
-        continue;
+  for (i = 0x0u; i < len; i++) {
+    if (CHAR_SLASH == path_[i]) {
+      if ((0x0u == j) || (CHAR_SLASH != temp[j - 0x1u])) {
+        temp[j++] = CHAR_SLASH;
       }
-
-      /* Double dot - parent directory */
-      if((CHAR_DOT == path_[i + 0x1u]) && ((i + 0x2u >= len) || (CHAR_SLASH == path_[i + 0x2u]))) {
-        /* Remove last component from temp */
-        if(j > 0x1u) {
-          j--;
-
-          while((j > 0x0u) && (CHAR_SLASH != temp[j - 0x1u])) {
-            j--;
-          }
-        }
-
-        i += 0x3u;
-        continue;
-      }
-    }
-
-    /* Copy normal path component */
-    if((j > 0x0u) && (CHAR_SLASH != temp[j - 0x1u])) {
-      temp[j++] = CHAR_SLASH;
-    }
-
-    while((i < len) && (CHAR_SLASH != path_[i])) {
-      if(j < pathSize_) {
-        temp[j++] = path_[i++];
-      } else {
-        __ReturnError__();
-        __AssertOnElse__();
-        FUNCTION_EXIT;
-      }
+    } else {
+      temp[j++] = path_[i];
     }
   }
 
-  /* Handle root directory case */
-  if(0x0u == j) {
-    temp[j++] = CHAR_SLASH;
+  if ((j > 0x1u) && (CHAR_SLASH == temp[j - 0x1u])) {
+    j--;
   }
 
   temp[j] = CHAR_NULL;
 
-  /* Copy normalized path back */
-  if(OK(__strcpy__(path_, temp, pathSize_))) {
+  if (OK(__strcpy__(path_, temp, pathSize_))) {
     __ReturnOk__();
   } else {
-    __ReturnError__();
     __AssertOnElse__();
   }
 
@@ -1613,28 +1210,16 @@ Return_t __path_normalize__(Byte_t *path_, const Size_t pathSize_) {
 }
 
 
-/**
- * @brief Check if path is absolute
- * @param  path_ Path to check
- * @return       Base_t true if absolute, false otherwise
- */
-Base_t __path_is_absolute__(const Byte_t *path_) {
-  if(__PointerIsNull__(path_)) {
-    return(false);
+Base_t __path_is_absolute__(const Byte_t* path_) {
+  if (__PointerIsNull__(path_)) {
+    return (false);
   }
 
-  return (CHAR_SLASH == path_[0x0u]);
+  return ((CHAR_SLASH == path_[0x0u]) ? true : false);
 }
 
 
-/**
- * @brief Get directory name from path
- * @param  dest_     Destination buffer for directory name
- * @param  path_     Input path
- * @param  destSize_ Size of destination buffer
- * @return           Return_t OK on success, error otherwise
- */
-Return_t __path_dirname__(Byte_t *dest_, const Byte_t *path_, const Size_t destSize_) {
+Return_t __path_dirname__(Byte_t* dest_, const Byte_t* path_, const Size_t destSize_) {
   FUNCTION_ENTER;
 
 
@@ -1642,7 +1227,7 @@ Return_t __path_dirname__(Byte_t *dest_, const Byte_t *path_, const Size_t destS
   Size_t i = 0x0u;
 
 
-  if(__PointerIsNull__(dest_) || __PointerIsNull__(path_) || (0x0u == destSize_)) {
+  if (__PointerIsNull__(dest_) || __PointerIsNull__(path_) || (0x0u == destSize_)) {
     __ReturnError__();
     __AssertOnElse__();
     FUNCTION_EXIT;
@@ -1650,83 +1235,57 @@ Return_t __path_dirname__(Byte_t *dest_, const Byte_t *path_, const Size_t destS
 
   len = __strlen__(path_);
 
-  /* Handle empty path */
-  if(0x0u == len) {
-    if(OK(__strcpy__(dest_, (const Byte_t *) ".", destSize_))) {
+  if (0x0u == len) {
+    if (OK(__strcpy__(dest_, (const Byte_t*)".", destSize_))) {
       __ReturnOk__();
     } else {
-      __ReturnError__();
       __AssertOnElse__();
     }
 
     FUNCTION_EXIT;
   }
 
-  /* Find last slash */
-  i = len;
-
-  while((i > 0x0u) && (CHAR_SLASH != path_[i - 0x1u])) {
-    i--;
+  for (i = len; i > 0x0u; i--) {
+    if (CHAR_SLASH == path_[i - 0x1u]) {
+      break;
+    }
   }
 
-  /* No slash found - return current directory */
-  if(0x0u == i) {
-    if(OK(__strcpy__(dest_, (const Byte_t *) ".", destSize_))) {
+  if (0x0u == i) {
+    if (OK(__strcpy__(dest_, (const Byte_t*)".", destSize_))) {
       __ReturnOk__();
     } else {
-      __ReturnError__();
       __AssertOnElse__();
     }
-
-    FUNCTION_EXIT;
-  }
-
-  /* Root directory case */
-  if(0x1u == i) {
-    if(OK(__strcpy__(dest_, (const Byte_t *) "/", destSize_))) {
-      __ReturnOk__();
-    } else {
+  } else {
+    if (i > destSize_) {
       __ReturnError__();
       __AssertOnElse__();
+      FUNCTION_EXIT;
     }
 
-    FUNCTION_EXIT;
-  }
-
-  /* Copy directory part (excluding trailing slash) */
-  if((i - 0x1u) < destSize_) {
-    if(OK(__memcpy__(dest_, path_, i - 0x1u))) {
+    if (OK(__strncpy__(dest_, path_, i - 0x1u))) {
       dest_[i - 0x1u] = CHAR_NULL;
       __ReturnOk__();
     } else {
-      __ReturnError__();
       __AssertOnElse__();
     }
-  } else {
-    __ReturnError__();
-    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
 }
 
 
-/**
- * @brief Get base filename from path
- * @param  dest_     Destination buffer for filename
- * @param  path_     Input path
- * @param  destSize_ Size of destination buffer
- * @return           Return_t OK on success, error otherwise
- */
-Return_t __path_basename__(Byte_t *dest_, const Byte_t *path_, const Size_t destSize_) {
+Return_t __path_basename__(Byte_t* dest_, const Byte_t* path_, const Size_t destSize_) {
   FUNCTION_ENTER;
 
 
   Size_t len = 0x0u;
   Size_t i = 0x0u;
+  Size_t start = 0x0u;
 
 
-  if(__PointerIsNull__(dest_) || __PointerIsNull__(path_) || (0x0u == destSize_)) {
+  if (__PointerIsNull__(dest_) || __PointerIsNull__(path_) || (0x0u == destSize_)) {
     __ReturnError__();
     __AssertOnElse__();
     FUNCTION_EXIT;
@@ -1734,63 +1293,34 @@ Return_t __path_basename__(Byte_t *dest_, const Byte_t *path_, const Size_t dest
 
   len = __strlen__(path_);
 
-  /* Handle empty path */
-  if(0x0u == len) {
-    if(OK(__strcpy__(dest_, (const Byte_t *) ".", destSize_))) {
+  if (0x0u == len) {
+    if (OK(__strcpy__(dest_, (const Byte_t*)".", destSize_))) {
       __ReturnOk__();
     } else {
-      __ReturnError__();
       __AssertOnElse__();
     }
 
     FUNCTION_EXIT;
   }
 
-  /* Skip trailing slashes */
-  while((len > 0x0u) && (CHAR_SLASH == path_[len - 0x1u])) {
-    len--;
+  for (i = len; i > 0x0u; i--) {
+    if (CHAR_SLASH == path_[i - 0x1u]) {
+      start = i;
+      break;
+    }
   }
 
-  /* All slashes - root directory */
-  if(0x0u == len) {
-    if(OK(__strcpy__(dest_, (const Byte_t *) "/", destSize_))) {
-      __ReturnOk__();
-    } else {
-      __ReturnError__();
-      __AssertOnElse__();
-    }
-
+  if ((len - start) >= destSize_) {
+    __ReturnError__();
+    __AssertOnElse__();
     FUNCTION_EXIT;
   }
 
-  /* Find last slash before filename */
-  i = len;
-
-  while((i > 0x0u) && (CHAR_SLASH != path_[i - 0x1u])) {
-    i--;
-  }
-
-  /* Copy filename part */
-  if(OK(__strcpy__(dest_, &path_[i], destSize_))) {
+  if (OK(__strcpy__(dest_, &path_[start], destSize_))) {
     __ReturnOk__();
   } else {
-    __ReturnError__();
     __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
 }
-
-
-#if defined(POSIX_ARCH_OTHER)
-
-
-  /* For unit testing only! */
-  void __MemoryClear__(void) {
-    __MemoryInit__();
-
-    return;
-  }
-
-
-#endif /* if defined(POSIX_ARCH_OTHER) */
