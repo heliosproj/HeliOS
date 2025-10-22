@@ -168,7 +168,6 @@
     typedef struct MemoryRegion_s {
       volatile Byte_t mem[MEMORY_REGION_SIZE_IN_BYTES];  /* Memory pool */
       BlockHeader_t *first; /* Pointer to first block header in mem[] */
-      HalfWord_t headerSize; /* Size of block header in bytes */
       HalfWord_t allocations; /* Number of successful allocations */
       HalfWord_t frees; /* Number of successful frees */
       Word_t minAvailableEver; /* Lower water mark of free bytes */

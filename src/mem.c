@@ -37,16 +37,16 @@ static volatile MemoryRegion_t kernel = {
 #define __IsAligned__(value_, alignment_) \
         (((value_) & ((alignment_) - 1)) == 0)
 
-/* Calculate aligned header size to ensure user data starts at aligned address */
-#define __AlignedHeaderSize__() \
-        __AlignUp__(sizeof(BlockHeader_t), CONFIG_MEMORY_ALIGNMENT)
+/* Calculate aligned header size at compile-time to ensure user data starts at aligned address */
+#define ALIGNED_HEADER_SIZE \
+        (((sizeof(BlockHeader_t)) + (CONFIG_MEMORY_ALIGNMENT - 1)) & ~(CONFIG_MEMORY_ALIGNMENT - 1))
 
 /* Macros for pointer arithmetic and validation */
-#define __OffsetPointerToBlockHeader__(ptr_, region_) \
-        ((BlockHeader_t *) (((Byte_t *) (ptr_)) - (region_)->headerSize))
+#define __OffsetPointerToBlockHeader__(ptr_) \
+        ((BlockHeader_t *) (((Byte_t *) (ptr_)) - ALIGNED_HEADER_SIZE))
 
-#define __OffsetBlockHeaderToPointer__(header_, region_) \
-        ((Addr_t *) (((Byte_t *) (header_)) + (region_)->headerSize))
+#define __OffsetBlockHeaderToPointer__(header_) \
+        ((Addr_t *) (((Byte_t *) (header_)) + ALIGNED_HEADER_SIZE))
 
 #define __BlockHeaderIsInUse__(header_) (INUSE == (header_)->free)
 #define __BlockHeaderIsFree__(header_) (FREE == (header_)->free)
@@ -204,7 +204,7 @@ static Return_t __ValidateBlockHeader__(const BlockHeader_t *header_, const vola
 
   /* Quick bounds check - header must be within region memory */
   if(!(((const Byte_t *) header_ < (const Byte_t *) region_->mem) || ((const Byte_t *) header_ >= ((const Byte_t *) region_->mem + MEMORY_REGION_SIZE_IN_BYTES -
-    region_->headerSize)))) {
+    ALIGNED_HEADER_SIZE)))) {
     /* Validate checksum - this is the key integrity check */
     expectedChecksum = __checksum__(header_);
 
@@ -269,8 +269,6 @@ static Return_t __MemoryRegionInit__(volatile MemoryRegion_t *region_) {
   FUNCTION_ENTER;
 
   if(__PointerIsNotNull__(region_)) {
-    /* Calculate aligned header size to ensure user data is properly aligned */
-    region_->headerSize = __AlignedHeaderSize__();
 
 
     /* Set the first block header at the start of the memory region */
@@ -290,7 +288,7 @@ static Return_t __MemoryRegionInit__(volatile MemoryRegion_t *region_) {
 
       first->next = null;
       /* Account for aligned header size in available space calculation */
-      first->size = MEMORY_REGION_SIZE_IN_BYTES - region_->headerSize;
+      first->size = MEMORY_REGION_SIZE_IN_BYTES - ALIGNED_HEADER_SIZE;
       first->free = FREE;
 
 
@@ -328,11 +326,6 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
   __DisableInterrupts__();
 
   if(__FlagIsNotSet__(MEMFAULT) && __PointerIsNotNull__(region_) && __PointerIsNotNull__(addr_) && (nil < size_)) {
-    /* Ensure region has aligned header size set */
-    if(region_->headerSize == 0) {
-      region_->headerSize = __AlignedHeaderSize__();
-    }
-
     /* Lazy initialization: if region has never been initialized, do it now */
     if(__PointerIsNull__(region_->first)) {
       region_->first = (BlockHeader_t *) region_->mem;
@@ -340,7 +333,7 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
 
 
       first->next = null;
-      first->size = MEMORY_REGION_SIZE_IN_BYTES - region_->headerSize;
+      first->size = MEMORY_REGION_SIZE_IN_BYTES - ALIGNED_HEADER_SIZE;
       first->free = FREE;
 
 
@@ -369,15 +362,15 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
       if(__PointerIsNotNull__(candidate)) {
         /* Check if we should split the block - only split if remaining space is at least CONFIG_MEMORY_MINIMUM_BLOCK_SIZE
          * Use aligned header size to ensure new block starts at aligned address */
-        if((region_->headerSize + CONFIG_MEMORY_MINIMUM_BLOCK_SIZE) <= (candidate->size - requested)) {
+        if((ALIGNED_HEADER_SIZE + CONFIG_MEMORY_MINIMUM_BLOCK_SIZE) <= (candidate->size - requested)) {
           /* Split the block - ensure new block starts at aligned address */
           next = candidate->next;
-          candidate->next = (BlockHeader_t *) (((Byte_t *) candidate) + region_->headerSize + requested);
+          candidate->next = (BlockHeader_t *) (((Byte_t *) candidate) + ALIGNED_HEADER_SIZE + requested);
 
 
           /* Set up new free block */
           candidate->next->next = next;
-          candidate->next->size = candidate->size - requested - region_->headerSize;
+          candidate->next->size = candidate->size - requested - ALIGNED_HEADER_SIZE;
           candidate->next->free = FREE;
           candidate->next->checksum = __checksum__(candidate->next);
 
@@ -391,8 +384,8 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
         candidate->checksum = __checksum__(candidate);
 
         /* Zero out allocated memory */
-        if(OK(__memset__(__OffsetBlockHeaderToPointer__(candidate, region_), nil, requested))) {
-          *addr_ = __OffsetBlockHeaderToPointer__(candidate, region_);
+        if(OK(__memset__(__OffsetBlockHeaderToPointer__(candidate), nil, requested))) {
+          *addr_ = __OffsetBlockHeaderToPointer__(candidate);
 
           /* Verify alignment of returned pointer */
           if(!__IsAligned__((Size_t)*addr_, CONFIG_MEMORY_ALIGNMENT)) {
@@ -442,7 +435,7 @@ static Return_t __free__(volatile MemoryRegion_t *region_, const volatile Addr_t
 
   if(__FlagIsNotSet__(MEMFAULT) && __PointerIsNotNull__(region_) && __PointerIsNotNull__(addr_)) {
     /* Get the block header from the user pointer */
-    header = __OffsetPointerToBlockHeader__(addr_, region_);
+    header = __OffsetPointerToBlockHeader__(addr_);
 
     /* Validate the block header - this checks:
      * 1. Header is within region bounds 2. Header is properly aligned 3. Free
@@ -586,17 +579,12 @@ Return_t xMemGetUsed(Size_t *size_) {
 
 
   if(__PointerIsNotNull__(size_)) {
-    /* Ensure heap has aligned header size set */
-    if(heap.headerSize == 0) {
-      heap.headerSize = __AlignedHeaderSize__();
-    }
-
     cursor = heap.first;
 
     while(__PointerIsNotNull__(cursor)) {
       if(__BlockHeaderIsInUse__(cursor)) {
         /* Include both data size and aligned header overhead */
-        used += cursor->size + heap.headerSize;
+        used += cursor->size + ALIGNED_HEADER_SIZE;
       }
 
       cursor = cursor->next;
@@ -621,7 +609,7 @@ Return_t xMemGetSize(const volatile Addr_t *addr_, Size_t *size_) {
 
   if(__PointerIsNotNull__(addr_) && __PointerIsNotNull__(size_)) {
     /* Get the block header from the user pointer */
-    header = __OffsetPointerToBlockHeader__(addr_, &heap);
+    header = __OffsetPointerToBlockHeader__(addr_);
 
     /* Validate the block header - comprehensive validation */
     if(OK(__ValidateBlockHeader__(header, &heap))) {
