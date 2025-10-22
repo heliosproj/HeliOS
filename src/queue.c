@@ -71,6 +71,7 @@ Return_t xQueueCreate(Queue_t **queue_, const Base_t limit_) {
 Return_t xQueueDelete(Queue_t *queue_) {
   FUNCTION_ENTER;
 
+
   /* Loop through the queue while it contains messages and drop each message
    * until there are no more messages. */
   while(__PointerIsNotNull__(queue_->head)) {
@@ -104,15 +105,15 @@ Return_t xQueueGetLength(const Queue_t *queue_, Base_t *res_) {
     __GetQueueLength__();
 
 
-      /* Confirm the length of the queue matches the number of the messages we
-       * counted while traversing the queue. If they match, then set res_ to the
-       * number of messages. */
-      if(__QueueLengthCorrect__()) {
-        *res_ = messages;
-        __ReturnOk__();
-      } else {
-        __AssertOnElse__();
-      }
+    /* Confirm the length of the queue matches the number of the messages we
+     * counted while traversing the queue. If they match, then set res_ to the
+     * number of messages. */
+    if(__QueueLengthCorrect__()) {
+      *res_ = messages;
+      __ReturnOk__();
+    } else {
+      __AssertOnElse__();
+    }
   } else {
     __AssertOnElse__();
   }
@@ -133,21 +134,21 @@ Return_t xQueueIsQueueEmpty(const Queue_t *queue_, Base_t *res_) {
     __GetQueueLength__();
 
 
-      /* Confirm the length of the queue matches the number of the messages we
-       * counted while traversing the queue.
-       *
-       * If the number of messages is nil, then set res_ to true because the
-       * queue is empty. Otherwise set res_ to false because the queue is *NOT*
-       * empty. */
-      if(__QueueLengthZero__() && __QueueLengthCorrect__()) {
-        *res_ = true;
-        __ReturnOk__();
-      } else if(__QueueLengthNonZero__() && __QueueLengthCorrect__()) {
-        *res_ = false;
-        __ReturnOk__();
-      } else {
-        __AssertOnElse__();
-      }
+    /* Confirm the length of the queue matches the number of the messages we
+     * counted while traversing the queue.
+     *
+     * If the number of messages is nil, then set res_ to true because the queue
+     * is empty. Otherwise set res_ to false because the queue is *NOT*
+     * empty. */
+    if(__QueueLengthZero__() && __QueueLengthCorrect__()) {
+      *res_ = true;
+      __ReturnOk__();
+    } else if(__QueueLengthNonZero__() && __QueueLengthCorrect__()) {
+      *res_ = false;
+      __ReturnOk__();
+    } else {
+      __AssertOnElse__();
+    }
   } else {
     __AssertOnElse__();
   }
@@ -168,22 +169,22 @@ Return_t xQueueIsQueueFull(const Queue_t *queue_, Base_t *res_) {
     __GetQueueLength__();
 
 
-      /* Confirm the length of the queue matches the number of the messages we
-       * counted while traversing the queue.
-       *
-       * If the number of messages greater than or equal to the queue length
-       * limit, then set res_ to true because the queue is full. If the number
-       * of messages is less than the queue length limit, then set res_ to false
-       * because the queue is *NOT* full. */
-      if(__QueueLengthAtLimit__() && __QueueLengthCorrect__()) {
-        *res_ = true;
-        __ReturnOk__();
-      } else if(__QueueLengthNotAtLimit__() && __QueueLengthCorrect__()) {
-        *res_ = false;
-        __ReturnOk__();
-      } else {
-        __AssertOnElse__();
-      }
+    /* Confirm the length of the queue matches the number of the messages we
+     * counted while traversing the queue.
+     *
+     * If the number of messages greater than or equal to the queue length
+     * limit, then set res_ to true because the queue is full. If the number of
+     * messages is less than the queue length limit, then set res_ to false
+     * because the queue is *NOT* full. */
+    if(__QueueLengthAtLimit__() && __QueueLengthCorrect__()) {
+      *res_ = true;
+      __ReturnOk__();
+    } else if(__QueueLengthNotAtLimit__() && __QueueLengthCorrect__()) {
+      *res_ = false;
+      __ReturnOk__();
+    } else {
+      __AssertOnElse__();
+    }
   } else {
     __AssertOnElse__();
   }
@@ -204,22 +205,21 @@ Return_t xQueueMessagesWaiting(const Queue_t *queue_, Base_t *res_) {
     __GetQueueLength__();
 
 
-      /* Confirm the length of the queue matches the number of the messages we
-       * counted while traversing the queue.
-       *
-       * If the number of messages greater than nil, then set res_ to true
-       * because there is at least one message waiting - possibly more.
-       * Otherwise set res_ to false because there are no messages waiting in
-       * the queue. */
-      if(__QueueLengthNonZero__() && __QueueLengthCorrect__()) {
-        *res_ = true;
-        __ReturnOk__();
-      } else if(__QueueLengthZero__() && __QueueLengthCorrect__()) {
-        *res_ = false;
-        __ReturnOk__();
-      } else {
-        __AssertOnElse__();
-      }
+    /* Confirm the length of the queue matches the number of the messages we
+     * counted while traversing the queue.
+     *
+     * If the number of messages greater than nil, then set res_ to true because
+     * there is at least one message waiting - possibly more. Otherwise set res_
+     * to false because there are no messages waiting in the queue. */
+    if(__QueueLengthNonZero__() && __QueueLengthCorrect__()) {
+      *res_ = true;
+      __ReturnOk__();
+    } else if(__QueueLengthZero__() && __QueueLengthCorrect__()) {
+      *res_ = false;
+      __ReturnOk__();
+    } else {
+      __AssertOnElse__();
+    }
   } else {
     __AssertOnElse__();
   }
@@ -244,33 +244,30 @@ Return_t xQueueSend(Queue_t *queue_, const Base_t bytes_, const Byte_t *value_) 
       if((queue_->limit > queue_->length) && __QueueLengthCorrect__()) {
         if(OK(__KernelAllocateMemory__((volatile Addr_t **) &message, sizeof(Message_t)))) {
           if(__PointerIsNotNull__(message)) {
-              if(OK(__memcpy__(message->messageValue, value_, CONFIG_MESSAGE_VALUE_BYTES))) {
-                message->messageBytes = bytes_;
-                message->next = null;
+            if(OK(__memcpy__(message->messageValue, value_, CONFIG_MESSAGE_VALUE_BYTES))) {
+              message->messageBytes = bytes_;
+              message->next = null;
 
 
-                /* If the queue tail is not null then it already contains
-                 * messages and append the new message, otherwise set the head
-                 * and tail to the new message. */
-                if(__PointerIsNotNull__(queue_->tail)) {
-                  queue_->tail->next = message;
-                  queue_->tail = message;
-                } else {
-                  queue_->head = message;
-                  queue_->tail = message;
-                }
-
-                queue_->length++;
-                __ReturnOk__();
+              /* If the queue tail is not null then it already contains messages
+               * and append the new message, otherwise set the head and tail to
+               * the new message. */
+              if(__PointerIsNotNull__(queue_->tail)) {
+                queue_->tail->next = message;
+                queue_->tail = message;
               } else {
-                __AssertOnElse__();
-
-
-                /* Free the kernel memory because __memcpy__() failed. */
-                __KernelFreeMemory__(message);
+                queue_->head = message;
+                queue_->tail = message;
               }
+
+              queue_->length++;
+              __ReturnOk__();
             } else {
               __AssertOnElse__();
+
+
+              /* Free the kernel memory because __memcpy__() failed. */
+              __KernelFreeMemory__(message);
             }
           } else {
             __AssertOnElse__();
@@ -281,6 +278,9 @@ Return_t xQueueSend(Queue_t *queue_, const Base_t bytes_, const Byte_t *value_) 
       } else {
         __AssertOnElse__();
       }
+    } else {
+      __AssertOnElse__();
+    }
   } else {
     __AssertOnElse__();
   }
@@ -311,21 +311,18 @@ static Return_t __QueuePeek__(const Queue_t *queue_, QueueMessage_t **message_) 
 
   if(__PointerIsNotNull__(queue_) && __PointerIsNotNull__(message_)) {
     if(__PointerIsNotNull__(queue_->head)) {
-        if(OK(__HeapAllocateMemory__((volatile Addr_t **) message_, sizeof(QueueMessage_t)))) {
-          if(__PointerIsNotNull__(*message_)) {
-            (*message_)->messageBytes = queue_->head->messageBytes;
+      if(OK(__HeapAllocateMemory__((volatile Addr_t **) message_, sizeof(QueueMessage_t)))) {
+        if(__PointerIsNotNull__(*message_)) {
+          (*message_)->messageBytes = queue_->head->messageBytes;
 
-            if(OK(__memcpy__((*message_)->messageValue, queue_->head->messageValue, CONFIG_MESSAGE_VALUE_BYTES))) {
-              __ReturnOk__();
-            } else {
-              __AssertOnElse__();
-
-
-              /* Free the heap memory because __memcpy__() failed. */
-              __HeapFreeMemory__(*message_);
-            }
+          if(OK(__memcpy__((*message_)->messageValue, queue_->head->messageValue, CONFIG_MESSAGE_VALUE_BYTES))) {
+            __ReturnOk__();
           } else {
             __AssertOnElse__();
+
+
+            /* Free the heap memory because __memcpy__() failed. */
+            __HeapFreeMemory__(*message_);
           }
         } else {
           __AssertOnElse__();
@@ -333,6 +330,9 @@ static Return_t __QueuePeek__(const Queue_t *queue_, QueueMessage_t **message_) 
       } else {
         __AssertOnElse__();
       }
+    } else {
+      __AssertOnElse__();
+    }
   } else {
     __AssertOnElse__();
   }
@@ -367,22 +367,22 @@ static Return_t __QueueDropmessage__(Queue_t *queue_) {
 
   if(__PointerIsNotNull__(queue_)) {
     if(__PointerIsNotNull__(queue_->head)) {
-        message = queue_->head;
-        queue_->head = queue_->head->next;
+      message = queue_->head;
+      queue_->head = queue_->head->next;
 
-        if(__PointerIsNull__(queue_->head)) {
-          queue_->tail = null;
-        }
+      if(__PointerIsNull__(queue_->head)) {
+        queue_->tail = null;
+      }
 
-        if(OK(__KernelFreeMemory__(message))) {
-          queue_->length--;
-          __ReturnOk__();
-        } else {
-          __AssertOnElse__();
-        }
+      if(OK(__KernelFreeMemory__(message))) {
+        queue_->length--;
+        __ReturnOk__();
       } else {
         __AssertOnElse__();
       }
+    } else {
+      __AssertOnElse__();
+    }
   } else {
     __AssertOnElse__();
   }
@@ -421,11 +421,11 @@ Return_t xQueueLockQueue(Queue_t *queue_) {
 
   if(__PointerIsNotNull__(queue_)) {
     if(false == queue_->locked) {
-        queue_->locked = true;
-        __ReturnOk__();
-      } else {
-        __AssertOnElse__();
-      }
+      queue_->locked = true;
+      __ReturnOk__();
+    } else {
+      __AssertOnElse__();
+    }
   } else {
     __AssertOnElse__();
   }
@@ -439,11 +439,11 @@ Return_t xQueueUnLockQueue(Queue_t *queue_) {
 
   if(__PointerIsNotNull__(queue_)) {
     if(true == queue_->locked) {
-        queue_->locked = false;
-        __ReturnOk__();
-      } else {
-        __AssertOnElse__();
-      }
+      queue_->locked = false;
+      __ReturnOk__();
+    } else {
+      __AssertOnElse__();
+    }
   } else {
     __AssertOnElse__();
   }

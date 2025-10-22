@@ -220,42 +220,39 @@ Return_t xDeviceWrite(const HalfWord_t uid_, Size_t *size_, Addr_t *data_) {
         /* Check to make sure the device is running *AND*
          * writable. */
         if(((DeviceModeReadWrite == device->mode) || (DeviceModeWriteOnly == device->mode)) && (DeviceStateRunning == device->state)) {
-            /* Allocate some kernel memory we will copy the data to be written
-             * to the device from the heap into. */
-            if(OK(__KernelAllocateMemory__((volatile Addr_t **) &data, *size_))) {
-              if(__PointerIsNotNull__(data)) {
-                /* Copy the data to be written to the device from the heap into
-                 * the kernel memory then call the device driver's
-                 * DEVICENAME_write() function. */
-                if(OK(__memcpy__(data, data_, *size_))) {
-                  if(OK((*device->write)(device, size_, data))) {
-                    /* Free the kernel memory now that we are done. It is up to
-                     * the end-user to free the heap memory the data occupies.
-                     */
-                    if(OK(__KernelFreeMemory__(data))) {
-                      device->bytesWritten += *size_;
-                      __ReturnOk__();
-                    } else {
-                      __AssertOnElse__();
-                    }
+          /* Allocate some kernel memory we will copy the data to be written to
+           * the device from the heap into. */
+          if(OK(__KernelAllocateMemory__((volatile Addr_t **) &data, *size_))) {
+            if(__PointerIsNotNull__(data)) {
+              /* Copy the data to be written to the device from the heap into
+               * the kernel memory then call the device driver's
+               * DEVICENAME_write() function. */
+              if(OK(__memcpy__(data, data_, *size_))) {
+                if(OK((*device->write)(device, size_, data))) {
+                  /* Free the kernel memory now that we are done. It is up to
+                   * the end-user to free the heap memory the data occupies.
+                   */
+                  if(OK(__KernelFreeMemory__(data))) {
+                    device->bytesWritten += *size_;
+                    __ReturnOk__();
                   } else {
                     __AssertOnElse__();
-
-
-                    /* Because DEVICENAME_write() returned an error, we need to
-                     * free the kernel memory. */
-                    __KernelFreeMemory__(data);
                   }
                 } else {
                   __AssertOnElse__();
 
 
-                  /* Because __memcpy__() returned an error, we need to free the
-                   * kernel memory. */
+                  /* Because DEVICENAME_write() returned an error, we need to
+                   * free the kernel memory. */
                   __KernelFreeMemory__(data);
                 }
               } else {
                 __AssertOnElse__();
+
+
+                /* Because __memcpy__() returned an error, we need to free the
+                 * kernel memory. */
+                __KernelFreeMemory__(data);
               }
             } else {
               __AssertOnElse__();
@@ -272,6 +269,9 @@ Return_t xDeviceWrite(const HalfWord_t uid_, Size_t *size_, Addr_t *data_) {
     } else {
       __AssertOnElse__();
     }
+  } else {
+    __AssertOnElse__();
+  }
 
   FUNCTION_EXIT;
 }
@@ -385,15 +385,14 @@ Return_t xDeviceRead(const HalfWord_t uid_, Size_t *size_, Addr_t **data_) {
            * memory. */
           if(OK((*device->read)(device, size_, &data))) {
             if((nil < *size_) && __PointerIsNotNull__(data)) {
-              /* Allocate "size_" of heap memory to copy the data read from
-               * the device in kernel memory into. */
+              /* Allocate "size_" of heap memory to copy the data read from the
+               * device in kernel memory into. */
               if(OK(__HeapAllocateMemory__((volatile Addr_t **) data_, *size_))) {
                 if(__PointerIsNotNull__(*data_)) {
                   /* Perform the copy from kernel memory to heap memory. */
                   if(OK(__memcpy__(*data_, data, *size_))) {
-                    /* Free the kernel memory now that we are done. It is up
-                     * to the end-user to free the heap memory the data
-                     * occupies.
+                    /* Free the kernel memory now that we are done. It is up to
+                     * the end-user to free the heap memory the data occupies.
                      */
                     if(OK(__KernelFreeMemory__(data))) {
                       device->bytesRead += *size_;
@@ -585,56 +584,53 @@ Return_t xDeviceConfigDevice(const HalfWord_t uid_, Size_t *size_, Addr_t *confi
      */
     if(OK(__DeviceListFind__(uid_, &device))) {
       if(__PointerIsNotNull__(device)) {
-        /* Allocate some kernel memory we will copy the configuration data to
-         * be written to the device from the heap into. */
+        /* Allocate some kernel memory we will copy the configuration data to be
+         * written to the device from the heap into. */
         if(OK(__KernelAllocateMemory__((volatile Addr_t **) &config, *size_))) {
           if(__PointerIsNotNull__(config)) {
-              /* Copy the configuration data to be written to the device from
-               * the heap into the kernel memory then call the device driver's
-               * DEVICENAME_config() function.
-               *
-               * NOTE: DEVICENAME_config() is bi-direction, the configuration
-               * data is read into and read out of the device so there are two
-               * calls to __memcpy__(). */
-              if(OK(__memcpy__(config, config_, *size_))) {
-                if(OK((*device->config)(device, size_, config))) {
-                  /* Copy the configuration data read back from the device from
-                   * the kernel back into heap memory. */
-                  if(OK(__memcpy__(config_, config, *size_))) {
-                    /* Free the kernel memory now that we are done. It is up to
-                     * the end-user to free the heap memory the data occupies.
-                     */
-                    if(OK(__KernelFreeMemory__(config))) {
-                      __ReturnOk__();
-                    } else {
-                      __AssertOnElse__();
-                    }
+            /* Copy the configuration data to be written to the device from the
+             * heap into the kernel memory then call the device driver's
+             * DEVICENAME_config() function.
+             *
+             * NOTE: DEVICENAME_config() is bi-direction, the configuration data
+             * is read into and read out of the device so there are two calls to
+             * __memcpy__(). */
+            if(OK(__memcpy__(config, config_, *size_))) {
+              if(OK((*device->config)(device, size_, config))) {
+                /* Copy the configuration data read back from the device from
+                 * the kernel back into heap memory. */
+                if(OK(__memcpy__(config_, config, *size_))) {
+                  /* Free the kernel memory now that we are done. It is up to
+                   * the end-user to free the heap memory the data occupies.
+                   */
+                  if(OK(__KernelFreeMemory__(config))) {
+                    __ReturnOk__();
                   } else {
                     __AssertOnElse__();
-
-
-                    /* Because __memcpy__() returned an error, we need to free
-                     * the kernel memory. */
-                    __KernelFreeMemory__(config);
                   }
                 } else {
                   __AssertOnElse__();
 
 
-                  /* Because DEVICENAME_config() returned an error, we need to
-                   * free the kernel memory. */
+                  /* Because __memcpy__() returned an error, we need to free the
+                   * kernel memory. */
                   __KernelFreeMemory__(config);
                 }
               } else {
                 __AssertOnElse__();
 
 
-                /* Because __memcpy__() returned an error, we need to free the
-                 * kernel memory. */
+                /* Because DEVICENAME_config() returned an error, we need to
+                 * free the kernel memory. */
                 __KernelFreeMemory__(config);
               }
             } else {
               __AssertOnElse__();
+
+
+              /* Because __memcpy__() returned an error, we need to free the
+               * kernel memory. */
+              __KernelFreeMemory__(config);
             }
           } else {
             __AssertOnElse__();
@@ -648,6 +644,9 @@ Return_t xDeviceConfigDevice(const HalfWord_t uid_, Size_t *size_, Addr_t *confi
     } else {
       __AssertOnElse__();
     }
+  } else {
+    __AssertOnElse__();
+  }
 
   FUNCTION_EXIT;
 }

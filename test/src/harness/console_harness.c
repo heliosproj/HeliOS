@@ -397,6 +397,7 @@ static void __SetupConsoleEnvironment__(void) {
   __CharDeviceStateClear__();
   xMockUSARTReset();
 
+
   /* Configure character device with mock USART */
   if(OK(xMemAlloc((volatile Addr_t **) &charConfig, sizeof(CharDeviceConfig_t)))) {
     charConfig->command = CHAR_CMD_CONFIG;

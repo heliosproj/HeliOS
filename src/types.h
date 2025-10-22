@@ -155,7 +155,8 @@
   #ifndef BLOCKHEADER_T_
     #define BLOCKHEADER_T_
     typedef struct BlockHeader_s {
-      struct BlockHeader_s *next;  /* Pointer to the next block header within mem[] */
+      struct BlockHeader_s *next;  /* Pointer to the next block header within
+                                    * mem[] */
       Word_t checksum; /* Checksum for integrity verification */
       Word_t size; /* Number of bytes available for data (excludes header) */
       Byte_t free; /* FREE or INUSE status */

@@ -87,30 +87,27 @@ Return_t xStreamReceive(const StreamBuffer_t *stream_, HalfWord_t *bytes_, Byte_
     if(__StreamLengthNonZero__()) {
       if(OK(__HeapAllocateMemory__((volatile Addr_t **) data_, stream_->length * sizeof(Byte_t)))) {
         if(__PointerIsNotNull__(*data_)) {
-            *bytes_ = stream_->length;
+          *bytes_ = stream_->length;
 
-            if(OK(__memcpy__(*data_, stream_->buffer, stream_->length * sizeof(Byte_t)))) {
-              /* Reset stream buffer and length (cast away const for
-               * modification) */
-              if(OK(__memset__((Addr_t *) stream_->buffer, nil, CONFIG_STREAM_BUFFER_BYTES))) {
-                ((StreamBuffer_t *) stream_)->length = nil;
-                __ReturnOk__();
-              } else {
-                __AssertOnElse__();
-
-
-                /* Free heap memory because __memset__() failed. */
-                __HeapFreeMemory__(*data_);
-              }
+          if(OK(__memcpy__(*data_, stream_->buffer, stream_->length * sizeof(Byte_t)))) {
+            /* Reset stream buffer and length (cast away const for modification)
+             */
+            if(OK(__memset__((Addr_t *) stream_->buffer, nil, CONFIG_STREAM_BUFFER_BYTES))) {
+              ((StreamBuffer_t *) stream_)->length = nil;
+              __ReturnOk__();
             } else {
               __AssertOnElse__();
 
 
-              /* Free heap memory because __memcpy__() failed. */
+              /* Free heap memory because __memset__() failed. */
               __HeapFreeMemory__(*data_);
             }
           } else {
             __AssertOnElse__();
+
+
+            /* Free heap memory because __memcpy__() failed. */
+            __HeapFreeMemory__(*data_);
           }
         } else {
           __AssertOnElse__();
@@ -118,6 +115,9 @@ Return_t xStreamReceive(const StreamBuffer_t *stream_, HalfWord_t *bytes_, Byte_
       } else {
         __AssertOnElse__();
       }
+    } else {
+      __AssertOnElse__();
+    }
   } else {
     __AssertOnElse__();
   }

@@ -52,7 +52,8 @@
     #undef MEMORY_REGION_CHECK_OPTION_W_ADDR
   #endif /* if defined(MEMORY_REGION_CHECK_OPTION_W_ADDR) */
   #define MEMORY_REGION_CHECK_OPTION_W_ADDR 0x2u /* Check with address */
-  /* The BlockHeader_t and updated MemoryRegion_t structures are now defined in types.h */
+  /* The BlockHeader_t and updated MemoryRegion_t structures are now defined in
+   * types.h */
 
   #ifdef __cplusplus
     extern "C" {
