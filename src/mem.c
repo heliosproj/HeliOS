@@ -37,7 +37,6 @@ static volatile MemoryRegion_t kernel = {
 #define __BlockHeaderIsInUse__(header_) (INUSE == (header_)->free)
 #define __BlockHeaderIsFree__(header_) (FREE == (header_)->free)
 /* Private function prototypes */
-static Return_t __VerifyRegionConsistency__(const volatile MemoryRegion_t *region_);
 static Return_t __ValidateBlockHeader__(const BlockHeader_t *header_, const volatile MemoryRegion_t *region_);
 static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **addr_, const Size_t size_);
 static Return_t __free__(volatile MemoryRegion_t *region_, const volatile Addr_t *addr_);
@@ -295,66 +294,6 @@ static Return_t __MemoryRegionInit__(volatile MemoryRegion_t *region_) {
 }
 
 
-/* Verify region consistency - check all blocks for integrity */
-static Return_t __VerifyRegionConsistency__(const volatile MemoryRegion_t *region_) {
-  FUNCTION_ENTER;
-
-
-  BlockHeader_t *cursor = null;
-  Size_t totalBytes = 0;
-  Word_t calculatedChecksum = 0;
-
-
-  if(__PointerIsNotNull__(region_)) {
-    cursor = region_->first;
-
-    /* Walk the entire linked list */
-    while(__PointerIsNotNull__(cursor)) {
-      /* Verify checksum */
-      calculatedChecksum = __checksum__(cursor);
-
-      if(calculatedChecksum != cursor->checksum) {
-        /* Checksum mismatch */
-        __SetFlag__(MEMFAULT);
-        __ReturnError__();
-        break;
-      }
-
-      /* Verify free status is valid */
-      if((cursor->free != FREE) && (cursor->free != INUSE)) {
-        /* Invalid free status */
-        __SetFlag__(MEMFAULT);
-        __ReturnError__();
-        break;
-      }
-
-      /* Add block header size and data size to running total */
-      totalBytes += sizeof(BlockHeader_t) + cursor->size;
-
-      /* Check if we've exceeded the memory region size (circular reference) */
-      if(totalBytes > MEMORY_REGION_SIZE_IN_BYTES) {
-        /* Circular reference detected - total size exceeds region */
-        __SetFlag__(MEMFAULT);
-        __ReturnError__();
-        break;
-      }
-
-      /* Move to next block */
-      cursor = cursor->next;
-    }
-
-    /* If we completed the loop without errors, return OK */
-    if(__PointerIsNull__(cursor)) {
-      __ReturnOk__();
-    }
-  } else {
-    __AssertOnElse__();
-  }
-
-  FUNCTION_EXIT;
-}
-
-
 /* Allocate memory from region */
 static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **addr_, const Size_t size_) {
   FUNCTION_ENTER;
@@ -390,8 +329,6 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
 
     }
 
-    /* Verify region consistency before allocation */
-    if(OK(__VerifyRegionConsistency__(region_))) {
       cursor = region_->first;
 
       /* Find best fit free block */
@@ -451,9 +388,9 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
       } else {
         __AssertOnElse__();
       }
-    } else {
+    /* } else {
       __AssertOnElse__();
-    }
+    } */
   } else {
     __AssertOnElse__();
   }
