@@ -301,8 +301,6 @@ static void test_error_handling_and_null_pointers(void) {
 
 
   /* Test 1.36: NULL pointer in xTaskGetSchedulerState */
-
-
   /* Test 1.36: xTaskGetSchedulerState with NULL output returns error */
   unit_begin("xTaskGetSchedulerState with NULL output returns error");
   unit_assert_not_ok(xTaskGetSchedulerState(null));

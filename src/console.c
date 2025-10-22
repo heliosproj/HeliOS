@@ -38,6 +38,7 @@
 static ConsoleState_t consoleState;
 static Volume_t *mountedVolume = null;
 
+
 /* Performance optimization: Cache for device lookup */
 static Device_t *cachedDevice = null;
 static HalfWord_t cachedDeviceUID = 0x0u;
@@ -235,6 +236,7 @@ void vConsoleTask(Task_t *task_, TaskParm_t *parm_) {
 static Return_t __ConsoleCheckDevice__(void) {
   FUNCTION_ENTER;
 
+
   /* Performance optimization: Use cached device if UID matches */
   if(__PointerIsNotNull__(cachedDevice) && (CONFIG_CONSOLE_DEVICE_UID == cachedDeviceUID)) {
     if(DeviceStateRunning == cachedDevice->state) {
@@ -246,6 +248,7 @@ static Return_t __ConsoleCheckDevice__(void) {
       cachedDeviceUID = 0x0u;
     }
   }
+
 
   /* Cache miss or invalid - look up device */
   if(OK(__DeviceListFind__(CONFIG_CONSOLE_DEVICE_UID, &cachedDevice))) {
@@ -276,10 +279,12 @@ static Return_t __ConsoleCheckDevice__(void) {
 static Return_t __ConsoleWriteString__(const Byte_t *str_) {
   FUNCTION_ENTER;
 
+
   Word_t len = 0x0u;
   Size_t size = 0x0u;
   Device_t *device = null;
   CharDeviceCommand_t cmd;
+
 
   if(__PointerIsNotNull__(str_)) {
     len = __strlen__(str_);
@@ -305,6 +310,8 @@ static Return_t __ConsoleWriteString__(const Byte_t *str_) {
         /* Step 1: Configure byte count for write operation */
         cmd.command = CHAR_CMD_SET_PARAMS;
         cmd.byteCount = (HalfWord_t) len;
+
+
         /* Performance: Use interrupt mode if available, else blocking */
         cmd.transferMode = CHAR_IO_MODE_INTERRUPT;
         size = sizeof(CharDeviceCommand_t);
@@ -322,6 +329,7 @@ static Return_t __ConsoleWriteString__(const Byte_t *str_) {
 
             if(OK((*device->config)(device, &size, (Addr_t *) &cmd))) {
               size = len;
+
               if(OK((*device->write)(device, &size, (Addr_t *) str_))) {
                 __ReturnOk__();
               } else {
@@ -362,10 +370,12 @@ static Return_t __ConsoleWriteString__(const Byte_t *str_) {
 static Return_t __ConsoleReadChar__(Byte_t *ch_) {
   FUNCTION_ENTER;
 
+
   Size_t size = 0x1u;
   Addr_t *readData = null;
   Device_t *device = null;
   CharDeviceCommand_t cmd;
+
 
   if(__PointerIsNotNull__(ch_)) {
     /* Performance optimization: Try cached device first */
@@ -388,6 +398,8 @@ static Return_t __ConsoleReadChar__(Byte_t *ch_) {
       /* Step 1: Configure byte count for read operation */
       cmd.command = CHAR_CMD_SET_PARAMS;
       cmd.byteCount = 0x1u;
+
+
       /* Use blocking mode for reliable operation */
       cmd.transferMode = CHAR_IO_MODE_BLOCKING;
       size = sizeof(CharDeviceCommand_t);
@@ -405,6 +417,8 @@ static Return_t __ConsoleReadChar__(Byte_t *ch_) {
             if(__PointerIsNotNull__(readData)) {
               __KernelFreeMemory__(readData);
             }
+
+
             /* No data available - normal condition */
             __ReturnError__();
           }
@@ -805,8 +819,10 @@ static Return_t __ConsoleCmdLs__(const Byte_t *args_) {
 static Return_t __ConsoleCmdCd__(const Byte_t *args_) {
   FUNCTION_ENTER;
 
+
   Base_t exists = false;
   Byte_t newPath[CONFIG_FS_MAX_PATH_LENGTH];
+
 
   if(__PointerIsNotNull__(mountedVolume)) {
     if(!__PointerIsNotNull__(args_) || (CHAR_NULL == args_[0x0])) {
@@ -833,6 +849,7 @@ static Return_t __ConsoleCmdCd__(const Byte_t *args_) {
         FUNCTION_EXIT;
       }
     }
+
 
     /* Normalize the path to remove . and .. references */
     if(OK(__path_normalize__(newPath, CONFIG_FS_MAX_PATH_LENGTH))) {
@@ -875,7 +892,8 @@ static Return_t __ConsoleCmdPwd__(const Byte_t *args_) {
 
 
 /* Magic number for cat command buffer size */
-#define CAT_BUFFER_SIZE 0x100u  /* 256 bytes */
+#define CAT_BUFFER_SIZE 0x100u /* 256 bytes */
+
 
 /**
  * @brief Command: cat - Display file contents with buffered reading
@@ -885,12 +903,14 @@ static Return_t __ConsoleCmdPwd__(const Byte_t *args_) {
 static Return_t __ConsoleCmdCat__(const Byte_t *args_) {
   FUNCTION_ENTER;
 
+
   File_t *file = null;
   Byte_t *buffer = null;
   Word_t bytesToRead = 0x0u;
   Word_t fileSize = 0x0u;
   Word_t totalRead = 0x0u;
   Byte_t path[CONFIG_FS_MAX_PATH_LENGTH];
+
 
   if(__PointerIsNotNull__(mountedVolume) && __PointerIsNotNull__(args_) && (0x00u != args_[0x0])) {
     /* Use path utility to build full path */
@@ -907,27 +927,32 @@ static Return_t __ConsoleCmdCat__(const Byte_t *args_) {
       }
     }
 
+
     /* Open file for reading */
     if(OK(xFileOpen(&file, mountedVolume, path, FS_MODE_READ))) {
       /* Get file size for progress tracking */
       if(OK(xFileGetSize(file, &fileSize))) {
         if(0x0u < fileSize) {
           /* Allocate buffer for chunked reading */
-          if(OK(xMemAlloc((volatile Addr_t **)&buffer, CAT_BUFFER_SIZE))) {
+          if(OK(xMemAlloc((volatile Addr_t **) &buffer, CAT_BUFFER_SIZE))) {
             /* Read file in chunks */
             while(totalRead < fileSize) {
               /* Calculate bytes to read in this chunk */
-              bytesToRead = (fileSize - totalRead) > CAT_BUFFER_SIZE ?
-                           CAT_BUFFER_SIZE : (fileSize - totalRead);
+              bytesToRead = (fileSize - totalRead) > CAT_BUFFER_SIZE ? CAT_BUFFER_SIZE : (fileSize - totalRead);
+
 
               /* Read chunk from file */
               if(OK(xFileRead(file, bytesToRead, &buffer))) {
                 /* Display chunk contents */
                 Word_t i = 0x0u;
-                Byte_t ch[0x2] = {0x00u, 0x00u};
+                Byte_t ch[0x2] = {
+                  0x00u, 0x00u
+                };
+
 
                 for(i = 0x0u; i < bytesToRead; i++) {
                   ch[0x0] = buffer[i];
+
 
                   /* Convert LF to CRLF for terminal */
                   if(CHAR_LF == ch[0x0]) {
@@ -948,10 +973,12 @@ static Return_t __ConsoleCmdCat__(const Byte_t *args_) {
               }
             }
 
+
             /* Ensure final newline */
             if(buffer[bytesToRead - 0x1u] != CHAR_LF) {
               __ConsoleWriteString__((const Byte_t *) "\r\n");
             }
+
 
             /* Free buffer */
             xMemFree(buffer);
@@ -972,6 +999,7 @@ static Return_t __ConsoleCmdCat__(const Byte_t *args_) {
         __AssertOnElse__();
         FUNCTION_EXIT;
       }
+
 
       /* Close file */
       xFileClose(file);
@@ -1065,7 +1093,9 @@ static Return_t __ConsoleCmdMv__(const Byte_t *args_) {
 static Return_t __ConsoleCmdRm__(const Byte_t *args_) {
   FUNCTION_ENTER;
 
+
   Byte_t path[CONFIG_FS_MAX_PATH_LENGTH];
+
 
   if(__PointerIsNotNull__(mountedVolume) && __PointerIsNotNull__(args_) && (CHAR_NULL != args_[0x0])) {
     /* Build full path using path utilities */
@@ -1081,6 +1111,7 @@ static Return_t __ConsoleCmdRm__(const Byte_t *args_) {
         FUNCTION_EXIT;
       }
     }
+
 
     /* Remove file */
     if(OK(xFileUnlink(mountedVolume, path))) {
@@ -1113,7 +1144,9 @@ static Return_t __ConsoleCmdRm__(const Byte_t *args_) {
 static Return_t __ConsoleCmdMkdir__(const Byte_t *args_) {
   FUNCTION_ENTER;
 
+
   Byte_t path[CONFIG_FS_MAX_PATH_LENGTH];
+
 
   if(__PointerIsNotNull__(mountedVolume) && __PointerIsNotNull__(args_) && (CHAR_NULL != args_[0x0])) {
     /* Build full path using path utilities */
@@ -1129,6 +1162,7 @@ static Return_t __ConsoleCmdMkdir__(const Byte_t *args_) {
         FUNCTION_EXIT;
       }
     }
+
 
     /* Create directory */
     if(OK(xDirMake(mountedVolume, path))) {

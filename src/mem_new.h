@@ -31,6 +31,7 @@
   #include <stdint.h>
   #include <stddef.h>
 
+
   /* Memory management constants */
   #if defined(INUSE)
     #undef INUSE
@@ -51,33 +52,34 @@
     #undef MEMORY_REGION_CHECK_OPTION_W_ADDR
   #endif /* if defined(MEMORY_REGION_CHECK_OPTION_W_ADDR) */
   #define MEMORY_REGION_CHECK_OPTION_W_ADDR 0x2u /* Check with address */
-
   /* Forward declarations for new structures */
   typedef struct BlockHeader_s BlockHeader_t;
   typedef struct MemoryRegion_s MemoryRegion_t;
 
+
   /* Block header structure with checksum support */
   typedef struct BlockHeader_s {
-    struct BlockHeader_s *next;  /* Pointer to the next block header within mem[] */
-    Word_t checksum;             /* Checksum for integrity verification */
-    Word_t size;                 /* Number of bytes available for data (excludes header) */
-    Byte_t free;                 /* FREE or INUSE status */
+    struct BlockHeader_s *next;  /* Pointer to the next block header within
+                                  * mem[] */
+    Word_t checksum; /* Checksum for integrity verification */
+    Word_t size; /* Number of bytes available for data (excludes header) */
+    Byte_t free; /* FREE or INUSE status */
   } BlockHeader_t;
+
 
   /* Memory region structure with multiple region support */
   typedef struct MemoryRegion_s {
     volatile Byte_t mem[MEMORY_REGION_SIZE_IN_BYTES];  /* Memory pool */
-    BlockHeader_t *first;        /* Pointer to first block header in mem[] */
-    HalfWord_t headerSize;       /* Size of block header in bytes */
-    HalfWord_t allocations;      /* Number of successful allocations */
-    HalfWord_t frees;           /* Number of successful frees */
-    Word_t minAvailableEver;    /* Lower water mark of free bytes */
+    BlockHeader_t *first; /* Pointer to first block header in mem[] */
+    HalfWord_t headerSize; /* Size of block header in bytes */
+    HalfWord_t allocations; /* Number of successful allocations */
+    HalfWord_t frees; /* Number of successful frees */
+    Word_t minAvailableEver; /* Lower water mark of free bytes */
   } MemoryRegion_t;
 
   #ifdef __cplusplus
     extern "C" {
   #endif /* ifdef __cplusplus */
-
   /* Public API Functions - Maintain compatibility */
   Return_t xMemAlloc(volatile Addr_t **addr_, const Size_t size_);
   Return_t xMemFree(const volatile Addr_t *addr_);
@@ -87,6 +89,7 @@
   Return_t xMemGetHeapStats(MemoryRegionStats_t **stats_);
   Return_t xMemGetKernelStats(MemoryRegionStats_t **stats_);
 
+
   /* Kernel API Functions */
   Return_t __KernelAllocateMemory__(volatile Addr_t **addr_, const Size_t size_);
   Return_t __KernelFreeMemory__(const volatile Addr_t *addr_);
@@ -95,11 +98,13 @@
   Return_t __HeapFreeMemory__(const volatile Addr_t *addr_);
   Return_t __MemoryRegionCheckHeap__(const volatile Addr_t *addr_, const Base_t option_);
 
+
   /* Memory utility functions */
   Return_t __memcpy__(const volatile Addr_t *dest_, const volatile Addr_t *src_, const Size_t size_);
   Return_t __memset__(const volatile Addr_t *dest_, const Byte_t val_, const Size_t size_);
   Return_t __memcmp__(const volatile Addr_t *s1_, const volatile Addr_t *s2_, const Size_t size_, Base_t *res_);
   Return_t __MemoryInit__(void);
+
 
   /* String utility functions following libc naming conventions */
   Size_t __strlen__(const Byte_t *str_);
@@ -108,8 +113,9 @@
   Base_t __strcmp__(const Byte_t *s1_, const Byte_t *s2_);
   Base_t __strncmp__(const Byte_t *s1_, const Byte_t *s2_, const Size_t n_);
   Return_t __strcat__(Byte_t *dest_, const Byte_t *src_, const Size_t destSize_);
-  Byte_t* __strchr__(const Byte_t *str_, const Byte_t ch_);
-  Byte_t* __strrchr__(const Byte_t *str_, const Byte_t ch_);
+  Byte_t * __strchr__(const Byte_t *str_, const Byte_t ch_);
+  Byte_t * __strrchr__(const Byte_t *str_, const Byte_t ch_);
+
 
   /* Path utility functions */
   Return_t __path_join__(Byte_t *dest_, const Byte_t *base_, const Byte_t *path_, const Size_t destSize_);

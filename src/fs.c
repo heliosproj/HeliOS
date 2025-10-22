@@ -277,8 +277,12 @@ Return_t xFSGetVolumeInfo(const Volume_t *volume_, VolumeInfo_t **info_) {
       info->sectorsPerCluster = volume_->sectorsPerCluster;
       info->bytesPerCluster = (Word_t) volume_->bytesPerSector * volume_->sectorsPerCluster;
 
+
       /* Calculate total clusters based on FAT size */
-      /* Each FAT entry is 4 bytes, so total clusters = (sectorsPerFAT * bytesPerSector) / 4 */
+
+
+      /* Each FAT entry is 4 bytes, so total clusters = (sectorsPerFAT *
+       * bytesPerSector) / 4 */
       maxCluster = (volume_->sectorsPerFAT * volume_->bytesPerSector) / 4u;
 
       /* Limit to reasonable maximum to avoid excessive scanning */
@@ -291,6 +295,7 @@ Return_t xFSGetVolumeInfo(const Volume_t *volume_, VolumeInfo_t **info_) {
       for(cluster = 2u; cluster < maxCluster; cluster++) {
         if(OK(__GetFATEntry__(volume_, cluster, &fatEntry))) {
           totalClusters++;
+
           if(fatEntry == FAT32_FREE_CLUSTER) {
             freeClusters++;
           }
@@ -821,11 +826,11 @@ Return_t xFileWrite(File_t *file_, const Size_t size_, const Byte_t *data_) {
     if(file_->currentCluster == 0x0) {
       file_->currentCluster = file_->firstCluster;
 
-
       /* Seek to correct cluster based on position */
       if(file_->position > 0) {
         Word_t targetCluster = file_->position / clusterSize;
         Word_t currentClusterIdx = 0;
+
 
         /* Follow the FAT chain to reach the target cluster */
         while(currentClusterIdx < targetCluster) {
@@ -834,6 +839,7 @@ Return_t xFileWrite(File_t *file_, const Size_t size_, const Byte_t *data_) {
               /* Reached end of chain before target - need to extend the file */
               break;
             }
+
             file_->currentCluster = nextCluster;
             currentClusterIdx++;
           } else {
@@ -949,9 +955,7 @@ Return_t xFileSeek(File_t *file_, const Word_t offset_, const Byte_t origin_) {
     }
 
     /* Don't seek past EOF for read-only files */
-    if((newPosition > file_->fileSize) &&
-       ((file_->mode & FS_MODE_WRITE) == 0x0) &&
-       ((file_->mode & FS_MODE_APPEND) == 0x0)) {
+    if((newPosition > file_->fileSize) && ((file_->mode & FS_MODE_WRITE) == 0x0) && ((file_->mode & FS_MODE_APPEND) == 0x0)) {
       newPosition = file_->fileSize;
     }
 
@@ -1056,6 +1060,7 @@ Return_t xFileSync(File_t *file_) {
           if(OK(__ReadCluster__(file_->volume, entryCluster, &clusterData))) {
             /* Update the entry in the cluster */
             __memcpy__(clusterData + entryOffset, &entry, sizeof(FAT32DirEntry_t));
+
 
             /* Write the cluster back */
             firstSector = __ClusterToSector__(file_->volume, entryCluster);

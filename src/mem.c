@@ -295,8 +295,8 @@ Return_t xMemGetUsed(Size_t *size_) {
       cursor = heap.start;
 
       /* Traverse, while the cursor is not null, the memory entries in the heap
-       * memory region and add up the in-use blocks as we go.
-       * Added iteration limit to detect circular references. */
+       * memory region and add up the in-use blocks as we go. Added iteration
+       * limit to detect circular references. */
       while(__PointerIsNotNull__(cursor) && (iterations < maxIterations)) {
         /* If the memory entry is *NOT* free, then add the number of blocks it
          * contains to the in-use count. */
@@ -475,6 +475,7 @@ static Return_t __MemoryRegionCheck__(const volatile MemoryRegion_t *region_, co
      * memory entry we need to find as we traverse the memory entries in the
      * memory region. */
     entry = __OffsetPointerToMemEntry__(addr_, region_);
+
 
     /* Reset iterations for this second traversal */
     iterations = nil;
@@ -1214,25 +1215,30 @@ static Return_t __DetectByteOrder__(ByteOrder_t *order_) {
 
 /* ============================================================================
  * String Utility Functions - libc-compatible implementations
- * ============================================================================ */
+ * ============================================================================
+ */
+
 
 /* Magic numbers for string operations */
 #define CHAR_NULL 0x00u
 #define CHAR_SLASH 0x2Fu
 #define CHAR_DOT 0x2Eu
 
+
 /* Path length configuration - matches fs.h default */
 #if !defined(CONFIG_FS_MAX_PATH_LENGTH)
   #define CONFIG_FS_MAX_PATH_LENGTH 256u
-#endif
+#endif /* if !defined(CONFIG_FS_MAX_PATH_LENGTH) */
+
 
 /**
  * @brief Calculate the length of a null-terminated string
- * @param str_ Input string
- * @return Length of the string (not including null terminator)
+ * @param  str_ Input string
+ * @return      Length of the string (not including null terminator)
  */
 Size_t __strlen__(const Byte_t *str_) {
   Size_t len = 0x0u;
+
 
   if(__PointerIsNotNull__(str_)) {
     while(CHAR_NULL != str_[len]) {
@@ -1240,21 +1246,23 @@ Size_t __strlen__(const Byte_t *str_) {
     }
   }
 
-  return len;
+  return(len);
 }
 
 
 /**
  * @brief Copy string from source to destination with bounds checking
- * @param dest_ Destination buffer
- * @param src_ Source string
- * @param destSize_ Size of destination buffer
- * @return Return_t OK on success, error otherwise
+ * @param  dest_     Destination buffer
+ * @param  src_      Source string
+ * @param  destSize_ Size of destination buffer
+ * @return           Return_t OK on success, error otherwise
  */
 Return_t __strcpy__(Byte_t *dest_, const Byte_t *src_, const Size_t destSize_) {
   FUNCTION_ENTER;
 
+
   Size_t i = 0x0u;
+
 
   if(__PointerIsNull__(dest_) || __PointerIsNull__(src_) || (0x0u == destSize_)) {
     __ReturnError__();
@@ -1270,22 +1278,23 @@ Return_t __strcpy__(Byte_t *dest_, const Byte_t *src_, const Size_t destSize_) {
 
   dest_[i] = CHAR_NULL;
   __ReturnOk__();
-
   FUNCTION_EXIT;
 }
 
 
 /**
  * @brief Copy at most n characters from source to destination
- * @param dest_ Destination buffer
- * @param src_ Source string
- * @param n_ Maximum number of characters to copy
- * @return Return_t OK on success, error otherwise
+ * @param  dest_ Destination buffer
+ * @param  src_  Source string
+ * @param  n_    Maximum number of characters to copy
+ * @return       Return_t OK on success, error otherwise
  */
 Return_t __strncpy__(Byte_t *dest_, const Byte_t *src_, const Size_t n_) {
   FUNCTION_ENTER;
 
+
   Size_t i = 0x0u;
+
 
   if(__PointerIsNull__(dest_) || __PointerIsNull__(src_)) {
     __ReturnError__();
@@ -1304,28 +1313,29 @@ Return_t __strncpy__(Byte_t *dest_, const Byte_t *src_, const Size_t n_) {
   }
 
   __ReturnOk__();
-
   FUNCTION_EXIT;
 }
 
 
 /**
  * @brief Compare two null-terminated strings
- * @param s1_ First string
- * @param s2_ Second string
- * @return Base_t true if strings are equal, false otherwise
+ * @param  s1_ First string
+ * @param  s2_ Second string
+ * @return     Base_t true if strings are equal, false otherwise
  */
 Base_t __strcmp__(const Byte_t *s1_, const Byte_t *s2_) {
   Size_t i = 0x0u;
 
+
   if(!__PointerIsNotNull__(s1_) || !__PointerIsNotNull__(s2_)) {
-    return false;
+    return(false);
   }
 
   while((CHAR_NULL != s1_[i]) && (CHAR_NULL != s2_[i])) {
     if(s1_[i] != s2_[i]) {
-      return false;
+      return(false);
     }
+
     i++;
   }
 
@@ -1335,16 +1345,18 @@ Base_t __strcmp__(const Byte_t *s1_, const Byte_t *s2_) {
 
 /**
  * @brief Compare at most n characters of two strings
- * @param s1_ First string
- * @param s2_ Second string
- * @param n_ Maximum number of characters to compare
- * @return Base_t true if strings are equal up to n characters, false otherwise
+ * @param  s1_ First string
+ * @param  s2_ Second string
+ * @param  n_  Maximum number of characters to compare
+ * @return     Base_t true if strings are equal up to n characters, false
+ *             otherwise
  */
 Base_t __strncmp__(const Byte_t *s1_, const Byte_t *s2_, const Size_t n_) {
   Size_t i = 0x0u;
 
+
   if(!__PointerIsNotNull__(s1_) || !__PointerIsNotNull__(s2_)) {
-    return false;
+    return(false);
   }
 
   for(i = 0x0u; i < n_; i++) {
@@ -1353,22 +1365,24 @@ Base_t __strncmp__(const Byte_t *s1_, const Byte_t *s2_, const Size_t n_) {
     }
   }
 
-  return true;
+  return(true);
 }
 
 
 /**
  * @brief Concatenate source string to destination with bounds checking
- * @param dest_ Destination buffer
- * @param src_ Source string to append
- * @param destSize_ Total size of destination buffer
- * @return Return_t OK on success, error otherwise
+ * @param  dest_     Destination buffer
+ * @param  src_      Source string to append
+ * @param  destSize_ Total size of destination buffer
+ * @return           Return_t OK on success, error otherwise
  */
 Return_t __strcat__(Byte_t *dest_, const Byte_t *src_, const Size_t destSize_) {
   FUNCTION_ENTER;
 
+
   Size_t destLen = 0x0u;
   Size_t i = 0x0u;
+
 
   if(__PointerIsNull__(dest_) || __PointerIsNull__(src_) || (0x0u == destSize_)) {
     __ReturnError__();
@@ -1394,84 +1408,90 @@ Return_t __strcat__(Byte_t *dest_, const Byte_t *src_, const Size_t destSize_) {
 
   dest_[destLen + i] = CHAR_NULL;
   __ReturnOk__();
-
   FUNCTION_EXIT;
 }
 
 
 /**
  * @brief Find first occurrence of character in string
- * @param str_ String to search
- * @param ch_ Character to find
- * @return Pointer to first occurrence or null if not found
+ * @param  str_ String to search
+ * @param  ch_  Character to find
+ * @return      Pointer to first occurrence or null if not found
  */
-Byte_t* __strchr__(const Byte_t *str_, const Byte_t ch_) {
+Byte_t * __strchr__(const Byte_t *str_, const Byte_t ch_) {
   if(__PointerIsNull__(str_)) {
-    return null;
+    return(null);
   }
 
   while(CHAR_NULL != *str_) {
     if(*str_ == ch_) {
-      return (Byte_t*)str_;
+      return((Byte_t *) str_);
     }
+
     str_++;
   }
 
   /* Check if searching for null terminator */
   if(CHAR_NULL == ch_) {
-    return (Byte_t*)str_;
+    return((Byte_t *) str_);
   }
 
-  return null;
+  return(null);
 }
 
 
 /**
  * @brief Find last occurrence of character in string
- * @param str_ String to search
- * @param ch_ Character to find
- * @return Pointer to last occurrence or null if not found
+ * @param  str_ String to search
+ * @param  ch_  Character to find
+ * @return      Pointer to last occurrence or null if not found
  */
-Byte_t* __strrchr__(const Byte_t *str_, const Byte_t ch_) {
+Byte_t * __strrchr__(const Byte_t *str_, const Byte_t ch_) {
   Byte_t *last = null;
 
+
   if(__PointerIsNull__(str_)) {
-    return null;
+    return(null);
   }
 
   while(CHAR_NULL != *str_) {
     if(*str_ == ch_) {
-      last = (Byte_t*)str_;
+      last = (Byte_t *) str_;
     }
+
     str_++;
   }
 
   /* Check if searching for null terminator */
   if(CHAR_NULL == ch_) {
-    return (Byte_t*)str_;
+    return((Byte_t *) str_);
   }
 
-  return last;
+  return(last);
 }
 
 
 /* ============================================================================
  * Path Utility Functions
- * ============================================================================ */
+ * ============================================================================
+ */
+
 
 /**
  * @brief Join base path with relative path
- * @param dest_ Destination buffer for joined path
- * @param base_ Base path
- * @param path_ Path to append
- * @param destSize_ Size of destination buffer
- * @return Return_t OK on success, error otherwise
+ * @param  dest_     Destination buffer for joined path
+ * @param  base_     Base path
+ * @param  path_     Path to append
+ * @param  destSize_ Size of destination buffer
+ * @return           Return_t OK on success, error otherwise
  */
 Return_t __path_join__(Byte_t *dest_, const Byte_t *base_, const Byte_t *path_, const Size_t destSize_) {
   FUNCTION_ENTER;
 
+
   Size_t baseLen = 0x0u;
   Base_t needsSlash = false;
+
 
   if(__PointerIsNull__(dest_) || __PointerIsNull__(base_) || __PointerIsNull__(path_) || (0x0u == destSize_)) {
     __ReturnError__();
@@ -1487,6 +1507,7 @@ Return_t __path_join__(Byte_t *dest_, const Byte_t *base_, const Byte_t *path_, 
       __ReturnError__();
       __AssertOnElse__();
     }
+
     FUNCTION_EXIT;
   }
 
@@ -1529,17 +1550,19 @@ Return_t __path_join__(Byte_t *dest_, const Byte_t *base_, const Byte_t *path_, 
 
 /**
  * @brief Normalize a path by resolving . and .. references
- * @param path_ Path to normalize (modified in place)
- * @param pathSize_ Size of path buffer
- * @return Return_t OK on success, error otherwise
+ * @param  path_     Path to normalize (modified in place)
+ * @param  pathSize_ Size of path buffer
+ * @return           Return_t OK on success, error otherwise
  */
 Return_t __path_normalize__(Byte_t *path_, const Size_t pathSize_) {
   FUNCTION_ENTER;
+
 
   Size_t i = 0x0u;
   Size_t j = 0x0u;
   Size_t len = 0x0u;
   Byte_t temp[CONFIG_FS_MAX_PATH_LENGTH];
+
 
   if(__PointerIsNull__(path_) || (0x0u == pathSize_)) {
     __ReturnError__();
@@ -1580,15 +1603,16 @@ Return_t __path_normalize__(Byte_t *path_, const Size_t pathSize_) {
       }
 
       /* Double dot - parent directory */
-      if((CHAR_DOT == path_[i + 0x1u]) &&
-         ((i + 0x2u >= len) || (CHAR_SLASH == path_[i + 0x2u]))) {
+      if((CHAR_DOT == path_[i + 0x1u]) && ((i + 0x2u >= len) || (CHAR_SLASH == path_[i + 0x2u]))) {
         /* Remove last component from temp */
         if(j > 0x1u) {
           j--;
+
           while((j > 0x0u) && (CHAR_SLASH != temp[j - 0x1u])) {
             j--;
           }
         }
+
         i += 0x3u;
         continue;
       }
@@ -1631,12 +1655,12 @@ Return_t __path_normalize__(Byte_t *path_, const Size_t pathSize_) {
 
 /**
  * @brief Check if path is absolute
- * @param path_ Path to check
- * @return Base_t true if absolute, false otherwise
+ * @param  path_ Path to check
+ * @return       Base_t true if absolute, false otherwise
  */
 Base_t __path_is_absolute__(const Byte_t *path_) {
   if(__PointerIsNull__(path_)) {
-    return false;
+    return(false);
   }
 
   return (CHAR_SLASH == path_[0x0u]);
@@ -1645,16 +1669,18 @@ Base_t __path_is_absolute__(const Byte_t *path_) {
 
 /**
  * @brief Get directory name from path
- * @param dest_ Destination buffer for directory name
- * @param path_ Input path
- * @param destSize_ Size of destination buffer
- * @return Return_t OK on success, error otherwise
+ * @param  dest_     Destination buffer for directory name
+ * @param  path_     Input path
+ * @param  destSize_ Size of destination buffer
+ * @return           Return_t OK on success, error otherwise
  */
 Return_t __path_dirname__(Byte_t *dest_, const Byte_t *path_, const Size_t destSize_) {
   FUNCTION_ENTER;
 
+
   Size_t len = 0x0u;
   Size_t i = 0x0u;
+
 
   if(__PointerIsNull__(dest_) || __PointerIsNull__(path_) || (0x0u == destSize_)) {
     __ReturnError__();
@@ -1666,40 +1692,44 @@ Return_t __path_dirname__(Byte_t *dest_, const Byte_t *path_, const Size_t destS
 
   /* Handle empty path */
   if(0x0u == len) {
-    if(OK(__strcpy__(dest_, (const Byte_t*)".", destSize_))) {
+    if(OK(__strcpy__(dest_, (const Byte_t *) ".", destSize_))) {
       __ReturnOk__();
     } else {
       __ReturnError__();
       __AssertOnElse__();
     }
+
     FUNCTION_EXIT;
   }
 
   /* Find last slash */
   i = len;
+
   while((i > 0x0u) && (CHAR_SLASH != path_[i - 0x1u])) {
     i--;
   }
 
   /* No slash found - return current directory */
   if(0x0u == i) {
-    if(OK(__strcpy__(dest_, (const Byte_t*)".", destSize_))) {
+    if(OK(__strcpy__(dest_, (const Byte_t *) ".", destSize_))) {
       __ReturnOk__();
     } else {
       __ReturnError__();
       __AssertOnElse__();
     }
+
     FUNCTION_EXIT;
   }
 
   /* Root directory case */
   if(0x1u == i) {
-    if(OK(__strcpy__(dest_, (const Byte_t*)"/", destSize_))) {
+    if(OK(__strcpy__(dest_, (const Byte_t *) "/", destSize_))) {
       __ReturnOk__();
     } else {
       __ReturnError__();
       __AssertOnElse__();
     }
+
     FUNCTION_EXIT;
   }
 
@@ -1723,16 +1753,18 @@ Return_t __path_dirname__(Byte_t *dest_, const Byte_t *path_, const Size_t destS
 
 /**
  * @brief Get base filename from path
- * @param dest_ Destination buffer for filename
- * @param path_ Input path
- * @param destSize_ Size of destination buffer
- * @return Return_t OK on success, error otherwise
+ * @param  dest_     Destination buffer for filename
+ * @param  path_     Input path
+ * @param  destSize_ Size of destination buffer
+ * @return           Return_t OK on success, error otherwise
  */
 Return_t __path_basename__(Byte_t *dest_, const Byte_t *path_, const Size_t destSize_) {
   FUNCTION_ENTER;
 
+
   Size_t len = 0x0u;
   Size_t i = 0x0u;
+
 
   if(__PointerIsNull__(dest_) || __PointerIsNull__(path_) || (0x0u == destSize_)) {
     __ReturnError__();
@@ -1744,12 +1776,13 @@ Return_t __path_basename__(Byte_t *dest_, const Byte_t *path_, const Size_t dest
 
   /* Handle empty path */
   if(0x0u == len) {
-    if(OK(__strcpy__(dest_, (const Byte_t*)".", destSize_))) {
+    if(OK(__strcpy__(dest_, (const Byte_t *) ".", destSize_))) {
       __ReturnOk__();
     } else {
       __ReturnError__();
       __AssertOnElse__();
     }
+
     FUNCTION_EXIT;
   }
 
@@ -1760,17 +1793,19 @@ Return_t __path_basename__(Byte_t *dest_, const Byte_t *path_, const Size_t dest
 
   /* All slashes - root directory */
   if(0x0u == len) {
-    if(OK(__strcpy__(dest_, (const Byte_t*)"/", destSize_))) {
+    if(OK(__strcpy__(dest_, (const Byte_t *) "/", destSize_))) {
       __ReturnOk__();
     } else {
       __ReturnError__();
       __AssertOnElse__();
     }
+
     FUNCTION_EXIT;
   }
 
   /* Find last slash before filename */
   i = len;
+
   while((i > 0x0u) && (CHAR_SLASH != path_[i - 0x1u])) {
     i--;
   }
