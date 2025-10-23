@@ -377,41 +377,46 @@ static Return_t __free__(volatile MemoryRegion_t *region_, const volatile Addr_t
   /* Disable interrupts during free */
   __DisableInterrupts__();
 
-  if(__FlagIsNotSet__(MEMFAULT) && __PointerIsNotNull__(region_) && __PointerIsNotNull__(addr_)) {
-    /* Get the block header from the user pointer */
-    header = __OffsetPointerToBlockHeader__(addr_);
+  if(__PointerIsNotNull__(addr_)) {
+    if(__FlagIsNotSet__(MEMFAULT) && __PointerIsNotNull__(region_)) {
+      /* Get the block header from the user pointer */
+      header = __OffsetPointerToBlockHeader__(addr_);
 
-    /* Validate the block header - this checks:
-     * 1. Header is within region bounds 2. Header is properly aligned 3. Free
-     * field has valid value (FREE or INUSE) 4. Size is reasonable 5. Checksum
-     * is valid 6. Header is in the linked list
-     */
-    if(OK(__ValidateBlockHeader__(header, region_))) {
-      /* Additional check: block must be in use to free it */
-      if(__BlockHeaderIsInUse__(header)) {
-        /* Mark block as free */
-        header->free = FREE;
-        header->checksum = __checksum__(header);
-        region_->frees++;
+      /* Validate the block header - this checks:
+       * 1. Header is within region bounds 2. Header is properly aligned 3. Free
+       * field has valid value (FREE or INUSE) 4. Size is reasonable 5. Checksum
+       * is valid 6. Header is in the linked list
+       */
+      if(OK(__ValidateBlockHeader__(header, region_))) {
+        /* Additional check: block must be in use to free it */
+        if(__BlockHeaderIsInUse__(header)) {
+          /* Mark block as free */
+          header->free = FREE;
+          header->checksum = __checksum__(header);
+          region_->frees++;
 
-        /* Merge adjacent free blocks */
-        if(OK(__DefragMemoryRegion__(region_))) {
-          __ReturnOk__();
+          /* Merge adjacent free blocks */
+          if(OK(__DefragMemoryRegion__(region_))) {
+            __ReturnOk__();
+          } else {
+            __AssertOnElse__();
+          }
         } else {
+          /* Block is already free - double free error */
+#if !defined(POSIX_ARCH_OTHER)
+            __SetFlag__(MEMFAULT);
+#endif /* if !defined(POSIX_ARCH_OTHER) */
           __AssertOnElse__();
         }
       } else {
-        /* Block is already free - double free error */
-#if !defined(POSIX_ARCH_OTHER)
-          __SetFlag__(MEMFAULT);
-#endif /* if !defined(POSIX_ARCH_OTHER) */
+        /* Invalid block header - bad pointer, not necessarily corruption */
         __AssertOnElse__();
       }
     } else {
-      /* Invalid block header - bad pointer, not necessarily corruption */
       __AssertOnElse__();
     }
   } else {
+    __ReturnOk__();
     __AssertOnElse__();
   }
 
