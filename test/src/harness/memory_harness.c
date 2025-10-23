@@ -162,7 +162,8 @@ void memory_harness(void) {
   large_alloc = CONFIG_MEMORY_REGION_SIZE - sizeof(BlockHeader_t) - 40; /* Leave
                                                                          * 40
                                                                          * bytes
-                                                                         * + header
+                                                                         * +
+                                                                         * header
                                                                          */
   unit_assert_ok(xMemAlloc((volatile Addr_t **) &mem05, large_alloc));
   actual = nil;

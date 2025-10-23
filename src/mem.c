@@ -63,136 +63,74 @@ static Return_t __MemoryRegionInit__(volatile MemoryRegion_t *region_);
 static Return_t __DetectByteOrder__(ByteOrder_t *order_);
 
 
-/* Checksum calculation function */
+/* Optimized checksum calculation using word-aligned operations Uses Fletcher-32
+ * inspired algorithm for better performance Processes data in word-sized chunks
+ * instead of bytes
+ */
 static Word_t __checksum__(const BlockHeader_t *header_) {
-  Word_t checksum = 0x0u;
-  const Byte_t *header = (const Byte_t *) header_;
+  Word_t sum1 = 0xFFFFu;
+  Word_t sum2 = 0xFFFFu;
+  Word_t temp;
 
 
+  /* Process pointer field efficiently based on architecture */
 #if UINTPTR_MAX == 0xFF
 
 
-    /* 8-bit architecture - 1 byte pointer */
-    /* Process next pointer (1 byte) */
-    checksum ^= header[0];
-    checksum = (checksum << 1) | (checksum >> 31);
-
-
-    /* Skip checksum at header[1-4] */
-    /* Process size (4 bytes) */
-    checksum ^= header[5];
-    checksum = (checksum << 1) | (checksum >> 31);
-    checksum ^= header[6];
-    checksum = (checksum << 1) | (checksum >> 31);
-    checksum ^= header[7];
-    checksum = (checksum << 1) | (checksum >> 31);
-    checksum ^= header[8];
-    checksum = (checksum << 1) | (checksum >> 31);
-
-
-    /* Process free (1 byte) */
-    checksum ^= header[9];
-    checksum = (checksum << 1) | (checksum >> 31);
+    /* 8-bit architecture - process pointer as single byte */
+    sum1 = (sum1 + (Word_t) (uintptr_t) header_->next) & 0xFFFFu;
+    sum2 = (sum2 + sum1) & 0xFFFFu;
 
 #elif UINTPTR_MAX == 0xFFFF
 
 
-    /* 16-bit architecture - 2 byte pointer */
-    /* Process next pointer (2 bytes) */
-    checksum ^= header[0];
-    checksum = (checksum << 1) | (checksum >> 31);
-    checksum ^= header[1];
-    checksum = (checksum << 1) | (checksum >> 31);
-
-
-    /* Skip checksum at header[2-5] */
-    /* Process size (4 bytes) */
-    checksum ^= header[6];
-    checksum = (checksum << 1) | (checksum >> 31);
-    checksum ^= header[7];
-    checksum = (checksum << 1) | (checksum >> 31);
-    checksum ^= header[8];
-    checksum = (checksum << 1) | (checksum >> 31);
-    checksum ^= header[9];
-    checksum = (checksum << 1) | (checksum >> 31);
-
-
-    /* Process free (1 byte) */
-    checksum ^= header[10];
-    checksum = (checksum << 1) | (checksum >> 31);
+    /* 16-bit architecture - process pointer as 16-bit word */
+    temp = (Word_t) (uintptr_t) header_->next;
+    sum1 = (sum1 + temp) & 0xFFFFu;
+    sum2 = (sum2 + sum1) & 0xFFFFu;
 
 #elif UINTPTR_MAX == 0xFFFFFFFF
 
 
-    /* 32-bit architecture - 4 byte pointer */
-    /* Process next pointer (4 bytes) */
-    checksum ^= header[0];
-    checksum = (checksum << 1) | (checksum >> 31);
-    checksum ^= header[1];
-    checksum = (checksum << 1) | (checksum >> 31);
-    checksum ^= header[2];
-    checksum = (checksum << 1) | (checksum >> 31);
-    checksum ^= header[3];
-    checksum = (checksum << 1) | (checksum >> 31);
-
-
-    /* Skip checksum at header[4-7] */
-    /* Process size (4 bytes) */
-    checksum ^= header[8];
-    checksum = (checksum << 1) | (checksum >> 31);
-    checksum ^= header[9];
-    checksum = (checksum << 1) | (checksum >> 31);
-    checksum ^= header[10];
-    checksum = (checksum << 1) | (checksum >> 31);
-    checksum ^= header[11];
-    checksum = (checksum << 1) | (checksum >> 31);
-
-
-    /* Process free (1 byte) */
-    checksum ^= header[12];
-    checksum = (checksum << 1) | (checksum >> 31);
+    /* 32-bit architecture - process pointer as two 16-bit words */
+    temp = (Word_t) (uintptr_t) header_->next;
+    sum1 = (sum1 + (temp & 0xFFFFu)) & 0xFFFFu;
+    sum2 = (sum2 + sum1) & 0xFFFFu;
+    sum1 = (sum1 + (temp >> 16)) & 0xFFFFu;
+    sum2 = (sum2 + sum1) & 0xFFFFu;
 
 #elif UINTPTR_MAX == 0xFFFFFFFFFFFFFFFF
 
 
-    /* 64-bit architecture - 8 byte pointer */
-    /* Process next pointer (8 bytes) */
-    checksum ^= header[0];
-    checksum = (checksum << 1) | (checksum >> 31);
-    checksum ^= header[1];
-    checksum = (checksum << 1) | (checksum >> 31);
-    checksum ^= header[2];
-    checksum = (checksum << 1) | (checksum >> 31);
-    checksum ^= header[3];
-    checksum = (checksum << 1) | (checksum >> 31);
-    checksum ^= header[4];
-    checksum = (checksum << 1) | (checksum >> 31);
-    checksum ^= header[5];
-    checksum = (checksum << 1) | (checksum >> 31);
-    checksum ^= header[6];
-    checksum = (checksum << 1) | (checksum >> 31);
-    checksum ^= header[7];
-    checksum = (checksum << 1) | (checksum >> 31);
-
-
-    /* Skip checksum at header[8-11] */
-    /* Process size (4 bytes) */
-    checksum ^= header[12];
-    checksum = (checksum << 1) | (checksum >> 31);
-    checksum ^= header[13];
-    checksum = (checksum << 1) | (checksum >> 31);
-    checksum ^= header[14];
-    checksum = (checksum << 1) | (checksum >> 31);
-    checksum ^= header[15];
-    checksum = (checksum << 1) | (checksum >> 31);
-
-
-    /* Process free (1 byte) */
-    checksum ^= header[16];
-    checksum = (checksum << 1) | (checksum >> 31);
+    /* 64-bit architecture - process pointer as four 16-bit words Much faster
+     * than 16 individual byte operations with rotations */
+    temp = (Word_t) ((uintptr_t) header_->next & 0xFFFFFFFFu);
+    sum1 = (sum1 + (temp & 0xFFFFu)) & 0xFFFFu;
+    sum2 = (sum2 + sum1) & 0xFFFFu;
+    sum1 = (sum1 + (temp >> 16)) & 0xFFFFu;
+    sum2 = (sum2 + sum1) & 0xFFFFu;
+    temp = (Word_t) ((uintptr_t) header_->next >> 32);
+    sum1 = (sum1 + (temp & 0xFFFFu)) & 0xFFFFu;
+    sum2 = (sum2 + sum1) & 0xFFFFu;
+    sum1 = (sum1 + (temp >> 16)) & 0xFFFFu;
+    sum2 = (sum2 + sum1) & 0xFFFFu;
 #endif /* if UINTPTR_MAX == 0xFF */
 
-  return (checksum);
+
+  /* Process size field - always 32-bit, process as two 16-bit words */
+  sum1 = (sum1 + (header_->size & 0xFFFFu)) & 0xFFFFu;
+  sum2 = (sum2 + sum1) & 0xFFFFu;
+  sum1 = (sum1 + (header_->size >> 16)) & 0xFFFFu;
+  sum2 = (sum2 + sum1) & 0xFFFFu;
+
+
+  /* Process free field - single byte */
+  sum1 = (sum1 + header_->free) & 0xFFFFu;
+  sum2 = (sum2 + sum1) & 0xFFFFu;
+
+
+  /* Combine sums with mixing for better distribution */
+  return(((sum2 << 16) | sum1) ^ 0xDEADBEEFu);
 }
 
 
