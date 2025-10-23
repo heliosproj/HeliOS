@@ -251,7 +251,6 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
 
         cursor = cursor->next;
       } else {
-        __SetFlag__(MEMFAULT);
         __AssertOnElse__();
       }
     }
@@ -364,7 +363,6 @@ static Return_t __DefragMemoryRegion__(volatile MemoryRegion_t *region_) {
         traversedSize += ALIGNED_HEADER_SIZE + cursor->size;
 
         if(traversedSize > MEMORY_REGION_SIZE) {
-          __SetFlag__(MEMFAULT);
           cycleDetected = true;
         } else {
           if(__BlockHeaderIsFree__(cursor) && __BlockHeaderIsFree__(cursor->next)) {
@@ -455,7 +453,6 @@ Return_t xMemGetUsed(Size_t *size_) {
       traversedSize += ALIGNED_HEADER_SIZE + cursor->size;
 
       if(traversedSize > MEMORY_REGION_SIZE) {
-        __SetFlag__(MEMFAULT);
         cycleDetected = true;
       } else {
         if(__BlockHeaderIsInUse__(cursor)) {
@@ -590,7 +587,6 @@ static Return_t __MemGetRegionStats__(const volatile MemoryRegion_t *region_, Me
         traversedSize += ALIGNED_HEADER_SIZE + cursor->size;
 
         if(traversedSize > MEMORY_REGION_SIZE) {
-          __SetFlag__(MEMFAULT);
           xMemFree((const volatile Addr_t *) stats);
           cycleDetected = true;
         } else {
