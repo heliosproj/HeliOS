@@ -166,7 +166,7 @@
   #ifndef MEMORYREGION_T_
     #define MEMORYREGION_T_
     typedef struct MemoryRegion_s {
-      volatile Byte_t mem[MEMORY_REGION_SIZE_IN_BYTES];  /* Memory pool */
+      volatile Byte_t mem[MEMORY_REGION_SIZE];  /* Memory pool */
       BlockHeader_t *first; /* Pointer to first block header in mem[] */
       HalfWord_t allocations; /* Number of successful allocations */
       HalfWord_t frees; /* Number of successful frees */

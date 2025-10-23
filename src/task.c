@@ -817,17 +817,17 @@ Return_t xTaskStartScheduler(void) {
           if(OK(xTaskCreate(&consoleTask, "Console", vConsoleTask, null))) {
             /* Note: Task priority not currently implemented in HeliOS */
 
-  #if (0x0u == CONFIG_CONSOLE_TASK_MODE)
+  #if (nil == CONFIG_CONSOLE_TASK_MODE)
 
 
               /* Continuous mode - task runs every clock tick */
               xTaskResume(consoleTask);
-  #else /* if (0x0u == CONFIG_CONSOLE_TASK_MODE) */
+  #else /* if (nil == CONFIG_CONSOLE_TASK_MODE) */
               /* Event-driven mode - task runs on timer */
               xTaskWait(consoleTask);
               xTaskChangePeriod(consoleTask, CONFIG_CONSOLE_TIMER_PERIOD_MS);
               xTaskResetTimer(consoleTask);
-  #endif /* if (0x0u == CONFIG_CONSOLE_TASK_MODE) */
+  #endif /* if (nil == CONFIG_CONSOLE_TASK_MODE) */
           }
         }
       }

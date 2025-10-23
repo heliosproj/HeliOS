@@ -13472,7 +13472,7 @@
      * - Display of console banner on connect
      *
      * Task scheduling mode is determined by CONFIG_CONSOLE_TASK_MODE:
-     * - Continuous mode (0x0u): Runs every scheduler tick
+     * - Continuous mode (nil): Runs every scheduler tick
      * - Event-driven mode (0x1u): Runs on timer events
      *
      * @param[in] task_ Task handle for this console task

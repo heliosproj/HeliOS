@@ -195,7 +195,7 @@ static void test_queue_peek_and_receive(void) {
   unit_assert_ok(xQueuePeek(queue, &message));
   unit_assert_not_null(message);
   unit_assert_equal(message->messageBytes, MESSAGE_SIZE);
-  unit_assert_equal(strncmp(TEST_MESSAGE_1, (char *) message->messageValue, MESSAGE_SIZE), 0x0u);
+  unit_assert_equal(strncmp(TEST_MESSAGE_1, (char *) message->messageValue, MESSAGE_SIZE), nil);
   unit_assert_ok(xMemFree(message));
   unit_end();
 
@@ -206,7 +206,7 @@ static void test_queue_peek_and_receive(void) {
   unit_assert_ok(xQueueReceive(queue, &message));
   unit_assert_not_null(message);
   unit_assert_equal(message->messageBytes, MESSAGE_SIZE);
-  unit_assert_equal(strncmp(TEST_MESSAGE_1, (char *) message->messageValue, MESSAGE_SIZE), 0x0u);
+  unit_assert_equal(strncmp(TEST_MESSAGE_1, (char *) message->messageValue, MESSAGE_SIZE), nil);
   unit_assert_ok(xMemFree(message));
   unit_end();
 

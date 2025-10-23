@@ -127,7 +127,7 @@ static void __WriteLE32__(Byte_t *data_, Word_t value_) {
 /* Mount tracking - tracks which block devices are currently mounted */
 #define MAX_MOUNTED_VOLUMES 0x8u
 static HalfWord_t mountedDevices[MAX_MOUNTED_VOLUMES];
-static Byte_t mountedDeviceCount = 0x0u;
+static Byte_t mountedDeviceCount = nil;
 /* Forward declarations for helper functions */
 static Return_t __ReadSector__(const Volume_t *vol_, Word_t sector_, Byte_t **data_);
 static Return_t __WriteSector__(const Volume_t *vol_, Word_t sector_, const Byte_t *data_);
@@ -172,7 +172,7 @@ Return_t xFSMount(Volume_t **volume_) {
       vol->mounted = false;
 
       /* Read boot sector (sector 0x0) */
-      if(OK(__ReadSector__(vol, 0x0u, &bootSectorData))) {
+      if(OK(__ReadSector__(vol, nil, &bootSectorData))) {
         bs = (FAT32BootSector_t *) bootSectorData;
 
 
@@ -190,7 +190,7 @@ Return_t xFSMount(Volume_t **volume_) {
         vol->dataStartSector = vol->reservedSectors + (vol->numFATs * vol->sectorsPerFAT);
 
         /* Validate FAT32 filesystem */
-        if((vol->bytesPerSector >= 0x200u) && (vol->sectorsPerCluster > 0x0u) && (vol->rootDirCluster >= 0x2u)) {
+        if((vol->bytesPerSector >= 0x200u) && (vol->sectorsPerCluster > nil) && (vol->rootDirCluster >= 0x2u)) {
           vol->mounted = true;
 
           /* Add device to mounted list */
@@ -366,17 +366,17 @@ Return_t xFSFormat(const Byte_t *volumeLabel_) {
     bs->sectorsPerCluster = sectorsPerCluster;
     __WriteLE16__(bs->reservedSectors, reservedSectors);
     bs->numFATs = numFATs;
-    __WriteLE16__(bs->rootEntryCount, 0x0u);  /* 0x0 for FAT32 */
-    __WriteLE16__(bs->totalSectors16, 0x0u); /* 0x0 for FAT32 */
+    __WriteLE16__(bs->rootEntryCount, nil);  /* 0x0 for FAT32 */
+    __WriteLE16__(bs->totalSectors16, nil); /* 0x0 for FAT32 */
     bs->mediaType = 0xF8u; /* Fixed disk */
-    __WriteLE16__(bs->FATSize16, 0x0u); /* 0x0 for FAT32 */
+    __WriteLE16__(bs->FATSize16, nil); /* 0x0 for FAT32 */
     __WriteLE16__(bs->sectorsPerTrack, 0x3Fu);
     __WriteLE16__(bs->numHeads, 0x10u);
-    __WriteLE32__(bs->hiddenSectors, 0x0u);
+    __WriteLE32__(bs->hiddenSectors, nil);
     __WriteLE32__(bs->totalSectors32, 0x800u);  /* 1MB / 512 bytes */
     __WriteLE32__(bs->FATSize32, sectorsPerFAT);
-    __WriteLE16__(bs->extFlags, 0x0u);
-    __WriteLE16__(bs->fsVersion, 0x0u);
+    __WriteLE16__(bs->extFlags, nil);
+    __WriteLE16__(bs->fsVersion, nil);
     __WriteLE32__(bs->rootCluster, rootDirCluster);
     __WriteLE16__(bs->fsInfo, 0x1u);
     __WriteLE16__(bs->backupBootSector, 0x6u);
@@ -392,10 +392,10 @@ Return_t xFSFormat(const Byte_t *volumeLabel_) {
     bootSector[0x1FFu] = 0xAAu;
 
     /* Write boot sector */
-    if(OK(__WriteSector__(&tempVol, 0x0u, bootSector))) {
+    if(OK(__WriteSector__(&tempVol, nil, bootSector))) {
       Byte_t *fatSector = null;
-      Word_t sector = 0x0u;
-      Word_t fat = 0x0u;
+      Word_t sector = nil;
+      Word_t fat = nil;
       Base_t fatInitSuccess = true;
 
 
@@ -407,11 +407,11 @@ Return_t xFSFormat(const Byte_t *volumeLabel_) {
         __memset__(fatSector, 0x00u, bytesPerSector);
 
         /* Write zeros to all sectors of all FAT copies */
-        for(fat = 0x0u; fat < numFATs && fatInitSuccess; fat++) {
+        for(fat = nil; fat < numFATs && fatInitSuccess; fat++) {
           Word_t fatStartSector = fatStart + (fat * sectorsPerFAT);
 
 
-          for(sector = 0x0u; sector < sectorsPerFAT && fatInitSuccess; sector++) {
+          for(sector = nil; sector < sectorsPerFAT && fatInitSuccess; sector++) {
             if(ERROR(__WriteSector__(&tempVol, fatStartSector + sector, fatSector))) {
               fatInitSuccess = false;
             }
@@ -423,13 +423,13 @@ Return_t xFSFormat(const Byte_t *volumeLabel_) {
            * - Cluster 0x0: Media descriptor (0x0FFFFFF8)
            * - Cluster 0x1: Clean/dirty flag (0x0FFFFFFF)
            * - Cluster 0x2: Root directory (EOC marker 0x0FFFFFFF) */
-          if(OK(__SetFATEntry__(&tempVol, 0x0u, 0x0FFFFFF8u)) && OK(__SetFATEntry__(&tempVol, 0x1u, 0x0FFFFFFFu)) && OK(__SetFATEntry__(&tempVol, 0x2u,
+          if(OK(__SetFATEntry__(&tempVol, nil, 0x0FFFFFF8u)) && OK(__SetFATEntry__(&tempVol, 0x1u, 0x0FFFFFFFu)) && OK(__SetFATEntry__(&tempVol, 0x2u,
             FAT32_EOC_MAX))) {
             /* Initialize root directory cluster to zeros */
             Word_t rootFirstSector = __ClusterToSector__(&tempVol, rootDirCluster);
 
 
-            for(sector = 0x0u; sector < sectorsPerCluster && fatInitSuccess; sector++) {
+            for(sector = nil; sector < sectorsPerCluster && fatInitSuccess; sector++) {
               if(ERROR(__WriteSector__(&tempVol, rootFirstSector + sector, fatSector))) {
                 fatInitSuccess = false;
               }

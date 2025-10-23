@@ -41,7 +41,7 @@ static Volume_t *mountedVolume = null;
 
 /* Performance optimization: Cache for device lookup */
 static Device_t *cachedDevice = null;
-static HalfWord_t cachedDeviceUID = 0x0u;
+static HalfWord_t cachedDeviceUID = nil;
 
 
 /* Forward declarations for command handlers */
@@ -133,7 +133,7 @@ Return_t xConsoleInit(void) {
 #else /* if defined(CONFIG_CONSOLE_ECHO_ENABLED) */
     consoleState.echoEnabled = false;
 #endif /* if defined(CONFIG_CONSOLE_ECHO_ENABLED) */
-  consoleState.bufferPosition = 0x0u;
+  consoleState.bufferPosition = nil;
   __memset__(consoleState.commandBuffer, CHAR_NULL, CONFIG_CONSOLE_MAX_COMMAND_LENGTH);
   __strcpy__(consoleState.currentWorkingDirectory, (const Byte_t *) "/", CONFIG_FS_MAX_PATH_LENGTH);
   mountedVolume = null;
@@ -175,7 +175,7 @@ void vConsoleTask(Task_t *task_, TaskParm_t *parm_) {
     /* Device not ready - reset state */
     if(consoleState.deviceReady) {
       consoleState.deviceReady = false;
-      consoleState.bufferPosition = 0x0u;
+      consoleState.bufferPosition = nil;
 
 
       /* Unmount filesystem if it was mounted */
@@ -201,10 +201,10 @@ void vConsoleTask(Task_t *task_, TaskParm_t *parm_) {
 
 
       /* Process command if buffer is not empty */
-      if(consoleState.bufferPosition > 0x0u) {
+      if(consoleState.bufferPosition > nil) {
         consoleState.commandBuffer[consoleState.bufferPosition] = CHAR_NULL;
         __ConsoleProcessCommand__();
-        consoleState.bufferPosition = 0x0u;
+        consoleState.bufferPosition = nil;
       }
 
       __ConsolePrintPrompt__();
@@ -244,7 +244,7 @@ static Return_t __ConsoleCheckDevice__(void) {
     } else {
       /* Device state changed, invalidate cache */
       cachedDevice = null;
-      cachedDeviceUID = 0x0u;
+      cachedDeviceUID = nil;
 
 
       /* Cache miss or invalid - look up device */
@@ -255,12 +255,12 @@ static Return_t __ConsoleCheckDevice__(void) {
           __ReturnOk__();
         } else {
           cachedDevice = null;
-          cachedDeviceUID = 0x0u;
+          cachedDeviceUID = nil;
           __AssertOnElse__();
         }
       } else {
         cachedDevice = null;
-        cachedDeviceUID = 0x0u;
+        cachedDeviceUID = nil;
         __AssertOnElse__();
       }
     }
@@ -273,12 +273,12 @@ static Return_t __ConsoleCheckDevice__(void) {
         __ReturnOk__();
       } else {
         cachedDevice = null;
-        cachedDeviceUID = 0x0u;
+        cachedDeviceUID = nil;
         __AssertOnElse__();
       }
     } else {
       cachedDevice = null;
-      cachedDeviceUID = 0x0u;
+      cachedDeviceUID = nil;
       __AssertOnElse__();
     }
   }
@@ -296,8 +296,8 @@ static Return_t __ConsoleWriteString__(const Byte_t *str_) {
   FUNCTION_ENTER;
 
 
-  Word_t len = 0x0u;
-  Size_t size = 0x0u;
+  Word_t len = nil;
+  Size_t size = nil;
   Device_t *device = null;
   CharDeviceCommand_t cmd;
 
@@ -305,7 +305,7 @@ static Return_t __ConsoleWriteString__(const Byte_t *str_) {
   if(__PointerIsNotNull__(str_)) {
     len = __strlen__(str_);
 
-    if(0x0u < len) {
+    if(nil < len) {
       /* Performance optimization: Try cached device first */
       if(__PointerIsNotNull__(cachedDevice) && (CONFIG_CONSOLE_DEVICE_UID == cachedDeviceUID)) {
         device = cachedDevice;
@@ -415,7 +415,7 @@ static Return_t __ConsoleReadChar__(Byte_t *ch_) {
         size = 0x1u;
 
         if(OK((*device->read)(device, &size, &readData))) {
-          if(__PointerIsNotNull__(readData) && (0x0u < size)) {
+          if(__PointerIsNotNull__(readData) && (nil < size)) {
             *ch_ = *((Byte_t *) readData);
             __KernelFreeMemory__(readData);
             __ReturnOk__();
@@ -459,7 +459,7 @@ static void __ConsolePrintPrompt__(void) {
 static Return_t __ConsoleHandleBackspace__(void) {
   FUNCTION_ENTER;
 
-  if(consoleState.bufferPosition > 0x0u) {
+  if(consoleState.bufferPosition > nil) {
     consoleState.bufferPosition--;
     consoleState.commandBuffer[consoleState.bufferPosition] = 0x00u;
 
@@ -488,7 +488,7 @@ static Return_t __ConsoleProcessCommand__(void) {
 
   Byte_t *cmdName = consoleState.commandBuffer;
   Byte_t *cmdArgs = null;
-  Word_t i = 0x0u;
+  Word_t i = nil;
   Base_t commandFound = false;
 
 
@@ -497,7 +497,7 @@ static Return_t __ConsoleProcessCommand__(void) {
 
 
   /* Find space to separate command from arguments */
-  for(i = 0x0u; cmdName[i] != CHAR_NULL; i++) {
+  for(i = nil; cmdName[i] != CHAR_NULL; i++) {
     if(CHAR_SPACE == cmdName[i]) {
       cmdName[i] = CHAR_NULL;
       cmdArgs = &cmdName[i + 0x1u];
@@ -512,7 +512,7 @@ static Return_t __ConsoleProcessCommand__(void) {
     __ReturnOk__();
   } else {
     /* Search command table */
-    for(i = 0x0u; __PointerIsNotNull__(commandTable[i].name) && !commandFound; i++) {
+    for(i = nil; __PointerIsNotNull__(commandTable[i].name) && !commandFound; i++) {
       if(0 == __strcmp__(cmdName, commandTable[i].name)) {
         if(__PointerIsNotNull__(commandTable[i].handler)) {
           if(OK(commandTable[i].handler((const Byte_t *) cmdArgs))) {
@@ -547,13 +547,13 @@ static Return_t __ConsoleCmdHelp__(const Byte_t *args_) {
   FUNCTION_ENTER;
 
 
-  Word_t i = 0x0u;
+  Word_t i = nil;
 
 
   (void) args_;
   __ConsoleWriteString__((const Byte_t *) "Available commands:\r\n");
 
-  for(i = 0x0u; __PointerIsNotNull__(commandTable[i].name); i++) {
+  for(i = nil; __PointerIsNotNull__(commandTable[i].name); i++) {
     __ConsoleWriteString__((const Byte_t *) "  ");
     __ConsoleWriteString__(commandTable[i].name);
     __ConsoleWriteString__((const Byte_t *) " - ");
@@ -591,8 +591,8 @@ static Return_t __ConsoleCmdTasks__(const Byte_t *args_) {
 
 
   TaskInfo_t *taskList = null;
-  Base_t taskCount = 0x0u;
-  Base_t i = 0x0u;
+  Base_t taskCount = nil;
+  Base_t i = nil;
   Byte_t numBuf[0x10];
 
 
@@ -602,7 +602,7 @@ static Return_t __ConsoleCmdTasks__(const Byte_t *args_) {
   __ConsoleWriteString__((const Byte_t *) "  ---- ---------- --------\r\n");
 
   if(OK(xTaskGetAllTaskInfo(&taskList, &taskCount))) {
-    for(i = 0x0u; i < taskCount; i++) {
+    for(i = nil; i < taskCount; i++) {
       /* Print task ID */
       __ConsoleWriteString__((const Byte_t *) "  ");
       __uitoah__((Word_t) taskList[i].id, numBuf, sizeof(numBuf));
@@ -924,9 +924,9 @@ static Return_t __ConsoleCmdCat__(const Byte_t *args_) {
 
   File_t *file = null;
   Byte_t *buffer = null;
-  Word_t bytesToRead = 0x0u;
-  Word_t fileSize = 0x0u;
-  Word_t totalRead = 0x0u;
+  Word_t bytesToRead = nil;
+  Word_t fileSize = nil;
+  Word_t totalRead = nil;
   Byte_t path[CONFIG_FS_MAX_PATH_LENGTH];
 
 
@@ -952,7 +952,7 @@ static Return_t __ConsoleCmdCat__(const Byte_t *args_) {
     if(OK(xFileOpen(&file, mountedVolume, path, FS_MODE_READ))) {
       /* Get file size for progress tracking */
       if(OK(xFileGetSize(file, &fileSize))) {
-        if(0x0u < fileSize) {
+        if(nil < fileSize) {
           /* Allocate buffer for chunked reading */
           if(OK(xMemAlloc((volatile Addr_t **) &buffer, CAT_BUFFER_SIZE))) {
             /* Read file in chunks */
@@ -964,13 +964,13 @@ static Return_t __ConsoleCmdCat__(const Byte_t *args_) {
               /* Read chunk from file */
               if(OK(xFileRead(file, bytesToRead, &buffer))) {
                 /* Display chunk contents */
-                Word_t i = 0x0u;
+                Word_t i = nil;
                 Byte_t ch[0x2] = {
                   0x00u, 0x00u
                 };
 
 
-                for(i = 0x0u; i < bytesToRead; i++) {
+                for(i = nil; i < bytesToRead; i++) {
                   ch[0x0] = buffer[i];
 
 
@@ -1066,12 +1066,12 @@ static Return_t __ConsoleCmdMv__(const Byte_t *args_) {
   Byte_t newPath[CONFIG_FS_MAX_PATH_LENGTH];
   const Byte_t *src = args_;
   const Byte_t *dst = null;
-  Word_t i = 0x0u;
+  Word_t i = nil;
 
 
   if(__PointerIsNotNull__(mountedVolume) && __PointerIsNotNull__(args_) && (CHAR_NULL != args_[0x0])) {
     /* Find space separating source and destination */
-    for(i = 0x0u; args_[i] != CHAR_NULL; i++) {
+    for(i = nil; args_[i] != CHAR_NULL; i++) {
       if(CHAR_SPACE == args_[i]) {
         dst = &args_[i + 0x1u];
         __SkipWhitespace__(&dst);
@@ -1247,7 +1247,7 @@ static void __SkipWhitespace__(const Byte_t **str_) {
  */
 static void __uitoah__(Word_t value_, Byte_t *buffer_, Word_t bufferSize_) {
   const Byte_t *hexDigits = (const Byte_t *) "0123456789ABCDEF";
-  Word_t i = 0x0u;
+  Word_t i = nil;
   Word_t temp = value_;
 
 
@@ -1261,7 +1261,7 @@ static void __uitoah__(Word_t value_, Byte_t *buffer_, Word_t bufferSize_) {
   buffer_[i++] = CHAR_LOWERCASE_X; /* 'x' */
 
   /* Handle zero specially */
-  if(0x0u == value_) {
+  if(nil == value_) {
     if(i < bufferSize_ - 0x1u) {
       buffer_[i++] = CHAR_ZERO;  /* '0' */
     }
@@ -1275,11 +1275,11 @@ static void __uitoah__(Word_t value_, Byte_t *buffer_, Word_t bufferSize_) {
   /* Convert to hex digits (will be in reverse order initially) */
   {
     Word_t start = i;
-    Word_t end = 0x0u;
+    Word_t end = nil;
     Byte_t tmpChar = CHAR_NULL;
 
 
-    while(temp > 0x0u && i < bufferSize_ - 0x1u) {
+    while(temp > nil && i < bufferSize_ - 0x1u) {
       buffer_[i++] = hexDigits[temp & 0xFu];
       temp >>= 0x4;
     }
@@ -1312,7 +1312,7 @@ static void __uitoah__(Word_t value_, Byte_t *buffer_, Word_t bufferSize_) {
   #else /* if defined(CONFIG_CONSOLE_ECHO_ENABLED) */
       consoleState.echoEnabled = false;
   #endif /* if defined(CONFIG_CONSOLE_ECHO_ENABLED) */
-    consoleState.bufferPosition = 0x0u;
+    consoleState.bufferPosition = nil;
     __memset__(consoleState.commandBuffer, CHAR_NULL, CONFIG_CONSOLE_MAX_COMMAND_LENGTH);
     __strcpy__(consoleState.currentWorkingDirectory, (const Byte_t *) "/", CONFIG_FS_MAX_PATH_LENGTH);
     mountedVolume = null;

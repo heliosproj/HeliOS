@@ -29,7 +29,7 @@
 #define FILL_PATTERN_AA 0xAAu /* Alternating pattern */
 #define TEST_STRING_1 "LOOPBACK TEST STRING"
 #define TEST_STRING_2 "DEVICE DRIVER VALIDATION"
-#define TEST_POSITION_START 0x0u /* Start of buffer */
+#define TEST_POSITION_START nil /* Start of buffer */
 #define TEST_POSITION_MID 0x200u /* Middle of buffer */
 #define BLOCK_SIZE_STANDARD 512u /* Standard block size */
 #define BLOCK_COUNT_SINGLE 1u /* Single block */
@@ -132,7 +132,7 @@ static void test_configuration_commands(void) {
   configSize = sizeof(LoopbackStats_t);
   unit_assert_ok(xDeviceConfigDevice(LOOPBACK_DEVICE_ID, &configSize, (Addr_t *) stats));
   unit_assert_equal(stats->bufferSize, TEST_DATA_LARGE);
-  unit_assert_equal(stats->bytesAvailable, 0x0u);
+  unit_assert_equal(stats->bytesAvailable, nil);
   xMemFree((Addr_t *) stats);
   unit_end();
 
@@ -423,10 +423,10 @@ static void test_statistics_tracking(void) {
   stats->command = LOOPBACK_CMD_GET_STATS;
   configSize = sizeof(LoopbackStats_t);
   unit_assert_ok(xDeviceConfigDevice(LOOPBACK_DEVICE_ID, &configSize, (Addr_t *) stats));
-  unit_assert_equal(stats->bytesWritten, 0x0u);
-  unit_assert_equal(stats->bytesRead, 0x0u);
-  unit_assert_equal(stats->writeOperations, 0x0u);
-  unit_assert_equal(stats->readOperations, 0x0u);
+  unit_assert_equal(stats->bytesWritten, nil);
+  unit_assert_equal(stats->bytesRead, nil);
+  unit_assert_equal(stats->writeOperations, nil);
+  unit_assert_equal(stats->readOperations, nil);
   xMemFree((Addr_t *) stats);
   unit_end();
 
@@ -462,7 +462,7 @@ static void test_statistics_tracking(void) {
   unit_assert_ok(xDeviceConfigDevice(LOOPBACK_DEVICE_ID, &configSize, (Addr_t *) stats));
   unit_assert_equal(stats->bytesRead, TEST_DATA_SMALL);
   unit_assert_equal(stats->readOperations, 0x1u);
-  unit_assert_equal(stats->bytesAvailable, 0x0u);
+  unit_assert_equal(stats->bytesAvailable, nil);
   xMemFree((Addr_t *) stats);
   unit_end();
 
@@ -529,7 +529,7 @@ static void test_circular_buffer_wraparound(void) {
   bytesRead = TEST_DATA_SMALL;
   readData = null;
   unit_assert_ok(xDeviceRead(LOOPBACK_DEVICE_ID, &bytesRead, &readData));
-  unit_assert_equal(((Byte_t *) readData)[0], 0x0u);
+  unit_assert_equal(((Byte_t *) readData)[0], nil);
   unit_assert_equal(((Byte_t *) readData)[TEST_DATA_SMALL - 1], TEST_DATA_SMALL - 1);
   unit_assert_ok(xMemFree(readData));
   unit_assert_ok(xMemFree(writeData));
@@ -679,7 +679,7 @@ static void test_block_io_interface(void) {
   unit_assert_ok(xMemAlloc((volatile Addr_t **) &request, sizeof(BlockIORequest_t)));
   request->command = BLOCK_IO_CMD_SET_REQUEST;
   request->operation = BLOCK_IO_OP_WRITE;
-  request->blockNumber = 0x0u;
+  request->blockNumber = nil;
   request->blockCount = BLOCK_COUNT_SINGLE;
   request->blockSize = BLOCK_SIZE_STANDARD;
   configSize = sizeof(BlockIORequest_t);
@@ -704,7 +704,7 @@ static void test_block_io_interface(void) {
   unit_assert_ok(xMemAlloc((volatile Addr_t **) &request, sizeof(BlockIORequest_t)));
   request->command = BLOCK_IO_CMD_SET_REQUEST;
   request->operation = BLOCK_IO_OP_READ;
-  request->blockNumber = 0x0u;
+  request->blockNumber = nil;
   request->blockCount = BLOCK_COUNT_SINGLE;
   request->blockSize = BLOCK_SIZE_STANDARD;
   configSize = sizeof(BlockIORequest_t);

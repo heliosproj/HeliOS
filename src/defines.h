@@ -87,9 +87,9 @@
   #endif /* if !defined(OS_PRODUCT_NAME_SIZE) */
 
 
-  #if !defined(MEMORY_REGION_SIZE_IN_BYTES)
-    #define MEMORY_REGION_SIZE_IN_BYTES CONFIG_MEMORY_REGION_SIZE
-  #endif /* if !defined(MEMORY_REGION_SIZE_IN_BYTES) */
+  #if !defined(MEMORY_REGION_SIZE)
+    #define MEMORY_REGION_SIZE CONFIG_MEMORY_REGION_SIZE
+  #endif /* if !defined(MEMORY_REGION_SIZE) */
 
 
   #if !defined(OK)

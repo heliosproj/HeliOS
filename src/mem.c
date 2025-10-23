@@ -55,7 +55,8 @@ static Return_t __DetectByteOrder__(ByteOrder_t *order_);
 static Word_t __checksum__(const BlockHeader_t *header_);
 
 
-static Word_t __checksum__(const BlockHeader_t *header_) {
+static Word_t __checksum__(const BlockHeader_t *header_) { /* GOOD - DO NOT
+                                                            * TOUCH */
   Word_t sum1 = 0xFFFFu;
   Word_t sum2 = 0xFFFFu;
   Word_t temp;
@@ -105,15 +106,15 @@ static Word_t __checksum__(const BlockHeader_t *header_) {
 }
 
 
-static Return_t __ValidateBlockHeader__(const BlockHeader_t *header_, const volatile MemoryRegion_t *region_) {
+static Return_t __ValidateBlockHeader__(const BlockHeader_t *header_, const volatile MemoryRegion_t *region_) {  /* GOOD - DO NOT TOUCH!! */
   FUNCTION_ENTER;
 
 
-  Word_t expectedChecksum = 0x0u;
+  Word_t expectedChecksum = nil;
 
 
-  if(!(((const Byte_t *) header_ < (const Byte_t *) region_->mem) || ((const Byte_t *) header_ >= ((const Byte_t *) region_->mem + MEMORY_REGION_SIZE_IN_BYTES -
-    ALIGNED_HEADER_SIZE)))) {
+  if(((const Byte_t *) header_ >= (const Byte_t *) region_->mem) && ((const Byte_t *) header_ < ((const Byte_t *) region_->mem + MEMORY_REGION_SIZE -
+    ALIGNED_HEADER_SIZE))) {
     expectedChecksum = __checksum__(header_);
 
     if(header_->checksum == expectedChecksum) {
@@ -141,7 +142,7 @@ static Return_t __ValidateBlockHeader__(const BlockHeader_t *header_, const vola
 }
 
 
-Return_t __MemoryInit__(void) {
+Return_t __MemoryInit__(void) {  /* GOOD - DO NOT TOUCH!! */
   FUNCTION_ENTER;
 
 
@@ -178,16 +179,16 @@ static Return_t __MemoryRegionInit__(volatile MemoryRegion_t *region_) {
 
   if(__PointerIsNotNull__(region_)) {
     region_->first = (BlockHeader_t *) region_->mem;
-    region_->minAvailableEver = MEMORY_REGION_SIZE_IN_BYTES;
+    region_->minAvailableEver = MEMORY_REGION_SIZE;
     region_->allocations = 0;
     region_->frees = 0;
 
-    if(OK(__memset__((volatile Addr_t *) region_->mem, nil, MEMORY_REGION_SIZE_IN_BYTES))) {
+    if(OK(__memset__((volatile Addr_t *) region_->mem, nil, MEMORY_REGION_SIZE))) {
       BlockHeader_t *first = region_->first;
 
 
       first->next = null;
-      first->size = MEMORY_REGION_SIZE_IN_BYTES - ALIGNED_HEADER_SIZE;
+      first->size = MEMORY_REGION_SIZE - ALIGNED_HEADER_SIZE;
       first->free = FREE;
       first->checksum = __checksum__(first);
       __ReturnOk__();
@@ -221,12 +222,12 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
   __DisableInterrupts__();
 
   if(__FlagIsNotSet__(MEMFAULT) && __PointerIsNotNull__(region_) && __PointerIsNotNull__(addr_) && (nil < size_) && (requested >= size_) && ((requested <
-    MEMORY_REGION_SIZE_IN_BYTES) && ((requested + ALIGNED_HEADER_SIZE) <= MEMORY_REGION_SIZE_IN_BYTES))) {
+    MEMORY_REGION_SIZE) && ((requested + ALIGNED_HEADER_SIZE) <= MEMORY_REGION_SIZE))) {
     if(__PointerIsNull__(region_->first)) {
       region_->first = (BlockHeader_t *) region_->mem;
       first = region_->first;
       first->next = null;
-      first->size = MEMORY_REGION_SIZE_IN_BYTES - ALIGNED_HEADER_SIZE;
+      first->size = MEMORY_REGION_SIZE - ALIGNED_HEADER_SIZE;
       first->free = FREE;
       first->checksum = __checksum__(first);
     }
@@ -243,7 +244,7 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
 
       traversedSize += ALIGNED_HEADER_SIZE + cursor->size;
 
-      if(traversedSize > MEMORY_REGION_SIZE_IN_BYTES) {
+      if(traversedSize > MEMORY_REGION_SIZE) {
         cycleDetected = true;
         candidate = null;
         __SetFlag__(MEMFAULT);
@@ -375,7 +376,7 @@ static Return_t __DefragMemoryRegion__(volatile MemoryRegion_t *region_) {
       while(__PointerIsNotNull__(cursor) && __PointerIsNotNull__(cursor->next) && !cycleDetected) {
         traversedSize += ALIGNED_HEADER_SIZE + cursor->size;
 
-        if(traversedSize > MEMORY_REGION_SIZE_IN_BYTES) {
+        if(traversedSize > MEMORY_REGION_SIZE) {
           __SetFlag__(MEMFAULT);
           cycleDetected = true;
         } else {
@@ -466,7 +467,7 @@ Return_t xMemGetUsed(Size_t *size_) {
     while(__PointerIsNotNull__(cursor) && !cycleDetected) {
       traversedSize += ALIGNED_HEADER_SIZE + cursor->size;
 
-      if(traversedSize > MEMORY_REGION_SIZE_IN_BYTES) {
+      if(traversedSize > MEMORY_REGION_SIZE) {
         __SetFlag__(MEMFAULT);
         cycleDetected = true;
       } else {
@@ -601,7 +602,7 @@ static Return_t __MemGetRegionStats__(const volatile MemoryRegion_t *region_, Me
       while(__PointerIsNotNull__(cursor) && !cycleDetected) {
         traversedSize += ALIGNED_HEADER_SIZE + cursor->size;
 
-        if(traversedSize > MEMORY_REGION_SIZE_IN_BYTES) {
+        if(traversedSize > MEMORY_REGION_SIZE) {
           __SetFlag__(MEMFAULT);
           xMemFree((const volatile Addr_t *) stats);
           cycleDetected = true;
@@ -799,7 +800,7 @@ static Return_t __DetectByteOrder__(ByteOrder_t *order_) {
 
 
 Size_t __strlen__(const Byte_t *str_) {
-  Size_t len = 0x0u;
+  Size_t len = nil;
 
 
   if(__PointerIsNotNull__(str_)) {
@@ -816,10 +817,10 @@ Return_t __strcpy__(Byte_t *dest_, const Byte_t *src_, const Size_t destSize_) {
   FUNCTION_ENTER;
 
 
-  Size_t i = 0x0u;
+  Size_t i = nil;
 
 
-  if(__PointerIsNotNull__(dest_) && __PointerIsNotNull__(src_) && (0x0u < destSize_)) {
+  if(__PointerIsNotNull__(dest_) && __PointerIsNotNull__(src_) && (nil < destSize_)) {
     while((CHAR_NULL != src_[i]) && (i < (destSize_ - 0x1u))) {
       dest_[i] = src_[i];
       i++;
@@ -839,11 +840,11 @@ Return_t __strncpy__(Byte_t *dest_, const Byte_t *src_, const Size_t n_) {
   FUNCTION_ENTER;
 
 
-  Size_t i = 0x0u;
+  Size_t i = nil;
 
 
-  if(__PointerIsNotNull__(dest_) && __PointerIsNotNull__(src_) && (0x0u < n_)) {
-    for(i = 0x0u; (i < n_) && (CHAR_NULL != src_[i]); i++) {
+  if(__PointerIsNotNull__(dest_) && __PointerIsNotNull__(src_) && (nil < n_)) {
+    for(i = nil; (i < n_) && (CHAR_NULL != src_[i]); i++) {
       dest_[i] = src_[i];
     }
 
@@ -861,11 +862,11 @@ Return_t __strncpy__(Byte_t *dest_, const Byte_t *src_, const Size_t n_) {
 
 
 Base_t __strcmp__(const Byte_t *s1_, const Byte_t *s2_) {
-  Size_t i = 0x0u;
+  Size_t i = nil;
 
 
   if(__PointerIsNull__(s1_) || __PointerIsNull__(s2_)) {
-    return (0x0u);
+    return (nil);
   }
 
   while((CHAR_NULL != s1_[i]) && (CHAR_NULL != s2_[i])) {
@@ -877,7 +878,7 @@ Base_t __strcmp__(const Byte_t *s1_, const Byte_t *s2_) {
   }
 
   if(s1_[i] == s2_[i]) {
-    return (0x0u);
+    return (nil);
   }
 
   return ((s1_[i] < s2_[i]) ? -0x1 : 0x1);
@@ -885,20 +886,20 @@ Base_t __strcmp__(const Byte_t *s1_, const Byte_t *s2_) {
 
 
 Base_t __strncmp__(const Byte_t *s1_, const Byte_t *s2_, const Size_t n_) {
-  Size_t i = 0x0u;
+  Size_t i = nil;
 
 
-  if(__PointerIsNull__(s1_) || __PointerIsNull__(s2_) || (0x0u == n_)) {
-    return (0x0u);
+  if(__PointerIsNull__(s1_) || __PointerIsNull__(s2_) || (nil == n_)) {
+    return (nil);
   }
 
-  for(i = 0x0u; i < n_; i++) {
+  for(i = nil; i < n_; i++) {
     if((CHAR_NULL == s1_[i]) || (s1_[i] != s2_[i])) {
       return ((s1_[i] < s2_[i]) ? (Base_t) -0x1 : ((s1_[i] > s2_[i]) ? (Base_t) 0x1 : (Base_t) 0x0));
     }
   }
 
-  return (0x0u);
+  return (nil);
 }
 
 
@@ -906,11 +907,11 @@ Return_t __strcat__(Byte_t *dest_, const Byte_t *src_, const Size_t destSize_) {
   FUNCTION_ENTER;
 
 
-  Size_t destLen = 0x0u;
-  Size_t i = 0x0u;
+  Size_t destLen = nil;
+  Size_t i = nil;
 
 
-  if(__PointerIsNotNull__(dest_) && __PointerIsNotNull__(src_) && (0x0u < destSize_)) {
+  if(__PointerIsNotNull__(dest_) && __PointerIsNotNull__(src_) && (nil < destSize_)) {
     destLen = __strlen__(dest_);
 
     if(destLen < destSize_) {
@@ -933,7 +934,7 @@ Return_t __strcat__(Byte_t *dest_, const Byte_t *src_, const Size_t destSize_) {
 
 
 Byte_t * __strchr__(const Byte_t *str_, const Byte_t ch_) {
-  Size_t i = 0x0u;
+  Size_t i = nil;
 
 
   if(__PointerIsNull__(str_)) {
@@ -957,8 +958,8 @@ Byte_t * __strchr__(const Byte_t *str_, const Byte_t ch_) {
 
 
 Byte_t * __strrchr__(const Byte_t *str_, const Byte_t ch_) {
-  Size_t len = 0x0u;
-  Size_t i = 0x0u;
+  Size_t len = nil;
+  Size_t i = nil;
 
 
   if(__PointerIsNull__(str_)) {
@@ -967,13 +968,13 @@ Byte_t * __strrchr__(const Byte_t *str_, const Byte_t ch_) {
 
   len = __strlen__(str_);
 
-  for(i = len; i > 0x0u; i--) {
+  for(i = len; i > nil; i--) {
     if(str_[i - 0x1u] == ch_) {
       return ((Byte_t *) &str_[i - 0x1u]);
     }
   }
 
-  if((CHAR_NULL == ch_) && (len > 0x0u)) {
+  if((CHAR_NULL == ch_) && (len > nil)) {
     return ((Byte_t *) &str_[len]);
   }
 
@@ -985,12 +986,12 @@ Return_t __path_join__(Byte_t *dest_, const Byte_t *base_, const Byte_t *path_, 
   FUNCTION_ENTER;
 
 
-  Size_t baseLen = 0x0u;
-  Size_t pathLen = 0x0u;
+  Size_t baseLen = nil;
+  Size_t pathLen = nil;
   Base_t needSlash = false;
 
 
-  if(__PointerIsNull__(dest_) || __PointerIsNull__(base_) || __PointerIsNull__(path_) || (0x0u == destSize_)) {
+  if(__PointerIsNull__(dest_) || __PointerIsNull__(base_) || __PointerIsNull__(path_) || (nil == destSize_)) {
     __AssertOnElse__();
     FUNCTION_EXIT;
   }
@@ -998,12 +999,12 @@ Return_t __path_join__(Byte_t *dest_, const Byte_t *base_, const Byte_t *path_, 
   baseLen = __strlen__(base_);
   pathLen = __strlen__(path_);
 
-  if((0x0u == baseLen) || (0x0u == pathLen)) {
+  if((nil == baseLen) || (nil == pathLen)) {
     __AssertOnElse__();
     FUNCTION_EXIT;
   }
 
-  if(CHAR_SLASH == path_[0x0u]) {
+  if(CHAR_SLASH == path_[nil]) {
     if(pathLen >= destSize_) {
       __AssertOnElse__();
       __AssertOnElse__();
@@ -1019,9 +1020,9 @@ Return_t __path_join__(Byte_t *dest_, const Byte_t *base_, const Byte_t *path_, 
     FUNCTION_EXIT;
   }
 
-  needSlash = (CHAR_SLASH != base_[baseLen - 0x1u]) && (CHAR_SLASH != path_[0x0u]);
+  needSlash = (CHAR_SLASH != base_[baseLen - 0x1u]) && (CHAR_SLASH != path_[nil]);
 
-  if((baseLen + pathLen + (needSlash ? 0x1u : 0x0u)) >= destSize_) {
+  if((baseLen + pathLen + (needSlash ? 0x1u : nil)) >= destSize_) {
     __AssertOnElse__();
     FUNCTION_EXIT;
   }
@@ -1049,84 +1050,84 @@ Return_t __path_normalize__(Byte_t *path_, const Size_t pathSize_) {
   FUNCTION_ENTER;
 
 
-  Size_t i = 0x0u;
-  Size_t j = 0x0u;
-  Size_t len = 0x0u;
+  Size_t i = nil;
+  Size_t j = nil;
+  Size_t len = nil;
   Byte_t temp[CONFIG_FS_MAX_PATH_LENGTH];
   Byte_t segments[CONFIG_FS_MAX_PATH_LENGTH / 2][CONFIG_FS_MAX_PATH_LENGTH];
-  Size_t segmentCount = 0x0u;
-  Size_t k = 0x0u;
-  Size_t segLen = 0x0u;
-  Size_t segIdx = 0x0u;
+  Size_t segmentCount = nil;
+  Size_t k = nil;
+  Size_t segLen = nil;
+  Size_t segIdx = nil;
 
 
-  if(__PointerIsNull__(path_) || (0x0u == pathSize_)) {
+  if(__PointerIsNull__(path_) || (nil == pathSize_)) {
     __AssertOnElse__();
     FUNCTION_EXIT;
   }
 
   len = __strlen__(path_);
 
-  if((0x0u == len) || (len >= CONFIG_FS_MAX_PATH_LENGTH)) {
+  if((nil == len) || (len >= CONFIG_FS_MAX_PATH_LENGTH)) {
     __AssertOnElse__();
     FUNCTION_EXIT;
   }
 
-  for(i = 0x0u; i <= len; i++) {
+  for(i = nil; i <= len; i++) {
     temp[i] = path_[i];
   }
 
-  i = 0x0u;
+  i = nil;
 
-  if(CHAR_SLASH == temp[0x0u]) {
+  if(CHAR_SLASH == temp[nil]) {
     i = 0x1u;
   }
 
-  segIdx = 0x0u;
+  segIdx = nil;
 
   for(; i <= len; i++) {
     if((CHAR_SLASH == temp[i]) || (CHAR_NULL == temp[i])) {
-      if(segIdx > 0x0u) {
+      if(segIdx > nil) {
         segments[segmentCount][segIdx] = CHAR_NULL;
 
-        if((segments[segmentCount][0x0u] == '.') && (segments[segmentCount][0x1u] == '.') && (segments[segmentCount][0x2u] == CHAR_NULL)) {
-          if(segmentCount > 0x0u) {
+        if((segments[segmentCount][nil] == '.') && (segments[segmentCount][0x1u] == '.') && (segments[segmentCount][0x2u] == CHAR_NULL)) {
+          if(segmentCount > nil) {
             segmentCount--;
           }
-        } else if(!((segments[segmentCount][0x0u] == '.') && (segments[segmentCount][0x1u] == CHAR_NULL))) {
+        } else if(!((segments[segmentCount][nil] == '.') && (segments[segmentCount][0x1u] == CHAR_NULL))) {
           segmentCount++;
         }
 
-        segIdx = 0x0u;
+        segIdx = nil;
       }
     } else {
       segments[segmentCount][segIdx++] = temp[i];
     }
   }
 
-  j = 0x0u;
+  j = nil;
 
-  if(CHAR_SLASH == path_[0x0u]) {
+  if(CHAR_SLASH == path_[nil]) {
     path_[j++] = CHAR_SLASH;
   }
 
-  for(k = 0x0u; k < segmentCount; k++) {
+  for(k = nil; k < segmentCount; k++) {
     Size_t m;
 
 
     segLen = __strlen__(segments[k]);
 
-    if(k > 0x0u) {
+    if(k > nil) {
       path_[j++] = CHAR_SLASH;
     }
 
-    for(m = 0x0u; m < segLen; m++) {
+    for(m = nil; m < segLen; m++) {
       path_[j++] = segments[k][m];
     }
   }
 
-  if((0x0u == j) || ((0x1u == j) && (CHAR_SLASH == path_[0x0u]))) {
-    path_[0x0u] = CHAR_SLASH;
+  if((nil == j) || ((0x1u == j) && (CHAR_SLASH == path_[nil]))) {
+    path_[nil] = CHAR_SLASH;
     j = 0x1u;
   }
 
@@ -1141,7 +1142,7 @@ Base_t __path_is_absolute__(const Byte_t *path_) {
     return (false);
   }
 
-  return ((CHAR_SLASH == path_[0x0u]) ? true : false);
+  return ((CHAR_SLASH == path_[nil]) ? true : false);
 }
 
 
@@ -1149,18 +1150,18 @@ Return_t __path_dirname__(Byte_t *dest_, const Byte_t *path_, const Size_t destS
   FUNCTION_ENTER;
 
 
-  Size_t len = 0x0u;
-  Size_t i = 0x0u;
+  Size_t len = nil;
+  Size_t i = nil;
 
 
-  if(__PointerIsNull__(dest_) || __PointerIsNull__(path_) || (0x0u == destSize_)) {
+  if(__PointerIsNull__(dest_) || __PointerIsNull__(path_) || (nil == destSize_)) {
     __AssertOnElse__();
     FUNCTION_EXIT;
   }
 
   len = __strlen__(path_);
 
-  if(0x0u == len) {
+  if(nil == len) {
     if(OK(__strcpy__(dest_, (const Byte_t *) ".", destSize_))) {
       __ReturnOk__();
     } else {
@@ -1170,13 +1171,13 @@ Return_t __path_dirname__(Byte_t *dest_, const Byte_t *path_, const Size_t destS
     FUNCTION_EXIT;
   }
 
-  for(i = len; i > 0x0u; i--) {
+  for(i = len; i > nil; i--) {
     if(CHAR_SLASH == path_[i - 0x1u]) {
       break;
     }
   }
 
-  if(0x0u == i) {
+  if(nil == i) {
     if(OK(__strcpy__(dest_, (const Byte_t *) ".", destSize_))) {
       __ReturnOk__();
     } else {
@@ -1205,19 +1206,19 @@ Return_t __path_basename__(Byte_t *dest_, const Byte_t *path_, const Size_t dest
   FUNCTION_ENTER;
 
 
-  Size_t len = 0x0u;
-  Size_t i = 0x0u;
-  Size_t start = 0x0u;
+  Size_t len = nil;
+  Size_t i = nil;
+  Size_t start = nil;
 
 
-  if(__PointerIsNull__(dest_) || __PointerIsNull__(path_) || (0x0u == destSize_)) {
+  if(__PointerIsNull__(dest_) || __PointerIsNull__(path_) || (nil == destSize_)) {
     __AssertOnElse__();
     FUNCTION_EXIT;
   }
 
   len = __strlen__(path_);
 
-  if(0x0u == len) {
+  if(nil == len) {
     if(OK(__strcpy__(dest_, (const Byte_t *) ".", destSize_))) {
       __ReturnOk__();
     } else {
@@ -1227,7 +1228,7 @@ Return_t __path_basename__(Byte_t *dest_, const Byte_t *path_, const Size_t dest
     FUNCTION_EXIT;
   }
 
-  for(i = len; i > 0x0u; i--) {
+  for(i = len; i > nil; i--) {
     if(CHAR_SLASH == path_[i - 0x1u]) {
       start = i;
       break;

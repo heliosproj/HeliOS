@@ -155,7 +155,7 @@ void memory_harness(void) {
   }
 
   unit_assert_ok(xMemGetUsed(&actual));
-  unit_assert_equal(actual, 0x0u);
+  unit_assert_equal(actual, nil);
 
 
   /* Allocate almost all available memory, leaving just a small amount */
@@ -235,7 +235,7 @@ void memory_harness(void) {
 
 
   /* After allocating LARGE_BLOCK_SIZE, available should be less than total */
-  unit_assert_true(mem02->availableSpaceInBytes < MEMORY_REGION_SIZE_IN_BYTES);
+  unit_assert_true(mem02->availableSpaceInBytes < MEMORY_REGION_SIZE);
   unit_assert_ok(xMemFree(mem02));
   unit_end();
 
@@ -454,7 +454,7 @@ static void test_memory_edge_cases(void) {
 
   /* Verify memory is freed */
   unit_assert_ok(xMemGetUsed(&size));
-  unit_assert_equal(size, 0x0u);
+  unit_assert_equal(size, nil);
 
 
   /* Allocate again - should succeed */
@@ -1178,7 +1178,7 @@ static void test_state_consistency(void) {
 
     /* Get baseline (should be 0 after FreeAll) */
     unit_assert_ok(xMemGetUsed(&used1));
-    unit_assert_equal(used1, 0x0u);
+    unit_assert_equal(used1, nil);
 
 
     /* Request more than available */
@@ -1265,7 +1265,7 @@ static void test_memfreeall_idempotency(void) {
 
     /* Verify memory freed */
     unit_assert_ok(xMemGetUsed(&size));
-    unit_assert_equal(size, 0x0u);
+    unit_assert_equal(size, nil);
 
 
     /* Second call should still succeed */
@@ -1287,7 +1287,7 @@ static void test_memfreeall_idempotency(void) {
     /* FreeAll with clean slate */
     unit_assert_ok(xMemFreeAll());
     unit_assert_ok(xMemGetUsed(&size));
-    unit_assert_equal(size, 0x0u);
+    unit_assert_equal(size, nil);
 
 
     /* Should still work */
