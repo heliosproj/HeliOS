@@ -209,9 +209,9 @@
  *
  * The heap memory region is used by tasks, whereas the kernel memory region is
  * used solely by the kernel for kernel objects. CONFIG_MEMORY_REGION_SIZE
- * allows the end-user to define the size, in bytes, of each memory region
- * (heap and kernel). The size of all memory regions needs to be adjusted to
- * fit the memory requirements of the end-user's application.
+ * allows the end-user to define the size, in bytes, of each memory region (heap
+ * and kernel). The size of all memory regions needs to be adjusted to fit the
+ * memory requirements of the end-user's application.
  *
  * The memory implementation uses variable-sized blocks with headers, allowing
  * efficient allocation of different sized objects without fixed block overhead.
@@ -229,8 +229,8 @@
  * - Larger embedded systems: 0x10000 - 0x40000 (64KB - 256KB)
  * - Systems with external RAM: 0x40000+ (256KB+)
  *
- * The default value is 0x10000 (64KB) which provides a good balance for
- * typical embedded applications.
+ * The default value is 0x10000 (64KB) which provides a good balance for typical
+ * embedded applications.
  *
  * @note The value should be set as a hexadecimal constant with the 'u' suffix
  * (e.g., 0x10000u for 64KB).
@@ -251,6 +251,7 @@
   #if !defined(CONFIG_MEMORY_REGION_SIZE)
     #define CONFIG_MEMORY_REGION_SIZE 0x10000u /* 64KB default */
   #endif /* if !defined(CONFIG_MEMORY_REGION_SIZE) */
+
 
 /**
  * @brief Define the minimum block size to prevent fragmentation
@@ -279,6 +280,7 @@
     #define CONFIG_MEMORY_MINIMUM_BLOCK_SIZE 0x20u /* 32 bytes */
   #endif /* if !defined(CONFIG_MEMORY_MINIMUM_BLOCK_SIZE) */
 
+
 /**
  * @brief Define memory alignment requirement for allocated memory
  *
@@ -293,7 +295,8 @@
  * - 16 bytes: Required for SIMD operations (SSE, NEON, etc.)
  *
  * The alignment must be a power of 2. The default value is 8 bytes, which
- * provides compatibility with most data types on both 32-bit and 64-bit systems.
+ * provides compatibility with most data types on both 32-bit and 64-bit
+ * systems.
  *
  * @par Performance Impact:
  * Proper alignment can significantly improve memory access performance by:
@@ -302,8 +305,9 @@
  * - Improving cache line utilization
  * - Enabling compiler vectorization optimizations
  *
- * @note On architectures with strict alignment requirements (e.g., ARM Cortex-M0),
- * misaligned access will cause a hard fault. Always use at least 4-byte alignment.
+ * @note On architectures with strict alignment requirements (e.g., ARM
+ * Cortex-M0), misaligned access will cause a hard fault. Always use at least
+ * 4-byte alignment.
  *
  * @warning The alignment value must be a power of 2 (4, 8, 16, etc.)
  *

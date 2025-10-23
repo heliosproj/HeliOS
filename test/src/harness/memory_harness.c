@@ -21,7 +21,8 @@
 #define NUM_TEST_ALLOCS 0x20u /* Number of allocation test iterations */
 #define OVERSIZED_ALLOC 0x99999u /* Size that should fail allocation */
 #define LARGE_BLOCK_SIZE 0x8000u /* 32,768 bytes - large allocation test */
-#define LARGE_BLOCK_USED 0x8020u /* Expected memory used after large alloc (with header) */
+#define LARGE_BLOCK_USED 0x8020u /* Expected memory used after large alloc (with
+                                  * header) */
 #define HEAP_AVAILABLE_BYTES 0x63A0u /* Expected heap available space */
 #define HEAP_FREE_BLOCKS 0x31Du /* Expected number of free blocks */
 #define HEAP_ALLOC_COUNT 0x24u /* Expected successful allocations */
@@ -37,23 +38,22 @@
 #define LARGE_ALLOC_SIZE 512 /* Large allocation size */
 #define FRAG_BLOCK_SIZE 1024 /* Fragmentation test block size */
 #define MAX_SIZE_TEST (CONFIG_MEMORY_REGION_SIZE + 100) /*
-                                                                                                       *
-                                                                                                       *
-                                                                                                       *
-                                                                                                       *
-                                                                                                       *
-                                                                                                       *
-                                                                                                       *
-                                                                                                       *
-                                                                                                       *
-                                                                                                       *
-                                                                                                       *
-                                                                                                       *
-                                                                                                       *
-                                                                                                       * Oversized
-                                                                                                       * allocation
-                                                                                                       * test
-                                                                                                       */
+                                                         *
+                                                         *
+                                                         *
+                                                         *
+                                                         *
+                                                         *
+                                                         *
+                                                         *
+                                                         *
+                                                         *
+                                                         *
+                                                         *
+                                                         *
+                                                         * Oversized allocation
+                                                         * test
+                                                         */
 #define MAX_TEST_ALLOCS 100 /* Maximum test allocations */
 /* Corruption test constants */
 #define INVALID_FREE_VALUE 123 /* Invalid value for free field corruption test
@@ -69,8 +69,8 @@
 #define CORRUPTION_NEXT_INVALID 0xFFFFFFFFu /* Invalid next pointer value */
 #define TEST_ARBITRARY_ADDR 0x12345678u /* Arbitrary test address */
 static Size_t sizes[NUM_TEST_ALLOCS] = {
-  0x253u, 0x183u, 0x32u, 0x293u, 0x33u, 0x143u, 0x133u, 0x53u, 0x173u, 0x93u, 0x143u, 0x223u, 0x143u, 0x313u, 0x20u, 0x113u, 0x63u, 0x93u,
-    0x153u, 0x63u, 0x183u, 0x32u, 0x133u, 0x313u, 0x273u, 0x153u, 0x243u, 0x293u, 0x243u, 0x293u, 0x303u, 0x233u
+  0x253u, 0x183u, 0x32u, 0x293u, 0x33u, 0x143u, 0x133u, 0x53u, 0x173u, 0x93u, 0x143u, 0x223u, 0x143u, 0x313u, 0x20u, 0x113u, 0x63u, 0x93u, 0x153u, 0x63u, 0x183u
+    , 0x32u, 0x133u, 0x313u, 0x273u, 0x153u, 0x243u, 0x293u, 0x243u, 0x293u, 0x303u, 0x233u
 };
 static Size_t order[NUM_TEST_ALLOCS] = {
   0x02u, 0x16u, 0x07u, 0x0Cu, 0x06u, 0x00u, 0x0Du, 0x18u, 0x10u, 0x08u, 0x0Au, 0x1Eu, 0x0Bu, 0x0Eu, 0x03u, 0x09u, 0x19u, 0x05u, 0x1Cu, 0x1Du, 0x0Fu, 0x01u,
@@ -121,6 +121,7 @@ void memory_harness(void) {
     Size_t alignedSize;
     Size_t alignedHeaderSize;
 
+
     tests[i].size = sizes[i];
 
 
@@ -137,7 +138,8 @@ void memory_harness(void) {
     unit_assert_ok(xMemGetUsed(&actual));
 
 
-    /* The actual used should match exactly what we've allocated including aligned headers */
+    /* The actual used should match exactly what we've allocated including
+     * aligned headers */
     unit_assert_equal(actual, used);
 
 
@@ -157,7 +159,11 @@ void memory_harness(void) {
 
 
   /* Allocate almost all available memory, leaving just a small amount */
-  large_alloc = CONFIG_MEMORY_REGION_SIZE - sizeof(BlockHeader_t) - 40; /* Leave 40 bytes + header */
+  large_alloc = CONFIG_MEMORY_REGION_SIZE - sizeof(BlockHeader_t) - 40; /* Leave
+                                                                         * 40
+                                                                         * bytes
+                                                                         * + header
+                                                                         */
   unit_assert_ok(xMemAlloc((volatile Addr_t **) &mem05, large_alloc));
   actual = nil;
   unit_assert_ok(xMemGetUsed(&actual));
@@ -165,10 +171,10 @@ void memory_harness(void) {
 
   /* With minimum block size enforcement, the allocator will give us the entire
    * remaining memory region if splitting would create a fragment smaller than
-   * CONFIG_MEMORY_MINIMUM_BLOCK_SIZE (32 bytes). In this case, requesting
-   * (size - header - 40) bytes would leave 40 bytes. After subtracting the
-   * header for the new free block, only ~16 bytes would remain, which is less
-   * than CONFIG_MEMORY_MINIMUM_BLOCK_SIZE, so we get the entire region. */
+   * CONFIG_MEMORY_MINIMUM_BLOCK_SIZE (32 bytes). In this case, requesting (size
+   * - header - 40) bytes would leave 40 bytes. After subtracting the header for
+   * the new free block, only ~16 bytes would remain, which is less than
+   * CONFIG_MEMORY_MINIMUM_BLOCK_SIZE, so we get the entire region. */
   unit_assert_equal(actual, CONFIG_MEMORY_REGION_SIZE);
   unit_assert_ok(xMemFree(mem05));
   unit_end();
@@ -188,6 +194,7 @@ void memory_harness(void) {
     Size_t alignedLargeSize;
     Size_t alignedHeader;
 
+
     unit_assert_ok(xMemGetUsed(&actual));
 
 
@@ -195,8 +202,7 @@ void memory_harness(void) {
     alignedLargeSize = ((LARGE_BLOCK_SIZE + (CONFIG_MEMORY_ALIGNMENT - 1)) & ~(CONFIG_MEMORY_ALIGNMENT - 1));
     alignedHeader = ((sizeof(BlockHeader_t) + (CONFIG_MEMORY_ALIGNMENT - 1)) & ~(CONFIG_MEMORY_ALIGNMENT - 1));
     unit_assert_equal(actual, alignedLargeSize + alignedHeader);
-  }
-  unit_end();
+  } unit_end();
 
 
   /* Test 4: Allocated block size retrieval */
@@ -204,14 +210,14 @@ void memory_harness(void) {
   {
     Size_t alignedLargeSize;
 
+
     unit_assert_ok(xMemGetSize(mem01, &actual));
 
 
     /* xMemGetSize returns the aligned size that was actually allocated */
     alignedLargeSize = ((LARGE_BLOCK_SIZE + (CONFIG_MEMORY_ALIGNMENT - 1)) & ~(CONFIG_MEMORY_ALIGNMENT - 1));
     unit_assert_equal(actual, alignedLargeSize);
-  }
-  unit_end();
+  } unit_end();
 
 
   /* Test 5: Heap statistics */
@@ -666,7 +672,6 @@ static void test_boundary_allocations(void) {
 
 
   unit_print("--- Section 4: Boundary Allocations ---");
-
   unit_begin("Boundary - Single byte allocation");
   {
     ptr = null;
@@ -685,6 +690,8 @@ static void test_boundary_allocations(void) {
     unit_assert_ok(xMemAlloc(&ptr, 32));
     unit_assert_not_null(ptr);
     unit_assert_ok(xMemGetSize(ptr, &size));
+
+
     /* 32 is already aligned to 8 */
     unit_assert_equal(size, 32);
     unit_assert_ok(xMemFree(ptr));

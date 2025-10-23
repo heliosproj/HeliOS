@@ -37,9 +37,12 @@ static volatile MemoryRegion_t kernel = {
 #define __IsAligned__(value_, alignment_) \
         (((value_) & ((alignment_) - 1)) == 0)
 
-/* Calculate aligned header size at compile-time to ensure user data starts at aligned address */
+
+/* Calculate aligned header size at compile-time to ensure user data starts at
+ * aligned address */
 #define ALIGNED_HEADER_SIZE \
         (((sizeof(BlockHeader_t)) + (CONFIG_MEMORY_ALIGNMENT - 1)) & ~(CONFIG_MEMORY_ALIGNMENT - 1))
+
 
 /* Macros for pointer arithmetic and validation */
 #define __OffsetPointerToBlockHeader__(ptr_) \
@@ -50,7 +53,6 @@ static volatile MemoryRegion_t kernel = {
 
 #define __BlockHeaderIsInUse__(header_) (INUSE == (header_)->free)
 #define __BlockHeaderIsFree__(header_) (FREE == (header_)->free)
-
 /* Private function prototypes */
 static Return_t __ValidateBlockHeader__(const BlockHeader_t *header_, const volatile MemoryRegion_t *region_);
 static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **addr_, const Size_t size_);
@@ -269,8 +271,6 @@ static Return_t __MemoryRegionInit__(volatile MemoryRegion_t *region_) {
   FUNCTION_ENTER;
 
   if(__PointerIsNotNull__(region_)) {
-
-
     /* Set the first block header at the start of the memory region */
     region_->first = (BlockHeader_t *) region_->mem;
 
@@ -287,6 +287,8 @@ static Return_t __MemoryRegionInit__(volatile MemoryRegion_t *region_) {
 
 
       first->next = null;
+
+
       /* Account for aligned header size in available space calculation */
       first->size = MEMORY_REGION_SIZE_IN_BYTES - ALIGNED_HEADER_SIZE;
       first->free = FREE;
@@ -319,35 +321,21 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
   BlockHeader_t *first = null;
   Size_t candidateSize = (Size_t) -1;
 
-  /* Align requested size to ensure next block (if created) starts at aligned address */
+
+  /* Align requested size to ensure next block (if created) starts at aligned
+   * address */
   requested = __AlignUp__(size_, CONFIG_MEMORY_ALIGNMENT);
+
 
   /* Disable interrupts during allocation */
   __DisableInterrupts__();
 
-  /* Validate bounds before proceeding with allocation */
-  /* Check for alignment overflow - if requested is less than original, overflow occurred */
-  if(requested < size_) {
-    __EnableInterrupts__();
-    __AssertOnElse__();
-  }
-
-  /* Validate that requested size doesn't exceed theoretical maximum */
-  /* Must be able to fit at least one block header plus the requested data */
-  /* This prevents absurdly large allocations that could never succeed */
-  if(requested >= MEMORY_REGION_SIZE_IN_BYTES ||
-     (requested + ALIGNED_HEADER_SIZE) > MEMORY_REGION_SIZE_IN_BYTES) {
-    __EnableInterrupts__();
-    __AssertOnElse__();
-  }
-
-  if(__FlagIsNotSet__(MEMFAULT) && __PointerIsNotNull__(region_) && __PointerIsNotNull__(addr_) && (nil < size_)) {
+  if(__FlagIsNotSet__(MEMFAULT) && __PointerIsNotNull__(region_) && __PointerIsNotNull__(addr_) && (nil < size_) && (requested >= size_) && ((requested <
+    MEMORY_REGION_SIZE_IN_BYTES) && ((requested + ALIGNED_HEADER_SIZE) <= MEMORY_REGION_SIZE_IN_BYTES))) {
     /* Lazy initialization: if region has never been initialized, do it now */
     if(__PointerIsNull__(region_->first)) {
       region_->first = (BlockHeader_t *) region_->mem;
       first = region_->first;
-
-
       first->next = null;
       first->size = MEMORY_REGION_SIZE_IN_BYTES - ALIGNED_HEADER_SIZE;
       first->free = FREE;
@@ -355,81 +343,80 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
 
       /* Set checksum for the initial block */
       first->checksum = __checksum__(first);
-
-
     }
 
-      cursor = region_->first;
+    cursor = region_->first;
 
-      /* Find best fit free block */
-      while(__PointerIsNotNull__(cursor)) {
-        if(__BlockHeaderIsFree__(cursor) && (requested <= cursor->size) && (cursor->size < candidateSize)) {
-          candidateSize = cursor->size;
-          candidate = cursor;
-        }
-
-        if(__BlockHeaderIsFree__(cursor)) {
-          available += cursor->size;
-        }
-
-        cursor = cursor->next;
+    /* Find best fit free block */
+    while(__PointerIsNotNull__(cursor)) {
+      if(__BlockHeaderIsFree__(cursor) && (requested <= cursor->size) && (cursor->size < candidateSize)) {
+        candidateSize = cursor->size;
+        candidate = cursor;
       }
 
-      if(__PointerIsNotNull__(candidate)) {
-        /* Check if we should split the block - only split if remaining space is at least CONFIG_MEMORY_MINIMUM_BLOCK_SIZE
-         * Use aligned header size to ensure new block starts at aligned address
-         * Check candidate->size >= requested first to prevent integer underflow */
-        if(candidate->size >= requested &&
-           (candidate->size - requested) >= (ALIGNED_HEADER_SIZE + CONFIG_MEMORY_MINIMUM_BLOCK_SIZE)) {
-          /* Split the block - ensure new block starts at aligned address */
-          next = candidate->next;
-          candidate->next = (BlockHeader_t *) (((Byte_t *) candidate) + ALIGNED_HEADER_SIZE + requested);
+      if(__BlockHeaderIsFree__(cursor)) {
+        available += cursor->size;
+      }
+
+      cursor = cursor->next;
+    }
+
+    if(__PointerIsNotNull__(candidate)) {
+      /* Check if we should split the block - only split if remaining space is
+       * at least CONFIG_MEMORY_MINIMUM_BLOCK_SIZE Use aligned header size to
+       * ensure new block starts at aligned address Check candidate->size >=
+       * requested first to prevent integer underflow */
+      if((candidate->size >= requested) && ((candidate->size - requested) >= (ALIGNED_HEADER_SIZE + CONFIG_MEMORY_MINIMUM_BLOCK_SIZE))) {
+        /* Split the block - ensure new block starts at aligned address */
+        next = candidate->next;
+        candidate->next = (BlockHeader_t *) (((Byte_t *) candidate) + ALIGNED_HEADER_SIZE + requested);
 
 
-          /* Set up new free block */
-          candidate->next->next = next;
-          candidate->next->size = candidate->size - requested - ALIGNED_HEADER_SIZE;
-          candidate->next->free = FREE;
-          candidate->next->checksum = __checksum__(candidate->next);
+        /* Set up new free block */
+        candidate->next->next = next;
+        candidate->next->size = candidate->size - requested - ALIGNED_HEADER_SIZE;
+        candidate->next->free = FREE;
+        candidate->next->checksum = __checksum__(candidate->next);
 
 
-          /* Update current block */
-          candidate->size = requested;
-        }
+        /* Update current block */
+        candidate->size = requested;
+      }
 
-        /* Mark block as in use */
-        candidate->free = INUSE;
-        candidate->checksum = __checksum__(candidate);
+      /* Mark block as in use */
+      candidate->free = INUSE;
+      candidate->checksum = __checksum__(candidate);
 
-        /* Zero out allocated memory */
-        if(OK(__memset__(__OffsetBlockHeaderToPointer__(candidate), nil, requested))) {
-          *addr_ = __OffsetBlockHeaderToPointer__(candidate);
+      /* Zero out allocated memory */
+      if(OK(__memset__(__OffsetBlockHeaderToPointer__(candidate), nil, requested))) {
+        *addr_ = __OffsetBlockHeaderToPointer__(candidate);
 
-          /* Verify alignment of returned pointer */
-          if(!__IsAligned__((Size_t)*addr_, CONFIG_MEMORY_ALIGNMENT)) {
-            /* Critical error: alignment guarantee violated */
-            __SetFlag__(MEMFAULT);
-            __AssertOnElse__();
-          }
-
-          /* Update statistics */
-          region_->allocations++;
-          available -= requested;
-
-          if(available < region_->minAvailableEver) {
-            region_->minAvailableEver = available;
-          }
-
-          __ReturnOk__();
-        } else {
+        /* Verify alignment of returned pointer */
+        if(!__IsAligned__((Size_t) *addr_, CONFIG_MEMORY_ALIGNMENT)) {
+          /* Critical error: alignment guarantee violated */
+          __SetFlag__(MEMFAULT);
           __AssertOnElse__();
         }
+
+        /* Update statistics */
+        region_->allocations++;
+        available -= requested;
+
+        if(available < region_->minAvailableEver) {
+          region_->minAvailableEver = available;
+        }
+
+        __ReturnOk__();
       } else {
         __AssertOnElse__();
       }
-    /* } else {
+    } else {
       __AssertOnElse__();
-    } */
+    }
+
+    /* } else {
+     *  __AssertOnElse__();
+     *  } */
   } else {
     __AssertOnElse__();
   }
@@ -521,6 +508,7 @@ static Return_t __DefragMemoryRegion__(volatile MemoryRegion_t *region_) {
 
           /* Update checksum for merged block */
           cursor->checksum = __checksum__(cursor);
+
 
           /* Block merged successfully */
           merged = true;
