@@ -127,11 +127,6 @@
   #endif /* if !defined(__ReturnOk__) */
 
 
-  #if !defined(__ReturnError__)
-    #define __ReturnError__() ret = ReturnError
-  #endif /* if !defined(__ReturnError__) */
-
-
   #if !defined(__AssertOnElse__)
     #if defined(CONFIG_ENABLE_SYSTEM_ASSERT)
       #define __AssertOnElse__() xSystemAssert(__FILE__, __LINE__)

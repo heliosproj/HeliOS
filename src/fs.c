@@ -161,7 +161,7 @@ Return_t xFSMount(Volume_t **volume_) {
   if(__PointerIsNotNull__(volume_)) {
     /* Check if device is already mounted */
     if(__IsDeviceMounted__(CONFIG_FS_BLOCK_DEVICE_UID)) {
-      __ReturnError__();
+      /* Return error by default */
       FUNCTION_EXIT;
     }
 
@@ -267,7 +267,7 @@ Return_t xFSGetVolumeInfo(const Volume_t *volume_, VolumeInfo_t **info_) {
   if(__PointerIsNotNull__(volume_) && __PointerIsNotNull__(info_)) {
     /* Check if volume is mounted */
     if(!volume_->mounted) {
-      __ReturnError__();
+      /* Return error by default */
       FUNCTION_EXIT;
     }
 
@@ -315,7 +315,7 @@ Return_t xFSGetVolumeInfo(const Volume_t *volume_, VolumeInfo_t **info_) {
       __AssertOnElse__();
     }
   } else {
-    __ReturnError__();
+    /* Return error by default */
   }
 
   FUNCTION_EXIT;
@@ -479,7 +479,7 @@ Return_t xFileOpen(File_t **file_, Volume_t *volume_, const Byte_t *path_, const
   if(__PointerIsNotNull__(file_) && __PointerIsNotNull__(volume_) && __PointerIsNotNull__(path_)) {
     /* Check if volume is mounted */
     if(!volume_->mounted) {
-      __ReturnError__();
+      /* Return error by default */
       FUNCTION_EXIT;
     }
 
@@ -579,7 +579,9 @@ Return_t xFileOpen(File_t **file_, Volume_t *volume_, const Byte_t *path_, const
         if((mode_ & FS_MODE_CREATE) == 0x0) {
           /* Cannot open non-existent file without CREATE mode */
           __KernelFreeMemory__(file);
-          __ReturnError__();
+
+
+          /* Return error by default */
           FUNCTION_EXIT;
         }
 
@@ -596,7 +598,7 @@ Return_t xFileOpen(File_t **file_, Volume_t *volume_, const Byte_t *path_, const
     }
   } else {
     /* NULL pointer passed - return error instead of asserting */
-    __ReturnError__();
+    /* Return error by default */
   }
 
   FUNCTION_EXIT;
@@ -675,7 +677,7 @@ Return_t xFileClose(File_t *file_) {
     }
   } else {
     /* NULL pointer passed - return error instead of asserting */
-    __ReturnError__();
+    /* Return error by default */
   }
 
   FUNCTION_EXIT;
@@ -1068,7 +1070,9 @@ Return_t xFileSync(File_t *file_) {
             for(i = 0; i < file_->volume->sectorsPerCluster; i++) {
               if(ERROR(__WriteSector__(file_->volume, firstSector + i, clusterData + (i * file_->volume->bytesPerSector)))) {
                 __KernelFreeMemory__(clusterData);
-                __ReturnError__();
+
+
+                /* Return error by default */
                 FUNCTION_EXIT;
               }
             }
@@ -1189,7 +1193,7 @@ Return_t xDirOpen(Dir_t **dir_, Volume_t *volume_, const Byte_t *path_) {
   if(__PointerIsNotNull__(dir_) && __PointerIsNotNull__(volume_) && __PointerIsNotNull__(path_)) {
     /* Check if volume is mounted */
     if(!volume_->mounted) {
-      __ReturnError__();
+      /* Return error by default */
       FUNCTION_EXIT;
     }
 
@@ -1202,7 +1206,7 @@ Return_t xDirOpen(Dir_t **dir_, Volume_t *volume_, const Byte_t *path_) {
         /* Verify it's a directory */
         if((entry.attr & FAT_ATTR_DIRECTORY) == 0x0) {
           /* Not a directory */
-          __ReturnError__();
+          /* Return error by default */
           FUNCTION_EXIT;
         }
 
@@ -1210,7 +1214,7 @@ Return_t xDirOpen(Dir_t **dir_, Volume_t *volume_, const Byte_t *path_) {
         dirCluster = ((Word_t) __ReadLE16__(entry.firstClusterHigh) << 0x10) | __ReadLE16__(entry.firstClusterLow);
       } else {
         /* Directory not found */
-        __ReturnError__();
+        /* Return error by default */
         FUNCTION_EXIT;
       }
     }
@@ -1228,7 +1232,7 @@ Return_t xDirOpen(Dir_t **dir_, Volume_t *volume_, const Byte_t *path_) {
     }
   } else {
     /* NULL pointer passed - return error instead of asserting */
-    __ReturnError__();
+    /* Return error by default */
   }
 
   FUNCTION_EXIT;
@@ -1249,7 +1253,7 @@ Return_t xDirClose(Dir_t *dir_) {
     }
   } else {
     /* NULL pointer passed - return error instead of asserting */
-    __ReturnError__();
+    /* Return error by default */
   }
 
   FUNCTION_EXIT;
@@ -1414,7 +1418,7 @@ Return_t xDirMake(Volume_t *volume_, const Byte_t *path_) {
   if(__PointerIsNotNull__(volume_) && __PointerIsNotNull__(path_)) {
     /* Check if volume is mounted */
     if(!volume_->mounted) {
-      __ReturnError__();
+      /* Return error by default */
       FUNCTION_EXIT;
     }
 
@@ -1524,7 +1528,7 @@ Return_t xDirMake(Volume_t *volume_, const Byte_t *path_) {
     }
   } else {
     /* NULL pointer passed - return error instead of asserting */
-    __ReturnError__();
+    /* Return error by default */
   }
 
   FUNCTION_EXIT;
@@ -1553,7 +1557,7 @@ Return_t xDirRemove(Volume_t *volume_, const Byte_t *path_) {
   if(__PointerIsNotNull__(volume_) && __PointerIsNotNull__(path_)) {
     /* Check if volume is mounted */
     if(!volume_->mounted) {
-      __ReturnError__();
+      /* Return error by default */
       FUNCTION_EXIT;
     }
 
@@ -1620,7 +1624,7 @@ check_empty:
 
       if(!isEmpty) {
         /* Directory not empty - cannot remove */
-        __ReturnError__();
+        /* Return error by default */
         FUNCTION_EXIT;
       }
 
@@ -1657,11 +1661,11 @@ check_empty:
       }
     } else {
       /* Directory not found */
-      __ReturnError__();
+      /* Return error by default */
     }
   } else {
     /* NULL pointer passed - return error instead of asserting */
-    __ReturnError__();
+    /* Return error by default */
   }
 
   FUNCTION_EXIT;
@@ -1679,7 +1683,9 @@ Return_t xFileExists(Volume_t *volume_, const Byte_t *path_, Base_t *exists_) {
     /* Check if volume is mounted */
     if(!volume_->mounted) {
       *exists_ = false;
-      __ReturnError__();
+
+
+      /* Return error by default */
       FUNCTION_EXIT;
     }
 
@@ -1693,7 +1699,7 @@ Return_t xFileExists(Volume_t *volume_, const Byte_t *path_, Base_t *exists_) {
     }
   } else {
     /* NULL pointer passed - return error instead of asserting */
-    __ReturnError__();
+    /* Return error by default */
   }
 
   FUNCTION_EXIT;
@@ -1716,7 +1722,7 @@ Return_t xFileUnlink(Volume_t *volume_, const Byte_t *path_) {
   if(__PointerIsNotNull__(volume_) && __PointerIsNotNull__(path_)) {
     /* Check if volume is mounted */
     if(!volume_->mounted) {
-      __ReturnError__();
+      /* Return error by default */
       FUNCTION_EXIT;
     }
 
@@ -1766,11 +1772,11 @@ Return_t xFileUnlink(Volume_t *volume_, const Byte_t *path_) {
       }
     } else {
       /* File not found */
-      __ReturnError__();
+      /* Return error by default */
     }
   } else {
     /* NULL pointer passed - return error instead of asserting */
-    __ReturnError__();
+    /* Return error by default */
   }
 
   FUNCTION_EXIT;
@@ -1799,7 +1805,7 @@ Return_t xFileRename(Volume_t *volume_, const Byte_t *oldPath_, const Byte_t *ne
   if(__PointerIsNotNull__(volume_) && __PointerIsNotNull__(oldPath_) && __PointerIsNotNull__(newPath_)) {
     /* Check if volume is mounted */
     if(!volume_->mounted) {
-      __ReturnError__();
+      /* Return error by default */
       FUNCTION_EXIT;
     }
 
@@ -1865,11 +1871,11 @@ Return_t xFileRename(Volume_t *volume_, const Byte_t *oldPath_, const Byte_t *ne
       }
     } else {
       /* Old file not found */
-      __ReturnError__();
+      /* Return error by default */
     }
   } else {
     /* NULL pointer passed - return error instead of asserting */
-    __ReturnError__();
+    /* Return error by default */
   }
 
   FUNCTION_EXIT;
@@ -1887,7 +1893,7 @@ Return_t xFileGetInfo(Volume_t *volume_, const Byte_t *path_, DirEntry_t **entry
   if(__PointerIsNotNull__(volume_) && __PointerIsNotNull__(path_) && __PointerIsNotNull__(entry_)) {
     /* Check if volume is mounted */
     if(!volume_->mounted) {
-      __ReturnError__();
+      /* Return error by default */
       FUNCTION_EXIT;
     }
 
@@ -1936,7 +1942,7 @@ Return_t xFileGetInfo(Volume_t *volume_, const Byte_t *path_, DirEntry_t **entry
     }
   } else {
     /* NULL pointer passed - return error instead of asserting */
-    __ReturnError__();
+    /* Return error by default */
   }
 
   FUNCTION_EXIT;

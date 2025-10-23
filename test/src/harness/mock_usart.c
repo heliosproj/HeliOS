@@ -39,7 +39,7 @@ Return_t MOCKUSRT_self_register(void) {
     MOCKUSRT_read, MOCKUSRT_write, MOCKUSRT_simple_read, MOCKUSRT_simple_write))) {
     __ReturnOk__();
   } else {
-    __ReturnError__();
+    /* Return error by default */
     __AssertOnElse__();
   }
 
@@ -194,7 +194,9 @@ Return_t MOCKUSRT_read(Device_t *device_, Size_t *size_, Addr_t **data_) {
       /* No data available */
       *size_ = 0x0u;
       *data_ = null;
-      __ReturnError__();
+
+
+      /* Return error by default */
       FUNCTION_EXIT;
     }
 
@@ -256,7 +258,9 @@ Return_t MOCKUSRT_write(Device_t *device_, Size_t *size_, Addr_t *data_) {
     if(0x0u == freeSpace) {
       /* No space available */
       *size_ = 0x0u;
-      __ReturnError__();
+
+
+      /* Return error by default */
       FUNCTION_EXIT;
     }
 
@@ -294,7 +298,7 @@ Return_t MOCKUSRT_simple_read(Device_t *device_, Byte_t *data_) {
       device_->available = (__GetRxAvailable__() > 0x0u) ? true : false;
       __ReturnOk__();
     } else {
-      __ReturnError__();
+      /* Return error by default */
     }
   } else {
     __AssertOnElse__();
@@ -318,7 +322,7 @@ Return_t MOCKUSRT_simple_write(Device_t *device_, Byte_t data_) {
     __TxWrite__(data_);
     __ReturnOk__();
   } else {
-    __ReturnError__();
+    /* Return error by default */
   }
 
   FUNCTION_EXIT;

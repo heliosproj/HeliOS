@@ -241,30 +241,46 @@ static Return_t __ConsoleCheckDevice__(void) {
   if(__PointerIsNotNull__(cachedDevice) && (CONFIG_CONSOLE_DEVICE_UID == cachedDeviceUID)) {
     if(DeviceStateRunning == cachedDevice->state) {
       __ReturnOk__();
-      FUNCTION_EXIT;
     } else {
       /* Device state changed, invalidate cache */
       cachedDevice = null;
       cachedDeviceUID = 0x0u;
+
+
+      /* Cache miss or invalid - look up device */
+      if(OK(__DeviceListFind__(CONFIG_CONSOLE_DEVICE_UID, &cachedDevice))) {
+        if(__PointerIsNotNull__(cachedDevice) && (DeviceStateRunning == cachedDevice->state)) {
+          /* Update cache */
+          cachedDeviceUID = CONFIG_CONSOLE_DEVICE_UID;
+          __ReturnOk__();
+        } else {
+          cachedDevice = null;
+          cachedDeviceUID = 0x0u;
+          __AssertOnElse__();
+        }
+      } else {
+        cachedDevice = null;
+        cachedDeviceUID = 0x0u;
+        __AssertOnElse__();
+      }
     }
-  }
-
-
-  /* Cache miss or invalid - look up device */
-  if(OK(__DeviceListFind__(CONFIG_CONSOLE_DEVICE_UID, &cachedDevice))) {
-    if(__PointerIsNotNull__(cachedDevice) && (DeviceStateRunning == cachedDevice->state)) {
-      /* Update cache */
-      cachedDeviceUID = CONFIG_CONSOLE_DEVICE_UID;
-      __ReturnOk__();
+  } else {
+    /* Cache miss or invalid - look up device */
+    if(OK(__DeviceListFind__(CONFIG_CONSOLE_DEVICE_UID, &cachedDevice))) {
+      if(__PointerIsNotNull__(cachedDevice) && (DeviceStateRunning == cachedDevice->state)) {
+        /* Update cache */
+        cachedDeviceUID = CONFIG_CONSOLE_DEVICE_UID;
+        __ReturnOk__();
+      } else {
+        cachedDevice = null;
+        cachedDeviceUID = 0x0u;
+        __AssertOnElse__();
+      }
     } else {
       cachedDevice = null;
       cachedDeviceUID = 0x0u;
-      __ReturnError__();
+      __AssertOnElse__();
     }
-  } else {
-    cachedDevice = null;
-    cachedDeviceUID = 0x0u;
-    __ReturnError__();
   }
 
   FUNCTION_EXIT;
@@ -300,9 +316,7 @@ static Return_t __ConsoleWriteString__(const Byte_t *str_) {
           cachedDevice = device;
           cachedDeviceUID = CONFIG_CONSOLE_DEVICE_UID;
         } else {
-          __ReturnError__();
-          __AssertOnElse__();
-          FUNCTION_EXIT;
+          device = null;
         }
       }
 
@@ -333,28 +347,22 @@ static Return_t __ConsoleWriteString__(const Byte_t *str_) {
               if(OK((*device->write)(device, &size, (Addr_t *) str_))) {
                 __ReturnOk__();
               } else {
-                __ReturnError__();
                 __AssertOnElse__();
               }
             } else {
-              __ReturnError__();
               __AssertOnElse__();
             }
           }
         } else {
-          __ReturnError__();
           __AssertOnElse__();
         }
       } else {
-        __ReturnError__();
         __AssertOnElse__();
       }
     } else {
-      __ReturnError__();
       __AssertOnElse__();
     }
   } else {
-    __ReturnError__();
     __AssertOnElse__();
   }
 
@@ -388,9 +396,7 @@ static Return_t __ConsoleReadChar__(Byte_t *ch_) {
         cachedDevice = device;
         cachedDeviceUID = CONFIG_CONSOLE_DEVICE_UID;
       } else {
-        __ReturnError__();
-        __AssertOnElse__();
-        FUNCTION_EXIT;
+        device = null;
       }
     }
 
@@ -419,23 +425,18 @@ static Return_t __ConsoleReadChar__(Byte_t *ch_) {
             }
 
 
-            /* No data available - normal condition */
-            __ReturnError__();
+            /* No data available - normal condition, not an error */
           }
         } else {
           /* Read failed - could be no data or device issue */
-          __ReturnError__();
         }
       } else {
-        __ReturnError__();
         __AssertOnElse__();
       }
     } else {
-      __ReturnError__();
       __AssertOnElse__();
     }
   } else {
-    __ReturnError__();
     __AssertOnElse__();
   }
 
@@ -470,7 +471,7 @@ static Return_t __ConsoleHandleBackspace__(void) {
 
     __ReturnOk__();
   } else {
-    __ReturnError__();
+    /* Return error by default */
   }
 
   FUNCTION_EXIT;
@@ -488,6 +489,7 @@ static Return_t __ConsoleProcessCommand__(void) {
   Byte_t *cmdName = consoleState.commandBuffer;
   Byte_t *cmdArgs = null;
   Word_t i = 0x0u;
+  Base_t commandFound = false;
 
 
   /* Skip leading whitespace */
@@ -505,34 +507,34 @@ static Return_t __ConsoleProcessCommand__(void) {
   }
 
 
-  /* Empty command */
+  /* Empty command - return success */
   if(CHAR_NULL == cmdName[0x0]) {
     __ReturnOk__();
-    FUNCTION_EXIT;
-  }
+  } else {
+    /* Search command table */
+    for(i = 0x0u; __PointerIsNotNull__(commandTable[i].name) && !commandFound; i++) {
+      if(0 == __strcmp__(cmdName, commandTable[i].name)) {
+        if(__PointerIsNotNull__(commandTable[i].handler)) {
+          if(OK(commandTable[i].handler((const Byte_t *) cmdArgs))) {
+            __ReturnOk__();
+          } else {
+            __AssertOnElse__();
+          }
 
-
-  /* Search command table */
-  for(i = 0x0u; __PointerIsNotNull__(commandTable[i].name); i++) {
-    if(0 == __strcmp__(cmdName, commandTable[i].name)) {
-      if(__PointerIsNotNull__(commandTable[i].handler)) {
-        if(OK(commandTable[i].handler((const Byte_t *) cmdArgs))) {
-          __ReturnOk__();
-        } else {
-          __ReturnError__();
+          commandFound = true;
         }
-
-        FUNCTION_EXIT;
       }
+    }
+
+    if(!commandFound) {
+      /* Unknown command */
+      __ConsoleWriteString__((const Byte_t *) "Unknown command: ");
+      __ConsoleWriteString__(cmdName);
+      __ConsoleWriteString__((const Byte_t *) "\r\nType 'help' for available commands.\r\n");
+      __AssertOnElse__();
     }
   }
 
-
-  /* Unknown command */
-  __ConsoleWriteString__((const Byte_t *) "Unknown command: ");
-  __ConsoleWriteString__(cmdName);
-  __ConsoleWriteString__((const Byte_t *) "\r\nType 'help' for available commands.\r\n");
-  __ReturnError__();
   FUNCTION_EXIT;
 }
 
@@ -633,7 +635,9 @@ static Return_t __ConsoleCmdTasks__(const Byte_t *args_) {
     __ReturnOk__();
   } else {
     __ConsoleWriteString__((const Byte_t *) "Error: Unable to retrieve task information.\r\n");
-    __ReturnError__();
+
+
+    /* Return error by default */
   }
 
   FUNCTION_EXIT;
@@ -679,7 +683,9 @@ static Return_t __ConsoleCmdMem__(const Byte_t *args_) {
     __ReturnOk__();
   } else {
     __ConsoleWriteString__((const Byte_t *) "Error: Unable to retrieve memory information.\r\n");
-    __ReturnError__();
+
+
+    /* Return error by default */
   }
 
   FUNCTION_EXIT;
@@ -747,7 +753,9 @@ static Return_t __ConsoleCmdLs__(const Byte_t *args_) {
 
   if(!__PointerIsNotNull__(mountedVolume)) {
     __ConsoleWriteString__((const Byte_t *) "Error: No filesystem mounted.\r\n");
-    __ReturnError__();
+
+
+    /* Return error by default */
     FUNCTION_EXIT;
   }
 
@@ -804,7 +812,9 @@ static Return_t __ConsoleCmdLs__(const Byte_t *args_) {
     __ReturnOk__();
   } else {
     __ConsoleWriteString__((const Byte_t *) "Error: Unable to open directory.\r\n");
-    __ReturnError__();
+
+
+    /* Return error by default */
   }
 
   FUNCTION_EXIT;
@@ -844,7 +854,9 @@ static Return_t __ConsoleCmdCd__(const Byte_t *args_) {
         /* Path joined successfully */
       } else {
         __ConsoleWriteString__((const Byte_t *) "Error: Path too long.\r\n");
-        __ReturnError__();
+
+
+        /* Return error by default */
         __AssertOnElse__();
         FUNCTION_EXIT;
       }
@@ -859,17 +871,23 @@ static Return_t __ConsoleCmdCd__(const Byte_t *args_) {
         __ReturnOk__();
       } else {
         __ConsoleWriteString__((const Byte_t *) "Error: Directory not found.\r\n");
-        __ReturnError__();
+
+
+        /* Return error by default */
         __AssertOnElse__();
       }
     } else {
       __ConsoleWriteString__((const Byte_t *) "Error: Invalid path.\r\n");
-      __ReturnError__();
+
+
+      /* Return error by default */
       __AssertOnElse__();
     }
   } else {
     __ConsoleWriteString__((const Byte_t *) "Error: No filesystem mounted.\r\n");
-    __ReturnError__();
+
+
+    /* Return error by default */
     __AssertOnElse__();
   }
 
@@ -921,7 +939,9 @@ static Return_t __ConsoleCmdCat__(const Byte_t *args_) {
         /* Path joined successfully */
       } else {
         __ConsoleWriteString__((const Byte_t *) "Error: Path too long.\r\n");
-        __ReturnError__();
+
+
+        /* Return error by default */
         __AssertOnElse__();
         FUNCTION_EXIT;
       }
@@ -967,7 +987,9 @@ static Return_t __ConsoleCmdCat__(const Byte_t *args_) {
                 __ConsoleWriteString__((const Byte_t *) "Error: Failed to read file.\r\n");
                 xMemFree(buffer);
                 xFileClose(file);
-                __ReturnError__();
+
+
+                /* Return error by default */
                 __AssertOnElse__();
                 FUNCTION_EXIT;
               }
@@ -985,7 +1007,9 @@ static Return_t __ConsoleCmdCat__(const Byte_t *args_) {
           } else {
             __ConsoleWriteString__((const Byte_t *) "Error: Unable to allocate buffer.\r\n");
             xFileClose(file);
-            __ReturnError__();
+
+
+            /* Return error by default */
             __AssertOnElse__();
             FUNCTION_EXIT;
           }
@@ -995,7 +1019,9 @@ static Return_t __ConsoleCmdCat__(const Byte_t *args_) {
       } else {
         __ConsoleWriteString__((const Byte_t *) "Error: Unable to get file size.\r\n");
         xFileClose(file);
-        __ReturnError__();
+
+
+        /* Return error by default */
         __AssertOnElse__();
         FUNCTION_EXIT;
       }
@@ -1006,7 +1032,9 @@ static Return_t __ConsoleCmdCat__(const Byte_t *args_) {
       __ReturnOk__();
     } else {
       __ConsoleWriteString__((const Byte_t *) "Error: Unable to open file.\r\n");
-      __ReturnError__();
+
+
+      /* Return error by default */
       __AssertOnElse__();
     }
   } else {
@@ -1016,7 +1044,8 @@ static Return_t __ConsoleCmdCat__(const Byte_t *args_) {
       __ConsoleWriteString__((const Byte_t *) "Error: No file specified.\r\n");
     }
 
-    __ReturnError__();
+
+    /* Return error by default */
     __AssertOnElse__();
   }
 
@@ -1106,7 +1135,9 @@ static Return_t __ConsoleCmdRm__(const Byte_t *args_) {
         /* Path joined successfully */
       } else {
         __ConsoleWriteString__((const Byte_t *) "Error: Path too long.\r\n");
-        __ReturnError__();
+
+
+        /* Return error by default */
         __AssertOnElse__();
         FUNCTION_EXIT;
       }
@@ -1118,7 +1149,9 @@ static Return_t __ConsoleCmdRm__(const Byte_t *args_) {
       __ReturnOk__();
     } else {
       __ConsoleWriteString__((const Byte_t *) "Error: Unable to remove file.\r\n");
-      __ReturnError__();
+
+
+      /* Return error by default */
       __AssertOnElse__();
     }
   } else {
@@ -1128,7 +1161,8 @@ static Return_t __ConsoleCmdRm__(const Byte_t *args_) {
       __ConsoleWriteString__((const Byte_t *) "Error: No file specified.\r\n");
     }
 
-    __ReturnError__();
+
+    /* Return error by default */
     __AssertOnElse__();
   }
 
@@ -1157,7 +1191,9 @@ static Return_t __ConsoleCmdMkdir__(const Byte_t *args_) {
         /* Path joined successfully */
       } else {
         __ConsoleWriteString__((const Byte_t *) "Error: Path too long.\r\n");
-        __ReturnError__();
+
+
+        /* Return error by default */
         __AssertOnElse__();
         FUNCTION_EXIT;
       }
@@ -1169,7 +1205,9 @@ static Return_t __ConsoleCmdMkdir__(const Byte_t *args_) {
       __ReturnOk__();
     } else {
       __ConsoleWriteString__((const Byte_t *) "Error: Unable to create directory.\r\n");
-      __ReturnError__();
+
+
+      /* Return error by default */
       __AssertOnElse__();
     }
   } else {
@@ -1179,7 +1217,8 @@ static Return_t __ConsoleCmdMkdir__(const Byte_t *args_) {
       __ConsoleWriteString__((const Byte_t *) "Error: No directory specified.\r\n");
     }
 
-    __ReturnError__();
+
+    /* Return error by default */
     __AssertOnElse__();
   }
 

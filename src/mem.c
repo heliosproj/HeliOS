@@ -39,6 +39,8 @@ static volatile MemoryRegion_t kernel = {  /* Kernel memory pool structure */
  */
 #define __AlignDown__(value_, alignment_) \
         ((value_) & ~((alignment_) - 1)) /* Simply mask off the lower bits */
+
+
 /* Macro to check if a value is aligned - returns true if no remainder when
  * divided by alignment */
 #define __IsAligned__(value_, alignment_) \
@@ -133,8 +135,6 @@ static Word_t __checksum__(const BlockHeader_t *header_) {
     sum1 = (sum1 + (temp >> 16)) & 0xFFFFu; /* Add bits 48-63 to sum1 */
     sum2 = (sum2 + sum1) & 0xFFFFu; /* Update sum2 */
 #endif /* if UINTPTR_MAX == 0xFF */
-
-
   /* Process size field as two 16-bit words (size is always 32-bit) */
   sum1 = (sum1 + (header_->size & 0xFFFFu)) & 0xFFFFu; /* Add lower 16 bits of
                                                         * size */
@@ -166,13 +166,15 @@ static Return_t __ValidateBlockHeader__(const BlockHeader_t *header_, const vola
                                                                       * before
                                                                       * region
                                                                       * start */
-    ((const Byte_t *) header_ >= ((const Byte_t *) region_->mem + MEMORY_REGION_SIZE_IN_BYTES - ALIGNED_HEADER_SIZE)))) {     /*
-                                                                                                                               * Check
-                                                                                                                               * not
-                                                                                                                               * after
-                                                                                                                               * region
-                                                                                                                               * end
-                                                                                                                               */
+    ((const Byte_t *) header_ >= ((const Byte_t *) region_->mem + MEMORY_REGION_SIZE_IN_BYTES - ALIGNED_HEADER_SIZE)))) { /*
+                                                                                                                           *
+                                                                                                                           *
+                                                                                                                           * Check
+                                                                                                                           * not
+                                                                                                                           * after
+                                                                                                                           * region
+                                                                                                                           * end
+                                                                                                                           */
     /* Header is within bounds - now validate integrity */
     expectedChecksum = __checksum__(header_); /* Calculate what checksum should
                                                * be */
@@ -180,10 +182,8 @@ static Return_t __ValidateBlockHeader__(const BlockHeader_t *header_, const vola
     if(header_->checksum == expectedChecksum) { /* Compare stored vs calculated
                                                  * checksum */
       /* Checksum valid - verify free/inuse flag has legal value */
-      if((header_->free == FREE) || (header_->free == INUSE)) { /* Only FREE
-                                                                 * (0xD5) or
-                                                                 * INUSE (0xAA)
-                                                                 * are valid */
+      if((header_->free == FREE) || (header_->free == INUSE)) {
+        /* Only FREE (0xD5) or INUSE (0xAA) are valid */
         __ReturnOk__(); /* All validation checks passed */
       } else {
         /* Invalid free/inuse flag indicates memory corruption */
@@ -254,14 +254,18 @@ static Return_t __MemoryRegionInit__(volatile MemoryRegion_t *region_) {
     /* Set first block header at beginning of memory region */
     region_->first = (BlockHeader_t *) region_->mem; /* Point to start of memory
                                                       * array */
+
+
     /* Initialize statistics */
     region_->minAvailableEver = MEMORY_REGION_SIZE_IN_BYTES; /* Track minimum
-                                                              * free memory */
+                                                             * free memory */
     region_->allocations = 0; /* Reset allocation counter */
     region_->frees = 0; /* Reset free counter */
 
     /* Clear entire memory region to zero for security */
     if(OK(__memset__((volatile Addr_t *) region_->mem, nil, MEMORY_REGION_SIZE_IN_BYTES))) { /*
+                                                                                              *
+                                                                                              *
                                                                                               * Zero
                                                                                               * all
                                                                                               * bytes
@@ -312,22 +316,24 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
   /* Align requested size up to alignment boundary */
   requested = __AlignUp__(size_, CONFIG_MEMORY_ALIGNMENT); /* Ensure proper
                                                             * alignment */
+
+
   /* Disable interrupts to make allocation atomic */
   __DisableInterrupts__(); /* Prevent race conditions */
 
   /* Comprehensive validation of all parameters and preconditions */
   if(__FlagIsNotSet__(MEMFAULT) && /* No memory fault active */
-    __PointerIsNotNull__(region_) &&   /* Valid region pointer */
-    __PointerIsNotNull__(addr_) &&   /* Valid output pointer */
-    (nil < size_) &&   /* Non-zero size requested */
-    (requested >= size_) &&   /* Check alignment didn't overflow */
-    ((requested < MEMORY_REGION_SIZE_IN_BYTES) &&   /* Request fits in region */
-    ((requested + ALIGNED_HEADER_SIZE) <= MEMORY_REGION_SIZE_IN_BYTES))) {    /*
-                                                                               * Including
-                                                                               * header
-                                                                               * still
-                                                                               * fits
-                                                                               */
+    __PointerIsNotNull__(region_) && /* Valid region pointer */
+    __PointerIsNotNull__(addr_) && /* Valid output pointer */
+    (nil < size_) && /* Non-zero size requested */
+    (requested >= size_) && /* Check alignment didn't overflow */
+    ((requested < MEMORY_REGION_SIZE_IN_BYTES) && /* Request fits in region */
+    ((requested + ALIGNED_HEADER_SIZE) <= MEMORY_REGION_SIZE_IN_BYTES))) { /*
+                                                                            * Including
+                                                                            * header
+                                                                            * still
+                                                                            * fits
+                                                                            */
     /* Lazy initialization if region was never used before */
     if(__PointerIsNull__(region_->first)) { /* Check if first allocation ever */
       /* Initialize region with single free block */
@@ -351,7 +357,7 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
       /* Validate block header before accessing to prevent crashes from
        * corruption */
       if(!OK(__ValidateBlockHeader__(cursor, region_))) { /* Check block
-                                                           * integrity */
+                                                          * integrity */
         /* Corruption detected - cannot trust any candidates found so far */
         candidate = null; /* Clear any candidate to prevent using corrupted
                            * memory */
@@ -378,9 +384,9 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
 
       /* Check if this block is suitable (free and big enough) */
       if(__BlockHeaderIsFree__(cursor) && /* Block is free */
-        (requested <= cursor->size) &&   /* Block is big enough */
-        (cursor->size < candidateSize)) {   /* Block is smaller than current
-                                             * best (best-fit) */
+        (requested <= cursor->size) && /* Block is big enough */
+        (cursor->size < candidateSize)) {
+        /* Block is smaller than current best (best-fit) */
         candidateSize = cursor->size; /* Update best size */
         candidate = cursor; /* Save this block as candidate */
       }
@@ -402,14 +408,18 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
                                                                        * corruption
                                                                        */
       /* Determine if block should be split or used whole */
+
+
       /* Split only if remaining space is enough for minimum block plus header
        */
       if((candidate->size >= requested) && /* Verify no underflow */
-        ((candidate->size - requested) >= (ALIGNED_HEADER_SIZE + CONFIG_MEMORY_MINIMUM_BLOCK_SIZE))) {   /*
-                                                                                                          * Remainder
-                                                                                                          * is
-                                                                                                          * useful
-                                                                                                          */
+        ((candidate->size - requested) >= (ALIGNED_HEADER_SIZE + CONFIG_MEMORY_MINIMUM_BLOCK_SIZE))) { /*
+                                                                                                        *
+                                                                                                        *
+                                                                                                        * Remainder
+                                                                                                        * is
+                                                                                                        * useful
+                                                                                                        */
         /* Split the block - create new free block from remainder */
         next = candidate->next; /* Save original next pointer */
         /* Calculate new block location after allocated space */
@@ -419,6 +429,8 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
         /* Initialize the new free block */
         candidate->next->next = next; /* Link to original next */
         candidate->next->size = candidate->size - requested - ALIGNED_HEADER_SIZE; /*
+                                                                                    *
+                                                                                    *
                                                                                     * Remaining
                                                                                     * size
                                                                                     */
@@ -426,6 +438,8 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
         candidate->next->checksum = __checksum__(candidate->next); /* Set
                                                                     * checksum
                                                                     */
+
+
         /* Update allocated block size */
         candidate->size = requested; /* Exact size requested */
       }
@@ -436,12 +450,13 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
       candidate->checksum = __checksum__(candidate); /* Update checksum */
 
       /* Clear allocated memory for security */
-      if(OK(__memset__(__OffsetBlockHeaderToPointer__(candidate), nil, requested))) { /*
-                                                                                       * Zero
-                                                                                       * memory
-                                                                                       */
+      if(OK(__memset__(__OffsetBlockHeaderToPointer__(candidate), nil, requested))) {
+        /*
+         * Zero memory
+         */
         *addr_ = __OffsetBlockHeaderToPointer__(candidate); /* Return user
                                                              * pointer */
+
 
         /* Verify pointer alignment as final check */
         if(!__IsAligned__((Size_t) *addr_, CONFIG_MEMORY_ALIGNMENT)) { /* Check
@@ -549,23 +564,27 @@ static Return_t __DefragMemoryRegion__(volatile MemoryRegion_t *region_) {
   BlockHeader_t *cursor = null; /* Current block pointer */
   BlockHeader_t *nextBlock = null; /* Next block pointer */
   Base_t merged = true; /* Flag to track if any merges occurred */
+  Base_t cycleDetected = false; /* Flag for cycle detection */
   Size_t traversedSize = 0; /* For cycle detection */
 
 
   if(__PointerIsNotNull__(region_)) { /* Validate region pointer */
-    /* Keep merging until no more merges possible */
-    while(merged) { /* Continue while merges happening */
+    /* Keep merging until no more merges possible or error detected */
+    while(merged && !cycleDetected) {
+      /* Continue while merges happening and no errors */
       merged = false; /* Reset merge flag */
       cursor = region_->first; /* Start at beginning */
       traversedSize = 0; /* Reset traversal counter */
 
       /* Traverse list looking for adjacent free blocks */
-      while(__PointerIsNotNull__(cursor) && __PointerIsNotNull__(cursor->next)) { /*
-                                                                                   * Need
-                                                                                   * current
-                                                                                   * and
-                                                                                   * next
-                                                                                   */
+      while(__PointerIsNotNull__(cursor) && __PointerIsNotNull__(cursor->next) && !cycleDetected) { /*
+                                                                                                     *
+                                                                                                     *
+                                                                                                     * Need
+                                                                                                     * current
+                                                                                                     * and
+                                                                                                     * next
+                                                                                                     */
         /* Track traversed memory for cycle detection */
         traversedSize += ALIGNED_HEADER_SIZE + cursor->size; /* Add block size
                                                               */
@@ -573,44 +592,48 @@ static Return_t __DefragMemoryRegion__(volatile MemoryRegion_t *region_) {
         if(traversedSize > MEMORY_REGION_SIZE_IN_BYTES) { /* Cycle detected */
           /* Circular reference - memory corruption */
           __SetFlag__(MEMFAULT); /* Set fault flag */
-          __AssertOnElse__(); /* Trigger assertion */
-          FUNCTION_EXIT; /* Exit function */
-        }
-
-
-        /* Check if current and next blocks are both free */
-        if(__BlockHeaderIsFree__(cursor) && __BlockHeaderIsFree__(cursor->next)) { /*
-                                                                                    * Both
-                                                                                    * free
-                                                                                    */
-          nextBlock = cursor->next; /* Get next block pointer */
-
-          /* Check for integer overflow before merging */
-          if(cursor->size > ((Size_t) -1) - ALIGNED_HEADER_SIZE - nextBlock->size) { /*
-                                                                                      * Would
-                                                                                      * overflow
-                                                                                      */
-            /* Skip this merge to prevent overflow */
-            cursor = cursor->next; /* Move to next block */
-            continue; /* Skip to next iteration */
-          }
-
-
-          /* Merge the blocks */
-          cursor->size += ALIGNED_HEADER_SIZE + nextBlock->size; /* Combine
-                                                                  * sizes */
-          cursor->next = nextBlock->next; /* Skip over merged block */
-          /* Update checksum for merged block */
-          cursor->checksum = __checksum__(cursor); /* Recalculate checksum */
-          /* Mark that merge occurred */
-          merged = true; /* Set flag to continue merging */
+          cycleDetected = true; /* Set flag to exit loops */
         } else {
-          cursor = cursor->next;  /* Move to next block */
+          /* Check if current and next blocks are both free */
+          if(__BlockHeaderIsFree__(cursor) && __BlockHeaderIsFree__(cursor->next)) {
+            /*
+             * Both free
+             */
+            nextBlock = cursor->next; /* Get next block pointer */
+
+            /* Check for integer overflow before merging */
+            if(cursor->size > ((Size_t) -1) - ALIGNED_HEADER_SIZE - nextBlock->size) { /*
+                                                                                        *
+                                                                                        *
+                                                                                        * Would
+                                                                                        * overflow
+                                                                                        */
+              /* Skip this merge to prevent overflow */
+              cursor = cursor->next; /* Move to next block */
+              continue; /* Skip to next iteration */
+            }
+
+
+            /* Merge the blocks */
+            cursor->size += ALIGNED_HEADER_SIZE + nextBlock->size; /* Combine
+                                                                   * sizes */
+            cursor->next = nextBlock->next; /* Skip over merged block */
+            /* Update checksum for merged block */
+            cursor->checksum = __checksum__(cursor); /* Recalculate checksum */
+            /* Mark that merge occurred */
+            merged = true; /* Set flag to continue merging */
+          } else {
+            cursor = cursor->next;  /* Move to next block */
+          }
         }
       }
     }
 
-    __ReturnOk__();  /* Defragmentation complete */
+    if(cycleDetected) {
+      __AssertOnElse__(); /* Trigger assertion for cycle detection */
+    } else {
+      __ReturnOk__();  /* Defragmentation complete */
+    }
   } else {
     __AssertOnElse__();  /* Null region pointer */
   }
@@ -651,8 +674,8 @@ Return_t xMemFree(const volatile Addr_t *addr_) {
 Return_t xMemFreeAll(void) {
   FUNCTION_ENTER;  /* Track function entry */
 
-  if(OK(__MemoryRegionInit__(&heap))) { /* Reinitialize heap to single free
-                                         * block */
+  if(OK(__MemoryRegionInit__(&heap))) {
+    /* Reinitialize heap to single free block */
     __ReturnOk__(); /* Reset successful */
   } else {
     __AssertOnElse__();  /* Reset failed */
@@ -670,33 +693,39 @@ Return_t xMemGetUsed(Size_t *size_) {
   BlockHeader_t *cursor = null; /* Block iterator */
   Size_t used = 0; /* Total used memory */
   Size_t traversedSize = 0; /* For cycle detection */
+  Base_t cycleDetected = false; /* Flag for cycle detection */
 
 
   if(__PointerIsNotNull__(size_)) { /* Validate output pointer */
     cursor = heap.first; /* Start at first block */
 
     /* Traverse all blocks counting used memory */
-    while(__PointerIsNotNull__(cursor)) { /* While blocks remain */
+    while(__PointerIsNotNull__(cursor) && !cycleDetected) { /* While blocks
+                                                             * remain and no
+                                                             * errors */
       /* Track traversed memory for cycle detection */
       traversedSize += ALIGNED_HEADER_SIZE + cursor->size; /* Add block total */
 
       if(traversedSize > MEMORY_REGION_SIZE_IN_BYTES) { /* Cycle detected */
         /* Circular reference - corruption */
         __SetFlag__(MEMFAULT); /* Set fault flag */
-        __AssertOnElse__(); /* Trigger assertion */
-        FUNCTION_EXIT; /* Exit function */
-      }
+        cycleDetected = true; /* Set flag to exit loop */
+      } else {
+        if(__BlockHeaderIsInUse__(cursor)) {  /* Block is allocated */
+          /* Include both user data and header overhead */
+          used += cursor->size + ALIGNED_HEADER_SIZE; /* Add total block size */
+        }
 
-      if(__BlockHeaderIsInUse__(cursor)) {  /* Block is allocated */
-        /* Include both user data and header overhead */
-        used += cursor->size + ALIGNED_HEADER_SIZE; /* Add total block size */
+        cursor = cursor->next;  /* Move to next block */
       }
-
-      cursor = cursor->next;  /* Move to next block */
     }
 
-    *size_ = used;  /* Return total used */
-    __ReturnOk__(); /* Success */
+    if(cycleDetected) {
+      __AssertOnElse__(); /* Trigger assertion for cycle detection */
+    } else {
+      *size_ = used;  /* Return total used */
+      __ReturnOk__(); /* Success */
+    }
   } else {
     __AssertOnElse__();  /* Null output pointer */
   }
@@ -817,6 +846,7 @@ static Return_t __MemGetRegionStats__(const volatile MemoryRegion_t *region_, Me
   Word_t freeBlocks = 0; /* Number of free blocks */
   Word_t availableBytes = 0; /* Total free bytes */
   Size_t traversedSize = 0; /* For cycle detection */
+  Base_t cycleDetected = false; /* Flag for cycle detection */
 
 
   if(__PointerIsNotNull__(region_) && __PointerIsNotNull__(stats_)) { /*
@@ -824,14 +854,16 @@ static Return_t __MemGetRegionStats__(const volatile MemoryRegion_t *region_, Me
                                                                        * parameters
                                                                        */
     /* Allocate memory for stats structure */
-    if(OK(xMemAlloc((volatile Addr_t **) &stats, sizeof(MemoryRegionStats_t)))) { /*
-                                                                                   * Allocate
-                                                                                   * stats
-                                                                                   */
+    if(OK(xMemAlloc((volatile Addr_t **) &stats, sizeof(MemoryRegionStats_t)))) {
+      /*
+       * Allocate stats
+       */
       cursor = region_->first; /* Start at first block */
 
       /* Traverse blocks gathering statistics */
-      while(__PointerIsNotNull__(cursor)) { /* While blocks remain */
+      while(__PointerIsNotNull__(cursor) && !cycleDetected) { /* While blocks
+                                                               * remain and no
+                                                               * errors */
         /* Track traversed memory for cycle detection */
         traversedSize += ALIGNED_HEADER_SIZE + cursor->size; /* Add block size
                                                               */
@@ -841,45 +873,49 @@ static Return_t __MemGetRegionStats__(const volatile MemoryRegion_t *region_, Me
           __SetFlag__(MEMFAULT); /* Set fault flag */
           /* Free allocated stats before exit */
           xMemFree((const volatile Addr_t *) stats); /* Clean up */
-          __AssertOnElse__(); /* Trigger assertion */
-          FUNCTION_EXIT; /* Exit function */
-        }
+          cycleDetected = true; /* Set flag to exit loop */
+        } else {
+          if(__BlockHeaderIsFree__(cursor)) {  /* Block is free */
+            freeBlocks++; /* Count free block */
+            availableBytes += cursor->size; /* Add to total free */
 
-        if(__BlockHeaderIsFree__(cursor)) {  /* Block is free */
-          freeBlocks++; /* Count free block */
-          availableBytes += cursor->size; /* Add to total free */
+            if(cursor->size > largestFree) { /* Check if largest */
+              largestFree = cursor->size; /* Update largest */
+            }
 
-          if(cursor->size > largestFree) { /* Check if largest */
-            largestFree = cursor->size; /* Update largest */
+            if(cursor->size < smallestFree) {  /* Check if smallest */
+              smallestFree = cursor->size; /* Update smallest */
+            }
           }
 
-          if(cursor->size < smallestFree) {  /* Check if smallest */
-            smallestFree = cursor->size; /* Update smallest */
-          }
+          cursor = cursor->next;  /* Move to next block */
         }
-
-        cursor = cursor->next;  /* Move to next block */
       }
 
-
-      /* Fill in statistics structure */
-      stats->largestFreeEntryInBytes = largestFree; /* Largest free block */
-      stats->smallestFreeEntryInBytes = (smallestFree == (Word_t) -1) ? 0 : smallestFree; /*
-                                                                                           * Smallest
-                                                                                           * or
-                                                                                           * 0
-                                                                                           */
-      stats->numberOfFreeBlocks = freeBlocks; /* Free block count */
-      stats->availableSpaceInBytes = availableBytes; /* Total free space */
-      stats->successfulAllocations = region_->allocations; /* Allocation count
-                                                            */
-      stats->successfulFrees = region_->frees; /* Free count */
-      stats->minimumEverFreeBytesRemaining = region_->minAvailableEver; /* Low
-                                                                         * water
-                                                                         * mark
-                                                                         */
-      *stats_ = stats; /* Return stats pointer */
-      __ReturnOk__(); /* Success */
+      if(cycleDetected) {
+        __AssertOnElse__(); /* Trigger assertion for cycle detection */
+      } else {
+        /* Fill in statistics structure */
+        stats->largestFreeEntryInBytes = largestFree; /* Largest free block */
+        stats->smallestFreeEntryInBytes = (smallestFree == (Word_t) -1) ? 0 : smallestFree; /*
+                                                                                             *
+                                                                                             *
+                                                                                             * Smallest
+                                                                                             * or
+                                                                                             * 0
+                                                                                             */
+        stats->numberOfFreeBlocks = freeBlocks; /* Free block count */
+        stats->availableSpaceInBytes = availableBytes; /* Total free space */
+        stats->successfulAllocations = region_->allocations; /* Allocation count
+                                                              */
+        stats->successfulFrees = region_->frees; /* Free count */
+        stats->minimumEverFreeBytesRemaining = region_->minAvailableEver; /* Low
+                                                                           * water
+                                                                           * mark
+                                                                           */
+        *stats_ = stats; /* Return stats pointer */
+        __ReturnOk__(); /* Success */
+      }
     } else {
       __AssertOnElse__();  /* Stats allocation failed */
     }
@@ -929,10 +965,10 @@ Return_t __memcpy__(const volatile Addr_t *dest_, const volatile Addr_t *src_, c
   volatile Byte_t *dest = null; /* Destination byte pointer */
 
 
-  if(__PointerIsNotNull__(dest_) && __PointerIsNotNull__(src_) && (nil < size_)) { /*
-                                                                                    * Validate
-                                                                                    * parameters
-                                                                                    */
+  if(__PointerIsNotNull__(dest_) && __PointerIsNotNull__(src_) && (nil < size_)) {
+    /*
+     * Validate parameters
+     */
     src = (Byte_t *) src_; /* Cast to byte pointer */
     dest = (Byte_t *) dest_; /* Cast to byte pointer */
 
@@ -984,9 +1020,10 @@ Return_t __memcmp__(const volatile Addr_t *s1_, const volatile Addr_t *s2_, cons
   volatile Byte_t *s2 = null; /* Second region pointer */
 
 
-  if(__PointerIsNotNull__(s1_) && __PointerIsNotNull__(s2_) && (nil < size_) && __PointerIsNotNull__(res_)) { /*
-                                                                                                               * Validate
-                                                                                                               */
+  if(__PointerIsNotNull__(s1_) && __PointerIsNotNull__(s2_) && (nil < size_) && __PointerIsNotNull__(res_)) {
+    /*
+     * Validate
+     */
     *res_ = true; /* Assume equal initially */
     s1 = (Byte_t *) s1_; /* Cast to byte pointer */
     s2 = (Byte_t *) s2_; /* Cast to byte pointer */
@@ -1042,8 +1079,6 @@ static Return_t __DetectByteOrder__(ByteOrder_t *order_) {
 
 
 #endif /* if defined(POSIX_ARCH_OTHER) */
-
-
 /* String utility constants */
 #define CHAR_NULL 0x00u /* Null terminator character */
 #define CHAR_SLASH 0x2Fu /* Forward slash character '/' */
@@ -1077,24 +1112,25 @@ Return_t __strcpy__(Byte_t *dest_, const Byte_t *src_, const Size_t destSize_) {
   Size_t i = 0x0u; /* Character index */
 
 
-  if(__PointerIsNull__(dest_) || __PointerIsNull__(src_) || (0x0u == destSize_)) { /*
-                                                                                    * Validate
-                                                                                    * parameters
-                                                                                    */
+  if(__PointerIsNotNull__(dest_) && __PointerIsNotNull__(src_) && (0x0u < destSize_)) { /*
+                                                                                         *
+                                                                                         *
+                                                                                         * Validate
+                                                                                         * parameters
+                                                                                         */
+    /* Copy characters until null or size limit */
+    while((CHAR_NULL != src_[i]) && (i < (destSize_ - 0x1u))) {
+      /* Room for null terminator */
+      dest_[i] = src_[i]; /* Copy character */
+      i++; /* Next character */
+    }
+
+    dest_[i] = CHAR_NULL;  /* Add null terminator */
+    __ReturnOk__(); /* Success */
+  } else {
     __AssertOnElse__(); /* Invalid parameters */
-    FUNCTION_EXIT; /* Exit function */
   }
 
-
-  /* Copy characters until null or size limit */
-  while((CHAR_NULL != src_[i]) && (i < (destSize_ - 0x1u))) { /* Room for null
-                                                               * terminator */
-    dest_[i] = src_[i]; /* Copy character */
-    i++; /* Next character */
-  }
-
-  dest_[i] = CHAR_NULL;  /* Add null terminator */
-  __ReturnOk__(); /* Success */
   FUNCTION_EXIT; /* Track function exit */
 }
 
@@ -1107,27 +1143,28 @@ Return_t __strncpy__(Byte_t *dest_, const Byte_t *src_, const Size_t n_) {
   Size_t i = 0x0u; /* Character index */
 
 
-  if(__PointerIsNull__(dest_) || __PointerIsNull__(src_) || (0x0u == n_)) { /*
-                                                                             * Validate
-                                                                             * parameters
-                                                                             */
+  if(__PointerIsNotNull__(dest_) && __PointerIsNotNull__(src_) && (0x0u < n_)) { /*
+                                                                                  *
+                                                                                  *
+                                                                                  * Validate
+                                                                                  * parameters
+                                                                                  */
+    /* Copy up to n characters or until null */
+    for(i = 0x0u; (i < n_) && (CHAR_NULL != src_[i]); i++) { /* Copy loop */
+      dest_[i] = src_[i]; /* Copy character */
+    }
+
+
+    /* Pad with nulls if source was shorter */
+    for(; i < n_; i++) { /* Padding loop */
+      dest_[i] = CHAR_NULL; /* Add null */
+    }
+
+    __ReturnOk__();  /* Success */
+  } else {
     __AssertOnElse__(); /* Invalid parameters */
-    FUNCTION_EXIT; /* Exit function */
   }
 
-
-  /* Copy up to n characters or until null */
-  for(i = 0x0u; (i < n_) && (CHAR_NULL != src_[i]); i++) { /* Copy loop */
-    dest_[i] = src_[i]; /* Copy character */
-  }
-
-
-  /* Pad with nulls if source was shorter */
-  for(; i < n_; i++) { /* Padding loop */
-    dest_[i] = CHAR_NULL; /* Add null */
-  }
-
-  __ReturnOk__();  /* Success */
   FUNCTION_EXIT; /* Track function exit */
 }
 
@@ -1143,8 +1180,8 @@ Base_t __strcmp__(const Byte_t *s1_, const Byte_t *s2_) {
 
 
   /* Compare characters until mismatch or end */
-  while((CHAR_NULL != s1_[i]) && (CHAR_NULL != s2_[i])) { /* Both have
-                                                           * characters */
+  while((CHAR_NULL != s1_[i]) && (CHAR_NULL != s2_[i])) {
+    /* Both have characters */
     if(s1_[i] != s2_[i]) { /* Characters differ */
       return ((s1_[i] < s2_[i]) ? -0x1 : 0x1); /* Return comparison result */
     }
@@ -1165,10 +1202,10 @@ Base_t __strncmp__(const Byte_t *s1_, const Byte_t *s2_, const Size_t n_) {
   Size_t i = 0x0u;  /* Character index */
 
 
-  if(__PointerIsNull__(s1_) || __PointerIsNull__(s2_) || (0x0u == n_)) { /*
-                                                                          * Validate
-                                                                          * parameters
-                                                                          */
+  if(__PointerIsNull__(s1_) || __PointerIsNull__(s2_) || (0x0u == n_)) {
+    /*
+     * Validate parameters
+     */
     return (0x0u); /* Treat as equal */
   }
 
@@ -1191,33 +1228,31 @@ Return_t __strcat__(Byte_t *dest_, const Byte_t *src_, const Size_t destSize_) {
   Size_t i = 0x0u; /* Source index */
 
 
-  if(__PointerIsNull__(dest_) || __PointerIsNull__(src_) || (0x0u == destSize_)) { /*
-                                                                                    * Validate
-                                                                                    */
+  if(__PointerIsNotNull__(dest_) && __PointerIsNotNull__(src_) && (0x0u < destSize_)) {
+    /*
+     * Validate
+     */
+    destLen = __strlen__(dest_); /* Get current length */
+
+    if(destLen < destSize_) { /* Have room */
+      /* Append source to destination */
+      while((CHAR_NULL != src_[i]) && ((destLen + i) < (destSize_ - 0x1u))) {
+        /*
+         * Room for null
+         */
+        dest_[destLen + i] = src_[i]; /* Copy character */
+        i++; /* Next character */
+      }
+
+      dest_[destLen + i] = CHAR_NULL;  /* Add terminator */
+      __ReturnOk__(); /* Success */
+    } else {
+      __AssertOnElse__(); /* No room */
+    }
+  } else {
     __AssertOnElse__(); /* Invalid parameters */
-    FUNCTION_EXIT; /* Exit function */
   }
 
-  destLen = __strlen__(dest_);  /* Get current length */
-
-  if(destLen >= destSize_) { /* Already full */
-    __AssertOnElse__(); /* No room */
-    FUNCTION_EXIT; /* Exit function */
-  }
-
-
-  /* Append source to destination */
-  while((CHAR_NULL != src_[i]) && ((destLen + i) < (destSize_ - 0x1u))) { /*
-                                                                           * Room
-                                                                           * for
-                                                                           * null
-                                                                           */
-    dest_[destLen + i] = src_[i]; /* Copy character */
-    i++; /* Next character */
-  }
-
-  dest_[destLen + i] = CHAR_NULL;  /* Add terminator */
-  __ReturnOk__(); /* Success */
   FUNCTION_EXIT; /* Track function exit */
 }
 
@@ -1321,8 +1356,9 @@ Return_t __path_join__(Byte_t *dest_, const Byte_t *base_, const Byte_t *path_, 
 
 
   /* Check if result will fit */
-  if((baseLen + pathLen + (needSlash ? 0x1u : 0x0u)) >= destSize_) { /* Too long
-                                                                      */
+  if((baseLen + pathLen + (needSlash ? 0x1u : 0x0u)) >= destSize_) {
+    /* Too long
+     */
     __AssertOnElse__(); /* Buffer too small */
     FUNCTION_EXIT; /* Exit function */
   }
@@ -1365,8 +1401,9 @@ Return_t __path_normalize__(Byte_t *path_, const Size_t pathSize_) {
   Size_t segIdx = 0x0u; /* Character in segment */
 
 
-  if(__PointerIsNull__(path_) || (0x0u == pathSize_)) { /* Validate parameters
-                                                         */
+  if(__PointerIsNull__(path_) || (0x0u == pathSize_)) {
+    /* Validate parameters
+     */
     __AssertOnElse__(); /* Invalid parameters */
     FUNCTION_EXIT; /* Exit function */
   }
@@ -1401,7 +1438,11 @@ Return_t __path_normalize__(Byte_t *path_, const Size_t pathSize_) {
 
         /* Process special segments */
         if((segments[segmentCount][0x0u] == '.') && (segments[segmentCount][0x1u] == '.') && (segments[segmentCount][0x2u] == CHAR_NULL)) { /*
+                                                                                                                                             *
+                                                                                                                                             *
                                                                                                                                              * ".."
+                                                                                                                                             *
+                                                                                                                                             *
                                                                                                                                              * segment
                                                                                                                                              */
           /* Go up one directory if possible */
@@ -1409,7 +1450,11 @@ Return_t __path_normalize__(Byte_t *path_, const Size_t pathSize_) {
             segmentCount--; /* Remove last segment */
           }
         } else if(!((segments[segmentCount][0x0u] == '.') && (segments[segmentCount][0x1u] == CHAR_NULL))) { /*
+                                                                                                              *
+                                                                                                              *
                                                                                                               * Not
+                                                                                                              *
+                                                                                                              *
                                                                                                               * "."
                                                                                                               */
           /* Keep this segment */
@@ -1450,9 +1495,9 @@ Return_t __path_normalize__(Byte_t *path_, const Size_t pathSize_) {
 
 
   /* Handle empty result (root directory) */
-  if((0x0u == j) || ((0x1u == j) && (CHAR_SLASH == path_[0x0u]))) { /* Empty or
-                                                                     * just "/"
-                                                                     */
+  if((0x0u == j) || ((0x1u == j) && (CHAR_SLASH == path_[0x0u]))) {
+    /* Empty or just "/"
+     */
     path_[0x0u] = CHAR_SLASH; /* Set to root */
     j = 0x1u; /* One character */
   }
@@ -1483,9 +1528,10 @@ Return_t __path_dirname__(Byte_t *dest_, const Byte_t *path_, const Size_t destS
   Size_t i = 0x0u; /* Loop index */
 
 
-  if(__PointerIsNull__(dest_) || __PointerIsNull__(path_) || (0x0u == destSize_)) { /*
-                                                                                     * Validate
-                                                                                     */
+  if(__PointerIsNull__(dest_) || __PointerIsNull__(path_) || (0x0u == destSize_)) {
+    /*
+     * Validate
+     */
     __AssertOnElse__(); /* Invalid parameters */
     FUNCTION_EXIT; /* Exit function */
   }
@@ -1493,9 +1539,8 @@ Return_t __path_dirname__(Byte_t *dest_, const Byte_t *path_, const Size_t destS
   len = __strlen__(path_);  /* Get path length */
 
   if(0x0u == len) { /* Empty path */
-    if(OK(__strcpy__(dest_, (const Byte_t *) ".", destSize_))) { /* Return
-                                                                  * current
-                                                                  * directory */
+    if(OK(__strcpy__(dest_, (const Byte_t *) ".", destSize_))) {
+      /* Return current directory */
       __ReturnOk__(); /* Success */
     } else {
       __AssertOnElse__();  /* Copy failed */
@@ -1513,9 +1558,8 @@ Return_t __path_dirname__(Byte_t *dest_, const Byte_t *path_, const Size_t destS
   }
 
   if(0x0u == i) {  /* No slash found */
-    if(OK(__strcpy__(dest_, (const Byte_t *) ".", destSize_))) { /* Return
-                                                                  * current
-                                                                  * directory */
+    if(OK(__strcpy__(dest_, (const Byte_t *) ".", destSize_))) {
+      /* Return current directory */
       __ReturnOk__(); /* Success */
     } else {
       __AssertOnElse__();  /* Copy failed */
@@ -1549,9 +1593,10 @@ Return_t __path_basename__(Byte_t *dest_, const Byte_t *path_, const Size_t dest
   Size_t start = 0x0u; /* Start of filename */
 
 
-  if(__PointerIsNull__(dest_) || __PointerIsNull__(path_) || (0x0u == destSize_)) { /*
-                                                                                     * Validate
-                                                                                     */
+  if(__PointerIsNull__(dest_) || __PointerIsNull__(path_) || (0x0u == destSize_)) {
+    /*
+     * Validate
+     */
     __AssertOnElse__(); /* Invalid parameters */
     FUNCTION_EXIT; /* Exit function */
   }
@@ -1559,9 +1604,8 @@ Return_t __path_basename__(Byte_t *dest_, const Byte_t *path_, const Size_t dest
   len = __strlen__(path_);  /* Get path length */
 
   if(0x0u == len) { /* Empty path */
-    if(OK(__strcpy__(dest_, (const Byte_t *) ".", destSize_))) { /* Return
-                                                                  * current
-                                                                  * directory */
+    if(OK(__strcpy__(dest_, (const Byte_t *) ".", destSize_))) {
+      /* Return current directory */
       __ReturnOk__(); /* Success */
     } else {
       __AssertOnElse__();  /* Copy failed */

@@ -446,7 +446,7 @@ static void __SetupConsoleEnvironment__(void) {
 
 
     if(__PointerIsNull__(command_) || __PointerIsNull__(expected_)) {
-      __ReturnError__();
+      /* Return error by default */
       __AssertOnElse__();
       FUNCTION_EXIT;
     }
@@ -458,13 +458,13 @@ static void __SetupConsoleEnvironment__(void) {
 
     /* Prepare command with CR */
     if(ERROR(__strcpy__(commandWithCR, command_, TEST_MAX_COMMAND_LENGTH + 0x2u))) {
-      __ReturnError__();
+      /* Return error by default */
       __AssertOnElse__();
       FUNCTION_EXIT;
     }
 
     if(ERROR(__strcat__(commandWithCR, (const Byte_t *) "\r", TEST_MAX_COMMAND_LENGTH + 0x2u))) {
-      __ReturnError__();
+      /* Return error by default */
       __AssertOnElse__();
       FUNCTION_EXIT;
     }
@@ -485,7 +485,7 @@ static void __SetupConsoleEnvironment__(void) {
     if(__OutputContains__(output, expected_)) {
       __ReturnOk__();
     } else {
-      __ReturnError__();
+      /* Return error by default */
     }
 
     FUNCTION_EXIT;

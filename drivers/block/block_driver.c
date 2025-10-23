@@ -58,7 +58,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _self_register)(void) {
                           TO_FUNCTION(DEVICE_NAME, _simple_write)))) {
     __ReturnOk__();
   } else {
-    __ReturnError__();
+    /* Return error by default */
     __AssertOnElse__();
   }
 
@@ -115,11 +115,11 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Add
           /* SD/MMC protocols would initialize here */
           else {
             /* Not implemented yet */
-            __ReturnError__();
+            /* Return error by default */
             __AssertOnElse__();
           }
         } else {
-          __ReturnError__();
+          /* Return error by default */
           __AssertOnElse__();
         }
 
@@ -136,7 +136,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Add
 
           __ReturnOk__();
         } else {
-          __ReturnError__();
+          /* Return error by default */
           __AssertOnElse__();
         }
 
@@ -156,18 +156,18 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Add
 
           __ReturnOk__();
         } else {
-          __ReturnError__();
+          /* Return error by default */
           __AssertOnElse__();
         }
 
         break;
 
       default:
-        __ReturnError__();
+        /* Return error by default */
         __AssertOnElse__();
     }
   } else {
-    __ReturnError__();
+    /* Return error by default */
     __AssertOnElse__();
   }
 
@@ -189,16 +189,16 @@ Return_t TO_FUNCTION(DEVICE_NAME, _read)(Device_t *device_, Size_t *size_, Addr_
         *size_ = (Size_t)state.blockSize * state.currentBlockCount;
         __ReturnOk__();
       } else {
-        __ReturnError__();
+        /* Return error by default */
         __AssertOnElse__();
       }
     } else {
       /* SD/MMC protocols not implemented yet */
-      __ReturnError__();
+      /* Return error by default */
       __AssertOnElse__();
     }
   } else {
-    __ReturnError__();
+    /* Return error by default */
     __AssertOnElse__();
   }
 
@@ -216,16 +216,16 @@ Return_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t *device_, Size_t *size_, Addr
       if(OK(__BlockDeviceWriteBlockRAW__((Byte_t *)data_))) {
         __ReturnOk__();
       } else {
-        __ReturnError__();
+        /* Return error by default */
         __AssertOnElse__();
       }
     } else {
       /* SD/MMC protocols not implemented yet */
-      __ReturnError__();
+      /* Return error by default */
       __AssertOnElse__();
     }
   } else {
-    __ReturnError__();
+    /* Return error by default */
     __AssertOnElse__();
   }
 
@@ -236,7 +236,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t *device_, Size_t *size_, Addr
 Return_t TO_FUNCTION(DEVICE_NAME, _simple_read)(Device_t *device_, Byte_t *data_) {
   FUNCTION_ENTER;
   /* Block devices don't support simple byte-level operations */
-  __ReturnError__();
+  /* Return error by default */
   __AssertOnElse__();
   FUNCTION_EXIT;
 }
@@ -245,7 +245,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _simple_read)(Device_t *device_, Byte_t *data_
 Return_t TO_FUNCTION(DEVICE_NAME, _simple_write)(Device_t *device_, Byte_t data_) {
   FUNCTION_ENTER;
   /* Block devices don't support simple byte-level operations */
-  __ReturnError__();
+  /* Return error by default */
   __AssertOnElse__();
   FUNCTION_EXIT;
 }
@@ -281,7 +281,7 @@ static Return_t __PrepareBlockIORequest__(const Byte_t operation_,
 
     __ReturnOk__();
   } else {
-    __ReturnError__();
+    /* Return error by default */
     __AssertOnElse__();
   }
 
@@ -310,16 +310,16 @@ static Return_t __BlockDeviceReadBlockRAW__(Byte_t **data_) {
         __ReturnOk__();
       } else {
         __KernelFreeMemory__(request);
-        __ReturnError__();
+        /* Return error by default */
         __AssertOnElse__();
       }
     } else {
       __KernelFreeMemory__(request);
-      __ReturnError__();
+      /* Return error by default */
       __AssertOnElse__();
     }
   } else {
-    __ReturnError__();
+    /* Return error by default */
     __AssertOnElse__();
   }
 
@@ -346,16 +346,16 @@ static Return_t __BlockDeviceWriteBlockRAW__(const Byte_t *data_) {
         __ReturnOk__();
       } else {
         __KernelFreeMemory__(request);
-        __ReturnError__();
+        /* Return error by default */
         __AssertOnElse__();
       }
     } else {
       __KernelFreeMemory__(request);
-      __ReturnError__();
+      /* Return error by default */
       __AssertOnElse__();
     }
   } else {
-    __ReturnError__();
+    /* Return error by default */
     __AssertOnElse__();
   }
 

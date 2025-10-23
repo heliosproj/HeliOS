@@ -84,7 +84,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _self_register)(void) {
                           LOOPBACK_simple_write))) {
     __ReturnOk__();
   } else {
-    __ReturnError__();
+    /* Return error by default */
     __AssertOnElse__();
   }
 
@@ -116,7 +116,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _init)(Device_t *device_) {
 
     __ReturnOk__();
   } else {
-    __ReturnError__();
+    /* Return error by default */
     __AssertOnElse__();
   }
 
@@ -153,7 +153,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Add
 
           __ReturnOk__();
         } else {
-          __ReturnError__();
+          /* Return error by default */
           __AssertOnElse__();
         }
       }
@@ -184,7 +184,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Add
           state.writePosition = cfg->position;
           __ReturnOk__();
         } else {
-          __ReturnError__();
+          /* Return error by default */
           __AssertOnElse__();
         }
       }
@@ -218,7 +218,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Add
           state.mode = cfg->mode;
           __ReturnOk__();
         } else {
-          __ReturnError__();
+          /* Return error by default */
           __AssertOnElse__();
         }
       }
@@ -244,7 +244,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Add
       }
     }
   } else {
-    __ReturnError__();
+    /* Return error by default */
     __AssertOnElse__();
   }
 
@@ -291,20 +291,20 @@ Return_t TO_FUNCTION(DEVICE_NAME, _read)(Device_t *device_, Size_t *size_, Addr_
 
           __ReturnOk__();
         } else {
-          __ReturnError__();
+          /* Return error by default */
           __AssertOnElse__();
         }
       } else {
-        __ReturnError__();
+        /* Return error by default */
         __AssertOnElse__();
       }
     } else {
       /* No data available */
-      __ReturnError__();
+      /* Return error by default */
       __AssertOnElse__();
     }
   } else {
-    __ReturnError__();
+    /* Return error by default */
     __AssertOnElse__();
   }
 
@@ -349,11 +349,11 @@ Return_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t *device_, Size_t *size_, Addr
       __ReturnOk__();
     } else {
       /* Buffer full */
-      __ReturnError__();
+      /* Return error by default */
       __AssertOnElse__();
     }
   } else {
-    __ReturnError__();
+    /* Return error by default */
     __AssertOnElse__();
   }
 
@@ -385,11 +385,11 @@ Return_t TO_FUNCTION(DEVICE_NAME, _simple_read)(Device_t *device_, Byte_t *data_
       __ReturnOk__();
     } else {
       /* No data available */
-      __ReturnError__();
+      /* Return error by default */
       __AssertOnElse__();
     }
   } else {
-    __ReturnError__();
+    /* Return error by default */
     __AssertOnElse__();
   }
 
@@ -421,11 +421,11 @@ Return_t TO_FUNCTION(DEVICE_NAME, _simple_write)(Device_t *device_, Byte_t data_
       __ReturnOk__();
     } else {
       /* Buffer full */
-      __ReturnError__();
+      /* Return error by default */
       __AssertOnElse__();
     }
   } else {
-    __ReturnError__();
+    /* Return error by default */
     __AssertOnElse__();
   }
 
@@ -443,7 +443,7 @@ static Return_t __ValidateAndTruncateSize__(Size_t requested_, Size_t *actual_) 
 
     if(nil == *actual_) {
       /* No data available */
-      __ReturnError__();
+      /* Return error by default */
       __AssertOnElse__();
     }
   } else {

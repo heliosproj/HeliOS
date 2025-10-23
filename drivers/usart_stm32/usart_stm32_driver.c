@@ -80,7 +80,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _self_register)(void) {
                           TO_FUNCTION(DEVICE_NAME, _simple_write)))) {
     __ReturnOk__();
   } else {
-    __ReturnError__();
+    /* Return error by default */
     __AssertOnElse__();
   }
 
@@ -137,7 +137,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Add
 
         __ReturnOk__();
       } else {
-        __ReturnError__();
+        /* Return error by default */
         __AssertOnElse__();
       }
     }
@@ -156,7 +156,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Add
 
         __ReturnOk__();
       } else {
-        __ReturnError__();
+        /* Return error by default */
         __AssertOnElse__();
       }
     }
@@ -188,11 +188,11 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Add
             if(HAL_OK == HAL_UART_Init(&state.huart)) {
               __ReturnOk__();
             } else {
-              __ReturnError__();
+              /* Return error by default */
               __AssertOnElse__();
             }
           } else {
-            __ReturnError__();
+            /* Return error by default */
             __AssertOnElse__();
           }
         #else
@@ -200,7 +200,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Add
           __ReturnOk__();
         #endif /* if !defined(POSIX_ARCH_OTHER) */
       } else {
-        __ReturnError__();
+        /* Return error by default */
         __AssertOnElse__();
       }
     }
@@ -218,7 +218,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Add
 
         __ReturnOk__();
       } else {
-        __ReturnError__();
+        /* Return error by default */
         __AssertOnElse__();
       }
     }
@@ -260,11 +260,11 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Add
             state.initialized = true;
             __ReturnOk__();
           } else {
-            __ReturnError__();
+            /* Return error by default */
             __AssertOnElse__();
           }
         } else {
-          __ReturnError__();
+          /* Return error by default */
           __AssertOnElse__();
         }
       #else
@@ -273,11 +273,11 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Add
         __ReturnOk__();
       #endif /* if !defined(POSIX_ARCH_OTHER) */
     } else {
-      __ReturnError__();
+      /* Return error by default */
       __AssertOnElse__();
     }
   } else {
-    __ReturnError__();
+    /* Return error by default */
     __AssertOnElse__();
   }
 
@@ -316,7 +316,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _read)(Device_t *device_, Size_t *size_, Addr_
         *size_ = bytesRead;
         __ReturnOk__();
       } else {
-        __ReturnError__();
+        /* Return error by default */
         __AssertOnElse__();
       }
     }
@@ -331,11 +331,11 @@ Return_t TO_FUNCTION(DEVICE_NAME, _read)(Device_t *device_, Size_t *size_, Addr_
             __ReturnOk__();
           } else {
             __KernelFreeMemory__(buffer);
-            __ReturnError__();
+            /* Return error by default */
             __AssertOnElse__();
           }
         } else {
-          __ReturnError__();
+          /* Return error by default */
           __AssertOnElse__();
         }
       #else
@@ -345,17 +345,17 @@ Return_t TO_FUNCTION(DEVICE_NAME, _read)(Device_t *device_, Size_t *size_, Addr_
           *size_ = 0; /* No data available in simulation */
           __ReturnOk__();
         } else {
-          __ReturnError__();
+          /* Return error by default */
           __AssertOnElse__();
         }
       #endif /* if !defined(POSIX_ARCH_OTHER) */
     } else {
       /* DMA and other modes not implemented yet */
-      __ReturnError__();
+      /* Return error by default */
       __AssertOnElse__();
     }
   } else {
-    __ReturnError__();
+    /* Return error by default */
     __AssertOnElse__();
   }
 
@@ -381,7 +381,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t *device_, Size_t *size_, Addr
           __ReturnOk__();
         } else {
           state.txBusy = false;
-          __ReturnError__();
+          /* Return error by default */
           __AssertOnElse__();
         }
       } else if(CHAR_IO_MODE_INTERRUPT == state.currentRequest.transferMode) {
@@ -391,7 +391,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t *device_, Size_t *size_, Addr
           __ReturnOk__();
         } else {
           state.txBusy = false;
-          __ReturnError__();
+          /* Return error by default */
           __AssertOnElse__();
         }
       } else {
@@ -399,7 +399,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t *device_, Size_t *size_, Addr
         if(HAL_OK == HAL_UART_Transmit(&state.huart, (Byte_t *)data_, bytesToWrite, state.currentRequest.timeoutMs)) {
           __ReturnOk__();
         } else {
-          __ReturnError__();
+          /* Return error by default */
           __AssertOnElse__();
         }
       }
@@ -409,7 +409,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t *device_, Size_t *size_, Addr
       __ReturnOk__();
     #endif /* if !defined(POSIX_ARCH_OTHER) */
   } else {
-    __ReturnError__();
+    /* Return error by default */
     __AssertOnElse__();
   }
 
@@ -431,17 +431,17 @@ Return_t TO_FUNCTION(DEVICE_NAME, _simple_read)(Device_t *device_, Byte_t *data_
         if(HAL_OK == HAL_UART_Receive(&state.huart, data_, 1, 1000)) {
           __ReturnOk__();
         } else {
-          __ReturnError__();
+          /* Return error by default */
           __AssertOnElse__();
         }
       #else
         /* POSIX simulation - no data */
-        __ReturnError__();
+        /* Return error by default */
         __AssertOnElse__();
       #endif /* if !defined(POSIX_ARCH_OTHER) */
     }
   } else {
-    __ReturnError__();
+    /* Return error by default */
     __AssertOnElse__();
   }
 
@@ -458,7 +458,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _simple_write)(Device_t *device_, Byte_t data_
       if(HAL_OK == HAL_UART_Transmit(&state.huart, &data_, 1, 1000)) {
         __ReturnOk__();
       } else {
-        __ReturnError__();
+        /* Return error by default */
         __AssertOnElse__();
       }
     #else
@@ -467,7 +467,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _simple_write)(Device_t *device_, Byte_t data_
       __ReturnOk__();
     #endif /* if !defined(POSIX_ARCH_OTHER) */
   } else {
-    __ReturnError__();
+    /* Return error by default */
     __AssertOnElse__();
   }
 
@@ -616,7 +616,7 @@ static Return_t __TranslateHALToParity__(const Byte_t parity_, Word_t *halParity
       break;
 
     default:
-      __ReturnError__();
+      /* Return error by default */
       __AssertOnElse__();
   }
 
@@ -638,7 +638,7 @@ static Return_t __TranslateHALToStopBits__(const Byte_t stopBits_, Word_t *halSt
       break;
 
     default:
-      __ReturnError__();
+      /* Return error by default */
       __AssertOnElse__();
   }
 
@@ -660,7 +660,7 @@ static Return_t __TranslateHALToWordLength__(const Byte_t dataBits_, Word_t *hal
       break;
 
     default:
-      __ReturnError__();
+      /* Return error by default */
       __AssertOnElse__();
   }
 
