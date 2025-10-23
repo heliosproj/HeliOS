@@ -249,7 +249,7 @@
  *
  */
   #if !defined(CONFIG_MEMORY_REGION_SIZE)
-    #define CONFIG_MEMORY_REGION_SIZE 0x10000u   /* 64KB default */
+    #define CONFIG_MEMORY_REGION_SIZE 0x10000u /* 64KB default */
   #endif /* if !defined(CONFIG_MEMORY_REGION_SIZE) */
 
 

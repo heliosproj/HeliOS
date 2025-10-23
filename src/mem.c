@@ -294,6 +294,14 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
 
     /* Find best fit free block */
     while(__PointerIsNotNull__(cursor)) {
+      /* Validate block header before accessing its fields */
+      if(!OK(__ValidateBlockHeader__(cursor, region_))) {
+        /* Corrupted block header detected */
+        __SetFlag__(MEMFAULT);
+        __AssertOnElse__();
+        break;
+      }
+
       /* Cycle detection: Sum up traversed memory */
       traversedSize += ALIGNED_HEADER_SIZE + cursor->size;
 
@@ -471,7 +479,6 @@ static Return_t __DefragMemoryRegion__(volatile MemoryRegion_t *region_) {
         /* Merge if both current and next blocks are free */
         if(__BlockHeaderIsFree__(cursor) && __BlockHeaderIsFree__(cursor->next)) {
           nextBlock = cursor->next;
-
 
           /* Check for integer overflow before merging */
           if(cursor->size > ((Size_t) -1) - ALIGNED_HEADER_SIZE - nextBlock->size) {
