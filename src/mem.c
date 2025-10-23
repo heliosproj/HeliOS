@@ -264,6 +264,7 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
   BlockHeader_t *first = null;
   Size_t candidateSize = (Size_t) -1;
   Size_t traversedSize = 0;  /* For cycle detection */
+  Size_t cycleDetected = false;
 
 
   /* Align requested size to ensure next block (if created) starts at aligned
@@ -295,8 +296,10 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
     while(__PointerIsNotNull__(cursor)) {
       /* Cycle detection: Sum up traversed memory */
       traversedSize += ALIGNED_HEADER_SIZE + cursor->size;
+
       if(traversedSize > MEMORY_REGION_SIZE_IN_BYTES) {
         /* Circular reference detected - traversed more memory than exists */
+        cycleDetected = true;
         __SetFlag__(MEMFAULT);
         __AssertOnElse__();
         break;
@@ -314,7 +317,7 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
       cursor = cursor->next;
     }
 
-    if(__PointerIsNotNull__(candidate)) {
+    if((cycleDetected == false) && __PointerIsNotNull__(candidate)) {
       /* Check if we should split the block - only split if remaining space is
        * at least CONFIG_MEMORY_MINIMUM_BLOCK_SIZE Use aligned header size to
        * ensure new block starts at aligned address Check candidate->size >=
@@ -457,6 +460,7 @@ static Return_t __DefragMemoryRegion__(volatile MemoryRegion_t *region_) {
       while(__PointerIsNotNull__(cursor) && __PointerIsNotNull__(cursor->next)) {
         /* Cycle detection: Sum up traversed memory */
         traversedSize += ALIGNED_HEADER_SIZE + cursor->size;
+
         if(traversedSize > MEMORY_REGION_SIZE_IN_BYTES) {
           /* Circular reference detected - traversed more memory than exists */
           __SetFlag__(MEMFAULT);
@@ -550,6 +554,7 @@ Return_t xMemGetUsed(Size_t *size_) {
     while(__PointerIsNotNull__(cursor)) {
       /* Cycle detection: Sum up traversed memory */
       traversedSize += ALIGNED_HEADER_SIZE + cursor->size;
+
       if(traversedSize > MEMORY_REGION_SIZE_IN_BYTES) {
         /* Circular reference detected - traversed more memory than exists */
         __SetFlag__(MEMFAULT);
@@ -691,9 +696,12 @@ static Return_t __MemGetRegionStats__(const volatile MemoryRegion_t *region_, Me
       while(__PointerIsNotNull__(cursor)) {
         /* Cycle detection: Sum up traversed memory */
         traversedSize += ALIGNED_HEADER_SIZE + cursor->size;
+
         if(traversedSize > MEMORY_REGION_SIZE_IN_BYTES) {
           /* Circular reference detected - traversed more memory than exists */
           __SetFlag__(MEMFAULT);
+
+
           /* Free the allocated stats structure before exiting */
           xMemFree((const volatile Addr_t *) stats);
           __AssertOnElse__();

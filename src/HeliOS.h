@@ -715,8 +715,7 @@
     typedef struct MemoryRegionStats_s {
       Word_t largestFreeEntryInBytes; /**< The largest free entry in bytes. */
       Word_t smallestFreeEntryInBytes; /**< The smallest free entry in bytes. */
-      Word_t numberOfFreeBlocks; /**< The number of free blocks. See
-                                  *    for block
+      Word_t numberOfFreeBlocks; /**< The number of free blocks. See for block
                                   * size in bytes. */
       Word_t availableSpaceInBytes; /**< The amount of free memory in bytes
                                      * (i.e., numberOfFreeBlocks *
@@ -5569,9 +5568,8 @@
    * and varies by platform. This may include timer setup, interrupt
    * configuration, or other hardware-dependent operations.
    *
-   * @note The memory configuration ( ) is
-   * validated during initialization. Invalid configurations will cause
-   * initialization to fail.
+   * @note The memory configuration ( ) is validated during initialization.
+   * Invalid configurations will cause initialization to fail.
    *
    * @note Memory allocations (xMemAlloc, xMemFree) can be performed after
    * successful initialization but before the scheduler starts. This is useful
