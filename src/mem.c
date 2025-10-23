@@ -268,6 +268,8 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
 
   /* Align requested size to ensure next block (if created) starts at aligned
    * address */
+
+
   requested = __AlignUp__(size_, CONFIG_MEMORY_ALIGNMENT);
 
 
@@ -295,7 +297,9 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
     while(__PointerIsNotNull__(cursor)) {
       /* Validate block header before accessing its fields */
       if(!OK(__ValidateBlockHeader__(cursor, region_))) {
-        /* Corrupted block header detected */
+        /* Corrupted block header detected - cannot trust any candidates found
+         */
+        candidate = null;
         __SetFlag__(MEMFAULT);
         __AssertOnElse__();
         break;
@@ -306,6 +310,7 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
 
       if(traversedSize > MEMORY_REGION_SIZE_IN_BYTES) {
         /* Circular reference detected - traversed more memory than exists */
+        candidate = null;
         __SetFlag__(MEMFAULT);
         __AssertOnElse__();
         break;
@@ -323,7 +328,7 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
       cursor = cursor->next;
     }
 
-    if( __PointerIsNotNull__(candidate)) {
+    if(__PointerIsNotNull__(candidate)) {
       /* Check if we should split the block - only split if remaining space is
        * at least CONFIG_MEMORY_MINIMUM_BLOCK_SIZE Use aligned header size to
        * ensure new block starts at aligned address Check candidate->size >=
@@ -928,7 +933,7 @@ Return_t __strcpy__(Byte_t *dest_, const Byte_t *src_, const Size_t destSize_) {
 
 
   if(__PointerIsNull__(dest_) || __PointerIsNull__(src_) || (0x0u == destSize_)) {
-    __AssertOnElse__();  
+    __AssertOnElse__();
     FUNCTION_EXIT;
   }
 
@@ -951,7 +956,7 @@ Return_t __strncpy__(Byte_t *dest_, const Byte_t *src_, const Size_t n_) {
 
 
   if(__PointerIsNull__(dest_) || __PointerIsNull__(src_) || (0x0u == n_)) {
-    __AssertOnElse__();  
+    __AssertOnElse__();
     FUNCTION_EXIT;
   }
 
@@ -1019,14 +1024,14 @@ Return_t __strcat__(Byte_t *dest_, const Byte_t *src_, const Size_t destSize_) {
 
 
   if(__PointerIsNull__(dest_) || __PointerIsNull__(src_) || (0x0u == destSize_)) {
-    __AssertOnElse__();  
+    __AssertOnElse__();
     FUNCTION_EXIT;
   }
 
   destLen = __strlen__(dest_);
 
   if(destLen >= destSize_) {
-    __AssertOnElse__();  
+    __AssertOnElse__();
     FUNCTION_EXIT;
   }
 
@@ -1101,7 +1106,7 @@ Return_t __path_join__(Byte_t *dest_, const Byte_t *base_, const Byte_t *path_, 
 
 
   if(__PointerIsNull__(dest_) || __PointerIsNull__(base_) || __PointerIsNull__(path_) || (0x0u == destSize_)) {
-    __AssertOnElse__();  
+    __AssertOnElse__();
     FUNCTION_EXIT;
   }
 
@@ -1109,7 +1114,7 @@ Return_t __path_join__(Byte_t *dest_, const Byte_t *base_, const Byte_t *path_, 
   pathLen = __strlen__(path_);
 
   if((0x0u == baseLen) || (0x0u == pathLen)) {
-    __AssertOnElse__();  
+    __AssertOnElse__();
     FUNCTION_EXIT;
   }
 
@@ -1133,7 +1138,7 @@ Return_t __path_join__(Byte_t *dest_, const Byte_t *base_, const Byte_t *path_, 
   needSlash = (CHAR_SLASH != base_[baseLen - 0x1u]) && (CHAR_SLASH != path_[0x0u]);
 
   if((baseLen + pathLen + (needSlash ? 0x1u : 0x0u)) >= destSize_) {
-    __AssertOnElse__();  
+    __AssertOnElse__();
     FUNCTION_EXIT;
   }
 
@@ -1172,14 +1177,14 @@ Return_t __path_normalize__(Byte_t *path_, const Size_t pathSize_) {
 
 
   if(__PointerIsNull__(path_) || (0x0u == pathSize_)) {
-    __AssertOnElse__();  
+    __AssertOnElse__();
     FUNCTION_EXIT;
   }
 
   len = __strlen__(path_);
 
   if((0x0u == len) || (len >= CONFIG_FS_MAX_PATH_LENGTH)) {
-    __AssertOnElse__();  
+    __AssertOnElse__();
     FUNCTION_EXIT;
   }
 
@@ -1273,7 +1278,7 @@ Return_t __path_dirname__(Byte_t *dest_, const Byte_t *path_, const Size_t destS
 
 
   if(__PointerIsNull__(dest_) || __PointerIsNull__(path_) || (0x0u == destSize_)) {
-    __AssertOnElse__();  
+    __AssertOnElse__();
     FUNCTION_EXIT;
   }
 
@@ -1330,7 +1335,7 @@ Return_t __path_basename__(Byte_t *dest_, const Byte_t *path_, const Size_t dest
 
 
   if(__PointerIsNull__(dest_) || __PointerIsNull__(path_) || (0x0u == destSize_)) {
-    __AssertOnElse__();  
+    __AssertOnElse__();
     FUNCTION_EXIT;
   }
 
@@ -1354,7 +1359,7 @@ Return_t __path_basename__(Byte_t *dest_, const Byte_t *path_, const Size_t dest
   }
 
   if((len - start) >= destSize_) {
-    __AssertOnElse__();  
+    __AssertOnElse__();
     FUNCTION_EXIT;
   }
 
