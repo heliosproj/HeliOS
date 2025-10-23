@@ -263,6 +263,7 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
   BlockHeader_t *next = null;
   BlockHeader_t *first = null;
   Size_t candidateSize = (Size_t) -1;
+  Size_t traversedSize = 0;  /* For cycle detection */
 
 
   /* Align requested size to ensure next block (if created) starts at aligned
@@ -292,6 +293,15 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
 
     /* Find best fit free block */
     while(__PointerIsNotNull__(cursor)) {
+      /* Cycle detection: Sum up traversed memory */
+      traversedSize += ALIGNED_HEADER_SIZE + cursor->size;
+      if(traversedSize > MEMORY_REGION_SIZE_IN_BYTES) {
+        /* Circular reference detected - traversed more memory than exists */
+        __SetFlag__(MEMFAULT);
+        __AssertOnElse__();
+        break;
+      }
+
       if(__BlockHeaderIsFree__(cursor) && (requested <= cursor->size) && (cursor->size < candidateSize)) {
         candidateSize = cursor->size;
         candidate = cursor;
@@ -434,6 +444,7 @@ static Return_t __DefragMemoryRegion__(volatile MemoryRegion_t *region_) {
   BlockHeader_t *cursor = null;
   BlockHeader_t *nextBlock = null;
   Base_t merged = true;
+  Size_t traversedSize = 0;  /* For cycle detection */
 
 
   if(__PointerIsNotNull__(region_)) {
@@ -441,8 +452,18 @@ static Return_t __DefragMemoryRegion__(volatile MemoryRegion_t *region_) {
     while(merged) {
       merged = false;
       cursor = region_->first;
+      traversedSize = 0;  /* Reset for each pass */
 
       while(__PointerIsNotNull__(cursor) && __PointerIsNotNull__(cursor->next)) {
+        /* Cycle detection: Sum up traversed memory */
+        traversedSize += ALIGNED_HEADER_SIZE + cursor->size;
+        if(traversedSize > MEMORY_REGION_SIZE_IN_BYTES) {
+          /* Circular reference detected - traversed more memory than exists */
+          __SetFlag__(MEMFAULT);
+          __AssertOnElse__();
+          FUNCTION_EXIT;
+        }
+
         /* Merge if both current and next blocks are free */
         if(__BlockHeaderIsFree__(cursor) && __BlockHeaderIsFree__(cursor->next)) {
           nextBlock = cursor->next;
@@ -520,12 +541,22 @@ Return_t xMemGetUsed(Size_t *size_) {
 
   BlockHeader_t *cursor = null;
   Size_t used = 0;
+  Size_t traversedSize = 0;  /* For cycle detection */
 
 
   if(__PointerIsNotNull__(size_)) {
     cursor = heap.first;
 
     while(__PointerIsNotNull__(cursor)) {
+      /* Cycle detection: Sum up traversed memory */
+      traversedSize += ALIGNED_HEADER_SIZE + cursor->size;
+      if(traversedSize > MEMORY_REGION_SIZE_IN_BYTES) {
+        /* Circular reference detected - traversed more memory than exists */
+        __SetFlag__(MEMFAULT);
+        __AssertOnElse__();
+        FUNCTION_EXIT;
+      }
+
       if(__BlockHeaderIsInUse__(cursor)) {
         /* Include both data size and aligned header overhead */
         used += cursor->size + ALIGNED_HEADER_SIZE;
@@ -649,6 +680,7 @@ static Return_t __MemGetRegionStats__(const volatile MemoryRegion_t *region_, Me
   Word_t smallestFree = (Word_t) -1;
   Word_t freeBlocks = 0;
   Word_t availableBytes = 0;
+  Size_t traversedSize = 0;  /* For cycle detection */
 
 
   if(__PointerIsNotNull__(region_) && __PointerIsNotNull__(stats_)) {
@@ -657,6 +689,17 @@ static Return_t __MemGetRegionStats__(const volatile MemoryRegion_t *region_, Me
       cursor = region_->first;
 
       while(__PointerIsNotNull__(cursor)) {
+        /* Cycle detection: Sum up traversed memory */
+        traversedSize += ALIGNED_HEADER_SIZE + cursor->size;
+        if(traversedSize > MEMORY_REGION_SIZE_IN_BYTES) {
+          /* Circular reference detected - traversed more memory than exists */
+          __SetFlag__(MEMFAULT);
+          /* Free the allocated stats structure before exiting */
+          xMemFree((const volatile Addr_t *) stats);
+          __AssertOnElse__();
+          FUNCTION_EXIT;
+        }
+
         if(__BlockHeaderIsFree__(cursor)) {
           freeBlocks++;
           availableBytes += cursor->size;

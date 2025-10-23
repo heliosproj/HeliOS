@@ -716,11 +716,11 @@
       Word_t largestFreeEntryInBytes; /**< The largest free entry in bytes. */
       Word_t smallestFreeEntryInBytes; /**< The smallest free entry in bytes. */
       Word_t numberOfFreeBlocks; /**< The number of free blocks. See
-                                  * CONFIG_MEMORY_REGION_BLOCK_SIZE for block
+                                  *    for block
                                   * size in bytes. */
       Word_t availableSpaceInBytes; /**< The amount of free memory in bytes
                                      * (i.e., numberOfFreeBlocks *
-                                     * CONFIG_MEMORY_REGION_BLOCK_SIZE). */
+                                     *   ). */
       Word_t successfulAllocations; /**< Number of successful memory
                                      * allocations.
                                      */
@@ -1922,8 +1922,8 @@
    * HeliOS maintains separate user and kernel memory regions. This function
    * allocates from the user heap, which is intended for application data
    * structures, buffers, and general-purpose memory needs. The total heap size
-   * is determined by CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS ×
-   * CONFIG_MEMORY_REGION_BLOCK_SIZE.
+   * is determined by   ×
+   *   .
    *
    * Memory Allocation Features:
    * - Automatic zero-initialization of allocated memory
@@ -1990,8 +1990,8 @@
    * @sa xMemGetUsed() - Get total allocated memory
    * @sa xMemGetSize() - Get size of an allocation
    * @sa xMemGetHeapStats() - Get detailed heap statistics
-   * @sa CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS - Heap size configuration
-   * @sa CONFIG_MEMORY_REGION_BLOCK_SIZE - Memory block size configuration
+   * @sa   - Heap size configuration
+   * @sa    - Memory block size configuration
    */
   Return_t xMemAlloc(volatile Addr_t **addr_, const Size_t size_);
 
@@ -2229,8 +2229,8 @@
    * Example 1: Monitor heap usage in diagnostic task
    * @code void memoryMonitorTask(Task_t *task, TaskParm_t *parm) {
    *   Size_t usedBytes;
-   *   Size_t totalHeap = CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS *
-   *                     CONFIG_MEMORY_REGION_BLOCK_SIZE;
+   *   Size_t totalHeap =   *
+   *                       ;
    *
    *   if (OK(xMemGetUsed(&usedBytes))) {
    *     Byte_t percentUsed = (Byte_t)((usedBytes * 100) / totalHeap);
@@ -2271,8 +2271,8 @@
    * Example 3: Pre-allocation size check
    * @code Return_t allocateBuffer(Byte_t **buffer, Size_t requestedSize) {
    *   Size_t currentUsage;
-   *   Size_t totalHeap = CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS *
-   *                     CONFIG_MEMORY_REGION_BLOCK_SIZE;
+   *   Size_t totalHeap =   *
+   *                       ;
    *
    *   // Check if allocation would exceed safe threshold if
    * (OK(xMemGetUsed(&currentUsage))) {
@@ -2290,8 +2290,8 @@
    * Example 4: Runtime memory statistics reporting
    * @code void reportMemoryStatus(void) {
    *   Size_t usedBytes;
-   *   Size_t totalBytes = CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS *
-   *                      CONFIG_MEMORY_REGION_BLOCK_SIZE;
+   *   Size_t totalBytes =   *
+   *                        ;
    *
    *   if (OK(xMemGetUsed(&usedBytes))) {
    *     Size_t freeBytes = totalBytes - usedBytes;
@@ -2786,7 +2786,7 @@
    * kernel memory. Only the statistics content describes kernel memory.
    *
    * @note Kernel memory size is configured at compile time via
-   * CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS. It cannot be changed at runtime.
+   *  . It cannot be changed at runtime.
    *
    * @note Unlike user heap, kernel memory is typically not fragmented because
    * kernel objects are usually longer-lived and not freed frequently.
@@ -2798,7 +2798,7 @@
    * @sa xMemFree() - Free the statistics structure (from user heap)
    * @sa xTaskCreate() - Creates task (uses kernel memory)
    * @sa xQueueCreate() - Creates queue (uses kernel memory)
-   * @sa CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS - Kernel memory size configuration
+   * @sa   - Kernel memory size configuration
    */
   Return_t xMemGetKernelStats(MemoryRegionStats_t **stats_);
 
@@ -5569,7 +5569,7 @@
    * and varies by platform. This may include timer setup, interrupt
    * configuration, or other hardware-dependent operations.
    *
-   * @note The memory configuration (CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS) is
+   * @note The memory configuration ( ) is
    * validated during initialization. Invalid configurations will cause
    * initialization to fail.
    *
@@ -5581,7 +5581,7 @@
    * @sa xTaskStartScheduler() - Start scheduler after task setup
    * @sa xSystemGetSystemInfo() - Query system information post-init
    * @sa xSystemHalt() - Halt system in case of critical errors
-   * @sa CONFIG_MEMORY_REGION_SIZE_IN_BLOCKS - Memory configuration
+   * @sa   - Memory configuration
    * @sa xPortSystemInit() - Port-specific initialization (internal)
    */
   Return_t xSystemInit(void);

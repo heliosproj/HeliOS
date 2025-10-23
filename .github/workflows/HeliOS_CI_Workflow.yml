@@ -19,7 +19,7 @@ jobs:
 
       - name: Build HeliOS unit tests...
         shell: bash
-        run: gcc -fdiagnostics-color=always -O0 -ggdb -ansi -pedantic -Wall -Wextra -Wno-unused-parameter -Wno-pointer-to-int-cast -I${{github.workspace}}/src -I${{github.workspace}}/drivers/ramdisk -I${{github.workspace}}/drivers/block -I${{github.workspace}}/drivers/char -I${{github.workspace}}/test/src -I${{github.workspace}}/test/src/harness -I${{github.workspace}}/test/src/unit -DPOSIX_ARCH_OTHER -DCONFIG_MEMORY_REGION_SIZE_IN_BLOCKS=0x1C20u -DCONFIG_ENABLE_SYSTEM_ASSERT -DUNIT_TEST_COLORIZE -o${{github.workspace}}/test/bin/test ${{github.workspace}}/src/*.c ${{github.workspace}}/drivers/ramdisk/*.c ${{github.workspace}}/drivers/block/*.c ${{github.workspace}}/drivers/char/*.c ${{github.workspace}}/test/src/*.c ${{github.workspace}}/test/src/harness/*.c ${{github.workspace}}/test/src/unit/*.c
+        run: gcc -fdiagnostics-color=always -O0 -ggdb -ansi -pedantic -Wall -Wextra -Wno-unused-parameter -Wno-pointer-to-int-cast -I${{github.workspace}}/src -I${{github.workspace}}/drivers/ramdisk -I${{github.workspace}}/drivers/block -I${{github.workspace}}/drivers/char -I${{github.workspace}}/test/src -I${{github.workspace}}/test/src/harness -I${{github.workspace}}/test/src/unit -DPOSIX_ARCH_OTHER -D =0x1C20u -DCONFIG_ENABLE_SYSTEM_ASSERT -DUNIT_TEST_COLORIZE -o${{github.workspace}}/test/bin/test ${{github.workspace}}/src/*.c ${{github.workspace}}/drivers/ramdisk/*.c ${{github.workspace}}/drivers/block/*.c ${{github.workspace}}/drivers/char/*.c ${{github.workspace}}/test/src/*.c ${{github.workspace}}/test/src/harness/*.c ${{github.workspace}}/test/src/unit/*.c
 
       - name: Run HeliOS unit tests...
         shell: bash
