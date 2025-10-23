@@ -142,17 +142,21 @@ Return_t __MemoryInit__(void) {
   ByteOrder_t order;
 
 
-  if(OK(__MemoryRegionInit__(&heap))) {
-    if(OK(__MemoryRegionInit__(&kernel))) {
-      if(OK(__DetectByteOrder__(&order))) {
-        if(ByteOrderLittleEndian == order) {
-          __SetFlag__(LITTLEEND);
-        } else {
-          __UnsetFlag__(LITTLEEND);
-        }
+  if((CONFIG_MEMORY_ALIGNMENT != 0) && ((CONFIG_MEMORY_ALIGNMENT & (CONFIG_MEMORY_ALIGNMENT - 1)) == 0)) {
+    if(OK(__MemoryRegionInit__(&heap))) {
+      if(OK(__MemoryRegionInit__(&kernel))) {
+        if(OK(__DetectByteOrder__(&order))) {
+          if(ByteOrderLittleEndian == order) {
+            __SetFlag__(LITTLEEND);
+          } else {
+            __UnsetFlag__(LITTLEEND);
+          }
 
-        __UnsetFlag__(MEMFAULT);
-        __ReturnOk__();
+          __UnsetFlag__(MEMFAULT);
+          __ReturnOk__();
+        } else {
+          __AssertOnElse__();
+        }
       } else {
         __AssertOnElse__();
       }
