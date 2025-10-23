@@ -325,6 +325,22 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
   /* Disable interrupts during allocation */
   __DisableInterrupts__();
 
+  /* Validate bounds before proceeding with allocation */
+  /* Check for alignment overflow - if requested is less than original, overflow occurred */
+  if(requested < size_) {
+    __EnableInterrupts__();
+    __AssertOnElse__();
+  }
+
+  /* Validate that requested size doesn't exceed theoretical maximum */
+  /* Must be able to fit at least one block header plus the requested data */
+  /* This prevents absurdly large allocations that could never succeed */
+  if(requested >= MEMORY_REGION_SIZE_IN_BYTES ||
+     (requested + ALIGNED_HEADER_SIZE) > MEMORY_REGION_SIZE_IN_BYTES) {
+    __EnableInterrupts__();
+    __AssertOnElse__();
+  }
+
   if(__FlagIsNotSet__(MEMFAULT) && __PointerIsNotNull__(region_) && __PointerIsNotNull__(addr_) && (nil < size_)) {
     /* Lazy initialization: if region has never been initialized, do it now */
     if(__PointerIsNull__(region_->first)) {
