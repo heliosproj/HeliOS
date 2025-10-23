@@ -664,16 +664,6 @@ Return_t __HeapFreeMemory__(const volatile Addr_t *addr_) {
 }
 
 
-Return_t __MemoryRegionCheckHeap__(const volatile Addr_t *addr_, const Base_t option_) {
-  FUNCTION_ENTER;
-
-
-  /* Always return OK - integrity checking removed */
-  __ReturnOk__();
-  FUNCTION_EXIT;
-}
-
-
 /* Memory statistics functions */
 static Return_t __MemGetRegionStats__(const volatile MemoryRegion_t *region_, MemoryRegionStats_t **stats_) {
   FUNCTION_ENTER;
