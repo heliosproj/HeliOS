@@ -232,13 +232,13 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
 
     while(__PointerIsNotNull__(cursor)) {
       if(OK(__ValidateBlockHeader__(cursor, region_))) {
-        traversedSize += ALIGNED_HEADER_SIZE + cursor->size;
-
-        if(traversedSize > MEMORY_REGION_SIZE) {
+        if(traversedSize > MEMORY_REGION_SIZE - ALIGNED_HEADER_SIZE - cursor->size) {
           candidate = null;
           __AssertOnElse__();
           break;
         }
+
+        traversedSize += ALIGNED_HEADER_SIZE + cursor->size;
 
         if(__BlockHeaderIsFree__(cursor) && (requested <= cursor->size) && (cursor->size < candidateSize)) {
           candidateSize = cursor->size;
@@ -360,11 +360,11 @@ static Return_t __DefragMemoryRegion__(volatile MemoryRegion_t *region_) {
       traversedSize = nil;
 
       while(__PointerIsNotNull__(cursor) && __PointerIsNotNull__(cursor->next) && !cycleDetected) {
-        traversedSize += ALIGNED_HEADER_SIZE + cursor->size;
-
-        if(traversedSize > MEMORY_REGION_SIZE) {
+        if(traversedSize > MEMORY_REGION_SIZE - ALIGNED_HEADER_SIZE - cursor->size) {
           cycleDetected = true;
         } else {
+          traversedSize += ALIGNED_HEADER_SIZE + cursor->size;
+
           if(__BlockHeaderIsFree__(cursor) && __BlockHeaderIsFree__(cursor->next)) {
             nextBlock = cursor->next;
 
@@ -450,11 +450,11 @@ Return_t xMemGetUsed(Size_t *size_) {
     cursor = heap.first;
 
     while(__PointerIsNotNull__(cursor) && !cycleDetected) {
-      traversedSize += ALIGNED_HEADER_SIZE + cursor->size;
-
-      if(traversedSize > MEMORY_REGION_SIZE) {
+      if(traversedSize > MEMORY_REGION_SIZE - ALIGNED_HEADER_SIZE - cursor->size) {
         cycleDetected = true;
       } else {
+        traversedSize += ALIGNED_HEADER_SIZE + cursor->size;
+
         if(__BlockHeaderIsInUse__(cursor)) {
           used += cursor->size + ALIGNED_HEADER_SIZE;
         }
@@ -584,12 +584,12 @@ static Return_t __MemGetRegionStats__(const volatile MemoryRegion_t *region_, Me
       cursor = region_->first;
 
       while(__PointerIsNotNull__(cursor) && !cycleDetected) {
-        traversedSize += ALIGNED_HEADER_SIZE + cursor->size;
-
-        if(traversedSize > MEMORY_REGION_SIZE) {
+        if(traversedSize > MEMORY_REGION_SIZE - ALIGNED_HEADER_SIZE - cursor->size) {
           xMemFree((const volatile Addr_t *) stats);
           cycleDetected = true;
         } else {
+          traversedSize += ALIGNED_HEADER_SIZE + cursor->size;
+
           if(__BlockHeaderIsFree__(cursor)) {
             freeBlocks++;
             availableBytes += cursor->size;
