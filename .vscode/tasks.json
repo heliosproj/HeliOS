@@ -23,6 +23,7 @@
                 "-I${workspaceFolder}/test/src/unit",
                 "-DPOSIX_ARCH_OTHER",
                 "-DCONFIG_ENABLE_SYSTEM_ASSERT",
+                "-DCONFIG_MEMORY_REGION_SIZE=0x38400u",
                 "-DUNIT_TEST_COLORIZE",
                 "-o${workspaceFolder}/test/bin/test",
                 "${workspaceFolder}/src/*.c",
