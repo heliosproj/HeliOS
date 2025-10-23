@@ -130,7 +130,7 @@ static Word_t __checksum__(const BlockHeader_t *header_) {
 
 
   /* Combine sums with mixing for better distribution */
-  return(((sum2 << 16) | sum1) ^ 0xDEADBEEFu);
+  return(((sum2 << 16) | sum1) ^ 0xB16B00B5u);
 }
 
 
