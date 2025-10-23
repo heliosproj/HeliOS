@@ -43,16 +43,6 @@
   #endif /* if defined(FREE) */
   #define FREE 0xD5u /* 213 - Block is free */
 
-  #if defined(MEMORY_REGION_CHECK_OPTION_WO_ADDR)
-    #undef MEMORY_REGION_CHECK_OPTION_WO_ADDR
-  #endif /* if defined(MEMORY_REGION_CHECK_OPTION_WO_ADDR) */
-  #define MEMORY_REGION_CHECK_OPTION_WO_ADDR 0x1u /* Check without address */
-
-  #if defined(MEMORY_REGION_CHECK_OPTION_W_ADDR)
-    #undef MEMORY_REGION_CHECK_OPTION_W_ADDR
-  #endif /* if defined(MEMORY_REGION_CHECK_OPTION_W_ADDR) */
-  #define MEMORY_REGION_CHECK_OPTION_W_ADDR 0x2u /* Check with address */
-
 
   /* The BlockHeader_t and updated MemoryRegion_t structures are now defined in
    * types.h */

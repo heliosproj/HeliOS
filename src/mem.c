@@ -61,6 +61,7 @@ static Return_t __MemGetRegionStats__(const volatile MemoryRegion_t *region_, Me
 static Return_t __DefragMemoryRegion__(volatile MemoryRegion_t *region_);
 static Return_t __MemoryRegionInit__(volatile MemoryRegion_t *region_);
 static Return_t __DetectByteOrder__(ByteOrder_t *order_);
+static Word_t __checksum__(const BlockHeader_t *header_);
 
 
 /* Optimized checksum calculation using word-aligned operations Uses Fletcher-32
@@ -355,10 +356,6 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
     } else {
       __AssertOnElse__();
     }
-
-    /* } else {
-     *  __AssertOnElse__();
-     *  } */
   } else {
     __AssertOnElse__();
   }
@@ -476,12 +473,8 @@ static Return_t __DefragMemoryRegion__(volatile MemoryRegion_t *region_) {
 Return_t xMemAlloc(volatile Addr_t **addr_, const Size_t size_) {
   FUNCTION_ENTER;
 
-  if(__PointerIsNotNull__(addr_) && (nil < size_)) {
-    if(OK(__calloc__(&heap, addr_, size_))) {
-      __ReturnOk__();
-    } else {
-      __AssertOnElse__();
-    }
+  if(OK(__calloc__(&heap, addr_, size_))) {
+    __ReturnOk__();
   } else {
     __AssertOnElse__();
   }
@@ -493,15 +486,10 @@ Return_t xMemAlloc(volatile Addr_t **addr_, const Size_t size_) {
 Return_t xMemFree(const volatile Addr_t *addr_) {
   FUNCTION_ENTER;
 
-  if(__PointerIsNotNull__(addr_)) {
-    if(OK(__free__(&heap, addr_))) {
-      __ReturnOk__();
-    } else {
-      __AssertOnElse__();
-    }
-  } else {
-    /* Silently succeed on NULL (matches standard C free behavior) */
+  if(OK(__free__(&heap, addr_))) {
     __ReturnOk__();
+  } else {
+    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -588,13 +576,9 @@ Return_t xMemGetSize(const volatile Addr_t *addr_, Size_t *size_) {
 Return_t __KernelAllocateMemory__(volatile Addr_t **addr_, const Size_t size_) {
   FUNCTION_ENTER;
 
-  if(__PointerIsNotNull__(addr_) && (nil < size_)) {
-    if(OK(__calloc__(&kernel, addr_, size_))) {
-      if(__PointerIsNotNull__(*addr_)) {
-        __ReturnOk__();
-      } else {
-        __AssertOnElse__();
-      }
+  if(OK(__calloc__(&kernel, addr_, size_))) {
+    if(__PointerIsNotNull__(*addr_)) {
+      __ReturnOk__();
     } else {
       __AssertOnElse__();
     }
@@ -609,12 +593,8 @@ Return_t __KernelAllocateMemory__(volatile Addr_t **addr_, const Size_t size_) {
 Return_t __KernelFreeMemory__(const volatile Addr_t *addr_) {
   FUNCTION_ENTER;
 
-  if(__PointerIsNotNull__(addr_)) {
-    if(OK(__free__(&kernel, addr_))) {
-      __ReturnOk__();
-    } else {
-      __AssertOnElse__();
-    }
+  if(OK(__free__(&kernel, addr_))) {
+    __ReturnOk__();
   } else {
     __AssertOnElse__();
   }
@@ -623,26 +603,12 @@ Return_t __KernelFreeMemory__(const volatile Addr_t *addr_) {
 }
 
 
-Return_t __MemoryRegionCheckKernel__(const volatile Addr_t *addr_, const Base_t option_) {
-  FUNCTION_ENTER;
-
-
-  /* Always return OK - integrity checking removed */
-  __ReturnOk__();
-  FUNCTION_EXIT;
-}
-
-
 Return_t __HeapAllocateMemory__(volatile Addr_t **addr_, const Size_t size_) {
   FUNCTION_ENTER;
 
-  if(__PointerIsNotNull__(addr_) && (nil < size_)) {
-    if(OK(__calloc__(&heap, addr_, size_))) {
-      if(__PointerIsNotNull__(*addr_)) {
-        __ReturnOk__();
-      } else {
-        __AssertOnElse__();
-      }
+  if(OK(__calloc__(&heap, addr_, size_))) {
+    if(__PointerIsNotNull__(*addr_)) {
+      __ReturnOk__();
     } else {
       __AssertOnElse__();
     }
@@ -657,12 +623,8 @@ Return_t __HeapAllocateMemory__(volatile Addr_t **addr_, const Size_t size_) {
 Return_t __HeapFreeMemory__(const volatile Addr_t *addr_) {
   FUNCTION_ENTER;
 
-  if(__PointerIsNotNull__(addr_)) {
-    if(OK(__free__(&heap, addr_))) {
-      __ReturnOk__();
-    } else {
-      __AssertOnElse__();
-    }
+  if(OK(__free__(&heap, addr_))) {
+    __ReturnOk__();
   } else {
     __AssertOnElse__();
   }
@@ -729,12 +691,8 @@ static Return_t __MemGetRegionStats__(const volatile MemoryRegion_t *region_, Me
 Return_t xMemGetHeapStats(MemoryRegionStats_t **stats_) {
   FUNCTION_ENTER;
 
-  if(__PointerIsNotNull__(stats_)) {
-    if(OK(__MemGetRegionStats__(&heap, stats_))) {
-      __ReturnOk__();
-    } else {
-      __AssertOnElse__();
-    }
+  if(OK(__MemGetRegionStats__(&heap, stats_))) {
+    __ReturnOk__();
   } else {
     __AssertOnElse__();
   }
@@ -746,12 +704,8 @@ Return_t xMemGetHeapStats(MemoryRegionStats_t **stats_) {
 Return_t xMemGetKernelStats(MemoryRegionStats_t **stats_) {
   FUNCTION_ENTER;
 
-  if(__PointerIsNotNull__(stats_)) {
-    if(OK(__MemGetRegionStats__(&kernel, stats_))) {
-      __ReturnOk__();
-    } else {
-      __AssertOnElse__();
-    }
+  if(OK(__MemGetRegionStats__(&kernel, stats_))) {
+    __ReturnOk__();
   } else {
     __AssertOnElse__();
   }
@@ -781,7 +735,6 @@ Return_t __memcpy__(const volatile Addr_t *dest_, const volatile Addr_t *src_, c
     __ReturnOk__();
   } else {
     __AssertOnElse__();
-    __AssertOnElse__();
   }
 
   FUNCTION_EXIT;
@@ -805,7 +758,6 @@ Return_t __memset__(const volatile Addr_t *dest_, const Byte_t val_, const Size_
 
     __ReturnOk__();
   } else {
-    __AssertOnElse__();
     __AssertOnElse__();
   }
 
@@ -839,7 +791,6 @@ Return_t __memcmp__(const volatile Addr_t *s1_, const volatile Addr_t *s2_, cons
 
     __ReturnOk__();
   } else {
-    __AssertOnElse__();
     __AssertOnElse__();
   }
 
