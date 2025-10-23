@@ -115,8 +115,6 @@ static Word_t __checksum__(const BlockHeader_t *header_) {
     sum1 = (sum1 + (temp >> 16)) & 0xFFFFu;
     sum2 = (sum2 + sum1) & 0xFFFFu;
 #endif /* if UINTPTR_MAX == 0xFF */
-
-
   /* Process size field - always 32-bit, process as two 16-bit words */
   sum1 = (sum1 + (header_->size & 0xFFFFu)) & 0xFFFFu;
   sum2 = (sum2 + sum1) & 0xFFFFu;
@@ -155,10 +153,16 @@ static Return_t __ValidateBlockHeader__(const BlockHeader_t *header_, const vola
         __ReturnOk__();
       } else {
         /* Invalid state - corruption detected */
+#if !defined(POSIX_ARCH_OTHER)
+          __SetFlag__(MEMFAULT);
+#endif /* if !defined(POSIX_ARCH_OTHER) */
         __AssertOnElse__();
       }
     } else {
       /* Checksum mismatch - corruption detected */
+#if !defined(POSIX_ARCH_OTHER)
+        __SetFlag__(MEMFAULT);
+#endif /* if !defined(POSIX_ARCH_OTHER) */
       __AssertOnElse__();
     }
   } else {
@@ -401,6 +405,9 @@ static Return_t __free__(volatile MemoryRegion_t *region_, const volatile Addr_t
         }
       } else {
         /* Block is already free - double free error */
+#if !defined(POSIX_ARCH_OTHER)
+          __SetFlag__(MEMFAULT);
+#endif /* if !defined(POSIX_ARCH_OTHER) */
         __AssertOnElse__();
       }
     } else {
