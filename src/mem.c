@@ -101,17 +101,12 @@ static Word_t __checksum__(const BlockHeader_t *header_) {
   sum1 = (sum1 + header_->free) & 0xFFFFu;
   sum2 = (sum2 + sum1) & 0xFFFFu;
 
-  return(((sum2 << 16) | sum1) ^ 0xB16B00B5u);
+  return (((sum2 << 16) | sum1) ^ 0xB16B00B5u);
 }
 
 
-static Return_t __ValidateBlockHeader__(const BlockHeader_t *header_, const volatile MemoryRegion_t *region_) {  /*
-                                                                                                                  * GOOD
-                                                                                                                  * -
-                                                                                                                  * DO
-                                                                                                                  * NOT
-                                                                                                                  * TOUCH!!
-                                                                                                                  */
+/* GOOD - DO NOT TOUCH!! */
+static Return_t __ValidateBlockHeader__(const BlockHeader_t *header_, const volatile MemoryRegion_t *region_) {
   FUNCTION_ENTER;
 
 
@@ -147,7 +142,8 @@ static Return_t __ValidateBlockHeader__(const BlockHeader_t *header_, const vola
 }
 
 
-Return_t __MemoryInit__(void) {  /* GOOD - DO NOT TOUCH!! */
+/* GOOD - DO NOT TOUCH!! */
+Return_t __MemoryInit__(void) {
   FUNCTION_ENTER;
 
 
@@ -179,8 +175,13 @@ Return_t __MemoryInit__(void) {  /* GOOD - DO NOT TOUCH!! */
 }
 
 
+/* GOOD - DO NOT TOUCH!! */
 static Return_t __MemoryRegionInit__(volatile MemoryRegion_t *region_) {
   FUNCTION_ENTER;
+
+
+  BlockHeader_t *first = null;
+
 
   if(__PointerIsNotNull__(region_)) {
     region_->first = (BlockHeader_t *) region_->mem;
@@ -189,9 +190,7 @@ static Return_t __MemoryRegionInit__(volatile MemoryRegion_t *region_) {
     region_->frees = nil;
 
     if(OK(__memset__((volatile Addr_t *) region_->mem, nil, MEMORY_REGION_SIZE))) {
-      BlockHeader_t *first = region_->first;
-
-
+      first = region_->first;
       first->next = null;
       first->size = MEMORY_REGION_SIZE - ALIGNED_HEADER_SIZE;
       first->free = FREE;
@@ -207,12 +206,12 @@ static Return_t __MemoryRegionInit__(volatile MemoryRegion_t *region_) {
   FUNCTION_EXIT;
 }
 
-
+/* GOOD - DO NOT TOUCH!! */
 static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **addr_, const Size_t size_) {
   FUNCTION_ENTER;
 
 
-  Size_t requested;
+  Size_t requested = nil;
   Size_t available = nil;
   BlockHeader_t *cursor = null;
   BlockHeader_t *candidate = null;
@@ -220,11 +219,10 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
   BlockHeader_t *first = null;
   Size_t candidateSize = (Size_t) -1;
   Size_t traversedSize = nil;
-  Base_t cycleDetected = false;
 
+  __DisableInterrupts__();
 
   requested = __AlignUp__(size_, CONFIG_MEMORY_ALIGNMENT);
-  __DisableInterrupts__();
 
   if(__FlagIsNotSet__(MEMFAULT) && __PointerIsNotNull__(region_) && __PointerIsNotNull__(addr_) && (nil < size_) && (requested >= size_) && ((requested <
     MEMORY_REGION_SIZE) && ((requested + ALIGNED_HEADER_SIZE) <= MEMORY_REGION_SIZE))) {
@@ -240,36 +238,33 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
     cursor = region_->first;
 
     while(__PointerIsNotNull__(cursor)) {
-      if(!OK(__ValidateBlockHeader__(cursor, region_))) {
-        candidate = null;
+      if(OK(__ValidateBlockHeader__(cursor, region_))) {
+        traversedSize += ALIGNED_HEADER_SIZE + cursor->size;
+
+        if(traversedSize > MEMORY_REGION_SIZE) {
+          candidate = null;
+          __SetFlag__(MEMFAULT);
+          __AssertOnElse__();
+          break;
+        }
+
+        if(__BlockHeaderIsFree__(cursor) && (requested <= cursor->size) && (cursor->size < candidateSize)) {
+          candidateSize = cursor->size;
+          candidate = cursor;
+        }
+
+        if(__BlockHeaderIsFree__(cursor)) {
+          available += cursor->size;
+        }
+
+        cursor = cursor->next;
+      } else {
         __SetFlag__(MEMFAULT);
         __AssertOnElse__();
-        break;
       }
-
-      traversedSize += ALIGNED_HEADER_SIZE + cursor->size;
-
-      if(traversedSize > MEMORY_REGION_SIZE) {
-        cycleDetected = true;
-        candidate = null;
-        __SetFlag__(MEMFAULT);
-        __AssertOnElse__();
-        break;
-      }
-
-      if(__BlockHeaderIsFree__(cursor) && (requested <= cursor->size) && (cursor->size < candidateSize)) {
-        candidateSize = cursor->size;
-        candidate = cursor;
-      }
-
-      if(__BlockHeaderIsFree__(cursor)) {
-        available += cursor->size;
-      }
-
-      cursor = cursor->next;
     }
 
-    if((cycleDetected == false) && __PointerIsNotNull__(candidate)) {
+    if(__PointerIsNotNull__(candidate)) {
       if((candidate->size >= requested) && ((candidate->size - requested) >= (ALIGNED_HEADER_SIZE + CONFIG_MEMORY_MINIMUM_BLOCK_SIZE))) {
         next = candidate->next;
         candidate->next = (BlockHeader_t *) (((Byte_t *) candidate) + ALIGNED_HEADER_SIZE + requested);
@@ -286,19 +281,18 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
       if(OK(__memset__(__OffsetBlockHeaderToPointer__(candidate), nil, requested))) {
         *addr_ = __OffsetBlockHeaderToPointer__(candidate);
 
-        if(!__IsAligned__((Size_t) *addr_, CONFIG_MEMORY_ALIGNMENT)) {
-          __SetFlag__(MEMFAULT);
+        if(__IsAligned__((Size_t) *addr_, CONFIG_MEMORY_ALIGNMENT)) {
+          region_->allocations++;
+          available -= requested;
+
+          if(available < region_->minAvailableEver) {
+            region_->minAvailableEver = available;
+          }
+
+          __ReturnOk__();
+        } else {
           __AssertOnElse__();
         }
-
-        region_->allocations++;
-        available -= requested;
-
-        if(available < region_->minAvailableEver) {
-          region_->minAvailableEver = available;
-        }
-
-        __ReturnOk__();
       } else {
         __AssertOnElse__();
       }
@@ -339,10 +333,6 @@ static Return_t __free__(volatile MemoryRegion_t *region_, const volatile Addr_t
             __AssertOnElse__();
           }
         } else {
-
-#if !defined(POSIX_ARCH_OTHER)
-            __SetFlag__(MEMFAULT);
-#endif /* if !defined(POSIX_ARCH_OTHER) */
           __AssertOnElse__();
         }
       } else {
