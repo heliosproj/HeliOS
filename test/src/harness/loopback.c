@@ -98,13 +98,13 @@ Return_t TO_FUNCTION(DEVICE_NAME, _init)(Device_t *device_) {
   if(__PointerIsNotNull__(device_)) {
 
     /* Initialize state */
-    state.writePosition = 0;
-    state.readPosition = 0;
-    state.bytesAvailable = 0;
-    state.bytesRead = 0;
-    state.bytesWritten = 0;
-    state.readOperations = 0;
-    state.writeOperations = 0;
+    state.writePosition = nil;
+    state.readPosition = nil;
+    state.bytesAvailable = nil;
+    state.bytesRead = nil;
+    state.bytesWritten = nil;
+    state.readOperations = nil;
+    state.writeOperations = nil;
     state.mode = LOOPBACK_MODE_FIFO;
     state.initialized = true;
 
@@ -196,13 +196,13 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Add
         LoopbackClearConfig_t *cfg = (LoopbackClearConfig_t *)config_;
 
         __memset__(loopbackBuffer, cfg->fillPattern, LOOPBACK_BUFFER_SIZE);
-        state.writePosition = 0;
-        state.readPosition = 0;
-        state.bytesAvailable = 0;
-        state.bytesRead = 0;
-        state.bytesWritten = 0;
-        state.readOperations = 0;
-        state.writeOperations = 0;
+        state.writePosition = nil;
+        state.readPosition = nil;
+        state.bytesAvailable = nil;
+        state.bytesRead = nil;
+        state.bytesWritten = nil;
+        state.readOperations = nil;
+        state.writeOperations = nil;
         device_->available = false;
 
         __ReturnOk__();
@@ -271,7 +271,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _read)(Device_t *device_, Size_t *size_, Addr_
         if(OK(__KernelAllocateMemory__((volatile Addr_t **)&buffer, bytesToRead))) {
 
           /* Copy data from circular buffer */
-          for(i = 0; i < bytesToRead; i++) {
+          for(i = nil; i < bytesToRead; i++) {
             buffer[i] = loopbackBuffer[state.readPosition];
             state.readPosition = (state.readPosition + 1) % LOOPBACK_BUFFER_SIZE;
           }
@@ -329,7 +329,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t *device_, Size_t *size_, Addr
       bytesToWrite = (*size_ > spaceAvailable) ? spaceAvailable : *size_;
 
       /* Copy data to circular buffer */
-      for(i = 0; i < bytesToWrite; i++) {
+      for(i = nil; i < bytesToWrite; i++) {
         loopbackBuffer[state.writePosition] = ((Byte_t *)data_)[i];
         state.writePosition = (state.writePosition + 1) % LOOPBACK_BUFFER_SIZE;
       }
@@ -475,13 +475,13 @@ static void __UpdateAvailability__(Device_t *device_) {
 /* For unit testing only! */
 void __LoopbackStateClear__(void) {
   /* Clear state */
-  state.writePosition = 0;
-  state.readPosition = 0;
-  state.bytesAvailable = 0;
-  state.bytesRead = 0;
-  state.bytesWritten = 0;
-  state.readOperations = 0;
-  state.writeOperations = 0;
+  state.writePosition = nil;
+  state.readPosition = nil;
+  state.bytesAvailable = nil;
+  state.bytesRead = nil;
+  state.bytesWritten = nil;
+  state.readOperations = nil;
+  state.writeOperations = nil;
   state.mode = LOOPBACK_MODE_FIFO;
   state.initialized = false;
 

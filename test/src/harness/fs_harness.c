@@ -155,7 +155,7 @@ void fs_harness(void) {
  */
 static void test_driver_registration_and_mount(void) {
   BlockDeviceConfig_t *blockConfig = null;
-  Size_t configSize = 0;
+  Size_t configSize = nil;
   Volume_t *vol = null;
   VolumeInfo_t *volInfo = null;
 
@@ -368,7 +368,7 @@ static void test_directory_operations(void) {
   DirEntry_t *entry = null;
   Base_t exists = nil;
   File_t *file = null;
-  int entryCount = 0;
+  int entryCount = nil;
 
 
   unit_print("--- Section 3: Directory Operations ---");
@@ -416,7 +416,7 @@ static void test_directory_operations(void) {
 
   /* Test 3.5: Directory read */
   unit_begin("Directory read returns all entries");
-  entryCount = 0;
+  entryCount = nil;
 
   /* Read all directory entries */
   while(OK(xDirRead(dir, &entry))) {
@@ -686,7 +686,7 @@ static void test_large_file_operations(void) {
   File_t *file = null;
   Byte_t *writeData = null;
   Byte_t *readData = null;
-  Size_t i = 0;
+  Size_t i = nil;
   Word_t fileSize = nil;
   Word_t position = nil;
 
@@ -709,7 +709,7 @@ static void test_large_file_operations(void) {
   unit_assert_not_null(writeData);
 
   /* Fill with pattern (repeating 0-255) */
-  for(i = 0; i < LARGE_FILE_SIZE; i++) {
+  for(i = nil; i < LARGE_FILE_SIZE; i++) {
     writeData[i] = (Byte_t) (i & 0xFFu);
   }
 
@@ -743,7 +743,7 @@ static void test_large_file_operations(void) {
   unit_assert_not_null(readData);
 
   /* Verify data matches */
-  for(i = 0; i < LARGE_FILE_SIZE; i++) {
+  for(i = nil; i < LARGE_FILE_SIZE; i++) {
     if(writeData[i] != readData[i]) {
       unit_print("Data mismatch detected in large file read");
       unit_assert_true(false);
@@ -772,7 +772,7 @@ static void test_cluster_boundary_operations(void) {
   Byte_t *writeData = null;
   Byte_t *readData = null;
   Size_t testSize = CLUSTER_SIZE - CLUSTER_BOUNDARY_OFFSET;
-  Size_t i = 0;
+  Size_t i = nil;
   Word_t position = nil;
 
 
@@ -794,7 +794,7 @@ static void test_cluster_boundary_operations(void) {
   unit_assert_not_null(writeData);
 
   /* Fill with pattern */
-  for(i = 0; i < CLUSTER_SIZE + CLUSTER_SPAN_SIZE; i++) {
+  for(i = nil; i < CLUSTER_SIZE + CLUSTER_SPAN_SIZE; i++) {
     writeData[i] = (Byte_t) ((i * 7) & 0xFFu);
   }
 
@@ -824,7 +824,7 @@ static void test_cluster_boundary_operations(void) {
   unit_assert_not_null(readData);
 
   /* Verify data */
-  for(i = 0; i < CLUSTER_BOUNDARY_READ_SIZE; i++) {
+  for(i = nil; i < CLUSTER_BOUNDARY_READ_SIZE; i++) {
     if(writeData[CLUSTER_SIZE - CLUSTER_BOUNDARY_READ_OFFSET + i] != readData[i]) {
       unit_print("Cluster boundary data mismatch detected");
       unit_assert_true(false);
@@ -1295,7 +1295,7 @@ static void test_file_write_seek_cluster(void) {
   File_t *file = null;
   Byte_t *writeData = null;
   Byte_t *readData = null;
-  Word_t i = 0;
+  Word_t i = nil;
   Word_t position = nil;
   Word_t clusterSize = 4096; /* 512 bytes/sector * 8 sectors/cluster */
 
@@ -1323,7 +1323,7 @@ static void test_file_write_seek_cluster(void) {
   unit_assert_not_null(writeData);
 
   /* Fill with pattern */
-  for(i = 0; i < clusterSize * 2; i++) {
+  for(i = nil; i < clusterSize * 2; i++) {
     writeData[i] = (Byte_t) (i & 0xFFu);
   }
 
@@ -1397,11 +1397,11 @@ static void test_volume_info_with_files(void) {
   VolumeInfo_t *volInfo1 = null;
   VolumeInfo_t *volInfo2 = null;
   File_t *file = null;
-  Word_t initialFreeClusters = 0;
-  Word_t afterFreeClusters = 0;
+  Word_t initialFreeClusters = nil;
+  Word_t afterFreeClusters = nil;
   Byte_t *largeData = null;
   Word_t dataSize = 8192; /* 2 clusters worth */
-  Word_t i = 0;
+  Word_t i = nil;
 
 
   unit_print("--- Section 15: Volume Info With Files ---");
@@ -1429,7 +1429,7 @@ static void test_volume_info_with_files(void) {
   unit_assert_not_null(largeData);
 
   /* Fill with data */
-  for(i = 0; i < dataSize; i++) {
+  for(i = nil; i < dataSize; i++) {
     largeData[i] = (Byte_t) ((i * 3) & 0xFFu);
   }
 

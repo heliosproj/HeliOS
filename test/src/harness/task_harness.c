@@ -374,7 +374,7 @@ static void test_basic_task_operations(void) {
   unit_end();
   unit_begin("All task runtime statistics retrieval succeeds");
   task04 = null;
-  task05 = 0;
+  task05 = nil;
   unit_assert_ok(xTaskGetAllRunTimeStats(&task04, &task05));
   unit_assert_not_null(task04);
   unit_assert_equal(0x1, task05); /* Should have 1 task */
@@ -391,7 +391,7 @@ static void test_basic_task_operations(void) {
   unit_assert_ok(xMemFree(task04));
   unit_end();
   unit_begin("Task count retrieval returns correct number");
-  task06 = 0;
+  task06 = nil;
   unit_assert_ok(xTaskGetNumberOfTasks(&task06));
   unit_assert_equal(0x1, task06); /* Should have 1 task */
   unit_end();
@@ -517,7 +517,7 @@ static void test_multi_task_scenarios(void) {
   /* Test 3.1: Create multiple tasks */
   unit_begin("Create 10 tasks successfully");
 
-  for(i = 0; i < MAX_TASKS_TEST; i++) {
+  for(i = nil; i < MAX_TASKS_TEST; i++) {
     tasks[i] = null;
     snprintf((char *) taskName, CONFIG_TASK_NAME_BYTES, "TSK%02d", (int) (i + 1));
     unit_assert_ok(xTaskCreate(&tasks[i], taskName, task_harness_task, null));
@@ -537,7 +537,7 @@ static void test_multi_task_scenarios(void) {
   /* Test 3.3: Retrieve each task by name */
   unit_begin("Retrieve all tasks by name");
 
-  for(i = 0; i < MAX_TASKS_TEST; i++) {
+  for(i = nil; i < MAX_TASKS_TEST; i++) {
     snprintf((char *) taskName, CONFIG_TASK_NAME_BYTES, "TSK%02d", (int) (i + 1));
     retrieved = null;
     unit_assert_ok(xTaskGetHandleByName(&retrieved, taskName));
@@ -550,7 +550,7 @@ static void test_multi_task_scenarios(void) {
   /* Test 3.4: Retrieve each task by ID */
   unit_begin("Retrieve all tasks by ID");
 
-  for(i = 0; i < MAX_TASKS_TEST; i++) {
+  for(i = nil; i < MAX_TASKS_TEST; i++) {
     unit_assert_ok(xTaskGetId(tasks[i], &taskId));
     retrieved = null;
     unit_assert_ok(xTaskGetHandleById(&retrieved, taskId));
@@ -563,7 +563,7 @@ static void test_multi_task_scenarios(void) {
   /* Test 3.5: Get all task info at once */
   unit_begin("Get all task information in single call");
   allInfo = null;
-  taskCount = 0;
+  taskCount = nil;
   unit_assert_ok(xTaskGetAllTaskInfo(&allInfo, &taskCount));
   unit_assert_not_null(allInfo);
   unit_assert_equal(MAX_TASKS_TEST, taskCount);
@@ -574,7 +574,7 @@ static void test_multi_task_scenarios(void) {
   /* Test 3.6: Get all runtime stats at once */
   unit_begin("Get all runtime statistics in single call");
   allStats = null;
-  taskCount = 0;
+  taskCount = nil;
   unit_assert_ok(xTaskGetAllRunTimeStats(&allStats, &taskCount));
   unit_assert_not_null(allStats);
   unit_assert_equal(MAX_TASKS_TEST, taskCount);

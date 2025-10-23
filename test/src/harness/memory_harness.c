@@ -117,7 +117,7 @@ void memory_harness(void) {
   used = nil;
   actual = nil;
 
-  for(i = 0; i < NUM_TEST_ALLOCS; i++) {
+  for(i = nil; i < NUM_TEST_ALLOCS; i++) {
     Size_t alignedSize;
     Size_t alignedHeaderSize;
 
@@ -150,7 +150,7 @@ void memory_harness(void) {
 
   unit_assert_not_ok(xMemAlloc((volatile Addr_t **) &mem05, OVERSIZED_ALLOC));
 
-  for(i = 0; i < NUM_TEST_ALLOCS; i++) {
+  for(i = nil; i < NUM_TEST_ALLOCS; i++) {
     unit_assert_ok(xMemFree(tests[order[i]].ptr));
   }
 
@@ -375,16 +375,16 @@ static void test_memory_edge_cases(void) {
   {
     volatile Addr_t *ptrs[MAX_TEST_ALLOCS];
     int i;
-    int allocCount = 0;
-    Size_t sizeBefore = 0;
-    Size_t sizeAfter = 0;
+    int allocCount = nil;
+    Size_t sizeBefore = nil;
+    Size_t sizeAfter = nil;
 
 
     /* Get baseline memory usage */
     unit_assert_ok(xMemGetUsed(&sizeBefore));
 
     /* Allocate as many small blocks as possible */
-    for(i = 0; i < MAX_TEST_ALLOCS; i++) {
+    for(i = nil; i < MAX_TEST_ALLOCS; i++) {
       ptrs[i] = null;
 
       if(OK(xMemAlloc(&ptrs[i], TINY_ALLOC_SIZE))) {
@@ -399,7 +399,7 @@ static void test_memory_edge_cases(void) {
     unit_assert_true(allocCount > 0);
 
     /* Free all allocated blocks */
-    for(i = 0; i < allocCount; i++) {
+    for(i = nil; i < allocCount; i++) {
       unit_assert_ok(xMemFree(ptrs[i]));
     }
 
@@ -491,13 +491,13 @@ static void test_memcpy_memcmp(void) {
   unit_begin("Memory Utility - __memcpy__() Basic Copy");
   {
     /* Initialize source with pattern */
-    for(i = 0; i < 128; i++) {
+    for(i = nil; i < 128; i++) {
       src[i] = (Byte_t) i;
     }
 
     /* Clear destination */
-    for(i = 0; i < 128; i++) {
-      dest[i] = 0;
+    for(i = nil; i < 128; i++) {
+      dest[i] = nil;
     }
 
     /* Positive: Normal copy */
@@ -523,7 +523,7 @@ static void test_memcpy_memcmp(void) {
   unit_begin("Memory Utility - __memcmp__() Equal Buffers");
   {
     /* Test __memcmp__ with equal buffers */
-    for(i = 0; i < 128; i++) {
+    for(i = nil; i < 128; i++) {
       src[i] = (Byte_t) 0xAA;
       dest[i] = (Byte_t) 0xAA;
     }
@@ -551,7 +551,7 @@ static void test_memcpy_memcmp(void) {
   unit_begin("Memory Utility - __memcmp__() Early Difference");
   {
     /* Test difference at start */
-    for(i = 0; i < 128; i++) {
+    for(i = nil; i < 128; i++) {
       src[i] = (Byte_t) i;
       dest[i] = (Byte_t) i;
     }
@@ -575,7 +575,7 @@ static void test_memcpy_memcmp(void) {
     unit_assert_ok(__memset__(ptr, 0xAA, 256));
 
     /* Verify pattern */
-    for(i = 0; i < 256; i++) {
+    for(i = nil; i < 256; i++) {
       unit_assert_equal(bytes[i], 0xAA);
     }
 
@@ -583,7 +583,7 @@ static void test_memcpy_memcmp(void) {
     unit_assert_ok(__memset__(ptr, 0x55, 256));
 
     /* Verify new pattern */
-    for(i = 0; i < 256; i++) {
+    for(i = nil; i < 256; i++) {
       unit_assert_equal(bytes[i], 0x55);
     }
 
@@ -896,7 +896,7 @@ static void test_data_integrity(void) {
     bytes = (Byte_t *) ptr;
 
     /* Verify all bytes are zero */
-    for(i = 0; i < 256; i++) {
+    for(i = nil; i < 256; i++) {
       unit_assert_equal(bytes[i], 0);
     }
 
@@ -908,12 +908,12 @@ static void test_data_integrity(void) {
     bytes = (Byte_t *) ptr;
 
     /* Write pattern */
-    for(i = 0; i < 128; i++) {
+    for(i = nil; i < 128; i++) {
       bytes[i] = (Byte_t) (i & 0xFF);
     }
 
     /* Verify pattern */
-    for(i = 0; i < 128; i++) {
+    for(i = nil; i < 128; i++) {
       unit_assert_equal(bytes[i], (Byte_t) (i & 0xFF));
     }
 
@@ -933,13 +933,13 @@ static void test_data_integrity(void) {
     bytes2 = (Byte_t *) ptr2;
 
     /* Write different patterns */
-    for(i = 0; i < 64; i++) {
+    for(i = nil; i < 64; i++) {
       bytes1[i] = 0xAA;
       bytes2[i] = 0x55;
     }
 
     /* Verify independence */
-    for(i = 0; i < 64; i++) {
+    for(i = nil; i < 64; i++) {
       unit_assert_equal(bytes1[i], 0xAA);
       unit_assert_equal(bytes2[i], 0x55);
     }
@@ -958,7 +958,7 @@ static void test_data_integrity(void) {
     unit_assert_ok(xMemAlloc(&ptr1, 128));
     bytes1 = (Byte_t *) ptr1;
 
-    for(i = 0; i < 128; i++) {
+    for(i = nil; i < 128; i++) {
       bytes1[i] = (Byte_t) (i * 2);
     }
 
@@ -966,7 +966,7 @@ static void test_data_integrity(void) {
     unit_assert_ok(xMemAlloc(&ptr2, 64));
 
     /* Verify first block still has pattern */
-    for(i = 0; i < 128; i++) {
+    for(i = nil; i < 128; i++) {
       unit_assert_equal(bytes1[i], (Byte_t) (i * 2));
     }
 
@@ -991,26 +991,26 @@ static void test_fragmentation_stress(void) {
 
 
     /* Allocate 20 small blocks */
-    for(i = 0; i < 20; i++) {
+    for(i = nil; i < 20; i++) {
       ptrs[i] = null;
       unit_assert_ok(xMemAlloc(&ptrs[i], 64));
       unit_assert_not_null(ptrs[i]);
     }
 
     /* Free every other block (create fragmentation) */
-    for(i = 0; i < 20; i += 2) {
+    for(i = nil; i < 20; i += 2) {
       unit_assert_ok(xMemFree(ptrs[i]));
     }
 
     /* Try to allocate blocks in freed spaces */
-    for(i = 0; i < 20; i += 2) {
+    for(i = nil; i < 20; i += 2) {
       ptrs[i] = null;
       unit_assert_ok(xMemAlloc(&ptrs[i], 32));
       unit_assert_not_null(ptrs[i]);
     }
 
     /* Cleanup all */
-    for(i = 0; i < 20; i++) {
+    for(i = nil; i < 20; i++) {
       unit_assert_ok(xMemFree(ptrs[i]));
     }
   } unit_end();
@@ -1021,7 +1021,7 @@ static void test_fragmentation_stress(void) {
 
 
     /* Allocate 10 blocks */
-    for(i = 0; i < 10; i++) {
+    for(i = nil; i < 10; i++) {
       ptrs[i] = null;
       unit_assert_ok(xMemAlloc(&ptrs[i], 128));
     }
@@ -1032,7 +1032,7 @@ static void test_fragmentation_stress(void) {
     }
 
     /* Free all even-indexed blocks */
-    for(i = 0; i < 10; i += 2) {
+    for(i = nil; i < 10; i += 2) {
       unit_assert_ok(xMemFree(ptrs[i]));
     }
 
@@ -1052,17 +1052,17 @@ static void test_fragmentation_stress(void) {
 
 
     /* Allocate mixed sizes */
-    for(i = 0; i < 5; i++) {
+    for(i = nil; i < 5; i++) {
       small[i] = null;
       unit_assert_ok(xMemAlloc(&small[i], 32));
     }
 
-    for(i = 0; i < 3; i++) {
+    for(i = nil; i < 3; i++) {
       medium[i] = null;
       unit_assert_ok(xMemAlloc(&medium[i], 128));
     }
 
-    for(i = 0; i < 2; i++) {
+    for(i = nil; i < 2; i++) {
       large[i] = null;
       unit_assert_ok(xMemAlloc(&large[i], 512));
     }
@@ -1086,11 +1086,11 @@ static void test_fragmentation_stress(void) {
     unit_assert_ok(xMemAlloc(&small[4], 32));
 
     /* Cleanup - now all pointers are valid */
-    for(i = 0; i < 5; i++) {
+    for(i = nil; i < 5; i++) {
       unit_assert_ok(xMemFree(small[i]));
     }
 
-    for(i = 0; i < 3; i++) {
+    for(i = nil; i < 3; i++) {
       unit_assert_ok(xMemFree(medium[i]));
     }
 
@@ -1231,7 +1231,7 @@ static void test_state_consistency(void) {
 
 
     /* Multiple failed allocations */
-    for(i = 0; i < 5; i++) {
+    for(i = nil; i < 5; i++) {
       ptr1 = null;
       unit_assert_not_ok(xMemAlloc(&ptr1, tooLarge));
     }
@@ -1317,7 +1317,7 @@ static void test_memfreeall_idempotency(void) {
     /* Verify it's zeroed */
     bytes = (Byte_t *) ptr;
 
-    for(i = 0; i < 256; i++) {
+    for(i = nil; i < 256; i++) {
       unit_assert_equal(bytes[i], 0);
     }
 
@@ -1406,7 +1406,7 @@ static void test_performance_stress(void) {
 
 
     /* Rapid alloc/free cycles */
-    for(i = 0; i < 50; i++) {
+    for(i = nil; i < 50; i++) {
       ptr = null;
       unit_assert_ok(xMemAlloc(&ptr, 64));
       unit_assert_not_null(ptr);
@@ -1417,11 +1417,11 @@ static void test_performance_stress(void) {
   {
     volatile Addr_t *ptrs[100];
     int i;
-    int allocCount = 0;
+    int allocCount = nil;
 
 
     /* Allocate as many as possible */
-    for(i = 0; i < 100; i++) {
+    for(i = nil; i < 100; i++) {
       ptrs[i] = null;
 
       if(OK(xMemAlloc(&ptrs[i], 32))) {
@@ -1435,7 +1435,7 @@ static void test_performance_stress(void) {
     unit_assert_true(allocCount > 0);
 
     /* Free all */
-    for(i = 0; i < allocCount; i++) {
+    for(i = nil; i < allocCount; i++) {
       unit_assert_ok(xMemFree(ptrs[i]));
     }
   } unit_end();
@@ -1447,7 +1447,7 @@ static void test_performance_stress(void) {
 
 
     /* Allocate progressively larger blocks */
-    for(i = 0; i < 10; i++) {
+    for(i = nil; i < 10; i++) {
       ptr = null;
 
       if(OK(xMemAlloc(&ptr, size))) {
@@ -1483,7 +1483,7 @@ static void test_randomized_patterns(void) {
 
 
     /* Allocate in sequential order with varied sizes */
-    for(i = 0; i < 16; i++) {
+    for(i = nil; i < 16; i++) {
       ptrs[i] = null;
 
       if(!OK(xMemAlloc(&ptrs[i], sizes[i]))) {
@@ -1492,7 +1492,7 @@ static void test_randomized_patterns(void) {
     }
 
     /* Free in pseudo-random order */
-    for(i = 0; i < 16; i++) {
+    for(i = nil; i < 16; i++) {
       if(__PointerIsNotNull__(ptrs[freeOrder[i]])) {
         unit_assert_ok(xMemFree(ptrs[freeOrder[i]]));
       }
@@ -1536,7 +1536,7 @@ static void test_alignment_verification(void) {
 
 
     /* Allocate multiple blocks and verify alignment */
-    for(i = 0; i < 10; i++) {
+    for(i = nil; i < 10; i++) {
       ptr = null;
       unit_assert_ok(xMemAlloc(&ptr, 64));
       unit_assert_not_null(ptr);
@@ -1544,7 +1544,7 @@ static void test_alignment_verification(void) {
 
       /* Check that address is reasonable (not null, not obviously invalid) */
       address = (Size_t) ptr;
-      unit_assert_true(address != 0);
+      unit_assert_true(address != nil);
       unit_assert_ok(xMemFree(ptr));
     }
   } unit_end();
@@ -1556,13 +1556,13 @@ static void test_alignment_verification(void) {
     int i;
 
 
-    for(i = 0; i < 10; i++) {
+    for(i = nil; i < 10; i++) {
       ptr = null;
 
       if(OK(xMemAlloc(&ptr, sizes[i]))) {
         unit_assert_not_null(ptr);
         address = (Size_t) ptr;
-        unit_assert_true(address != 0);
+        unit_assert_true(address != nil);
         unit_assert_ok(xMemFree(ptr));
       }
     }

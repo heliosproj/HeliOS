@@ -83,7 +83,7 @@ static void test_stream_send_and_fill(void) {
   unit_begin("Stream accepts bytes until buffer is full");
   unit_assert_ok(xStreamCreate(&stream));
 
-  for(i = 0; i < STREAM_FILL_COUNT; i++) {
+  for(i = nil; i < STREAM_FILL_COUNT; i++) {
     unit_assert_ok(xStreamSend(stream, i));
   }
 
@@ -116,7 +116,7 @@ static void test_stream_status_checks(void) {
   unit_begin("Stream full check correctly identifies full buffer");
   unit_assert_ok(xStreamCreate(&stream));
 
-  for(i = 0; i < STREAM_FILL_COUNT; i++) {
+  for(i = nil; i < STREAM_FILL_COUNT; i++) {
     unit_assert_ok(xStreamSend(stream, i));
   }
 
@@ -162,7 +162,7 @@ static void test_stream_receive(void) {
   unit_begin("Stream receive returns all buffered bytes");
   unit_assert_ok(xStreamCreate(&stream));
 
-  for(i = 0; i < STREAM_FILL_COUNT; i++) {
+  for(i = nil; i < STREAM_FILL_COUNT; i++) {
     unit_assert_ok(xStreamSend(stream, i));
   }
 
@@ -197,7 +197,7 @@ static void test_stream_reset(void) {
 
 
   /* Fill the buffer */
-  for(i = 0; i < STREAM_FILL_COUNT; i++) {
+  for(i = nil; i < STREAM_FILL_COUNT; i++) {
     unit_assert_ok(xStreamSend(stream, i));
   }
 

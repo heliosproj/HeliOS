@@ -94,11 +94,11 @@ Return_t TO_FUNCTION(DEVICE_NAME, _init)(Device_t *device_) {
   FUNCTION_ENTER;
 
   /* Initialize state */
-  state.currentPosition = 0;
-  state.bytesRead = 0;
-  state.bytesWritten = 0;
-  state.readOperations = 0;
-  state.writeOperations = 0;
+  state.currentPosition = nil;
+  state.bytesRead = nil;
+  state.bytesWritten = nil;
+  state.readOperations = nil;
+  state.writeOperations = nil;
   state.initialized = true;
 
   /* Clear RAM disk to zeros */
@@ -175,11 +175,11 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Add
         RAMDiskClearConfig_t *cfg = (RAMDiskClearConfig_t *)config_;
 
         __memset__(ramdisk, cfg->fillPattern, RAMDISK_SIZE_BYTES);
-        state.currentPosition = 0;
-        state.bytesRead = 0;
-        state.bytesWritten = 0;
-        state.readOperations = 0;
-        state.writeOperations = 0;
+        state.currentPosition = nil;
+        state.bytesRead = nil;
+        state.bytesWritten = nil;
+        state.readOperations = nil;
+        state.writeOperations = nil;
 
         __ReturnOk__();
       }
@@ -364,11 +364,11 @@ static Return_t __ValidateAndTruncateSize__(Size_t requested_, Size_t *actual_) 
 /* For unit testing only! */
 void __RAMDiskStateClear__(void) {
   /* Clear state */
-  state.currentPosition = 0;
-  state.bytesRead = 0;
-  state.bytesWritten = 0;
-  state.readOperations = 0;
-  state.writeOperations = 0;
+  state.currentPosition = nil;
+  state.bytesRead = nil;
+  state.bytesWritten = nil;
+  state.readOperations = nil;
+  state.writeOperations = nil;
   state.initialized = false;
 
   /* Clear RAM disk contents */

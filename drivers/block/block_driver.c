@@ -71,12 +71,12 @@ Return_t TO_FUNCTION(DEVICE_NAME, _init)(Device_t *device_) {
 
   /* Initialization happens in config after I/O driver is configured */
   state.initialized = false;
-  state.ioDriverUID = 0;
-  state.protocol = 0;
+  state.ioDriverUID = nil;
+  state.protocol = nil;
   state.blockSize = BLOCK_DEFAULT_SECTOR_SIZE;
-  state.totalBlocks = 0;
-  state.currentBlockNumber = 0;
-  state.currentBlockCount = 0;
+  state.totalBlocks = nil;
+  state.currentBlockNumber = nil;
+  state.currentBlockCount = nil;
   state.currentTransferMode = BLOCK_IO_MODE_BLOCKING;
 
   __ReturnOk__();
@@ -274,7 +274,7 @@ static Return_t __PrepareBlockIORequest__(const Byte_t operation_,
     request->blockCount = state.currentBlockCount;
     request->blockSize = state.blockSize;
     request->transferMode = state.currentTransferMode;
-    request->reserved = 0;
+    request->reserved = nil;
 
     *request_ = request;
     *configSize_ = sizeof(BlockIORequest_t);
@@ -295,7 +295,7 @@ static Return_t __BlockDeviceReadBlockRAW__(Byte_t **data_) {
   Size_t totalSize = (Size_t)state.blockSize * state.currentBlockCount;
   Byte_t *buffer = null;
   BlockIORequest_t *request = null;
-  Size_t configSize = 0;
+  Size_t configSize = nil;
 
   /* Prepare block I/O request from state */
   if(OK(__PrepareBlockIORequest__(BLOCK_IO_OP_READ, &request, &configSize))) {
@@ -332,7 +332,7 @@ static Return_t __BlockDeviceWriteBlockRAW__(const Byte_t *data_) {
 
   Size_t totalSize = (Size_t)state.blockSize * state.currentBlockCount;
   BlockIORequest_t *request = null;
-  Size_t configSize = 0;
+  Size_t configSize = nil;
 
   /* Prepare block I/O request from state */
   if(OK(__PrepareBlockIORequest__(BLOCK_IO_OP_WRITE, &request, &configSize))) {
@@ -368,13 +368,13 @@ static Return_t __BlockDeviceWriteBlockRAW__(const Byte_t *data_) {
 
 /* For unit testing only! */
 void __BlockDeviceStateClear__(void) {
-  state.ioDriverUID = 0;
-  state.protocol = 0;
+  state.ioDriverUID = nil;
+  state.protocol = nil;
   state.blockSize = BLOCK_DEFAULT_SECTOR_SIZE;
-  state.totalBlocks = 0;
+  state.totalBlocks = nil;
   state.initialized = false;
-  state.currentBlockNumber = 0;
-  state.currentBlockCount = 0;
+  state.currentBlockNumber = nil;
+  state.currentBlockCount = nil;
   state.currentTransferMode = BLOCK_IO_MODE_BLOCKING;
 
   return;

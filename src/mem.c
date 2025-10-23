@@ -31,7 +31,7 @@ static volatile MemoryRegion_t kernel = {
         ((value_) & ~((alignment_) - 1))
 
 #define __IsAligned__(value_, alignment_) \
-        (((value_) & ((alignment_) - 1)) == 0)
+        (((value_) & ((alignment_) - 1)) == nil)
 
 #define ALIGNED_HEADER_SIZE \
         (((sizeof(BlockHeader_t)) + (CONFIG_MEMORY_ALIGNMENT - 1)) & ~(CONFIG_MEMORY_ALIGNMENT - 1))
@@ -55,8 +55,8 @@ static Return_t __DetectByteOrder__(ByteOrder_t *order_);
 static Word_t __checksum__(const BlockHeader_t *header_);
 
 
-static Word_t __checksum__(const BlockHeader_t *header_) { /* GOOD - DO NOT
-                                                            * TOUCH */
+static Word_t __checksum__(const BlockHeader_t *header_) {
+  /* GOOD - DO NOT TOUCH */
   Word_t sum1 = 0xFFFFu;
   Word_t sum2 = 0xFFFFu;
   Word_t temp;
@@ -94,7 +94,6 @@ static Word_t __checksum__(const BlockHeader_t *header_) { /* GOOD - DO NOT
     sum1 = (sum1 + (temp >> 16)) & 0xFFFFu;
     sum2 = (sum2 + sum1) & 0xFFFFu;
 #endif /* if UINTPTR_MAX == 0xFF */
-
   sum1 = (sum1 + (header_->size & 0xFFFFu)) & 0xFFFFu;
   sum2 = (sum2 + sum1) & 0xFFFFu;
   sum1 = (sum1 + (header_->size >> 16)) & 0xFFFFu;
@@ -106,7 +105,13 @@ static Word_t __checksum__(const BlockHeader_t *header_) { /* GOOD - DO NOT
 }
 
 
-static Return_t __ValidateBlockHeader__(const BlockHeader_t *header_, const volatile MemoryRegion_t *region_) {  /* GOOD - DO NOT TOUCH!! */
+static Return_t __ValidateBlockHeader__(const BlockHeader_t *header_, const volatile MemoryRegion_t *region_) {  /*
+                                                                                                                  * GOOD
+                                                                                                                  * -
+                                                                                                                  * DO
+                                                                                                                  * NOT
+                                                                                                                  * TOUCH!!
+                                                                                                                  */
   FUNCTION_ENTER;
 
 
@@ -180,8 +185,8 @@ static Return_t __MemoryRegionInit__(volatile MemoryRegion_t *region_) {
   if(__PointerIsNotNull__(region_)) {
     region_->first = (BlockHeader_t *) region_->mem;
     region_->minAvailableEver = MEMORY_REGION_SIZE;
-    region_->allocations = 0;
-    region_->frees = 0;
+    region_->allocations = nil;
+    region_->frees = nil;
 
     if(OK(__memset__((volatile Addr_t *) region_->mem, nil, MEMORY_REGION_SIZE))) {
       BlockHeader_t *first = region_->first;
@@ -208,13 +213,13 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
 
 
   Size_t requested;
-  Size_t available = 0;
+  Size_t available = nil;
   BlockHeader_t *cursor = null;
   BlockHeader_t *candidate = null;
   BlockHeader_t *next = null;
   BlockHeader_t *first = null;
   Size_t candidateSize = (Size_t) -1;
-  Size_t traversedSize = 0;
+  Size_t traversedSize = nil;
   Base_t cycleDetected = false;
 
 
@@ -364,14 +369,14 @@ static Return_t __DefragMemoryRegion__(volatile MemoryRegion_t *region_) {
   BlockHeader_t *nextBlock = null;
   Base_t merged = true;
   Base_t cycleDetected = false;
-  Size_t traversedSize = 0;
+  Size_t traversedSize = nil;
 
 
   if(__PointerIsNotNull__(region_)) {
     while(merged && !cycleDetected) {
       merged = false;
       cursor = region_->first;
-      traversedSize = 0;
+      traversedSize = nil;
 
       while(__PointerIsNotNull__(cursor) && __PointerIsNotNull__(cursor->next) && !cycleDetected) {
         traversedSize += ALIGNED_HEADER_SIZE + cursor->size;
@@ -456,8 +461,8 @@ Return_t xMemGetUsed(Size_t *size_) {
 
 
   BlockHeader_t *cursor = null;
-  Size_t used = 0;
-  Size_t traversedSize = 0;
+  Size_t used = nil;
+  Size_t traversedSize = nil;
   Base_t cycleDetected = false;
 
 
@@ -587,11 +592,11 @@ static Return_t __MemGetRegionStats__(const volatile MemoryRegion_t *region_, Me
 
   MemoryRegionStats_t *stats = null;
   BlockHeader_t *cursor = null;
-  Word_t largestFree = 0;
+  Word_t largestFree = nil;
   Word_t smallestFree = (Word_t) -1;
-  Word_t freeBlocks = 0;
-  Word_t availableBytes = 0;
-  Size_t traversedSize = 0;
+  Word_t freeBlocks = nil;
+  Word_t availableBytes = nil;
+  Size_t traversedSize = nil;
   Base_t cycleDetected = false;
 
 

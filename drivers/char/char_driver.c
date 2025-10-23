@@ -80,19 +80,19 @@ Return_t TO_FUNCTION(DEVICE_NAME, _init)(Device_t *device_) {
 
   /* Initialization happens in config after I/O driver is configured */
   state.initialized = false;
-  state.ioDriverUID = 0;
-  state.protocol = 0;
+  state.ioDriverUID = nil;
+  state.protocol = nil;
   state.lineMode = CHAR_LINE_RAW;
-  state.baudRate = 0;
-  state.rxBufferSize = 0;
-  state.txBufferSize = 0;
+  state.baudRate = nil;
+  state.rxBufferSize = nil;
+  state.txBufferSize = nil;
   state.rxBuffer = null;
   state.txBuffer = null;
-  state.rxHead = 0;
-  state.rxTail = 0;
-  state.txHead = 0;
-  state.txTail = 0;
-  state.currentByteCount = 0;
+  state.rxHead = nil;
+  state.rxTail = nil;
+  state.txHead = nil;
+  state.txTail = nil;
+  state.currentByteCount = nil;
   state.currentTransferMode = CHAR_IO_MODE_BLOCKING;
 
   __ReturnOk__();
@@ -138,10 +138,10 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Add
             if(OK(__KernelAllocateMemory__((volatile Addr_t **)&state.rxBuffer, state.rxBufferSize))) {
               /* Allocate TX buffer */
               if(OK(__KernelAllocateMemory__((volatile Addr_t **)&state.txBuffer, state.txBufferSize))) {
-                state.rxHead = 0;
-                state.rxTail = 0;
-                state.txHead = 0;
-                state.txTail = 0;
+                state.rxHead = nil;
+                state.rxTail = nil;
+                state.txHead = nil;
+                state.txTail = nil;
                 state.initialized = true;
 
                 /* Return configured values back to caller */
@@ -213,8 +213,8 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Add
               info->rxBytesAvailable = ioStatus.rxBytesAvailable;
               info->txBytesFree = ioStatus.txBytesFree;
             } else {
-              info->rxBytesAvailable = 0;
-              info->txBytesFree = 0;
+              info->rxBytesAvailable = nil;
+              info->txBytesFree = nil;
             }
           }
 
@@ -246,7 +246,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _read)(Device_t *device_, Size_t *size_, Addr_
   FUNCTION_ENTER;
 
   Byte_t *charData = null;
-  Size_t bytesRead = 0;
+  Size_t bytesRead = nil;
 
   if(__PointerIsNotNull__(size_) && __PointerIsNotNull__(data_) && state.initialized) {
 
@@ -306,7 +306,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _simple_read)(Device_t *device_, Byte_t *data_
 
   if(__PointerIsNotNull__(data_) && state.initialized) {
     Byte_t *byteData = null;
-    Size_t bytesRead = 0;
+    Size_t bytesRead = nil;
 
     /* Set state for single byte read */
     state.currentByteCount = 1;
@@ -401,7 +401,7 @@ static Return_t __CharDeviceReadRAW__(Byte_t **data_,
   Size_t requestSize = (Size_t)state.currentByteCount;
   Byte_t *buffer = null;
   CharIORequest_t *request = null;
-  Size_t configSize = 0;
+  Size_t configSize = nil;
 
   /* Prepare character I/O request from state */
   if(OK(__PrepareCharIORequest__(CHAR_IO_OP_READ, &request, &configSize))) {
@@ -439,7 +439,7 @@ static Return_t __CharDeviceWriteRAW__(const Byte_t *data_) {
 
   Size_t writeSize = (Size_t)state.currentByteCount;
   CharIORequest_t *request = null;
-  Size_t configSize = 0;
+  Size_t configSize = nil;
 
   /* Prepare character I/O request from state */
   if(OK(__PrepareCharIORequest__(CHAR_IO_OP_WRITE, &request, &configSize))) {
@@ -512,20 +512,20 @@ void __CharDeviceStateClear__(void) {
     __KernelFreeMemory__(state.txBuffer);
   }
 
-  state.ioDriverUID = 0;
-  state.protocol = 0;
+  state.ioDriverUID = nil;
+  state.protocol = nil;
   state.lineMode = CHAR_LINE_RAW;
-  state.baudRate = 0;
+  state.baudRate = nil;
   state.initialized = false;
-  state.rxBufferSize = 0;
-  state.txBufferSize = 0;
+  state.rxBufferSize = nil;
+  state.txBufferSize = nil;
   state.rxBuffer = null;
   state.txBuffer = null;
-  state.rxHead = 0;
-  state.rxTail = 0;
-  state.txHead = 0;
-  state.txTail = 0;
-  state.currentByteCount = 0;
+  state.rxHead = nil;
+  state.rxTail = nil;
+  state.txHead = nil;
+  state.txTail = nil;
+  state.currentByteCount = nil;
   state.currentTransferMode = CHAR_IO_MODE_BLOCKING;
 
   return;

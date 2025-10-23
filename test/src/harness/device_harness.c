@@ -521,7 +521,7 @@ static void test_circular_buffer_wraparound(void) {
   writeData = null;
   unit_assert_ok(xMemAlloc((volatile Addr_t **) &writeData, bytesToWrite));
 
-  for(i = 0; i < TEST_DATA_MEDIUM; i++) {
+  for(i = nil; i < TEST_DATA_MEDIUM; i++) {
     ((Byte_t *) writeData)[i] = (Byte_t) (i & 0xFFu);
   }
 
@@ -754,7 +754,7 @@ static void test_large_data_transfers(void) {
   writeData = null;
   unit_assert_ok(xMemAlloc((volatile Addr_t **) &writeData, bytesToWrite));
 
-  for(i = 0; i < TEST_DATA_LARGE; i++) {
+  for(i = nil; i < TEST_DATA_LARGE; i++) {
     ((Byte_t *) writeData)[i] = (Byte_t) (i & 0xFFu);
   }
 
@@ -771,7 +771,7 @@ static void test_large_data_transfers(void) {
   unit_assert_ok(xDeviceRead(LOOPBACK_DEVICE_ID, &bytesRead, &readData));
   unit_assert_equal(bytesRead, TEST_DATA_LARGE);
 
-  for(i = 0; i < TEST_DATA_LARGE; i++) {
+  for(i = nil; i < TEST_DATA_LARGE; i++) {
     if(((Byte_t *) readData)[i] != (Byte_t) (i & 0xFFu)) {
       unit_assert_true(false);
       break;
