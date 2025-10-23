@@ -473,8 +473,15 @@ static Return_t __DefragMemoryRegion__(volatile MemoryRegion_t *region_) {
           nextBlock = cursor->next;
 
 
+          /* Check for integer overflow before merging */
+          if(cursor->size > ((Size_t) -1) - ALIGNED_HEADER_SIZE - nextBlock->size) {
+            /* Overflow would occur - skip this merge */
+            cursor = cursor->next;
+            continue;
+          }
+
           /* Merge the blocks */
-          cursor->size += sizeof(BlockHeader_t) + nextBlock->size;
+          cursor->size += ALIGNED_HEADER_SIZE + nextBlock->size;
           cursor->next = nextBlock->next;
 
 
