@@ -271,6 +271,62 @@ rules:
     enabled: true
     message: "Use OK() macro for checking return status"
 
+  EH-003:
+    category: "Error Handling"
+    severity: "CRITICAL"
+    description: "Variable 'ret' must not be directly accessed - use only FUNCTION_ENTER, FUNCTION_EXIT, and __ReturnOk__()"
+    check_type: "pattern"
+    patterns:
+      # Check for direct assignment to ret (will need to filter out allowed cases)
+      ret_direct_assignment:
+        pattern: '\bret\s*='
+        context:
+          in_function: true
+          not_in_comment: true
+      # Check for direct comparison of ret in conditions
+      ret_direct_comparison:
+        pattern: '(?:if|while|for)\s*\([^)]*\bret\b[^)]*\)'
+        context:
+          in_function: true
+          not_in_comment: true
+      # Check for ret used as function parameter
+      ret_as_parameter:
+        pattern: '\w+\s*\([^)]*\bret\b[^)]*\)'
+        context:
+          in_function: true
+          not_in_comment: true
+    exclude_patterns:
+      - 'FUNCTION_ENTER'
+      - 'FUNCTION_EXIT'
+      - '__ReturnOk__'
+      - 'OK\s*\(\s*ret\s*\)'
+      - 'ERROR\s*\(\s*ret\s*\)'
+    enabled: true
+    message: "Direct access to 'ret' variable detected - use FUNCTION_ENTER, FUNCTION_EXIT, or __ReturnOk__() only"
+    fix_suggestion: "The 'ret' variable should only be modified by FUNCTION_ENTER, FUNCTION_EXIT, and __ReturnOk__() macros"
+
+  EH-004:
+    category: "Error Handling"
+    severity: "CRITICAL"
+    description: "__ReturnError__() macro must not exist or be used"
+    check_type: "pattern"
+    patterns:
+      # Check for __ReturnError__ macro definition
+      return_error_define:
+        pattern: '#define\s+__ReturnError__'
+        context:
+          not_in_comment: true
+          not_in_string: true
+      # Check for __ReturnError__ usage in code
+      return_error_usage:
+        pattern: '__ReturnError__\s*\('
+        context:
+          not_in_comment: true
+          not_in_string: true
+    enabled: true
+    message: "__ReturnError__() macro is prohibited - errors should be indicated by 'ret' remaining as ReturnError from FUNCTION_ENTER"
+    fix_suggestion: "Remove __ReturnError__() - the 'ret' variable is initialized to ReturnError by FUNCTION_ENTER and should be left unchanged for error cases"
+
   # ==========================================
   # AST-Based Code Quality Rules
   # ==========================================
