@@ -12,17 +12,17 @@ HeliOS Embedded Operating System Copyright (C) 2020-2026 HeliOS Project <license
 SPDX-License-Identifier: GPL-2.0-or-later
 
 @description
+HeliOS Source Code Compliance Checker
 Usage:
     ./check [options] [files/directories]
 
 Examples:
-    ./check                    # Check src/ directory with original checker
-    ./check --enhanced         # Check with enhanced checker
+    ./check                    # Check src/ directory
     ./check ../../src/         # Check specific directory
     ./check file.c             # Check single file
     ./check -o json            # Output JSON format
     ./check -o html -f report.html  # Save HTML report
-    ./check --enhanced --confidence-threshold 0.80  # Enhanced with higher confidence
+    ./check --confidence-threshold 0.80  # Higher confidence threshold
 """
 
 import sys
@@ -31,20 +31,8 @@ import os
 # Add current directory to Python path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-# Check if enhanced mode is requested
-if '--enhanced' in sys.argv:
-    # Remove --enhanced from argv for the module
-    sys.argv.remove('--enhanced')
-
-    # Use enhanced rules file by default if not specified
-    if '-r' not in sys.argv and '--rules' not in sys.argv:
-        sys.argv.extend(['-r', 'helios_enhanced.yaml'])
-
-    # Import and run the enhanced checker
-    from check_enhanced import main
-else:
-    # Import and run the original checker
-    from check import main
+# Import and run the checker
+from check import main
 
 if __name__ == '__main__':
     sys.exit(main())
