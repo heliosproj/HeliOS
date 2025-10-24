@@ -162,65 +162,65 @@ Return_t xFSMount(Volume_t **volume_) {
     /* Check if device is already mounted */
     if(__IsDeviceMounted__(CONFIG_FS_BLOCK_DEVICE_UID)) {
       /* Return error by default */
-      FUNCTION_EXIT;
-    }
+      __AssertOnElse__();
+    } else {
+      /* Allocate volume structure in kernel heap memory */
+      if(OK(__KernelAllocateMemory__((volatile Addr_t **) &vol, sizeof(Volume_t)))) {
+        /* Store block device UID for all I/O operations */
+        vol->blockDeviceUID = CONFIG_FS_BLOCK_DEVICE_UID;
+        vol->mounted = false;
 
-    /* Allocate volume structure in kernel heap memory */
-    if(OK(__KernelAllocateMemory__((volatile Addr_t **) &vol, sizeof(Volume_t)))) {
-      /* Store block device UID for all I/O operations */
-      vol->blockDeviceUID = CONFIG_FS_BLOCK_DEVICE_UID;
-      vol->mounted = false;
-
-      /* Read boot sector (sector 0x0) */
-      if(OK(__ReadSector__(vol, nil, &bootSectorData))) {
-        bs = (FAT32BootSector_t *) bootSectorData;
-
-
-        /* Parse boot sector parameters */
-        vol->bytesPerSector = __ReadLE16__(bs->bytesPerSector);
-        vol->sectorsPerCluster = bs->sectorsPerCluster;
-        vol->reservedSectors = __ReadLE16__(bs->reservedSectors);
-        vol->numFATs = bs->numFATs;
-        vol->sectorsPerFAT = __ReadLE32__(bs->FATSize32);
-        vol->rootDirCluster = __ReadLE32__(bs->rootCluster);
+        /* Read boot sector (sector 0x0) */
+        if(OK(__ReadSector__(vol, nil, &bootSectorData))) {
+          bs = (FAT32BootSector_t *) bootSectorData;
 
 
-        /* Calculate FAT and data region start sectors */
-        vol->fatStartSector = vol->reservedSectors;
-        vol->dataStartSector = vol->reservedSectors + (vol->numFATs * vol->sectorsPerFAT);
+          /* Parse boot sector parameters */
+          vol->bytesPerSector = __ReadLE16__(bs->bytesPerSector);
+          vol->sectorsPerCluster = bs->sectorsPerCluster;
+          vol->reservedSectors = __ReadLE16__(bs->reservedSectors);
+          vol->numFATs = bs->numFATs;
+          vol->sectorsPerFAT = __ReadLE32__(bs->FATSize32);
+          vol->rootDirCluster = __ReadLE32__(bs->rootCluster);
 
-        /* Validate FAT32 filesystem */
-        if((vol->bytesPerSector >= 0x200u) && (vol->sectorsPerCluster > nil) && (vol->rootDirCluster >= 0x2u)) {
-          vol->mounted = true;
 
-          /* Add device to mounted list */
-          if(OK(__AddMountedDevice__(CONFIG_FS_BLOCK_DEVICE_UID))) {
-            /* Free boot sector buffer */
-            if(OK(__KernelFreeMemory__(bootSectorData))) {
-              *volume_ = vol;
-              __ReturnOk__();
+          /* Calculate FAT and data region start sectors */
+          vol->fatStartSector = vol->reservedSectors;
+          vol->dataStartSector = vol->reservedSectors + (vol->numFATs * vol->sectorsPerFAT);
+
+          /* Validate FAT32 filesystem */
+          if((vol->bytesPerSector >= 0x200u) && (vol->sectorsPerCluster > nil) && (vol->rootDirCluster >= 0x2u)) {
+            vol->mounted = true;
+
+            /* Add device to mounted list */
+            if(OK(__AddMountedDevice__(CONFIG_FS_BLOCK_DEVICE_UID))) {
+              /* Free boot sector buffer */
+              if(OK(__KernelFreeMemory__(bootSectorData))) {
+                *volume_ = vol;
+                __ReturnOk__();
+              } else {
+                __AssertOnElse__();
+              }
             } else {
+              /* Failed to track mount - cleanup */
+              __KernelFreeMemory__(bootSectorData);
+              __KernelFreeMemory__(vol);
               __AssertOnElse__();
             }
           } else {
-            /* Failed to track mount - cleanup */
+            /* Invalid FAT32 parameters */
             __KernelFreeMemory__(bootSectorData);
             __KernelFreeMemory__(vol);
             __AssertOnElse__();
           }
         } else {
-          /* Invalid FAT32 parameters */
-          __KernelFreeMemory__(bootSectorData);
+          /* Failed to read boot sector */
           __KernelFreeMemory__(vol);
           __AssertOnElse__();
         }
       } else {
-        /* Failed to read boot sector */
-        __KernelFreeMemory__(vol);
         __AssertOnElse__();
       }
-    } else {
-      __AssertOnElse__();
     }
   } else {
     __AssertOnElse__();
@@ -1982,6 +1982,8 @@ static Base_t __ByteCompare__(const Byte_t *s1_, const Byte_t *s2_, Word_t len_)
  * @return        ReturnOK on success, ReturnError on invalid name
  */
 static Return_t __ConvertToFAT83__(const Byte_t *path_, Byte_t *fat83_) {
+  FUNCTION_ENTER;
+
   Word_t i = nil;
   Word_t j = nil;
   Word_t nameLen = nil;
@@ -1990,42 +1992,25 @@ static Return_t __ConvertToFAT83__(const Byte_t *path_, Byte_t *fat83_) {
 
 
   if(__PointerIsNull__(path_) || __PointerIsNull__(fat83_)) {
-    return(ReturnError);
-  }
-
-  /* Initialize output to spaces */
-  for(i = nil; i < 11; i++) {
-    fat83_[i] = ' ';
-  }
-
-  /* Find dot position for extension */
-  for(i = nil; path_[i] != '\0'; i++) {
-    if(path_[i] == '.') {
-      dotPos = &path_[i];
-    }
-  }
-
-  /* Copy name part (up to 8 chars, before dot or end) */
-  nameLen = nil;
-
-  for(i = nil; path_[i] != '\0' && path_[i] != '.' && nameLen < 8; i++) {
-    Byte_t c = path_[i];
-
-
-    /* Convert to uppercase */
-    if((c >= 'a') && (c <= 'z')) {
-      c = c - 'a' + 'A';
+    __AssertOnElse__();
+  } else {
+    /* Initialize output to spaces */
+    for(i = nil; i < 11; i++) {
+      fat83_[i] = ' ';
     }
 
-    fat83_[nameLen++] = c;
-  }
+    /* Find dot position for extension */
+    for(i = nil; path_[i] != '\0'; i++) {
+      if(path_[i] == '.') {
+        dotPos = &path_[i];
+      }
+    }
 
-  /* Copy extension part (up to 3 chars, after dot) */
-  if(__PointerIsNotNull__(dotPos)) {
-    extLen = nil;
+    /* Copy name part (up to 8 chars, before dot or end) */
+    nameLen = nil;
 
-    for(j = 1; dotPos[j] != '\0' && extLen < 3; j++) {
-      Byte_t c = dotPos[j];
+    for(i = nil; path_[i] != '\0' && path_[i] != '.' && nameLen < 8; i++) {
+      Byte_t c = path_[i];
 
 
       /* Convert to uppercase */
@@ -2033,11 +2018,30 @@ static Return_t __ConvertToFAT83__(const Byte_t *path_, Byte_t *fat83_) {
         c = c - 'a' + 'A';
       }
 
-      fat83_[8 + extLen++] = c;
+      fat83_[nameLen++] = c;
     }
+
+    /* Copy extension part (up to 3 chars, after dot) */
+    if(__PointerIsNotNull__(dotPos)) {
+      extLen = nil;
+
+      for(j = 1; dotPos[j] != '\0' && extLen < 3; j++) {
+        Byte_t c = dotPos[j];
+
+
+        /* Convert to uppercase */
+        if((c >= 'a') && (c <= 'z')) {
+          c = c - 'a' + 'A';
+        }
+
+        fat83_[8 + extLen++] = c;
+      }
+    }
+
+    __ReturnOk__();
   }
 
-  return(ReturnOK);
+  FUNCTION_EXIT;
 }
 
 
@@ -2056,6 +2060,8 @@ static Return_t __ConvertToFAT83__(const Byte_t *path_, Byte_t *fat83_) {
  */
 static Return_t __FindDirEntry__(const Volume_t *vol_, Word_t dirCluster_, const Byte_t *name83_, FAT32DirEntry_t *entry_, Word_t *entryCluster_, Word_t *
   entryOffset_) {
+  FUNCTION_ENTER;
+
   Byte_t *clusterData = null;
   FAT32DirEntry_t *fatEntry = null;
   Word_t entriesPerCluster = nil;
@@ -2066,66 +2072,68 @@ static Return_t __FindDirEntry__(const Volume_t *vol_, Word_t dirCluster_, const
 
 
   if(__PointerIsNull__(vol_) || __PointerIsNull__(name83_)) {
-    return(ReturnError);
+    __AssertOnElse__();
+  } else {
+    entriesPerCluster = ((Word_t) vol_->bytesPerSector * vol_->sectorsPerCluster) / sizeof(FAT32DirEntry_t);
+
+    /* Search through directory cluster chain */
+    while(!found && currentCluster < FAT32_EOC_MIN && OK(ret)) {
+      /* Read directory cluster */
+      if(ERROR(__ReadCluster__(vol_, currentCluster, &clusterData))) {
+        __AssertOnElse__();
+      } else {
+        /* Search entries in this cluster */
+        for(entryIdx = nil; entryIdx < entriesPerCluster && !found; entryIdx++) {
+          fatEntry = (FAT32DirEntry_t *) (clusterData + (entryIdx * sizeof(FAT32DirEntry_t)));
+
+          /* Check for end of directory */
+          if(fatEntry->name[0x0] == 0x00u) {
+            __KernelFreeMemory__(clusterData);
+            __AssertOnElse__(); /* Not found */
+            break;
+          }
+
+          /* Skip deleted entries and long filename entries */
+          if((fatEntry->name[0x0] == 0xE5u) || ((fatEntry->attr & FAT_ATTR_LONG_NAME) == FAT_ATTR_LONG_NAME)) {
+            continue;
+          }
+
+          /* Compare filenames */
+          if(__ByteCompare__(fatEntry->name, name83_, 11)) {
+            /* Found it! */
+            if(__PointerIsNotNull__(entry_)) {
+              __memcpy__(entry_, fatEntry, sizeof(FAT32DirEntry_t));
+            }
+
+            if(__PointerIsNotNull__(entryCluster_)) {
+              *entryCluster_ = currentCluster;
+            }
+
+            if(__PointerIsNotNull__(entryOffset_)) {
+              *entryOffset_ = entryIdx * sizeof(FAT32DirEntry_t);
+            }
+
+            __KernelFreeMemory__(clusterData);
+            __ReturnOk__();
+            found = true;
+          }
+        }
+
+        if(!found) {
+          __KernelFreeMemory__(clusterData);
+
+          /* Move to next cluster in chain */
+          if(OK(__GetFATEntry__(vol_, currentCluster, &nextCluster))) {
+            currentCluster = nextCluster;
+          } else {
+            __AssertOnElse__();
+          }
+        }
+      }
+    }
   }
 
-  entriesPerCluster = ((Word_t) vol_->bytesPerSector * vol_->sectorsPerCluster) / sizeof(FAT32DirEntry_t);
-
-  /* Search through directory cluster chain */
-  while(!found && currentCluster < FAT32_EOC_MIN) {
-    /* Read directory cluster */
-    if(ERROR(__ReadCluster__(vol_, currentCluster, &clusterData))) {
-      return(ReturnError);
-    }
-
-    /* Search entries in this cluster */
-    for(entryIdx = nil; entryIdx < entriesPerCluster; entryIdx++) {
-      fatEntry = (FAT32DirEntry_t *) (clusterData + (entryIdx * sizeof(FAT32DirEntry_t)));
-
-      /* Check for end of directory */
-      if(fatEntry->name[0x0] == 0x00u) {
-        __KernelFreeMemory__(clusterData);
-
-        return(ReturnError); /* Not found */
-      }
-
-      /* Skip deleted entries and long filename entries */
-      if((fatEntry->name[0x0] == 0xE5u) || ((fatEntry->attr & FAT_ATTR_LONG_NAME) == FAT_ATTR_LONG_NAME)) {
-        continue;
-      }
-
-      /* Compare filenames */
-      if(__ByteCompare__(fatEntry->name, name83_, 11)) {
-        /* Found it! */
-        if(__PointerIsNotNull__(entry_)) {
-          __memcpy__(entry_, fatEntry, sizeof(FAT32DirEntry_t));
-        }
-
-        if(__PointerIsNotNull__(entryCluster_)) {
-          *entryCluster_ = currentCluster;
-        }
-
-        if(__PointerIsNotNull__(entryOffset_)) {
-          *entryOffset_ = entryIdx * sizeof(FAT32DirEntry_t);
-        }
-
-        __KernelFreeMemory__(clusterData);
-
-        return(ReturnOK);
-      }
-    }
-
-    __KernelFreeMemory__(clusterData);
-
-    /* Move to next cluster in chain */
-    if(OK(__GetFATEntry__(vol_, currentCluster, &nextCluster))) {
-      currentCluster = nextCluster;
-    } else {
-      return(ReturnError);
-    }
-  }
-
-  return(ReturnError); /* Not found */
+  FUNCTION_EXIT;
 }
 
 
@@ -2145,6 +2153,8 @@ static Return_t __FindDirEntry__(const Volume_t *vol_, Word_t dirCluster_, const
  */
 static Return_t __FindFileByPath__(const Volume_t *vol_, const Byte_t *path_, FAT32DirEntry_t *entry_, Word_t *parentCluster_, Word_t *entryCluster_, Word_t *
   entryOffset_) {
+  FUNCTION_ENTER;
+
   Byte_t name83[11];
   Byte_t component[256];
   Word_t pathIdx = nil;
@@ -2152,93 +2162,95 @@ static Return_t __FindFileByPath__(const Volume_t *vol_, const Byte_t *path_, FA
   Word_t currentCluster = nil;
   FAT32DirEntry_t dirEntry;
   Return_t result = ReturnError;
+  Base_t pathDone = false;
 
 
   if(__PointerIsNull__(vol_) || __PointerIsNull__(path_)) {
-    return(ReturnError);
-  }
+    __AssertOnElse__();
+  } else {
+    /* Start at root directory */
+    currentCluster = vol_->rootDirCluster;
 
-  /* Start at root directory */
-  currentCluster = vol_->rootDirCluster;
-
-  /* Skip leading slash if present */
-  if(path_[0] == '/') {
-    pathIdx = 1;
-  }
-
-  /* If path is just "/" or empty, return root directory info */
-  if(path_[pathIdx] == '\0') {
-    if(__PointerIsNotNull__(entry_)) {
-      __memset__(entry_, 0x00u, sizeof(FAT32DirEntry_t));
-      entry_->attr = FAT_ATTR_DIRECTORY;
+    /* Skip leading slash if present */
+    if(path_[0] == '/') {
+      pathIdx = 1;
     }
 
-    if(__PointerIsNotNull__(parentCluster_)) {
-      *parentCluster_ = currentCluster;
-    }
-
-    if(__PointerIsNotNull__(entryCluster_)) {
-      *entryCluster_ = currentCluster;
-    }
-
-    if(__PointerIsNotNull__(entryOffset_)) {
-      *entryOffset_ = nil;
-    }
-
-    return(ReturnOK);
-  }
-
-  /* Parse path components and traverse directories */
-  while(path_[pathIdx] != '\0') {
-    /* Extract next component */
-    componentIdx = nil;
-
-    while(path_[pathIdx] != '\0' && path_[pathIdx] != '/' && componentIdx < 255) {
-      component[componentIdx++] = path_[pathIdx++];
-    }
-
-    component[componentIdx] = '\0';
-
-    /* Skip slash */
-    if(path_[pathIdx] == '/') {
-      pathIdx++;
-    }
-
-    /* Convert component to 8.3 format */
-    if(ERROR(__ConvertToFAT83__(component, name83))) {
-      return(ReturnError);
-    }
-
-    /* Search for this component in current directory */
-    result = __FindDirEntry__(vol_, currentCluster, name83, &dirEntry, entryCluster_, entryOffset_);
-
-    if(ERROR(result)) {
-      return(ReturnError); /* Component not found */
-    }
-
-    /* If this is the last component, we're done */
+    /* If path is just "/" or empty, return root directory info */
     if(path_[pathIdx] == '\0') {
       if(__PointerIsNotNull__(entry_)) {
-        __memcpy__(entry_, &dirEntry, sizeof(FAT32DirEntry_t));
+        __memset__(entry_, 0x00u, sizeof(FAT32DirEntry_t));
+        entry_->attr = FAT_ATTR_DIRECTORY;
       }
 
       if(__PointerIsNotNull__(parentCluster_)) {
         *parentCluster_ = currentCluster;
       }
 
-      return(ReturnOK);
-    }
+      if(__PointerIsNotNull__(entryCluster_)) {
+        *entryCluster_ = currentCluster;
+      }
 
-    /* Otherwise, move into this directory (must be a directory) */
-    if((dirEntry.attr & FAT_ATTR_DIRECTORY) == 0x0) {
-      return(ReturnError); /* Not a directory, can't traverse further */
-    }
+      if(__PointerIsNotNull__(entryOffset_)) {
+        *entryOffset_ = nil;
+      }
 
-    /* Update parent and current cluster for next iteration */
-    currentCluster = ((Word_t) __ReadLE16__(dirEntry.firstClusterHigh) << 0x10) | __ReadLE16__(dirEntry.firstClusterLow);
+      __ReturnOk__();
+    } else {
+      /* Parse path components and traverse directories */
+      while(path_[pathIdx] != '\0' && !pathDone && OK(ret)) {
+        /* Extract next component */
+        componentIdx = nil;
+
+        while(path_[pathIdx] != '\0' && path_[pathIdx] != '/' && componentIdx < 255) {
+          component[componentIdx++] = path_[pathIdx++];
+        }
+
+        component[componentIdx] = '\0';
+
+        /* Skip slash */
+        if(path_[pathIdx] == '/') {
+          pathIdx++;
+        }
+
+        /* Convert component to 8.3 format */
+        if(ERROR(__ConvertToFAT83__(component, name83))) {
+          __AssertOnElse__();
+        } else {
+          /* Search for this component in current directory */
+          result = __FindDirEntry__(vol_, currentCluster, name83, &dirEntry, entryCluster_, entryOffset_);
+
+          if(ERROR(result)) {
+            __AssertOnElse__(); /* Component not found */
+          } else {
+            /* If this is the last component, we're done */
+            if(path_[pathIdx] == '\0') {
+              if(__PointerIsNotNull__(entry_)) {
+                __memcpy__(entry_, &dirEntry, sizeof(FAT32DirEntry_t));
+              }
+
+              if(__PointerIsNotNull__(parentCluster_)) {
+                *parentCluster_ = currentCluster;
+              }
+
+              __ReturnOk__();
+              pathDone = true;
+            } else {
+              /* Otherwise, move into this directory (must be a directory) */
+              if((dirEntry.attr & FAT_ATTR_DIRECTORY) == 0x0) {
+                __AssertOnElse__(); /* Not a directory, can't traverse further */
+              } else {
+                /* Update parent and current cluster for next iteration */
+                currentCluster = ((Word_t) __ReadLE16__(dirEntry.firstClusterHigh) << 0x10) | __ReadLE16__(dirEntry.firstClusterLow);
+              }
+            }
+          }
+        }
+      }
+    }
   }
 
-  return(result);
+  FUNCTION_EXIT;
 }
 
 
