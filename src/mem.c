@@ -55,8 +55,8 @@ static Return_t __DetectByteOrder__(ByteOrder_t *order_);
 static Word_t __checksum__(const BlockHeader_t *header_);
 
 
+/* GOOD - DO NOT TOUCH */
 static Word_t __checksum__(const BlockHeader_t *header_) {
-  /* GOOD - DO NOT TOUCH */
   Word_t sum1 = 0xFFFFu;
   Word_t sum2 = 0xFFFFu;
   Word_t temp;
@@ -303,6 +303,7 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
 }
 
 
+/* GOOD - DO NOT TOUCH!! */
 static Return_t __free__(volatile MemoryRegion_t *region_, const volatile Addr_t *addr_) {
   FUNCTION_ENTER;
 
@@ -346,51 +347,68 @@ static Return_t __free__(volatile MemoryRegion_t *region_, const volatile Addr_t
 }
 
 
+/* GOOD - DO NOT TOUCH!! */
 static Return_t __DefragMemoryRegion__(volatile MemoryRegion_t *region_) {
   FUNCTION_ENTER;
 
 
   BlockHeader_t *cursor = null;
   BlockHeader_t *nextBlock = null;
-  Base_t merged = true;
-  Base_t cycleDetected = false;
   Size_t traversedSize = nil;
+  Size_t mergedSize = nil;
+  Base_t headForExit = false;
 
 
   if(__PointerIsNotNull__(region_)) {
-    while(merged && !cycleDetected) {
-      merged = false;
-      cursor = region_->first;
-      traversedSize = nil;
+    cursor = region_->first;
+    traversedSize = nil;
 
-      while(__PointerIsNotNull__(cursor) && __PointerIsNotNull__(cursor->next) && !cycleDetected) {
-        if(traversedSize > MEMORY_REGION_SIZE - ALIGNED_HEADER_SIZE - cursor->size) {
-          cycleDetected = true;
-        } else {
+    while(__PointerIsNotNull__(cursor) && !headForExit) {
+      if(traversedSize <= MEMORY_REGION_SIZE - ALIGNED_HEADER_SIZE - cursor->size) {
+        if(OK(__ValidateBlockHeader__(cursor, region_))) {
           traversedSize += ALIGNED_HEADER_SIZE + cursor->size;
 
-          if(__BlockHeaderIsFree__(cursor) && __BlockHeaderIsFree__(cursor->next)) {
-            nextBlock = cursor->next;
+          if(__BlockHeaderIsFree__(cursor) && __PointerIsNotNull__(cursor->next)) {
+            while(__PointerIsNotNull__(cursor->next) && __BlockHeaderIsFree__(cursor->next) && !headForExit) {
+              nextBlock = cursor->next;
 
-            if(cursor->size > ((Size_t) -1) - ALIGNED_HEADER_SIZE - nextBlock->size) {
-              cursor = cursor->next;
-              continue;
+              if(OK(__ValidateBlockHeader__(nextBlock, region_))) {
+                if(cursor->size <= ((Size_t) -1) - ALIGNED_HEADER_SIZE - nextBlock->size) {
+                  mergedSize = ALIGNED_HEADER_SIZE + nextBlock->size;
+
+                  if(traversedSize + mergedSize <= MEMORY_REGION_SIZE) {
+                    cursor->size += ALIGNED_HEADER_SIZE + nextBlock->size;
+                    cursor->next = nextBlock->next;
+                    cursor->checksum = __checksum__(cursor);
+                    traversedSize += mergedSize;
+                  } else {
+                    headForExit = true;
+                    __AssertOnElse__();
+                  }
+                } else {
+                  break;
+                }
+              } else {
+                headForExit = true;
+                __AssertOnElse__();
+              }
             }
+          }
 
-            cursor->size += ALIGNED_HEADER_SIZE + nextBlock->size;
-            cursor->next = nextBlock->next;
-            cursor->checksum = __checksum__(cursor);
-            merged = true;
-          } else {
+          if(!headForExit) {
             cursor = cursor->next;
           }
+        } else {
+          headForExit = true;
+          __AssertOnElse__();
         }
+      } else {
+        headForExit = true;
+        __AssertOnElse__();
       }
     }
 
-    if(cycleDetected) {
-      __AssertOnElse__();
-    } else {
+    if(!headForExit) {
       __ReturnOk__();
     }
   } else {
@@ -401,6 +419,7 @@ static Return_t __DefragMemoryRegion__(volatile MemoryRegion_t *region_) {
 }
 
 
+/* GOOD - DO NOT TOUCH!! */
 Return_t xMemAlloc(volatile Addr_t **addr_, const Size_t size_) {
   FUNCTION_ENTER;
 
@@ -414,6 +433,7 @@ Return_t xMemAlloc(volatile Addr_t **addr_, const Size_t size_) {
 }
 
 
+/* GOOD - DO NOT TOUCH!! */
 Return_t xMemFree(const volatile Addr_t *addr_) {
   FUNCTION_ENTER;
 
@@ -427,6 +447,7 @@ Return_t xMemFree(const volatile Addr_t *addr_) {
 }
 
 
+/* GOOD - DO NOT TOUCH!! */
 Return_t xMemFreeAll(void) {
   FUNCTION_ENTER;
 
@@ -440,6 +461,7 @@ Return_t xMemFreeAll(void) {
 }
 
 
+/* GOOD - DO NOT TOUCH!! */
 Return_t xMemGetUsed(Size_t *size_) {
   FUNCTION_ENTER;
 
@@ -447,29 +469,27 @@ Return_t xMemGetUsed(Size_t *size_) {
   BlockHeader_t *cursor = null;
   Size_t used = nil;
   Size_t traversedSize = nil;
-  Base_t cycleDetected = false;
 
 
   if(__PointerIsNotNull__(size_)) {
     cursor = heap.first;
 
-    while(__PointerIsNotNull__(cursor) && !cycleDetected) {
+    while(__PointerIsNotNull__(cursor)) {
       if(traversedSize > MEMORY_REGION_SIZE - ALIGNED_HEADER_SIZE - cursor->size) {
-        cycleDetected = true;
-      } else {
-        traversedSize += ALIGNED_HEADER_SIZE + cursor->size;
-
-        if(__BlockHeaderIsInUse__(cursor)) {
-          used += cursor->size + ALIGNED_HEADER_SIZE;
-        }
-
-        cursor = cursor->next;
+        __AssertOnElse__();
+        break;
       }
+
+      traversedSize += ALIGNED_HEADER_SIZE + cursor->size;
+
+      if(__BlockHeaderIsInUse__(cursor)) {
+        used += cursor->size + ALIGNED_HEADER_SIZE;
+      }
+
+      cursor = cursor->next;
     }
 
-    if(cycleDetected) {
-      __AssertOnElse__();
-    } else {
+    if(__PointerIsNull__(cursor)) {
       *size_ = used;
       __ReturnOk__();
     }
@@ -481,6 +501,7 @@ Return_t xMemGetUsed(Size_t *size_) {
 }
 
 
+/* GOOD - DO NOT TOUCH!! */
 Return_t xMemGetSize(const volatile Addr_t *addr_, Size_t *size_) {
   FUNCTION_ENTER;
 
@@ -509,6 +530,7 @@ Return_t xMemGetSize(const volatile Addr_t *addr_, Size_t *size_) {
 }
 
 
+/* GOOD - DO NOT TOUCH!! */
 Return_t __KernelAllocateMemory__(volatile Addr_t **addr_, const Size_t size_) {
   FUNCTION_ENTER;
 
@@ -526,6 +548,7 @@ Return_t __KernelAllocateMemory__(volatile Addr_t **addr_, const Size_t size_) {
 }
 
 
+/* GOOD - DO NOT TOUCH!! */
 Return_t __KernelFreeMemory__(const volatile Addr_t *addr_) {
   FUNCTION_ENTER;
 
@@ -539,6 +562,7 @@ Return_t __KernelFreeMemory__(const volatile Addr_t *addr_) {
 }
 
 
+/* GOOD - DO NOT TOUCH!! */
 Return_t __HeapAllocateMemory__(volatile Addr_t **addr_, const Size_t size_) {
   FUNCTION_ENTER;
 
@@ -556,6 +580,7 @@ Return_t __HeapAllocateMemory__(volatile Addr_t **addr_, const Size_t size_) {
 }
 
 
+/* GOOD - DO NOT TOUCH!! */
 Return_t __HeapFreeMemory__(const volatile Addr_t *addr_) {
   FUNCTION_ENTER;
 
@@ -569,6 +594,7 @@ Return_t __HeapFreeMemory__(const volatile Addr_t *addr_) {
 }
 
 
+/* GOOD - DO NOT TOUCH */
 static Return_t __MemGetRegionStats__(const volatile MemoryRegion_t *region_, MemoryRegionStats_t **stats_) {
   FUNCTION_ENTER;
 
@@ -580,18 +606,14 @@ static Return_t __MemGetRegionStats__(const volatile MemoryRegion_t *region_, Me
   Word_t freeBlocks = nil;
   Word_t availableBytes = nil;
   Size_t traversedSize = nil;
-  Base_t cycleDetected = false;
 
 
   if(__PointerIsNotNull__(region_) && __PointerIsNotNull__(stats_)) {
     if(OK(xMemAlloc((volatile Addr_t **) &stats, sizeof(MemoryRegionStats_t)))) {
       cursor = region_->first;
 
-      while(__PointerIsNotNull__(cursor) && !cycleDetected) {
-        if(traversedSize > MEMORY_REGION_SIZE - ALIGNED_HEADER_SIZE - cursor->size) {
-          xMemFree((const volatile Addr_t *) stats);
-          cycleDetected = true;
-        } else {
+      while(__PointerIsNotNull__(cursor)) {
+        if(traversedSize <= MEMORY_REGION_SIZE - ALIGNED_HEADER_SIZE - cursor->size) {
           traversedSize += ALIGNED_HEADER_SIZE + cursor->size;
 
           if(__BlockHeaderIsFree__(cursor)) {
@@ -608,12 +630,16 @@ static Return_t __MemGetRegionStats__(const volatile MemoryRegion_t *region_, Me
           }
 
           cursor = cursor->next;
+        } else {
+          xMemFree((const volatile Addr_t *) stats);
+          __HeapFreeMemory__((const volatile Addr_t *) stats);
+          stats = null;
+          __AssertOnElse__();
+          break;
         }
       }
 
-      if(cycleDetected) {
-        __AssertOnElse__();
-      } else {
+      if(__PointerIsNotNull__(stats)) {
         stats->largestFreeEntryInBytes = largestFree;
         stats->smallestFreeEntryInBytes = (smallestFree == (Word_t) -1) ? 0 : smallestFree;
         stats->numberOfFreeBlocks = freeBlocks;
@@ -635,6 +661,7 @@ static Return_t __MemGetRegionStats__(const volatile MemoryRegion_t *region_, Me
 }
 
 
+/* GOOD - DO NOT TOUCH */
 Return_t xMemGetHeapStats(MemoryRegionStats_t **stats_) {
   FUNCTION_ENTER;
 
@@ -648,6 +675,7 @@ Return_t xMemGetHeapStats(MemoryRegionStats_t **stats_) {
 }
 
 
+/* GOOD - DO NOT TOUCH */
 Return_t xMemGetKernelStats(MemoryRegionStats_t **stats_) {
   FUNCTION_ENTER;
 
@@ -661,6 +689,7 @@ Return_t xMemGetKernelStats(MemoryRegionStats_t **stats_) {
 }
 
 
+/* GOOD - DO NOT TOUCH */
 Return_t __memcpy__(const volatile Addr_t *dest_, const volatile Addr_t *src_, const Size_t size_) {
   FUNCTION_ENTER;
 
@@ -687,6 +716,7 @@ Return_t __memcpy__(const volatile Addr_t *dest_, const volatile Addr_t *src_, c
 }
 
 
+/* GOOD - DO NOT TOUCH */
 Return_t __memset__(const volatile Addr_t *dest_, const Byte_t val_, const Size_t size_) {
   FUNCTION_ENTER;
 
@@ -711,6 +741,7 @@ Return_t __memset__(const volatile Addr_t *dest_, const Byte_t val_, const Size_
 }
 
 
+/* GOOD - DO NOT TOUCH */
 Return_t __memcmp__(const volatile Addr_t *s1_, const volatile Addr_t *s2_, const Size_t size_, Base_t *res_) {
   FUNCTION_ENTER;
 
@@ -744,6 +775,7 @@ Return_t __memcmp__(const volatile Addr_t *s1_, const volatile Addr_t *s2_, cons
 }
 
 
+/* GOOD - DO NOT TOUCH */
 static Return_t __DetectByteOrder__(ByteOrder_t *order_) {
   FUNCTION_ENTER;
 
