@@ -1,11 +1,20 @@
-# HeliOS Unified Rules Configuration
-# Report-Only Compliance Checker Rules
-# All rule logic is defined in this YAML file
+# UNCRUSTIFY-OFF
+# @file helios.yaml
+# @author Manny Peterson <manny@heliosproj.org>
+# @brief HeliOS Source Code Rules for Source Code Compliance Checker
+# @version 0.5.0
+# @date 2025-10-24
+#
+# @copyright
+# HeliOS Embedded Operating System Copyright (C) 2020-2026 HeliOS Project <license@heliosproj.org>
+#
+# SPDX-License-Identifier: GPL-2.0-or-later
+#
 
 metadata:
   version: "3.0"
   description: "Unified HeliOS coding standards - fully YAML-driven"
-  last_updated: "2024-10-24"
+  last_updated: "2025-10-24"
 
 # Global configuration
 config:

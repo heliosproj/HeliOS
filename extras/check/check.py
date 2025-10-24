@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
 """
-HeliOS Compliance Checker - Report-Only Version
-A sophisticated static analysis tool for coding standards enforcement
+@file check.py
+@author Manny Peterson <manny@heliosproj.org>
+@brief HeliOS Source Code Compliance Checker
+@version 0.5.0
+@date 2025-10-24
 
-Features:
-- YAML-driven rule engine
-- AST and regex-based parsing
-- Multi-level caching for performance
-- Parallel processing
-- Detailed violation reporting
-- No auto-fix functionality (report-only)
+@copyright
+HeliOS Embedded Operating System Copyright (C) 2020-2026 HeliOS Project <license@heliosproj.org>
+
+SPDX-License-Identifier: GPL-2.0-or-later
+
 """
 
 import os
