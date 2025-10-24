@@ -37,8 +37,6 @@
 #if !defined(CONFIG_FS_MAX_PATH_LENGTH)
   #define CONFIG_FS_MAX_PATH_LENGTH 256u
 #endif /* if !defined(CONFIG_FS_MAX_PATH_LENGTH) */
-
-
 /* Console state */
 static ConsoleState_t consoleState;
 static Volume_t *mountedVolume = null;
@@ -125,14 +123,19 @@ static const ConsoleCommand_t commandTable[] = {{
 
 /* ============================================================================
  * String and Path Utility Functions (used only by console)
- * ============================================================================ */
+ * ============================================================================
+ */
 
 #if defined(UNIT_TEST_COLORIZE)
-/* Make functions non-static when building tests so test harness can test them */
-#define STATIC_UNLESS_TEST
-#else
-#define STATIC_UNLESS_TEST static
-#endif
+
+
+/* Make functions non-static when building tests so test harness can test them
+ */
+  #define STATIC_UNLESS_TEST
+#else  /* if defined(UNIT_TEST_COLORIZE) */
+  #define STATIC_UNLESS_TEST static
+#endif /* if defined(UNIT_TEST_COLORIZE) */
+
 
 STATIC_UNLESS_TEST Size_t __strlen__(const Byte_t *str_) {
   Size_t len = nil;

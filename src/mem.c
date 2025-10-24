@@ -121,12 +121,21 @@ static Return_t __ValidateBlockHeader__(const BlockHeader_t *header_, const vola
       if((header_->free == FREE) || (header_->free == INUSE)) {
         __ReturnOk__();
       } else {
+#if !defined(POSIX_ARCH_OTHER)
+          __SetFlag__(MEMFAULT);
+#endif /* if !defined(POSIX_ARCH_OTHER) */
         __AssertOnElse__();
       }
     } else {
+#if !defined(POSIX_ARCH_OTHER)
+        __SetFlag__(MEMFAULT);
+#endif /* if !defined(POSIX_ARCH_OTHER) */
       __AssertOnElse__();
     }
   } else {
+#if !defined(POSIX_ARCH_OTHER)
+      __SetFlag__(MEMFAULT);
+#endif /* if !defined(POSIX_ARCH_OTHER) */
     __AssertOnElse__();
   }
 
