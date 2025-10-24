@@ -1,6 +1,8 @@
 /.vscode/**
 /test/bin/**
 /.claude/**
+/extras/check/__pycache__/**
+/extras/check/.helios_cache/**
 !.gitignore
 !.gitattributes
 !/.vscode/settings.json

@@ -1,0 +1,440 @@
+# HeliOS Unified Rules Configuration
+# Report-Only Compliance Checker Rules
+# All rule logic is defined in this YAML file
+
+metadata:
+  version: "3.0"
+  description: "Unified HeliOS coding standards - fully YAML-driven"
+  last_updated: "2024-10-24"
+
+# Global configuration
+config:
+  max_function_complexity: 15
+  max_function_lines: 200
+  max_file_lines: 2000
+  enable_caching: true
+  parallel_processing: true
+
+# Rule definitions
+rules:
+
+  # ==========================================
+  # Function Structure Rules (Built-in)
+  # ==========================================
+
+  FS-001-ENTER:
+    category: "Function Structure"
+    severity: "CRITICAL"
+    description: "Functions must have FUNCTION_ENTER macro"
+    check_type: "builtin"
+    builtin_type: "function_structure"
+    require_enter: true
+    require_exit: false
+    enabled: true
+    fix_suggestion: "Add 'FUNCTION_ENTER;' after opening brace"
+    message: "Function missing FUNCTION_ENTER macro"
+
+  FS-001-EXIT:
+    category: "Function Structure"
+    severity: "CRITICAL"
+    description: "Functions must have FUNCTION_EXIT macro"
+    check_type: "builtin"
+    builtin_type: "function_structure"
+    require_enter: false
+    require_exit: true
+    enabled: true
+    fix_suggestion: "Add 'FUNCTION_EXIT;' before closing brace"
+    message: "Function missing FUNCTION_EXIT macro"
+
+  FS-002:
+    category: "Function Structure"
+    severity: "CRITICAL"
+    description: "No early returns except through allowed macros"
+    check_type: "builtin"
+    builtin_type: "early_returns"
+    allowed_patterns:
+      - "__ReturnOk__"
+      - "__ReturnWithError__"
+      - "__ReturnWithValue__"
+    enabled: true
+    message: "Early return detected - use __ReturnOk__() or similar macros"
+    fix_suggestion: "Replace return with __ReturnOk__() or restructure logic"
+
+  FS-003:
+    category: "Function Structure"
+    severity: "IMPORTANT"
+    description: "Public API functions must return Return_t"
+    check_type: "pattern"
+    patterns:
+      public_api: '^Return_t\s+x[A-Z][a-zA-Z0-9_]*\s*\('
+    enabled: true
+    message: "Public API function should return Return_t"
+
+  FS-004:
+    category: "Function Structure"
+    severity: "RECOMMENDED"
+    description: "Function complexity should not exceed maximum"
+    check_type: "semantic"
+    max_complexity: 15
+    enabled: true
+    fix_suggestion: "Refactor function into smaller, more focused functions"
+
+  FS-005:
+    category: "Function Structure"
+    severity: "RECOMMENDED"
+    description: "Functions should not exceed maximum lines"
+    check_type: "semantic"
+    max_lines: 200
+    enabled: true
+    fix_suggestion: "Split function into smaller functions"
+
+  # ==========================================
+  # Parameter Naming Rules (Built-in)
+  # ==========================================
+
+  PN-001:
+    category: "Naming Convention"
+    severity: "IMPORTANT"
+    description: "Function parameters must end with underscore"
+    check_type: "builtin"
+    builtin_type: "parameter_naming"
+    require_suffix: "_"
+    exclude_types:
+      - "void"
+      - "..."
+      - "(*)"  # Function pointers
+    enabled: true
+    fix_suggestion: "Add underscore suffix to parameter name"
+
+  # ==========================================
+  # Naming Convention Rules (Pattern)
+  # ==========================================
+
+  NC-001:
+    category: "Naming Convention"
+    severity: "IMPORTANT"
+    description: "Macros must use double underscores and ALL_CAPS"
+    check_type: "pattern"
+    patterns:
+      macro_define: '#define\s+__[A-Z_]+__'
+    enabled: true
+    message: "Macro should use __ALL_CAPS__ naming"
+
+  NC-002:
+    category: "Naming Convention"
+    severity: "IMPORTANT"
+    description: "Static functions must use double underscore prefix/suffix"
+    check_type: "pattern"
+    patterns:
+      static_function: 'static\s+\w+\s+__[a-zA-Z][a-zA-Z0-9_]*__\s*\('
+    enabled: true
+    message: "Static function should use __Name__ format"
+
+  NC-003:
+    category: "Naming Convention"
+    severity: "IMPORTANT"
+    description: "Public API functions must start with 'x'"
+    check_type: "pattern"
+    patterns:
+      public_api: '^Return_t\s+x[A-Z]'
+    enabled: true
+    message: "Public API function should start with 'x'"
+
+  NC-004:
+    category: "Naming Convention"
+    severity: "RECOMMENDED"
+    description: "Type definitions should end with _t"
+    check_type: "pattern"
+    patterns:
+      typedef: 'typedef\s+(?:struct|enum|union).*\}\s*(\w+_t);'
+    enabled: true
+    message: "Type definition should end with '_t'"
+
+  # ==========================================
+  # Memory Management Rules
+  # ==========================================
+
+  MM-001:
+    category: "Memory Management"
+    severity: "CRITICAL"
+    description: "Pointer parameters must be checked for NULL"
+    check_type: "pattern"
+    patterns:
+      pointer_check: '__PointerIs(?:Not)?Null__\('
+    enabled: true
+    message: "Pointer should be checked with __PointerIsNull__ or __PointerIsNotNull__"
+    fix_suggestion: "Add __PointerIsNotNull__(ptr_) check before using pointer"
+
+  MM-002:
+    category: "Memory Management"
+    severity: "CRITICAL"
+    description: "Memory allocation must be checked"
+    check_type: "pattern"
+    patterns:
+      alloc_check: '__(?:Kernel|Heap)AllocateMemory__.*if\s*\(\s*OK\s*\('
+    enabled: true
+    message: "Memory allocation should be checked with OK() macro"
+
+  MM-003:
+    category: "Memory Management"
+    severity: "CRITICAL"
+    description: "MEMFAULT flag must be set before memory error handling"
+    check_type: "pattern"
+    patterns:
+      memfault_before_assert: '__SetFlag__\(MEMFAULT\).*__AssertOnElse__'
+    context: "memory error handling"
+    enabled: true
+    message: "Set MEMFAULT flag before __AssertOnElse__ in memory operations"
+
+  MM-004:
+    category: "Memory Management"
+    severity: "CRITICAL"
+    description: "Allocated memory must be freed"
+    check_type: "pattern"
+    patterns:
+      allocate: '__(?:Kernel|Heap)AllocateMemory__'
+      free: '__(?:Kernel|Heap)FreeMemory__'
+    enabled: true
+    message: "Allocated memory should be freed before function exit"
+
+  # ==========================================
+  # Error Handling Rules
+  # ==========================================
+
+  EH-001:
+    category: "Error Handling"
+    severity: "IMPORTANT"
+    description: "Error conditions should use __AssertOnElse__"
+    check_type: "pattern"
+    patterns:
+      else_assert: 'else\s*\{[^}]*__AssertOnElse__'
+    enabled: true
+    message: "Use __AssertOnElse__() in error handling paths"
+
+  EH-002:
+    category: "Error Handling"
+    severity: "IMPORTANT"
+    description: "Use OK() macro for status checks"
+    check_type: "pattern"
+    patterns:
+      ok_macro: 'if\s*\(\s*OK\s*\('
+    enabled: true
+    message: "Use OK() macro for checking return status"
+
+  # ==========================================
+  # Code Quality Rules
+  # ==========================================
+
+  CQ-001:
+    category: "Code Quality"
+    severity: "RECOMMENDED"
+    description: "Variables should be initialized"
+    check_type: "pattern"
+    patterns:
+      initialized: '=\s*(?:nil|null|false|true|0|NULL)'
+    enabled: true
+    message: "Initialize variables at declaration"
+
+  CQ-002:
+    category: "Code Quality"
+    severity: "RECOMMENDED"
+    description: "Use descriptive cursor for linked list operations"
+    check_type: "pattern"
+    patterns:
+      cursor_usage: '\bcursor\s*='
+    context: "linked list operations"
+    enabled: true
+    message: "Use 'cursor' variable name for list traversal"
+
+  CQ-003:
+    category: "Code Quality"
+    severity: "INFO"
+    description: "Add comments for memory cleanup"
+    check_type: "pattern"
+    patterns:
+      cleanup_comment: '/\*.*(?:Free|Clean|Release).*memory.*\*/'
+    enabled: true
+    message: "Add comment before memory cleanup operations"
+
+  # ==========================================
+  # Concurrency Rules
+  # ==========================================
+
+  CN-001:
+    category: "Concurrency"
+    severity: "CRITICAL"
+    description: "Critical sections must disable/enable interrupts"
+    check_type: "pattern"
+    patterns:
+      disable_interrupts: '__DisableInterrupts__\(\)'
+      enable_interrupts: '__EnableInterrupts__\(\)'
+    enabled: true
+    message: "Critical section should use interrupt disable/enable"
+
+  CN-002:
+    category: "Concurrency"
+    severity: "IMPORTANT"
+    description: "Shared data should be volatile"
+    check_type: "pattern"
+    patterns:
+      volatile_shared: 'static\s+volatile'
+    enabled: true
+    message: "Shared data should be declared volatile"
+
+  # ==========================================
+  # Magic Numbers and Constants
+  # ==========================================
+
+  MN-001:
+    category: "Magic Numbers"
+    severity: "RECOMMENDED"
+    description: "Avoid magic numbers"
+    check_type: "pattern"
+    patterns:
+      magic_number: '(?<![x0-9a-fA-F])[2-9]\d{2,}(?![0-9a-fA-F])'
+    exclude_patterns:
+      - '#define'
+      - 'case\s+'
+      - '//.*'
+      - '/\*.*\*/'
+    enabled: true
+    message: "Define magic number as a named constant"
+    fix_suggestion: "Create a #define or const for this value"
+
+  # ==========================================
+  # Conditional Compilation Rules
+  # ==========================================
+
+  CC-001:
+    category: "Conditional Compilation"
+    severity: "IMPORTANT"
+    description: "Conditional compilation blocks should have endif comments"
+    check_type: "pattern"
+    patterns:
+      ifdef: '#if(?:def|ndef)?\s+'
+      endif_comment: '#endif\s*/\*.*\*/'
+    enabled: true
+    message: "Add comment to #endif to identify matching #ifdef"
+
+  CC-002:
+    category: "Conditional Compilation"
+    severity: "RECOMMENDED"
+    description: "Avoid nested conditional compilation"
+    check_type: "pattern"
+    patterns:
+      nested_ifdef: '#ifdef.*#ifdef'
+    enabled: true
+    message: "Avoid deeply nested conditional compilation"
+
+  # ==========================================
+  # Safety and Security Rules
+  # ==========================================
+
+  SF-001:
+    category: "Safety"
+    severity: "CRITICAL"
+    description: "Buffer overflow checks required"
+    check_type: "pattern"
+    patterns:
+      overflow_check: '__SetFlag__\(OVERFLOW\)'
+    context: "arithmetic operations"
+    enabled: true
+    message: "Check for buffer/integer overflow"
+
+  SF-002:
+    category: "Security"
+    severity: "CRITICAL"
+    description: "Validate input parameters"
+    check_type: "pattern"
+    patterns:
+      validation: '__Validate(?:Input|Parameter|Range)__'
+    enabled: true
+    message: "Validate input parameters before use"
+
+  # ==========================================
+  # Documentation Rules
+  # ==========================================
+
+  DC-001:
+    category: "Documentation"
+    severity: "RECOMMENDED"
+    description: "Functions should have documentation header"
+    check_type: "pattern"
+    patterns:
+      doc_header: '/\*\*.*\*/'
+    enabled: true
+    message: "Add documentation header for function"
+
+  DC-002:
+    category: "Documentation"
+    severity: "INFO"
+    description: "Complex logic should have explanatory comments"
+    check_type: "semantic"
+    min_complexity_for_comment: 10
+    enabled: true
+    message: "Add comments to explain complex logic"
+
+  # ==========================================
+  # Composite Rules (Multiple Conditions)
+  # ==========================================
+
+  COMP-001:
+    category: "Composite"
+    severity: "CRITICAL"
+    description: "Complete memory safety compliance"
+    check_type: "composite"
+    requires_all:
+      - MM-001  # Pointer checks
+      - MM-002  # Allocation checks
+      - MM-004  # Memory freed
+    enabled: true
+    message: "Function must satisfy all memory safety rules"
+
+  COMP-002:
+    category: "Composite"
+    severity: "IMPORTANT"
+    description: "Complete function structure compliance"
+    check_type: "composite"
+    requires_all:
+      - FS-001-ENTER
+      - FS-001-EXIT
+      - FS-002
+    enabled: true
+    message: "Function must have proper structure with ENTER/EXIT and no early returns"
+
+# Exception patterns that apply globally
+global_exceptions:
+  # Files or patterns to exclude from checking
+  exclude_files:
+    - "*_test.c"
+    - "*_mock.c"
+    - "*/test/*"
+    - "*/tests/*"
+    - "*/examples/*"
+
+  # Functions to exclude from certain rules
+  exclude_functions:
+    - "main"
+    - "test_*"
+    - "mock_*"
+
+  # Patterns that indicate generated code (skip checking)
+  generated_code_markers:
+    - "AUTO-GENERATED"
+    - "DO NOT EDIT"
+    - "@generated"
+
+# Severity configuration for exit codes
+exit_codes:
+  CRITICAL: 1
+  IMPORTANT: 0
+  RECOMMENDED: 0
+  INFO: 0
+
+# Report configuration
+report:
+  show_context_lines: 3
+  max_violations_per_file: 100
+  group_by: "severity"  # Options: severity, category, rule
+  include_metrics: true
+  include_suggestions: true
