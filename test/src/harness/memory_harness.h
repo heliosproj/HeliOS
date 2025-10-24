@@ -1,17 +1,14 @@
 /*UNCRUSTIFY-OFF*/
 /**
  * @file memory_harness.h
- * @author Manny Peterson <manny@heliosproj.org>
- * @brief Unit testing sources
- * @version 0.5.0
- * @date 2023-03-19
+ * @author Test Harness
+ * @brief Comprehensive memory management test harness
+ * @version 1.0.0
+ * @date 2025-01-23
  *
  * @copyright
- * HeliOS Embedded Operating System Copyright (C) 2020-2026 HeliOS Project <license@heliosproj.org>
- *
- *  SPDX-License-Identifier: GPL-2.0-or-later
- *
- *
+ * HeliOS Embedded Operating System Test Suite
+ * SPDX-License-Identifier: GPL-2.0-or-later
  */
 /*UNCRUSTIFY-ON*/
 #ifndef MEMORY_HARNESS_H_
@@ -21,27 +18,33 @@
   #include "defines.h"
   #include "types.h"
   #include "port.h"
-  #include "device.h"
   #include "mem.h"
-  #include "queue.h"
-  #include "streams.h"
-  #include "sys.h"
-  #include "task.h"
-  #include "timer.h"
-
   #include "unit.h"
-
-  typedef struct MemoryTest_s {
-    Size_t size;
-    Size_t blocks;
-    void *ptr;
-  } MemoryTest_t;
 
   #ifdef __cplusplus
     extern "C" {
   #endif /* ifdef __cplusplus */
+
+  /* Test Suite Functions */
+  void test_memory_basic_allocation(void);
+  void test_memory_stress_allocation(void);
+  void test_memory_fragmentation(void);
+  void test_memory_edge_cases(void);
+  void test_memory_utilities(void);
+  void test_memory_statistics(void);
+  void test_memory_corruption_detection(void);
+  void test_memory_alignment(void);
+  void test_memory_kernel_region(void);
+  void test_memory_free_all(void);
+  void test_memory_size_tracking(void);
+  void test_memory_defragmentation(void);
+  void test_memory_cycle_detection(void);
+  void test_memory_large_allocations(void);
+  void test_memory_pattern_verification(void);
+
+  /* Main test entry point */
+  void run_memory_tests(void);
   void memory_harness(void);
-  void memory_harness_task(Task_t *task_, TaskParm_t *parm_);
 
   #ifdef __cplusplus
     }
