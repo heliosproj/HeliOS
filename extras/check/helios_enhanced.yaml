@@ -1,0 +1,596 @@
+# UNCRUSTIFY-OFF
+# @file helios_enhanced.yaml
+# @author Manny Peterson <manny@heliosproj.org>
+# @brief HeliOS Enhanced Rules Configuration for Advanced Compliance Checker
+# @version 0.6.0
+# @date 2025-10-24
+#
+# @copyright
+# HeliOS Embedded Operating System Copyright (C) 2020-2026 HeliOS Project <license@heliosproj.org>
+#
+# SPDX-License-Identifier: GPL-2.0-or-later
+#
+# @description
+# Enhanced rule configuration leveraging advanced capabilities:
+# - AST-based analysis
+# - Context-aware checking
+# - Semantic understanding
+# - Cross-reference validation
+# - Dataflow analysis
+# - HeliOS-specific patterns
+# UNCRUSTIFY-ON
+
+metadata:
+  version: "4.0"
+  description: "HeliOS Enhanced Rules - Full capability utilization"
+  last_updated: "2025-10-24"
+
+# Global configuration
+config:
+  max_function_complexity: 15
+  max_function_lines: 200
+  max_file_lines: 2000
+  enable_caching: true
+  parallel_processing: true
+  confidence_threshold: 0.70
+  enable_cross_reference: true
+  enable_suppression: true
+
+# Rule definitions with enhanced capabilities
+rules:
+
+  # ==========================================
+  # AST-Based Function Structure Rules
+  # ==========================================
+
+  FS-001-ENTER:
+    category: "Function Structure"
+    severity: "CRITICAL"
+    description: "Functions must have FUNCTION_ENTER macro"
+    check_type: "builtin"
+    builtin_type: "function_structure"
+    require_enter: true
+    require_exit: false
+    enabled: true
+    fix_suggestion: "Add 'FUNCTION_ENTER;' after opening brace"
+    message: "Function missing FUNCTION_ENTER macro"
+    context_requirements:
+      in_function: true
+      not_in_macro: true
+
+  FS-001-EXIT:
+    category: "Function Structure"
+    severity: "CRITICAL"
+    description: "Functions must have FUNCTION_EXIT macro"
+    check_type: "builtin"
+    builtin_type: "function_structure"
+    require_enter: false
+    require_exit: true
+    enabled: true
+    fix_suggestion: "Add 'FUNCTION_EXIT;' before closing brace"
+    message: "Function missing FUNCTION_EXIT macro"
+    context_requirements:
+      in_function: true
+      not_in_macro: true
+
+  FS-002:
+    category: "Function Structure"
+    severity: "CRITICAL"
+    description: "No early returns except through allowed macros"
+    check_type: "builtin"
+    builtin_type: "early_returns"
+    allowed_patterns:
+      - "__ReturnOk__"
+      - "__ReturnWithError__"
+      - "__ReturnWithValue__"
+    enabled: true
+    message: "Early return detected - use __ReturnOk__() or similar macros"
+    fix_suggestion: "Replace return with __ReturnOk__() or restructure logic"
+
+  FS-003:
+    category: "Function Structure"
+    severity: "IMPORTANT"
+    description: "Public API functions must return Return_t"
+    check_type: "helios"
+    helios_rule_type: "api_consistency"
+    enabled: true
+    message: "Public API function should return Return_t"
+
+  FS-004:
+    category: "Function Structure"
+    severity: "RECOMMENDED"
+    description: "Function complexity should not exceed maximum"
+    check_type: "semantic"
+    max_complexity: 15
+    enabled: true
+    fix_suggestion: "Refactor function into smaller, more focused functions"
+
+  FS-005:
+    category: "Function Structure"
+    severity: "RECOMMENDED"
+    description: "Functions should not exceed maximum lines"
+    check_type: "semantic"
+    max_lines: 200
+    enabled: true
+    fix_suggestion: "Split function into smaller functions"
+
+  # ==========================================
+  # Enhanced Parameter Naming Rules
+  # ==========================================
+
+  PN-001:
+    category: "Naming Convention"
+    severity: "IMPORTANT"
+    description: "Function parameters must end with underscore"
+    check_type: "builtin"
+    builtin_type: "parameter_naming"
+    require_suffix: "_"
+    exclude_types:
+      - "void"
+      - "..."
+      - "(*)"  # Function pointers
+    enabled: true
+    fix_suggestion: "Add underscore suffix to parameter name"
+
+  # ==========================================
+  # Context-Aware Naming Convention Rules
+  # ==========================================
+
+  NC-001:
+    category: "Naming Convention"
+    severity: "IMPORTANT"
+    description: "Macros must use double underscores and ALL_CAPS"
+    check_type: "pattern"
+    patterns:
+      macro_define:
+        pattern: '#define\s+__[A-Z_]+__'
+        context:
+          not_in_string: true
+          not_in_comment: true
+    enabled: true
+    message: "Macro should use __ALL_CAPS__ naming"
+
+  NC-002:
+    category: "Naming Convention"
+    severity: "IMPORTANT"
+    description: "Static functions must use double underscore prefix/suffix"
+    check_type: "pattern"
+    patterns:
+      static_function:
+        pattern: 'static\s+\w+\s+__[a-zA-Z][a-zA-Z0-9_]*__\s*\('
+        context:
+          in_function: false
+    enabled: true
+    message: "Static function should use __Name__ format"
+
+  NC-003:
+    category: "Naming Convention"
+    severity: "IMPORTANT"
+    description: "Public API functions must start with 'x'"
+    check_type: "helios"
+    helios_rule_type: "api_consistency"
+    enabled: true
+    message: "Public API function should start with 'x'"
+
+  NC-004:
+    category: "Naming Convention"
+    severity: "RECOMMENDED"
+    description: "Type definitions should end with _t"
+    check_type: "pattern"
+    patterns:
+      typedef:
+        pattern: 'typedef\s+(?:struct|enum|union).*\}\s*(\w+_t);'
+        context:
+          not_in_macro: true
+    enabled: true
+    message: "Type definition should end with '_t'"
+
+  # ==========================================
+  # Advanced Memory Management Rules
+  # ==========================================
+
+  MM-001:
+    category: "Memory Management"
+    severity: "CRITICAL"
+    description: "Pointer parameters must be checked for NULL"
+    check_type: "pattern"
+    patterns:
+      pointer_check:
+        pattern: '__PointerIs(?:Not)?Null__\('
+        context:
+          in_function: true
+    enabled: true
+    message: "Pointer should be checked with __PointerIsNull__ or __PointerIsNotNull__"
+    fix_suggestion: "Add __PointerIsNotNull__(ptr_) check before using pointer"
+
+  MM-002:
+    category: "Memory Management"
+    severity: "CRITICAL"
+    description: "Memory allocation must be checked"
+    check_type: "pattern"
+    patterns:
+      alloc_check:
+        pattern: '__(?:Kernel|Heap)AllocateMemory__.*if\s*\(\s*OK\s*\('
+        context:
+          in_function: true
+    enabled: true
+    message: "Memory allocation should be checked with OK() macro"
+
+  MM-003:
+    category: "Memory Management"
+    severity: "CRITICAL"
+    description: "MEMFAULT flag must be set before memory error handling"
+    check_type: "pattern"
+    patterns:
+      memfault_before_assert:
+        pattern: '__SetFlag__\(MEMFAULT\).*__AssertOnElse__'
+        context:
+          in_function: true
+    context: "memory error handling"
+    enabled: true
+    message: "Set MEMFAULT flag before __AssertOnElse__ in memory operations"
+
+  MM-004:
+    category: "Memory Management"
+    severity: "CRITICAL"
+    description: "Allocated memory must be freed"
+    check_type: "builtin"
+    builtin_type: "memory_safety"
+    enabled: true
+    message: "Allocated memory should be freed before function exit"
+
+  MM-005:
+    category: "Memory Management"
+    severity: "CRITICAL"
+    description: "Check for potential null pointer dereferences"
+    check_type: "dataflow"
+    check_null_deref: true
+    enabled: true
+    message: "Potential null pointer dereference detected"
+
+  # ==========================================
+  # Enhanced Error Handling Rules
+  # ==========================================
+
+  EH-001:
+    category: "Error Handling"
+    severity: "IMPORTANT"
+    description: "Error conditions should use __AssertOnElse__"
+    check_type: "pattern"
+    patterns:
+      else_assert:
+        pattern: 'else\s*\{[^}]*__AssertOnElse__'
+        context:
+          in_function: true
+    enabled: true
+    message: "Use __AssertOnElse__() in error handling paths"
+
+  EH-002:
+    category: "Error Handling"
+    severity: "IMPORTANT"
+    description: "Use OK() macro for status checks"
+    check_type: "pattern"
+    patterns:
+      ok_macro:
+        pattern: 'if\s*\(\s*OK\s*\('
+        context:
+          in_function: true
+    enabled: true
+    message: "Use OK() macro for checking return status"
+
+  # ==========================================
+  # AST-Based Code Quality Rules
+  # ==========================================
+
+  CQ-001:
+    category: "Code Quality"
+    severity: "RECOMMENDED"
+    description: "Variables should be initialized"
+    check_type: "ast"
+    check_uninitialized: true
+    enabled: true
+    message: "Initialize variables at declaration"
+
+  CQ-002:
+    category: "Code Quality"
+    severity: "RECOMMENDED"
+    description: "Use descriptive cursor for linked list operations"
+    check_type: "pattern"
+    patterns:
+      cursor_usage:
+        pattern: '\bcursor\s*='
+        context:
+          in_function: true
+    context: "linked list operations"
+    enabled: true
+    message: "Use 'cursor' variable name for list traversal"
+
+  CQ-003:
+    category: "Code Quality"
+    severity: "INFO"
+    description: "Add comments for memory cleanup"
+    check_type: "pattern"
+    patterns:
+      cleanup_comment:
+        pattern: '/\*.*(?:Free|Clean|Release).*memory.*\*/'
+        context:
+          in_function: true
+    enabled: true
+    message: "Add comment before memory cleanup operations"
+
+  # ==========================================
+  # HeliOS-Specific Concurrency Rules
+  # ==========================================
+
+  CN-001:
+    category: "Concurrency"
+    severity: "CRITICAL"
+    description: "Critical sections must disable/enable interrupts"
+    check_type: "helios"
+    helios_rule_type: "interrupt_safety"
+    enabled: true
+    message: "Critical section should use interrupt disable/enable"
+
+  CN-002:
+    category: "Concurrency"
+    severity: "IMPORTANT"
+    description: "Shared data should be volatile"
+    check_type: "pattern"
+    patterns:
+      volatile_shared:
+        pattern: 'static\s+volatile'
+        context:
+          not_in_comment: true
+    enabled: true
+    message: "Shared data should be declared volatile"
+
+  # ==========================================
+  # Context-Aware Magic Number Rules
+  # ==========================================
+
+  MN-001:
+    category: "Magic Numbers"
+    severity: "RECOMMENDED"
+    description: "Avoid magic numbers"
+    check_type: "pattern"
+    patterns:
+      magic_number:
+        pattern: '(?<![x0-9a-fA-F])[2-9]\d{2,}(?![0-9a-fA-F])'
+        context:
+          not_in_comment: true
+          not_in_string: true
+          not_in_macro: true
+    exclude_patterns:
+      - '#define'
+      - 'case\s+'
+    enabled: true
+    message: "Define magic number as a named constant"
+    fix_suggestion: "Create a #define or const for this value"
+
+  # ==========================================
+  # HeliOS State Machine Rules
+  # ==========================================
+
+  SM-001:
+    category: "State Machine"
+    severity: "CRITICAL"
+    description: "Task state transitions must be valid"
+    check_type: "helios"
+    helios_rule_type: "state_machine"
+    enabled: true
+    message: "Invalid task state transition detected"
+
+  SM-002:
+    category: "Scheduler"
+    severity: "IMPORTANT"
+    description: "Scheduler functions must check scheduler state"
+    check_type: "helios"
+    helios_rule_type: "scheduler"
+    enabled: true
+    message: "Function should verify scheduler state before operation"
+
+  # ==========================================
+  # Advanced Safety and Security Rules
+  # ==========================================
+
+  SF-001:
+    category: "Safety"
+    severity: "CRITICAL"
+    description: "Buffer overflow checks required"
+    check_type: "pattern"
+    patterns:
+      overflow_check:
+        pattern: '__SetFlag__\(OVERFLOW\)'
+        context:
+          in_function: true
+    context: "arithmetic operations"
+    enabled: true
+    message: "Check for buffer/integer overflow"
+
+  SF-002:
+    category: "Security"
+    severity: "CRITICAL"
+    description: "Validate input parameters"
+    check_type: "pattern"
+    patterns:
+      validation:
+        pattern: '__Validate(?:Input|Parameter|Range)__'
+        context:
+          in_function: true
+    enabled: true
+    message: "Validate input parameters before use"
+
+  # ==========================================
+  # Cross-Reference Analysis Rules
+  # ==========================================
+
+  XREF-001:
+    category: "Dead Code"
+    severity: "INFO"
+    description: "Function is never called"
+    check_type: "cross_reference"
+    enabled: true
+    message: "Function appears to be unused"
+    fix_suggestion: "Remove if unused or add appropriate calls"
+
+  XREF-002:
+    category: "API Design"
+    severity: "IMPORTANT"
+    description: "Public function not declared in header"
+    check_type: "cross_reference"
+    enabled: true
+    message: "Public function missing header declaration"
+
+  # ==========================================
+  # File-Level Rules
+  # ==========================================
+
+  FILE-001:
+    category: "File Structure"
+    severity: "IMPORTANT"
+    description: "Header files must have include guards"
+    check_type: "file_level"
+    enabled: true
+    message: "Header file missing include guards"
+    fix_suggestion: "Add #ifndef/#define/#endif guards"
+
+  FILE-002:
+    category: "File Structure"
+    severity: "RECOMMENDED"
+    description: "Files should not exceed maximum lines"
+    check_type: "file_level"
+    max_lines: 2000
+    enabled: true
+    message: "File is too large, consider splitting"
+
+  # ==========================================
+  # Documentation Rules with AST
+  # ==========================================
+
+  DC-001:
+    category: "Documentation"
+    severity: "RECOMMENDED"
+    description: "Functions should have documentation header"
+    check_type: "ast"
+    check_documentation: true
+    enabled: true
+    message: "Add documentation header for function"
+
+  DC-002:
+    category: "Documentation"
+    severity: "INFO"
+    description: "Complex logic should have explanatory comments"
+    check_type: "semantic"
+    min_complexity_for_comment: 10
+    enabled: true
+    message: "Add comments to explain complex logic"
+
+  # ==========================================
+  # Enhanced Composite Rules
+  # ==========================================
+
+  COMP-001:
+    category: "Composite"
+    severity: "CRITICAL"
+    description: "Complete memory safety compliance"
+    check_type: "composite"
+    requires_all:
+      - MM-001  # Pointer checks
+      - MM-002  # Allocation checks
+      - MM-004  # Memory freed
+      - MM-005  # Null deref checks
+    enabled: true
+    message: "Function must satisfy all memory safety rules"
+
+  COMP-002:
+    category: "Composite"
+    severity: "IMPORTANT"
+    description: "Complete function structure compliance"
+    check_type: "composite"
+    requires_all:
+      - FS-001-ENTER
+      - FS-001-EXIT
+      - FS-002
+    enabled: true
+    message: "Function must have proper structure with ENTER/EXIT and no early returns"
+
+  COMP-003:
+    category: "Composite"
+    severity: "IMPORTANT"
+    description: "Complete API compliance for public functions"
+    check_type: "composite"
+    requires_all:
+      - FS-003  # Return type
+      - NC-003  # Naming convention
+      - DC-001  # Documentation
+    enabled: true
+    message: "Public API function must meet all API requirements"
+
+# Suppression configuration
+suppressions:
+  # Inline suppression format
+  inline_format: "// helios-disable {rule_id}"
+
+  # File-level suppressions
+  file_patterns:
+    - pattern: "*_test.c"
+      rules: ["FS-001-ENTER", "FS-001-EXIT"]
+    - pattern: "*_mock.c"
+      rules: ["*"]  # Suppress all rules for mock files
+
+  # Function-level suppressions
+  function_patterns:
+    - pattern: "main"
+      rules: ["FS-001-ENTER", "FS-001-EXIT", "PN-001"]
+    - pattern: "test_*"
+      rules: ["FS-001-ENTER", "FS-001-EXIT"]
+    - pattern: "__*__"  # Macro-generated functions
+      rules: ["FS-001-ENTER", "FS-001-EXIT"]
+
+# Confidence modifiers for specific contexts
+confidence_modifiers:
+  in_macro_expansion: 0.7
+  in_generated_code: 0.5
+  in_test_code: 0.8
+  in_inline_function: 0.9
+
+# Exception patterns that apply globally
+global_exceptions:
+  # Files or patterns to exclude from checking
+  exclude_files:
+    - "*_test.c"
+    - "*_mock.c"
+    - "*/test/*"
+    - "*/tests/*"
+    - "*/examples/*"
+
+  # Functions to exclude from certain rules
+  exclude_functions:
+    - "main"
+    - "test_*"
+    - "mock_*"
+
+  # Patterns that indicate generated code (skip checking)
+  generated_code_markers:
+    - "AUTO-GENERATED"
+    - "DO NOT EDIT"
+    - "@generated"
+
+# Severity configuration for exit codes
+exit_codes:
+  CRITICAL: 1
+  IMPORTANT: 0
+  RECOMMENDED: 0
+  INFO: 0
+
+# Report configuration
+report:
+  show_context_lines: 3
+  max_violations_per_file: 100
+  group_by: "severity"  # Options: severity, category, rule
+  include_metrics: true
+  include_suggestions: true
+  include_confidence: true
+  include_suppressed: false
+  show_cross_references: true
+  highlight_low_confidence: true
