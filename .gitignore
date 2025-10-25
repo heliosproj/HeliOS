@@ -2,7 +2,7 @@
 /test/bin/**
 /.claude/**
 __pycache__
-.helios_cache
+.check_cache
 .claude
 /test/compliance-report.json
 /test/test-report.json
