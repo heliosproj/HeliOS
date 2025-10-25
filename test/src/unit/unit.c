@@ -74,7 +74,7 @@ void unit_end(void) {
       unit->pass++;
     }
 
-    memset(unit->name, 0x0, UNIT_NAME_LENGTH);
+    memset(unit->name, 0x0u, UNIT_NAME_LENGTH);
     unit->begun = false;
     unit->failed = false;
   } else if(false == unit->begun) {
@@ -108,7 +108,7 @@ void unit_exit(void) {
     if(0x0 < unit->fail) {
       exit(0x1);
     } else {
-      exit(0x0);
+      exit(0x0u);
     }
   }
 

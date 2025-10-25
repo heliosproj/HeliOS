@@ -44,8 +44,8 @@ void timer_harness(void) {
  */
 static void test_timer_creation_and_period(void) {
   Timer_t *timer = null;
-  Ticks_t retrievedPeriod = nil;
-  Ticks_t newPeriod = nil;
+  Ticks_t retrievedPeriod = 0x0u;
+  Ticks_t newPeriod = 0x0u;
 
 
   unit_print("--- Section 1: Timer Creation and Period Management ---");
@@ -84,9 +84,9 @@ static void test_timer_creation_and_period(void) {
  */
 static void test_timer_activation_and_expiration(void) {
   Timer_t *timer = null;
-  Base_t isActive = nil;
-  Base_t hasExpiredBefore = nil;
-  Base_t hasExpiredAfter = nil;
+  Base_t isActive = 0x0u;
+  Base_t hasExpiredBefore = 0x0u;
+  Base_t hasExpiredAfter = 0x0u;
 
 
   unit_print("--- Section 2: Timer Activation and Expiration ---");
@@ -131,10 +131,10 @@ static void test_timer_activation_and_expiration(void) {
  */
 static void test_timer_control_operations(void) {
   Timer_t *timer = null;
-  Base_t isActiveAfterStop = nil;
-  Base_t isActiveAfterStart = nil;
-  Base_t hasExpiredBeforeReset = nil;
-  Base_t hasExpiredAfterReset = nil;
+  Base_t isActiveAfterStop = 0x0u;
+  Base_t isActiveAfterStart = 0x0u;
+  Base_t hasExpiredBeforeReset = 0x0u;
+  Base_t hasExpiredAfterReset = 0x0u;
 
 
   unit_print("--- Section 3: Timer Control Operations ---");
@@ -186,7 +186,7 @@ static void test_timer_control_operations(void) {
  */
 static void test_timer_delete(void) {
   Timer_t *timer = null;
-  Ticks_t period = nil;
+  Ticks_t period = 0x0u;
 
 
   unit_print("--- Section 4: Timer Delete and Cleanup ---");

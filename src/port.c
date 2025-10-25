@@ -18,7 +18,7 @@
 
 
 #if defined(CMSIS_ARCH_CORTEXM)
-  static volatile Ticks_t sysTicks = nil;
+  static volatile Ticks_t sysTicks = 0x0u;
 
 
   void SysTick_Handler(void) {
@@ -44,7 +44,7 @@ Ticks_t __PortGetSysTicks__(void) {
 
 #elif defined(ARDUINO_ARCH_ESP32) || defined(ESP32)
 
-    return(0x0);
+    return(0x0u);
 
 #elif defined(CMSIS_ARCH_CORTEXM)
 

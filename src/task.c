@@ -43,7 +43,7 @@ static SchedulerState_t scheduler = SchedulerStateRunning;
           (*task_->callback)(task_, task_->taskParameter); \
           task_->lastRunTime = __PortGetSysTicks__() - start; \
           task_->totalRunTime += task_->lastRunTime; \
-          if((nil < task_->wdTimerPeriod) && (task_->lastRunTime > task_->wdTimerPeriod)) { \
+          if((0x0u < task_->wdTimerPeriod) && (task_->lastRunTime > task_->wdTimerPeriod)) { \
             task_->state = TaskStateSuspended; \
           } \
           if(task_->totalRunTime < prev) { \
@@ -213,7 +213,7 @@ Return_t xTaskGetHandleById(Task_t **task_, const Base_t id_) {
   Task_t *cursor = null;
 
 
-  if(__PointerIsNotNull__(task_) && (nil < id_) && __PointerIsNotNull__(tlist)) {
+  if(__PointerIsNotNull__(task_) && (0x0u < id_) && __PointerIsNotNull__(tlist)) {
     cursor = tlist->head;
 
     while(__PointerIsNotNull__(cursor)) {
@@ -237,8 +237,8 @@ Return_t xTaskGetAllRunTimeStats(TaskRunTimeStats_t **stats_, Base_t *tasks_) {
   FUNCTION_ENTER;
 
 
-  Base_t task = nil;
-  Base_t tasks = nil;
+  Base_t task = 0x0u;
+  Base_t tasks = 0x0u;
   Task_t *cursor = null;
 
 
@@ -250,7 +250,7 @@ Return_t xTaskGetAllRunTimeStats(TaskRunTimeStats_t **stats_, Base_t *tasks_) {
       cursor = cursor->next;
     }
 
-    if((nil < tasks) && (tlist->length == tasks)) {
+    if((0x0u < tasks) && (tlist->length == tasks)) {
       if(OK(__HeapAllocateMemory__((volatile Addr_t **) stats_, tasks * sizeof(TaskRunTimeStats_t)))) {
         if(__PointerIsNotNull__(*stats_)) {
           cursor = tlist->head;
@@ -314,14 +314,14 @@ Return_t xTaskGetNumberOfTasks(Base_t *tasks_) {
   FUNCTION_ENTER;
 
 
-  Base_t tasks = nil;
+  Base_t tasks = 0x0u;
   Task_t *cursor = null;
 
 
   if(__PointerIsNotNull__(tasks_)) {
-    /* If tlist is null, no tasks have been created yet - return 0x0 */
+    /* If tlist is null, no tasks have been created yet - return 0x0u */
     if(__PointerIsNull__(tlist)) {
-      *tasks_ = 0x0;
+      *tasks_ = 0x0u;
       __ReturnOk__();
     } else {
       cursor = tlist->head;
@@ -387,8 +387,8 @@ Return_t xTaskGetAllTaskInfo(TaskInfo_t **info_, Base_t *tasks_) {
   FUNCTION_ENTER;
 
 
-  Base_t task = nil;
-  Base_t tasks = nil;
+  Base_t task = 0x0u;
+  Base_t tasks = 0x0u;
   Task_t *cursor = null;
 
 
@@ -400,7 +400,7 @@ Return_t xTaskGetAllTaskInfo(TaskInfo_t **info_, Base_t *tasks_) {
       cursor = cursor->next;
     }
 
-    if((nil < tasks) && (tlist->length == tasks)) {
+    if((0x0u < tasks) && (tlist->length == tasks)) {
       if(OK(__HeapAllocateMemory__((volatile Addr_t **) info_, tasks * sizeof(TaskInfo_t)))) {
         if(__PointerIsNotNull__(*info_)) {
           cursor = tlist->head;
@@ -516,9 +516,9 @@ Return_t xTaskNotifyStateClear(Task_t *task_) {
 
   if(__PointerIsNotNull__(task_) && __PointerIsNotNull__(tlist)) {
     if(OK(__TaskListFindTask__(task_))) {
-      if(nil < task_->notificationBytes) {
-        if(OK(__memset__(task_->notificationValue, nil, CONFIG_NOTIFICATION_VALUE_BYTES))) {
-          task_->notificationBytes = nil;
+      if(0x0u < task_->notificationBytes) {
+        if(OK(__memset__(task_->notificationValue, 0x0u, CONFIG_NOTIFICATION_VALUE_BYTES))) {
+          task_->notificationBytes = 0x0u;
           __ReturnOk__();
         } else {
           __AssertOnElse__();
@@ -542,7 +542,7 @@ Return_t xTaskNotificationIsWaiting(const Task_t *task_, Base_t *res_) {
 
   if(__PointerIsNotNull__(task_) && __PointerIsNotNull__(res_) && __PointerIsNotNull__(tlist)) {
     if(OK(__TaskListFindTask__(task_))) {
-      if(nil < task_->notificationBytes) {
+      if(0x0u < task_->notificationBytes) {
         *res_ = true;
         __ReturnOk__();
       } else {
@@ -563,10 +563,10 @@ Return_t xTaskNotificationIsWaiting(const Task_t *task_, Base_t *res_) {
 Return_t xTaskNotifyGive(Task_t *task_, const Base_t bytes_, const Byte_t *value_) {
   FUNCTION_ENTER;
 
-  if(__PointerIsNotNull__(task_) && (nil < bytes_) && (CONFIG_NOTIFICATION_VALUE_BYTES >= bytes_) && __PointerIsNotNull__(value_) && __PointerIsNotNull__(tlist)
+  if(__PointerIsNotNull__(task_) && (0x0u < bytes_) && (CONFIG_NOTIFICATION_VALUE_BYTES >= bytes_) && __PointerIsNotNull__(value_) && __PointerIsNotNull__(tlist)
     ) {
     if(OK(__TaskListFindTask__(task_))) {
-      if(nil == task_->notificationBytes) {
+      if(0x0u == task_->notificationBytes) {
         if(OK(__memcpy__(task_->notificationValue, value_, CONFIG_NOTIFICATION_VALUE_BYTES))) {
           task_->notificationBytes = bytes_;
           __ReturnOk__();
@@ -592,13 +592,13 @@ Return_t xTaskNotifyTake(Task_t *task_, TaskNotification_t **notification_) {
 
   if(__PointerIsNotNull__(task_) && __PointerIsNotNull__(notification_) && __PointerIsNotNull__(tlist)) {
     if(OK(__TaskListFindTask__(task_))) {
-      if(nil < task_->notificationBytes) {
+      if(0x0u < task_->notificationBytes) {
         if(OK(__HeapAllocateMemory__((volatile Addr_t **) notification_, sizeof(TaskNotification_t)))) {
           if(__PointerIsNotNull__(*notification_)) {
             if(OK(__memcpy__((*notification_)->notificationValue, task_->notificationValue, CONFIG_NOTIFICATION_VALUE_BYTES))) {
-              if(OK(__memset__(task_->notificationValue, nil, CONFIG_NOTIFICATION_VALUE_BYTES))) {
+              if(OK(__memset__(task_->notificationValue, 0x0u, CONFIG_NOTIFICATION_VALUE_BYTES))) {
                 (*notification_)->notificationBytes = task_->notificationBytes;
-                task_->notificationBytes = nil;
+                task_->notificationBytes = 0x0u;
                 __ReturnOk__();
               } else {
                 __AssertOnElse__();
@@ -795,8 +795,8 @@ Return_t xTaskStartScheduler(void) {
 
   Task_t *task = null;
   Task_t *cursor = null;
-  Ticks_t start = nil;
-  Ticks_t prev = nil;
+  Ticks_t start = 0x0u;
+  Ticks_t prev = 0x0u;
 
 
   /* Intentionally underflow to get the maximum value of Ticks_t. */
@@ -817,17 +817,17 @@ Return_t xTaskStartScheduler(void) {
           if(OK(xTaskCreate(&consoleTask, "Console", vConsoleTask, null))) {
             /* Note: Task priority not currently implemented in HeliOS */
 
-  #if (nil == CONFIG_CONSOLE_TASK_MODE)
+  #if (0x0u == CONFIG_CONSOLE_TASK_MODE)
 
 
               /* Continuous mode - task runs every clock tick */
               xTaskResume(consoleTask);
-  #else /* if (nil == CONFIG_CONSOLE_TASK_MODE) */
+  #else /* if (0x0u == CONFIG_CONSOLE_TASK_MODE) */
               /* Event-driven mode - task runs on timer */
               xTaskWait(consoleTask);
               xTaskChangePeriod(consoleTask, CONFIG_CONSOLE_TIMER_PERIOD_MS);
               xTaskResetTimer(consoleTask);
-  #endif /* if (nil == CONFIG_CONSOLE_TASK_MODE) */
+  #endif /* if (0x0u == CONFIG_CONSOLE_TASK_MODE) */
           }
         }
       }
@@ -849,14 +849,14 @@ Return_t xTaskStartScheduler(void) {
          * then run the task. Note: Task callback is responsible for clearing
          * the notification via xTaskNotifyTake() to prevent repeated execution.
          */
-        if((TaskStateWaiting == cursor->state) && (nil < cursor->notificationBytes)) {
+        if((TaskStateWaiting == cursor->state) && (0x0u < cursor->notificationBytes)) {
           __TaskRun__(cursor);
 
 
           /* If the task is in a waiting state *AND* the task timer has elapsed,
            * then run the task. Uses safe arithmetic for timer overflow
            * handling. */
-        } else if((TaskStateWaiting == cursor->state) && (nil < cursor->timerPeriod)) {
+        } else if((TaskStateWaiting == cursor->state) && (0x0u < cursor->timerPeriod)) {
           Ticks_t elapsed = __PortGetSysTicks__() - cursor->timerStartTime;
 
 

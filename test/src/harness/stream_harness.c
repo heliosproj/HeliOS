@@ -22,7 +22,7 @@
 #define STREAM_LAST_BYTE_INDEX 0x1Fu /* Index of last byte in buffer (31) */
 #define STREAM_FILL_COUNT CONFIG_STREAM_BUFFER_BYTES /* Number of bytes to fill
                                                       * buffer */
-#define TEST_BYTE_VALUE 0x0 /* Test byte value */
+#define TEST_BYTE_VALUE 0x0u /* Test byte value */
 /* Helper function prototypes */
 static void test_stream_creation(void);
 static void test_stream_send_and_fill(void);
@@ -73,7 +73,7 @@ static void test_stream_creation(void) {
  */
 static void test_stream_send_and_fill(void) {
   StreamBuffer_t *stream = null;
-  HalfWord_t i = nil;
+  HalfWord_t i = 0x0u;
 
 
   unit_print("--- Section 2: Stream Send and Buffer Fill ---");
@@ -83,7 +83,7 @@ static void test_stream_send_and_fill(void) {
   unit_begin("Stream accepts bytes until buffer is full");
   unit_assert_ok(xStreamCreate(&stream));
 
-  for(i = nil; i < STREAM_FILL_COUNT; i++) {
+  for(i = 0x0u; i < STREAM_FILL_COUNT; i++) {
     unit_assert_ok(xStreamSend(stream, i));
   }
 
@@ -104,8 +104,8 @@ static void test_stream_send_and_fill(void) {
  */
 static void test_stream_status_checks(void) {
   StreamBuffer_t *stream = null;
-  HalfWord_t i = nil;
-  HalfWord_t bytesAvailable = nil;
+  HalfWord_t i = 0x0u;
+  HalfWord_t bytesAvailable = 0x0u;
   Base_t result;
 
 
@@ -116,7 +116,7 @@ static void test_stream_status_checks(void) {
   unit_begin("Stream full check correctly identifies full buffer");
   unit_assert_ok(xStreamCreate(&stream));
 
-  for(i = nil; i < STREAM_FILL_COUNT; i++) {
+  for(i = 0x0u; i < STREAM_FILL_COUNT; i++) {
     unit_assert_ok(xStreamSend(stream, i));
   }
 
@@ -150,8 +150,8 @@ static void test_stream_status_checks(void) {
  */
 static void test_stream_receive(void) {
   StreamBuffer_t *stream = null;
-  HalfWord_t i = nil;
-  HalfWord_t bytesReceived = nil;
+  HalfWord_t i = 0x0u;
+  HalfWord_t bytesReceived = 0x0u;
   Byte_t *receivedData = null;
 
 
@@ -162,7 +162,7 @@ static void test_stream_receive(void) {
   unit_begin("Stream receive returns all buffered bytes");
   unit_assert_ok(xStreamCreate(&stream));
 
-  for(i = nil; i < STREAM_FILL_COUNT; i++) {
+  for(i = 0x0u; i < STREAM_FILL_COUNT; i++) {
     unit_assert_ok(xStreamSend(stream, i));
   }
 
@@ -184,7 +184,7 @@ static void test_stream_receive(void) {
  */
 static void test_stream_reset(void) {
   StreamBuffer_t *stream = null;
-  HalfWord_t i = nil;
+  HalfWord_t i = 0x0u;
   Base_t result;
 
 
@@ -197,7 +197,7 @@ static void test_stream_reset(void) {
 
 
   /* Fill the buffer */
-  for(i = nil; i < STREAM_FILL_COUNT; i++) {
+  for(i = 0x0u; i < STREAM_FILL_COUNT; i++) {
     unit_assert_ok(xStreamSend(stream, i));
   }
 

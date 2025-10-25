@@ -59,7 +59,7 @@ static RAMDiskState_t state = {
 
 /* Helper macro for parameter validation */
 #define __ValidateBufferParams__(size_, data_) \
-        (__PointerIsNotNull__(size_) && __PointerIsNotNull__(data_) && (nil < *(size_)))
+        (__PointerIsNotNull__(size_) && __PointerIsNotNull__(data_) && (0x0u < *(size_)))
 
 
 /* Forward declaration for bounds checking helper */
@@ -94,11 +94,11 @@ Return_t TO_FUNCTION(DEVICE_NAME, _init)(Device_t *device_) {
   FUNCTION_ENTER;
 
   /* Initialize state */
-  state.currentPosition = nil;
-  state.bytesRead = nil;
-  state.bytesWritten = nil;
-  state.readOperations = nil;
-  state.writeOperations = nil;
+  state.currentPosition = 0x0u;
+  state.bytesRead = 0x0u;
+  state.bytesWritten = 0x0u;
+  state.readOperations = 0x0u;
+  state.writeOperations = 0x0u;
   state.initialized = true;
 
   /* Clear RAM disk to zeros */
@@ -175,11 +175,11 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Add
         RAMDiskClearConfig_t *cfg = (RAMDiskClearConfig_t *)config_;
 
         __memset__(ramdisk, cfg->fillPattern, RAMDISK_SIZE_BYTES);
-        state.currentPosition = nil;
-        state.bytesRead = nil;
-        state.bytesWritten = nil;
-        state.readOperations = nil;
-        state.writeOperations = nil;
+        state.currentPosition = 0x0u;
+        state.bytesRead = 0x0u;
+        state.bytesWritten = 0x0u;
+        state.readOperations = 0x0u;
+        state.writeOperations = 0x0u;
 
         __ReturnOk__();
       }
@@ -215,7 +215,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _read)(Device_t *device_, Size_t *size_, Addr_
   FUNCTION_ENTER;
 
   Byte_t *buffer = null;
-  Size_t bytesToRead = nil;
+  Size_t bytesToRead = 0x0u;
 
   if(__ValidateBufferParams__(size_, data_)) {
 
@@ -256,7 +256,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _read)(Device_t *device_, Size_t *size_, Addr_
 Return_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t *device_, Size_t *size_, Addr_t *data_) {
   FUNCTION_ENTER;
 
-  Size_t bytesToWrite = nil;
+  Size_t bytesToWrite = 0x0u;
 
   if(__ValidateBufferParams__(size_, data_)) {
 
@@ -344,7 +344,7 @@ static Return_t __ValidateAndTruncateSize__(Size_t requested_, Size_t *actual_) 
     /* Truncate to remaining space */
     *actual_ = RAMDISK_SIZE_BYTES - state.currentPosition;
 
-    if(nil == *actual_) {
+    if(0x0u == *actual_) {
       /* Already at end of disk */
       /* Return error by default */
       __AssertOnElse__();
@@ -364,11 +364,11 @@ static Return_t __ValidateAndTruncateSize__(Size_t requested_, Size_t *actual_) 
 /* For unit testing only! */
 void __RAMDiskStateClear__(void) {
   /* Clear state */
-  state.currentPosition = nil;
-  state.bytesRead = nil;
-  state.bytesWritten = nil;
-  state.readOperations = nil;
-  state.writeOperations = nil;
+  state.currentPosition = 0x0u;
+  state.bytesRead = 0x0u;
+  state.bytesWritten = 0x0u;
+  state.readOperations = 0x0u;
+  state.writeOperations = 0x0u;
   state.initialized = false;
 
   /* Clear RAM disk contents */

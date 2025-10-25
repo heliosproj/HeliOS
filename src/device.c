@@ -19,7 +19,7 @@
 static DeviceList_t *dlist = null;
 
 
-#define __DeviceUidNonZero__() (nil < uid_)
+#define __DeviceUidNonZero__() (0x0u < uid_)
 
 
 Return_t xDeviceRegisterDevice(Return_t (*device_self_register_)()) {
@@ -76,9 +76,9 @@ Return_t __RegisterDevice__(const HalfWord_t uid_, const Byte_t *name_, const De
                 device->uid = uid_;
                 device->state = state_;
                 device->mode = mode_;
-                device->bytesWritten = nil;
-                device->bytesRead = nil;
-                device->available = nil;
+                device->bytesWritten = 0x0u;
+                device->bytesRead = 0x0u;
+                device->available = 0x0u;
                 device->init = init_;
                 device->config = config_;
                 device->read = read_;
@@ -212,7 +212,7 @@ Return_t xDeviceWrite(const HalfWord_t uid_, Size_t *size_, Addr_t *data_) {
   Byte_t *data = null;
 
 
-  if(__DeviceUidNonZero__() && __PointerIsNotNull__(size_) && (nil < *size_) && __PointerIsNotNull__(data_) && __PointerIsNotNull__(dlist)) {
+  if(__DeviceUidNonZero__() && __PointerIsNotNull__(size_) && (0x0u < *size_) && __PointerIsNotNull__(data_) && __PointerIsNotNull__(dlist)) {
     /* Look-up the device by its unique identifier in the device list.
      */
     if(OK(__DeviceListFind__(uid_, &device))) {
@@ -291,7 +291,7 @@ Return_t __DeviceWrite__(const HalfWord_t uid_, Size_t *size_, Addr_t *data_) {
   Device_t *device = null;
 
 
-  if(__DeviceUidNonZero__() && __PointerIsNotNull__(size_) && (nil < *size_) && __PointerIsNotNull__(data_) && __PointerIsNotNull__(dlist)) {
+  if(__DeviceUidNonZero__() && __PointerIsNotNull__(size_) && (0x0u < *size_) && __PointerIsNotNull__(data_) && __PointerIsNotNull__(dlist)) {
     /* Look-up the device by its unique identifier */
     if(OK(__DeviceListFind__(uid_, &device))) {
       if(__PointerIsNotNull__(device)) {
@@ -326,7 +326,7 @@ Return_t xDeviceSimpleRead(const HalfWord_t uid_, Byte_t *data_) {
 
 
   Device_t *device = null;
-  Byte_t data = nil;
+  Byte_t data = 0x0u;
 
 
   if(__DeviceUidNonZero__() && __PointerIsNotNull__(data_) && __PointerIsNotNull__(dlist)) {
@@ -384,7 +384,7 @@ Return_t xDeviceRead(const HalfWord_t uid_, Size_t *size_, Addr_t **data_) {
            * the data returned by the device driver is waiting for us in kernel
            * memory. */
           if(OK((*device->read)(device, size_, &data))) {
-            if((nil < *size_) && __PointerIsNotNull__(data)) {
+            if((0x0u < *size_) && __PointerIsNotNull__(data)) {
               /* Allocate "size_" of heap memory to copy the data read from the
                * device in kernel memory into. */
               if(OK(__HeapAllocateMemory__((volatile Addr_t **) data_, *size_))) {
@@ -472,7 +472,7 @@ Return_t __DeviceRead__(const HalfWord_t uid_, Size_t *size_, Addr_t **data_) {
         if(((DeviceModeReadWrite == device->mode) || (DeviceModeReadOnly == device->mode)) && (DeviceStateRunning == device->state)) {
           /* Call driver read directly - returns kernel memory */
           if(OK((*device->read)(device, size_, data_))) {
-            if((nil < *size_) && __PointerIsNotNull__(*data_)) {
+            if((0x0u < *size_) && __PointerIsNotNull__(*data_)) {
               device->bytesRead += *size_;
 
 
@@ -581,7 +581,7 @@ Return_t xDeviceConfigDevice(const HalfWord_t uid_, Size_t *size_, Addr_t *confi
   Addr_t *config = null;
 
 
-  if(__DeviceUidNonZero__() && (nil < *size_) && __PointerIsNotNull__(config_) && __PointerIsNotNull__(dlist)) {
+  if(__DeviceUidNonZero__() && (0x0u < *size_) && __PointerIsNotNull__(config_) && __PointerIsNotNull__(dlist)) {
     /* Look-up the device by its unique identifier in the device list.
      */
     if(OK(__DeviceListFind__(uid_, &device))) {
@@ -668,7 +668,7 @@ Return_t __DeviceConfigDevice__(const HalfWord_t uid_, Size_t *size_, Addr_t *co
   Device_t *device = null;
 
 
-  if(__DeviceUidNonZero__() && (nil < *size_) && __PointerIsNotNull__(config_) && __PointerIsNotNull__(dlist)) {
+  if(__DeviceUidNonZero__() && (0x0u < *size_) && __PointerIsNotNull__(config_) && __PointerIsNotNull__(dlist)) {
     /* Look-up the device by its unique identifier */
     if(OK(__DeviceListFind__(uid_, &device))) {
       if(__PointerIsNotNull__(device)) {

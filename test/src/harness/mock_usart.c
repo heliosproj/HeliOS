@@ -59,19 +59,19 @@ Return_t MOCKUSRT_init(Device_t *device_) {
 
   /* Initialize state */
   __memset__(&state, 0x00u, sizeof(MockUSARTState_t));
-  state.rxHead = nil;
-  state.rxTail = nil;
-  state.txHead = nil;
-  state.txTail = nil;
+  state.rxHead = 0x0u;
+  state.rxTail = 0x0u;
+  state.txHead = 0x0u;
+  state.txTail = 0x0u;
   state.initialized = true;
 
 
   /* Initialize current request to defaults */
   state.currentRequest.command = CHAR_IO_CMD_SET_REQUEST;
   state.currentRequest.operation = CHAR_IO_OP_READ;
-  state.currentRequest.byteCount = nil;
+  state.currentRequest.byteCount = 0x0u;
   state.currentRequest.transferMode = CHAR_IO_MODE_BLOCKING;
-  state.currentRequest.timeoutMs = nil;
+  state.currentRequest.timeoutMs = 0x0u;
   __ReturnOk__();
   FUNCTION_EXIT;
 }
@@ -93,7 +93,7 @@ Return_t MOCKUSRT_config(Device_t *device_, Size_t *size_, Addr_t *config_) {
 
   (void) device_;
 
-  if(__PointerIsNotNull__(config_) && __PointerIsNotNull__(size_) && (*size_ > nil)) {
+  if(__PointerIsNotNull__(config_) && __PointerIsNotNull__(size_) && (*size_ > 0x0u)) {
     cmd = (Byte_t *) config_;
 
     switch(*cmd) {
@@ -178,9 +178,9 @@ Return_t MOCKUSRT_read(Device_t *device_, Size_t *size_, Addr_t **data_) {
 
 
   Byte_t *buffer = null;
-  HalfWord_t bytesToRead = nil;
-  HalfWord_t available = nil;
-  HalfWord_t i = nil;
+  HalfWord_t bytesToRead = 0x0u;
+  HalfWord_t available = 0x0u;
+  HalfWord_t i = 0x0u;
   Byte_t byte = 0x00u;
 
 
@@ -190,9 +190,9 @@ Return_t MOCKUSRT_read(Device_t *device_, Size_t *size_, Addr_t **data_) {
     /* Determine how many bytes to read */
     available = __GetRxAvailable__();
 
-    if(nil == available) {
+    if(0x0u == available) {
       /* No data available */
-      *size_ = nil;
+      *size_ = 0x0u;
       *data_ = null;
 
 
@@ -206,7 +206,7 @@ Return_t MOCKUSRT_read(Device_t *device_, Size_t *size_, Addr_t **data_) {
     /* Allocate kernel memory for return data */
     if(OK(__KernelAllocateMemory__((volatile Addr_t **) &buffer, bytesToRead))) {
       /* Copy data from RX buffer */
-      for(i = nil; i < bytesToRead; i++) {
+      for(i = 0x0u; i < bytesToRead; i++) {
         if(__RxRead__(&byte)) {
           buffer[i] = byte;
         } else {
@@ -219,7 +219,7 @@ Return_t MOCKUSRT_read(Device_t *device_, Size_t *size_, Addr_t **data_) {
 
 
       /* Update device availability */
-      device_->available = (__GetRxAvailable__() > nil) ? true : false;
+      device_->available = (__GetRxAvailable__() > 0x0u) ? true : false;
       __ReturnOk__();
     } else {
       __AssertOnElse__();
@@ -244,20 +244,20 @@ Return_t MOCKUSRT_write(Device_t *device_, Size_t *size_, Addr_t *data_) {
 
 
   Byte_t *buffer = null;
-  HalfWord_t bytesToWrite = nil;
-  HalfWord_t freeSpace = nil;
-  HalfWord_t i = nil;
+  HalfWord_t bytesToWrite = 0x0u;
+  HalfWord_t freeSpace = 0x0u;
+  HalfWord_t i = 0x0u;
 
 
   (void) device_;
 
-  if(__PointerIsNotNull__(size_) && __PointerIsNotNull__(data_) && (*size_ > nil)) {
+  if(__PointerIsNotNull__(size_) && __PointerIsNotNull__(data_) && (*size_ > 0x0u)) {
     buffer = (Byte_t *) data_;
     freeSpace = __GetTxFree__();
 
-    if(nil == freeSpace) {
+    if(0x0u == freeSpace) {
       /* No space available */
-      *size_ = nil;
+      *size_ = 0x0u;
 
 
       /* Return error by default */
@@ -268,7 +268,7 @@ Return_t MOCKUSRT_write(Device_t *device_, Size_t *size_, Addr_t *data_) {
     bytesToWrite = (*size_ < freeSpace) ? (HalfWord_t) *size_ : freeSpace;
 
     /* Copy data to TX buffer */
-    for(i = nil; i < bytesToWrite; i++) {
+    for(i = 0x0u; i < bytesToWrite; i++) {
       __TxWrite__(buffer[i]);
     }
 
@@ -295,7 +295,7 @@ Return_t MOCKUSRT_simple_read(Device_t *device_, Byte_t *data_) {
   if(__PointerIsNotNull__(data_)) {
     if(__RxRead__(data_)) {
       /* Update device availability */
-      device_->available = (__GetRxAvailable__() > nil) ? true : false;
+      device_->available = (__GetRxAvailable__() > 0x0u) ? true : false;
       __ReturnOk__();
     } else {
       /* Return error by default */
@@ -318,7 +318,7 @@ Return_t MOCKUSRT_simple_write(Device_t *device_, Byte_t data_) {
   FUNCTION_ENTER;
   (void) device_;
 
-  if(__GetTxFree__() > nil) {
+  if(__GetTxFree__() > 0x0u) {
     __TxWrite__(data_);
     __ReturnOk__();
   } else {
@@ -347,7 +347,7 @@ static HalfWord_t __GetRxAvailable__(void) {
  * @return HalfWord_t Free bytes
  */
 static HalfWord_t __GetTxFree__(void) {
-  HalfWord_t used = nil;
+  HalfWord_t used = 0x0u;
 
 
   if(state.txHead >= state.txTail) {
@@ -435,7 +435,7 @@ static Base_t __TxRead__(Byte_t *byte_) {
  * @param input_ Null-terminated string to inject
  */
 void xMockUSARTInjectInput(const Byte_t *input_) {
-  HalfWord_t i = nil;
+  HalfWord_t i = 0x0u;
 
 
   if(__PointerIsNotNull__(input_)) {
@@ -454,7 +454,7 @@ void xMockUSARTInjectInput(const Byte_t *input_) {
  * @param actualLen_ Actual bytes read
  */
 void xMockUSARTGetOutput(Byte_t *buffer_, HalfWord_t maxLen_, HalfWord_t *actualLen_) {
-  HalfWord_t i = nil;
+  HalfWord_t i = 0x0u;
   Byte_t byte = 0x00u;
 
 
@@ -473,10 +473,10 @@ void xMockUSARTGetOutput(Byte_t *buffer_, HalfWord_t maxLen_, HalfWord_t *actual
  * @brief Reset both RX and TX buffers
  */
 void xMockUSARTReset(void) {
-  state.rxHead = nil;
-  state.rxTail = nil;
-  state.txHead = nil;
-  state.txTail = nil;
+  state.rxHead = 0x0u;
+  state.rxTail = 0x0u;
+  state.txHead = 0x0u;
+  state.txTail = 0x0u;
   __memset__(state.rxBuffer, 0x00u, MOCK_USART_RX_BUFFER_SIZE);
   __memset__(state.txBuffer, 0x00u, MOCK_USART_TX_BUFFER_SIZE);
 }
@@ -496,7 +496,7 @@ HalfWord_t xMockUSARTGetRxAvailable(void) {
  * @return HalfWord_t Bytes in TX buffer
  */
 HalfWord_t xMockUSARTGetTxCount(void) {
-  HalfWord_t count = nil;
+  HalfWord_t count = 0x0u;
 
 
   if(state.txHead >= state.txTail) {
@@ -513,7 +513,7 @@ HalfWord_t xMockUSARTGetTxCount(void) {
  * @brief Clear TX buffer only (keep RX intact)
  */
 void xMockUSARTClearOutput(void) {
-  state.txHead = nil;
-  state.txTail = nil;
+  state.txHead = 0x0u;
+  state.txTail = 0x0u;
   __memset__(state.txBuffer, 0x00u, MOCK_USART_TX_BUFFER_SIZE);
 }

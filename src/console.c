@@ -44,7 +44,7 @@ static Volume_t *mountedVolume = null;
 
 /* Performance optimization: Cache for device lookup */
 static Device_t *cachedDevice = null;
-static HalfWord_t cachedDeviceUID = nil;
+static HalfWord_t cachedDeviceUID = 0x0u;
 
 
 /* Forward declarations for command handlers */
@@ -138,7 +138,7 @@ static const ConsoleCommand_t commandTable[] = {{
 
 
 STATIC_UNLESS_TEST Size_t __strlen__(const Byte_t *str_) {
-  Size_t len = nil;
+  Size_t len = 0x0u;
 
 
   if(__PointerIsNotNull__(str_)) {
@@ -155,10 +155,10 @@ STATIC_UNLESS_TEST Return_t __strcpy__(Byte_t *dest_, const Byte_t *src_, const 
   FUNCTION_ENTER;
 
 
-  Size_t i = nil;
+  Size_t i = 0x0u;
 
 
-  if(__PointerIsNotNull__(dest_) && __PointerIsNotNull__(src_) && (nil < destSize_)) {
+  if(__PointerIsNotNull__(dest_) && __PointerIsNotNull__(src_) && (0x0u < destSize_)) {
     while((CHAR_NULL != src_[i]) && (i < (destSize_ - 0x1u))) {
       dest_[i] = src_[i];
       i++;
@@ -178,11 +178,11 @@ STATIC_UNLESS_TEST Return_t __strncpy__(Byte_t *dest_, const Byte_t *src_, const
   FUNCTION_ENTER;
 
 
-  Size_t i = nil;
+  Size_t i = 0x0u;
 
 
-  if(__PointerIsNotNull__(dest_) && __PointerIsNotNull__(src_) && (nil < n_)) {
-    for(i = nil; (i < n_) && (CHAR_NULL != src_[i]); i++) {
+  if(__PointerIsNotNull__(dest_) && __PointerIsNotNull__(src_) && (0x0u < n_)) {
+    for(i = 0x0u; (i < n_) && (CHAR_NULL != src_[i]); i++) {
       dest_[i] = src_[i];
     }
 
@@ -200,11 +200,11 @@ STATIC_UNLESS_TEST Return_t __strncpy__(Byte_t *dest_, const Byte_t *src_, const
 
 
 STATIC_UNLESS_TEST Base_t __strcmp__(const Byte_t *s1_, const Byte_t *s2_) {
-  Size_t i = nil;
+  Size_t i = 0x0u;
 
 
   if(__PointerIsNull__(s1_) || __PointerIsNull__(s2_)) {
-    return (nil);
+    return (0x0u);
   }
 
   while((CHAR_NULL != s1_[i]) && (CHAR_NULL != s2_[i])) {
@@ -216,7 +216,7 @@ STATIC_UNLESS_TEST Base_t __strcmp__(const Byte_t *s1_, const Byte_t *s2_) {
   }
 
   if(s1_[i] == s2_[i]) {
-    return (nil);
+    return (0x0u);
   }
 
   return ((s1_[i] < s2_[i]) ? -0x1 : 0x1);
@@ -224,20 +224,20 @@ STATIC_UNLESS_TEST Base_t __strcmp__(const Byte_t *s1_, const Byte_t *s2_) {
 
 
 STATIC_UNLESS_TEST Base_t __strncmp__(const Byte_t *s1_, const Byte_t *s2_, const Size_t n_) {
-  Size_t i = nil;
+  Size_t i = 0x0u;
 
 
-  if(__PointerIsNull__(s1_) || __PointerIsNull__(s2_) || (nil == n_)) {
-    return (nil);
+  if(__PointerIsNull__(s1_) || __PointerIsNull__(s2_) || (0x0u == n_)) {
+    return (0x0u);
   }
 
-  for(i = nil; i < n_; i++) {
+  for(i = 0x0u; i < n_; i++) {
     if((CHAR_NULL == s1_[i]) || (s1_[i] != s2_[i])) {
-      return ((s1_[i] < s2_[i]) ? (Base_t) -0x1 : ((s1_[i] > s2_[i]) ? (Base_t) 0x1 : (Base_t) 0x0));
+      return ((s1_[i] < s2_[i]) ? (Base_t) -0x1 : ((s1_[i] > s2_[i]) ? (Base_t) 0x1 : (Base_t) 0x0u));
     }
   }
 
-  return (nil);
+  return (0x0u);
 }
 
 
@@ -245,11 +245,11 @@ STATIC_UNLESS_TEST Return_t __strcat__(Byte_t *dest_, const Byte_t *src_, const 
   FUNCTION_ENTER;
 
 
-  Size_t destLen = nil;
-  Size_t i = nil;
+  Size_t destLen = 0x0u;
+  Size_t i = 0x0u;
 
 
-  if(__PointerIsNotNull__(dest_) && __PointerIsNotNull__(src_) && (nil < destSize_)) {
+  if(__PointerIsNotNull__(dest_) && __PointerIsNotNull__(src_) && (0x0u < destSize_)) {
     destLen = __strlen__(dest_);
 
     if(destLen < destSize_) {
@@ -272,7 +272,7 @@ STATIC_UNLESS_TEST Return_t __strcat__(Byte_t *dest_, const Byte_t *src_, const 
 
 
 STATIC_UNLESS_TEST Byte_t * __strchr__(const Byte_t *str_, const Byte_t ch_) {
-  Size_t i = nil;
+  Size_t i = 0x0u;
 
 
   if(__PointerIsNull__(str_)) {
@@ -296,8 +296,8 @@ STATIC_UNLESS_TEST Byte_t * __strchr__(const Byte_t *str_, const Byte_t ch_) {
 
 
 STATIC_UNLESS_TEST Byte_t * __strrchr__(const Byte_t *str_, const Byte_t ch_) {
-  Size_t len = nil;
-  Size_t i = nil;
+  Size_t len = 0x0u;
+  Size_t i = 0x0u;
 
 
   if(__PointerIsNull__(str_)) {
@@ -306,13 +306,13 @@ STATIC_UNLESS_TEST Byte_t * __strrchr__(const Byte_t *str_, const Byte_t ch_) {
 
   len = __strlen__(str_);
 
-  for(i = len; i > nil; i--) {
+  for(i = len; i > 0x0u; i--) {
     if(str_[i - 0x1u] == ch_) {
       return ((Byte_t *) &str_[i - 0x1u]);
     }
   }
 
-  if((CHAR_NULL == ch_) && (len > nil)) {
+  if((CHAR_NULL == ch_) && (len > 0x0u)) {
     return ((Byte_t *) &str_[len]);
   }
 
@@ -324,12 +324,12 @@ STATIC_UNLESS_TEST Return_t __path_join__(Byte_t *dest_, const Byte_t *base_, co
   FUNCTION_ENTER;
 
 
-  Size_t baseLen = nil;
-  Size_t pathLen = nil;
+  Size_t baseLen = 0x0u;
+  Size_t pathLen = 0x0u;
   Base_t needSlash = false;
 
 
-  if(__PointerIsNull__(dest_) || __PointerIsNull__(base_) || __PointerIsNull__(path_) || (nil == destSize_)) {
+  if(__PointerIsNull__(dest_) || __PointerIsNull__(base_) || __PointerIsNull__(path_) || (0x0u == destSize_)) {
     __AssertOnElse__();
     FUNCTION_EXIT;
   }
@@ -337,12 +337,12 @@ STATIC_UNLESS_TEST Return_t __path_join__(Byte_t *dest_, const Byte_t *base_, co
   baseLen = __strlen__(base_);
   pathLen = __strlen__(path_);
 
-  if((nil == baseLen) || (nil == pathLen)) {
+  if((0x0u == baseLen) || (0x0u == pathLen)) {
     __AssertOnElse__();
     FUNCTION_EXIT;
   }
 
-  if(CHAR_SLASH == path_[nil]) {
+  if(CHAR_SLASH == path_[0x0u]) {
     if(pathLen >= destSize_) {
       __AssertOnElse__();
       __AssertOnElse__();
@@ -358,9 +358,9 @@ STATIC_UNLESS_TEST Return_t __path_join__(Byte_t *dest_, const Byte_t *base_, co
     FUNCTION_EXIT;
   }
 
-  needSlash = (CHAR_SLASH != base_[baseLen - 0x1u]) && (CHAR_SLASH != path_[nil]);
+  needSlash = (CHAR_SLASH != base_[baseLen - 0x1u]) && (CHAR_SLASH != path_[0x0u]);
 
-  if((baseLen + pathLen + (needSlash ? 0x1u : nil)) >= destSize_) {
+  if((baseLen + pathLen + (needSlash ? 0x1u : 0x0u)) >= destSize_) {
     __AssertOnElse__();
     FUNCTION_EXIT;
   }
@@ -388,84 +388,84 @@ STATIC_UNLESS_TEST Return_t __path_normalize__(Byte_t *path_, const Size_t pathS
   FUNCTION_ENTER;
 
 
-  Size_t i = nil;
-  Size_t j = nil;
-  Size_t len = nil;
+  Size_t i = 0x0u;
+  Size_t j = 0x0u;
+  Size_t len = 0x0u;
   Byte_t temp[CONFIG_FS_MAX_PATH_LENGTH];
   Byte_t segments[CONFIG_FS_MAX_PATH_LENGTH / 2][CONFIG_FS_MAX_PATH_LENGTH];
-  Size_t segmentCount = nil;
-  Size_t k = nil;
-  Size_t segLen = nil;
-  Size_t segIdx = nil;
+  Size_t segmentCount = 0x0u;
+  Size_t k = 0x0u;
+  Size_t segLen = 0x0u;
+  Size_t segIdx = 0x0u;
 
 
-  if(__PointerIsNull__(path_) || (nil == pathSize_)) {
+  if(__PointerIsNull__(path_) || (0x0u == pathSize_)) {
     __AssertOnElse__();
     FUNCTION_EXIT;
   }
 
   len = __strlen__(path_);
 
-  if((nil == len) || (len >= CONFIG_FS_MAX_PATH_LENGTH)) {
+  if((0x0u == len) || (len >= CONFIG_FS_MAX_PATH_LENGTH)) {
     __AssertOnElse__();
     FUNCTION_EXIT;
   }
 
-  for(i = nil; i <= len; i++) {
+  for(i = 0x0u; i <= len; i++) {
     temp[i] = path_[i];
   }
 
-  i = nil;
+  i = 0x0u;
 
-  if(CHAR_SLASH == temp[nil]) {
+  if(CHAR_SLASH == temp[0x0u]) {
     i = 0x1u;
   }
 
-  segIdx = nil;
+  segIdx = 0x0u;
 
   for(; i <= len; i++) {
     if((CHAR_SLASH == temp[i]) || (CHAR_NULL == temp[i])) {
-      if(segIdx > nil) {
+      if(segIdx > 0x0u) {
         segments[segmentCount][segIdx] = CHAR_NULL;
 
-        if((segments[segmentCount][nil] == '.') && (segments[segmentCount][0x1u] == '.') && (segments[segmentCount][0x2u] == CHAR_NULL)) {
-          if(segmentCount > nil) {
+        if((segments[segmentCount][0x0u] == '.') && (segments[segmentCount][0x1u] == '.') && (segments[segmentCount][0x2u] == CHAR_NULL)) {
+          if(segmentCount > 0x0u) {
             segmentCount--;
           }
-        } else if(!((segments[segmentCount][nil] == '.') && (segments[segmentCount][0x1u] == CHAR_NULL))) {
+        } else if(!((segments[segmentCount][0x0u] == '.') && (segments[segmentCount][0x1u] == CHAR_NULL))) {
           segmentCount++;
         }
 
-        segIdx = nil;
+        segIdx = 0x0u;
       }
     } else {
       segments[segmentCount][segIdx++] = temp[i];
     }
   }
 
-  j = nil;
+  j = 0x0u;
 
-  if(CHAR_SLASH == path_[nil]) {
+  if(CHAR_SLASH == path_[0x0u]) {
     path_[j++] = CHAR_SLASH;
   }
 
-  for(k = nil; k < segmentCount; k++) {
+  for(k = 0x0u; k < segmentCount; k++) {
     Size_t m;
 
 
     segLen = __strlen__(segments[k]);
 
-    if(k > nil) {
+    if(k > 0x0u) {
       path_[j++] = CHAR_SLASH;
     }
 
-    for(m = nil; m < segLen; m++) {
+    for(m = 0x0u; m < segLen; m++) {
       path_[j++] = segments[k][m];
     }
   }
 
-  if((nil == j) || ((0x1u == j) && (CHAR_SLASH == path_[nil]))) {
-    path_[nil] = CHAR_SLASH;
+  if((0x0u == j) || ((0x1u == j) && (CHAR_SLASH == path_[0x0u]))) {
+    path_[0x0u] = CHAR_SLASH;
     j = 0x1u;
   }
 
@@ -480,7 +480,7 @@ STATIC_UNLESS_TEST Base_t __path_is_absolute__(const Byte_t *path_) {
     return (false);
   }
 
-  return ((CHAR_SLASH == path_[nil]) ? true : false);
+  return ((CHAR_SLASH == path_[0x0u]) ? true : false);
 }
 
 
@@ -488,18 +488,18 @@ STATIC_UNLESS_TEST Return_t __path_dirname__(Byte_t *dest_, const Byte_t *path_,
   FUNCTION_ENTER;
 
 
-  Size_t len = nil;
-  Size_t i = nil;
+  Size_t len = 0x0u;
+  Size_t i = 0x0u;
 
 
-  if(__PointerIsNull__(dest_) || __PointerIsNull__(path_) || (nil == destSize_)) {
+  if(__PointerIsNull__(dest_) || __PointerIsNull__(path_) || (0x0u == destSize_)) {
     __AssertOnElse__();
     FUNCTION_EXIT;
   }
 
   len = __strlen__(path_);
 
-  if(nil == len) {
+  if(0x0u == len) {
     if(OK(__strcpy__(dest_, (const Byte_t *) ".", destSize_))) {
       __ReturnOk__();
     } else {
@@ -509,13 +509,13 @@ STATIC_UNLESS_TEST Return_t __path_dirname__(Byte_t *dest_, const Byte_t *path_,
     FUNCTION_EXIT;
   }
 
-  for(i = len; i > nil; i--) {
+  for(i = len; i > 0x0u; i--) {
     if(CHAR_SLASH == path_[i - 0x1u]) {
       break;
     }
   }
 
-  if(nil == i) {
+  if(0x0u == i) {
     if(OK(__strcpy__(dest_, (const Byte_t *) ".", destSize_))) {
       __ReturnOk__();
     } else {
@@ -544,19 +544,19 @@ STATIC_UNLESS_TEST Return_t __path_basename__(Byte_t *dest_, const Byte_t *path_
   FUNCTION_ENTER;
 
 
-  Size_t len = nil;
-  Size_t i = nil;
-  Size_t start = nil;
+  Size_t len = 0x0u;
+  Size_t i = 0x0u;
+  Size_t start = 0x0u;
 
 
-  if(__PointerIsNull__(dest_) || __PointerIsNull__(path_) || (nil == destSize_)) {
+  if(__PointerIsNull__(dest_) || __PointerIsNull__(path_) || (0x0u == destSize_)) {
     __AssertOnElse__();
     FUNCTION_EXIT;
   }
 
   len = __strlen__(path_);
 
-  if(nil == len) {
+  if(0x0u == len) {
     if(OK(__strcpy__(dest_, (const Byte_t *) ".", destSize_))) {
       __ReturnOk__();
     } else {
@@ -566,7 +566,7 @@ STATIC_UNLESS_TEST Return_t __path_basename__(Byte_t *dest_, const Byte_t *path_
     FUNCTION_EXIT;
   }
 
-  for(i = len; i > nil; i--) {
+  for(i = len; i > 0x0u; i--) {
     if(CHAR_SLASH == path_[i - 0x1u]) {
       start = i;
       break;
@@ -603,7 +603,7 @@ Return_t xConsoleInit(void) {
 #else /* if defined(CONFIG_CONSOLE_ECHO_ENABLED) */
     consoleState.echoEnabled = false;
 #endif /* if defined(CONFIG_CONSOLE_ECHO_ENABLED) */
-  consoleState.bufferPosition = nil;
+  consoleState.bufferPosition = 0x0u;
   __memset__(consoleState.commandBuffer, CHAR_NULL, CONFIG_CONSOLE_MAX_COMMAND_LENGTH);
   __strcpy__(consoleState.currentWorkingDirectory, (const Byte_t *) "/", CONFIG_FS_MAX_PATH_LENGTH);
   mountedVolume = null;
@@ -645,7 +645,7 @@ void vConsoleTask(Task_t *task_, TaskParm_t *parm_) {
     /* Device not ready - reset state */
     if(consoleState.deviceReady) {
       consoleState.deviceReady = false;
-      consoleState.bufferPosition = nil;
+      consoleState.bufferPosition = 0x0u;
 
 
       /* Unmount filesystem if it was mounted */
@@ -671,10 +671,10 @@ void vConsoleTask(Task_t *task_, TaskParm_t *parm_) {
 
 
       /* Process command if buffer is not empty */
-      if(consoleState.bufferPosition > nil) {
+      if(consoleState.bufferPosition > 0x0u) {
         consoleState.commandBuffer[consoleState.bufferPosition] = CHAR_NULL;
         __ConsoleProcessCommand__();
-        consoleState.bufferPosition = nil;
+        consoleState.bufferPosition = 0x0u;
       }
 
       __ConsolePrintPrompt__();
@@ -689,7 +689,7 @@ void vConsoleTask(Task_t *task_, TaskParm_t *parm_) {
           Byte_t echoChar[0x2];
 
 
-          echoChar[0x0] = ch;
+          echoChar[0x0u] = ch;
           echoChar[0x1] = CHAR_NULL;
           __ConsoleWriteString__(echoChar);
         }
@@ -714,7 +714,7 @@ static Return_t __ConsoleCheckDevice__(void) {
     } else {
       /* Device state changed, invalidate cache */
       cachedDevice = null;
-      cachedDeviceUID = nil;
+      cachedDeviceUID = 0x0u;
 
 
       /* Cache miss or invalid - look up device */
@@ -725,12 +725,12 @@ static Return_t __ConsoleCheckDevice__(void) {
           __ReturnOk__();
         } else {
           cachedDevice = null;
-          cachedDeviceUID = nil;
+          cachedDeviceUID = 0x0u;
           __AssertOnElse__();
         }
       } else {
         cachedDevice = null;
-        cachedDeviceUID = nil;
+        cachedDeviceUID = 0x0u;
         __AssertOnElse__();
       }
     }
@@ -743,12 +743,12 @@ static Return_t __ConsoleCheckDevice__(void) {
         __ReturnOk__();
       } else {
         cachedDevice = null;
-        cachedDeviceUID = nil;
+        cachedDeviceUID = 0x0u;
         __AssertOnElse__();
       }
     } else {
       cachedDevice = null;
-      cachedDeviceUID = nil;
+      cachedDeviceUID = 0x0u;
       __AssertOnElse__();
     }
   }
@@ -766,8 +766,8 @@ static Return_t __ConsoleWriteString__(const Byte_t *str_) {
   FUNCTION_ENTER;
 
 
-  Word_t len = nil;
-  Size_t size = nil;
+  Word_t len = 0x0u;
+  Size_t size = 0x0u;
   Device_t *device = null;
   CharDeviceCommand_t cmd;
 
@@ -775,7 +775,7 @@ static Return_t __ConsoleWriteString__(const Byte_t *str_) {
   if(__PointerIsNotNull__(str_)) {
     len = __strlen__(str_);
 
-    if(nil < len) {
+    if(0x0u < len) {
       /* Performance optimization: Try cached device first */
       if(__PointerIsNotNull__(cachedDevice) && (CONFIG_CONSOLE_DEVICE_UID == cachedDeviceUID)) {
         device = cachedDevice;
@@ -885,7 +885,7 @@ static Return_t __ConsoleReadChar__(Byte_t *ch_) {
         size = 0x1u;
 
         if(OK((*device->read)(device, &size, &readData))) {
-          if(__PointerIsNotNull__(readData) && (nil < size)) {
+          if(__PointerIsNotNull__(readData) && (0x0u < size)) {
             *ch_ = *((Byte_t *) readData);
             __KernelFreeMemory__(readData);
             __ReturnOk__();
@@ -929,7 +929,7 @@ static void __ConsolePrintPrompt__(void) {
 static Return_t __ConsoleHandleBackspace__(void) {
   FUNCTION_ENTER;
 
-  if(consoleState.bufferPosition > nil) {
+  if(consoleState.bufferPosition > 0x0u) {
     consoleState.bufferPosition--;
     consoleState.commandBuffer[consoleState.bufferPosition] = 0x00u;
 
@@ -958,7 +958,7 @@ static Return_t __ConsoleProcessCommand__(void) {
 
   Byte_t *cmdName = consoleState.commandBuffer;
   Byte_t *cmdArgs = null;
-  Word_t i = nil;
+  Word_t i = 0x0u;
   Base_t commandFound = false;
 
 
@@ -967,7 +967,7 @@ static Return_t __ConsoleProcessCommand__(void) {
 
 
   /* Find space to separate command from arguments */
-  for(i = nil; cmdName[i] != CHAR_NULL; i++) {
+  for(i = 0x0u; cmdName[i] != CHAR_NULL; i++) {
     if(CHAR_SPACE == cmdName[i]) {
       cmdName[i] = CHAR_NULL;
       cmdArgs = &cmdName[i + 0x1u];
@@ -978,11 +978,11 @@ static Return_t __ConsoleProcessCommand__(void) {
 
 
   /* Empty command - return success */
-  if(CHAR_NULL == cmdName[0x0]) {
+  if(CHAR_NULL == cmdName[0x0u]) {
     __ReturnOk__();
   } else {
     /* Search command table */
-    for(i = nil; __PointerIsNotNull__(commandTable[i].name) && !commandFound; i++) {
+    for(i = 0x0u; __PointerIsNotNull__(commandTable[i].name) && !commandFound; i++) {
       if(0 == __strcmp__(cmdName, commandTable[i].name)) {
         if(__PointerIsNotNull__(commandTable[i].handler)) {
           if(OK(commandTable[i].handler((const Byte_t *) cmdArgs))) {
@@ -1017,13 +1017,13 @@ static Return_t __ConsoleCmdHelp__(const Byte_t *args_) {
   FUNCTION_ENTER;
 
 
-  Word_t i = nil;
+  Word_t i = 0x0u;
 
 
   (void) args_;
   __ConsoleWriteString__((const Byte_t *) "Available commands:\r\n");
 
-  for(i = nil; __PointerIsNotNull__(commandTable[i].name); i++) {
+  for(i = 0x0u; __PointerIsNotNull__(commandTable[i].name); i++) {
     __ConsoleWriteString__((const Byte_t *) "  ");
     __ConsoleWriteString__(commandTable[i].name);
     __ConsoleWriteString__((const Byte_t *) " - ");
@@ -1061,8 +1061,8 @@ static Return_t __ConsoleCmdTasks__(const Byte_t *args_) {
 
 
   TaskInfo_t *taskList = null;
-  Base_t taskCount = nil;
-  Base_t i = nil;
+  Base_t taskCount = 0x0u;
+  Base_t i = 0x0u;
   Byte_t numBuf[0x10];
 
 
@@ -1072,7 +1072,7 @@ static Return_t __ConsoleCmdTasks__(const Byte_t *args_) {
   __ConsoleWriteString__((const Byte_t *) "  ---- ---------- --------\r\n");
 
   if(OK(xTaskGetAllTaskInfo(&taskList, &taskCount))) {
-    for(i = nil; i < taskCount; i++) {
+    for(i = 0x0u; i < taskCount; i++) {
       /* Print task ID */
       __ConsoleWriteString__((const Byte_t *) "  ");
       __uitoah__((Word_t) taskList[i].id, numBuf, sizeof(numBuf));
@@ -1186,7 +1186,7 @@ static Return_t __ConsoleCmdClear__(const Byte_t *args_) {
 static Return_t __ConsoleCmdEcho__(const Byte_t *args_) {
   FUNCTION_ENTER;
 
-  if(__PointerIsNotNull__(args_) && (CHAR_NULL != args_[0x0])) {
+  if(__PointerIsNotNull__(args_) && (CHAR_NULL != args_[0x0u])) {
     /* Print the arguments */
     __ConsoleWriteString__(args_);
     __ConsoleWriteString__((const Byte_t *) "\r\n");
@@ -1231,7 +1231,7 @@ static Return_t __ConsoleCmdLs__(const Byte_t *args_) {
 
 
   /* Determine path */
-  if(__PointerIsNotNull__(args_) && (CHAR_NULL != args_[0x0])) {
+  if(__PointerIsNotNull__(args_) && (CHAR_NULL != args_[0x0u])) {
     __strcpy__(path, args_, CONFIG_FS_MAX_PATH_LENGTH);
   } else {
     __strcpy__(path, consoleState.currentWorkingDirectory, CONFIG_FS_MAX_PATH_LENGTH);
@@ -1305,7 +1305,7 @@ static Return_t __ConsoleCmdCd__(const Byte_t *args_) {
 
 
   if(__PointerIsNotNull__(mountedVolume)) {
-    if(!__PointerIsNotNull__(args_) || (CHAR_NULL == args_[0x0])) {
+    if(!__PointerIsNotNull__(args_) || (CHAR_NULL == args_[0x0u])) {
       /* No argument - go to root */
       __strcpy__(newPath, (const Byte_t *) "/", CONFIG_FS_MAX_PATH_LENGTH);
     } else if(0 == __strcmp__(args_, (const Byte_t *) "..")) {
@@ -1394,13 +1394,13 @@ static Return_t __ConsoleCmdCat__(const Byte_t *args_) {
 
   File_t *file = null;
   Byte_t *buffer = null;
-  Word_t bytesToRead = nil;
-  Word_t fileSize = nil;
-  Word_t totalRead = nil;
+  Word_t bytesToRead = 0x0u;
+  Word_t fileSize = 0x0u;
+  Word_t totalRead = 0x0u;
   Byte_t path[CONFIG_FS_MAX_PATH_LENGTH];
 
 
-  if(__PointerIsNotNull__(mountedVolume) && __PointerIsNotNull__(args_) && (0x00u != args_[0x0])) {
+  if(__PointerIsNotNull__(mountedVolume) && __PointerIsNotNull__(args_) && (0x00u != args_[0x0u])) {
     /* Use path utility to build full path */
     if(__path_is_absolute__(args_)) {
       __strcpy__(path, args_, CONFIG_FS_MAX_PATH_LENGTH);
@@ -1422,7 +1422,7 @@ static Return_t __ConsoleCmdCat__(const Byte_t *args_) {
     if(OK(xFileOpen(&file, mountedVolume, path, FS_MODE_READ))) {
       /* Get file size for progress tracking */
       if(OK(xFileGetSize(file, &fileSize))) {
-        if(nil < fileSize) {
+        if(0x0u < fileSize) {
           /* Allocate buffer for chunked reading */
           if(OK(xMemAlloc((volatile Addr_t **) &buffer, CAT_BUFFER_SIZE))) {
             /* Read file in chunks */
@@ -1434,18 +1434,18 @@ static Return_t __ConsoleCmdCat__(const Byte_t *args_) {
               /* Read chunk from file */
               if(OK(xFileRead(file, bytesToRead, &buffer))) {
                 /* Display chunk contents */
-                Word_t i = nil;
+                Word_t i = 0x0u;
                 Byte_t ch[0x2] = {
                   0x00u, 0x00u
                 };
 
 
-                for(i = nil; i < bytesToRead; i++) {
-                  ch[0x0] = buffer[i];
+                for(i = 0x0u; i < bytesToRead; i++) {
+                  ch[0x0u] = buffer[i];
 
 
                   /* Convert LF to CRLF for terminal */
-                  if(CHAR_LF == ch[0x0]) {
+                  if(CHAR_LF == ch[0x0u]) {
                     __ConsoleWriteString__((const Byte_t *) "\r\n");
                   } else {
                     __ConsoleWriteString__(ch);
@@ -1536,12 +1536,12 @@ static Return_t __ConsoleCmdMv__(const Byte_t *args_) {
   Byte_t newPath[CONFIG_FS_MAX_PATH_LENGTH];
   const Byte_t *src = args_;
   const Byte_t *dst = null;
-  Word_t i = nil;
+  Word_t i = 0x0u;
 
 
-  if(__PointerIsNotNull__(mountedVolume) && __PointerIsNotNull__(args_) && (CHAR_NULL != args_[0x0])) {
+  if(__PointerIsNotNull__(mountedVolume) && __PointerIsNotNull__(args_) && (CHAR_NULL != args_[0x0u])) {
     /* Find space separating source and destination */
-    for(i = nil; args_[i] != CHAR_NULL; i++) {
+    for(i = 0x0u; args_[i] != CHAR_NULL; i++) {
       if(CHAR_SPACE == args_[i]) {
         dst = &args_[i + 0x1u];
         __SkipWhitespace__(&dst);
@@ -1549,7 +1549,7 @@ static Return_t __ConsoleCmdMv__(const Byte_t *args_) {
       }
     }
 
-    if(__PointerIsNotNull__(dst) && (CHAR_NULL != dst[0x0])) {
+    if(__PointerIsNotNull__(dst) && (CHAR_NULL != dst[0x0u])) {
       /* Build source path */
       __memcpy__(oldPath, src, i);
       oldPath[i] = CHAR_NULL;
@@ -1596,7 +1596,7 @@ static Return_t __ConsoleCmdRm__(const Byte_t *args_) {
   Byte_t path[CONFIG_FS_MAX_PATH_LENGTH];
 
 
-  if(__PointerIsNotNull__(mountedVolume) && __PointerIsNotNull__(args_) && (CHAR_NULL != args_[0x0])) {
+  if(__PointerIsNotNull__(mountedVolume) && __PointerIsNotNull__(args_) && (CHAR_NULL != args_[0x0u])) {
     /* Build full path using path utilities */
     if(__path_is_absolute__(args_)) {
       __strcpy__(path, args_, CONFIG_FS_MAX_PATH_LENGTH);
@@ -1652,7 +1652,7 @@ static Return_t __ConsoleCmdMkdir__(const Byte_t *args_) {
   Byte_t path[CONFIG_FS_MAX_PATH_LENGTH];
 
 
-  if(__PointerIsNotNull__(mountedVolume) && __PointerIsNotNull__(args_) && (CHAR_NULL != args_[0x0])) {
+  if(__PointerIsNotNull__(mountedVolume) && __PointerIsNotNull__(args_) && (CHAR_NULL != args_[0x0u])) {
     /* Build full path using path utilities */
     if(__path_is_absolute__(args_)) {
       __strcpy__(path, args_, CONFIG_FS_MAX_PATH_LENGTH);
@@ -1717,7 +1717,7 @@ static void __SkipWhitespace__(const Byte_t **str_) {
  */
 static void __uitoah__(Word_t value_, Byte_t *buffer_, Word_t bufferSize_) {
   const Byte_t *hexDigits = (const Byte_t *) "0123456789ABCDEF";
-  Word_t i = nil;
+  Word_t i = 0x0u;
   Word_t temp = value_;
 
 
@@ -1731,7 +1731,7 @@ static void __uitoah__(Word_t value_, Byte_t *buffer_, Word_t bufferSize_) {
   buffer_[i++] = CHAR_LOWERCASE_X; /* 'x' */
 
   /* Handle zero specially */
-  if(nil == value_) {
+  if(0x0u == value_) {
     if(i < bufferSize_ - 0x1u) {
       buffer_[i++] = CHAR_ZERO;  /* '0' */
     }
@@ -1745,11 +1745,11 @@ static void __uitoah__(Word_t value_, Byte_t *buffer_, Word_t bufferSize_) {
   /* Convert to hex digits (will be in reverse order initially) */
   {
     Word_t start = i;
-    Word_t end = nil;
+    Word_t end = 0x0u;
     Byte_t tmpChar = CHAR_NULL;
 
 
-    while(temp > nil && i < bufferSize_ - 0x1u) {
+    while(temp > 0x0u && i < bufferSize_ - 0x1u) {
       buffer_[i++] = hexDigits[temp & 0xFu];
       temp >>= 0x4;
     }
@@ -1782,7 +1782,7 @@ static void __uitoah__(Word_t value_, Byte_t *buffer_, Word_t bufferSize_) {
   #else /* if defined(CONFIG_CONSOLE_ECHO_ENABLED) */
       consoleState.echoEnabled = false;
   #endif /* if defined(CONFIG_CONSOLE_ECHO_ENABLED) */
-    consoleState.bufferPosition = nil;
+    consoleState.bufferPosition = 0x0u;
     __memset__(consoleState.commandBuffer, CHAR_NULL, CONFIG_CONSOLE_MAX_COMMAND_LENGTH);
     __strcpy__(consoleState.currentWorkingDirectory, (const Byte_t *) "/", CONFIG_FS_MAX_PATH_LENGTH);
     mountedVolume = null;

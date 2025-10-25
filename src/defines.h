@@ -45,16 +45,11 @@
 
   #if !defined(null)
     #if defined(__cplusplus)
-      #define null 0x0 /* 0 */
+      #define null 0x0u /* 0 */
     #else  /* if defined(__cplusplus) */
       #define null ((void *) 0x0) /* 0 */
     #endif /* if defined(__cplusplus) */
   #endif /* if !defined(null) */
-
-
-  #if !defined(nil)
-    #define nil 0x00u /* 0 */
-  #endif /* if !defined(nil) */
 
 
   #if !defined(UINT8_TYPE)

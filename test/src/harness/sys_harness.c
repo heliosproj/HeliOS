@@ -54,7 +54,7 @@ static void test_system_initialization(void) {
   /* Test 1.1: Multiple initialization calls succeed (idempotent) */
   unit_begin("System initialization succeeds when called multiple times");
 
-  for(i = nil; i < INIT_CALL_COUNT; i++) {
+  for(i = 0x0u; i < INIT_CALL_COUNT; i++) {
     unit_assert_ok(xSystemInit());
   }
 

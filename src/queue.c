@@ -30,10 +30,10 @@ static Return_t __QueuePeek__(const Queue_t *queue_, QueueMessage_t **message_);
 #define __QueueLengthCorrect__() (queue_->length == messages)
 
 
-#define __QueueLengthZero__() (messages == nil)
+#define __QueueLengthZero__() (messages == 0x0u)
 
 
-#define __QueueLengthNonZero__() (nil < messages)
+#define __QueueLengthNonZero__() (0x0u < messages)
 
 
 #define __QueueLengthAtLimit__() (queue_->limit <= messages)
@@ -48,7 +48,7 @@ Return_t xQueueCreate(Queue_t **queue_, const Base_t limit_) {
   if(__PointerIsNotNull__(queue_) && (CONFIG_QUEUE_MINIMUM_LIMIT <= limit_)) {
     if(OK(__KernelAllocateMemory__((volatile Addr_t **) queue_, sizeof(Queue_t)))) {
       if(__PointerIsNotNull__(*queue_)) {
-        (*queue_)->length = nil;
+        (*queue_)->length = 0x0u;
         (*queue_)->limit = limit_;
         (*queue_)->locked = false;
         (*queue_)->head = null;
@@ -97,7 +97,7 @@ Return_t xQueueGetLength(const Queue_t *queue_, Base_t *res_) {
   FUNCTION_ENTER;
 
 
-  Base_t messages = nil;
+  Base_t messages = 0x0u;
   Message_t *cursor = null;
 
 
@@ -126,7 +126,7 @@ Return_t xQueueIsQueueEmpty(const Queue_t *queue_, Base_t *res_) {
   FUNCTION_ENTER;
 
 
-  Base_t messages = nil;
+  Base_t messages = 0x0u;
   Message_t *cursor = null;
 
 
@@ -137,7 +137,7 @@ Return_t xQueueIsQueueEmpty(const Queue_t *queue_, Base_t *res_) {
     /* Confirm the length of the queue matches the number of the messages we
      * counted while traversing the queue.
      *
-     * If the number of messages is nil, then set res_ to true because the queue
+     * If the number of messages is 0x0u, then set res_ to true because the queue
      * is empty. Otherwise set res_ to false because the queue is *NOT*
      * empty. */
     if(__QueueLengthZero__() && __QueueLengthCorrect__()) {
@@ -161,7 +161,7 @@ Return_t xQueueIsQueueFull(const Queue_t *queue_, Base_t *res_) {
   FUNCTION_ENTER;
 
 
-  Base_t messages = nil;
+  Base_t messages = 0x0u;
   Message_t *cursor = null;
 
 
@@ -197,7 +197,7 @@ Return_t xQueueMessagesWaiting(const Queue_t *queue_, Base_t *res_) {
   FUNCTION_ENTER;
 
 
-  Base_t messages = nil;
+  Base_t messages = 0x0u;
   Message_t *cursor = null;
 
 
@@ -208,7 +208,7 @@ Return_t xQueueMessagesWaiting(const Queue_t *queue_, Base_t *res_) {
     /* Confirm the length of the queue matches the number of the messages we
      * counted while traversing the queue.
      *
-     * If the number of messages greater than nil, then set res_ to true because
+     * If the number of messages greater than 0x0u, then set res_ to true because
      * there is at least one message waiting - possibly more. Otherwise set res_
      * to false because there are no messages waiting in the queue. */
     if(__QueueLengthNonZero__() && __QueueLengthCorrect__()) {
@@ -233,11 +233,11 @@ Return_t xQueueSend(Queue_t *queue_, const Base_t bytes_, const Byte_t *value_) 
 
 
   Message_t *message = null;
-  Base_t messages = nil;
+  Base_t messages = 0x0u;
   Message_t *cursor = null;
 
 
-  if(__PointerIsNotNull__(queue_) && (nil < bytes_) && (CONFIG_MESSAGE_VALUE_BYTES >= bytes_) && __PointerIsNotNull__(value_)) {
+  if(__PointerIsNotNull__(queue_) && (0x0u < bytes_) && (CONFIG_MESSAGE_VALUE_BYTES >= bytes_) && __PointerIsNotNull__(value_)) {
     if(false == queue_->locked) {
       __GetQueueLength__();
 

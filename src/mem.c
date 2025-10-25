@@ -31,7 +31,7 @@ static volatile MemoryRegion_t kernel = {
         ((value_) & ~((alignment_) - 1))
 
 #define __IsAligned__(value_, alignment_) \
-        (((value_) & ((alignment_) - 1)) == nil)
+        (((value_) & ((alignment_) - 1)) == 0x0u)
 
 #define ALIGNED_HEADER_SIZE \
         (((sizeof(BlockHeader_t)) + (CONFIG_MEMORY_ALIGNMENT - 1)) & ~(CONFIG_MEMORY_ALIGNMENT - 1))
@@ -110,7 +110,7 @@ static Return_t __ValidateBlockHeader__(const BlockHeader_t *header_, const vola
   FUNCTION_ENTER;
 
 
-  Word_t expectedChecksum = nil;
+  Word_t expectedChecksum = 0x0u;
 
 
   if(((const Byte_t *) header_ >= (const Byte_t *) region_->mem) && ((const Byte_t *) header_ < ((const Byte_t *) region_->mem + MEMORY_REGION_SIZE -
@@ -191,10 +191,10 @@ static Return_t __MemoryRegionInit__(volatile MemoryRegion_t *region_) {
   if(__PointerIsNotNull__(region_)) {
     region_->first = (BlockHeader_t *) region_->mem;
     region_->minAvailableEver = MEMORY_REGION_SIZE;
-    region_->allocations = nil;
-    region_->frees = nil;
+    region_->allocations = 0x0u;
+    region_->frees = 0x0u;
 
-    if(OK(__memset__((volatile Addr_t *) region_->mem, nil, MEMORY_REGION_SIZE))) {
+    if(OK(__memset__((volatile Addr_t *) region_->mem, 0x0u, MEMORY_REGION_SIZE))) {
       first = region_->first;
       first->next = null;
       first->size = MEMORY_REGION_SIZE - ALIGNED_HEADER_SIZE;
@@ -217,20 +217,20 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
   FUNCTION_ENTER;
 
 
-  Size_t requested = nil;
-  Size_t available = nil;
+  Size_t requested = 0x0u;
+  Size_t available = 0x0u;
   BlockHeader_t *cursor = null;
   BlockHeader_t *candidate = null;
   BlockHeader_t *next = null;
   BlockHeader_t *first = null;
   Size_t candidateSize = (Size_t) -1;
-  Size_t traversedSize = nil;
+  Size_t traversedSize = 0x0u;
 
 
   __DisableInterrupts__();
   requested = __AlignUp__(size_, CONFIG_MEMORY_ALIGNMENT);
 
-  if(__FlagIsNotSet__(MEMFAULT) && __PointerIsNotNull__(region_) && __PointerIsNotNull__(addr_) && (nil < size_) && (requested >= size_) && ((requested <
+  if(__FlagIsNotSet__(MEMFAULT) && __PointerIsNotNull__(region_) && __PointerIsNotNull__(addr_) && (0x0u < size_) && (requested >= size_) && ((requested <
     MEMORY_REGION_SIZE) && ((requested + ALIGNED_HEADER_SIZE) <= MEMORY_REGION_SIZE))) {
     if(__PointerIsNull__(region_->first)) {
       region_->first = (BlockHeader_t *) region_->mem;
@@ -282,7 +282,7 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
       candidate->free = INUSE;
       candidate->checksum = __checksum__(candidate);
 
-      if(OK(__memset__(__OffsetBlockHeaderToPointer__(candidate), nil, requested))) {
+      if(OK(__memset__(__OffsetBlockHeaderToPointer__(candidate), 0x0u, requested))) {
         *addr_ = __OffsetBlockHeaderToPointer__(candidate);
 
         if(__IsAligned__((Size_t) *addr_, CONFIG_MEMORY_ALIGNMENT)) {
@@ -363,14 +363,14 @@ static Return_t __DefragMemoryRegion__(volatile MemoryRegion_t *region_) {
 
   BlockHeader_t *cursor = null;
   BlockHeader_t *nextBlock = null;
-  Size_t traversedSize = nil;
-  Size_t mergedSize = nil;
+  Size_t traversedSize = 0x0u;
+  Size_t mergedSize = 0x0u;
   Base_t headForExit = false;
 
 
   if(__PointerIsNotNull__(region_)) {
     cursor = region_->first;
-    traversedSize = nil;
+    traversedSize = 0x0u;
 
     while(__PointerIsNotNull__(cursor) && !headForExit) {
       if(traversedSize <= MEMORY_REGION_SIZE - ALIGNED_HEADER_SIZE - cursor->size) {
@@ -476,8 +476,8 @@ Return_t xMemGetUsed(Size_t *size_) {
 
 
   BlockHeader_t *cursor = null;
-  Size_t used = nil;
-  Size_t traversedSize = nil;
+  Size_t used = 0x0u;
+  Size_t traversedSize = 0x0u;
 
 
   if(__PointerIsNotNull__(size_)) {
@@ -610,11 +610,11 @@ static Return_t __MemGetRegionStats__(const volatile MemoryRegion_t *region_, Me
 
   MemoryRegionStats_t *stats = null;
   BlockHeader_t *cursor = null;
-  Word_t largestFree = nil;
+  Word_t largestFree = 0x0u;
   Word_t smallestFree = (Word_t) -1;
-  Word_t freeBlocks = nil;
-  Word_t availableBytes = nil;
-  Size_t traversedSize = nil;
+  Word_t freeBlocks = 0x0u;
+  Word_t availableBytes = 0x0u;
+  Size_t traversedSize = 0x0u;
 
 
   if(__PointerIsNotNull__(region_) && __PointerIsNotNull__(stats_)) {
@@ -703,16 +703,16 @@ Return_t __memcpy__(const volatile Addr_t *dest_, const volatile Addr_t *src_, c
   FUNCTION_ENTER;
 
 
-  Size_t i = nil;
+  Size_t i = 0x0u;
   volatile Byte_t *src = null;
   volatile Byte_t *dest = null;
 
 
-  if(__PointerIsNotNull__(dest_) && __PointerIsNotNull__(src_) && (nil < size_)) {
+  if(__PointerIsNotNull__(dest_) && __PointerIsNotNull__(src_) && (0x0u < size_)) {
     src = (Byte_t *) src_;
     dest = (Byte_t *) dest_;
 
-    for(i = nil; i < size_; i++) {
+    for(i = 0x0u; i < size_; i++) {
       dest[i] = src[i];
     }
 
@@ -730,14 +730,14 @@ Return_t __memset__(const volatile Addr_t *dest_, const Byte_t val_, const Size_
   FUNCTION_ENTER;
 
 
-  Size_t i = nil;
+  Size_t i = 0x0u;
   volatile Byte_t *dest = null;
 
 
-  if(__PointerIsNotNull__(dest_) && (nil < size_)) {
+  if(__PointerIsNotNull__(dest_) && (0x0u < size_)) {
     dest = (Byte_t *) dest_;
 
-    for(i = nil; i < size_; i++) {
+    for(i = 0x0u; i < size_; i++) {
       dest[i] = (Byte_t) val_;
     }
 
@@ -755,17 +755,17 @@ Return_t __memcmp__(const volatile Addr_t *s1_, const volatile Addr_t *s2_, cons
   FUNCTION_ENTER;
 
 
-  Size_t i = nil;
+  Size_t i = 0x0u;
   volatile Byte_t *s1 = null;
   volatile Byte_t *s2 = null;
 
 
-  if(__PointerIsNotNull__(s1_) && __PointerIsNotNull__(s2_) && (nil < size_) && __PointerIsNotNull__(res_)) {
+  if(__PointerIsNotNull__(s1_) && __PointerIsNotNull__(s2_) && (0x0u < size_) && __PointerIsNotNull__(res_)) {
     *res_ = true;
     s1 = (Byte_t *) s1_;
     s2 = (Byte_t *) s2_;
 
-    for(i = nil; i < size_; i++) {
+    for(i = 0x0u; i < size_; i++) {
       if(*s1 != *s2) {
         *res_ = false;
         break;

@@ -38,7 +38,7 @@
   #if defined(OS_MAJOR_VERSION_NO)
     #undef OS_MAJOR_VERSION_NO
   #endif /* if defined(OS_MAJOR_VERSION_NO) */
-  #define OS_MAJOR_VERSION_NO nil /* 0 */
+  #define OS_MAJOR_VERSION_NO 0x0u /* 0 */
 
 
   #if defined(OS_MINOR_VERSION_NO)
@@ -50,7 +50,7 @@
   #if defined(OS_PATCH_VERSION_NO)
     #undef OS_PATCH_VERSION_NO
   #endif /* if defined(OS_PATCH_VERSION_NO) */
-  #define OS_PATCH_VERSION_NO nil /* 0 */
+  #define OS_PATCH_VERSION_NO 0x0u /* 0 */
 
 
   #if defined(RUNNING)
@@ -98,7 +98,7 @@
   #if defined(__FlagIsNotSet__)
     #undef __FlagIsNotSet__
   #endif /* if defined(__FlagIsNotSet__) */
-  #define __FlagIsNotSet__(flag_) (nil == (flag_))
+  #define __FlagIsNotSet__(flag_) (0x0u == (flag_))
 
   #ifdef __cplusplus
     extern "C" {

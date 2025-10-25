@@ -83,7 +83,7 @@ void console_harness(void) {
  */
 static void test_console_initialization(void) {
   CharDeviceConfig_t *charConfig = null;
-  Size_t size = nil;
+  Size_t size = 0x0u;
 
 
   unit_print("--- Section 1: Console Initialization ---");
@@ -110,8 +110,8 @@ static void test_console_initialization(void) {
   charConfig->protocol = CHAR_PROTOCOL_RAW;
   charConfig->lineMode = CHAR_LINE_RAW;
   charConfig->baudRate = 115200u;
-  charConfig->rxBufferSize = nil;  /* Use default */
-  charConfig->txBufferSize = nil; /* Use default */
+  charConfig->rxBufferSize = 0x0u;  /* Use default */
+  charConfig->txBufferSize = 0x0u; /* Use default */
   size = sizeof(CharDeviceConfig_t);
   unit_assert_ok(xDeviceConfigDevice(CONFIG_CONSOLE_DEVICE_UID, &size, (Addr_t *) charConfig));
   xMemFree((Addr_t *) charConfig);
@@ -132,7 +132,7 @@ static void test_console_initialization(void) {
  */
 static void test_character_input_handling(void) {
   Byte_t output[TEST_OUTPUT_BUFFER_SIZE];
-  HalfWord_t outputLen = nil;
+  HalfWord_t outputLen = 0x0u;
   Task_t *consoleTask = null;
 
 
@@ -151,7 +151,7 @@ static void test_character_input_handling(void) {
 
   /* Check that character was echoed */
   xMockUSARTGetOutput(output, TEST_OUTPUT_BUFFER_SIZE, &outputLen);
-  unit_assert_true(outputLen > nil);
+  unit_assert_true(outputLen > 0x0u);
   unit_end();
 
 
@@ -167,7 +167,7 @@ static void test_character_input_handling(void) {
 
   /* Verify backspace sequence was sent */
   xMockUSARTGetOutput(output, TEST_OUTPUT_BUFFER_SIZE, &outputLen);
-  unit_assert_true(outputLen > nil);
+  unit_assert_true(outputLen > 0x0u);
   unit_end();
 
 
@@ -201,7 +201,7 @@ static void test_character_input_handling(void) {
  */
 static void test_command_parsing(void) {
   Byte_t output[TEST_OUTPUT_BUFFER_SIZE];
-  HalfWord_t outputLen = nil;
+  HalfWord_t outputLen = 0x0u;
 
 
   unit_print("--- Section 3: Command Parsing ---");
@@ -247,7 +247,7 @@ static void test_command_parsing(void) {
  */
 static void test_help_command(void) {
   Byte_t output[TEST_OUTPUT_BUFFER_SIZE];
-  HalfWord_t outputLen = nil;
+  HalfWord_t outputLen = 0x0u;
 
 
   unit_print("--- Section 4: Help Command ---");
@@ -273,7 +273,7 @@ static void test_help_command(void) {
  */
 static void test_version_command(void) {
   Byte_t output[TEST_OUTPUT_BUFFER_SIZE];
-  HalfWord_t outputLen = nil;
+  HalfWord_t outputLen = 0x0u;
 
 
   unit_print("--- Section 5: Version Command ---");
@@ -298,7 +298,7 @@ static void test_version_command(void) {
  */
 static void test_echo_command(void) {
   Byte_t output[TEST_OUTPUT_BUFFER_SIZE];
-  HalfWord_t outputLen = nil;
+  HalfWord_t outputLen = 0x0u;
 
 
   unit_print("--- Section 6: Echo Command ---");
@@ -340,8 +340,8 @@ static void test_echo_command(void) {
  * @return           Base_t true if found, false otherwise
  */
 static Base_t __OutputContains__(const Byte_t *output_, const Byte_t *expected_) {
-  Word_t i = nil;
-  Word_t j = nil;
+  Word_t i = 0x0u;
+  Word_t j = 0x0u;
   Base_t found = false;
 
 
@@ -352,7 +352,7 @@ static Base_t __OutputContains__(const Byte_t *output_, const Byte_t *expected_)
 
   /* Simple substring search */
   while(0x00u != output_[i]) {
-    j = nil;
+    j = 0x0u;
 
     while((output_[i + j] == expected_[j]) && (0x00u != expected_[j])) {
       j++;
@@ -375,10 +375,10 @@ static Base_t __OutputContains__(const Byte_t *output_, const Byte_t *expected_)
  * @param cycles_ Number of cycles to simulate
  */
 static void __SimulateConsoleCycles__(HalfWord_t cycles_) {
-  HalfWord_t i = nil;
+  HalfWord_t i = 0x0u;
 
 
-  for(i = nil; i < cycles_; i++) {
+  for(i = 0x0u; i < cycles_; i++) {
     vConsoleTask(null, null);
   }
 }
@@ -389,7 +389,7 @@ static void __SimulateConsoleCycles__(HalfWord_t cycles_) {
  */
 static void __SetupConsoleEnvironment__(void) {
   CharDeviceConfig_t *charConfig = null;
-  Size_t size = nil;
+  Size_t size = 0x0u;
 
 
   /* Clear and reset */
@@ -405,8 +405,8 @@ static void __SetupConsoleEnvironment__(void) {
     charConfig->protocol = CHAR_PROTOCOL_RAW;
     charConfig->lineMode = CHAR_LINE_RAW;
     charConfig->baudRate = 115200u;
-    charConfig->rxBufferSize = nil;
-    charConfig->txBufferSize = nil;
+    charConfig->rxBufferSize = 0x0u;
+    charConfig->txBufferSize = 0x0u;
     size = sizeof(CharDeviceConfig_t);
     xDeviceConfigDevice(CONFIG_CONSOLE_DEVICE_UID, &size, (Addr_t *) charConfig);
     xMemFree((Addr_t *) charConfig);
@@ -441,7 +441,7 @@ static void __SetupConsoleEnvironment__(void) {
 
 
     Byte_t output[TEST_OUTPUT_BUFFER_SIZE];
-    HalfWord_t outputLen = nil;
+    HalfWord_t outputLen = 0x0u;
     Byte_t commandWithCR[TEST_MAX_COMMAND_LENGTH + 0x2u];
 
 
@@ -628,7 +628,7 @@ static void test_buffered_file_operations(void) {
  */
 static void test_device_caching(void) {
   Byte_t output[TEST_OUTPUT_BUFFER_SIZE];
-  HalfWord_t outputLen = nil;
+  HalfWord_t outputLen = 0x0u;
 
 
   unit_print("--- Section 9: Device Caching ---");
@@ -648,7 +648,7 @@ static void test_device_caching(void) {
 
   /* Verify at least some characters were processed */
   xMockUSARTGetOutput(output, TEST_OUTPUT_BUFFER_SIZE, &outputLen);
-  unit_assert_true(outputLen > nil);  /* At least some output was generated */
+  unit_assert_true(outputLen > 0x0u);  /* At least some output was generated */
   unit_end();
 
 
@@ -676,7 +676,7 @@ static void test_device_caching(void) {
    *
    *  // Verify recovery after failure xMockUSARTGetOutput(output,
    * TEST_OUTPUT_BUFFER_SIZE, &outputLen);
-   *  unit_assert_true(outputLen > nil);
+   *  unit_assert_true(outputLen > 0x0u);
    *  unit_end();
    */
 }
@@ -687,7 +687,7 @@ static void test_device_caching(void) {
  */
 static void test_error_conditions(void) {
   Byte_t longCommand[TEST_MAX_COMMAND_LENGTH + 0x10u];
-  HalfWord_t i = nil;
+  HalfWord_t i = 0x0u;
 
 
   unit_print("--- Section 10: Error Conditions ---");
@@ -705,7 +705,7 @@ static void test_error_conditions(void) {
 
 
   /* Create oversized command */
-  for(i = nil; i < TEST_MAX_COMMAND_LENGTH + 0x5u; i++) {
+  for(i = 0x0u; i < TEST_MAX_COMMAND_LENGTH + 0x5u; i++) {
     longCommand[i] = 'x';
   }
 

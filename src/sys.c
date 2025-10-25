@@ -135,7 +135,7 @@ Return_t xSystemGetSystemInfo(SystemInfo_t **info_) {
 
   /* For unit testing only! */
   void __SysStateClear__(void) {
-    __memset__(&flag, nil, sizeof(Flags_t));
+    __memset__(&flag, 0x0u, sizeof(Flags_t));
 
     return;
   }

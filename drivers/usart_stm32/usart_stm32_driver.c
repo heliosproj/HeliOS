@@ -92,22 +92,22 @@ Return_t TO_FUNCTION(DEVICE_NAME, _init)(Device_t *device_) {
   FUNCTION_ENTER;
 
   /* Initialize state */
-  state.rxHead = nil;
-  state.rxTail = nil;
-  state.txHead = nil;
-  state.txTail = nil;
+  state.rxHead = 0x0u;
+  state.rxTail = 0x0u;
+  state.txHead = 0x0u;
+  state.txTail = 0x0u;
   state.txBusy = false;
   state.rxBusy = false;
   state.errorFlags = USART_ERROR_NONE;
   state.initialized = false;
-  state.rxSingleByte = nil;
+  state.rxSingleByte = 0x0u;
 
   /* Clear current request */
-  state.currentRequest.command = nil;
-  state.currentRequest.operation = nil;
-  state.currentRequest.byteCount = nil;
+  state.currentRequest.command = 0x0u;
+  state.currentRequest.operation = 0x0u;
+  state.currentRequest.byteCount = 0x0u;
   state.currentRequest.transferMode = CHAR_IO_MODE_BLOCKING;
-  state.currentRequest.timeoutMs = nil;
+  state.currentRequest.timeoutMs = 0x0u;
 
   /* Hardware initialization would happen here with USARTSTMInitConfig_t */
   /* For now, mark as initialized - actual HAL init happens in config */
@@ -167,9 +167,9 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Add
 
       if(CHAR_IO_CMD_SET_PARAMS == params->command) {
         #if !defined(POSIX_ARCH_OTHER)
-          Word_t halParity = nil;
-          Word_t halStopBits = nil;
-          Word_t halWordLength = nil;
+          Word_t halParity = 0x0u;
+          Word_t halStopBits = 0x0u;
+          Word_t halWordLength = 0x0u;
 
           /* Translate parameters to HAL format */
           if(OK(__TranslateHALToParity__(params->parity, &halParity)) &&
@@ -228,9 +228,9 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Add
       USARTSTMInitConfig_t *initCfg = (USARTSTMInitConfig_t *)config_;
 
       #if !defined(POSIX_ARCH_OTHER)
-        Word_t halParity = nil;
-        Word_t halStopBits = nil;
-        Word_t halWordLength = nil;
+        Word_t halParity = 0x0u;
+        Word_t halStopBits = 0x0u;
+        Word_t halWordLength = 0x0u;
 
         /* Configure HAL UART handle */
         state.huart.Instance = initCfg->usartInstance;
@@ -289,8 +289,8 @@ Return_t TO_FUNCTION(DEVICE_NAME, _read)(Device_t *device_, Size_t *size_, Addr_
   FUNCTION_ENTER;
 
   Byte_t *buffer = null;
-  HalfWord_t bytesToRead = nil;
-  HalfWord_t bytesRead = nil;
+  HalfWord_t bytesToRead = 0x0u;
+  HalfWord_t bytesRead = 0x0u;
 
   if(__PointerIsNotNull__(size_) && __PointerIsNotNull__(data_) && state.initialized) {
 
@@ -308,7 +308,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _read)(Device_t *device_, Size_t *size_, Addr_
       /* Allocate buffer for read data */
       if(OK(__KernelAllocateMemory__((volatile Addr_t **)&buffer, bytesToRead))) {
         /* Copy data from circular buffer */
-        for(bytesRead = nil; bytesRead < bytesToRead; bytesRead++) {
+        for(bytesRead = 0x0u; bytesRead < bytesToRead; bytesRead++) {
           buffer[bytesRead] = __CircularBufferGet__(state.rxBuffer, &state.rxTail, USART_RX_BUFFER_SIZE);
         }
 
@@ -342,7 +342,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _read)(Device_t *device_, Size_t *size_, Addr_
         /* POSIX simulation - return empty buffer */
         if(OK(__KernelAllocateMemory__((volatile Addr_t **)&buffer, bytesToRead))) {
           *data_ = buffer;
-          *size_ = nil; /* No data available in simulation */
+          *size_ = 0x0u; /* No data available in simulation */
           __ReturnOk__();
         } else {
           /* Return error by default */
@@ -366,7 +366,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _read)(Device_t *device_, Size_t *size_, Addr_
 Return_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t *device_, Size_t *size_, Addr_t *data_) {
   FUNCTION_ENTER;
 
-  HalfWord_t bytesToWrite = nil;
+  HalfWord_t bytesToWrite = 0x0u;
 
   if(__PointerIsNotNull__(size_) && __PointerIsNotNull__(data_) && state.initialized) {
 
@@ -677,15 +677,15 @@ static Return_t __TranslateHALToWordLength__(const Byte_t dataBits_, Word_t *hal
 
 /* For unit testing only! */
 void __USARTSTMStateClear__(void) {
-  state.rxHead = nil;
-  state.rxTail = nil;
-  state.txHead = nil;
-  state.txTail = nil;
+  state.rxHead = 0x0u;
+  state.rxTail = 0x0u;
+  state.txHead = 0x0u;
+  state.txTail = 0x0u;
   state.txBusy = false;
   state.rxBusy = false;
   state.errorFlags = USART_ERROR_NONE;
   state.initialized = false;
-  state.rxSingleByte = nil;
+  state.rxSingleByte = 0x0u;
 
   return;
 }

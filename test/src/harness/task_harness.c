@@ -138,7 +138,7 @@ static void test_error_handling_and_null_pointers(void) {
 
   /* Test 1.9: Invalid ID (zero) in xTaskGetHandleById */
   unit_begin("xTaskGetHandleById with zero ID returns error");
-  unit_assert_not_ok(xTaskGetHandleById(&task, 0x0));
+  unit_assert_not_ok(xTaskGetHandleById(&task, 0x0u));
   unit_end();
 
 
@@ -186,7 +186,7 @@ static void test_error_handling_and_null_pointers(void) {
 
   /* Test 1.17: Zero bytes in xTaskNotifyGive */
   unit_begin("xTaskNotifyGive with zero bytes returns error");
-  unit_assert_not_ok(xTaskNotifyGive(task, 0x0, (Byte_t *) MESSAGE_TEXT));
+  unit_assert_not_ok(xTaskNotifyGive(task, 0x0u, (Byte_t *) MESSAGE_TEXT));
   unit_end();
 
 
@@ -342,14 +342,14 @@ static void test_basic_task_operations(void) {
   Byte_t *task08;
   TaskNotification_t *task09;
   TaskState_t task13;
-  Base_t task14 = nil;
-  Base_t task15 = nil;
-  Base_t task16 = nil;
+  Base_t task14 = 0x0u;
+  Base_t task15 = 0x0u;
+  Base_t task16 = 0x0u;
   TaskState_t task17;
   TaskState_t task18;
   TaskState_t task19;
-  Ticks_t task20 = nil;
-  Ticks_t task21 = nil;
+  Ticks_t task20 = 0x0u;
+  Ticks_t task21 = 0x0u;
   SchedulerState_t task22;
   SchedulerState_t task23;
 
@@ -367,14 +367,14 @@ static void test_basic_task_operations(void) {
   unit_end();
   unit_begin("Task handle retrieval by ID succeeds");
   task02 = null;
-  task03 = 0x0;
+  task03 = 0x0u;
   unit_assert_ok(xTaskGetId(task01, &task03));
   unit_assert_ok(xTaskGetHandleById(&task02, task03));
   unit_assert_equal(task02, task01);
   unit_end();
   unit_begin("All task runtime statistics retrieval succeeds");
   task04 = null;
-  task05 = nil;
+  task05 = 0x0u;
   unit_assert_ok(xTaskGetAllRunTimeStats(&task04, &task05));
   unit_assert_not_null(task04);
   unit_assert_equal(0x1, task05); /* Should have 1 task */
@@ -391,7 +391,7 @@ static void test_basic_task_operations(void) {
   unit_assert_ok(xMemFree(task04));
   unit_end();
   unit_begin("Task count retrieval returns correct number");
-  task06 = nil;
+  task06 = 0x0u;
   unit_assert_ok(xTaskGetNumberOfTasks(&task06));
   unit_assert_equal(0x1, task06); /* Should have 1 task */
   unit_end();
@@ -401,7 +401,7 @@ static void test_basic_task_operations(void) {
   unit_assert_not_null(task07);
   unit_assert_ok(xTaskGetId(task01, &task03));
   unit_assert_equal(task07->id, task03); /* Verify ID matches */
-  unit_assert_equal(strncmp("TASK01", (char *) task07->name, TASK_NAME_LENGTH), 0x0);
+  unit_assert_equal(strncmp("TASK01", (char *) task07->name, TASK_NAME_LENGTH), 0x0u);
   unit_assert_equal(task07->state, TaskStateSuspended);
   unit_assert_ok(xMemFree(task07));
   unit_end();
@@ -412,7 +412,7 @@ static void test_basic_task_operations(void) {
   unit_assert_equal(0x1, task06); /* Should have 1 task */
   unit_assert_ok(xTaskGetId(task01, &task03));
   unit_assert_equal(task07->id, task03); /* Verify ID matches */
-  unit_assert_equal(strncmp("TASK01", (char *) task07->name, TASK_NAME_LENGTH), 0x0);
+  unit_assert_equal(strncmp("TASK01", (char *) task07->name, TASK_NAME_LENGTH), 0x0u);
   unit_assert_equal(task07->state, TaskStateSuspended);
   unit_assert_ok(xMemFree(task07));
   unit_end();
@@ -423,7 +423,7 @@ static void test_basic_task_operations(void) {
   unit_begin("Task name retrieval returns correct name");
   unit_assert_ok(xTaskGetName(task01, &task08));
   unit_assert_not_null(task08);
-  unit_assert_equal(strncmp("TASK01", (char *) task08, TASK_NAME_LENGTH), 0x0);
+  unit_assert_equal(strncmp("TASK01", (char *) task08, TASK_NAME_LENGTH), 0x0u);
   unit_assert_ok(xMemFree(task08));
   unit_end();
   unit_begin("Task ID retrieval returns correct ID");
@@ -449,7 +449,7 @@ static void test_basic_task_operations(void) {
   unit_assert_ok(xTaskNotifyTake(task01, &task09));
   unit_assert_not_null(task09);
   unit_assert_equal(task09->notificationBytes, MESSAGE_LENGTH);
-  unit_assert_equal(strncmp(MESSAGE_TEXT, (char *) task09->notificationValue, MESSAGE_LENGTH), 0x0);
+  unit_assert_equal(strncmp(MESSAGE_TEXT, (char *) task09->notificationValue, MESSAGE_LENGTH), 0x0u);
   unit_assert_ok(xMemFree(task09));
   unit_end();
   unit_begin("Task resume changes state to running");
@@ -517,7 +517,7 @@ static void test_multi_task_scenarios(void) {
   /* Test 3.1: Create multiple tasks */
   unit_begin("Create 10 tasks successfully");
 
-  for(i = nil; i < MAX_TASKS_TEST; i++) {
+  for(i = 0x0u; i < MAX_TASKS_TEST; i++) {
     tasks[i] = null;
     snprintf((char *) taskName, CONFIG_TASK_NAME_BYTES, "TSK%02d", (int) (i + 1));
     unit_assert_ok(xTaskCreate(&tasks[i], taskName, task_harness_task, null));
@@ -537,7 +537,7 @@ static void test_multi_task_scenarios(void) {
   /* Test 3.3: Retrieve each task by name */
   unit_begin("Retrieve all tasks by name");
 
-  for(i = nil; i < MAX_TASKS_TEST; i++) {
+  for(i = 0x0u; i < MAX_TASKS_TEST; i++) {
     snprintf((char *) taskName, CONFIG_TASK_NAME_BYTES, "TSK%02d", (int) (i + 1));
     retrieved = null;
     unit_assert_ok(xTaskGetHandleByName(&retrieved, taskName));
@@ -550,7 +550,7 @@ static void test_multi_task_scenarios(void) {
   /* Test 3.4: Retrieve each task by ID */
   unit_begin("Retrieve all tasks by ID");
 
-  for(i = nil; i < MAX_TASKS_TEST; i++) {
+  for(i = 0x0u; i < MAX_TASKS_TEST; i++) {
     unit_assert_ok(xTaskGetId(tasks[i], &taskId));
     retrieved = null;
     unit_assert_ok(xTaskGetHandleById(&retrieved, taskId));
@@ -563,7 +563,7 @@ static void test_multi_task_scenarios(void) {
   /* Test 3.5: Get all task info at once */
   unit_begin("Get all task information in single call");
   allInfo = null;
-  taskCount = nil;
+  taskCount = 0x0u;
   unit_assert_ok(xTaskGetAllTaskInfo(&allInfo, &taskCount));
   unit_assert_not_null(allInfo);
   unit_assert_equal(MAX_TASKS_TEST, taskCount);
@@ -574,7 +574,7 @@ static void test_multi_task_scenarios(void) {
   /* Test 3.6: Get all runtime stats at once */
   unit_begin("Get all runtime statistics in single call");
   allStats = null;
-  taskCount = nil;
+  taskCount = 0x0u;
   unit_assert_ok(xTaskGetAllRunTimeStats(&allStats, &taskCount));
   unit_assert_not_null(allStats);
   unit_assert_equal(MAX_TASKS_TEST, taskCount);
@@ -615,7 +615,7 @@ static void test_multi_task_scenarios(void) {
   unit_begin("Verify each task received correct notification");
   unit_assert_ok(xTaskNotifyTake(tasks[0], &notif));
   unit_assert_equal(notif->notificationBytes, MESSAGE_LENGTH);
-  unit_assert_equal(strncmp(MESSAGE_TEXT, (char *) notif->notificationValue, MESSAGE_LENGTH), 0x0);
+  unit_assert_equal(strncmp(MESSAGE_TEXT, (char *) notif->notificationValue, MESSAGE_LENGTH), 0x0u);
   unit_assert_ok(xMemFree(notif));
   unit_assert_ok(xTaskNotifyTake(tasks[1], &notif));
   unit_assert_equal(notif->notificationBytes, MESSAGE2_LENGTH);
@@ -652,14 +652,14 @@ static void test_multi_task_scenarios(void) {
   }
 
   unit_assert_ok(xTaskGetNumberOfTasks(&taskCount));
-  unit_assert_equal(0x0, taskCount);
+  unit_assert_equal(0x0u, taskCount);
   unit_end();
 
 
   /* Test 3.14: Verify task count is zero after all deletions */
   unit_begin("Verify task count is zero after cleanup");
   unit_assert_ok(xTaskGetNumberOfTasks(&taskCount));
-  unit_assert_equal(0x0, taskCount);
+  unit_assert_equal(0x0u, taskCount);
   unit_end();
 }
 
@@ -805,7 +805,7 @@ static void test_boundary_conditions(void) {
   /* Test 5.2: Verify maximum length name */
   unit_begin("Retrieve and verify maximum length name");
   unit_assert_ok(xTaskGetName(task, &retrievedName));
-  unit_assert_equal(memcmp(maxName, retrievedName, CONFIG_TASK_NAME_BYTES), 0x0);
+  unit_assert_equal(memcmp(maxName, retrievedName, CONFIG_TASK_NAME_BYTES), 0x0u);
   unit_assert_ok(xMemFree(retrievedName));
   unit_end();
 
@@ -820,7 +820,7 @@ static void test_boundary_conditions(void) {
   unit_begin("Receive and verify maximum size notification");
   unit_assert_ok(xTaskNotifyTake(task, &notif));
   unit_assert_equal(notif->notificationBytes, CONFIG_NOTIFICATION_VALUE_BYTES);
-  unit_assert_equal(memcmp(LONG_MESSAGE_TEXT, notif->notificationValue, CONFIG_NOTIFICATION_VALUE_BYTES), 0x0);
+  unit_assert_equal(memcmp(LONG_MESSAGE_TEXT, notif->notificationValue, CONFIG_NOTIFICATION_VALUE_BYTES), 0x0u);
   unit_assert_ok(xMemFree(notif));
   unit_end();
 
@@ -859,9 +859,9 @@ static void test_boundary_conditions(void) {
 
   /* Test 5.9: Zero timer period */
   unit_begin("Set zero timer period");
-  unit_assert_ok(xTaskChangePeriod(task, 0x0));
+  unit_assert_ok(xTaskChangePeriod(task, 0x0u));
   unit_assert_ok(xTaskGetPeriod(task, &period));
-  unit_assert_equal(0x0, period);
+  unit_assert_equal(0x0u, period);
   unit_end();
 
 
@@ -1040,10 +1040,10 @@ static void test_notification_advanced(void) {
   unit_assert_ok(xTaskNotificationIsWaiting(task2, &isWaiting));
   unit_assert_true(isWaiting);
   unit_assert_ok(xTaskNotifyTake(task1, &notif));
-  unit_assert_equal(strncmp(MESSAGE_TEXT, (char *) notif->notificationValue, MESSAGE_LENGTH), 0x0);
+  unit_assert_equal(strncmp(MESSAGE_TEXT, (char *) notif->notificationValue, MESSAGE_LENGTH), 0x0u);
   unit_assert_ok(xMemFree(notif));
   unit_assert_ok(xTaskNotifyTake(task2, &notif));
-  unit_assert_equal(strncmp(MESSAGE3_TEXT, (char *) notif->notificationValue, MESSAGE3_LENGTH), 0x0);
+  unit_assert_equal(strncmp(MESSAGE3_TEXT, (char *) notif->notificationValue, MESSAGE3_LENGTH), 0x0u);
   unit_assert_ok(xMemFree(notif));
   unit_end();
 
@@ -1054,7 +1054,7 @@ static void test_notification_advanced(void) {
   unit_assert_ok(xTaskNotifyGive(task1, CONFIG_NOTIFICATION_VALUE_BYTES, zeroData));
   unit_assert_ok(xTaskNotifyTake(task1, &notif));
   unit_assert_equal(notif->notificationBytes, CONFIG_NOTIFICATION_VALUE_BYTES);
-  unit_assert_equal(memcmp(zeroData, notif->notificationValue, CONFIG_NOTIFICATION_VALUE_BYTES), 0x0);
+  unit_assert_equal(memcmp(zeroData, notif->notificationValue, CONFIG_NOTIFICATION_VALUE_BYTES), 0x0u);
   unit_assert_ok(xMemFree(notif));
   unit_end();
 
@@ -1065,7 +1065,7 @@ static void test_notification_advanced(void) {
   unit_assert_ok(xTaskNotifyGive(task1, CONFIG_NOTIFICATION_VALUE_BYTES, ffData));
   unit_assert_ok(xTaskNotifyTake(task1, &notif));
   unit_assert_equal(notif->notificationBytes, CONFIG_NOTIFICATION_VALUE_BYTES);
-  unit_assert_equal(memcmp(ffData, notif->notificationValue, CONFIG_NOTIFICATION_VALUE_BYTES), 0x0);
+  unit_assert_equal(memcmp(ffData, notif->notificationValue, CONFIG_NOTIFICATION_VALUE_BYTES), 0x0u);
   unit_assert_ok(xMemFree(notif));
   unit_end();
 
@@ -1136,9 +1136,9 @@ static void test_watchdog_timer_comprehensive(void) {
     unit_begin("Set zero watchdog period");
     task2 = null;
     unit_assert_ok(xTaskCreate(&task2, (Byte_t *) "WDTASK2", task_harness_task, null));
-    unit_assert_ok(xTaskChangeWDPeriod(task2, 0x0));
+    unit_assert_ok(xTaskChangeWDPeriod(task2, 0x0u));
     unit_assert_ok(xTaskGetWDPeriod(task2, &wdPeriod));
-    unit_assert_equal(0x0, wdPeriod);
+    unit_assert_equal(0x0u, wdPeriod);
     unit_end();
 
 

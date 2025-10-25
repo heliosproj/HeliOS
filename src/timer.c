@@ -110,7 +110,7 @@ Return_t xTimerHasTimerExpired(const Timer_t *timer_, Base_t *res_) {
 
   if(__PointerIsNotNull__(timer_) && __PointerIsNotNull__(res_)) {
     if(TimerStateRunning == timer_->state) {
-      if((nil < timer_->timerPeriod) && ((__PortGetSysTicks__() - timer_->timerStartTime) > timer_->timerPeriod)) {
+      if((0x0u < timer_->timerPeriod) && ((__PortGetSysTicks__() - timer_->timerStartTime) > timer_->timerPeriod)) {
         *res_ = true;
         __ReturnOk__();
       } else {

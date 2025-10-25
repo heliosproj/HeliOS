@@ -155,7 +155,7 @@ void fs_harness(void) {
  */
 static void test_driver_registration_and_mount(void) {
   BlockDeviceConfig_t *blockConfig = null;
-  Size_t configSize = nil;
+  Size_t configSize = 0x0u;
   Volume_t *vol = null;
   VolumeInfo_t *volInfo = null;
 
@@ -229,9 +229,9 @@ static void test_basic_file_operations(void) {
   Volume_t *vol = null;
   File_t *file = null;
   Byte_t *readData = null;
-  Word_t position = nil;
-  Word_t fileSize = nil;
-  Base_t eof = nil;
+  Word_t position = 0x0u;
+  Word_t fileSize = 0x0u;
+  Base_t eof = 0x0u;
 
 
   unit_print("--- Section 2: Basic File Operations ---");
@@ -366,9 +366,9 @@ static void test_directory_operations(void) {
   Volume_t *vol = null;
   Dir_t *dir = null;
   DirEntry_t *entry = null;
-  Base_t exists = nil;
+  Base_t exists = 0x0u;
   File_t *file = null;
-  int entryCount = nil;
+  int entryCount = 0x0u;
 
 
   unit_print("--- Section 3: Directory Operations ---");
@@ -416,7 +416,7 @@ static void test_directory_operations(void) {
 
   /* Test 3.5: Directory read */
   unit_begin("Directory read returns all entries");
-  entryCount = nil;
+  entryCount = 0x0u;
 
   /* Read all directory entries */
   while(OK(xDirRead(dir, &entry))) {
@@ -474,7 +474,7 @@ static void test_directory_operations(void) {
 static void test_file_management(void) {
   Volume_t *vol = null;
   File_t *file = null;
-  Base_t exists = nil;
+  Base_t exists = 0x0u;
   DirEntry_t *info = null;
 
 
@@ -505,7 +505,7 @@ static void test_file_management(void) {
 
   /* Test 4.3: Non-existing file check */
   unit_begin("File existence check returns false for non-existing file");
-  exists = nil;
+  exists = 0x0u;
   unit_assert_ok(xFileExists(vol, (const Byte_t *) "/nonexist.txt", &exists));
   unit_assert_false(exists);
   unit_end();
@@ -525,13 +525,13 @@ static void test_file_management(void) {
 
 
   /* Verify old name doesn't exist */
-  exists = nil;
+  exists = 0x0u;
   unit_assert_ok(xFileExists(vol, (const Byte_t *) "/manage.txt", &exists));
   unit_assert_false(exists);
 
 
   /* Verify new name exists */
-  exists = nil;
+  exists = 0x0u;
   unit_assert_ok(xFileExists(vol, (const Byte_t *) "/renamed.txt", &exists));
   unit_assert_true(exists);
   unit_end();
@@ -543,7 +543,7 @@ static void test_file_management(void) {
 
 
   /* Verify file no longer exists */
-  exists = nil;
+  exists = 0x0u;
   unit_assert_ok(xFileExists(vol, (const Byte_t *) "/renamed.txt", &exists));
   unit_assert_false(exists);
   unit_end();
@@ -562,7 +562,7 @@ static void test_null_pointer_and_edge_cases(void) {
   Volume_t *vol = null;
   File_t *file = null;
   Dir_t *dir = null;
-  Base_t exists = nil;
+  Base_t exists = 0x0u;
 
 
   unit_print("--- Section 5: NULL Pointer and Edge Cases ---");
@@ -671,7 +671,7 @@ static void test_null_pointer_and_edge_cases(void) {
   unit_assert_not_ok(xFileOpen(&file, vol, (const Byte_t *) "/test.txt", FS_MODE_READ));
   dir = null;
   unit_assert_not_ok(xDirOpen(&dir, vol, (const Byte_t *) "/"));
-  exists = nil;
+  exists = 0x0u;
   unit_assert_not_ok(xFileExists(vol, (const Byte_t *) "/test.txt", &exists));
   unit_end();
 }
@@ -686,9 +686,9 @@ static void test_large_file_operations(void) {
   File_t *file = null;
   Byte_t *writeData = null;
   Byte_t *readData = null;
-  Size_t i = nil;
-  Word_t fileSize = nil;
-  Word_t position = nil;
+  Size_t i = 0x0u;
+  Word_t fileSize = 0x0u;
+  Word_t position = 0x0u;
 
 
   unit_print("--- Section 6: Large File Operations ---");
@@ -709,7 +709,7 @@ static void test_large_file_operations(void) {
   unit_assert_not_null(writeData);
 
   /* Fill with pattern (repeating 0-255) */
-  for(i = nil; i < LARGE_FILE_SIZE; i++) {
+  for(i = 0x0u; i < LARGE_FILE_SIZE; i++) {
     writeData[i] = (Byte_t) (i & 0xFFu);
   }
 
@@ -743,7 +743,7 @@ static void test_large_file_operations(void) {
   unit_assert_not_null(readData);
 
   /* Verify data matches */
-  for(i = nil; i < LARGE_FILE_SIZE; i++) {
+  for(i = 0x0u; i < LARGE_FILE_SIZE; i++) {
     if(writeData[i] != readData[i]) {
       unit_print("Data mismatch detected in large file read");
       unit_assert_true(false);
@@ -772,8 +772,8 @@ static void test_cluster_boundary_operations(void) {
   Byte_t *writeData = null;
   Byte_t *readData = null;
   Size_t testSize = CLUSTER_SIZE - CLUSTER_BOUNDARY_OFFSET;
-  Size_t i = nil;
-  Word_t position = nil;
+  Size_t i = 0x0u;
+  Word_t position = 0x0u;
 
 
   unit_print("--- Section 7: Cluster Boundary Operations ---");
@@ -794,7 +794,7 @@ static void test_cluster_boundary_operations(void) {
   unit_assert_not_null(writeData);
 
   /* Fill with pattern */
-  for(i = nil; i < CLUSTER_SIZE + CLUSTER_SPAN_SIZE; i++) {
+  for(i = 0x0u; i < CLUSTER_SIZE + CLUSTER_SPAN_SIZE; i++) {
     writeData[i] = (Byte_t) ((i * 7) & 0xFFu);
   }
 
@@ -824,7 +824,7 @@ static void test_cluster_boundary_operations(void) {
   unit_assert_not_null(readData);
 
   /* Verify data */
-  for(i = nil; i < CLUSTER_BOUNDARY_READ_SIZE; i++) {
+  for(i = 0x0u; i < CLUSTER_BOUNDARY_READ_SIZE; i++) {
     if(writeData[CLUSTER_SIZE - CLUSTER_BOUNDARY_READ_OFFSET + i] != readData[i]) {
       unit_print("Cluster boundary data mismatch detected");
       unit_assert_true(false);
@@ -851,7 +851,7 @@ static void test_partial_io_operations(void) {
   Volume_t *vol = null;
   File_t *file = null;
   Byte_t *readData = null;
-  Word_t position = nil;
+  Word_t position = 0x0u;
 
 
   unit_print("--- Section 8: Partial I/O Operations ---");
@@ -990,7 +990,7 @@ static void test_file_mode_validation(void) {
   File_t *file1 = null;
   File_t *file2 = null;
   Byte_t *readData = null;
-  Word_t position = nil;
+  Word_t position = 0x0u;
 
 
   unit_print("--- Section 10: File Mode Validation ---");
@@ -1036,7 +1036,7 @@ static void test_file_mode_validation(void) {
 
 
   /* Verify position at end after append */
-  position = nil;
+  position = 0x0u;
   unit_assert_ok(xFileTell(file1, &position));
   unit_assert_equal(EXPECTED_MODE_APPEND_POS, position);
   unit_assert_ok(xFileClose(file1));
@@ -1219,7 +1219,7 @@ static void test_file_sync_operations(void) {
   Volume_t *vol = null;
   File_t *file = null;
   Byte_t *readData = null;
-  Word_t fileSize = nil;
+  Word_t fileSize = 0x0u;
 
 
   unit_print("--- Section 13: File Sync Operations ---");
@@ -1295,8 +1295,8 @@ static void test_file_write_seek_cluster(void) {
   File_t *file = null;
   Byte_t *writeData = null;
   Byte_t *readData = null;
-  Word_t i = nil;
-  Word_t position = nil;
+  Word_t i = 0x0u;
+  Word_t position = 0x0u;
   Word_t clusterSize = 4096; /* 512 bytes/sector * 8 sectors/cluster */
 
 
@@ -1323,7 +1323,7 @@ static void test_file_write_seek_cluster(void) {
   unit_assert_not_null(writeData);
 
   /* Fill with pattern */
-  for(i = nil; i < clusterSize * 2; i++) {
+  for(i = 0x0u; i < clusterSize * 2; i++) {
     writeData[i] = (Byte_t) (i & 0xFFu);
   }
 
@@ -1397,11 +1397,11 @@ static void test_volume_info_with_files(void) {
   VolumeInfo_t *volInfo1 = null;
   VolumeInfo_t *volInfo2 = null;
   File_t *file = null;
-  Word_t initialFreeClusters = nil;
-  Word_t afterFreeClusters = nil;
+  Word_t initialFreeClusters = 0x0u;
+  Word_t afterFreeClusters = 0x0u;
   Byte_t *largeData = null;
   Word_t dataSize = 8192; /* 2 clusters worth */
-  Word_t i = nil;
+  Word_t i = 0x0u;
 
 
   unit_print("--- Section 15: Volume Info With Files ---");
@@ -1429,7 +1429,7 @@ static void test_volume_info_with_files(void) {
   unit_assert_not_null(largeData);
 
   /* Fill with data */
-  for(i = nil; i < dataSize; i++) {
+  for(i = 0x0u; i < dataSize; i++) {
     largeData[i] = (Byte_t) ((i * 3) & 0xFFu);
   }
 

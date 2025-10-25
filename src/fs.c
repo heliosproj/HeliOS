@@ -37,10 +37,10 @@ typedef struct __attribute__ ((packed)) FAT32BootSector_s {
   Byte_t sectorsPerCluster; /* 0x0D: Sectors per cluster */
   Byte_t reservedSectors[0x2]; /* 0x0E: Reserved sectors */
   Byte_t numFATs; /* 0x10: Number of FATs */
-  Byte_t rootEntryCount[0x2]; /* 0x11: Root entries (0x0 for FAT32) */
-  Byte_t totalSectors16[0x2]; /* 0x13: Total sectors (0x0 for FAT32) */
+  Byte_t rootEntryCount[0x2]; /* 0x11: Root entries (0x0u for FAT32) */
+  Byte_t totalSectors16[0x2]; /* 0x13: Total sectors (0x0u for FAT32) */
   Byte_t mediaType; /* 0x15: Media descriptor */
-  Byte_t FATSize16[0x2]; /* 0x16: FAT size (0x0 for FAT32) */
+  Byte_t FATSize16[0x2]; /* 0x16: FAT size (0x0u for FAT32) */
   Byte_t sectorsPerTrack[0x2]; /* 0x18: Sectors per track */
   Byte_t numHeads[0x2]; /* 0x1A: Number of heads */
   Byte_t hiddenSectors[0x4]; /* 0x1C: Hidden sectors */
@@ -98,26 +98,26 @@ typedef struct __attribute__ ((packed)) FAT32DirEntry_s {
 
 /* Helper function to read 16-bit little-endian value */
 static HalfWord_t __ReadLE16__(const Byte_t *data_) {
-  return((HalfWord_t) data_[0x0] | ((HalfWord_t) data_[0x1] << 0x8));
+  return((HalfWord_t) data_[0x0u] | ((HalfWord_t) data_[0x1] << 0x8));
 }
 
 
 /* Helper function to read 32-bit little-endian value */
 static Word_t __ReadLE32__(const Byte_t *data_) {
-  return((Word_t) data_[0x0] | ((Word_t) data_[0x1] << 0x8) | ((Word_t) data_[0x2] << 0x10) | ((Word_t) data_[0x3] << 0x18));
+  return((Word_t) data_[0x0u] | ((Word_t) data_[0x1] << 0x8) | ((Word_t) data_[0x2] << 0x10) | ((Word_t) data_[0x3] << 0x18));
 }
 
 
 /* Helper function to write 16-bit little-endian value */
 static void __WriteLE16__(Byte_t *data_, HalfWord_t value_) {
-  data_[0x0] = (Byte_t) (value_ & 0xFFu);
+  data_[0x0u] = (Byte_t) (value_ & 0xFFu);
   data_[0x1] = (Byte_t) ((value_ >> 0x8) & 0xFFu);
 }
 
 
 /* Helper function to write 32-bit little-endian value */
 static void __WriteLE32__(Byte_t *data_, Word_t value_) {
-  data_[0x0] = (Byte_t) (value_ & 0xFFu);
+  data_[0x0u] = (Byte_t) (value_ & 0xFFu);
   data_[0x1] = (Byte_t) ((value_ >> 0x8) & 0xFFu);
   data_[0x2] = (Byte_t) ((value_ >> 0x10) & 0xFFu);
   data_[0x3] = (Byte_t) ((value_ >> 0x18) & 0xFFu);
@@ -127,7 +127,7 @@ static void __WriteLE32__(Byte_t *data_, Word_t value_) {
 /* Mount tracking - tracks which block devices are currently mounted */
 #define MAX_MOUNTED_VOLUMES 0x8u
 static HalfWord_t mountedDevices[MAX_MOUNTED_VOLUMES];
-static Byte_t mountedDeviceCount = nil;
+static Byte_t mountedDeviceCount = 0x0u;
 /* Forward declarations for helper functions */
 static Return_t __ReadSector__(const Volume_t *vol_, Word_t sector_, Byte_t **data_);
 static Return_t __WriteSector__(const Volume_t *vol_, Word_t sector_, const Byte_t *data_);
@@ -171,8 +171,8 @@ Return_t xFSMount(Volume_t **volume_) {
       vol->blockDeviceUID = CONFIG_FS_BLOCK_DEVICE_UID;
       vol->mounted = false;
 
-      /* Read boot sector (sector 0x0) */
-      if(OK(__ReadSector__(vol, nil, &bootSectorData))) {
+      /* Read boot sector (sector 0x0u) */
+      if(OK(__ReadSector__(vol, 0x0u, &bootSectorData))) {
         bs = (FAT32BootSector_t *) bootSectorData;
 
 
@@ -190,7 +190,7 @@ Return_t xFSMount(Volume_t **volume_) {
         vol->dataStartSector = vol->reservedSectors + (vol->numFATs * vol->sectorsPerFAT);
 
         /* Validate FAT32 filesystem */
-        if((vol->bytesPerSector >= 0x200u) && (vol->sectorsPerCluster > nil) && (vol->rootDirCluster >= 0x2u)) {
+        if((vol->bytesPerSector >= 0x200u) && (vol->sectorsPerCluster > 0x0u) && (vol->rootDirCluster >= 0x2u)) {
           vol->mounted = true;
 
           /* Add device to mounted list */
@@ -257,11 +257,11 @@ Return_t xFSGetVolumeInfo(const Volume_t *volume_, VolumeInfo_t **info_) {
 
 
   VolumeInfo_t *info = null;
-  Word_t cluster = nil;
-  Word_t fatEntry = nil;
-  Word_t totalClusters = nil;
-  Word_t freeClusters = nil;
-  Word_t maxCluster = nil;
+  Word_t cluster = 0x0u;
+  Word_t fatEntry = 0x0u;
+  Word_t totalClusters = 0x0u;
+  Word_t freeClusters = 0x0u;
+  Word_t maxCluster = 0x0u;
 
 
   if(__PointerIsNotNull__(volume_) && __PointerIsNotNull__(info_)) {
@@ -366,17 +366,17 @@ Return_t xFSFormat(const Byte_t *volumeLabel_) {
     bs->sectorsPerCluster = sectorsPerCluster;
     __WriteLE16__(bs->reservedSectors, reservedSectors);
     bs->numFATs = numFATs;
-    __WriteLE16__(bs->rootEntryCount, nil);  /* 0x0 for FAT32 */
-    __WriteLE16__(bs->totalSectors16, nil); /* 0x0 for FAT32 */
+    __WriteLE16__(bs->rootEntryCount, 0x0u);  /* 0x0u for FAT32 */
+    __WriteLE16__(bs->totalSectors16, 0x0u); /* 0x0u for FAT32 */
     bs->mediaType = 0xF8u; /* Fixed disk */
-    __WriteLE16__(bs->FATSize16, nil); /* 0x0 for FAT32 */
+    __WriteLE16__(bs->FATSize16, 0x0u); /* 0x0u for FAT32 */
     __WriteLE16__(bs->sectorsPerTrack, 0x3Fu);
     __WriteLE16__(bs->numHeads, 0x10u);
-    __WriteLE32__(bs->hiddenSectors, nil);
+    __WriteLE32__(bs->hiddenSectors, 0x0u);
     __WriteLE32__(bs->totalSectors32, 0x800u);  /* 1MB / 512 bytes */
     __WriteLE32__(bs->FATSize32, sectorsPerFAT);
-    __WriteLE16__(bs->extFlags, nil);
-    __WriteLE16__(bs->fsVersion, nil);
+    __WriteLE16__(bs->extFlags, 0x0u);
+    __WriteLE16__(bs->fsVersion, 0x0u);
     __WriteLE32__(bs->rootCluster, rootDirCluster);
     __WriteLE16__(bs->fsInfo, 0x1u);
     __WriteLE16__(bs->backupBootSector, 0x6u);
@@ -392,10 +392,10 @@ Return_t xFSFormat(const Byte_t *volumeLabel_) {
     bootSector[0x1FFu] = 0xAAu;
 
     /* Write boot sector */
-    if(OK(__WriteSector__(&tempVol, nil, bootSector))) {
+    if(OK(__WriteSector__(&tempVol, 0x0u, bootSector))) {
       Byte_t *fatSector = null;
-      Word_t sector = nil;
-      Word_t fat = nil;
+      Word_t sector = 0x0u;
+      Word_t fat = 0x0u;
       Base_t fatInitSuccess = true;
 
 
@@ -407,11 +407,11 @@ Return_t xFSFormat(const Byte_t *volumeLabel_) {
         __memset__(fatSector, 0x00u, bytesPerSector);
 
         /* Write zeros to all sectors of all FAT copies */
-        for(fat = nil; fat < numFATs && fatInitSuccess; fat++) {
+        for(fat = 0x0u; fat < numFATs && fatInitSuccess; fat++) {
           Word_t fatStartSector = fatStart + (fat * sectorsPerFAT);
 
 
-          for(sector = nil; sector < sectorsPerFAT && fatInitSuccess; sector++) {
+          for(sector = 0x0u; sector < sectorsPerFAT && fatInitSuccess; sector++) {
             if(ERROR(__WriteSector__(&tempVol, fatStartSector + sector, fatSector))) {
               fatInitSuccess = false;
             }
@@ -420,16 +420,16 @@ Return_t xFSFormat(const Byte_t *volumeLabel_) {
 
         if(fatInitSuccess) {
           /* Now set special FAT entries:
-           * - Cluster 0x0: Media descriptor (0x0FFFFFF8)
+           * - Cluster 0x0u: Media descriptor (0x0FFFFFF8)
            * - Cluster 0x1: Clean/dirty flag (0x0FFFFFFF)
            * - Cluster 0x2: Root directory (EOC marker 0x0FFFFFFF) */
-          if(OK(__SetFATEntry__(&tempVol, nil, 0x0FFFFFF8u)) && OK(__SetFATEntry__(&tempVol, 0x1u, 0x0FFFFFFFu)) && OK(__SetFATEntry__(&tempVol, 0x2u,
+          if(OK(__SetFATEntry__(&tempVol, 0x0u, 0x0FFFFFF8u)) && OK(__SetFATEntry__(&tempVol, 0x1u, 0x0FFFFFFFu)) && OK(__SetFATEntry__(&tempVol, 0x2u,
             FAT32_EOC_MAX))) {
             /* Initialize root directory cluster to zeros */
             Word_t rootFirstSector = __ClusterToSector__(&tempVol, rootDirCluster);
 
 
-            for(sector = nil; sector < sectorsPerCluster && fatInitSuccess; sector++) {
+            for(sector = 0x0u; sector < sectorsPerCluster && fatInitSuccess; sector++) {
               if(ERROR(__WriteSector__(&tempVol, rootFirstSector + sector, fatSector))) {
                 fatInitSuccess = false;
               }
@@ -472,8 +472,8 @@ Return_t xFileOpen(File_t **file_, Volume_t *volume_, const Byte_t *path_, const
   File_t *file = null;
   FAT32DirEntry_t entry;
   Base_t fileExists = false;
-  Word_t parentCluster = nil;
-  Word_t i = nil;
+  Word_t parentCluster = 0x0u;
+  Word_t i = 0x0u;
 
 
   if(__PointerIsNotNull__(file_) && __PointerIsNotNull__(volume_) && __PointerIsNotNull__(path_)) {
@@ -490,12 +490,12 @@ Return_t xFileOpen(File_t **file_, Volume_t *volume_, const Byte_t *path_, const
       /* If file doesn't exist, try to determine parent directory */
       const Byte_t *lastSlash = null;
       Byte_t parentPath[256];
-      Word_t parentPathLen = nil;
+      Word_t parentPathLen = 0x0u;
       FAT32DirEntry_t parentEntry;
 
 
       /* Find parent directory cluster */
-      for(i = nil; path_[i] != '\0'; i++) {
+      for(i = 0x0u; path_[i] != '\0'; i++) {
         if(path_[i] == '/') {
           lastSlash = &path_[i];
         }
@@ -504,7 +504,7 @@ Return_t xFileOpen(File_t **file_, Volume_t *volume_, const Byte_t *path_, const
       if(__PointerIsNotNull__(lastSlash)) {
         parentPathLen = lastSlash - path_;
 
-        if(parentPathLen == 0x0) {
+        if(parentPathLen == 0x0u) {
           /* Parent is root */
           parentCluster = volume_->rootDirCluster;
         } else {
@@ -530,13 +530,13 @@ Return_t xFileOpen(File_t **file_, Volume_t *volume_, const Byte_t *path_, const
       /* Store reference to parent volume */
       file->volume = volume_;
       file->mode = mode_;
-      file->position = nil;
+      file->position = 0x0u;
       file->isOpen = true;
       file->isDirty = false;
       file->parentDirCluster = parentCluster;
 
       /* Copy path to file structure */
-      for(i = nil; path_[i] != '\0' && i < 255; i++) {
+      for(i = 0x0u; path_[i] != '\0' && i < 255; i++) {
         file->path[i] = path_[i];
       }
 
@@ -549,19 +549,19 @@ Return_t xFileOpen(File_t **file_, Volume_t *volume_, const Byte_t *path_, const
         file->fileSize = __ReadLE32__(entry.fileSize);
 
         /* If append mode, seek to end */
-        if((mode_ & FS_MODE_APPEND) != 0x0) {
+        if((mode_ & FS_MODE_APPEND) != 0x0u) {
           file->position = file->fileSize;
 
           /* Need to navigate to last cluster for append */
           if((file->firstCluster >= 0x2u) && (file->firstCluster < FAT32_EOC_MIN)) {
-            Word_t nextCluster = nil;
+            Word_t nextCluster = 0x0u;
             Word_t clusterSize = (Word_t) volume_->bytesPerSector * volume_->sectorsPerCluster;
             Word_t clustersToSkip = file->fileSize / clusterSize;
 
 
             file->currentCluster = file->firstCluster;
 
-            for(i = nil; i < clustersToSkip; i++) {
+            for(i = 0x0u; i < clustersToSkip; i++) {
               if(OK(__GetFATEntry__(volume_, file->currentCluster, &nextCluster))) {
                 if(nextCluster >= FAT32_EOC_MIN) {
                   break;
@@ -576,7 +576,7 @@ Return_t xFileOpen(File_t **file_, Volume_t *volume_, const Byte_t *path_, const
         }
       } else {
         /* File doesn't exist - check if CREATE mode is set */
-        if((mode_ & FS_MODE_CREATE) == 0x0) {
+        if((mode_ & FS_MODE_CREATE) == 0x0u) {
           /* Cannot open non-existent file without CREATE mode */
           __KernelFreeMemory__(file);
 
@@ -586,9 +586,9 @@ Return_t xFileOpen(File_t **file_, Volume_t *volume_, const Byte_t *path_, const
         }
 
         /* New file - will be created on first write */
-        file->firstCluster = nil;
-        file->currentCluster = nil;
-        file->fileSize = nil;
+        file->firstCluster = 0x0u;
+        file->currentCluster = 0x0u;
+        file->fileSize = 0x0u;
       }
 
       *file_ = file;
@@ -610,11 +610,11 @@ Return_t xFileClose(File_t *file_) {
 
 
   FAT32DirEntry_t entry;
-  Word_t entryCluster = nil;
-  Word_t entryOffset = nil;
+  Word_t entryCluster = 0x0u;
+  Word_t entryOffset = 0x0u;
   Byte_t *clusterData = null;
-  Word_t firstSector = nil;
-  Word_t i = nil;
+  Word_t firstSector = 0x0u;
+  Word_t i = 0x0u;
   const Byte_t *lastSlash = null;
   const Byte_t *fileName = null;
   Byte_t name83[11];
@@ -626,7 +626,7 @@ Return_t xFileClose(File_t *file_) {
       /* Extract just the filename from path */
       fileName = file_->path;
 
-      for(i = nil; file_->path[i] != '\0'; i++) {
+      for(i = 0x0u; file_->path[i] != '\0'; i++) {
         if(file_->path[i] == '/') {
           lastSlash = &file_->path[i];
         }
@@ -654,7 +654,7 @@ Return_t xFileClose(File_t *file_) {
             /* Write directory cluster back */
             firstSector = __ClusterToSector__(file_->volume, entryCluster);
 
-            for(i = nil; i < file_->volume->sectorsPerCluster; i++) {
+            for(i = 0x0u; i < file_->volume->sectorsPerCluster; i++) {
               __WriteSector__(file_->volume, firstSector + i, clusterData + (i * file_->volume->bytesPerSector));
             }
 
@@ -691,14 +691,14 @@ Return_t xFileRead(File_t *file_, const Size_t size_, Byte_t **data_) {
   Byte_t *buffer = null;
   Byte_t *clusterData = null;
   Size_t bytesToRead = size_;
-  Size_t bytesRead = nil;
-  Word_t clusterSize = nil;
-  Word_t offsetInCluster = nil;
-  Word_t bytesFromCluster = nil;
-  Word_t nextCluster = nil;
+  Size_t bytesRead = 0x0u;
+  Word_t clusterSize = 0x0u;
+  Word_t offsetInCluster = 0x0u;
+  Word_t bytesFromCluster = 0x0u;
+  Word_t nextCluster = 0x0u;
 
 
-  if(__PointerIsNotNull__(file_) && __PointerIsNotNull__(data_) && file_->isOpen && (nil < size_)) {
+  if(__PointerIsNotNull__(file_) && __PointerIsNotNull__(data_) && file_->isOpen && (0x0u < size_)) {
     /* Initialize output pointer to null for error cases */
     *data_ = null;
     clusterSize = (Word_t) file_->volume->bytesPerSector * file_->volume->sectorsPerCluster;
@@ -708,7 +708,7 @@ Return_t xFileRead(File_t *file_, const Size_t size_, Byte_t **data_) {
       bytesToRead = file_->fileSize - file_->position;
     }
 
-    if(nil == bytesToRead) {
+    if(0x0u == bytesToRead) {
       /* Already at EOF */
       __AssertOnElse__();
       FUNCTION_EXIT;
@@ -717,7 +717,7 @@ Return_t xFileRead(File_t *file_, const Size_t size_, Byte_t **data_) {
     /* Allocate buffer for read data from user heap (returned to caller) */
     if(OK(xMemAlloc((volatile Addr_t **) &buffer, bytesToRead))) {
       /* If not at start of file, navigate to correct cluster */
-      if(file_->currentCluster == 0x0) {
+      if(file_->currentCluster == 0x0u) {
         file_->currentCluster = file_->firstCluster;
       }
 
@@ -783,33 +783,33 @@ Return_t xFileWrite(File_t *file_, const Size_t size_, const Byte_t *data_) {
 
   Byte_t *clusterData = null;
   Size_t bytesToWrite = size_;
-  Size_t bytesWritten = nil;
-  Word_t clusterSize = nil;
-  Word_t offsetInCluster = nil;
-  Word_t bytesToCluster = nil;
-  Word_t nextCluster = nil;
-  Word_t i = nil;
-  Word_t firstSector = nil;
+  Size_t bytesWritten = 0x0u;
+  Word_t clusterSize = 0x0u;
+  Word_t offsetInCluster = 0x0u;
+  Word_t bytesToCluster = 0x0u;
+  Word_t nextCluster = 0x0u;
+  Word_t i = 0x0u;
+  Word_t firstSector = 0x0u;
 
 
-  if(__PointerIsNotNull__(file_) && __PointerIsNotNull__(data_) && file_->isOpen && (nil < size_)) {
+  if(__PointerIsNotNull__(file_) && __PointerIsNotNull__(data_) && file_->isOpen && (0x0u < size_)) {
     clusterSize = (Word_t) file_->volume->bytesPerSector * file_->volume->sectorsPerCluster;
 
     /* Check write mode */
-    if(((file_->mode & FS_MODE_WRITE) == 0x0) && ((file_->mode & FS_MODE_APPEND) == 0x0)) {
+    if(((file_->mode & FS_MODE_WRITE) == 0x0u) && ((file_->mode & FS_MODE_APPEND) == 0x0u)) {
       __AssertOnElse__();
       FUNCTION_EXIT;
     }
 
     /* If append mode, seek to end */
-    if((file_->mode & FS_MODE_APPEND) != 0x0) {
+    if((file_->mode & FS_MODE_APPEND) != 0x0u) {
       file_->position = file_->fileSize;
     }
 
     /* If at start and no clusters allocated, allocate first cluster */
-    if(file_->firstCluster == 0x0) {
+    if(file_->firstCluster == 0x0u) {
       /* Find a free cluster starting from cluster 3 */
-      Word_t freeCluster = nil;
+      Word_t freeCluster = 0x0u;
 
 
       if(OK(__FindFreeCluster__(file_->volume, 3u, &freeCluster))) {
@@ -825,13 +825,13 @@ Return_t xFileWrite(File_t *file_, const Size_t size_, const Byte_t *data_) {
     }
 
     /* Navigate to correct cluster if needed */
-    if(file_->currentCluster == 0x0) {
+    if(file_->currentCluster == 0x0u) {
       file_->currentCluster = file_->firstCluster;
 
       /* Seek to correct cluster based on position */
       if(file_->position > 0) {
         Word_t targetCluster = file_->position / clusterSize;
-        Word_t currentClusterIdx = nil;
+        Word_t currentClusterIdx = 0x0u;
 
 
         /* Follow the FAT chain to reach the target cluster */
@@ -871,7 +871,7 @@ Return_t xFileWrite(File_t *file_, const Size_t size_, const Byte_t *data_) {
         /* Write cluster back */
         firstSector = __ClusterToSector__(file_->volume, file_->currentCluster);
 
-        for(i = nil; i < file_->volume->sectorsPerCluster; i++) {
+        for(i = 0x0u; i < file_->volume->sectorsPerCluster; i++) {
           __WriteSector__(file_->volume, firstSector + i, clusterData + (i * file_->volume->bytesPerSector));
         }
 
@@ -890,7 +890,7 @@ Return_t xFileWrite(File_t *file_, const Size_t size_, const Byte_t *data_) {
           if(OK(__GetFATEntry__(file_->volume, file_->currentCluster, &nextCluster))) {
             if(nextCluster >= FAT32_EOC_MIN) {
               /* Need to allocate new cluster - find a free one */
-              Word_t newCluster = nil;
+              Word_t newCluster = 0x0u;
 
 
               /* Start searching from current cluster + 1 for better locality */
@@ -934,11 +934,11 @@ Return_t xFileSeek(File_t *file_, const Word_t offset_, const Byte_t origin_) {
   FUNCTION_ENTER;
 
 
-  Word_t newPosition = nil;
-  Word_t clusterSize = nil;
-  Word_t clustersToSkip = nil;
-  Word_t i = nil;
-  Word_t nextCluster = nil;
+  Word_t newPosition = 0x0u;
+  Word_t clusterSize = 0x0u;
+  Word_t clustersToSkip = 0x0u;
+  Word_t i = 0x0u;
+  Word_t nextCluster = 0x0u;
 
 
   if(__PointerIsNotNull__(file_) && file_->isOpen) {
@@ -957,7 +957,7 @@ Return_t xFileSeek(File_t *file_, const Word_t offset_, const Byte_t origin_) {
     }
 
     /* Don't seek past EOF for read-only files */
-    if((newPosition > file_->fileSize) && ((file_->mode & FS_MODE_WRITE) == 0x0) && ((file_->mode & FS_MODE_APPEND) == 0x0)) {
+    if((newPosition > file_->fileSize) && ((file_->mode & FS_MODE_WRITE) == 0x0u) && ((file_->mode & FS_MODE_APPEND) == 0x0u)) {
       newPosition = file_->fileSize;
     }
 
@@ -968,7 +968,7 @@ Return_t xFileSeek(File_t *file_, const Word_t offset_, const Byte_t origin_) {
     clustersToSkip = newPosition / clusterSize;
     file_->currentCluster = file_->firstCluster;
 
-    for(i = nil; i < clustersToSkip; i++) {
+    for(i = 0x0u; i < clustersToSkip; i++) {
       if(OK(__GetFATEntry__(file_->volume, file_->currentCluster, &nextCluster))) {
         if(nextCluster >= FAT32_EOC_MIN) {
           break;
@@ -1023,11 +1023,11 @@ Return_t xFileSync(File_t *file_) {
 
 
   FAT32DirEntry_t entry;
-  Word_t entryCluster = nil;
-  Word_t entryOffset = nil;
+  Word_t entryCluster = 0x0u;
+  Word_t entryOffset = 0x0u;
   Byte_t *clusterData = null;
-  Word_t firstSector = nil;
-  Word_t i = nil;
+  Word_t firstSector = 0x0u;
+  Word_t i = 0x0u;
   const Byte_t *lastSlash = null;
   const Byte_t *fileName = null;
   Byte_t name83[11];
@@ -1039,7 +1039,7 @@ Return_t xFileSync(File_t *file_) {
       /* Extract just the filename from path */
       fileName = file_->path;
 
-      for(i = nil; file_->path[i] != '\0'; i++) {
+      for(i = 0x0u; file_->path[i] != '\0'; i++) {
         if(file_->path[i] == '/') {
           lastSlash = &file_->path[i];
         }
@@ -1067,7 +1067,7 @@ Return_t xFileSync(File_t *file_) {
             /* Write the cluster back */
             firstSector = __ClusterToSector__(file_->volume, entryCluster);
 
-            for(i = nil; i < file_->volume->sectorsPerCluster; i++) {
+            for(i = 0x0u; i < file_->volume->sectorsPerCluster; i++) {
               if(ERROR(__WriteSector__(file_->volume, firstSector + i, clusterData + (i * file_->volume->bytesPerSector)))) {
                 __KernelFreeMemory__(clusterData);
 
@@ -1106,11 +1106,11 @@ Return_t xFileTruncate(File_t *file_, const Word_t size_) {
   FUNCTION_ENTER;
 
 
-  Word_t clusterSize = nil;
-  Word_t clustersNeeded = nil;
-  Word_t currentCluster = nil;
-  Word_t nextCluster = nil;
-  Word_t i = nil;
+  Word_t clusterSize = 0x0u;
+  Word_t clustersNeeded = 0x0u;
+  Word_t currentCluster = 0x0u;
+  Word_t nextCluster = 0x0u;
+  Word_t i = 0x0u;
 
 
   if(__PointerIsNotNull__(file_) && file_->isOpen) {
@@ -1129,7 +1129,7 @@ Return_t xFileTruncate(File_t *file_, const Word_t size_) {
     currentCluster = file_->firstCluster;
 
     /* Navigate to last needed cluster */
-    for(i = 1; i < clustersNeeded && currentCluster != 0x0; i++) {
+    for(i = 1; i < clustersNeeded && currentCluster != 0x0u; i++) {
       if(OK(__GetFATEntry__(file_->volume, currentCluster, &nextCluster))) {
         if(nextCluster >= FAT32_EOC_MIN) {
           break;
@@ -1187,7 +1187,7 @@ Return_t xDirOpen(Dir_t **dir_, Volume_t *volume_, const Byte_t *path_) {
 
   Dir_t *dir = null;
   FAT32DirEntry_t entry;
-  Word_t dirCluster = nil;
+  Word_t dirCluster = 0x0u;
 
 
   if(__PointerIsNotNull__(dir_) && __PointerIsNotNull__(volume_) && __PointerIsNotNull__(path_)) {
@@ -1204,7 +1204,7 @@ Return_t xDirOpen(Dir_t **dir_, Volume_t *volume_, const Byte_t *path_) {
       /* Find the directory by path */
       if(OK(__FindFileByPath__(volume_, path_, &entry, null, null, null))) {
         /* Verify it's a directory */
-        if((entry.attr & FAT_ATTR_DIRECTORY) == 0x0) {
+        if((entry.attr & FAT_ATTR_DIRECTORY) == 0x0u) {
           /* Not a directory */
           /* Return error by default */
           FUNCTION_EXIT;
@@ -1222,7 +1222,7 @@ Return_t xDirOpen(Dir_t **dir_, Volume_t *volume_, const Byte_t *path_) {
     /* Allocate directory handle in kernel heap */
     if(OK(__KernelAllocateMemory__((volatile Addr_t **) &dir, sizeof(Dir_t)))) {
       dir->volume = volume_;
-      dir->entryIndex = nil;
+      dir->entryIndex = 0x0u;
       dir->isOpen = true;
       dir->currentCluster = dirCluster;
       *dir_ = dir;
@@ -1267,9 +1267,9 @@ Return_t xDirRead(Dir_t *dir_, DirEntry_t **entry_) {
   Byte_t *clusterData = null;
   FAT32DirEntry_t *fatEntry = null;
   DirEntry_t *dirEntry = null;
-  Word_t entriesPerCluster = nil;
-  Word_t entryOffsetInCluster = nil;
-  Word_t nextCluster = nil;
+  Word_t entriesPerCluster = 0x0u;
+  Word_t entryOffsetInCluster = 0x0u;
+  Word_t nextCluster = 0x0u;
 
 
   if(__PointerIsNotNull__(dir_) && __PointerIsNotNull__(entry_) && dir_->isOpen) {
@@ -1283,8 +1283,8 @@ Return_t xDirRead(Dir_t *dir_, DirEntry_t **entry_) {
 
       /* Skip deleted entries (first byte = 0xE5) and end marker (first byte =
        * 0x00) */
-      while(fatEntry->name[0x0] == 0xE5u || fatEntry->name[0x0] == 0x00u) {
-        if(fatEntry->name[0x0] == 0x00u) {
+      while(fatEntry->name[0x0u] == 0xE5u || fatEntry->name[0x0u] == 0x00u) {
+        if(fatEntry->name[0x0u] == 0x00u) {
           /* End of directory */
           __KernelFreeMemory__(clusterData);
           __AssertOnElse__();
@@ -1295,7 +1295,7 @@ Return_t xDirRead(Dir_t *dir_, DirEntry_t **entry_) {
         entryOffsetInCluster = dir_->entryIndex % entriesPerCluster;
 
         /* Check if we need to read next cluster */
-        if(entryOffsetInCluster == 0x0) {
+        if(entryOffsetInCluster == 0x0u) {
           if(OK(__GetFATEntry__(dir_->volume, dir_->currentCluster, &nextCluster))) {
             if(nextCluster >= FAT32_EOC_MIN) {
               /* End of directory chain */
@@ -1334,12 +1334,12 @@ Return_t xDirRead(Dir_t *dir_, DirEntry_t **entry_) {
        */
       if(OK(xMemAlloc((volatile Addr_t **) &dirEntry, sizeof(DirEntry_t)))) {
         /* Convert 8.3 filename to null-terminated string */
-        Word_t i = nil;
-        Word_t j = nil;
+        Word_t i = 0x0u;
+        Word_t j = 0x0u;
 
 
         /* Copy name part (8 chars) */
-        for(i = nil; i < 8 && fatEntry->name[i] != ' '; i++) {
+        for(i = 0x0u; i < 8 && fatEntry->name[i] != ' '; i++) {
           dirEntry->name[j++] = fatEntry->name[i];
         }
 
@@ -1385,7 +1385,7 @@ Return_t xDirRewind(Dir_t *dir_) {
   FUNCTION_ENTER;
 
   if(__PointerIsNotNull__(dir_)) {
-    dir_->entryIndex = nil;
+    dir_->entryIndex = 0x0u;
     __ReturnOk__();
   } else {
     __AssertOnElse__();
@@ -1399,20 +1399,20 @@ Return_t xDirMake(Volume_t *volume_, const Byte_t *path_) {
   FUNCTION_ENTER;
 
 
-  Word_t parentCluster = nil;
-  Word_t newDirCluster = nil;
+  Word_t parentCluster = 0x0u;
+  Word_t newDirCluster = 0x0u;
   Byte_t dirName83[11];
   Byte_t *clusterData = null;
   FAT32DirEntry_t *dotEntry = null;
   FAT32DirEntry_t *dotdotEntry = null;
-  Word_t firstSector = nil;
-  Word_t i = nil;
+  Word_t firstSector = 0x0u;
+  Word_t i = 0x0u;
   const Byte_t *lastSlash = null;
   const Byte_t *dirName = null;
   Byte_t parentPath[256] = {
     0
   };
-  Word_t parentPathLen = nil;
+  Word_t parentPathLen = 0x0u;
 
 
   if(__PointerIsNotNull__(volume_) && __PointerIsNotNull__(path_)) {
@@ -1426,7 +1426,7 @@ Return_t xDirMake(Volume_t *volume_, const Byte_t *path_) {
     dirName = path_;
     lastSlash = null;
 
-    for(i = nil; path_[i] != '\0'; i++) {
+    for(i = 0x0u; path_[i] != '\0'; i++) {
       if(path_[i] == '/') {
         lastSlash = &path_[i];
       }
@@ -1439,7 +1439,7 @@ Return_t xDirMake(Volume_t *volume_, const Byte_t *path_) {
       /* Extract parent path */
       parentPathLen = lastSlash - path_;
 
-      if(parentPathLen == 0x0) {
+      if(parentPathLen == 0x0u) {
         /* Parent is root */
         parentPath[0] = '/';
         parentPath[1] = '\0';
@@ -1496,7 +1496,7 @@ Return_t xDirMake(Volume_t *volume_, const Byte_t *path_) {
           /* Write directory cluster */
           firstSector = __ClusterToSector__(volume_, newDirCluster);
 
-          for(i = nil; i < volume_->sectorsPerCluster; i++) {
+          for(i = 0x0u; i < volume_->sectorsPerCluster; i++) {
             if(ERROR(__WriteSector__(volume_, firstSector + i, clusterData + (i * volume_->bytesPerSector)))) {
               __KernelFreeMemory__(clusterData);
               __AssertOnElse__();
@@ -1540,18 +1540,18 @@ Return_t xDirRemove(Volume_t *volume_, const Byte_t *path_) {
 
 
   FAT32DirEntry_t entry;
-  Word_t entryCluster = nil;
-  Word_t entryOffset = nil;
-  Word_t dirCluster = nil;
+  Word_t entryCluster = 0x0u;
+  Word_t entryOffset = 0x0u;
+  Word_t dirCluster = 0x0u;
   Byte_t *clusterData = null;
   FAT32DirEntry_t *fatEntry = null;
-  Word_t entriesPerCluster = nil;
-  Word_t entryIdx = nil;
-  Word_t firstSector = nil;
-  Word_t i = nil;
+  Word_t entriesPerCluster = 0x0u;
+  Word_t entryIdx = 0x0u;
+  Word_t firstSector = 0x0u;
+  Word_t i = 0x0u;
   Base_t isEmpty = true;
-  Word_t currentCluster = nil;
-  Word_t nextCluster = nil;
+  Word_t currentCluster = 0x0u;
+  Word_t nextCluster = 0x0u;
 
 
   if(__PointerIsNotNull__(volume_) && __PointerIsNotNull__(path_)) {
@@ -1564,7 +1564,7 @@ Return_t xDirRemove(Volume_t *volume_, const Byte_t *path_) {
     /* Find the directory entry */
     if(OK(__FindFileByPath__(volume_, path_, &entry, null, &entryCluster, &entryOffset))) {
       /* Must be a directory */
-      if((entry.attr & FAT_ATTR_DIRECTORY) == 0x0) {
+      if((entry.attr & FAT_ATTR_DIRECTORY) == 0x0u) {
         __AssertOnElse__();
         FUNCTION_EXIT;
       }
@@ -1577,22 +1577,22 @@ Return_t xDirRemove(Volume_t *volume_, const Byte_t *path_) {
       /* Must check all clusters in the directory's cluster chain */
       entriesPerCluster = ((Word_t) volume_->bytesPerSector * volume_->sectorsPerCluster) / sizeof(FAT32DirEntry_t);
       currentCluster = dirCluster;
-      nextCluster = nil;
+      nextCluster = 0x0u;
 
       /* Iterate through all clusters in directory */
       while(isEmpty && currentCluster >= 2 && currentCluster < FAT32_EOC_MIN) {
         if(OK(__ReadCluster__(volume_, currentCluster, &clusterData))) {
-          for(entryIdx = nil; entryIdx < entriesPerCluster; entryIdx++) {
+          for(entryIdx = 0x0u; entryIdx < entriesPerCluster; entryIdx++) {
             fatEntry = (FAT32DirEntry_t *) (clusterData + (entryIdx * sizeof(FAT32DirEntry_t)));
 
             /* End of directory? */
-            if(fatEntry->name[0x0] == 0x00u) {
+            if(fatEntry->name[0x0u] == 0x00u) {
               __KernelFreeMemory__(clusterData);
               goto check_empty;
             }
 
             /* Skip deleted, . and .. entries */
-            if((fatEntry->name[0x0] == 0xE5u) || __ByteCompare__(fatEntry->name, (const Byte_t *) ".          ", 0xB) || __ByteCompare__(fatEntry->name, (const
+            if((fatEntry->name[0x0u] == 0xE5u) || __ByteCompare__(fatEntry->name, (const Byte_t *) ".          ", 0xB) || __ByteCompare__(fatEntry->name, (const
               Byte_t *) "..         ", 0xB)) {
               continue;
             }
@@ -1636,7 +1636,7 @@ check_empty:
         /* Write directory cluster back */
         firstSector = __ClusterToSector__(volume_, entryCluster);
 
-        for(i = nil; i < volume_->sectorsPerCluster; i++) {
+        for(i = 0x0u; i < volume_->sectorsPerCluster; i++) {
           if(ERROR(__WriteSector__(volume_, firstSector + i, clusterData + (i * volume_->bytesPerSector)))) {
             __KernelFreeMemory__(clusterData);
             __AssertOnElse__();
@@ -1711,12 +1711,12 @@ Return_t xFileUnlink(Volume_t *volume_, const Byte_t *path_) {
 
 
   FAT32DirEntry_t entry;
-  Word_t entryCluster = nil;
-  Word_t entryOffset = nil;
-  Word_t firstCluster = nil;
+  Word_t entryCluster = 0x0u;
+  Word_t entryOffset = 0x0u;
+  Word_t firstCluster = 0x0u;
   Byte_t *clusterData = null;
-  Word_t firstSector = nil;
-  Word_t i = nil;
+  Word_t firstSector = 0x0u;
+  Word_t i = 0x0u;
 
 
   if(__PointerIsNotNull__(volume_) && __PointerIsNotNull__(path_)) {
@@ -1729,7 +1729,7 @@ Return_t xFileUnlink(Volume_t *volume_, const Byte_t *path_) {
     /* Find the file and get its location */
     if(OK(__FindFileByPath__(volume_, path_, &entry, null, &entryCluster, &entryOffset))) {
       /* Don't allow deleting directories with this function */
-      if((entry.attr & FAT_ATTR_DIRECTORY) != 0x0) {
+      if((entry.attr & FAT_ATTR_DIRECTORY) != 0x0u) {
         __AssertOnElse__();
         FUNCTION_EXIT;
       }
@@ -1746,7 +1746,7 @@ Return_t xFileUnlink(Volume_t *volume_, const Byte_t *path_) {
         /* Write directory cluster back */
         firstSector = __ClusterToSector__(volume_, entryCluster);
 
-        for(i = nil; i < volume_->sectorsPerCluster; i++) {
+        for(i = 0x0u; i < volume_->sectorsPerCluster; i++) {
           if(ERROR(__WriteSector__(volume_, firstSector + i, clusterData + (i * volume_->bytesPerSector)))) {
             __KernelFreeMemory__(clusterData);
             __AssertOnElse__();
@@ -1788,16 +1788,16 @@ Return_t xFileRename(Volume_t *volume_, const Byte_t *oldPath_, const Byte_t *ne
 
 
   FAT32DirEntry_t oldEntry;
-  Word_t oldEntryCluster = nil;
-  Word_t oldEntryOffset = nil;
-  Word_t newParentCluster = nil;
+  Word_t oldEntryCluster = 0x0u;
+  Word_t oldEntryOffset = 0x0u;
+  Word_t newParentCluster = 0x0u;
   Byte_t newName83[11];
   Byte_t *clusterData = null;
-  Word_t firstSector = nil;
-  Word_t i = nil;
-  Word_t firstCluster = nil;
-  Word_t fileSize = nil;
-  Byte_t attr = nil;
+  Word_t firstSector = 0x0u;
+  Word_t i = 0x0u;
+  Word_t firstCluster = 0x0u;
+  Word_t fileSize = 0x0u;
+  Byte_t attr = 0x0u;
   const Byte_t *lastSlash = null;
   const Byte_t *fileName = null;
 
@@ -1815,7 +1815,7 @@ Return_t xFileRename(Volume_t *volume_, const Byte_t *oldPath_, const Byte_t *ne
       fileName = newPath_;
       lastSlash = null;
 
-      for(i = nil; newPath_[i] != '\0'; i++) {
+      for(i = 0x0u; newPath_[i] != '\0'; i++) {
         if(newPath_[i] == '/') {
           lastSlash = &newPath_[i];
         }
@@ -1853,7 +1853,7 @@ Return_t xFileRename(Volume_t *volume_, const Byte_t *oldPath_, const Byte_t *ne
           /* Write directory cluster back */
           firstSector = __ClusterToSector__(volume_, oldEntryCluster);
 
-          for(i = nil; i < volume_->sectorsPerCluster; i++) {
+          for(i = 0x0u; i < volume_->sectorsPerCluster; i++) {
             if(ERROR(__WriteSector__(volume_, firstSector + i, clusterData + (i * volume_->bytesPerSector)))) {
               __KernelFreeMemory__(clusterData);
               __AssertOnElse__();
@@ -1903,12 +1903,12 @@ Return_t xFileGetInfo(Volume_t *volume_, const Byte_t *path_, DirEntry_t **entry
        */
       if(OK(xMemAlloc((volatile Addr_t **) &dirEntry, sizeof(DirEntry_t)))) {
         /* Convert 8.3 filename to null-terminated string */
-        Word_t i = nil;
-        Word_t j = nil;
+        Word_t i = 0x0u;
+        Word_t j = 0x0u;
 
 
         /* Copy name part (8 chars) */
-        for(i = nil; i < 8 && fatEntry.name[i] != ' '; i++) {
+        for(i = 0x0u; i < 8 && fatEntry.name[i] != ' '; i++) {
           dirEntry->name[j++] = fatEntry.name[i];
         }
 
@@ -1962,10 +1962,10 @@ Return_t xFileGetInfo(Volume_t *volume_, const Byte_t *path_, DirEntry_t **entry
  * @return      true if equal, false if not equal
  */
 static Base_t __ByteCompare__(const Byte_t *s1_, const Byte_t *s2_, Word_t len_) {
-  Word_t i = nil;
+  Word_t i = 0x0u;
 
 
-  for(i = nil; i < len_; i++) {
+  for(i = 0x0u; i < len_; i++) {
     if(s1_[i] != s2_[i]) {
       return(false);
     }
@@ -1982,10 +1982,10 @@ static Base_t __ByteCompare__(const Byte_t *s1_, const Byte_t *s2_, Word_t len_)
  * @return        ReturnOK on success, ReturnError on invalid name
  */
 static Return_t __ConvertToFAT83__(const Byte_t *path_, Byte_t *fat83_) {
-  Word_t i = nil;
-  Word_t j = nil;
-  Word_t nameLen = nil;
-  Word_t extLen = nil;
+  Word_t i = 0x0u;
+  Word_t j = 0x0u;
+  Word_t nameLen = 0x0u;
+  Word_t extLen = 0x0u;
   const Byte_t *dotPos = null;
 
 
@@ -1994,21 +1994,21 @@ static Return_t __ConvertToFAT83__(const Byte_t *path_, Byte_t *fat83_) {
   }
 
   /* Initialize output to spaces */
-  for(i = nil; i < 11; i++) {
+  for(i = 0x0u; i < 11; i++) {
     fat83_[i] = ' ';
   }
 
   /* Find dot position for extension */
-  for(i = nil; path_[i] != '\0'; i++) {
+  for(i = 0x0u; path_[i] != '\0'; i++) {
     if(path_[i] == '.') {
       dotPos = &path_[i];
     }
   }
 
   /* Copy name part (up to 8 chars, before dot or end) */
-  nameLen = nil;
+  nameLen = 0x0u;
 
-  for(i = nil; path_[i] != '\0' && path_[i] != '.' && nameLen < 8; i++) {
+  for(i = 0x0u; path_[i] != '\0' && path_[i] != '.' && nameLen < 8; i++) {
     Byte_t c = path_[i];
 
 
@@ -2022,7 +2022,7 @@ static Return_t __ConvertToFAT83__(const Byte_t *path_, Byte_t *fat83_) {
 
   /* Copy extension part (up to 3 chars, after dot) */
   if(__PointerIsNotNull__(dotPos)) {
-    extLen = nil;
+    extLen = 0x0u;
 
     for(j = 1; dotPos[j] != '\0' && extLen < 3; j++) {
       Byte_t c = dotPos[j];
@@ -2058,10 +2058,10 @@ static Return_t __FindDirEntry__(const Volume_t *vol_, Word_t dirCluster_, const
   entryOffset_) {
   Byte_t *clusterData = null;
   FAT32DirEntry_t *fatEntry = null;
-  Word_t entriesPerCluster = nil;
-  Word_t entryIdx = nil;
+  Word_t entriesPerCluster = 0x0u;
+  Word_t entryIdx = 0x0u;
   Word_t currentCluster = dirCluster_;
-  Word_t nextCluster = nil;
+  Word_t nextCluster = 0x0u;
   Base_t found = false;
 
 
@@ -2079,18 +2079,18 @@ static Return_t __FindDirEntry__(const Volume_t *vol_, Word_t dirCluster_, const
     }
 
     /* Search entries in this cluster */
-    for(entryIdx = nil; entryIdx < entriesPerCluster; entryIdx++) {
+    for(entryIdx = 0x0u; entryIdx < entriesPerCluster; entryIdx++) {
       fatEntry = (FAT32DirEntry_t *) (clusterData + (entryIdx * sizeof(FAT32DirEntry_t)));
 
       /* Check for end of directory */
-      if(fatEntry->name[0x0] == 0x00u) {
+      if(fatEntry->name[0x0u] == 0x00u) {
         __KernelFreeMemory__(clusterData);
 
         return(ReturnError); /* Not found */
       }
 
       /* Skip deleted entries and long filename entries */
-      if((fatEntry->name[0x0] == 0xE5u) || ((fatEntry->attr & FAT_ATTR_LONG_NAME) == FAT_ATTR_LONG_NAME)) {
+      if((fatEntry->name[0x0u] == 0xE5u) || ((fatEntry->attr & FAT_ATTR_LONG_NAME) == FAT_ATTR_LONG_NAME)) {
         continue;
       }
 
@@ -2147,9 +2147,9 @@ static Return_t __FindFileByPath__(const Volume_t *vol_, const Byte_t *path_, FA
   entryOffset_) {
   Byte_t name83[11];
   Byte_t component[256];
-  Word_t pathIdx = nil;
-  Word_t componentIdx = nil;
-  Word_t currentCluster = nil;
+  Word_t pathIdx = 0x0u;
+  Word_t componentIdx = 0x0u;
+  Word_t currentCluster = 0x0u;
   FAT32DirEntry_t dirEntry;
   Return_t result = ReturnError;
 
@@ -2182,7 +2182,7 @@ static Return_t __FindFileByPath__(const Volume_t *vol_, const Byte_t *path_, FA
     }
 
     if(__PointerIsNotNull__(entryOffset_)) {
-      *entryOffset_ = nil;
+      *entryOffset_ = 0x0u;
     }
 
     return(ReturnOK);
@@ -2191,7 +2191,7 @@ static Return_t __FindFileByPath__(const Volume_t *vol_, const Byte_t *path_, FA
   /* Parse path components and traverse directories */
   while(path_[pathIdx] != '\0') {
     /* Extract next component */
-    componentIdx = nil;
+    componentIdx = 0x0u;
 
     while(path_[pathIdx] != '\0' && path_[pathIdx] != '/' && componentIdx < 255) {
       component[componentIdx++] = path_[pathIdx++];
@@ -2230,7 +2230,7 @@ static Return_t __FindFileByPath__(const Volume_t *vol_, const Byte_t *path_, FA
     }
 
     /* Otherwise, move into this directory (must be a directory) */
-    if((dirEntry.attr & FAT_ATTR_DIRECTORY) == 0x0) {
+    if((dirEntry.attr & FAT_ATTR_DIRECTORY) == 0x0u) {
       return(ReturnError); /* Not a directory, can't traverse further */
     }
 
@@ -2250,7 +2250,7 @@ static Return_t __FindFileByPath__(const Volume_t *vol_, const Byte_t *path_, FA
  */
 static Return_t __FreeClusters__(const Volume_t *vol_, Word_t startCluster_) {
   Word_t currentCluster = startCluster_;
-  Word_t nextCluster = nil;
+  Word_t nextCluster = 0x0u;
 
 
   if(__PointerIsNull__(vol_)) {
@@ -2289,12 +2289,12 @@ static Return_t __FreeClusters__(const Volume_t *vol_, Word_t startCluster_) {
 static Return_t __CreateDirEntry__(const Volume_t *vol_, Word_t parentCluster_, const Byte_t *name83_, Byte_t attr_, Word_t firstCluster_, Word_t size_) {
   Byte_t *clusterData = null;
   FAT32DirEntry_t *fatEntry = null;
-  Word_t entriesPerCluster = nil;
-  Word_t entryIdx = nil;
+  Word_t entriesPerCluster = 0x0u;
+  Word_t entryIdx = 0x0u;
   Word_t currentCluster = parentCluster_;
-  Word_t nextCluster = nil;
-  Word_t firstSector = nil;
-  Word_t i = nil;
+  Word_t nextCluster = 0x0u;
+  Word_t firstSector = 0x0u;
+  Word_t i = 0x0u;
   Base_t found = false;
 
 
@@ -2312,16 +2312,16 @@ static Return_t __CreateDirEntry__(const Volume_t *vol_, Word_t parentCluster_, 
     }
 
     /* Search for free entry in this cluster */
-    for(entryIdx = nil; entryIdx < entriesPerCluster; entryIdx++) {
+    for(entryIdx = 0x0u; entryIdx < entriesPerCluster; entryIdx++) {
       fatEntry = (FAT32DirEntry_t *) (clusterData + (entryIdx * sizeof(FAT32DirEntry_t)));
 
       /* Check for free entry (deleted or end marker) */
-      if((fatEntry->name[0x0] == 0x00u) || (fatEntry->name[0x0] == 0xE5u)) {
+      if((fatEntry->name[0x0u] == 0x00u) || (fatEntry->name[0x0u] == 0xE5u)) {
         /* Found free entry! Fill it in */
         __memcpy__(fatEntry->name, name83_, 0xB);
         fatEntry->attr = attr_;
-        fatEntry->ntReserved = 0x0;
-        fatEntry->createTimeTenth = nil;
+        fatEntry->ntReserved = 0x0u;
+        fatEntry->createTimeTenth = 0x0u;
         __WriteLE16__(fatEntry->createTime, 0);
         __WriteLE16__(fatEntry->createDate, 0);
         __WriteLE16__(fatEntry->lastAccessDate, 0);
@@ -2335,7 +2335,7 @@ static Return_t __CreateDirEntry__(const Volume_t *vol_, Word_t parentCluster_, 
         /* Write cluster back */
         firstSector = __ClusterToSector__(vol_, currentCluster);
 
-        for(i = nil; i < vol_->sectorsPerCluster; i++) {
+        for(i = 0x0u; i < vol_->sectorsPerCluster; i++) {
           if(ERROR(__WriteSector__(vol_, firstSector + i, clusterData + (i * vol_->bytesPerSector)))) {
             __KernelFreeMemory__(clusterData);
 
@@ -2355,7 +2355,7 @@ static Return_t __CreateDirEntry__(const Volume_t *vol_, Word_t parentCluster_, 
     if(OK(__GetFATEntry__(vol_, currentCluster, &nextCluster))) {
       if(nextCluster >= FAT32_EOC_MIN) {
         /* Need to allocate new cluster for directory */
-        Word_t newCluster = nil;
+        Word_t newCluster = 0x0u;
 
 
         if(OK(__FindFreeCluster__(vol_, currentCluster + 1u, &newCluster))) {
@@ -2371,7 +2371,7 @@ static Return_t __CreateDirEntry__(const Volume_t *vol_, Word_t parentCluster_, 
             __memset__(clusterData, 0x00u, (Word_t) vol_->bytesPerSector * vol_->sectorsPerCluster);
             firstSector = __ClusterToSector__(vol_, newCluster);
 
-            for(i = nil; i < vol_->sectorsPerCluster; i++) {
+            for(i = 0x0u; i < vol_->sectorsPerCluster; i++) {
               __WriteSector__(vol_, firstSector + i, clusterData + (i * vol_->bytesPerSector));
             }
 
@@ -2408,7 +2408,7 @@ static Return_t __ReadSector__(const Volume_t *vol_, Word_t sector_, Byte_t **da
 
   Size_t blockSize = sizeof(BlockDeviceCommand_t);
   BlockDeviceCommand_t *cmd = null;
-  Size_t readSize = nil;
+  Size_t readSize = 0x0u;
 
 
   if(__PointerIsNotNull__(vol_) && __PointerIsNotNull__(data_)) {
@@ -2461,7 +2461,7 @@ static Return_t __WriteSector__(const Volume_t *vol_, Word_t sector_, const Byte
 
   Size_t blockSize = sizeof(BlockDeviceCommand_t);
   BlockDeviceCommand_t *cmd = null;
-  Size_t writeSize = nil;
+  Size_t writeSize = 0x0u;
 
 
   if(__PointerIsNotNull__(vol_) && __PointerIsNotNull__(data_)) {
@@ -2524,11 +2524,11 @@ static Return_t __ReadCluster__(const Volume_t *vol_, Word_t cluster_, Byte_t **
   FUNCTION_ENTER;
 
 
-  Word_t firstSector = nil;
-  Word_t clusterSize = nil;
+  Word_t firstSector = 0x0u;
+  Word_t clusterSize = 0x0u;
   Byte_t *buffer = null;
   Byte_t *sectorData = null;
-  Word_t i = nil;
+  Word_t i = 0x0u;
 
 
   if(__PointerIsNotNull__(vol_) && __PointerIsNotNull__(data_)) {
@@ -2539,7 +2539,7 @@ static Return_t __ReadCluster__(const Volume_t *vol_, Word_t cluster_, Byte_t **
     /* Allocate buffer for entire cluster */
     if(OK(__KernelAllocateMemory__((volatile Addr_t **) &buffer, clusterSize))) {
       /* Read all sectors in cluster */
-      for(i = nil; i < vol_->sectorsPerCluster; i++) {
+      for(i = 0x0u; i < vol_->sectorsPerCluster; i++) {
         if(OK(__ReadSector__(vol_, firstSector + i, &sectorData))) {
           /* Copy sector data to cluster buffer */
           __memcpy__(buffer + (i * vol_->bytesPerSector), sectorData, vol_->bytesPerSector);
@@ -2579,11 +2579,11 @@ static Return_t __GetFATEntry__(const Volume_t *vol_, Word_t cluster_, Word_t *n
   FUNCTION_ENTER;
 
 
-  Word_t fatOffset = nil;
-  Word_t fatSector = nil;
-  Word_t entryOffset = nil;
+  Word_t fatOffset = 0x0u;
+  Word_t fatSector = 0x0u;
+  Word_t entryOffset = 0x0u;
   Byte_t *sectorData = null;
-  Word_t fatEntry = nil;
+  Word_t fatEntry = 0x0u;
 
 
   if(__PointerIsNotNull__(vol_) && __PointerIsNotNull__(nextCluster_)) {
@@ -2624,11 +2624,11 @@ static Return_t __SetFATEntry__(const Volume_t *vol_, Word_t cluster_, Word_t va
   FUNCTION_ENTER;
 
 
-  Word_t fatOffset = nil;
-  Word_t fatSector = nil;
-  Word_t entryOffset = nil;
+  Word_t fatOffset = 0x0u;
+  Word_t fatSector = 0x0u;
+  Word_t entryOffset = 0x0u;
   Byte_t *sectorData = null;
-  Byte_t i = nil;
+  Byte_t i = 0x0u;
 
 
   if(__PointerIsNotNull__(vol_)) {
@@ -2679,10 +2679,10 @@ static Return_t __FindFreeCluster__(const Volume_t *vol_, Word_t startHint_, Wor
   FUNCTION_ENTER;
 
 
-  Word_t cluster = nil;
-  Word_t maxCluster = nil;
-  Word_t fatEntry = nil;
-  Word_t searchStart = nil;
+  Word_t cluster = 0x0u;
+  Word_t maxCluster = 0x0u;
+  Word_t fatEntry = 0x0u;
+  Word_t searchStart = 0x0u;
 
 
   if(__PointerIsNotNull__(vol_) && __PointerIsNotNull__(freeCluster_)) {
@@ -2753,10 +2753,10 @@ static Return_t __FindFreeCluster__(const Volume_t *vol_, Word_t startHint_, Wor
  * @return                 true if mounted, false if not
  */
 static Base_t __IsDeviceMounted__(const HalfWord_t blockDeviceUID_) {
-  Byte_t i = nil;
+  Byte_t i = 0x0u;
 
 
-  for(i = nil; i < mountedDeviceCount; i++) {
+  for(i = 0x0u; i < mountedDeviceCount; i++) {
     if(mountedDevices[i] == blockDeviceUID_) {
       return(true);
     }
@@ -2789,11 +2789,11 @@ static Return_t __AddMountedDevice__(const HalfWord_t blockDeviceUID_) {
  * @return                 ReturnOK on success, ReturnError if not found
  */
 static Return_t __RemoveMountedDevice__(const HalfWord_t blockDeviceUID_) {
-  Byte_t i = nil;
-  Byte_t j = nil;
+  Byte_t i = 0x0u;
+  Byte_t j = 0x0u;
 
 
-  for(i = nil; i < mountedDeviceCount; i++) {
+  for(i = 0x0u; i < mountedDeviceCount; i++) {
     if(mountedDevices[i] == blockDeviceUID_) {
       /* Shift remaining elements down */
       for(j = i; j < mountedDeviceCount - 1; j++) {
@@ -2816,7 +2816,7 @@ static Return_t __RemoveMountedDevice__(const HalfWord_t blockDeviceUID_) {
 /* For unit testing only! */
   void __FSStateClear__(void) {
     /* Clear mount tracking state */
-    mountedDeviceCount = nil;
+    mountedDeviceCount = 0x0u;
 
     return;
   }

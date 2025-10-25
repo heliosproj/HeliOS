@@ -16,7 +16,7 @@
 /*UNCRUSTIFY-ON*/
 #include "streams.h"
 
-#define __StreamLengthNonZero__() (nil < stream_->length)
+#define __StreamLengthNonZero__() (0x0u < stream_->length)
 
 
 #define __StreamLengthAtLimit__() (stream_->length == CONFIG_STREAM_BUFFER_BYTES)
@@ -28,7 +28,7 @@ Return_t xStreamCreate(StreamBuffer_t **stream_) {
   if(__PointerIsNotNull__(stream_)) {
     if(OK(__KernelAllocateMemory__((volatile Addr_t **) stream_, sizeof(StreamBuffer_t)))) {
       if(__PointerIsNotNull__(*stream_)) {
-        (*stream_)->length = nil;
+        (*stream_)->length = 0x0u;
         __ReturnOk__();
       } else {
         __AssertOnElse__();
@@ -92,8 +92,8 @@ Return_t xStreamReceive(const StreamBuffer_t *stream_, HalfWord_t *bytes_, Byte_
           if(OK(__memcpy__(*data_, stream_->buffer, stream_->length * sizeof(Byte_t)))) {
             /* Reset stream buffer and length (cast away const for modification)
              */
-            if(OK(__memset__((Addr_t *) stream_->buffer, nil, CONFIG_STREAM_BUFFER_BYTES))) {
-              ((StreamBuffer_t *) stream_)->length = nil;
+            if(OK(__memset__((Addr_t *) stream_->buffer, 0x0u, CONFIG_STREAM_BUFFER_BYTES))) {
+              ((StreamBuffer_t *) stream_)->length = 0x0u;
               __ReturnOk__();
             } else {
               __AssertOnElse__();
@@ -150,8 +150,8 @@ Return_t xStreamReset(const StreamBuffer_t *stream_) {
   if(__PointerIsNotNull__(stream_)) {
     if(__StreamLengthNonZero__()) {
       /* Reset stream buffer and length (cast away const for modification) */
-      if(OK(__memset__((Addr_t *) stream_->buffer, nil, CONFIG_STREAM_BUFFER_BYTES))) {
-        ((StreamBuffer_t *) stream_)->length = nil;
+      if(OK(__memset__((Addr_t *) stream_->buffer, 0x0u, CONFIG_STREAM_BUFFER_BYTES))) {
+        ((StreamBuffer_t *) stream_)->length = 0x0u;
         __ReturnOk__();
       } else {
         __AssertOnElse__();

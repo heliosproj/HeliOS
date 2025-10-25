@@ -60,7 +60,7 @@ static LoopbackState_t state = {
 
 /* Helper macro for parameter validation */
 #define __ValidateBufferParams__(size_, data_) \
-        (__PointerIsNotNull__(size_) && __PointerIsNotNull__(data_) && (nil < *(size_)))
+        (__PointerIsNotNull__(size_) && __PointerIsNotNull__(data_) && (0x0u < *(size_)))
 
 
 /* Forward declarations for helper functions */
@@ -98,13 +98,13 @@ Return_t TO_FUNCTION(DEVICE_NAME, _init)(Device_t *device_) {
   if(__PointerIsNotNull__(device_)) {
 
     /* Initialize state */
-    state.writePosition = nil;
-    state.readPosition = nil;
-    state.bytesAvailable = nil;
-    state.bytesRead = nil;
-    state.bytesWritten = nil;
-    state.readOperations = nil;
-    state.writeOperations = nil;
+    state.writePosition = 0x0u;
+    state.readPosition = 0x0u;
+    state.bytesAvailable = 0x0u;
+    state.bytesRead = 0x0u;
+    state.bytesWritten = 0x0u;
+    state.readOperations = 0x0u;
+    state.writeOperations = 0x0u;
     state.mode = LOOPBACK_MODE_FIFO;
     state.initialized = true;
 
@@ -196,13 +196,13 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Add
         LoopbackClearConfig_t *cfg = (LoopbackClearConfig_t *)config_;
 
         __memset__(loopbackBuffer, cfg->fillPattern, LOOPBACK_BUFFER_SIZE);
-        state.writePosition = nil;
-        state.readPosition = nil;
-        state.bytesAvailable = nil;
-        state.bytesRead = nil;
-        state.bytesWritten = nil;
-        state.readOperations = nil;
-        state.writeOperations = nil;
+        state.writePosition = 0x0u;
+        state.readPosition = 0x0u;
+        state.bytesAvailable = 0x0u;
+        state.bytesRead = 0x0u;
+        state.bytesWritten = 0x0u;
+        state.readOperations = 0x0u;
+        state.writeOperations = 0x0u;
         device_->available = false;
 
         __ReturnOk__();
@@ -256,7 +256,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _read)(Device_t *device_, Size_t *size_, Addr_
   FUNCTION_ENTER;
 
   Byte_t *buffer = null;
-  Size_t bytesToRead = nil;
+  Size_t bytesToRead = 0x0u;
   Size_t i;
 
   if(__PointerIsNotNull__(device_) && __ValidateBufferParams__(size_, data_)) {
@@ -271,7 +271,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _read)(Device_t *device_, Size_t *size_, Addr_
         if(OK(__KernelAllocateMemory__((volatile Addr_t **)&buffer, bytesToRead))) {
 
           /* Copy data from circular buffer */
-          for(i = nil; i < bytesToRead; i++) {
+          for(i = 0x0u; i < bytesToRead; i++) {
             buffer[i] = loopbackBuffer[state.readPosition];
             state.readPosition = (state.readPosition + 1) % LOOPBACK_BUFFER_SIZE;
           }
@@ -315,7 +315,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _read)(Device_t *device_, Size_t *size_, Addr_
 Return_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t *device_, Size_t *size_, Addr_t *data_) {
   FUNCTION_ENTER;
 
-  Size_t bytesToWrite = nil;
+  Size_t bytesToWrite = 0x0u;
   Size_t i;
 
   if(__PointerIsNotNull__(device_) && __ValidateBufferParams__(size_, data_)) {
@@ -329,7 +329,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t *device_, Size_t *size_, Addr
       bytesToWrite = (*size_ > spaceAvailable) ? spaceAvailable : *size_;
 
       /* Copy data to circular buffer */
-      for(i = nil; i < bytesToWrite; i++) {
+      for(i = 0x0u; i < bytesToWrite; i++) {
         loopbackBuffer[state.writePosition] = ((Byte_t *)data_)[i];
         state.writePosition = (state.writePosition + 1) % LOOPBACK_BUFFER_SIZE;
       }
@@ -441,7 +441,7 @@ static Return_t __ValidateAndTruncateSize__(Size_t requested_, Size_t *actual_) 
     /* Truncate to available data */
     *actual_ = state.bytesAvailable;
 
-    if(nil == *actual_) {
+    if(0x0u == *actual_) {
       /* No data available */
       /* Return error by default */
       __AssertOnElse__();
@@ -475,13 +475,13 @@ static void __UpdateAvailability__(Device_t *device_) {
 /* For unit testing only! */
 void __LoopbackStateClear__(void) {
   /* Clear state */
-  state.writePosition = nil;
-  state.readPosition = nil;
-  state.bytesAvailable = nil;
-  state.bytesRead = nil;
-  state.bytesWritten = nil;
-  state.readOperations = nil;
-  state.writeOperations = nil;
+  state.writePosition = 0x0u;
+  state.readPosition = 0x0u;
+  state.bytesAvailable = 0x0u;
+  state.bytesRead = 0x0u;
+  state.bytesWritten = 0x0u;
+  state.readOperations = 0x0u;
+  state.writeOperations = 0x0u;
   state.mode = LOOPBACK_MODE_FIFO;
   state.initialized = false;
 
