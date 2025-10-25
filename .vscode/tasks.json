@@ -12,7 +12,6 @@
                 "-pedantic",
                 "-Wall",
                 "-Wextra",
-                "-Wno-unused-parameter",
                 "-Wno-pointer-to-int-cast",
                 "-I${workspaceFolder}/src",
                 "-I${workspaceFolder}/drivers/ramdisk",
