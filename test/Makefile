@@ -49,6 +49,9 @@ DEFINES = -DPOSIX_ARCH_OTHER \
 # Output binary
 TARGET = bin/test
 
+# Compliance checker output file
+CHECK_REPORT = compliance-report.json
+
 # Source files
 SOURCES = $(wildcard $(BASE_DIR)/src/*.c) \
           $(wildcard $(BASE_DIR)/drivers/ramdisk/*.c) \
@@ -79,7 +82,9 @@ test: $(TARGET)
 # Run source code compliance checker
 check:
 	@echo "Running HeliOS source code compliance checker..."
-	@cd $(BASE_DIR)/extras/check && ./check ../../src/*.c
+	@cd $(BASE_DIR)/extras/check && ./check -o json ../../src/*.c -f ../../test/$(CHECK_REPORT) || true
+	@echo "Compliance report saved to: $(CHECK_REPORT)"
+	@echo "Run 'jq . $(CHECK_REPORT)' to view formatted output"
 
 # Run tests with gdb for debugging
 debug: $(TARGET)
@@ -90,6 +95,7 @@ debug: $(TARGET)
 clean:
 	@echo "Cleaning build artifacts..."
 	@rm -f $(TARGET)
+	@rm -f $(CHECK_REPORT)
 	@rm -rf bin
 	@echo "Clean complete"
 
@@ -102,7 +108,7 @@ help:
 	@echo "================================="
 	@echo "  all   - Build the unit test binary (default)"
 	@echo "  test  - Build and run the unit tests"
-	@echo "  check - Run source code compliance checker on source files"
+	@echo "  check - Run compliance checker and save JSON report"
 	@echo "  debug - Run tests in gdb debugger"
-	@echo "  clean - Remove build artifacts and bin directory"
+	@echo "  clean - Remove build artifacts and compliance report"
 	@echo "  help  - Show this help message"

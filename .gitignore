@@ -3,6 +3,8 @@
 /.claude/**
 __pycache__
 .helios_cache
+.claude
+/test/compliance-report.json
 !.gitignore
 !.gitattributes
 !/.vscode/settings.json
