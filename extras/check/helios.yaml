@@ -416,6 +416,78 @@ rules:
     message: "Define magic number as a named constant"
     fix_suggestion: "Create a #define or const for this value"
 
+  MN-002:
+    category: "Magic Numbers"
+    severity: "CRITICAL"
+    description: "Numeric literals must be in hexadecimal with type suffix"
+    check_type: "pattern"
+    patterns:
+      # Match decimal literals (2 or more) in assignments
+      decimal_literal:
+        pattern: '=\s*[2-9]\d*\s*;'
+        context:
+          not_in_comment: true
+          not_in_string: true
+          in_function: true
+      # Match decimal literals 10 or higher
+      large_decimal:
+        pattern: '=\s*\d{2,}\s*;'
+        context:
+          not_in_comment: true
+          not_in_string: true
+          in_function: true
+      # Match hex literals without type suffix
+      hex_without_suffix:
+        pattern: '=\s*0x[0-9a-fA-F]+\s*;'
+        context:
+          not_in_comment: true
+          not_in_string: true
+          in_function: true
+    exclude_patterns:
+      - '#define'
+      - 'case\s+'
+      - '<<'
+      - '>>'
+      - '\[.*\]'
+      - '0x[0-9a-fA-F]+[uUlL]'  # Already has suffix
+    enabled: true
+    message: "Use hexadecimal notation with type suffix (e.g., 0x3u for unsigned 3)"
+    fix_suggestion: "Convert to hex with type suffix: unsigned->u, long->l, unsigned long->ul"
+
+  # ==========================================
+  # Type System Rules
+  # ==========================================
+
+  TS-001:
+    category: "Type System"
+    severity: "CRITICAL"
+    description: "Use only HeliOS types, not standard C types"
+    check_type: "pattern"
+    patterns:
+      # Standard integer types that should not be used
+      standard_int_types:
+        pattern: '\b(int|short|long|char|unsigned|signed|uint8_t|uint16_t|uint32_t|uint64_t|int8_t|int16_t|int32_t|int64_t|size_t|ptrdiff_t|intptr_t|uintptr_t)\b'
+        context:
+          not_in_comment: true
+          not_in_string: true
+          not_in_macro: false  # Check even in macros
+    exclude_patterns:
+      - '#include'  # Don't flag includes
+      - 'typedef.*_t;'  # Don't flag typedef definitions themselves
+      - '^\s*//'  # Skip single-line comments
+      - '^\s*/\*'  # Skip multi-line comments
+    enabled: true
+    message: "Use HeliOS types: Base_t, Byte_t, HalfWord_t, Word_t, Size_t, Addr_t, Return_t"
+    fix_suggestion: |
+      Replace with HeliOS types:
+      - uint8_t → Byte_t
+      - uint16_t → HalfWord_t
+      - uint32_t → Word_t
+      - int/unsigned → Word_t or appropriate type
+      - char → Byte_t
+      - void* → Addr_t
+      - size_t → Size_t
+
   # ==========================================
   # HeliOS State Machine Rules
   # ==========================================
