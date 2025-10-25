@@ -1,949 +1,761 @@
-# HeliOS Source Code Compliance Rules - Migrated to Nomic
-# Migration Date: 2025-10-25
-# Original Source: extras/check/rules.yaml
-# Nomic Version: 0.5.0
-
-metadata:
-  version: "1.0.0"
-  description: "HeliOS Source Code Compliance Rules - Nomic Migration"
-  last_updated: "2025-10-25"
-  original_version: "4.0"
-
-# Project configuration
-project:
-  name: "HeliOS"
-  description: "HeliOS Embedded Operating System"
-
-  # Custom types used in HeliOS
-  custom_types:
-    - "Return_t"
-    - "Base_t"
-    - "Byte_t"
-    - "HalfWord_t"
-    - "Word_t"
-    - "Size_t"
-    - "Addr_t"
-    - "Task_t"
-    - "Queue_t"
-    - "Timer_t"
-    - "Semaphore_t"
-    - "Mutex_t"
-    - "Flag_t"
-
-  # Type mappings (HeliOS type -> C type)
-  type_mappings:
-    Base_t: "uint8_t"
-    Byte_t: "uint8_t"
-    HalfWord_t: "uint16_t"
-    Word_t: "uint32_t"
-    Size_t: "size_t"
-    Addr_t: "void*"
-    Return_t: "enum"
-
-  # Type replacements (standard type -> HeliOS type)
-  type_replacements:
-    "int": "Word_t"
-    "unsigned": "Word_t"
-    "unsigned int": "Word_t"
-    "char": "Byte_t"
-    "unsigned char": "Byte_t"
-    "uint8_t": "Byte_t"
-    "uint16_t": "HalfWord_t"
-    "uint32_t": "Word_t"
-    "size_t": "Size_t"
-    "void *": "Addr_t"
-    "void*": "Addr_t"
-
-  # Required macros
-  required_macros:
-    function_enter: "FUNCTION_ENTER"
-    function_exit: "FUNCTION_EXIT"
-    assert_else: "__AssertOnElse__"
-    pointer_null_check:
-      - "__PointerIsNull__"
-      - "__PointerIsNotNull__"
-    return_ok: "__ReturnOk__"
-    return_err: "__ReturnWithError__"
-    return_val: "__ReturnWithValue__"
-
-  # API configuration
-  api:
-    prefixes:
-      - "xSystem"
-      - "xTask"
-      - "xQueue"
-      - "xTimer"
-      - "xMem"
-      - "xPort"
-      - "xStream"
-      - "xDevice"
-    return_type: "Return_t"
-    naming_convention: "camelCase"
-    prefix_required: true
-
-# Global configuration
-config:
-  max_function_complexity: 15
-  max_function_lines: 200
-  max_file_lines: 2000
-  confidence_threshold: 0.70
-  enable_suppression: true
-
-# Rules Definition
-rules:
-
-  # ============================================
-  # FUNCTION STRUCTURE RULES (FS)
-  # ============================================
-
-  - id: "FS-001-ENTER"
-    type: "function_structure"
-    severity: "error"
-    description: "Functions must have FUNCTION_ENTER macro as first statement"
-    message: "Function '{function_name}' missing FUNCTION_ENTER macro"
-    pattern:
-      type: "ast"
-      match: |
-        functions where {
-          @first_statement != "FUNCTION_ENTER"
-        }
-    fix:
-      suggestion: "Add 'FUNCTION_ENTER;' after opening brace"
-      automatic: true
-      replacement: |
-        insert_after(function_body_start, "FUNCTION_ENTER;")
-
-  - id: "FS-001-EXIT"
-    type: "function_structure"
-    severity: "error"
-    description: "Functions must have FUNCTION_EXIT macro before final return"
-    message: "Function '{function_name}' missing FUNCTION_EXIT macro"
-    pattern:
-      type: "ast"
-      match: |
-        functions where {
-          @last_statement_before_return != "FUNCTION_EXIT"
-        }
-    fix:
-      suggestion: "Add 'FUNCTION_EXIT;' before closing brace or return"
-      automatic: true
-      replacement: |
-        insert_before(function_body_end, "FUNCTION_EXIT;")
-
-  - id: "FS-002"
-    type: "return_statement"
-    severity: "error"
-    description: "No early returns except through allowed macros"
-    message: "Early return detected in '{function_name}' - use __ReturnOk__() or similar macros"
-    pattern:
-      type: "ast"
-      match: |
-        return_statements where {
-          not @is_last_in_function and
-          not @wrapped_in_macro(["__ReturnOk__", "__ReturnWithError__", "__ReturnWithValue__"])
-        }
-    fix:
-      suggestion: "Replace return with __ReturnOk__() or restructure logic"
-
-  - id: "FS-003"
-    type: "api_consistency"
-    severity: "warning"
-    description: "Public API functions must return Return_t"
-    message: "Public API function '{function_name}' should return Return_t"
-    pattern:
-      type: "ast"
-      match: |
-        functions where {
-          @is_public and
-          @has_api_prefix(["x"]) and
-          @return_type != "Return_t"
-        }
-    fix:
-      suggestion: "Change return type to Return_t"
-      automatic: true
-      replacement: |
-        set_return_type("Return_t")
-
-  - id: "FS-004"
-    type: "complexity"
-    severity: "info"
-    description: "Function complexity should not exceed maximum"
-    message: "Function '{function_name}' has complexity {complexity} (max: 15)"
-    pattern:
-      type: "metric"
-      match: |
-        functions where {
-          @cyclomatic_complexity > 15
-        }
-    fix:
-      suggestion: "Refactor function into smaller, more focused functions"
-
-  - id: "FS-005"
-    type: "size"
-    severity: "info"
-    description: "Functions should not exceed maximum lines"
-    message: "Function '{function_name}' has {line_count} lines (max: 200)"
-    pattern:
-      type: "metric"
-      match: |
-        functions where {
-          @line_count > 200
-        }
-    fix:
-      suggestion: "Split function into smaller functions"
-
-  # ============================================
-  # PARAMETER NAMING RULES (PN)
-  # ============================================
-
-  - id: "PN-001"
-    type: "naming_convention"
-    severity: "warning"
-    description: "Function parameters must end with underscore"
-    message: "Parameter '{param_name}' in function '{function_name}' should end with underscore"
-    pattern:
-      type: "ast"
-      match: |
-        parameters where {
-          not @ends_with("_") and
-          @type != "void" and
-          @type != "..."
-        }
-    fix:
-      suggestion: "Add underscore suffix to parameter name"
-      automatic: true
-      replacement: |
-        rename_to("{param_name}_")
-
-  # ============================================
-  # NAMING CONVENTION RULES (NC)
-  # ============================================
-
-  - id: "NC-001"
-    type: "naming_convention"
-    severity: "warning"
-    description: "Macros must use double underscores and ALL_CAPS"
-    message: "Macro '{macro_name}' should use __ALL_CAPS__ naming"
-    pattern:
-      type: "regex"
-      match: |
-        #define\s+(?!__[A-Z_]+__)(\w+)
-      context:
-        not_in_string: true
-        not_in_comment: true
-    fix:
-      suggestion: "Rename macro to __ALL_CAPS__ format"
-
-  - id: "NC-002"
-    type: "naming_convention"
-    severity: "warning"
-    description: "Static functions must use double underscore prefix/suffix"
-    message: "Static function '{function_name}' should use __Name__ format"
-    pattern:
-      type: "ast"
-      match: |
-        functions where {
-          @is_static and
-          not @matches_pattern("__.*__")
-        }
-    fix:
-      suggestion: "Rename to __FunctionName__ format"
-
-  - id: "NC-003"
-    type: "naming_convention"
-    severity: "warning"
-    description: "Public API functions must start with 'x'"
-    message: "Public API function '{function_name}' should start with 'x'"
-    pattern:
-      type: "ast"
-      match: |
-        functions where {
-          @is_public and
-          @is_api_function and
-          not @starts_with("x")
-        }
-    fix:
-      suggestion: "Rename to start with 'x' prefix"
-
-  - id: "NC-004"
-    type: "naming_convention"
-    severity: "info"
-    description: "Type definitions should end with _t"
-    message: "Type definition '{type_name}' should end with '_t'"
-    pattern:
-      type: "ast"
-      match: |
-        typedefs where {
-          not @ends_with("_t")
-        }
-    fix:
-      suggestion: "Rename type to end with '_t' suffix"
-
-  # ============================================
-  # MEMORY MANAGEMENT RULES (MM)
-  # ============================================
-
-  - id: "MM-001"
-    type: "null_check"
-    severity: "error"
-    description: "Pointer parameters must be checked for NULL"
-    message: "Pointer parameter '{param_name}' in '{function_name}' not checked for NULL"
-    pattern:
-      type: "dataflow"
-      match: |
-        pointer_params where {
-          @is_dereferenced and
-          not @has_null_check_before_use
-        }
-    fix:
-      suggestion: "Add __PointerIsNotNull__(ptr_) check before using pointer"
-      automatic: true
-      replacement: |
-        insert_before_use("__PointerIsNotNull__({param_name});")
-
-  - id: "MM-002"
-    type: "allocation_check"
-    severity: "error"
-    description: "Memory allocation must be checked"
-    message: "Memory allocation in '{function_name}' not checked with OK() macro"
-    pattern:
-      type: "ast"
-      match: |
-        allocations where {
-          @function_name in ["__KernelAllocateMemory__", "__HeapAllocateMemory__"] and
-          not @followed_by_check("OK")
-        }
-    fix:
-      suggestion: "Check allocation with 'if (OK(ret))' after allocation"
-
-  - id: "MM-003"
-    type: "flag_check"
-    severity: "error"
-    description: "MEMFAULT flag must be set before memory error handling"
-    message: "MEMFAULT flag not set before __AssertOnElse__ in memory operation"
-    pattern:
-      type: "sequence"
-      match: |
-        memory_operations where {
-          @has_assert_on_else and
-          not @has_flag_before("MEMFAULT", "__SetFlag__")
-        }
-    fix:
-      suggestion: "Add '__SetFlag__(MEMFAULT);' before __AssertOnElse__"
-
-  - id: "MM-004"
-    type: "memory_leak"
-    severity: "error"
-    description: "Allocated memory must be freed"
-    message: "Memory allocated in '{function_name}' may not be freed on all paths"
-    pattern:
-      type: "dataflow"
-      match: |
-        allocations where {
-          not @has_corresponding_free_on_all_paths
-        }
-    fix:
-      suggestion: "Ensure all allocated memory is freed before function exit"
-
-  - id: "MM-005"
-    type: "null_dereference"
-    severity: "error"
-    description: "Check for potential null pointer dereferences"
-    message: "Potential null pointer dereference of '{variable_name}' in '{function_name}'"
-    pattern:
-      type: "dataflow"
-      match: |
-        pointer_dereferences where {
-          @may_be_null and
-          not @has_null_check
-        }
-    fix:
-      suggestion: "Add null check before dereferencing pointer"
-
-  # ============================================
-  # ERROR HANDLING RULES (EH)
-  # ============================================
-
-  - id: "EH-001"
-    type: "error_handling"
-    severity: "warning"
-    description: "Error conditions should use __AssertOnElse__"
-    message: "Error handling in '{function_name}' should use __AssertOnElse__()"
-    pattern:
-      type: "ast"
-      match: |
-        else_blocks where {
-          @is_error_path and
-          not @contains("__AssertOnElse__")
-        }
-    fix:
-      suggestion: "Add __AssertOnElse__() in error handling path"
-
-  - id: "EH-002"
-    type: "status_check"
-    severity: "warning"
-    description: "Use OK() macro for status checks"
-    message: "Status check in '{function_name}' should use OK() macro"
-    pattern:
-      type: "ast"
-      match: |
-        conditionals where {
-          @checks_return_value and
-          not @uses_macro("OK")
-        }
-    fix:
-      suggestion: "Use 'if (OK(ret))' for status checking"
-
-  - id: "EH-003"
-    type: "variable_access"
-    severity: "error"
-    description: "Variable 'ret' must not be directly accessed"
-    message: "Direct access to 'ret' variable detected - use FUNCTION_ENTER, FUNCTION_EXIT, or __ReturnOk__() only"
-    pattern:
-      type: "ast"
-      match: |
-        variable_accesses where {
-          @variable_name == "ret" and
-          not @in_allowed_context(["FUNCTION_ENTER", "FUNCTION_EXIT", "__ReturnOk__", "OK", "ERROR"])
-        }
-    fix:
-      suggestion: "The 'ret' variable should only be modified by FUNCTION_ENTER, FUNCTION_EXIT, and __ReturnOk__() macros"
-
-  - id: "EH-004"
-    type: "prohibited_macro"
-    severity: "error"
-    description: "__ReturnError__() macro must not exist or be used"
-    message: "__ReturnError__() macro is prohibited - errors should be indicated by 'ret' remaining as ReturnError"
-    pattern:
-      type: "regex"
-      match: |
-        __ReturnError__\s*\(
-      context:
-        not_in_comment: true
-        not_in_string: true
-    fix:
-      suggestion: "Remove __ReturnError__() - the 'ret' variable is initialized to ReturnError and should be left unchanged for errors"
-
-  # ============================================
-  # CODE QUALITY RULES (CQ)
-  # ============================================
-
-  - id: "CQ-001"
-    type: "initialization"
-    severity: "info"
-    description: "Variables should be initialized"
-    message: "Variable '{variable_name}' in '{function_name}' is not initialized at declaration"
-    pattern:
-      type: "ast"
-      match: |
-        variable_declarations where {
-          not @has_initializer and
-          @type != "void*"
-        }
-    fix:
-      suggestion: "Initialize variable at declaration"
-
-  - id: "CQ-002"
-    type: "naming_convention"
-    severity: "info"
-    description: "Use descriptive cursor for linked list operations"
-    message: "List traversal in '{function_name}' should use 'cursor' variable name"
-    pattern:
-      type: "pattern"
-      match: |
-        list_traversals where {
-          @iterator_name != "cursor"
-        }
-    fix:
-      suggestion: "Use 'cursor' variable name for list traversal"
-
-  - id: "CQ-003"
-    type: "documentation"
-    severity: "info"
-    description: "Add comments for memory cleanup"
-    message: "Memory cleanup in '{function_name}' should have explanatory comment"
-    pattern:
-      type: "ast"
-      match: |
-        memory_deallocations where {
-          not @has_preceding_comment
-        }
-    fix:
-      suggestion: "Add comment before memory cleanup operations"
-
-  # ============================================
-  # CONCURRENCY RULES (CN)
-  # ============================================
-
-  - id: "CN-001"
-    type: "interrupt_safety"
-    severity: "error"
-    description: "Critical sections must disable/enable interrupts"
-    message: "Critical section in '{function_name}' should use interrupt disable/enable"
-    pattern:
-      type: "ast"
-      match: |
-        critical_sections where {
-          not @has_interrupt_disable_enable
-        }
-    fix:
-      suggestion: "Add interrupt disable/enable around critical section"
-
-  - id: "CN-002"
-    type: "volatile_check"
-    severity: "warning"
-    description: "Shared data should be volatile"
-    message: "Shared variable '{variable_name}' should be declared volatile"
-    pattern:
-      type: "ast"
-      match: |
-        global_variables where {
-          @is_accessed_from_multiple_contexts and
-          not @is_volatile
-        }
-    fix:
-      suggestion: "Add 'volatile' qualifier to shared variable"
-
-  # ============================================
-  # MAGIC NUMBER RULES (MN)
-  # ============================================
-
-  - id: "MN-001"
-    type: "magic_number"
-    severity: "info"
-    description: "Avoid magic numbers"
-    message: "Magic number {value} found - define as named constant"
-    pattern:
-      type: "regex"
-      match: |
-        (?<![x0-9a-fA-F])[2-9]\d{2,}(?![0-9a-fA-F])
-      context:
-        not_in_comment: true
-        not_in_string: true
-        not_in_macro: true
-        not_in_case: true
-    fix:
-      suggestion: "Create a #define or const for this value"
-
-  - id: "MN-002"
-    type: "numeric_literal"
-    severity: "error"
-    description: "Numeric literals must be in hexadecimal with type suffix"
-    message: "Use hexadecimal notation with type suffix (e.g., 0x3u)"
-    pattern:
-      type: "ast"
-      match: |
-        numeric_literals where {
-          @value >= 2 and
-          not @is_hexadecimal and
-          not @has_type_suffix
-        }
-    fix:
-      suggestion: "Convert to hex with type suffix: u for unsigned, l for long"
-
-  # ============================================
-  # TYPE SYSTEM RULES (TS)
-  # ============================================
-
-  - id: "TS-001"
-    type: "type_usage"
-    severity: "error"
-    description: "Use only HeliOS types, not standard C types"
-    message: "Use HeliOS type instead of '{type_name}'"
-    pattern:
-      type: "ast"
-      match: |
-        type_references where {
-          @type_name in ["int", "short", "long", "char", "unsigned", "signed",
-                         "uint8_t", "uint16_t", "uint32_t", "uint64_t",
-                         "int8_t", "int16_t", "int32_t", "int64_t",
-                         "size_t", "ptrdiff_t", "intptr_t", "uintptr_t"]
-        }
-    fix:
-      suggestion: |
-        Replace with HeliOS types:
-        - uint8_t → Byte_t
-        - uint16_t → HalfWord_t
-        - uint32_t → Word_t
-        - int/unsigned → Word_t
-        - char → Byte_t
-        - void* → Addr_t
-        - size_t → Size_t
-
-  # ============================================
-  # CROSS-FUNCTION ANALYSIS RULES (CFA)
-  # ============================================
-
-  - id: "CFA-001"
-    type: "type_consistency"
-    severity: "error"
-    description: "Type mismatch across function boundaries"
-    message: "Type mismatch in function call at '{location}'"
-    pattern:
-      type: "cross_function"
-      match: |
-        function_calls where {
-          @argument_types != @parameter_types
-        }
-    fix:
-      suggestion: "Ensure argument types match parameter types"
-
-  - id: "CFA-002"
-    type: "race_condition"
-    severity: "error"
-    description: "Race condition on global variables"
-    message: "Potential race condition on '{variable_name}'"
-    pattern:
-      type: "cross_function"
-      match: |
-        global_accesses where {
-          @has_concurrent_access and
-          not @has_synchronization
-        }
-    fix:
-      suggestion: "Add proper synchronization for concurrent access"
-
-  # ============================================
-  # MULTI-LINE PATTERN RULES (ML)
-  # ============================================
-
-  - id: "ML-001"
-    type: "function_structure"
-    severity: "error"
-    description: "Function must have ENTER/EXIT macros on separate lines"
-    message: "Function missing proper ENTER/EXIT macro structure"
-    pattern:
-      type: "multi_line"
-      match: |
-        function_body not matching {
-          FUNCTION_ENTER;
-          ...
-          FUNCTION_EXIT;
-        }
-    fix:
-      suggestion: "Add FUNCTION_ENTER after opening brace and FUNCTION_EXIT before closing brace"
-
-  - id: "ML-002"
-    type: "allocation_pattern"
-    severity: "error"
-    description: "Memory allocation must be followed by null check"
-    message: "Memory allocation not followed by null check"
-    pattern:
-      type: "multi_line"
-      match: |
-        __(?:Kernel|Heap)AllocateMemory__\([^)]+\);
-        next_line not matching if.*OK.*\(
-    fix:
-      suggestion: "Add 'if(OK(ret))' check after allocation"
-
-  # ============================================
-  # SEMANTIC PATTERN RULES (SP)
-  # ============================================
-
-  - id: "SP-001"
-    type: "type_conversion"
-    severity: "error"
-    description: "Detect improper type conversions"
-    message: "Improper type conversion detected at '{location}'"
-    pattern:
-      type: "semantic"
-      match: |
-        type_conversions where {
-          @from_standard_type and
-          @to_standard_type and
-          not @has_explicit_cast
-        }
-    fix:
-      suggestion: "Use proper HeliOS types or add explicit cast"
-
-  - id: "SP-002"
-    type: "memory_pattern"
-    severity: "error"
-    description: "Memory allocation without deallocation"
-    message: "Memory leak detected - allocation without corresponding free"
-    pattern:
-      type: "semantic"
-      match: |
-        memory_allocations where {
-          not @has_corresponding_free
-        }
-    fix:
-      suggestion: "Ensure all allocated memory is freed before function exit"
-
-  - id: "SP-003"
-    type: "api_return_type"
-    severity: "warning"
-    description: "Public API functions must return Return_t"
-    message: "Public API function not returning Return_t"
-    pattern:
-      type: "semantic"
-      match: |
-        api_functions where {
-          @return_type != "Return_t"
-        }
-    fix:
-      suggestion: "Change return type to Return_t"
-
-  # ============================================
-  # STATE MACHINE RULES (SM)
-  # ============================================
-
-  - id: "SM-001"
-    type: "state_transition"
-    severity: "error"
-    description: "Task state transitions must be valid"
-    message: "Invalid task state transition detected"
-    pattern:
-      type: "state_machine"
-      match: |
-        state_transitions where {
-          not @is_valid_transition
-        }
-    fix:
-      suggestion: "Ensure state transitions follow valid state machine rules"
-
-  - id: "SM-002"
-    type: "scheduler_check"
-    severity: "warning"
-    description: "Scheduler functions must check scheduler state"
-    message: "Function should verify scheduler state before operation"
-    pattern:
-      type: "ast"
-      match: |
-        scheduler_functions where {
-          not @checks_scheduler_state
-        }
-    fix:
-      suggestion: "Add scheduler state verification"
-
-  # ============================================
-  # SAFETY RULES (SF)
-  # ============================================
-
-  - id: "SF-001"
-    type: "overflow_check"
-    severity: "error"
-    description: "Buffer overflow checks required"
-    message: "Missing overflow check in arithmetic operation"
-    pattern:
-      type: "ast"
-      match: |
-        arithmetic_operations where {
-          @may_overflow and
-          not @has_overflow_check
-        }
-    fix:
-      suggestion: "Add overflow check before operation"
-
-  - id: "SF-002"
-    type: "input_validation"
-    severity: "error"
-    description: "Validate input parameters"
-    message: "Input parameter '{param_name}' not validated"
-    pattern:
-      type: "ast"
-      match: |
-        input_parameters where {
-          @is_external_input and
-          not @has_validation
-        }
-    fix:
-      suggestion: "Validate input parameters before use"
-
-  # ============================================
-  # CROSS-REFERENCE RULES (XREF)
-  # ============================================
-
-  - id: "XREF-001"
-    type: "dead_code"
-    severity: "info"
-    description: "Function is never called"
-    message: "Function '{function_name}' appears to be unused"
-    pattern:
-      type: "cross_reference"
-      match: |
-        functions where {
-          @call_count == 0 and
-          not @is_main and
-          not @is_interrupt_handler
-        }
-    fix:
-      suggestion: "Remove if unused or add appropriate calls"
-
-  - id: "XREF-002"
-    type: "header_declaration"
-    severity: "warning"
-    description: "Public function not declared in header"
-    message: "Public function '{function_name}' missing header declaration"
-    pattern:
-      type: "cross_reference"
-      match: |
-        public_functions where {
-          not @has_header_declaration
-        }
-    fix:
-      suggestion: "Add declaration to appropriate header file"
-
-  # ============================================
-  # FILE-LEVEL RULES (FILE)
-  # ============================================
-
-  - id: "FILE-001"
-    type: "include_guard"
-    severity: "warning"
-    description: "Header files must have include guards"
-    message: "Header file missing include guards"
-    pattern:
-      type: "file"
-      match: |
-        header_files where {
-          not @has_include_guards
-        }
-    fix:
-      suggestion: "Add #ifndef/#define/#endif guards"
-      automatic: true
-      replacement: |
-        add_include_guards("{FILE_NAME_UPPER}_H")
-
-  - id: "FILE-002"
-    type: "file_size"
-    severity: "info"
-    description: "Files should not exceed maximum lines"
-    message: "File has {line_count} lines (max: 2000)"
-    pattern:
-      type: "metric"
-      match: |
-        files where {
-          @line_count > 2000
-        }
-    fix:
-      suggestion: "Consider splitting file into smaller modules"
-
-  # ============================================
-  # DOCUMENTATION RULES (DC)
-  # ============================================
-
-  - id: "DC-001"
-    type: "function_documentation"
-    severity: "info"
-    description: "Functions should have documentation header"
-    message: "Function '{function_name}' lacks documentation"
-    pattern:
-      type: "ast"
-      match: |
-        functions where {
-          not @has_documentation_comment
-        }
-    fix:
-      suggestion: "Add documentation header for function"
-
-  - id: "DC-002"
-    type: "complexity_documentation"
-    severity: "info"
-    description: "Complex logic should have explanatory comments"
-    message: "Complex code block needs explanatory comments"
-    pattern:
-      type: "metric"
-      match: |
-        code_blocks where {
-          @complexity > 10 and
-          not @has_comments
-        }
-    fix:
-      suggestion: "Add comments to explain complex logic"
-
-  # ============================================
-  # COMPOSITE RULES (COMP)
-  # ============================================
-
-  - id: "COMP-001"
-    type: "composite"
-    severity: "error"
-    description: "Complete memory safety compliance"
-    message: "Function must satisfy all memory safety rules"
-    requires_all:
-      - "MM-001"  # Pointer checks
-      - "MM-002"  # Allocation checks
-      - "MM-004"  # Memory freed
-      - "MM-005"  # Null deref checks
-
-  - id: "COMP-002"
-    type: "composite"
-    severity: "warning"
-    description: "Complete function structure compliance"
-    message: "Function must have proper structure with ENTER/EXIT and no early returns"
-    requires_all:
-      - "FS-001-ENTER"
-      - "FS-001-EXIT"
-      - "FS-002"
-
-  - id: "COMP-003"
-    type: "composite"
-    severity: "warning"
-    description: "Complete API compliance for public functions"
-    message: "Public API function must meet all API requirements"
-    requires_all:
-      - "FS-003"  # Return type
-      - "NC-003"  # Naming convention
-      - "DC-001"  # Documentation
-
-# Suppression configuration
-suppressions:
-  inline_format: "// nomic-disable {rule_id}"
-
-  file_patterns:
-    - pattern: "*_test.c"
-      rules: ["FS-001-ENTER", "FS-001-EXIT"]
-    - pattern: "*_mock.c"
-      rules: ["*"]
-
-  function_patterns:
-    - pattern: "main"
-      rules: ["FS-001-ENTER", "FS-001-EXIT", "PN-001"]
-    - pattern: "test_*"
-      rules: ["FS-001-ENTER", "FS-001-EXIT"]
-    - pattern: "__*__"
-      rules: ["FS-001-ENTER", "FS-001-EXIT"]
-
-# Confidence modifiers
-confidence_modifiers:
-  in_macro_expansion: 0.7
-  in_generated_code: 0.5
-  in_test_code: 0.8
-  in_inline_function: 0.9
-
-# Global exceptions
-global_exceptions:
-  exclude_files:
-    - "*_test.c"
-    - "*_mock.c"
-    - "*/test/*"
-    - "*/tests/*"
-    - "*/examples/*"
-
-  exclude_functions:
-    - "main"
-    - "test_*"
-    - "mock_*"
-
-  generated_code_markers:
-    - "AUTO-GENERATED"
-    - "DO NOT EDIT"
-    - "@generated"
-
-# Severity configuration
-severity_levels:
-  error: 1
-  warning: 2
-  info: 3
-
-# Report configuration
-report:
-  show_context_lines: 3
-  max_violations_per_file: 100
-  group_by: "severity"
-  include_metrics: true
-  include_suggestions: true
-  include_confidence: true
-  include_suppressed: false
-  show_cross_references: true
+# HeliOS Compliance Rules for Nomic
+# Version: 2.0.2
+# Date: 2025-10-25
+#
+# This file contains semantic analysis rules for HeliOS compliance checking.
+# Rules are defined using Nomic's DSL as specified in RULES_SPEC.md
+
+---
+# Function Structure Rules
+
+- id: HELIOS-FS-001-ENTER
+  description: "Functions must start with FUNCTION_ENTER macro"
+  severity: error
+  scope: Function
+  select: "fn: Function"
+  assert_code: >
+    fn.entry_statements and
+    len(fn.entry_statements) > 0 and
+    pattern_matches(fn.entry_statements[0], "FUNCTION_ENTER")
+  exceptions:
+    - "fn.name == 'main'"
+    - "pattern_matches(fn.name, '^test_')"
+    - "pattern_matches(fn.name, '^mock_')"
+  message: >
+    Function {{ fn.name }} at {{ fn.source_range.file }}:{{ fn.source_range.line_start }}
+    missing FUNCTION_ENTER macro as first statement
+  fixit: >
+    Add 'FUNCTION_ENTER;' immediately after the opening brace of {{ fn.name }}
+  tags: [structure, mandatory]
+
+- id: HELIOS-FS-001-EXIT
+  description: "Functions must end with FUNCTION_EXIT macro"
+  severity: error
+  scope: Function
+  select: "fn: Function"
+  assert_code: >
+    fn.exit_statements and
+    len(fn.exit_statements) > 0 and
+    exists(stmt in fn.exit_statements if pattern_matches(stmt, "FUNCTION_EXIT"))
+  exceptions:
+    - "fn.name == 'main'"
+    - "pattern_matches(fn.name, '^test_')"
+    - "pattern_matches(fn.name, '^mock_')"
+  message: >
+    Function {{ fn.name }} at {{ fn.source_range.file }}:{{ fn.source_range.line_start }}
+    missing FUNCTION_EXIT macro before return
+  fixit: >
+    Add 'FUNCTION_EXIT;' before the closing brace of {{ fn.name }}
+  tags: [structure, mandatory]
+
+- id: HELIOS-FS-002
+  description: "No early returns except through allowed macros"
+  severity: error
+  scope: Function
+  select: "fn: Function"
+  assert_code: >
+    not exists(stmt in fn.all_statements
+      if pattern_matches(stmt, "\\breturn\\b") and not (
+        pattern_matches(stmt, "FUNCTION_EXIT") or
+        pattern_matches(stmt, "__Return")
+      )
+    )
+  exceptions:
+    - "fn.name == 'main'"
+  message: >
+    Function {{ fn.name }} has early return statement not using FUNCTION_EXIT or __Return* macros
+  fixit: >
+    Replace direct return with __ReturnOk__() or restructure to use FUNCTION_EXIT
+  tags: [structure, control-flow]
+
+- id: HELIOS-FS-003
+  description: "Public API functions must return Return_t"
+  severity: warning
+  scope: Function
+  select: >
+    fn: Function
+    where pattern_matches(fn.name, "^x[A-Z]")
+  assert_code: >
+    fn.return_type == "Return_t"
+  message: >
+    Public API function {{ fn.name }} should return Return_t, not {{ fn.return_type }}
+  fixit: >
+    Change return type of {{ fn.name }} to Return_t
+  tags: [api, type-system]
+
+- id: HELIOS-FS-004
+  description: "Function complexity should not exceed maximum"
+  severity: info
+  scope: Function
+  select: "fn: Function"
+  assert_code: >
+    fn.cyclomatic_complexity <= 15
+  message: >
+    Function {{ fn.name }} has cyclomatic complexity {{ fn.cyclomatic_complexity }} (max: 15)
+  fixit: >
+    Refactor {{ fn.name }} into smaller, more focused functions
+  tags: [complexity, maintainability]
+
+- id: HELIOS-FS-005
+  description: "Functions should not exceed maximum lines"
+  severity: info
+  scope: Function
+  select: "fn: Function"
+  assert_code: >
+    (fn.source_range.line_end - fn.source_range.line_start) <= 200
+  message: >
+    Function {{ fn.name }} has {{ fn.source_range.line_end - fn.source_range.line_start }} lines (max: 200)
+  fixit: >
+    Split {{ fn.name }} into smaller functions
+  tags: [size, maintainability]
+
+---
+# Parameter Naming Rules
+
+- id: HELIOS-PN-001
+  description: "Function parameters must end with underscore"
+  severity: warning
+  scope: Function
+  select: "fn: Function"
+  assert_code: >
+    not exists(param in fn.parameters
+      if param.ctype != "void" and not pattern_matches(param.name, "_$")
+    )
+  exceptions:
+    - "fn.name == 'main'"
+    - "'...' in [p.ctype for p in fn.parameters]"
+  message: >
+    Parameter(s) in {{ fn.name }} not ending with underscore:
+    {{ ', '.join([p.name for p in fn.parameters if not p.name.endswith('_') and p.ctype != 'void']) }}
+  fixit: >
+    Add underscore suffix to all parameters in {{ fn.name }}
+  tags: [naming, convention]
+
+---
+# Naming Convention Rules
+
+- id: HELIOS-NC-001
+  description: "Macros must use double underscores and ALL_CAPS"
+  severity: warning
+  scope: MacroDefinition
+  select: "macro: MacroDefinition"
+  assert_code: >
+    pattern_matches(macro.name, "^__[A-Z_]+__$") or
+    pattern_matches(macro.name, "^[A-Z_]+$")
+  exceptions:
+    - "macro.preprocessor.guard_condition == 'UNIT_TEST'"
+  message: >
+    Macro {{ macro.name }} should use __ALL_CAPS__ naming convention
+  fixit: >
+    Rename {{ macro.name }} to follow __ALL_CAPS__ pattern
+  tags: [naming, macro]
+
+- id: HELIOS-NC-002
+  description: "Static functions must use double underscore prefix/suffix"
+  severity: warning
+  scope: Function
+  select: >
+    fn: Function
+    where fn.is_static
+  assert_code: >
+    pattern_matches(fn.name, "^__.*__$")
+  message: >
+    Static function {{ fn.name }} should use __Name__ format
+  fixit: >
+    Rename {{ fn.name }} to __{{ fn.name.strip('_') }}__
+  tags: [naming, static]
+
+- id: HELIOS-NC-003
+  description: "Public API functions must start with 'x'"
+  severity: warning
+  scope: Function
+  select: >
+    fn: Function
+    where not fn.is_static and fn.linkage == "external"
+  assert_code: >
+    pattern_matches(fn.name, "^x[A-Z]") or
+    pattern_matches(fn.name, "^__") or
+    fn.name == "main"
+  message: >
+    Public function {{ fn.name }} should start with 'x' prefix (e.g., xSystemInit)
+  fixit: >
+    Rename {{ fn.name }} to start with 'x' prefix
+  tags: [naming, api]
+
+- id: HELIOS-NC-004
+  description: "Type definitions should end with _t"
+  severity: info
+  scope: TypeDecl
+  select: >
+    type: TypeDecl
+    where type.kind == "typedef"
+  assert_code: >
+    pattern_matches(type.name, "_t$")
+  message: >
+    Type {{ type.name }} should end with '_t' suffix
+  fixit: >
+    Rename {{ type.name }} to {{ type.name }}_t
+  tags: [naming, type]
+
+---
+# Memory Management Rules
+
+- id: HELIOS-MM-001
+  description: "Pointer parameters must be checked for NULL"
+  severity: error
+  scope: Function
+  select: "fn: Function"
+  assert_code: >
+    not exists(param in fn.parameters
+      if pattern_matches(param.ctype, "\\*") and
+         not exists(stmt in fn.all_statements if pattern_matches(stmt, "__Pointer.*" + param.name))
+    )
+  exceptions:
+    - "fn.annotations and any(ann.text == 'UNCHECKED_PARAMS' for ann in fn.annotations)"
+  message: >
+    Pointer parameter(s) in {{ fn.name }} not checked for NULL:
+    {{ ', '.join([p.name for p in fn.parameters if '*' in p.ctype]) }}
+  fixit: >
+    Add __PointerIsNotNull__(ptr_) checks for all pointer parameters
+  tags: [memory, safety]
+
+- id: HELIOS-MM-002
+  description: "Memory allocation must be checked"
+  severity: error
+  scope: Function
+  select: "fn: Function"
+  assert_code: >
+    not exists(call in fn.calls
+      if pattern_matches(call.callee_name, "AllocateMemory") and
+         not pattern_matches(fn, "OK\\s*\\(")
+    )
+  message: >
+    Memory allocation in {{ fn.name }} not checked with OK() macro
+  fixit: >
+    Check allocation result with 'if (OK(ret))' after allocation
+  tags: [memory, allocation]
+
+- id: HELIOS-MM-003
+  description: "MEMFAULT flag must be set before memory error handling"
+  severity: error
+  scope: Function
+  select: "fn: Function"
+  assert_code: >
+    not exists(stmt in fn.all_statements
+      if pattern_matches(stmt, "__AssertOnElse__.*memory") and
+         not exists(prev_stmt in fn.all_statements if pattern_matches(prev_stmt, "__SetFlag__\\(MEMFAULT\\)"))
+    )
+  message: >
+    Memory error in {{ fn.name }} without setting MEMFAULT flag
+  fixit: >
+    Add '__SetFlag__(MEMFAULT);' before memory error assertion
+  tags: [memory, error-handling]
+
+- id: HELIOS-MM-004
+  description: "Allocated memory must be freed"
+  severity: error
+  scope: Function
+  select: "fn: Function"
+  assert_code: >
+    not exists(call in fn.calls
+      if pattern_matches(call.callee_name, "AllocateMemory") and
+         not exists(free_call in fn.calls if pattern_matches(free_call.callee_name, "FreeMemory"))
+    )
+  exceptions:
+    - "fn.annotations and any(ann.text == 'TRANSFERS_OWNERSHIP' for ann in fn.annotations)"
+  message: >
+    Memory allocated in {{ fn.name }} may not be freed on all paths
+  fixit: >
+    Ensure all allocated memory is freed before function exit
+  tags: [memory, leak]
+
+- id: HELIOS-MM-005
+  description: "Check for potential null pointer dereferences"
+  severity: error
+  scope: Function
+  select: "fn: Function"
+  assert_code: >
+    not exists(var in fn.local_vars
+      if pattern_matches(var.ctype, "\\*") and var.writes and
+         not var.is_initialized and
+         not exists(stmt in fn.all_statements if pattern_matches(stmt, "__PointerIsNotNull.*" + var.name))
+    )
+  message: >
+    Potential null pointer dereference in {{ fn.name }}
+  fixit: >
+    Add null check before dereferencing pointer
+  tags: [memory, null-deref]
+
+---
+# Error Handling Rules
+
+- id: HELIOS-EH-001
+  description: "Error conditions should use __AssertOnElse__"
+  severity: warning
+  scope: IfStmt
+  select: >
+    ifstmt: IfStmt
+    where ifstmt.else_block is not None
+  assert_code: >
+    not pattern_matches(ifstmt.condition, "OK\\s*\\(") or
+    pattern_matches(ifstmt.else_block, "__AssertOnElse__")
+  message: >
+    Error path in function should use __AssertOnElse__()
+  fixit: >
+    Add __AssertOnElse__() in the else block
+  tags: [error-handling, assertion]
+
+- id: HELIOS-EH-002
+  description: "Use OK() macro for status checks"
+  severity: warning
+  scope: IfStmt
+  select: >
+    ifstmt: IfStmt
+    where pattern_matches(ifstmt.condition, "\\bret\\b")
+  assert_code: >
+    pattern_matches(ifstmt.condition, "OK\\s*\\(") or
+    pattern_matches(ifstmt.condition, "ERROR\\s*\\(")
+  message: >
+    Status check should use OK() or ERROR() macro
+  fixit: >
+    Replace condition with 'if (OK(ret))'
+  tags: [error-handling, status]
+
+- id: HELIOS-EH-003
+  description: "Variable 'ret' must not be directly accessed"
+  severity: error
+  scope: Function
+  select: >
+    fn: Function
+    where exists(var in fn.local_vars if var.name == "ret")
+  assert_code: >
+    not exists(stmt in fn.all_statements
+      if pattern_matches(stmt, "\\bret\\s*=") and
+         not pattern_matches(stmt, "FUNCTION_ENTER") and
+         not pattern_matches(stmt, "__ReturnOk__") and
+         not pattern_matches(stmt, "__ReturnWithValue__")
+    )
+  message: >
+    Direct access to 'ret' variable in {{ fn.name }} - use macros only
+  fixit: >
+    Use FUNCTION_ENTER, FUNCTION_EXIT, or __ReturnOk__() to modify 'ret'
+  tags: [error-handling, ret-variable]
+
+- id: HELIOS-EH-004
+  description: "__ReturnError__() macro must not exist or be used"
+  severity: error
+  scope: Function
+  select: "fn: Function"
+  assert_code: >
+    not pattern_matches(fn, "__ReturnError__")
+  message: >
+    __ReturnError__() is prohibited in {{ fn.name }} - errors are indicated by default ReturnError
+  fixit: >
+    Remove __ReturnError__() - rely on FUNCTION_ENTER's default ReturnError initialization
+  tags: [error-handling, prohibited]
+
+---
+# Code Quality Rules
+
+- id: HELIOS-CQ-001
+  description: "Variables should be initialized"
+  severity: info
+  scope: Variable
+  select: >
+    var: Variable
+    where var.is_local
+  assert_code: >
+    var.is_initialized or
+    pattern_matches(var.ctype, "\\*")
+  message: >
+    Variable {{ var.name }} in {{ var.parent_function.name }} is not initialized at declaration
+  fixit: >
+    Initialize {{ var.name }} at declaration
+  tags: [quality, initialization]
+
+- id: HELIOS-CQ-002
+  description: "Use descriptive cursor for linked list operations"
+  severity: info
+  scope: Function
+  select: >
+    fn: Function
+    where pattern_matches(fn, "->next")
+  assert_code: >
+    exists(var in fn.local_vars if var.name == "cursor")
+  message: >
+    List traversal in {{ fn.name }} should use 'cursor' variable name
+  fixit: >
+    Use 'cursor' as the iterator variable name for list traversal
+  tags: [quality, naming]
+
+- id: HELIOS-CQ-003
+  description: "Add comments for memory cleanup"
+  severity: info
+  scope: CallSite
+  select: >
+    call: CallSite
+    where pattern_matches(call.callee_name, "Free")
+  assert_code: >
+    call.preprocessor and call.preprocessor.active_defines
+  message: >
+    Memory cleanup at line {{ call.location.line_start }} should have explanatory comment
+  fixit: >
+    Add comment explaining the memory cleanup operation
+  tags: [quality, documentation]
+
+---
+# Concurrency Rules
+
+- id: HELIOS-CN-001
+  description: "Critical sections must disable/enable interrupts"
+  severity: error
+  scope: Function
+  select: >
+    fn: Function
+    where fn.has_critical_section
+  assert_code: >
+    pattern_matches(fn, "__DisableInterrupts__") and
+    pattern_matches(fn, "__EnableInterrupts__")
+  message: >
+    Critical section in {{ fn.name }} missing interrupt disable/enable
+  fixit: >
+    Add __DisableInterrupts__() and __EnableInterrupts__() around critical section
+  tags: [concurrency, interrupt]
+
+- id: HELIOS-CN-002
+  description: "Shared data should be volatile"
+  severity: warning
+  scope: Variable
+  select: >
+    var: Variable
+    where var.is_global and len(var.written_by) > 1
+  assert_code: >
+    var.is_volatile
+  message: >
+    Shared variable {{ var.name }} should be declared volatile
+  fixit: >
+    Add 'volatile' qualifier to {{ var.name }}
+  tags: [concurrency, volatile]
+
+---
+# Type System Rules
+
+- id: HELIOS-TS-001
+  description: "Use only HeliOS types, not standard C types"
+  severity: error
+  scope: Variable
+  select: "var: Variable"
+  assert_code: >
+    not pattern_matches(var.ctype, "\\b(int|short|long|char|unsigned|signed)\\b") or
+    pattern_matches(var.ctype, "_t\\b") or
+    var.decl_function == "main"
+  exceptions:
+    - "var.preprocessor.guard_condition == 'COMPATIBILITY_MODE'"
+  message: >
+    Variable {{ var.name }} uses standard C type {{ var.ctype }} instead of HeliOS types
+  fixit: >
+    Replace with HeliOS types: int→Word_t, char→Byte_t, void*→Addr_t
+  tags: [type-system, helios-types]
+
+---
+# Magic Number Rules
+
+- id: HELIOS-MN-001
+  description: "Avoid magic numbers"
+  severity: info
+  scope: Function
+  select: "fn: Function"
+  assert_code: >
+    not pattern_matches(fn, "(?<![x0-9a-fA-F])[2-9]\\d{2,}(?![0-9a-fA-F])")
+  exceptions:
+    - "pattern_matches(fn, '#define')"
+  message: >
+    Magic number found in {{ fn.name }} - define as named constant
+  fixit: >
+    Create a #define or const for numeric literals
+  tags: [magic-number, maintainability]
+
+- id: HELIOS-MN-002
+  description: "Numeric literals must be in hexadecimal with type suffix"
+  severity: warning
+  scope: Function
+  select: "fn: Function"
+  assert_code: >
+    not exists(stmt in fn.all_statements
+      if pattern_matches(stmt, "=\\s*[0-9]") and
+         not pattern_matches(stmt, "=\\s*0x[0-9a-fA-F]+[uUlL]") and
+         not pattern_matches(stmt, "=\\s*[01]\\b")
+    )
+  message: >
+    Use hexadecimal notation with type suffix in {{ fn.name }}
+  fixit: >
+    Convert decimal to hex with suffix: 3 → 0x3u, 256 → 0x100u
+  tags: [numeric-literal, style]
+
+---
+# Cross-Function Analysis Rules
+
+- id: HELIOS-CFA-001
+  description: "Type mismatch across function boundaries"
+  severity: error
+  scope: CallSite
+  select: >
+    call: CallSite
+    where call.callee_symbol is not None
+  assert_code: >
+    safe_getattr(call.callee_symbol, 'parameters', None) and
+    len(call.args) == len(safe_getattr(call.callee_symbol, 'parameters', []))
+  message: >
+    Argument count mismatch in call to {{ call.callee_name }}
+  fixit: >
+    Ensure argument types match parameter types
+  tags: [type-consistency, call-site]
+
+- id: HELIOS-CFA-002
+  description: "Race condition on global variables"
+  severity: error
+  scope: Variable
+  select: >
+    var: Variable
+    where var.is_global and not var.is_const
+  assert_code: >
+    var.is_volatile or
+    var.has_mutex_protection or
+    len(var.written_by) <= 1
+  message: >
+    Potential race condition on global variable {{ var.name }}
+  fixit: >
+    Add proper synchronization or volatile qualifier
+  tags: [race-condition, global]
+
+---
+# State Machine Rules
+
+- id: HELIOS-SM-001
+  description: "Task state transitions must be valid"
+  severity: error
+  scope: Function
+  select: >
+    fn: Function
+    where pattern_matches(fn.name, "xTask")
+  assert_code: >
+    not pattern_matches(fn, "RUNNING.*WAITING.*RUNNING")
+  message: >
+    Invalid task state transition in {{ fn.name }}
+  fixit: >
+    Ensure state transitions follow valid state machine rules
+  tags: [state-machine, task]
+
+- id: HELIOS-SM-002
+  description: "Scheduler functions must check scheduler state"
+  severity: warning
+  scope: Function
+  select: >
+    fn: Function
+    where pattern_matches(fn.name, "Scheduler")
+  assert_code: >
+    pattern_matches(fn, "__FlagIsSet__\\(RUNNING\\)")
+  message: >
+    {{ fn.name }} should verify scheduler state before operation
+  fixit: >
+    Add scheduler state verification using __FlagIsSet__(RUNNING)
+  tags: [scheduler, state]
+
+---
+# Safety Rules
+
+- id: HELIOS-SF-001
+  description: "Buffer overflow checks required"
+  severity: error
+  scope: Function
+  select: >
+    fn: Function
+    where pattern_matches(fn, "memcpy|strcpy|strcat")
+  assert_code: >
+    pattern_matches(fn, "__SetFlag__\\(OVERFLOW\\)") or
+    pattern_matches(fn, "bounds.*check")
+  message: >
+    Missing overflow check in {{ fn.name }}
+  fixit: >
+    Add bounds checking before buffer operations
+  tags: [safety, overflow]
+
+- id: HELIOS-SF-002
+  description: "Validate input parameters"
+  severity: error
+  scope: Function
+  select: >
+    fn: Function
+    where fn.is_api
+  assert_code: >
+    exists(stmt in fn.entry_statements
+      if pattern_matches(stmt, "__Validate|__PointerIs")
+    )
+  message: >
+    Input validation missing in API function {{ fn.name }}
+  fixit: >
+    Validate input parameters at function entry
+  tags: [safety, validation]
+
+---
+# Cross-Reference Rules
+
+- id: HELIOS-XREF-001
+  description: "Function is never called"
+  severity: info
+  scope: Function
+  select: >
+    fn: Function
+    where not fn.is_static
+  assert_code: >
+    len(fn.called_by) > 0 or
+    fn.name == "main" or
+    pattern_matches(fn.name, "^__.*interrupt")
+  message: >
+    Function {{ fn.name }} appears to be unused
+  fixit: >
+    Remove if unused or add appropriate calls
+  tags: [dead-code, unused]
+
+- id: HELIOS-XREF-002
+  description: "Public function not declared in header"
+  severity: warning
+  scope: Function
+  select: >
+    fn: Function
+    where not fn.is_static and fn.linkage == "external"
+  assert_code: >
+    fn.annotations or fn.name == "main"
+  message: >
+    Public function {{ fn.name }} may be missing header declaration
+  fixit: >
+    Add declaration to appropriate header file
+  tags: [header, declaration]
+
+---
+# File-Level Rules
+
+- id: HELIOS-FILE-001
+  description: "Header files must have include guards"
+  severity: warning
+  scope: TranslationUnit
+  select: >
+    tu: TranslationUnit
+    where pattern_matches(tu.path, "\\.h$")
+  assert_code: >
+    exists(macro in tu.macros
+      if pattern_matches(macro.name, "_H$|_H_$")
+    )
+  message: >
+    Header file {{ tu.path }} missing include guards
+  fixit: >
+    Add #ifndef/#define/#endif guards
+  tags: [header, guard]
+
+- id: HELIOS-FILE-002
+  description: "Files should not exceed maximum lines"
+  severity: info
+  scope: TranslationUnit
+  select: "tu: TranslationUnit"
+  assert_code: >
+    len(tu.functions) < 50
+  message: >
+    File {{ tu.path }} is too large ({{ len(tu.functions) }} functions)
+  fixit: >
+    Consider splitting file into smaller modules
+  tags: [file-size, modularity]
+
+---
+# Documentation Rules
+
+- id: HELIOS-DC-001
+  description: "Functions should have documentation header"
+  severity: info
+  scope: Function
+  select: >
+    fn: Function
+    where fn.is_api
+  assert_code: >
+    fn.annotations is not None and len(fn.annotations) > 0
+  message: >
+    API function {{ fn.name }} lacks documentation
+  fixit: >
+    Add documentation header with @brief, @param, @return
+  tags: [documentation, api]
+
+- id: HELIOS-DC-002
+  description: "Complex logic should have explanatory comments"
+  severity: info
+  scope: Function
+  select: >
+    fn: Function
+    where fn.cyclomatic_complexity > 10
+  assert_code: >
+    len(fn.annotations) > 3
+  message: >
+    Complex function {{ fn.name }} needs more explanatory comments
+  fixit: >
+    Add comments to explain complex logic sections
+  tags: [documentation, complexity]
+
+---
+# Composite Rules
+
+- id: HELIOS-COMP-001
+  description: "Complete memory safety compliance"
+  severity: error
+  scope: Function
+  select: >
+    fn: Function
+    where len(fn.calls) > 0
+  assert_code: >
+    (not exists(call in fn.calls
+      if pattern_matches(call.callee_name, "Allocate") and
+         not pattern_matches(fn, "OK\\s*\\(")
+    )) and
+    (not exists(param in fn.parameters
+      if pattern_matches(param.ctype, "\\*") and
+         not pattern_matches(fn, "__PointerIs")
+    ))
+  message: >
+    Function {{ fn.name }} must satisfy all memory safety rules
+  fixit: >
+    Ensure all memory operations are properly checked
+  tags: [composite, memory-safety]
+
+- id: HELIOS-COMP-002
+  description: "Complete function structure compliance"
+  severity: error
+  scope: Function
+  select: >
+    fn: Function
+    where fn.return_type == "Return_t"
+  assert_code: >
+    pattern_matches(fn.entry_statements[0] if fn.entry_statements else "", "FUNCTION_ENTER") and
+    exists(stmt in fn.exit_statements if pattern_matches(stmt, "FUNCTION_EXIT"))
+  exceptions:
+    - "fn.name == 'main'"
+  message: >
+    Function {{ fn.name }} must have proper ENTER/EXIT structure
+  fixit: >
+    Add FUNCTION_ENTER and FUNCTION_EXIT macros
+  tags: [composite, structure]
+
+- id: HELIOS-COMP-003
+  description: "Complete API compliance for public functions"
+  severity: warning
+  scope: Function
+  select: >
+    fn: Function
+    where pattern_matches(fn.name, "^x[A-Z]")
+  assert_code: >
+    fn.return_type == "Return_t" and
+    (not exists(param in fn.parameters
+      if param.ctype != "void" and not pattern_matches(param.name, "_$")
+    )) and
+    fn.annotations is not None
+  message: >
+    Public API function {{ fn.name }} must meet all API requirements
+  fixit: >
+    Ensure Return_t return type, parameter naming, and documentation
+  tags: [composite, api]

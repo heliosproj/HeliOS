@@ -1,4 +1,3 @@
-# UNCRUSTIFY-OFF
 #
 # @file Makefile
 # @author Manny Peterson <manny@heliosproj.org>
@@ -11,8 +10,7 @@
 #
 # SPDX-License-Identifier: GPL-2.0-or-later
 #
-#
-# UNCRUSTIFY-ON
+
 
 # Compiler
 CC = /usr/bin/gcc
@@ -47,8 +45,8 @@ DEFINES = -DPOSIX_ARCH_OTHER \
 TARGET = bin/test
 
 # Report output files
-CHECK_REPORT = compliance-report.json
 TEST_REPORT = test-report.json
+ANALYSIS_REPORT = analysis-report.json
 
 # Source files
 SOURCES = $(wildcard $(BASE_DIR)/src/*.c) \
@@ -64,9 +62,7 @@ all: $(TARGET)
 
 # Build the test binary
 $(TARGET): $(SOURCES) | bin
-	@echo "Building HeliOS unit tests..."
 	@$(CC) $(CFLAGS) $(INCLUDES) $(DEFINES) -o $@ $(SOURCES)
-	@echo "Build complete: $(TARGET)"
 
 # Create bin directory if it doesn't exist
 bin:
@@ -74,40 +70,44 @@ bin:
 
 # Run the tests
 test: $(TARGET)
-	@echo "Running HeliOS unit tests..."
 	@./$(TARGET) --json $(TEST_REPORT)
 	@echo "Test report saved to: $(TEST_REPORT)"
 
-# Run source code compliance checker
-check:
-	@echo "Running HeliOS source code compliance checker..."
-	@cd $(BASE_DIR)/extras/check && ./check -o json ../../src/*.c -f ../../test/$(CHECK_REPORT) || true
-	@echo "Compliance report saved to: $(CHECK_REPORT)"
-	@echo "Run 'jq . $(CHECK_REPORT)' to view formatted output"
+# Run Nomic semantic source code analyzer
+analyze:
+	@cd $(BASE_DIR)/extras/nomic && python3 nomic.py analyze \
+		--rules helios.yaml \
+		--format json \
+		--output ../../test/$(ANALYSIS_REPORT) \
+		../../src/*.c || true
+	@echo "Analysis report saved to: $(ANALYSIS_REPORT)"
 
 # Run tests with gdb for debugging
 debug: $(TARGET)
-	@echo "Starting HeliOS unit tests in debugger..."
 	@gdb ./$(TARGET)
 
 # Clean build artifacts
 clean:
-	@echo "Cleaning build artifacts..."
 	@rm -f $(TARGET)
-	@rm -f $(CHECK_REPORT) $(TEST_REPORT)
+	@rm -f $(TEST_REPORT) $(ANALYSIS_REPORT)
 	@rm -rf bin
-	@echo "Clean complete"
+	@rm -rf $(BASE_DIR)/extras/nomic/__pycache__
+	@rm -rf $(BASE_DIR)/extras/nomic/.cache
 
 # Phony targets
-.PHONY: all test check debug clean help
+.PHONY: all test analyze debug clean help
 
 # Help target
 help:
-	@echo "HeliOS Unit Test Makefile Targets"
-	@echo "================================="
-	@echo "  all   - Build the unit test binary (default)"
-	@echo "  test  - Run unit tests and save JSON report"
-	@echo "  check - Run compliance checker and save JSON report"
-	@echo "  debug - Run tests in gdb debugger"
-	@echo "  clean - Remove build artifacts and reports"
-	@echo "  help  - Show this help message"
+	@echo "  all      - Build the unit test binary (default)"
+	@echo "  test     - Run unit tests and generate test-report.json"
+	@echo "  analyze  - Run Nomic semantic analyzer and generate analysis-report.json"
+	@echo "  debug    - Run tests in gdb debugger"
+	@echo "  clean    - Remove all build artifacts, reports, and Python cache"
+	@echo "  help     - Show this help message"
+	@echo ""
+	@echo "Usage examples:"
+	@echo "  make              # Build tests"
+	@echo "  make test         # Run tests"
+	@echo "  make analyze      # Analyze source code"
+	@echo "  make clean all    # Clean rebuild"
