@@ -27,9 +27,7 @@ CFLAGS = -fdiagnostics-color=always \
          -ansi \
          -pedantic \
          -Wall \
-         -Wextra \
-         -Wno-pointer-to-int-cast \
-         -Wno-unused-parameter
+         -Wextra
 
 # Include paths
 INCLUDES = -I$(BASE_DIR)/src \
@@ -43,8 +41,7 @@ INCLUDES = -I$(BASE_DIR)/src \
 # Preprocessor definitions
 DEFINES = -DPOSIX_ARCH_OTHER \
           -DCONFIG_ENABLE_SYSTEM_ASSERT \
-          -DCONFIG_MEMORY_REGION_SIZE_IN_BLOCKS=0x1C20u \
-          -DUNIT_TEST_COLORIZE
+          -DCONFIG_MEMORY_REGION_SIZE_IN_BLOCKS=0x1C20u
 
 # Output binary
 TARGET = bin/test
