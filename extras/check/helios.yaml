@@ -489,6 +489,92 @@ rules:
       - size_t → Size_t
 
   # ==========================================
+  # Cross-Function Analysis Rules (New Enhancement)
+  # ==========================================
+
+  CFA-001:
+    category: "Cross-Function"
+    severity: "CRITICAL"
+    description: "Type mismatch across function boundaries"
+    check_type: "cross_function"
+    enabled: true
+    message: "Function parameter/return type mismatch detected"
+
+  CFA-002:
+    category: "Concurrency"
+    severity: "CRITICAL"
+    description: "Race condition on global variables"
+    check_type: "cross_function"
+    enabled: true
+    message: "Potential race condition detected"
+
+  # ==========================================
+  # Multi-Line Pattern Rules (New Enhancement)
+  # ==========================================
+
+  ML-001:
+    category: "Structure"
+    severity: "CRITICAL"
+    description: "Function must have ENTER/EXIT macros on separate lines"
+    check_type: "multi_line"
+    pattern: 'FUNCTION_ENTER;.*\n(?:.*\n){0,100}.*FUNCTION_EXIT;'
+    enabled: true
+    message: "Function missing proper ENTER/EXIT macro structure"
+    fix_suggestion: "Add FUNCTION_ENTER after opening brace and FUNCTION_EXIT before closing brace"
+
+  ML-002:
+    category: "Memory"
+    severity: "CRITICAL"
+    description: "Memory allocation must be followed by null check"
+    check_type: "multi_line"
+    pattern: '__(?:Kernel|Heap)AllocateMemory__\([^)]+\);\s*\n(?!.*if.*OK.*\()'
+    enabled: true
+    message: "Memory allocation not followed by null check"
+    fix_suggestion: "Add 'if(OK(ret))' check after allocation"
+
+  # ==========================================
+  # Semantic Pattern Rules (New Enhancement)
+  # ==========================================
+
+  SP-001:
+    category: "Type System"
+    severity: "CRITICAL"
+    description: "Detect improper type conversions"
+    check_type: "semantic"
+    semantic_type: "type_conversion"
+    semantic_config:
+      check_standard_types: true
+      require_explicit_cast: true
+    enabled: true
+    message: "Improper type conversion detected"
+    fix_suggestion: "Use proper HeliOS types or add explicit cast"
+
+  SP-002:
+    category: "Memory"
+    severity: "CRITICAL"
+    description: "Memory allocation without deallocation"
+    check_type: "semantic"
+    semantic_type: "memory_pattern"
+    semantic_config:
+      check_allocation: true
+      check_free: true
+    enabled: true
+    message: "Memory leak detected - allocation without corresponding free"
+    fix_suggestion: "Ensure all allocated memory is freed before function exit"
+
+  SP-003:
+    category: "API"
+    severity: "IMPORTANT"
+    description: "Public API functions must return Return_t"
+    check_type: "semantic"
+    semantic_type: "api_pattern"
+    semantic_config:
+      require_return_t: true
+    enabled: true
+    message: "Public API function not returning Return_t"
+    fix_suggestion: "Change return type to Return_t"
+
+  # ==========================================
   # HeliOS State Machine Rules
   # ==========================================
 
