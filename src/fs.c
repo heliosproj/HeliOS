@@ -1982,6 +1982,7 @@ static Base_t __ByteCompare__(const Byte_t *s1_, const Byte_t *s2_, Word_t len_)
  * @return        ReturnOK on success, ReturnError on invalid name
  */
 static Return_t __ConvertToFAT83__(const Byte_t *path_, Byte_t *fat83_) {
+  FUNCTION_ENTER;
   Word_t i = 0x0u;
   Word_t j = 0x0u;
   Word_t nameLen = 0x0u;
@@ -1990,7 +1991,7 @@ static Return_t __ConvertToFAT83__(const Byte_t *path_, Byte_t *fat83_) {
 
 
   if(__PointerIsNull__(path_) || __PointerIsNull__(fat83_)) {
-    return(ReturnError);
+    FUNCTION_EXIT;
   }
 
   /* Initialize output to spaces */
@@ -2037,7 +2038,8 @@ static Return_t __ConvertToFAT83__(const Byte_t *path_, Byte_t *fat83_) {
     }
   }
 
-  return(ReturnOK);
+  ret = ReturnOK;
+  FUNCTION_EXIT;
 }
 
 
@@ -2056,6 +2058,7 @@ static Return_t __ConvertToFAT83__(const Byte_t *path_, Byte_t *fat83_) {
  */
 static Return_t __FindDirEntry__(const Volume_t *vol_, Word_t dirCluster_, const Byte_t *name83_, FAT32DirEntry_t *entry_, Word_t *entryCluster_, Word_t *
   entryOffset_) {
+  FUNCTION_ENTER;
   Byte_t *clusterData = null;
   FAT32DirEntry_t *fatEntry = null;
   Word_t entriesPerCluster = 0x0u;
@@ -2066,7 +2069,7 @@ static Return_t __FindDirEntry__(const Volume_t *vol_, Word_t dirCluster_, const
 
 
   if(__PointerIsNull__(vol_) || __PointerIsNull__(name83_)) {
-    return(ReturnError);
+    FUNCTION_EXIT;
   }
 
   entriesPerCluster = ((Word_t) vol_->bytesPerSector * vol_->sectorsPerCluster) / sizeof(FAT32DirEntry_t);
@@ -2075,7 +2078,7 @@ static Return_t __FindDirEntry__(const Volume_t *vol_, Word_t dirCluster_, const
   while(!found && currentCluster < FAT32_EOC_MIN) {
     /* Read directory cluster */
     if(ERROR(__ReadCluster__(vol_, currentCluster, &clusterData))) {
-      return(ReturnError);
+      FUNCTION_EXIT;
     }
 
     /* Search entries in this cluster */
@@ -2086,7 +2089,7 @@ static Return_t __FindDirEntry__(const Volume_t *vol_, Word_t dirCluster_, const
       if(fatEntry->name[0x0u] == 0x00u) {
         __KernelFreeMemory__(clusterData);
 
-        return(ReturnError); /* Not found */
+        FUNCTION_EXIT; /* Not found */
       }
 
       /* Skip deleted entries and long filename entries */
@@ -2111,7 +2114,8 @@ static Return_t __FindDirEntry__(const Volume_t *vol_, Word_t dirCluster_, const
 
         __KernelFreeMemory__(clusterData);
 
-        return(ReturnOK);
+        ret = ReturnOK;
+        FUNCTION_EXIT;
       }
     }
 
@@ -2121,11 +2125,11 @@ static Return_t __FindDirEntry__(const Volume_t *vol_, Word_t dirCluster_, const
     if(OK(__GetFATEntry__(vol_, currentCluster, &nextCluster))) {
       currentCluster = nextCluster;
     } else {
-      return(ReturnError);
+      FUNCTION_EXIT;
     }
   }
 
-  return(ReturnError); /* Not found */
+  FUNCTION_EXIT; /* Not found */
 }
 
 
@@ -2145,6 +2149,7 @@ static Return_t __FindDirEntry__(const Volume_t *vol_, Word_t dirCluster_, const
  */
 static Return_t __FindFileByPath__(const Volume_t *vol_, const Byte_t *path_, FAT32DirEntry_t *entry_, Word_t *parentCluster_, Word_t *entryCluster_, Word_t *
   entryOffset_) {
+  FUNCTION_ENTER;
   Byte_t name83[11];
   Byte_t component[256];
   Word_t pathIdx = 0x0u;
@@ -2155,7 +2160,7 @@ static Return_t __FindFileByPath__(const Volume_t *vol_, const Byte_t *path_, FA
 
 
   if(__PointerIsNull__(vol_) || __PointerIsNull__(path_)) {
-    return(ReturnError);
+    FUNCTION_EXIT;
   }
 
   /* Start at root directory */
@@ -2185,7 +2190,8 @@ static Return_t __FindFileByPath__(const Volume_t *vol_, const Byte_t *path_, FA
       *entryOffset_ = 0x0u;
     }
 
-    return(ReturnOK);
+    ret = ReturnOK;
+    FUNCTION_EXIT;
   }
 
   /* Parse path components and traverse directories */
@@ -2206,14 +2212,14 @@ static Return_t __FindFileByPath__(const Volume_t *vol_, const Byte_t *path_, FA
 
     /* Convert component to 8.3 format */
     if(ERROR(__ConvertToFAT83__(component, name83))) {
-      return(ReturnError);
+      FUNCTION_EXIT;
     }
 
     /* Search for this component in current directory */
     result = __FindDirEntry__(vol_, currentCluster, name83, &dirEntry, entryCluster_, entryOffset_);
 
     if(ERROR(result)) {
-      return(ReturnError); /* Component not found */
+      FUNCTION_EXIT; /* Component not found */
     }
 
     /* If this is the last component, we're done */
@@ -2226,19 +2232,21 @@ static Return_t __FindFileByPath__(const Volume_t *vol_, const Byte_t *path_, FA
         *parentCluster_ = currentCluster;
       }
 
-      return(ReturnOK);
+      ret = ReturnOK;
+      FUNCTION_EXIT;
     }
 
     /* Otherwise, move into this directory (must be a directory) */
     if((dirEntry.attr & FAT_ATTR_DIRECTORY) == 0x0u) {
-      return(ReturnError); /* Not a directory, can't traverse further */
+      FUNCTION_EXIT; /* Not a directory, can't traverse further */
     }
 
     /* Update parent and current cluster for next iteration */
     currentCluster = ((Word_t) __ReadLE16__(dirEntry.firstClusterHigh) << 0x10) | __ReadLE16__(dirEntry.firstClusterLow);
   }
 
-  return(result);
+  ret = result;
+  FUNCTION_EXIT;
 }
 
 
