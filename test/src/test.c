@@ -15,6 +15,7 @@
  */
 /*UNCRUSTIFY-ON*/
 #include "test.h"
+#include <string.h>
 
 
 /* External cleanup function declarations for filesystem components */
@@ -26,7 +27,21 @@ extern void __CharDeviceStateClear__(void);
 
 
 int main(int argc, char **argv) {
-  unit_init();
+  Base_t json_output = false;
+  const char *json_file = null;
+  int i;
+
+  /* Parse command line arguments */
+  for (i = 1; i < argc; i++) {
+    if (strcmp(argv[i], "--json") == 0 || strcmp(argv[i], "-j") == 0) {
+      json_output = true;
+      if (i + 1 < argc && argv[i + 1][0] != '-') {
+        json_file = argv[++i];
+      }
+    }
+  }
+
+  unit_init_with_options(json_output, json_file);
   reset();
   sys_harness();
   reset();

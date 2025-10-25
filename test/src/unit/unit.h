@@ -31,18 +31,43 @@
     #undef UNIT_NAME_LENGTH
   #endif /* if defined(UNIT_NAME_LENGTH) */
   #define UNIT_NAME_LENGTH 0x40 /* 64 */
+
+  #define MAX_TESTS 1000
+  #define MAX_ASSERTIONS_PER_TEST 100
+  #define MAX_MESSAGE_LENGTH 256
+
+  typedef struct test_assertion_s {
+    char file[256];
+    int line;
+    char message[MAX_MESSAGE_LENGTH];
+  } test_assertion_t;
+
+  typedef struct test_result_s {
+    char name[UNIT_NAME_LENGTH];
+    int32_t passed;
+    test_assertion_t assertions[MAX_ASSERTIONS_PER_TEST];
+    int32_t assertion_count;
+  } test_result_t;
+
   typedef struct unit_s {
     char name[UNIT_NAME_LENGTH];
     int32_t begun;
     int32_t failed;
     int32_t pass;
     int32_t fail;
+    /* JSON output fields */
+    int32_t json_enabled;
+    const char *json_file;
+    test_result_t tests[MAX_TESTS];
+    int32_t test_count;
+    int32_t current_test_assertions;
   } unit_t;
 
   #ifdef __cplusplus
     extern "C" {
   #endif /* ifdef __cplusplus */
   void unit_init(void);
+  void unit_init_with_options(int32_t json_enabled_, const char *json_file_);
   void unit_begin(const char *name_);
   void unit_try(int expr_);
   void unit_end(void);

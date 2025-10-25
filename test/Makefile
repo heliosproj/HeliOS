@@ -49,8 +49,9 @@ DEFINES = -DPOSIX_ARCH_OTHER \
 # Output binary
 TARGET = bin/test
 
-# Compliance checker output file
+# Report output files
 CHECK_REPORT = compliance-report.json
+TEST_REPORT = test-report.json
 
 # Source files
 SOURCES = $(wildcard $(BASE_DIR)/src/*.c) \
@@ -77,7 +78,8 @@ bin:
 # Run the tests
 test: $(TARGET)
 	@echo "Running HeliOS unit tests..."
-	@./$(TARGET)
+	@./$(TARGET) --json $(TEST_REPORT)
+	@echo "Test report saved to: $(TEST_REPORT)"
 
 # Run source code compliance checker
 check:
@@ -95,7 +97,7 @@ debug: $(TARGET)
 clean:
 	@echo "Cleaning build artifacts..."
 	@rm -f $(TARGET)
-	@rm -f $(CHECK_REPORT)
+	@rm -f $(CHECK_REPORT) $(TEST_REPORT)
 	@rm -rf bin
 	@echo "Clean complete"
 
@@ -107,8 +109,8 @@ help:
 	@echo "HeliOS Unit Test Makefile Targets"
 	@echo "================================="
 	@echo "  all   - Build the unit test binary (default)"
-	@echo "  test  - Build and run the unit tests"
+	@echo "  test  - Run unit tests and save JSON report"
 	@echo "  check - Run compliance checker and save JSON report"
 	@echo "  debug - Run tests in gdb debugger"
-	@echo "  clean - Remove build artifacts and compliance report"
+	@echo "  clean - Remove build artifacts and reports"
 	@echo "  help  - Show this help message"
