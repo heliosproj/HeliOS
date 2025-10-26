@@ -416,6 +416,18 @@ void test_memory_statistics(void) {
   unit_begin("Memory statistics");
 
 
+  /* Test 0.1: NULL pointer in xMemGetUsed */
+  unit_assert_equal(xMemGetUsed(null), ReturnError);
+
+
+  /* Test 0.2: NULL pointer in xMemGetHeapStats */
+  unit_assert_equal(xMemGetHeapStats(null), ReturnError);
+
+
+  /* Test 0.3: NULL pointer in xMemGetKernelStats */
+  unit_assert_equal(xMemGetKernelStats(null), ReturnError);
+
+
   /* Test 1: Get initial used memory */
   unit_assert_equal(xMemGetUsed(&used_before), ReturnOK);
 

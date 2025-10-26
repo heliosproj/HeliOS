@@ -22,6 +22,7 @@
 #define TIMER_PERIOD_2_SECONDS 0x7D0 /* 2000 ms */
 #define TIMER_WAIT_SECONDS 3 /* Sleep duration for expiration tests */
 /* Helper function prototypes */
+static void test_error_handling_and_null_pointers(void);
 static void test_timer_creation_and_period(void);
 static void test_timer_activation_and_expiration(void);
 static void test_timer_control_operations(void);
@@ -30,6 +31,7 @@ static void test_timer_delete(void);
 
 void timer_harness(void) {
   unit_print("=== COMPREHENSIVE TIMER TEST SUITE ===");
+  test_error_handling_and_null_pointers();
   test_timer_creation_and_period();
   test_timer_activation_and_expiration();
   test_timer_control_operations();
@@ -39,7 +41,83 @@ void timer_harness(void) {
 
 
 /* ============================================================================
- * SECTION 1: TIMER CREATION AND PERIOD MANAGEMENT
+ * SECTION 1: ERROR HANDLING AND NULL POINTER VALIDATION
+ * ============================================================================
+ */
+static void test_error_handling_and_null_pointers(void) {
+  Timer_t *timer = null;
+  Timer_t *nullTimer = null;
+  Base_t result;
+  Ticks_t period;
+
+
+  unit_print("--- Section 1: Error Handling and NULL Pointer Tests ---");
+
+
+  /* Test 1.1: NULL pointer in xTimerCreate */
+  unit_begin("xTimerCreate with NULL pointer returns error");
+  unit_assert_not_ok(xTimerCreate(null, TIMER_PERIOD_1_SECOND));
+  unit_end();
+
+
+  /* Test 1.2: Create a valid timer for error tests */
+  unit_begin("Create valid timer for error testing");
+  unit_assert_ok(xTimerCreate(&timer, TIMER_PERIOD_1_SECOND));
+  unit_assert_not_null(timer);
+  unit_end();
+
+
+  /* Test 1.3: NULL pointer in xTimerDelete */
+  unit_begin("xTimerDelete with NULL pointer returns error");
+  unit_assert_not_ok(xTimerDelete(nullTimer));
+  unit_end();
+
+
+  /* Test 1.4: NULL pointer in xTimerChangePeriod */
+  unit_begin("xTimerChangePeriod with NULL timer returns error");
+  unit_assert_not_ok(xTimerChangePeriod(nullTimer, TIMER_PERIOD_2_SECONDS));
+  unit_end();
+
+
+  /* Test 1.5: NULL pointer in xTimerGetPeriod */
+  unit_begin("xTimerGetPeriod with NULL timer returns error");
+  unit_assert_not_ok(xTimerGetPeriod(nullTimer, &period));
+  unit_end();
+
+
+  /* Test 1.6: NULL pointer in xTimerIsTimerActive */
+  unit_begin("xTimerIsTimerActive with NULL timer returns error");
+  unit_assert_not_ok(xTimerIsTimerActive(nullTimer, &result));
+  unit_end();
+
+
+  /* Test 1.7: NULL pointer in xTimerReset */
+  unit_begin("xTimerReset with NULL timer returns error");
+  unit_assert_not_ok(xTimerReset(nullTimer));
+  unit_end();
+
+
+  /* Test 1.8: NULL pointer in xTimerStart */
+  unit_begin("xTimerStart with NULL timer returns error");
+  unit_assert_not_ok(xTimerStart(nullTimer));
+  unit_end();
+
+
+  /* Test 1.9: NULL pointer in xTimerStop */
+  unit_begin("xTimerStop with NULL timer returns error");
+  unit_assert_not_ok(xTimerStop(nullTimer));
+  unit_end();
+
+
+  /* Cleanup */
+  unit_begin("Cleanup error test timer");
+  unit_assert_ok(xTimerDelete(timer));
+  unit_end();
+}
+
+
+/* ============================================================================
+ * SECTION 2: TIMER CREATION AND PERIOD MANAGEMENT
  * ============================================================================
  */
 static void test_timer_creation_and_period(void) {
@@ -48,7 +126,7 @@ static void test_timer_creation_and_period(void) {
   Ticks_t newPeriod = 0x0u;
 
 
-  unit_print("--- Section 1: Timer Creation and Period Management ---");
+  unit_print("--- Section 2: Timer Creation and Period Management ---");
 
 
   /* Test 1.1: Timer creation */
@@ -79,7 +157,7 @@ static void test_timer_creation_and_period(void) {
 
 
 /* ============================================================================
- * SECTION 2: TIMER ACTIVATION AND EXPIRATION
+ * SECTION 3: TIMER ACTIVATION AND EXPIRATION
  * ============================================================================
  */
 static void test_timer_activation_and_expiration(void) {
@@ -126,7 +204,7 @@ static void test_timer_activation_and_expiration(void) {
 
 
 /* ============================================================================
- * SECTION 3: TIMER CONTROL OPERATIONS
+ * SECTION 4: TIMER CONTROL OPERATIONS
  * ============================================================================
  */
 static void test_timer_control_operations(void) {
@@ -181,7 +259,7 @@ static void test_timer_control_operations(void) {
 
 
 /* ============================================================================
- * SECTION 4: TIMER DELETE AND CLEANUP
+ * SECTION 5: TIMER DELETE AND CLEANUP
  * ============================================================================
  */
 static void test_timer_delete(void) {
@@ -189,7 +267,7 @@ static void test_timer_delete(void) {
   Ticks_t period = 0x0u;
 
 
-  unit_print("--- Section 4: Timer Delete and Cleanup ---");
+  unit_print("--- Section 5: Timer Delete and Cleanup ---");
 
 
   /* Test 4.1: Timer delete invalidates handle */

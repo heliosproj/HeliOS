@@ -596,6 +596,25 @@ static void test_error_conditions(void) {
   unit_end();
 
 
+  /* Test 8.3.1: xDeviceConfigDevice with NULL config */
+  unit_begin("xDeviceConfigDevice rejects NULL config");
+  configSize = sizeof(LoopbackClearConfig_t);
+  unit_assert_not_ok(xDeviceConfigDevice(LOOPBACK_DEVICE_ID, &configSize, null));
+  unit_end();
+
+
+  /* Test 8.3.2: xDeviceIsAvailable with NULL result */
+  unit_begin("xDeviceIsAvailable rejects NULL result pointer");
+  unit_assert_not_ok(xDeviceIsAvailable(LOOPBACK_DEVICE_ID, null));
+  unit_end();
+
+
+  /* Test 8.3.3: xDeviceRegisterDevice with NULL function */
+  unit_begin("xDeviceRegisterDevice rejects NULL function");
+  unit_assert_not_ok(xDeviceRegisterDevice(null));
+  unit_end();
+
+
   /* Test 8.4: Read from empty buffer */
   unit_begin("Read from empty buffer fails");
   unit_assert_ok(xMemAlloc((volatile Addr_t **) &clearCfg, sizeof(LoopbackClearConfig_t)));

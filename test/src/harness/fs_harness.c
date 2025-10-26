@@ -604,6 +604,66 @@ static void test_null_pointer_and_edge_cases(void) {
 
   /* xDirOpen with NULL path */
   unit_assert_not_ok(xDirOpen(&dir, vol, null));
+
+
+  /* xDirClose with NULL directory */
+  unit_assert_not_ok(xDirClose(null));
+
+
+  /* xDirMake with NULL volume */
+  unit_assert_not_ok(xDirMake(null, (const Byte_t *) "/testdir"));
+
+
+  /* xDirMake with NULL path */
+  unit_assert_not_ok(xDirMake(vol, null));
+
+
+  /* xDirRead with NULL directory */
+  unit_assert_not_ok(xDirRead(null, (DirEntry_t **) &dir));
+
+
+  /* xDirRewind with NULL directory */
+  unit_assert_not_ok(xDirRewind(null));
+
+
+  /* xFileEOF with NULL file */
+  unit_assert_not_ok(xFileEOF(null, &exists));
+
+
+  /* xFileGetInfo with NULL volume */
+  unit_assert_not_ok(xFileGetInfo(null, (const Byte_t *) "/test.txt", (DirEntry_t **) &dir));
+
+
+  /* xFileGetInfo with NULL path */
+  unit_assert_not_ok(xFileGetInfo(vol, null, (DirEntry_t **) &dir));
+
+
+  /* xFileGetSize with NULL file */
+  unit_assert_not_ok(xFileGetSize(null, (Word_t *) &exists));
+
+
+  /* xFileSeek with NULL file */
+  unit_assert_not_ok(xFileSeek(null, 0, FS_SEEK_SET));
+
+
+  /* xFileSync with NULL file */
+  unit_assert_not_ok(xFileSync(null));
+
+
+  /* xFileTell with NULL file */
+  unit_assert_not_ok(xFileTell(null, (Word_t *) &exists));
+
+
+  /* xFileTruncate with NULL file */
+  unit_assert_not_ok(xFileTruncate(null, 0));
+
+
+  /* xFSFormat with NULL label */
+  unit_assert_not_ok(xFSFormat(null));
+
+
+  /* xFSUnmount with NULL volume */
+  unit_assert_not_ok(xFSUnmount(null));
   unit_end();
 
 

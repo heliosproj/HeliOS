@@ -37,6 +37,7 @@
 
 
 /* Helper function prototypes */
+static void test_error_handling_and_null_pointers(void);
 static void test_queue_creation(void);
 static void test_queue_send_and_capacity(void);
 static void test_queue_status_checks(void);
@@ -48,6 +49,7 @@ static void test_queue_delete(void);
 
 void queue_harness(void) {
   unit_print("=== COMPREHENSIVE QUEUE TEST SUITE ===");
+  test_error_handling_and_null_pointers();
   test_queue_creation();
   test_queue_send_and_capacity();
   test_queue_status_checks();
@@ -60,14 +62,108 @@ void queue_harness(void) {
 
 
 /* ============================================================================
- * SECTION 1: QUEUE CREATION
+ * SECTION 1: ERROR HANDLING AND NULL POINTER VALIDATION
+ * ============================================================================
+ */
+static void test_error_handling_and_null_pointers(void) {
+  Queue_t *queue = null;
+  Queue_t *nullQueue = null;
+  Base_t result;
+  QueueMessage_t *message;
+
+
+  unit_print("--- Section 1: Error Handling and NULL Pointer Tests ---");
+
+
+  /* Test 1.1: Create a valid queue for error tests */
+  unit_begin("Create valid queue for error testing");
+  unit_assert_ok(xQueueCreate(&queue, QUEUE_MIN_CAPACITY));
+  unit_assert_not_null(queue);
+  unit_end();
+
+
+  /* Test 1.2: NULL pointer in xQueueDelete */
+  unit_begin("xQueueDelete with NULL pointer returns error");
+  unit_assert_not_ok(xQueueDelete(nullQueue));
+  unit_end();
+
+
+  /* Test 1.3: NULL pointer in xQueueGetLength */
+  unit_begin("xQueueGetLength with NULL queue returns error");
+  unit_assert_not_ok(xQueueGetLength(nullQueue, &result));
+  unit_end();
+
+
+  /* Test 1.4: NULL pointer in xQueueIsQueueEmpty */
+  unit_begin("xQueueIsQueueEmpty with NULL queue returns error");
+  unit_assert_not_ok(xQueueIsQueueEmpty(nullQueue, &result));
+  unit_end();
+
+
+  /* Test 1.5: NULL pointer in xQueueIsQueueFull */
+  unit_begin("xQueueIsQueueFull with NULL queue returns error");
+  unit_assert_not_ok(xQueueIsQueueFull(nullQueue, &result));
+  unit_end();
+
+
+  /* Test 1.6: NULL pointer in xQueueMessagesWaiting */
+  unit_begin("xQueueMessagesWaiting with NULL queue returns error");
+  unit_assert_not_ok(xQueueMessagesWaiting(nullQueue, &result));
+  unit_end();
+
+
+  /* Test 1.7: NULL pointer in xQueueSend */
+  unit_begin("xQueueSend with NULL queue returns error");
+  unit_assert_not_ok(xQueueSend(nullQueue, MESSAGE_SIZE, (Byte_t *) TEST_MESSAGE_1));
+  unit_end();
+
+
+  /* Test 1.8: NULL pointer in xQueuePeek */
+  unit_begin("xQueuePeek with NULL queue returns error");
+  unit_assert_not_ok(xQueuePeek(nullQueue, &message));
+  unit_end();
+
+
+  /* Test 1.9: NULL pointer in xQueueReceive */
+  unit_begin("xQueueReceive with NULL queue returns error");
+  unit_assert_not_ok(xQueueReceive(nullQueue, &message));
+  unit_end();
+
+
+  /* Test 1.10: NULL pointer in xQueueDropMessage */
+  unit_begin("xQueueDropMessage with NULL queue returns error");
+  unit_assert_not_ok(xQueueDropMessage(nullQueue));
+  unit_end();
+
+
+  /* Test 1.11: NULL pointer in xQueueLockQueue */
+  unit_begin("xQueueLockQueue with NULL queue returns error");
+  unit_assert_not_ok(xQueueLockQueue(nullQueue));
+  unit_end();
+
+
+  /* Test 1.12: NULL pointer in xQueueUnLockQueue */
+  unit_begin("xQueueUnLockQueue with NULL queue returns error");
+  unit_assert_not_ok(xQueueUnLockQueue(nullQueue));
+  unit_end();
+
+
+  /* Cleanup */
+  unit_begin("Cleanup error test queue");
+  unit_assert_ok(xQueueDelete(queue));
+  unit_end();
+}
+
+
+/* ============================================================================
+ * SECTION 2: QUEUE CREATION
  * ============================================================================
  */
 static void test_queue_creation(void) {
   Queue_t *queue = null;
 
 
-  unit_print("--- Section 1: Queue Creation ---");
+  unit_print("--- Section 2: Queue Creation ---");
 
 
   /* Test 1.1: Queue creation enforces minimum capacity */
@@ -91,14 +187,14 @@ static void test_queue_creation(void) {
 
 
 /* ============================================================================
- * SECTION 2: QUEUE SEND AND CAPACITY
+ * SECTION 3: QUEUE SEND AND CAPACITY
  * ============================================================================
  */
 static void test_queue_send_and_capacity(void) {
   Queue_t *queue = null;
 
 
-  unit_print("--- Section 2: Queue Send and Capacity ---");
+  unit_print("--- Section 3: Queue Send and Capacity ---");
 
 
   /* Test 2.1: Queue accepts messages until reaching capacity */
@@ -124,7 +220,7 @@ static void test_queue_send_and_capacity(void) {
 
 
 /* ============================================================================
- * SECTION 3: QUEUE STATUS CHECKS
+ * SECTION 4: QUEUE STATUS CHECKS
  * ============================================================================
  */
 static void test_queue_status_checks(void) {
@@ -132,7 +228,7 @@ static void test_queue_status_checks(void) {
   Base_t result;
 
 
-  unit_print("--- Section 3: Queue Status Checks ---");
+  unit_print("--- Section 4: Queue Status Checks ---");
 
 
   /* Test 3.1: Queue length */
@@ -177,7 +273,7 @@ static void test_queue_status_checks(void) {
 
 
 /* ============================================================================
- * SECTION 4: QUEUE PEEK AND RECEIVE
+ * SECTION 5: QUEUE PEEK AND RECEIVE
  * ============================================================================
  */
 static void test_queue_peek_and_receive(void) {
@@ -185,7 +281,7 @@ static void test_queue_peek_and_receive(void) {
   QueueMessage_t *message = null;
 
 
-  unit_print("--- Section 4: Queue Peek and Receive ---");
+  unit_print("--- Section 5: Queue Peek and Receive ---");
 
 
   /* Test 4.1: Queue peek */
@@ -217,7 +313,7 @@ static void test_queue_peek_and_receive(void) {
 
 
 /* ============================================================================
- * SECTION 5: QUEUE DROP OPERATIONS
+ * SECTION 6: QUEUE DROP OPERATIONS
  * ============================================================================
  */
 static void test_queue_drop(void) {
@@ -226,7 +322,7 @@ static void test_queue_drop(void) {
   QueueMessage_t *message = null;
 
 
-  unit_print("--- Section 5: Queue Drop Operations ---");
+  unit_print("--- Section 6: Queue Drop Operations ---");
 
 
   /* Test 5.1: Drop message */
@@ -253,7 +349,7 @@ static void test_queue_drop(void) {
 
 
 /* ============================================================================
- * SECTION 6: QUEUE LOCK AND UNLOCK
+ * SECTION 7: QUEUE LOCK AND UNLOCK
  * ============================================================================
  */
 static void test_queue_lock_unlock(void) {
@@ -261,7 +357,7 @@ static void test_queue_lock_unlock(void) {
   Base_t length;
 
 
-  unit_print("--- Section 6: Queue Lock and Unlock ---");
+  unit_print("--- Section 7: Queue Lock and Unlock ---");
 
 
   /* Test 6.1: Queue lock */
@@ -288,14 +384,14 @@ static void test_queue_lock_unlock(void) {
 
 
 /* ============================================================================
- * SECTION 7: QUEUE DELETE AND CLEANUP
+ * SECTION 8: QUEUE DELETE AND CLEANUP
  * ============================================================================
  */
 static void test_queue_delete(void) {
   Queue_t *queue = null;
 
 
-  unit_print("--- Section 7: Queue Delete and Cleanup ---");
+  unit_print("--- Section 8: Queue Delete and Cleanup ---");
 
 
   /* Test 7.1: Queue delete invalidates handle */

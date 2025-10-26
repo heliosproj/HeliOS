@@ -320,9 +320,14 @@ static void test_error_handling_and_null_pointers(void) {
     unit_assert_not_ok(xTaskGetWDPeriod(nullTask, &period));
     unit_end();
 #endif /* if defined(CONFIG_TASK_WD_TIMER_ENABLE) */
-  /* Cleanup */
-  unit_begin("Cleanup error test task");
+
+  /* Test 1.39: Task delete invalidates task handle */
+  unit_begin("Task delete invalidates task handle");
   unit_assert_ok(xTaskDelete(task));
+
+
+  /* After deletion, operations on the deleted task should fail */
+  unit_assert_not_ok(xTaskGetName(task, &name));
   unit_end();
 }
 

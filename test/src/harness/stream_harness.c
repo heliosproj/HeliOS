@@ -24,6 +24,7 @@
                                                       * buffer */
 #define TEST_BYTE_VALUE 0x0u /* Test byte value */
 /* Helper function prototypes */
+static void test_error_handling_and_null_pointers(void);
 static void test_stream_creation(void);
 static void test_stream_send_and_fill(void);
 static void test_stream_status_checks(void);
@@ -34,6 +35,7 @@ static void test_stream_delete(void);
 
 void stream_harness(void) {
   unit_print("=== COMPREHENSIVE STREAM BUFFER TEST SUITE ===");
+  test_error_handling_and_null_pointers();
   test_stream_creation();
   test_stream_send_and_fill();
   test_stream_status_checks();
@@ -45,14 +47,91 @@ void stream_harness(void) {
 
 
 /* ============================================================================
- * SECTION 1: STREAM BUFFER CREATION
+ * SECTION 1: ERROR HANDLING AND NULL POINTER VALIDATION
+ * ============================================================================
+ */
+static void test_error_handling_and_null_pointers(void) {
+  StreamBuffer_t *stream = null;
+  StreamBuffer_t *nullStream = null;
+  Base_t result;
+  HalfWord_t bytes;
+  Byte_t *data;
+
+
+  unit_print("--- Section 1: Error Handling and NULL Pointer Tests ---");
+
+
+  /* Test 1.1: NULL pointer in xStreamCreate */
+  unit_begin("xStreamCreate with NULL pointer returns error");
+  unit_assert_not_ok(xStreamCreate(null));
+  unit_end();
+
+
+  /* Test 1.2: Create a valid stream for error tests */
+  unit_begin("Create valid stream for error testing");
+  unit_assert_ok(xStreamCreate(&stream));
+  unit_assert_not_null(stream);
+  unit_end();
+
+
+  /* Test 1.3: NULL pointer in xStreamDelete */
+  unit_begin("xStreamDelete with NULL pointer returns error");
+  unit_assert_not_ok(xStreamDelete(nullStream));
+  unit_end();
+
+
+  /* Test 1.4: NULL pointer in xStreamSend */
+  unit_begin("xStreamSend with NULL stream returns error");
+  unit_assert_not_ok(xStreamSend(nullStream, TEST_BYTE_VALUE));
+  unit_end();
+
+
+  /* Test 1.5: NULL pointer in xStreamReceive */
+  unit_begin("xStreamReceive with NULL stream returns error");
+  unit_assert_not_ok(xStreamReceive(nullStream, &bytes, &data));
+  unit_end();
+
+
+  /* Test 1.6: NULL pointer in xStreamBytesAvailable */
+  unit_begin("xStreamBytesAvailable with NULL stream returns error");
+  unit_assert_not_ok(xStreamBytesAvailable(nullStream, &bytes));
+  unit_end();
+
+
+  /* Test 1.7: NULL pointer in xStreamReset */
+  unit_begin("xStreamReset with NULL stream returns error");
+  unit_assert_not_ok(xStreamReset(nullStream));
+  unit_end();
+
+
+  /* Test 1.8: NULL pointer in xStreamIsEmpty */
+  unit_begin("xStreamIsEmpty with NULL stream returns error");
+  unit_assert_not_ok(xStreamIsEmpty(nullStream, &result));
+  unit_end();
+
+
+  /* Test 1.9: NULL pointer in xStreamIsFull */
+  unit_begin("xStreamIsFull with NULL stream returns error");
+  unit_assert_not_ok(xStreamIsFull(nullStream, &result));
+  unit_end();
+
+
+  /* Cleanup */
+  unit_begin("Cleanup error test stream");
+  unit_assert_ok(xStreamDelete(stream));
+  unit_end();
+}
+
+
+/* ============================================================================
+ * SECTION 2: STREAM BUFFER CREATION
  * ============================================================================
  */
 static void test_stream_creation(void) {
   StreamBuffer_t *stream = null;
 
 
-  unit_print("--- Section 1: Stream Buffer Creation ---");
+  unit_print("--- Section 2: Stream Buffer Creation ---");
 
 
   /* Test 1.1: Stream buffer creation */
@@ -68,7 +147,7 @@ static void test_stream_creation(void) {
 
 
 /* ============================================================================
- * SECTION 2: STREAM SEND AND BUFFER FILL
+ * SECTION 3: STREAM SEND AND BUFFER FILL
  * ============================================================================
  */
 static void test_stream_send_and_fill(void) {
@@ -76,7 +155,7 @@ static void test_stream_send_and_fill(void) {
   HalfWord_t i = 0x0u;
 
 
-  unit_print("--- Section 2: Stream Send and Buffer Fill ---");
+  unit_print("--- Section 3: Stream Send and Buffer Fill ---");
 
 
   /* Test 2.1: Stream accepts bytes until buffer is full */
@@ -99,7 +178,7 @@ static void test_stream_send_and_fill(void) {
 
 
 /* ============================================================================
- * SECTION 3: STREAM STATUS CHECKS
+ * SECTION 4: STREAM STATUS CHECKS
  * ============================================================================
  */
 static void test_stream_status_checks(void) {
@@ -109,7 +188,7 @@ static void test_stream_status_checks(void) {
   Base_t result;
 
 
-  unit_print("--- Section 3: Stream Status Checks ---");
+  unit_print("--- Section 4: Stream Status Checks ---");
 
 
   /* Test 3.1: Stream full check */
@@ -145,7 +224,7 @@ static void test_stream_status_checks(void) {
 
 
 /* ============================================================================
- * SECTION 4: STREAM RECEIVE OPERATIONS
+ * SECTION 5: STREAM RECEIVE OPERATIONS
  * ============================================================================
  */
 static void test_stream_receive(void) {
@@ -179,7 +258,7 @@ static void test_stream_receive(void) {
 
 
 /* ============================================================================
- * SECTION 5: STREAM RESET OPERATIONS
+ * SECTION 6: STREAM RESET OPERATIONS
  * ============================================================================
  */
 static void test_stream_reset(void) {
@@ -221,14 +300,14 @@ static void test_stream_reset(void) {
 
 
 /* ============================================================================
- * SECTION 6: STREAM DELETE AND CLEANUP
+ * SECTION 7: STREAM DELETE AND CLEANUP
  * ============================================================================
  */
 static void test_stream_delete(void) {
   StreamBuffer_t *stream = null;
 
 
-  unit_print("--- Section 6: Stream Delete and Cleanup ---");
+  unit_print("--- Section 7: Stream Delete and Cleanup ---");
 
 
   /* Test 6.1: Stream delete invalidates stream handle */
