@@ -89,24 +89,21 @@
     void __ConsoleStateClear__(void);
   #endif /* if defined(POSIX_ARCH_OTHER) */
 
-  #if defined(UNIT_TEST_COLORIZE)
 
-
-    /* Expose string and path utility functions for test harness */
-    Size_t __strlen__(const Byte_t *str_);
-    Return_t __strcpy__(Byte_t *dest_, const Byte_t *src_, const Size_t destSize_);
-    Return_t __strncpy__(Byte_t *dest_, const Byte_t *src_, const Size_t n_);
-    Base_t __strcmp__(const Byte_t *s1_, const Byte_t *s2_);
-    Base_t __strncmp__(const Byte_t *s1_, const Byte_t *s2_, const Size_t n_);
-    Return_t __strcat__(Byte_t *dest_, const Byte_t *src_, const Size_t destSize_);
-    Byte_t * __strchr__(const Byte_t *str_, const Byte_t ch_);
-    Byte_t * __strrchr__(const Byte_t *str_, const Byte_t ch_);
-    Return_t __path_join__(Byte_t *dest_, const Byte_t *base_, const Byte_t *path_, const Size_t destSize_);
-    Return_t __path_normalize__(Byte_t *path_, const Size_t pathSize_);
-    Base_t __path_is_absolute__(const Byte_t *path_);
-    Return_t __path_dirname__(Byte_t *dest_, const Byte_t *path_, const Size_t destSize_);
-    Return_t __path_basename__(Byte_t *dest_, const Byte_t *path_, const Size_t destSize_);
-  #endif /* if defined(UNIT_TEST_COLORIZE) */
+  /* String and path utility functions */
+  Size_t __strlen__(const Byte_t *str_);
+  Return_t __strcpy__(Byte_t *dest_, const Byte_t *src_, const Size_t destSize_);
+  Return_t __strncpy__(Byte_t *dest_, const Byte_t *src_, const Size_t n_);
+  Base_t __strcmp__(const Byte_t *s1_, const Byte_t *s2_);
+  Base_t __strncmp__(const Byte_t *s1_, const Byte_t *s2_, const Size_t n_);
+  Return_t __strcat__(Byte_t *dest_, const Byte_t *src_, const Size_t destSize_);
+  Byte_t * __strchr__(const Byte_t *str_, const Byte_t ch_);
+  Byte_t * __strrchr__(const Byte_t *str_, const Byte_t ch_);
+  Return_t __path_join__(Byte_t *dest_, const Byte_t *base_, const Byte_t *path_, const Size_t destSize_);
+  Return_t __path_normalize__(Byte_t *path_, const Size_t pathSize_);
+  Base_t __path_is_absolute__(const Byte_t *path_);
+  Return_t __path_dirname__(Byte_t *dest_, const Byte_t *path_, const Size_t destSize_);
+  Return_t __path_basename__(Byte_t *dest_, const Byte_t *path_, const Size_t destSize_);
 
   #ifdef __cplusplus
     }

@@ -126,18 +126,7 @@ static const ConsoleCommand_t commandTable[] = {{
  * ============================================================================
  */
 
-#if defined(UNIT_TEST_COLORIZE)
-
-
-/* Make functions non-static when building tests so test harness can test them
- */
-  #define STATIC_UNLESS_TEST
-#else  /* if defined(UNIT_TEST_COLORIZE) */
-  #define STATIC_UNLESS_TEST static
-#endif /* if defined(UNIT_TEST_COLORIZE) */
-
-
-STATIC_UNLESS_TEST Size_t __strlen__(const Byte_t *str_) {
+Size_t __strlen__(const Byte_t *str_) {
   Size_t len = 0x0u;
 
 
@@ -151,7 +140,7 @@ STATIC_UNLESS_TEST Size_t __strlen__(const Byte_t *str_) {
 }
 
 
-STATIC_UNLESS_TEST Return_t __strcpy__(Byte_t *dest_, const Byte_t *src_, const Size_t destSize_) {
+Return_t __strcpy__(Byte_t *dest_, const Byte_t *src_, const Size_t destSize_) {
   FUNCTION_ENTER;
 
 
@@ -174,7 +163,7 @@ STATIC_UNLESS_TEST Return_t __strcpy__(Byte_t *dest_, const Byte_t *src_, const 
 }
 
 
-STATIC_UNLESS_TEST Return_t __strncpy__(Byte_t *dest_, const Byte_t *src_, const Size_t n_) {
+Return_t __strncpy__(Byte_t *dest_, const Byte_t *src_, const Size_t n_) {
   FUNCTION_ENTER;
 
 
@@ -199,7 +188,7 @@ STATIC_UNLESS_TEST Return_t __strncpy__(Byte_t *dest_, const Byte_t *src_, const
 }
 
 
-STATIC_UNLESS_TEST Base_t __strcmp__(const Byte_t *s1_, const Byte_t *s2_) {
+Base_t __strcmp__(const Byte_t *s1_, const Byte_t *s2_) {
   Size_t i = 0x0u;
 
 
@@ -223,7 +212,7 @@ STATIC_UNLESS_TEST Base_t __strcmp__(const Byte_t *s1_, const Byte_t *s2_) {
 }
 
 
-STATIC_UNLESS_TEST Base_t __strncmp__(const Byte_t *s1_, const Byte_t *s2_, const Size_t n_) {
+Base_t __strncmp__(const Byte_t *s1_, const Byte_t *s2_, const Size_t n_) {
   Size_t i = 0x0u;
 
 
@@ -241,7 +230,7 @@ STATIC_UNLESS_TEST Base_t __strncmp__(const Byte_t *s1_, const Byte_t *s2_, cons
 }
 
 
-STATIC_UNLESS_TEST Return_t __strcat__(Byte_t *dest_, const Byte_t *src_, const Size_t destSize_) {
+Return_t __strcat__(Byte_t *dest_, const Byte_t *src_, const Size_t destSize_) {
   FUNCTION_ENTER;
 
 
@@ -271,7 +260,7 @@ STATIC_UNLESS_TEST Return_t __strcat__(Byte_t *dest_, const Byte_t *src_, const 
 }
 
 
-STATIC_UNLESS_TEST Byte_t * __strchr__(const Byte_t *str_, const Byte_t ch_) {
+Byte_t * __strchr__(const Byte_t *str_, const Byte_t ch_) {
   Size_t i = 0x0u;
 
 
@@ -295,7 +284,7 @@ STATIC_UNLESS_TEST Byte_t * __strchr__(const Byte_t *str_, const Byte_t ch_) {
 }
 
 
-STATIC_UNLESS_TEST Byte_t * __strrchr__(const Byte_t *str_, const Byte_t ch_) {
+Byte_t * __strrchr__(const Byte_t *str_, const Byte_t ch_) {
   Size_t len = 0x0u;
   Size_t i = 0x0u;
 
@@ -320,7 +309,7 @@ STATIC_UNLESS_TEST Byte_t * __strrchr__(const Byte_t *str_, const Byte_t ch_) {
 }
 
 
-STATIC_UNLESS_TEST Return_t __path_join__(Byte_t *dest_, const Byte_t *base_, const Byte_t *path_, const Size_t destSize_) {
+Return_t __path_join__(Byte_t *dest_, const Byte_t *base_, const Byte_t *path_, const Size_t destSize_) {
   FUNCTION_ENTER;
 
 
@@ -384,7 +373,7 @@ STATIC_UNLESS_TEST Return_t __path_join__(Byte_t *dest_, const Byte_t *base_, co
 }
 
 
-STATIC_UNLESS_TEST Return_t __path_normalize__(Byte_t *path_, const Size_t pathSize_) {
+Return_t __path_normalize__(Byte_t *path_, const Size_t pathSize_) {
   FUNCTION_ENTER;
 
 
@@ -475,7 +464,7 @@ STATIC_UNLESS_TEST Return_t __path_normalize__(Byte_t *path_, const Size_t pathS
 }
 
 
-STATIC_UNLESS_TEST Base_t __path_is_absolute__(const Byte_t *path_) {
+Base_t __path_is_absolute__(const Byte_t *path_) {
   if(__PointerIsNull__(path_)) {
     return (false);
   }
@@ -484,7 +473,7 @@ STATIC_UNLESS_TEST Base_t __path_is_absolute__(const Byte_t *path_) {
 }
 
 
-STATIC_UNLESS_TEST Return_t __path_dirname__(Byte_t *dest_, const Byte_t *path_, const Size_t destSize_) {
+Return_t __path_dirname__(Byte_t *dest_, const Byte_t *path_, const Size_t destSize_) {
   FUNCTION_ENTER;
 
 
@@ -540,7 +529,7 @@ STATIC_UNLESS_TEST Return_t __path_dirname__(Byte_t *dest_, const Byte_t *path_,
 }
 
 
-STATIC_UNLESS_TEST Return_t __path_basename__(Byte_t *dest_, const Byte_t *path_, const Size_t destSize_) {
+Return_t __path_basename__(Byte_t *dest_, const Byte_t *path_, const Size_t destSize_) {
   FUNCTION_ENTER;
 
 
