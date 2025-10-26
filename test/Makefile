@@ -14,9 +14,15 @@
 
 # Compiler
 CC = /usr/bin/gcc
+CXX = /usr/bin/c++
 
 # Base directory (parent of test directory)
 BASE_DIR = ..
+
+# Nomic directories
+NOMIC_DIR = $(BASE_DIR)/extras/nomic
+NOMIC_BUILD_DIR = $(NOMIC_DIR)/build
+NOMIC_BIN = $(NOMIC_BUILD_DIR)/nomic
 
 # Compiler flags
 CFLAGS = -fdiagnostics-color=always \
@@ -68,18 +74,25 @@ $(TARGET): $(SOURCES) | bin
 bin:
 	@mkdir -p bin
 
+# Build Nomic semantic analyzer
+nomic:
+	@echo "Building Nomic semantic analyzer..."
+	@mkdir -p $(NOMIC_BUILD_DIR)
+	@cd $(NOMIC_BUILD_DIR) && cmake .. && $(MAKE) -j$$(nproc 2>/dev/null || echo 4)
+	@echo "Nomic built successfully: $(NOMIC_BIN)"
+
 # Run the tests
 test: $(TARGET)
 	@./$(TARGET) --json $(TEST_REPORT)
 	@echo "Test report saved to: $(TEST_REPORT)"
 
 # Run Nomic semantic source code analyzer
-analyze:
-	@cd $(BASE_DIR)/extras/nomic && python3 nomic.py analyze \
-		--rules helios.yaml \
+analyze: nomic
+	@echo "Running Nomic semantic analyzer..."
+	@$(NOMIC_BIN) analyze $(BASE_DIR)/src/*.c \
+		--rules $(NOMIC_DIR)/helios.yaml \
 		--format json \
-		--output ../../test/$(ANALYSIS_REPORT) \
-		../../src/*.c || true
+		--output $(ANALYSIS_REPORT) 2>/dev/null || true
 	@echo "Analysis report saved to: $(ANALYSIS_REPORT)"
 
 # Run tests with gdb for debugging
@@ -91,23 +104,24 @@ clean:
 	@rm -f $(TARGET)
 	@rm -f $(TEST_REPORT) $(ANALYSIS_REPORT)
 	@rm -rf bin
-	@rm -rf $(BASE_DIR)/extras/nomic/__pycache__
-	@rm -rf $(BASE_DIR)/extras/nomic/.cache
+	@rm -rf $(NOMIC_BUILD_DIR)
 
 # Phony targets
-.PHONY: all test analyze debug clean help
+.PHONY: all test analyze debug clean help nomic
 
 # Help target
 help:
 	@echo "  all      - Build the unit test binary (default)"
 	@echo "  test     - Run unit tests and generate test-report.json"
 	@echo "  analyze  - Run Nomic semantic analyzer and generate analysis-report.json"
+	@echo "  nomic    - Build the Nomic C semantic analyzer"
 	@echo "  debug    - Run tests in gdb debugger"
-	@echo "  clean    - Remove all build artifacts, reports, and Python cache"
+	@echo "  clean    - Remove all build artifacts and Nomic build directory"
 	@echo "  help     - Show this help message"
 	@echo ""
 	@echo "Usage examples:"
 	@echo "  make              # Build tests"
 	@echo "  make test         # Run tests"
-	@echo "  make analyze      # Analyze source code"
+	@echo "  make nomic        # Build Nomic analyzer"
+	@echo "  make analyze      # Build Nomic and analyze source code"
 	@echo "  make clean all    # Clean rebuild"
