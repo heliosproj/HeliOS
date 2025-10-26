@@ -3,38 +3,10 @@
         {
             "type": "shell",
             "label": "HeliOS Unit Test (build/gcc)",
-            "command": "/usr/bin/gcc",
-            "args": [
-                "-fdiagnostics-color=always",
-                "-O0",
-                "-ggdb",
-                "-ansi",
-                "-pedantic",
-                "-Wall",
-                "-Wextra",
-                "-Wno-pointer-to-int-cast",
-                "-I${workspaceFolder}/src",
-                "-I${workspaceFolder}/drivers/ramdisk",
-                "-I${workspaceFolder}/drivers/block",
-                "-I${workspaceFolder}/drivers/char",
-                "-I${workspaceFolder}/test/src",
-                "-I${workspaceFolder}/test/src/harness",
-                "-I${workspaceFolder}/test/src/unit",
-                "-DPOSIX_ARCH_OTHER",
-                "-DCONFIG_ENABLE_SYSTEM_ASSERT",
-                "-DCONFIG_MEMORY_REGION_SIZE=0x38400u",
-                "-DUNIT_TEST_COLORIZE",
-                "-o${workspaceFolder}/test/bin/test",
-                "${workspaceFolder}/src/*.c",
-                "${workspaceFolder}/drivers/ramdisk/*.c",
-                "${workspaceFolder}/drivers/block/*.c",
-                "${workspaceFolder}/drivers/char/*.c",
-                "${workspaceFolder}/test/src/*.c",
-                "${workspaceFolder}/test/src/harness/*.c",
-                "${workspaceFolder}/test/src/unit/*.c"
-            ],
+            "command": "make",
+            "args": [],
             "options": {
-                "cwd": "${workspaceFolder}/src"
+                "cwd": "${workspaceFolder}/test"
             },
             "problemMatcher": [
                 "$gcc"
@@ -43,6 +15,16 @@
                 "kind": "build",
                 "isDefault": true
             }
+        },
+        {
+            "type": "shell",
+            "label": "HeliOS Unit Test (run/make test)",
+            "command": "make",
+            "args": ["test"],
+            "options": {
+                "cwd": "${workspaceFolder}/test"
+            },
+            "problemMatcher": []
         },
         {
             "type": "shell",
