@@ -1,0 +1,2057 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "title": "Nomic C Rules Specification",
+  "version": "1.0.0",
+  "description": "Complete specification for writing Nomic C compliance checker rules. This document comprehensively describes all features, capabilities, and DSL functions available for rule authoring.",
+  "rule_structure": {
+    "description": "Complete YAML structure for defining a Nomic rule",
+    "required_fields": [
+      "id",
+      "description",
+      "severity",
+      "scope",
+      "select",
+      "assert",
+      "message"
+    ],
+    "optional_fields": [
+      "where",
+      "fixit",
+      "exceptions",
+      "tags"
+    ],
+    "fields": {
+      "id": {
+        "type": "string",
+        "description": "Unique identifier for the rule (e.g., SEC-001, MEMSAFE-010, QUALITY-020)",
+        "pattern": "^[A-Z]+-[0-9]{3,}$",
+        "examples": [
+          "SEC-001",
+          "MEMSAFE-010",
+          "BEST-020",
+          "QUALITY-001"
+        ]
+      },
+      "description": {
+        "type": "string",
+        "description": "Human-readable description of what the rule checks",
+        "examples": [
+          "Format string vulnerability - user data in format string",
+          "Potential buffer overflow in fixed-size buffer operations",
+          "Function has high cyclomatic complexity"
+        ]
+      },
+      "severity": {
+        "type": "enum",
+        "values": [
+          "error",
+          "warning",
+          "info"
+        ],
+        "description": "Severity level of violations",
+        "meanings": {
+          "error": "Critical issues that must be fixed",
+          "warning": "Important issues that should be addressed",
+          "info": "Suggestions for improvement"
+        }
+      },
+      "scope": {
+        "type": "enum",
+        "values": [
+          "function",
+          "variable",
+          "file",
+          "macro"
+        ],
+        "description": "What type of entity this rule applies to",
+        "details": {
+          "function": "Rule checks functions (most common)",
+          "variable": "Rule checks variables (local or global)",
+          "file": "Rule checks entire files",
+          "macro": "Rule checks preprocessor macros"
+        }
+      },
+      "select": {
+        "type": "string",
+        "description": "DSL expression to select entities to check",
+        "common_values": {
+          "functions": "All functions in the codebase",
+          "local_variables": "All local variables",
+          "global_variables": "All global variables",
+          "variables": "All variables (local and global)",
+          "files": "All files",
+          "macros": "All preprocessor macros"
+        },
+        "examples": [
+          "functions",
+          "local_variables",
+          "global_variables",
+          "variables"
+        ]
+      },
+      "where": {
+        "type": "string (DSL expression)",
+        "required": false,
+        "description": "Optional filter to narrow down selected entities before assertion",
+        "purpose": "Pre-filter entities to improve performance and clarity",
+        "examples": [
+          "calls(malloc)",
+          "hasPointerParameters()",
+          "not isStatic()",
+          "getCyclomaticComplexity() > 5",
+          "calls(printf) or calls(sprintf)",
+          "isPointer() and not isParameter()"
+        ]
+      },
+      "assert": {
+        "type": "string (DSL expression)",
+        "description": "Boolean expression that must be true to pass the rule",
+        "note": "If this evaluates to false, a violation is reported",
+        "examples": [
+          "checksAllocationResult()",
+          "getCyclomaticComplexity() <= 10",
+          "len(parameters) <= 5",
+          "formatStringIsLiteral()",
+          "forall p in parameters, not isPointer(p) or hasNullCheck(p)"
+        ]
+      },
+      "message": {
+        "type": "string (template)",
+        "description": "Message shown when rule is violated. Can use {placeholders} for entity properties",
+        "template_variables": {
+          "function_scope": {
+            "{name}": "Function name",
+            "{cyclomaticComplexity}": "Cyclomatic complexity value",
+            "{paramCount}": "Number of parameters",
+            "{lineCount}": "Number of lines",
+            "{nestingDepth}": "Maximum nesting depth",
+            "{localVarCount}": "Number of local variables",
+            "{returnCount}": "Number of return statements"
+          },
+          "variable_scope": {
+            "{name}": "Variable name",
+            "{type}": "Variable type"
+          }
+        },
+        "examples": [
+          "Function {name} has cyclomatic complexity of {cyclomaticComplexity}. Consider refactoring (threshold: 10).",
+          "Function {name} does not check malloc return value. Always check for NULL.",
+          "Variable {name} is not initialized. Initialize variables at declaration."
+        ]
+      },
+      "fixit": {
+        "type": "string",
+        "required": false,
+        "description": "Optional suggested fix for the violation",
+        "examples": [
+          "Add NULL check after allocation",
+          "Use snprintf instead of sprintf",
+          "Initialize variable at declaration"
+        ]
+      },
+      "exceptions": {
+        "type": "array of strings (patterns)",
+        "required": false,
+        "description": "Patterns for entities that should be excluded from this rule",
+        "examples": [
+          [
+            "test_*",
+            "*_internal"
+          ],
+          [
+            "^__.*"
+          ],
+          [
+            "main",
+            "setup",
+            "teardown"
+          ]
+        ]
+      },
+      "tags": {
+        "type": "array of strings",
+        "required": false,
+        "description": "Tags for categorization and filtering",
+        "common_tags": [
+          "security",
+          "memory-safety",
+          "code-quality",
+          "best-practices",
+          "cwe-120",
+          "cwe-416",
+          "buffer-overflow",
+          "use-after-free",
+          "maintainability",
+          "readability",
+          "performance",
+          "portability"
+        ],
+        "examples": [
+          [
+            "security",
+            "buffer-overflow",
+            "cwe-120"
+          ],
+          [
+            "code-quality",
+            "complexity",
+            "maintainability"
+          ],
+          [
+            "best-practices",
+            "initialization"
+          ]
+        ]
+      }
+    }
+  },
+  "dsl_language": {
+    "description": "Nomic's Domain-Specific Language (DSL) for writing rule expressions",
+    "data_types": {
+      "boolean": {
+        "description": "true or false",
+        "examples": [
+          "true",
+          "false"
+        ]
+      },
+      "number": {
+        "description": "Integer or floating-point",
+        "examples": [
+          "10",
+          "3.14",
+          "-5"
+        ]
+      },
+      "string": {
+        "description": "Text in quotes",
+        "examples": [
+          "\"hello\"",
+          "'world'"
+        ]
+      },
+      "collection": {
+        "description": "Lists of values",
+        "examples": [
+          "parameters",
+          "local_variables",
+          "statements"
+        ]
+      }
+    },
+    "operators": {
+      "logical": {
+        "and": "Logical AND",
+        "or": "Logical OR",
+        "not": "Logical NOT"
+      },
+      "comparison": {
+        "==": "Equal to",
+        "!=": "Not equal to",
+        "<": "Less than",
+        "<=": "Less than or equal",
+        ">": "Greater than",
+        ">=": "Greater than or equal"
+      },
+      "arithmetic": {
+        "+": "Addition",
+        "-": "Subtraction",
+        "*": "Multiplication",
+        "/": "Division",
+        "%": "Modulo"
+      },
+      "membership": {
+        "in": "Check if element is in collection"
+      }
+    },
+    "quantifiers": {
+      "forall": {
+        "syntax": "forall VAR in COLLECTION, CONDITION",
+        "description": "True if CONDITION is true for ALL elements",
+        "examples": [
+          "forall p in parameters, not isPointer(p) or isConst(p)",
+          "forall v in local_variables, isInitialized(v)"
+        ]
+      },
+      "exists": {
+        "syntax": "exists VAR in COLLECTION, CONDITION",
+        "description": "True if CONDITION is true for AT LEAST ONE element",
+        "examples": [
+          "exists p in parameters, isPointer(p)",
+          "exists v in local_variables, not isInitialized(v)"
+        ]
+      },
+      "none": {
+        "syntax": "none VAR in COLLECTION, CONDITION",
+        "description": "True if CONDITION is true for NO elements",
+        "examples": [
+          "none p in parameters, isPointer(p) and not isConst(p)"
+        ]
+      }
+    }
+  },
+  "builtin_functions": {
+    "description": "Complete catalog of all 180 built-in DSL functions",
+    "total_count": 180,
+    "categories": {
+      "type_checking": {
+        "description": "Functions to check type properties",
+        "functions": {
+          "is_pointer_type": {
+            "signature": "is_pointer_type(value) -> bool",
+            "description": "Check if value is a pointer type"
+          },
+          "is_array_type": {
+            "signature": "is_array_type(value) -> bool",
+            "description": "Check if value is an array type"
+          },
+          "is_const": {
+            "signature": "is_const(value) -> bool",
+            "description": "Check if value has const qualifier"
+          },
+          "is_volatile": {
+            "signature": "is_volatile(value) -> bool",
+            "description": "Check if value has volatile qualifier"
+          },
+          "is_static": {
+            "signature": "is_static(value) -> bool",
+            "description": "Check if value has static storage"
+          },
+          "is_unsigned": {
+            "signature": "is_unsigned(value) -> bool",
+            "description": "Check if type is unsigned"
+          },
+          "is_signed": {
+            "signature": "is_signed(value) -> bool",
+            "description": "Check if type is signed"
+          },
+          "is_integral": {
+            "signature": "is_integral(value) -> bool",
+            "description": "Check if type is integral (int, char, etc.)"
+          },
+          "is_floating": {
+            "signature": "is_floating(value) -> bool",
+            "description": "Check if type is floating point"
+          },
+          "is_void": {
+            "signature": "is_void(value) -> bool",
+            "description": "Check if type is void"
+          }
+        }
+      },
+      "pattern_matching": {
+        "description": "Functions for pattern and regex matching",
+        "functions": {
+          "pattern_matches": {
+            "signature": "pattern_matches(str, pattern) -> bool",
+            "description": "Check if string matches glob pattern"
+          },
+          "regex_matches": {
+            "signature": "regex_matches(str, regex) -> bool",
+            "description": "Check if string matches regex (full match)"
+          },
+          "regex_search": {
+            "signature": "regex_search(str, regex) -> bool",
+            "description": "Check if regex is found anywhere in string"
+          },
+          "ast_matches": {
+            "signature": "ast_matches(query) -> bool",
+            "description": "Execute AST query and check if matches exist"
+          },
+          "structural_match": {
+            "signature": "structural_match(pattern) -> bool",
+            "description": "Match structural patterns in code"
+          },
+          "fuzzy_match": {
+            "signature": "fuzzy_match(str1, str2, threshold) -> bool",
+            "description": "Fuzzy string matching"
+          }
+        }
+      },
+      "string_operations": {
+        "description": "Functions for string manipulation and queries",
+        "functions": {
+          "starts_with": {
+            "signature": "starts_with(str, prefix) -> bool",
+            "description": "Check if string starts with prefix"
+          },
+          "ends_with": {
+            "signature": "ends_with(str, suffix) -> bool",
+            "description": "Check if string ends with suffix"
+          },
+          "contains": {
+            "signature": "contains(str, substring) -> bool",
+            "description": "Check if string contains substring"
+          },
+          "length": {
+            "signature": "length(str) -> number",
+            "description": "Get length of string"
+          },
+          "to_upper": {
+            "signature": "to_upper(str) -> string",
+            "description": "Convert string to uppercase"
+          },
+          "to_lower": {
+            "signature": "to_lower(str) -> string",
+            "description": "Convert string to lowercase"
+          },
+          "trim": {
+            "signature": "trim(str) -> string",
+            "description": "Remove leading/trailing whitespace"
+          },
+          "replace": {
+            "signature": "replace(str, old, new) -> string",
+            "description": "Replace substring"
+          },
+          "split": {
+            "signature": "split(str, delim) -> collection",
+            "description": "Split string into collection"
+          },
+          "substring": {
+            "signature": "substring(str, start, length) -> string",
+            "description": "Extract substring"
+          },
+          "index_of": {
+            "signature": "index_of(str, substring) -> number",
+            "description": "Find index of substring (-1 if not found)"
+          },
+          "last_index_of": {
+            "signature": "last_index_of(str, substring) -> number",
+            "description": "Find last index of substring"
+          },
+          "char_at": {
+            "signature": "char_at(str, index) -> string",
+            "description": "Get character at index"
+          }
+        }
+      },
+      "collection_operations": {
+        "description": "Functions for working with collections (parameters, variables, etc.)",
+        "functions": {
+          "size": {
+            "signature": "size(collection) -> number",
+            "description": "Get number of elements in collection (alias: len, count)"
+          },
+          "len": {
+            "signature": "len(collection) -> number",
+            "description": "Get number of elements (same as size)"
+          },
+          "empty": {
+            "signature": "empty(collection) -> bool",
+            "description": "Check if collection is empty"
+          },
+          "count": {
+            "signature": "count(collection) -> number",
+            "description": "Count elements in collection"
+          },
+          "filter": {
+            "signature": "filter(collection, property, value) -> collection",
+            "description": "Filter collection by property value"
+          },
+          "map_property": {
+            "signature": "map_property(collection, property) -> collection",
+            "description": "Extract property from each element"
+          },
+          "all": {
+            "signature": "all(collection, condition) -> bool",
+            "description": "Check if all elements satisfy condition"
+          },
+          "any": {
+            "signature": "any(collection, condition) -> bool",
+            "description": "Check if any element satisfies condition"
+          },
+          "none": {
+            "signature": "none(collection, condition) -> bool",
+            "description": "Check if no elements satisfy condition"
+          },
+          "first": {
+            "signature": "first(collection) -> any",
+            "description": "Get first element"
+          },
+          "last": {
+            "signature": "last(collection) -> any",
+            "description": "Get last element"
+          },
+          "at": {
+            "signature": "at(collection, index) -> any",
+            "description": "Get element at index"
+          }
+        }
+      },
+      "arithmetic_math": {
+        "description": "Mathematical and arithmetic functions",
+        "functions": {
+          "abs": {
+            "signature": "abs(number) -> number",
+            "description": "Absolute value"
+          },
+          "min": {
+            "signature": "min(a, b, ...) -> number",
+            "description": "Minimum of values"
+          },
+          "max": {
+            "signature": "max(a, b, ...) -> number",
+            "description": "Maximum of values"
+          },
+          "clamp": {
+            "signature": "clamp(value, min, max) -> number",
+            "description": "Clamp value between min and max"
+          },
+          "ceil": {
+            "signature": "ceil(number) -> number",
+            "description": "Round up to nearest integer"
+          },
+          "floor": {
+            "signature": "floor(number) -> number",
+            "description": "Round down to nearest integer"
+          },
+          "round": {
+            "signature": "round(number) -> number",
+            "description": "Round to nearest integer"
+          },
+          "sqrt": {
+            "signature": "sqrt(number) -> number",
+            "description": "Square root"
+          },
+          "pow": {
+            "signature": "pow(base, exponent) -> number",
+            "description": "Power/exponentiation"
+          },
+          "mod": {
+            "signature": "mod(a, b) -> number",
+            "description": "Modulo operation"
+          },
+          "avg": {
+            "signature": "avg(collection) -> number",
+            "description": "Average of collection"
+          },
+          "sum": {
+            "signature": "sum(collection) -> number",
+            "description": "Sum of collection"
+          },
+          "gcd": {
+            "signature": "gcd(a, b) -> number",
+            "description": "Greatest common divisor"
+          },
+          "lcm": {
+            "signature": "lcm(a, b) -> number",
+            "description": "Least common multiple"
+          }
+        }
+      },
+      "function_analysis": {
+        "description": "Functions for analyzing function behavior",
+        "functions": {
+          "calls": {
+            "signature": "calls(function_name) -> bool",
+            "description": "Check if function calls specific function"
+          },
+          "calls_function": {
+            "signature": "calls_function(pattern) -> bool",
+            "description": "Check if function calls any function matching pattern"
+          },
+          "calls_printf_family": {
+            "signature": "calls_printf_family() -> bool",
+            "description": "Check if calls printf, fprintf, sprintf, etc."
+          },
+          "calls_unsafe_functions": {
+            "signature": "calls_unsafe_functions() -> bool",
+            "description": "Check if calls known unsafe functions"
+          },
+          "calls_any": {
+            "signature": "calls_any(func1, func2, ...) -> bool",
+            "description": "Check if calls any of the specified functions"
+          },
+          "uses_malloc": {
+            "signature": "uses_malloc() -> bool",
+            "description": "Check if function allocates memory with malloc"
+          },
+          "uses_free": {
+            "signature": "uses_free() -> bool",
+            "description": "Check if function frees memory"
+          },
+          "has_recursion": {
+            "signature": "has_recursion() -> bool",
+            "description": "Check if function is recursive"
+          },
+          "has_loop": {
+            "signature": "has_loop() -> bool",
+            "description": "Check if function contains loops"
+          },
+          "has_goto": {
+            "signature": "has_goto() -> bool",
+            "description": "Check if function uses goto"
+          },
+          "has_switch": {
+            "signature": "has_switch() -> bool",
+            "description": "Check if function has switch statement"
+          },
+          "has_switch_fallthrough": {
+            "signature": "has_switch_fallthrough() -> bool",
+            "description": "Check for fallthrough in switch cases"
+          },
+          "has_early_return": {
+            "signature": "has_early_return() -> bool",
+            "description": "Check if function has early return statements"
+          },
+          "has_goto_statement": {
+            "signature": "has_goto_statement() -> bool",
+            "description": "Alias for has_goto()"
+          },
+          "modifies_variable": {
+            "signature": "modifies_variable(var) -> bool",
+            "description": "Check if function modifies specific variable"
+          },
+          "reads_variable": {
+            "signature": "reads_variable(var) -> bool",
+            "description": "Check if function reads specific variable"
+          },
+          "variable_is_used": {
+            "signature": "variable_is_used(var) -> bool",
+            "description": "Check if variable is used"
+          },
+          "variable_is_defined": {
+            "signature": "variable_is_defined(var) -> bool",
+            "description": "Check if variable is defined"
+          },
+          "returns_value": {
+            "signature": "returns_value(pattern) -> bool",
+            "description": "Check if function returns value matching pattern"
+          },
+          "returns_null": {
+            "signature": "returns_null() -> bool",
+            "description": "Check if function returns NULL"
+          },
+          "returns_constant": {
+            "signature": "returns_constant() -> bool",
+            "description": "Check if function returns constant value"
+          },
+          "getCyclomaticComplexity": {
+            "signature": "getCyclomaticComplexity() -> number",
+            "description": "Get McCabe cyclomatic complexity"
+          },
+          "getLineCount": {
+            "signature": "getLineCount() -> number",
+            "description": "Get number of lines in function"
+          },
+          "getMaxNestingDepth": {
+            "signature": "getMaxNestingDepth() -> number",
+            "description": "Get maximum nesting depth"
+          },
+          "getReturnCount": {
+            "signature": "getReturnCount() -> number",
+            "description": "Get number of return statements"
+          }
+        }
+      },
+      "control_flow_analysis": {
+        "description": "Functions for control flow and data flow analysis",
+        "functions": {
+          "reaches": {
+            "signature": "reaches(def_var, def_block, use_block) -> bool",
+            "description": "Check if definition reaches use (def-use chains)"
+          },
+          "is_live": {
+            "signature": "is_live(var, block) -> bool",
+            "description": "Check if variable is live at given point"
+          },
+          "aliased_variables": {
+            "signature": "aliased_variables(var) -> collection",
+            "description": "Get variables that may alias with given variable"
+          },
+          "dominates": {
+            "signature": "dominates(block1, block2) -> bool",
+            "description": "Check if block1 dominates block2"
+          },
+          "post_dominates": {
+            "signature": "post_dominates(block1, block2) -> bool",
+            "description": "Check if block1 post-dominates block2"
+          },
+          "path_between": {
+            "signature": "path_between(from_block, to_block) -> collection",
+            "description": "Find path between blocks in CFG"
+          }
+        }
+      },
+      "security_analysis": {
+        "description": "Functions for detecting security vulnerabilities",
+        "functions": {
+          "has_command_injection_risk": {
+            "signature": "has_command_injection_risk() -> bool",
+            "description": "Check for command injection vulnerabilities"
+          },
+          "has_sql_injection_risk": {
+            "signature": "has_sql_injection_risk() -> bool",
+            "description": "Check for SQL injection vulnerabilities"
+          },
+          "has_format_string_risk": {
+            "signature": "has_format_string_risk() -> bool",
+            "description": "Check for format string vulnerabilities"
+          },
+          "has_unchecked_allocation": {
+            "signature": "has_unchecked_allocation() -> bool",
+            "description": "Check for unchecked malloc/calloc"
+          },
+          "has_unsanitized_taint": {
+            "signature": "has_unsanitized_taint() -> bool",
+            "description": "Check for untrusted data reaching sink"
+          },
+          "formatStringIsLiteral": {
+            "signature": "formatStringIsLiteral() -> bool",
+            "description": "Check if format string is a literal"
+          },
+          "systemArgumentIsConstant": {
+            "signature": "systemArgumentIsConstant() -> bool",
+            "description": "Check if system() argument is constant"
+          },
+          "has_unsafe_cast": {
+            "signature": "has_unsafe_cast() -> bool",
+            "description": "Check for potentially unsafe type casts"
+          },
+          "has_pointer_arithmetic": {
+            "signature": "has_pointer_arithmetic() -> bool",
+            "description": "Check for pointer arithmetic operations"
+          },
+          "uses_deprecated_function": {
+            "signature": "uses_deprecated_function() -> bool",
+            "description": "Check if uses deprecated functions"
+          }
+        }
+      },
+      "taint_analysis": {
+        "description": "Functions for tracking tainted (user-controlled) data flow",
+        "functions": {
+          "has_taint_flow": {
+            "signature": "has_taint_flow() -> bool",
+            "description": "Check if untrusted data flows to sensitive sink"
+          },
+          "has_taint_source": {
+            "signature": "has_taint_source() -> bool",
+            "description": "Check if function has taint source (user input)"
+          },
+          "has_taint_sink": {
+            "signature": "has_taint_sink() -> bool",
+            "description": "Check if function has taint sink (sensitive operation)"
+          },
+          "get_taint_sources": {
+            "signature": "get_taint_sources() -> collection",
+            "description": "Get list of taint sources in function"
+          },
+          "get_taint_sinks": {
+            "signature": "get_taint_sinks() -> collection",
+            "description": "Get list of taint sinks in function"
+          },
+          "is_taint_source": {
+            "signature": "is_taint_source(name) -> bool",
+            "description": "Check if named function is a taint source"
+          },
+          "is_taint_sink": {
+            "signature": "is_taint_sink(name) -> bool",
+            "description": "Check if named function is a taint sink"
+          },
+          "is_sanitizer": {
+            "signature": "is_sanitizer(name) -> bool",
+            "description": "Check if named function sanitizes input"
+          }
+        }
+      },
+      "code_quality_detection": {
+        "description": "Functions for detecting code quality issues",
+        "functions": {
+          "has_magic_number": {
+            "signature": "has_magic_number() -> bool",
+            "description": "Check for magic numbers in code"
+          },
+          "has_dead_code": {
+            "signature": "has_dead_code() -> bool",
+            "description": "Check for unreachable code"
+          },
+          "has_unreachable_return": {
+            "signature": "has_unreachable_return() -> bool",
+            "description": "Check for unreachable return statements"
+          },
+          "has_code_smell": {
+            "signature": "has_code_smell() -> bool",
+            "description": "Detect common code smells"
+          },
+          "has_long_line": {
+            "signature": "has_long_line() -> bool",
+            "description": "Check for lines exceeding length limit"
+          },
+          "max_line_length": {
+            "signature": "max_line_length() -> number",
+            "description": "Get maximum line length in function"
+          },
+          "has_deep_nesting": {
+            "signature": "has_deep_nesting() -> bool",
+            "description": "Check for excessive nesting"
+          },
+          "has_nested_loops": {
+            "signature": "has_nested_loops() -> bool",
+            "description": "Check for nested loops"
+          },
+          "has_todo_comment": {
+            "signature": "has_todo_comment() -> bool",
+            "description": "Check for TODO comments"
+          },
+          "has_undefined_variable": {
+            "signature": "has_undefined_variable() -> bool",
+            "description": "Check for use of undefined variables"
+          },
+          "has_uninitialized_var": {
+            "signature": "has_uninitialized_var() -> bool",
+            "description": "Check for uninitialized variables"
+          },
+          "hasTODOComment": {
+            "signature": "hasTODOComment() -> bool",
+            "description": "Alias for has_todo_comment()"
+          },
+          "hasFIXMEComment": {
+            "signature": "hasFIXMEComment() -> bool",
+            "description": "Check for FIXME comments"
+          }
+        }
+      },
+      "documentation_checking": {
+        "description": "Functions for checking code documentation",
+        "functions": {
+          "missing_doc": {
+            "signature": "missing_doc() -> bool",
+            "description": "Check if documentation is missing"
+          },
+          "has_function_doc": {
+            "signature": "has_function_doc() -> bool",
+            "description": "Check if function has documentation"
+          },
+          "has_brief_doc": {
+            "signature": "has_brief_doc() -> bool",
+            "description": "Check if has brief description"
+          },
+          "has_param_docs": {
+            "signature": "has_param_docs() -> bool",
+            "description": "Check if all parameters are documented"
+          },
+          "has_return_doc": {
+            "signature": "has_return_doc() -> bool",
+            "description": "Check if return value is documented"
+          }
+        }
+      },
+      "naming_conventions": {
+        "description": "Functions for checking naming conventions",
+        "functions": {
+          "check_variable_naming": {
+            "signature": "check_variable_naming(convention) -> bool",
+            "description": "Check variable naming convention"
+          },
+          "check_function_naming": {
+            "signature": "check_function_naming(convention) -> bool",
+            "description": "Check function naming convention"
+          },
+          "matches_case_style": {
+            "signature": "matches_case_style(name, style) -> bool",
+            "description": "Check if name matches case style (snake_case, camelCase, etc.)"
+          },
+          "matches_pattern": {
+            "signature": "matches_pattern(name, pattern) -> bool",
+            "description": "Check if name matches pattern"
+          },
+          "is_camel_case": {
+            "signature": "is_camel_case(name) -> bool",
+            "description": "Check if name is camelCase"
+          },
+          "is_pascal_case": {
+            "signature": "is_pascal_case(name) -> bool",
+            "description": "Check if name is PascalCase"
+          },
+          "is_snake_case": {
+            "signature": "is_snake_case(name) -> bool",
+            "description": "Check if name is snake_case"
+          },
+          "is_kebab_case": {
+            "signature": "is_kebab_case(name) -> bool",
+            "description": "Check if name is kebab-case"
+          },
+          "is_upper_case": {
+            "signature": "is_upper_case(name) -> bool",
+            "description": "Check if name is UPPER_CASE"
+          },
+          "has_prefix": {
+            "signature": "has_prefix(name, prefix) -> bool",
+            "description": "Check if name has specific prefix"
+          },
+          "has_suffix": {
+            "signature": "has_suffix(name, suffix) -> bool",
+            "description": "Check if name has specific suffix"
+          }
+        }
+      },
+      "code_structure": {
+        "description": "Functions for checking code structure and organization",
+        "functions": {
+          "has_header_guard": {
+            "signature": "has_header_guard() -> bool",
+            "description": "Check if header file has include guard"
+          },
+          "check_include_order": {
+            "signature": "check_include_order() -> bool",
+            "description": "Check if includes are in correct order"
+          }
+        }
+      },
+      "pattern_matching_advanced": {
+        "description": "Advanced pattern matching with AST queries",
+        "functions": {
+          "ast_query": {
+            "signature": "ast_query(query_string) -> bool",
+            "description": "Execute AST query and return if matches exist"
+          },
+          "ast_query_count": {
+            "signature": "ast_query_count(query_string) -> number",
+            "description": "Count AST query matches"
+          },
+          "match_code": {
+            "signature": "match_code(pattern, ...) -> collection",
+            "description": "Match code patterns and return matches"
+          }
+        }
+      },
+      "counting_metrics": {
+        "description": "Functions for counting code elements",
+        "functions": {
+          "array_access_count": {
+            "signature": "array_access_count() -> number",
+            "description": "Count number of array accesses in function"
+          },
+          "call_count": {
+            "signature": "call_count() -> number",
+            "description": "Get number of function calls made by this function"
+          },
+          "count_occurrences": {
+            "signature": "count_occurrences(text, substring) -> number",
+            "description": "Count occurrences of substring in text"
+          },
+          "if_count": {
+            "signature": "if_count() -> number",
+            "description": "Count number of if statements"
+          },
+          "local_var_count": {
+            "signature": "local_var_count() -> number",
+            "description": "Get number of local variables"
+          },
+          "loop_count": {
+            "signature": "loop_count() -> number",
+            "description": "Get number of loops (for, while, do-while)"
+          },
+          "param_count": {
+            "signature": "param_count() -> number",
+            "description": "Get number of parameters"
+          },
+          "pattern_match_count": {
+            "signature": "pattern_match_count(pattern) -> number",
+            "description": "Count pattern matches in code"
+          },
+          "pointer_param_count": {
+            "signature": "pointer_param_count() -> number",
+            "description": "Count number of pointer parameters"
+          },
+          "return_count": {
+            "signature": "return_count() -> number",
+            "description": "Get number of return statements"
+          },
+          "statement_count": {
+            "signature": "statement_count() -> number",
+            "description": "Get number of statements"
+          },
+          "static_var_count": {
+            "signature": "static_var_count() -> number",
+            "description": "Count number of static variables"
+          },
+          "taint_flow_count": {
+            "signature": "taint_flow_count() -> number",
+            "description": "Count number of taint flows from source to sink"
+          },
+          "taint_sink_count": {
+            "signature": "taint_sink_count() -> number",
+            "description": "Count number of taint sinks"
+          },
+          "taint_source_count": {
+            "signature": "taint_source_count() -> number",
+            "description": "Count number of taint sources"
+          },
+          "total_call_count": {
+            "signature": "total_call_count() -> number",
+            "description": "Get total number of function calls (including duplicates)"
+          },
+          "uninitialized_var_count": {
+            "signature": "uninitialized_var_count() -> number",
+            "description": "Count number of uninitialized variables"
+          },
+          "unique_call_count": {
+            "signature": "unique_call_count() -> number",
+            "description": "Get number of unique functions called"
+          },
+          "variable_def_count": {
+            "signature": "variable_def_count() -> number",
+            "description": "Count number of variable definitions"
+          },
+          "variable_use_count": {
+            "signature": "variable_use_count(var_name) -> number",
+            "description": "Count uses of specific variable"
+          }
+        }
+      },
+      "cfg_analysis": {
+        "description": "Control flow graph analysis functions",
+        "functions": {
+          "cfg_block_count": {
+            "signature": "cfg_block_count() -> number",
+            "description": "Get number of basic blocks in CFG"
+          },
+          "cfg_has_loops": {
+            "signature": "cfg_has_loops() -> bool",
+            "description": "Check if CFG contains loops (back edges)"
+          },
+          "cfg_loop_count": {
+            "signature": "cfg_loop_count() -> number",
+            "description": "Count number of loops in CFG"
+          },
+          "cfg_max_nesting": {
+            "signature": "cfg_max_nesting() -> number",
+            "description": "Get maximum nesting depth in CFG"
+          }
+        }
+      },
+      "utility_functions": {
+        "description": "Utility and helper functions",
+        "functions": {
+          "accesses_array": {
+            "signature": "accesses_array() -> bool",
+            "description": "Check if function accesses arrays"
+          },
+          "between": {
+            "signature": "between(value, min, max) -> bool",
+            "description": "Check if value is between min and max (inclusive)"
+          },
+          "coalesce": {
+            "signature": "coalesce(value1, value2, ...) -> any",
+            "description": "Return first non-empty/non-null value"
+          },
+          "default": {
+            "signature": "default(value, default_value) -> any",
+            "description": "Return value if non-empty, otherwise return default_value"
+          },
+          "extract_pattern_instances": {
+            "signature": "extract_pattern_instances(pattern, ...) -> collection",
+            "description": "Extract all instances matching pattern"
+          },
+          "factorial": {
+            "signature": "factorial(n) -> number",
+            "description": "Calculate factorial of n"
+          },
+          "free": {
+            "signature": "free() -> bool",
+            "description": "Check if function calls free()"
+          },
+          "gap_tolerant_match": {
+            "signature": "gap_tolerant_match(str1, str2) -> bool",
+            "description": "Match strings allowing gaps"
+          },
+          "has_cfg": {
+            "signature": "has_cfg() -> bool",
+            "description": "Check if function has control flow graph available"
+          },
+          "has_const_param": {
+            "signature": "has_const_param() -> bool",
+            "description": "Check if function has const parameters"
+          },
+          "has_live_variable": {
+            "signature": "has_live_variable(var_name) -> bool",
+            "description": "Check if variable is live in function"
+          },
+          "has_local_vars": {
+            "signature": "has_local_vars() -> bool",
+            "description": "Check if function has local variables"
+          },
+          "has_memory_leak_risk": {
+            "signature": "has_memory_leak_risk() -> bool",
+            "description": "Check if function has potential memory leaks"
+          },
+          "has_params": {
+            "signature": "has_params() -> bool",
+            "description": "Check if function has parameters"
+          },
+          "has_pointer_param": {
+            "signature": "has_pointer_param() -> bool",
+            "description": "Check if function has pointer parameters"
+          },
+          "has_return": {
+            "signature": "has_return() -> bool",
+            "description": "Check if function has return statements"
+          },
+          "has_static_var": {
+            "signature": "has_static_var() -> bool",
+            "description": "Check if function has static variables"
+          },
+          "has_string_literal": {
+            "signature": "has_string_literal() -> bool",
+            "description": "Check if function contains string literals"
+          },
+          "if_else": {
+            "signature": "if_else(condition, true_val, false_val) -> any",
+            "description": "Conditional expression (ternary operator)"
+          },
+          "is_empty": {
+            "signature": "is_empty(str) -> bool",
+            "description": "Check if string is empty"
+          },
+          "is_empty_or_whitespace": {
+            "signature": "is_empty_or_whitespace(str) -> bool",
+            "description": "Check if string is empty or contains only whitespace"
+          },
+          "is_even": {
+            "signature": "is_even(n) -> bool",
+            "description": "Check if number is even"
+          },
+          "is_odd": {
+            "signature": "is_odd(n) -> bool",
+            "description": "Check if number is odd"
+          },
+          "is_power_of_two": {
+            "signature": "is_power_of_two(n) -> bool",
+            "description": "Check if number is a power of 2"
+          },
+          "is_prime": {
+            "signature": "is_prime(n) -> bool",
+            "description": "Check if number is prime"
+          },
+          "is_public_function": {
+            "signature": "is_public_function() -> bool",
+            "description": "Check if function has external linkage (not static)"
+          },
+          "is_static_function": {
+            "signature": "is_static_function() -> bool",
+            "description": "Check if function has static storage"
+          },
+          "join": {
+            "signature": "join(collection, separator) -> string",
+            "description": "Join collection elements with separator"
+          },
+          "matches": {
+            "signature": "matches(str, pattern) -> bool",
+            "description": "Alias for pattern_matches()"
+          },
+          "max_nesting_depth": {
+            "signature": "max_nesting_depth() -> number",
+            "description": "Get maximum nesting depth"
+          },
+          "not": {
+            "signature": "not(value) -> bool",
+            "description": "Logical negation"
+          },
+          "one_of": {
+            "signature": "one_of(value, option1, option2, ...) -> bool",
+            "description": "Check if value equals any of the options"
+          },
+          "pointer_depth": {
+            "signature": "pointer_depth(type) -> number",
+            "description": "Get pointer indirection depth (int** = 2)"
+          },
+          "regex_match": {
+            "signature": "regex_match(str, regex) -> bool",
+            "description": "Alias for regex_matches()"
+          },
+          "repeat": {
+            "signature": "repeat(str, count) -> string",
+            "description": "Repeat string count times"
+          },
+          "returns": {
+            "signature": "returns(type_or_pattern) -> bool",
+            "description": "Check if function returns specific type or matches pattern"
+          },
+          "reverse": {
+            "signature": "reverse(str_or_collection) -> string|collection",
+            "description": "Reverse string or collection"
+          },
+          "unordered_match": {
+            "signature": "unordered_match(collection1, collection2) -> bool",
+            "description": "Check if collections have same elements (ignoring order)"
+          },
+          "wildcard_match": {
+            "signature": "wildcard_match(str, pattern) -> bool",
+            "description": "Match string with wildcards (* and ?)"
+          }
+        }
+      },
+      "api_consistency": {
+        "description": "Functions for checking API design consistency",
+        "functions": {
+          "all_params_const": {
+            "signature": "all_params_const() -> bool",
+            "description": "Check if all parameters are const-qualified"
+          },
+          "all_returns_same_type": {
+            "signature": "all_returns_same_type() -> bool",
+            "description": "Check if all return statements return the same type"
+          },
+          "check_static_first": {
+            "signature": "check_static_first() -> bool",
+            "description": "Check if static functions are declared before non-static"
+          }
+        }
+      }
+    }
+  },
+  "entity_properties": {
+    "description": "Properties available on different entity types in rule expressions",
+    "function_properties": {
+      "description": "Properties accessible via 'fn.' prefix when scope is 'function'",
+      "basic_properties": {
+        "fn.name": {
+          "type": "string",
+          "description": "Function name"
+        },
+        "fn.return_type": {
+          "type": "string",
+          "description": "Return type as string"
+        },
+        "fn.signature": {
+          "type": "string",
+          "description": "Complete function signature"
+        },
+        "fn.is_static": {
+          "type": "bool",
+          "description": "True if function has static storage"
+        },
+        "fn.is_inline": {
+          "type": "bool",
+          "description": "True if function is inline"
+        },
+        "fn.linkage": {
+          "type": "string",
+          "description": "Linkage type (internal, external, none)"
+        },
+        "fn.has_body": {
+          "type": "bool",
+          "description": "True if function has implementation"
+        }
+      },
+      "location_properties": {
+        "fn.location": {
+          "type": "SourceRange",
+          "description": "Source location of function"
+        },
+        "fn.location.file": {
+          "type": "string",
+          "description": "File path"
+        },
+        "fn.location.line": {
+          "type": "number",
+          "description": "Starting line number"
+        },
+        "fn.location.column": {
+          "type": "number",
+          "description": "Starting column"
+        }
+      },
+      "complexity_metrics": {
+        "fn.cyclomatic_complexity": {
+          "type": "number",
+          "description": "McCabe cyclomatic complexity"
+        },
+        "fn.line_count": {
+          "type": "number",
+          "description": "Number of lines in function body"
+        },
+        "fn.statement_count": {
+          "type": "number",
+          "description": "Number of statements"
+        },
+        "fn.parameter_count": {
+          "type": "number",
+          "description": "Number of parameters"
+        },
+        "fn.local_var_count": {
+          "type": "number",
+          "description": "Number of local variables"
+        },
+        "fn.call_count": {
+          "type": "number",
+          "description": "Number of function calls made"
+        }
+      },
+      "collections": {
+        "fn.parameters": {
+          "type": "collection<Variable>",
+          "description": "List of function parameters"
+        },
+        "fn.local_vars": {
+          "type": "collection<Variable>",
+          "description": "List of local variables"
+        },
+        "fn.local_variables": {
+          "type": "collection<Variable>",
+          "description": "Alias for local_vars"
+        },
+        "fn.calls": {
+          "type": "collection<CallSite>",
+          "description": "List of function calls"
+        },
+        "fn.statements": {
+          "type": "collection<Statement>",
+          "description": "List of statements"
+        },
+        "fn.return_statements": {
+          "type": "collection<Statement>",
+          "description": "List of return statements"
+        }
+      },
+      "advanced_analysis": {
+        "fn.cfg": {
+          "type": "ControlFlowGraph",
+          "description": "Control flow graph object"
+        },
+        "fn.cfg.blocks": {
+          "type": "collection<BasicBlock>",
+          "description": "CFG basic blocks"
+        },
+        "fn.cfg.entry": {
+          "type": "BasicBlock",
+          "description": "Entry block"
+        },
+        "fn.cfg.exits": {
+          "type": "collection<BasicBlock>",
+          "description": "Exit blocks"
+        },
+        "fn.preprocessor": {
+          "type": "PreprocessorContext",
+          "description": "Preprocessor information"
+        },
+        "fn.has_taint_flow": {
+          "type": "bool",
+          "description": "True if taint flows from source to sink"
+        }
+      }
+    },
+    "variable_properties": {
+      "description": "Properties accessible via 'var.' prefix when scope is 'variable'",
+      "basic_properties": {
+        "var.name": {
+          "type": "string",
+          "description": "Variable name"
+        },
+        "var.type": {
+          "type": "string",
+          "description": "Variable type as string"
+        },
+        "var.is_global": {
+          "type": "bool",
+          "description": "True if global variable"
+        },
+        "var.is_static": {
+          "type": "bool",
+          "description": "True if has static storage"
+        },
+        "var.is_const": {
+          "type": "bool",
+          "description": "True if const-qualified"
+        },
+        "var.is_initialized": {
+          "type": "bool",
+          "description": "True if initialized at declaration"
+        }
+      },
+      "usage_tracking": {
+        "var.read_count": {
+          "type": "number",
+          "description": "Number of times variable is read"
+        },
+        "var.write_count": {
+          "type": "number",
+          "description": "Number of times variable is written"
+        },
+        "var.scope": {
+          "type": "string",
+          "description": "Scope of variable (local, global, parameter)"
+        }
+      },
+      "location": {
+        "var.location": {
+          "type": "SourceRange",
+          "description": "Source location of declaration"
+        },
+        "var.location.file": {
+          "type": "string",
+          "description": "File path"
+        },
+        "var.location.line": {
+          "type": "number",
+          "description": "Line number"
+        }
+      },
+      "taint_analysis": {
+        "var.is_tainted": {
+          "type": "bool",
+          "description": "True if variable contains tainted data"
+        },
+        "var.taint_source": {
+          "type": "string",
+          "description": "Source of taint (if any)"
+        }
+      }
+    },
+    "statement_properties": {
+      "description": "Properties accessible on statement objects",
+      "properties": {
+        "stmt.text": {
+          "type": "string",
+          "description": "Statement text/code"
+        },
+        "stmt.type": {
+          "type": "enum",
+          "description": "Statement type (IF_STMT, FOR_STMT, WHILE_STMT, RETURN_STMT, etc.)"
+        },
+        "stmt.location": {
+          "type": "SourceRange",
+          "description": "Source location"
+        }
+      }
+    },
+    "file_properties": {
+      "description": "Properties accessible when scope is 'file'",
+      "properties": {
+        "file.path": {
+          "type": "string",
+          "description": "File path"
+        },
+        "file.name": {
+          "type": "string",
+          "description": "File name"
+        },
+        "file.line_count": {
+          "type": "number",
+          "description": "Total lines in file"
+        },
+        "file.includes": {
+          "type": "collection<string>",
+          "description": "Included headers"
+        }
+      }
+    },
+    "additional_function_properties": {
+      "fn.array_accesses": {
+        "type": "collection",
+        "description": "List of array access operations"
+      },
+      "fn.conditional_count": {
+        "type": "number",
+        "description": "Number of conditional statements"
+      },
+      "fn.const_input_params": {
+        "type": "collection",
+        "description": "Parameters that are const-qualified inputs"
+      },
+      "fn.goto_count": {
+        "type": "number",
+        "description": "Number of goto statements"
+      },
+      "fn.has_infinite_loop": {
+        "type": "bool",
+        "description": "True if function contains infinite loop"
+      },
+      "fn.has_output_params": {
+        "type": "bool",
+        "description": "True if function has output parameters (pointers)"
+      },
+      "fn.has_unreachable_code": {
+        "type": "bool",
+        "description": "True if function contains unreachable code"
+      },
+      "fn.loop_count": {
+        "type": "number",
+        "description": "Number of loop statements"
+      },
+      "fn.nesting_depth": {
+        "type": "number",
+        "description": "Maximum nesting depth"
+      },
+      "fn.output_params_last": {
+        "type": "bool",
+        "description": "True if output parameters come last in parameter list"
+      },
+      "fn.returns_error_code": {
+        "type": "bool",
+        "description": "True if function returns error code (int/enum)"
+      },
+      "fn.returns_pointer": {
+        "type": "bool",
+        "description": "True if function returns pointer"
+      },
+      "fn.returns_void": {
+        "type": "bool",
+        "description": "True if function returns void"
+      },
+      "fn.return_statements_count": {
+        "type": "number",
+        "description": "Number of return statements (alias for return_count)"
+      }
+    },
+    "additional_variable_properties": {
+      "var.initial_value": {
+        "type": "string",
+        "description": "Initial value expression (if initialized)"
+      },
+      "var.is_parameter": {
+        "type": "bool",
+        "description": "True if variable is a function parameter"
+      },
+      "var.is_tainted": {
+        "type": "bool",
+        "description": "True if variable contains tainted data"
+      },
+      "var.taint_source": {
+        "type": "string",
+        "description": "Source of taint (function name)"
+      },
+      "var.taint_confidence": {
+        "type": "number",
+        "description": "Confidence level of taint analysis (0-100)"
+      }
+    },
+    "type_properties": {
+      "description": "Properties accessible on TypeInfo objects",
+      "type.alignment": {
+        "type": "number",
+        "description": "Memory alignment requirement"
+      },
+      "type.canonical_type": {
+        "type": "string",
+        "description": "Canonical type name"
+      },
+      "type.canonical_name": {
+        "type": "string",
+        "description": "Canonical name (alias)"
+      },
+      "type.desugared_type": {
+        "type": "string",
+        "description": "Type with sugar removed"
+      },
+      "type.desugared_name": {
+        "type": "string",
+        "description": "Desugared name (alias)"
+      },
+      "type.is_arithmetic": {
+        "type": "bool",
+        "description": "True if type is arithmetic (int, float, etc.)"
+      },
+      "type.is_array": {
+        "type": "bool",
+        "description": "True if array type"
+      },
+      "type.is_const": {
+        "type": "bool",
+        "description": "True if const-qualified"
+      },
+      "type.is_enum": {
+        "type": "bool",
+        "description": "True if enum type"
+      },
+      "type.is_function_pointer": {
+        "type": "bool",
+        "description": "True if function pointer type"
+      },
+      "type.is_pointer": {
+        "type": "bool",
+        "description": "True if pointer type"
+      },
+      "type.is_signed": {
+        "type": "bool",
+        "description": "True if signed type"
+      },
+      "type.is_struct": {
+        "type": "bool",
+        "description": "True if struct type"
+      },
+      "type.is_typedef": {
+        "type": "bool",
+        "description": "True if typedef"
+      },
+      "type.is_union": {
+        "type": "bool",
+        "description": "True if union type"
+      },
+      "type.is_void": {
+        "type": "bool",
+        "description": "True if void type"
+      },
+      "type.is_volatile": {
+        "type": "bool",
+        "description": "True if volatile-qualified"
+      },
+      "type.pointer_depth": {
+        "type": "number",
+        "description": "Pointer indirection depth"
+      },
+      "type.size": {
+        "type": "number",
+        "description": "Size in bytes"
+      }
+    },
+    "additional_file_properties": {
+      "file.extension": {
+        "type": "string",
+        "description": "File extension (.c, .h, etc.)"
+      },
+      "file.follows_naming_convention": {
+        "type": "bool",
+        "description": "True if file name follows convention"
+      },
+      "file.function_count": {
+        "type": "number",
+        "description": "Number of functions in file"
+      },
+      "file.global_var_count": {
+        "type": "number",
+        "description": "Number of global variables"
+      },
+      "file.has_header_guard": {
+        "type": "bool",
+        "description": "True if header has include guard"
+      },
+      "file.has_include_guards": {
+        "type": "bool",
+        "description": "Alias for has_header_guard"
+      },
+      "file.ifdef_depth": {
+        "type": "number",
+        "description": "Maximum #ifdef nesting depth"
+      },
+      "file.include_count": {
+        "type": "number",
+        "description": "Number of #include directives"
+      },
+      "file.includes": {
+        "type": "collection<string>",
+        "description": "List of included files"
+      },
+      "file.is_header": {
+        "type": "bool",
+        "description": "True if file is a header (.h)"
+      },
+      "file.macros": {
+        "type": "collection",
+        "description": "List of macros defined in file"
+      },
+      "file.system_includes": {
+        "type": "collection<string>",
+        "description": "List of system includes (<...>)"
+      }
+    },
+    "cfg_properties_extended": {
+      "cfg.block_count": {
+        "type": "number",
+        "description": "Number of basic blocks"
+      },
+      "cfg.dominance_frontier": {
+        "type": "map",
+        "description": "Dominance frontier for each block"
+      },
+      "cfg.edge_count": {
+        "type": "number",
+        "description": "Number of edges in CFG"
+      },
+      "cfg.entry_block": {
+        "type": "BasicBlock",
+        "description": "Entry basic block"
+      },
+      "cfg.exit_block": {
+        "type": "BasicBlock",
+        "description": "Exit basic block (if single exit)"
+      },
+      "cfg.post_dominance": {
+        "type": "map",
+        "description": "Post-dominance information"
+      }
+    },
+    "preprocessor_properties": {
+      "preprocessor.annotations": {
+        "type": "collection",
+        "description": "Preprocessor annotations"
+      },
+      "preprocessor.has_size_before_buffer": {
+        "type": "bool",
+        "description": "True if size parameter comes before buffer in convention"
+      }
+    }
+  },
+  "rule_examples": {
+    "description": "Comprehensive examples showing different rule patterns",
+    "basic_assertion": {
+      "description": "Simple boolean check",
+      "example": {
+        "id": "EXAMPLE-001",
+        "description": "Function should not be too long",
+        "severity": "warning",
+        "scope": "function",
+        "select": "functions",
+        "assert": "getLineCount() <= 50",
+        "message": "Function {name} has {lineCount} lines. Keep functions under 50 lines.",
+        "tags": [
+          "code-quality",
+          "maintainability"
+        ]
+      }
+    },
+    "where_clause_filter": {
+      "description": "Filter entities before assertion",
+      "example": {
+        "id": "EXAMPLE-002",
+        "description": "Public functions must be documented",
+        "severity": "info",
+        "scope": "function",
+        "select": "functions",
+        "where": "not isStatic()",
+        "assert": "has_function_doc()",
+        "message": "Public function {name} is missing documentation.",
+        "tags": [
+          "documentation"
+        ]
+      }
+    },
+    "multiple_conditions": {
+      "description": "Complex conditions with logical operators",
+      "example": {
+        "id": "EXAMPLE-003",
+        "description": "Functions calling malloc must check result",
+        "severity": "error",
+        "scope": "function",
+        "select": "functions",
+        "where": "calls(malloc) or calls(calloc) or calls(realloc)",
+        "assert": "checksAllocationResult()",
+        "message": "Function {name} does not check allocation result for NULL.",
+        "tags": [
+          "memory-safety",
+          "error-handling"
+        ]
+      }
+    },
+    "quantifier_usage": {
+      "description": "Using forall/exists quantifiers",
+      "example": {
+        "id": "EXAMPLE-004",
+        "description": "All pointer parameters must be checked for NULL",
+        "severity": "warning",
+        "scope": "function",
+        "select": "functions",
+        "assert": "forall p in parameters, not isPointer(p) or hasNullCheck(p)",
+        "message": "Function {name} has unchecked pointer parameter.",
+        "tags": [
+          "defensive-programming",
+          "null-safety"
+        ]
+      }
+    },
+    "collection_operations": {
+      "description": "Working with collections",
+      "example": {
+        "id": "EXAMPLE-005",
+        "description": "Function should not have too many parameters",
+        "severity": "warning",
+        "scope": "function",
+        "select": "functions",
+        "assert": "len(parameters) <= 5",
+        "message": "Function {name} has {paramCount} parameters. Consider using a struct.",
+        "tags": [
+          "code-quality",
+          "design"
+        ]
+      }
+    },
+    "security_check": {
+      "description": "Security vulnerability detection",
+      "example": {
+        "id": "EXAMPLE-006",
+        "description": "Format string must be literal",
+        "severity": "error",
+        "scope": "function",
+        "select": "functions",
+        "where": "calls_printf_family()",
+        "assert": "formatStringIsLiteral()",
+        "message": "Function {name} uses non-literal format string. Security risk!",
+        "tags": [
+          "security",
+          "format-string",
+          "cwe-134"
+        ]
+      }
+    },
+    "variable_analysis": {
+      "description": "Checking variable properties",
+      "example": {
+        "id": "EXAMPLE-007",
+        "description": "Local variables should be initialized",
+        "severity": "warning",
+        "scope": "variable",
+        "select": "local_variables",
+        "where": "not isParameter()",
+        "assert": "isInitialized() or isInitializedBeforeUse()",
+        "message": "Variable {name} is not initialized at declaration.",
+        "tags": [
+          "best-practices",
+          "initialization"
+        ]
+      }
+    },
+    "complexity_check": {
+      "description": "Measuring code complexity",
+      "example": {
+        "id": "EXAMPLE-008",
+        "description": "Cyclomatic complexity too high",
+        "severity": "warning",
+        "scope": "function",
+        "select": "functions",
+        "assert": "getCyclomaticComplexity() <= 10",
+        "message": "Function {name} has complexity {cyclomaticComplexity}. Refactor to reduce complexity.",
+        "tags": [
+          "complexity",
+          "maintainability"
+        ]
+      }
+    },
+    "naming_convention": {
+      "description": "Enforcing naming conventions",
+      "example": {
+        "id": "EXAMPLE-009",
+        "description": "Functions should use snake_case",
+        "severity": "info",
+        "scope": "function",
+        "select": "functions",
+        "assert": "is_snake_case(name)",
+        "message": "Function {name} does not follow snake_case convention.",
+        "tags": [
+          "style",
+          "naming"
+        ]
+      }
+    },
+    "taint_analysis_example": {
+      "description": "Tracking untrusted data flow",
+      "example": {
+        "id": "EXAMPLE-010",
+        "description": "Prevent command injection",
+        "severity": "error",
+        "scope": "function",
+        "select": "functions",
+        "where": "calls(system)",
+        "assert": "not has_unsanitized_taint()",
+        "message": "Function {name} may pass untrusted input to system(). Sanitize input!",
+        "tags": [
+          "security",
+          "command-injection",
+          "cwe-78"
+        ]
+      }
+    }
+  },
+  "advanced_features": {
+    "description": "Advanced capabilities for complex rules",
+    "control_flow_graph": {
+      "description": "Accessing CFG for advanced analysis",
+      "usage": "Access via fn.cfg property",
+      "examples": [
+        "Check dominance: dominates(fn.cfg, block1, block2)",
+        "Find paths: path_between(fn.cfg, entry, exit)",
+        "Check liveness: is_live(fn.cfg, var_name, block_id)"
+      ]
+    },
+    "data_flow_analysis": {
+      "description": "Def-use chains and reaching definitions",
+      "functions": [
+        "reaches(var_name, def_block, use_block)",
+        "is_live(var_name, block_id)",
+        "aliased_variables(var_name)"
+      ]
+    },
+    "ast_queries": {
+      "description": "Query AST using specialized syntax",
+      "syntax": "Similar to CSS selectors for code",
+      "examples": [
+        "call_expr[@name=\"malloc\"]",
+        "for_stmt ... for_stmt",
+        "if_stmt[!has_compound_stmt]"
+      ]
+    },
+    "custom_properties": {
+      "description": "Defining custom predicates",
+      "note": "Use where clause to define reusable conditions",
+      "example": "where: \"isComplexFunction() and hasPointerParameters()\""
+    }
+  },
+  "best_practices": {
+    "description": "Best practices for writing effective rules",
+    "rule_design": [
+      "Use specific rule IDs with category prefixes (SEC-, MEMSAFE-, QUALITY-)",
+      "Write clear, actionable messages with context",
+      "Include relevant CWE numbers for security rules",
+      "Use appropriate severity levels (error for critical, warning for important, info for suggestions)",
+      "Add comprehensive tags for filtering and categorization"
+    ],
+    "performance": [
+      "Use where clause to pre-filter entities before expensive assertions",
+      "Prefer built-in functions over complex DSL expressions",
+      "Avoid redundant checks in both where and assert",
+      "Use quantifiers (forall/exists) efficiently"
+    ],
+    "maintainability": [
+      "Group related rules by category",
+      "Use consistent naming conventions",
+      "Document complex DSL expressions with comments in YAML",
+      "Test rules on representative codebases",
+      "Version control rule files"
+    ],
+    "accuracy": [
+      "Minimize false positives with precise conditions",
+      "Use exceptions list for known good patterns",
+      "Test rules thoroughly before deployment",
+      "Provide fix suggestions when possible"
+    ]
+  },
+  "common_patterns": {
+    "description": "Common rule patterns and idioms",
+    "check_function_calls": {
+      "pattern": "where: \"calls(function_name)\"",
+      "use_case": "Detect usage of specific functions",
+      "example": "where: \"calls(strcpy) or calls(gets)\""
+    },
+    "check_all_parameters": {
+      "pattern": "forall p in parameters, CONDITION",
+      "use_case": "Validate all function parameters",
+      "example": "forall p in parameters, not isPointer(p) or isConst(p)"
+    },
+    "check_collection_size": {
+      "pattern": "len(collection) OPERATOR value",
+      "use_case": "Limit collection sizes",
+      "example": "len(parameters) <= 5"
+    },
+    "check_naming": {
+      "pattern": "is_snake_case(name) or matches_pattern(name, pattern)",
+      "use_case": "Enforce naming conventions",
+      "example": "is_snake_case(fn.name) or has_prefix(fn.name, \"test_\")"
+    },
+    "check_complexity": {
+      "pattern": "getCyclomaticComplexity() <= threshold",
+      "use_case": "Limit code complexity",
+      "example": "getCyclomaticComplexity() <= 10 and getLineCount() <= 50"
+    }
+  },
+  "troubleshooting": {
+    "description": "Common issues and solutions",
+    "rule_not_triggering": {
+      "possible_causes": [
+        "where clause is too restrictive and filters out all entities",
+        "assert condition is always true",
+        "scope doesn't match entity type",
+        "Entity not being analyzed (check select expression)"
+      ],
+      "solutions": [
+        "Test where clause separately to verify it matches entities",
+        "Simplify assert to verify it can be false",
+        "Verify scope matches (function for functions, variable for variables)",
+        "Check that select expression returns entities"
+      ]
+    },
+    "too_many_false_positives": {
+      "solutions": [
+        "Add more specific conditions to where clause",
+        "Use exceptions list to exclude known patterns",
+        "Refine assert to be more precise",
+        "Consider using exists instead of forall for quantifiers"
+      ]
+    },
+    "dsl_syntax_errors": {
+      "common_errors": [
+        "Missing quotes around strings",
+        "Incorrect operator (using = instead of ==)",
+        "Mismatched parentheses",
+        "Undefined function or property"
+      ],
+      "solutions": [
+        "Always quote string literals",
+        "Use == for comparison, = is not valid",
+        "Check parentheses balancing",
+        "Verify function names in builtin_functions list"
+      ]
+    }
+  },
+  "reference": {
+    "description": "Quick reference for rule authoring",
+    "severity_levels": [
+      "error",
+      "warning",
+      "info"
+    ],
+    "scope_types": [
+      "function",
+      "variable",
+      "file",
+      "macro"
+    ],
+    "common_select_expressions": [
+      "functions",
+      "local_variables",
+      "global_variables",
+      "variables",
+      "files"
+    ],
+    "logical_operators": [
+      "and",
+      "or",
+      "not"
+    ],
+    "comparison_operators": [
+      "==",
+      "!=",
+      "<",
+      "<=",
+      ">",
+      ">="
+    ],
+    "arithmetic_operators": [
+      "+",
+      "-",
+      "*",
+      "/",
+      "%"
+    ],
+    "quantifiers": [
+      "forall",
+      "exists",
+      "none"
+    ],
+    "function_property_access": "fn.PROPERTY",
+    "variable_property_access": "var.PROPERTY",
+    "statement_property_access": "stmt.PROPERTY",
+    "total_builtin_functions": 207,
+    "function_categories": [
+      "type_checking",
+      "pattern_matching",
+      "string_operations",
+      "collection_operations",
+      "arithmetic_math",
+      "function_analysis",
+      "control_flow_analysis",
+      "security_analysis",
+      "taint_analysis",
+      "code_quality_detection",
+      "documentation_checking",
+      "naming_conventions"
+    ]
+  },
+  "version_info": {
+    "spec_version": "1.0.0",
+    "nomic_version": "1.0.0",
+    "last_updated": "2025-01-26",
+    "author": "Nomic Project",
+    "license": "GPL-3.0"
+  }
+}
