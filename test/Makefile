@@ -76,10 +76,8 @@ bin:
 
 # Build Nomic semantic analyzer
 nomic:
-	@echo "Building Nomic semantic analyzer..."
 	@mkdir -p $(NOMIC_BUILD_DIR)
 	@cd $(NOMIC_BUILD_DIR) && cmake .. && $(MAKE) -j$$(nproc 2>/dev/null || echo 4)
-	@echo "Nomic built successfully: $(NOMIC_BIN)"
 
 # Run the tests
 test: $(TARGET)
@@ -88,7 +86,6 @@ test: $(TARGET)
 
 # Run Nomic semantic source code analyzer
 analyze: nomic
-	@echo "Running Nomic semantic analyzer..."
 	@$(NOMIC_BIN) analyze $(BASE_DIR)/src/*.c \
 		--rules $(NOMIC_DIR)/helios.yaml \
 		--format json \

@@ -1,0 +1,1003 @@
+{
+  "metadata": {
+    "name": "HeliOS Coding Standard",
+    "version": "1.1.0",
+    "description": "DSL-like coding rules for HeliOS embedded operating system covering function structure, control flow, parameter validation, API naming conventions, and scope visibility",
+    "author": "HeliOS Project",
+    "date": "2025-10-26",
+    "rule_count": 27,
+    "categories": [
+      "function-structure",
+      "parameter-validation",
+      "control-flow",
+      "return-handling",
+      "memory-management",
+      "variable-naming",
+      "type-usage",
+      "numeric-literals",
+      "macro-usage",
+      "error-checking",
+      "comments",
+      "operation-checking",
+      "loop-patterns",
+      "conditionals",
+      "formatting",
+      "api-naming",
+      "api-scope"
+    ]
+  },
+  "rules": [
+    {
+      "id": "FN-001",
+      "category": "function-structure",
+      "name": "Function Entry/Exit Macros",
+      "shortName": "FUNCTION_ENTER/EXIT Required",
+      "description": "All functions returning Return_t must begin with FUNCTION_ENTER and end with FUNCTION_EXIT macros. FUNCTION_ENTER declares the Return_t ret variable initialized to ReturnError. FUNCTION_EXIT returns the ret variable.",
+      "dsl": {
+        "pattern": "function[returns=Return_t] { FUNCTION_ENTER; ...; FUNCTION_EXIT; }",
+        "rule": "REQUIRE macro.FUNCTION_ENTER AT function.start AND REQUIRE macro.FUNCTION_EXIT AT function.end"
+      },
+      "rationale": "Ensures consistent error handling and return value management across all kernel functions",
+      "examples": {
+        "valid": [
+          "Return_t xTaskCreate(...) {\n  FUNCTION_ENTER;\n  ...\n  FUNCTION_EXIT;\n}"
+        ],
+        "invalid": [
+          "Return_t xTaskCreate(...) {\n  Return_t ret = ReturnError;\n  ...\n  return ret;\n}"
+        ]
+      },
+      "severity": "error",
+      "references": [
+        "src/task.c:66",
+        "src/queue.c:46",
+        "src/device.c:26"
+      ]
+    },
+    {
+      "id": "FN-002",
+      "category": "function-structure",
+      "name": "No Direct Return Variable Access",
+      "shortName": "No Direct ret Assignment",
+      "description": "Function code must not directly assign to or manipulate the 'ret' variable. Only macros (__ReturnOk__) may modify the ret variable. Direct manipulation breaks the controlled return path pattern.",
+      "dsl": {
+        "pattern": "function[returns=Return_t] { !ASSIGN(ret); }",
+        "rule": "FORBID assignment TO variable.ret WITHIN function.body EXCEPT macro.context"
+      },
+      "rationale": "Centralizes return value management through macros, preventing inconsistent error handling patterns",
+      "examples": {
+        "valid": [
+          "__ReturnOk__();"
+        ],
+        "invalid": [
+          "ret = ReturnOK;",
+          "ret = ReturnError;"
+        ]
+      },
+      "severity": "error",
+      "references": [
+        "src/defines.h:121"
+      ]
+    },
+    {
+      "id": "VAL-001",
+      "category": "parameter-validation",
+      "name": "All Parameters Validated Upfront",
+      "shortName": "Validate All Params First",
+      "description": "All function parameters must be validated in a single compound conditional statement immediately after FUNCTION_ENTER and local variable declarations. Validation must check all pointer parameters for null and all numeric parameters for valid ranges before any processing occurs.",
+      "dsl": {
+        "pattern": "function { FUNCTION_ENTER; [locals*]; if(VALIDATE_ALL_PARAMS) { NESTED_LOGIC; } else { __AssertOnElse__(); }; FUNCTION_EXIT; }",
+        "rule": "REQUIRE validation.all_parameters BEFORE any.processing AND REQUIRE validation.form == compound_if_statement"
+      },
+      "rationale": "Prevents processing with invalid parameters and ensures fail-fast behavior at function boundaries",
+      "examples": {
+        "valid": [
+          "if(__PointerIsNotNull__(task_) && __PointerIsNotNull__(name_) && __PointerIsNotNull__(callback_) && __FlagIsNotSet__(RUNNING)) {\n  // nested logic\n} else {\n  __AssertOnElse__();\n}"
+        ],
+        "invalid": [
+          "if(__PointerIsNotNull__(task_)) {\n  if(__PointerIsNotNull__(name_)) {\n    // logic\n  }\n}"
+        ]
+      },
+      "severity": "error",
+      "references": [
+        "src/task.c:72",
+        "src/queue.c:48",
+        "src/device.c:57-61"
+      ]
+    },
+    {
+      "id": "VAL-002",
+      "category": "parameter-validation",
+      "name": "Use Validation Macros",
+      "shortName": "Macro-Based Validation",
+      "description": "Parameter validation must use standardized validation macros: __PointerIsNotNull__() for non-null checks, __PointerIsNull__() for null checks, __FlagIsSet__() and __FlagIsNotSet__() for flag state checks, and comparison operators for numeric range validation.",
+      "dsl": {
+        "pattern": "validation { USE(__PointerIsNotNull__ | __PointerIsNull__ | __FlagIsSet__ | __FlagIsNotSet__ | numeric_comparison); }",
+        "rule": "REQUIRE validation USES macro.validation_helpers INSTEAD OF raw_expressions"
+      },
+      "rationale": "Provides consistent, readable validation semantics and centralizes null-checking logic",
+      "examples": {
+        "valid": [
+          "__PointerIsNotNull__(task_)",
+          "__PointerIsNull__(tlist)",
+          "__FlagIsNotSet__(RUNNING)",
+          "(0x0u < bytes_)"
+        ],
+        "invalid": [
+          "task_ != NULL",
+          "tlist == NULL",
+          "RUNNING == 0"
+        ]
+      },
+      "severity": "error",
+      "references": [
+        "src/defines.h:111",
+        "src/defines.h:116",
+        "src/sys.h:95",
+        "src/sys.h:101"
+      ]
+    },
+    {
+      "id": "CTL-001",
+      "category": "control-flow",
+      "name": "No Early Returns",
+      "shortName": "Single Exit Point",
+      "description": "Functions must not use early return statements. The only return statement allowed is the FUNCTION_EXIT macro at the function end. This enforces single-entry/single-exit pattern with controlled return paths.",
+      "dsl": {
+        "pattern": "function { !RETURN EXCEPT AT function.end; }",
+        "rule": "FORBID keyword.return WITHIN function.body AND REQUIRE ONLY macro.FUNCTION_EXIT AT function.end"
+      },
+      "rationale": "Ensures predictable execution flow and simplifies debugging by guaranteeing single exit point",
+      "examples": {
+        "valid": [
+          "// Only exit point is FUNCTION_EXIT at end"
+        ],
+        "invalid": [
+          "if(error) return ReturnError;",
+          "if(success) return ReturnOK;"
+        ]
+      },
+      "severity": "error",
+      "references": [
+        "src/task.c:66-120",
+        "src/queue.c:45-68"
+      ]
+    },
+    {
+      "id": "CTL-002",
+      "category": "control-flow",
+      "name": "Nested Happy Path Pattern",
+      "shortName": "Indent Happy Path",
+      "description": "The successful execution path (happy path) must be implemented as nested if-statements, with each level of nesting representing progress through the function. Success conditions are nested deeper, creating a rightward indentation pattern for the main logic flow.",
+      "dsl": {
+        "pattern": "if(condition_valid) { if(next_valid) { if(operation_ok) { __ReturnOk__(); } else { __AssertOnElse__(); } } else { __AssertOnElse__(); } } else { __AssertOnElse__(); }",
+        "rule": "REQUIRE control_flow.success_path USES pattern.nested_if AND REQUIRE nesting.direction == rightward"
+      },
+      "rationale": "Makes the happy path visually distinct and easy to follow while keeping error handling consistent",
+      "examples": {
+        "valid": [
+          "if(__PointerIsNotNull__(task_)) {\n  if(OK(__TaskListFind__(task_))) {\n    *state_ = task_->state;\n    __ReturnOk__();\n  } else {\n    __AssertOnElse__();\n  }\n} else {\n  __AssertOnElse__();\n}"
+        ],
+        "invalid": [
+          "if(__PointerIsNull__(task_)) return ReturnError;\nif(ERROR(__TaskListFind__(task_))) return ReturnError;\n*state_ = task_->state;\nreturn ReturnOK;"
+        ]
+      },
+      "severity": "error",
+      "references": [
+        "src/task.c:448-457",
+        "src/queue.c:295-303"
+      ]
+    },
+    {
+      "id": "CTL-003",
+      "category": "control-flow",
+      "name": "Else Is Bad Path with Assert",
+      "shortName": "Assert on Else",
+      "description": "Every else clause represents an error/failure path and must contain only the __AssertOnElse__() macro call (optionally followed by cleanup code with comments). The else clause never contains business logic or success-path code.",
+      "dsl": {
+        "pattern": "if(happy_path) { success_logic; } else { __AssertOnElse__(); [/* cleanup */]? }",
+        "rule": "REQUIRE every.else_clause CONTAINS macro.__AssertOnElse__ AS first_statement AND FORBID business_logic IN else_clause"
+      },
+      "rationale": "Makes error paths explicit and consistent, triggering assertions for debugging while allowing cleanup",
+      "examples": {
+        "valid": [
+          "} else {\n  __AssertOnElse__();\n}",
+          "} else {\n  __AssertOnElse__();\n  /* Free kernel memory because __memcpy__() failed. */\n  __KernelFreeMemory__(message);\n}"
+        ],
+        "invalid": [
+          "} else {\n  task->state = TaskStateSuspended;\n}",
+          "} else {\n  return ReturnError;\n}"
+        ]
+      },
+      "severity": "error",
+      "references": [
+        "src/task.c:100",
+        "src/queue.c:266",
+        "src/device.c:106"
+      ]
+    },
+    {
+      "id": "RET-001",
+      "category": "return-handling",
+      "name": "Success Return Macro Only",
+      "shortName": "Use __ReturnOk__()",
+      "description": "To indicate function success, code must call __ReturnOk__() macro which sets ret to ReturnOK. Never manually assign ret = ReturnOK. The macro must be called immediately before exiting the deepest success nesting level.",
+      "dsl": {
+        "pattern": "success_path { __ReturnOk__(); }",
+        "rule": "REQUIRE success_indication USES macro.__ReturnOk__ AND FORBID direct.assignment(ret, ReturnOK)"
+      },
+      "rationale": "Provides centralized success indication and allows for future instrumentation/debugging hooks",
+      "examples": {
+        "valid": [
+          "__ReturnOk__();"
+        ],
+        "invalid": [
+          "ret = ReturnOK;",
+          "return ReturnOK;"
+        ]
+      },
+      "severity": "error",
+      "references": [
+        "src/task.c:98",
+        "src/defines.h:121"
+      ]
+    },
+    {
+      "id": "RET-002",
+      "category": "return-handling",
+      "name": "Error Return Via Function Exit",
+      "shortName": "Default Error Return",
+      "description": "Functions return error status by default since FUNCTION_ENTER initializes ret to ReturnError. Error paths should not explicitly set ret to ReturnError. Simply allow FUNCTION_EXIT to return the default error value, optionally calling __AssertOnElse__() first.",
+      "dsl": {
+        "pattern": "error_path { __AssertOnElse__(); /* fall through to FUNCTION_EXIT */ }",
+        "rule": "FORBID explicit.assignment(ret, ReturnError) AND REQUIRE error_path USES default.ret_value"
+      },
+      "rationale": "Leverages fail-by-default initialization, reducing code duplication and preventing missed error cases",
+      "examples": {
+        "valid": [
+          "} else {\n  __AssertOnElse__();\n}\nFUNCTION_EXIT;"
+        ],
+        "invalid": [
+          "} else {\n  ret = ReturnError;\n  __AssertOnElse__();\n}"
+        ]
+      },
+      "severity": "error",
+      "references": [
+        "src/defines.h:101",
+        "src/task.c:115-119"
+      ]
+    },
+    {
+      "id": "MEM-001",
+      "category": "memory-management",
+      "name": "Cleanup on Allocation Failure",
+      "shortName": "Free on Alloc Fail",
+      "description": "When a memory allocation or operation fails within nested allocations, all previously allocated resources must be freed in the error path. The cleanup code must appear in the else clause after __AssertOnElse__() with a comment explaining the cleanup reason.",
+      "dsl": {
+        "pattern": "if(OK(allocate)) { if(OK(next_op)) { success; } else { __AssertOnElse__(); /* cleanup */ free; } } else { __AssertOnElse__(); }",
+        "rule": "REQUIRE error_path PERFORMS cleanup.free_allocations WHEN prior.allocations_exist AND REQUIRE cleanup PRECEDED_BY comment.explanation"
+      },
+      "rationale": "Prevents memory leaks by ensuring proper cleanup on error paths in nested allocation scenarios",
+      "examples": {
+        "valid": [
+          "} else {\n  __AssertOnElse__();\n  /* Free kernel memory because __memcpy__() failed. */\n  __KernelFreeMemory__(message);\n}"
+        ],
+        "invalid": [
+          "} else {\n  __AssertOnElse__();\n  // Missing cleanup - memory leak!\n}"
+        ]
+      },
+      "severity": "error",
+      "references": [
+        "src/task.c:100-104",
+        "src/queue.c:266-270",
+        "src/device.c:106-111"
+      ]
+    },
+    {
+      "id": "VAR-001",
+      "category": "variable-naming",
+      "name": "Parameter Naming Convention",
+      "shortName": "Trailing Underscore Params",
+      "description": "All function parameters must use trailing underscore naming convention (e.g., task_, name_, callback_). This distinguishes parameters from local variables and prevents naming conflicts with types.",
+      "dsl": {
+        "pattern": "parameter { name MATCHES /^[a-z][a-zA-Z0-9]*_$/ }",
+        "rule": "REQUIRE parameter.name ENDS_WITH '_' AND REQUIRE parameter.name STARTS_WITH lowercase"
+      },
+      "rationale": "Provides visual distinction between parameters and locals, reducing naming collision risks",
+      "examples": {
+        "valid": [
+          "Return_t xTaskCreate(Task_t **task_, const Byte_t *name_, void (*callback_)(...), TaskParm_t *taskParameter_)"
+        ],
+        "invalid": [
+          "Return_t xTaskCreate(Task_t **task, const Byte_t *name, void (*callback)(...))"
+        ]
+      },
+      "severity": "error",
+      "references": [
+        "src/task.c:65",
+        "src/queue.c:45"
+      ]
+    },
+    {
+      "id": "VAR-002",
+      "category": "variable-naming",
+      "name": "Local Variable Initialization",
+      "shortName": "Initialize Locals to null/0",
+      "description": "Local variables must be declared immediately after FUNCTION_ENTER and initialized to appropriate zero values (null for pointers, 0x0u for numeric types). All local variable declarations must be grouped together before any logic.",
+      "dsl": {
+        "pattern": "function { FUNCTION_ENTER; [type var = initial_value;]+; /* blank line */ logic; }",
+        "rule": "REQUIRE local_vars DECLARED_AFTER macro.FUNCTION_ENTER AND REQUIRE local_vars.initialization IN {null, 0x0u, false} AND REQUIRE local_vars.grouping == consecutive"
+      },
+      "rationale": "Prevents use of uninitialized variables and clearly separates declarations from logic",
+      "examples": {
+        "valid": [
+          "FUNCTION_ENTER;\n\nTask_t *cursor = null;\nTask_t *previous = null;\n\nif(__PointerIsNotNull__(task_)) {"
+        ],
+        "invalid": [
+          "FUNCTION_ENTER;\nif(__PointerIsNotNull__(task_)) {\n  Task_t *cursor;"
+        ]
+      },
+      "severity": "error",
+      "references": [
+        "src/task.c:69",
+        "src/task.c:127-128",
+        "src/queue.c:51"
+      ]
+    },
+    {
+      "id": "TYP-001",
+      "category": "type-usage",
+      "name": "Use HeliOS Type Definitions",
+      "shortName": "HeliOS Types Required",
+      "description": "Code must use HeliOS type definitions (Return_t, Base_t, Byte_t, Word_t, HalfWord_t, Size_t, Ticks_t, Addr_t) instead of standard C types. Use 'null' macro instead of NULL. Use 'true'/'false' instead of 1/0 for boolean values.",
+      "dsl": {
+        "pattern": "type_usage { USE(Return_t | Base_t | Byte_t | Word_t | Size_t | Addr_t); USE(null); USE(true | false); }",
+        "rule": "REQUIRE types FROM helios.types AND FORBID types FROM {int, char, unsigned, NULL, 1, 0} IN boolean_context"
+      },
+      "rationale": "Ensures portability and consistent type semantics across different platforms",
+      "examples": {
+        "valid": [
+          "Return_t ret = ReturnError;",
+          "Base_t messages = 0x0u;",
+          "Message_t *cursor = null;",
+          "Base_t res = false;"
+        ],
+        "invalid": [
+          "int ret = -1;",
+          "unsigned char messages = 0;",
+          "void *cursor = NULL;",
+          "int res = 0;"
+        ]
+      },
+      "severity": "error",
+      "references": [
+        "src/types.h:48-127",
+        "src/task.c:66",
+        "src/queue.c:100"
+      ]
+    },
+    {
+      "id": "NUM-001",
+      "category": "numeric-literals",
+      "name": "Hexadecimal Zero Notation",
+      "shortName": "Use 0x0u for Zero",
+      "description": "Numeric zero values must be expressed in hexadecimal notation with unsigned suffix (0x0u) rather than decimal 0. This maintains consistency with other hexadecimal literals and makes unsigned intent explicit.",
+      "dsl": {
+        "pattern": "literal.zero { FORM == '0x0u' }",
+        "rule": "REQUIRE numeric.zero USES format.hex_unsigned AND FORBID format.decimal_zero"
+      },
+      "rationale": "Provides consistent literal notation and explicit unsigned typing for zero values",
+      "examples": {
+        "valid": [
+          "Base_t messages = 0x0u;",
+          "if(0x0u < bytes_)",
+          "task->notificationBytes = 0x0u;"
+        ],
+        "invalid": [
+          "Base_t messages = 0;",
+          "if(0 < bytes_)",
+          "task->notificationBytes = 0;"
+        ]
+      },
+      "severity": "warning",
+      "references": [
+        "src/task.c:240",
+        "src/queue.c:100",
+        "src/device.c:79"
+      ]
+    },
+    {
+      "id": "MAC-001",
+      "category": "macro-usage",
+      "name": "Internal Macro Naming Convention",
+      "shortName": "Double Underscore Macros",
+      "description": "Internal/helper macros and functions must use double underscore prefix and suffix naming pattern (e.g., __MacroName__, __FunctionName__). This distinguishes internal implementation from public API which uses single prefix 'x' for syscalls.",
+      "dsl": {
+        "pattern": "macro.internal { name MATCHES /^__[A-Z][a-zA-Z0-9]*__$/ }",
+        "rule": "REQUIRE macro.internal.name STARTS_WITH '__' AND ENDS_WITH '__' AND REQUIRE function.internal.name STARTS_WITH '__' AND ENDS_WITH '__'"
+      },
+      "rationale": "Clearly separates internal implementation from public API, preventing accidental external use",
+      "examples": {
+        "valid": [
+          "__ReturnOk__()",
+          "__AssertOnElse__()",
+          "__PointerIsNotNull__()",
+          "__KernelAllocateMemory__()"
+        ],
+        "invalid": [
+          "ReturnOk()",
+          "AssertOnElse()",
+          "PointerIsNotNull()"
+        ]
+      },
+      "severity": "error",
+      "references": [
+        "src/defines.h:121",
+        "src/defines.h:127",
+        "src/task.c:32"
+      ]
+    },
+    {
+      "id": "CHK-001",
+      "category": "error-checking",
+      "name": "Check All Syscall Results",
+      "shortName": "Validate Syscall Returns",
+      "description": "All syscall results must be checked using OK() or ERROR() macros before proceeding. Syscalls returning Return_t must have their results validated within the calling context. Unchecked syscalls can lead to processing invalid data.",
+      "dsl": {
+        "pattern": "syscall_invocation { if(OK(syscall(...))) { process; } else { __AssertOnElse__(); } }",
+        "rule": "REQUIRE syscall.result CHECKED_BY (macro.OK | macro.ERROR) BEFORE data.use"
+      },
+      "rationale": "Ensures errors are caught immediately and prevents cascading failures from unchecked operations",
+      "examples": {
+        "valid": [
+          "if(OK(__KernelAllocateMemory__((volatile Addr_t **)&tlist, sizeof(TaskList_t)))) {",
+          "if(OK(__memcpy__((*task_)->name, name_, CONFIG_TASK_NAME_BYTES))) {"
+        ],
+        "invalid": [
+          "__KernelAllocateMemory__((volatile Addr_t **)&tlist, sizeof(TaskList_t));",
+          "__memcpy__((*task_)->name, name_, CONFIG_TASK_NAME_BYTES);"
+        ]
+      },
+      "severity": "error",
+      "references": [
+        "src/task.c:75",
+        "src/task.c:78",
+        "src/defines.h:91"
+      ]
+    },
+    {
+      "id": "CMT-001",
+      "category": "comments",
+      "name": "Cleanup Code Must Be Commented",
+      "shortName": "Document Cleanup Reason",
+      "description": "When resource cleanup occurs in error paths, it must be preceded by a comment explaining why the cleanup is necessary and which operation failure triggered it. Comment format: '/* cleanup_action because operation_that_failed. */'",
+      "dsl": {
+        "pattern": "error_path.cleanup { /* comment */ cleanup_code; }",
+        "rule": "REQUIRE cleanup.in_error_path PRECEDED_BY comment.explanation AND REQUIRE comment CONTAINS {cleanup_reason, failed_operation}"
+      },
+      "rationale": "Makes error handling logic explicit and helps maintainers understand cleanup requirements",
+      "examples": {
+        "valid": [
+          "/* Free kernel memory because __memcpy__() failed. */\n__KernelFreeMemory__(message);",
+          "/* Free heap memory because __memset__() failed. */\n__HeapFreeMemory__(*notification_);"
+        ],
+        "invalid": [
+          "// cleanup\n__KernelFreeMemory__(message);",
+          "__KernelFreeMemory__(message);"
+        ]
+      },
+      "severity": "warning",
+      "references": [
+        "src/task.c:103",
+        "src/queue.c:269",
+        "src/device.c:109"
+      ]
+    },
+    {
+      "id": "OPR-001",
+      "category": "operation-checking",
+      "name": "Check Pointers After Allocation",
+      "shortName": "Verify Allocated Pointers",
+      "description": "After a successful allocation syscall, the returned pointer must still be explicitly validated with __PointerIsNotNull__() before use. Even if allocation returns OK, defensive programming requires pointer validation.",
+      "dsl": {
+        "pattern": "allocation { if(OK(alloc(&ptr))) { if(__PointerIsNotNull__(ptr)) { use(ptr); } } }",
+        "rule": "REQUIRE pointer.allocated VALIDATED_BY __PointerIsNotNull__ BEFORE pointer.dereference"
+      },
+      "rationale": "Provides defense-in-depth against allocation edge cases and ensures consistent validation patterns",
+      "examples": {
+        "valid": [
+          "if(OK(__KernelAllocateMemory__((volatile Addr_t **)&device, sizeof(Device_t)))) {\n  if(__PointerIsNotNull__(device)) {\n    // use device\n  }\n}"
+        ],
+        "invalid": [
+          "if(OK(__KernelAllocateMemory__((volatile Addr_t **)&device, sizeof(Device_t)))) {\n  device->uid = uid_;\n}"
+        ]
+      },
+      "severity": "error",
+      "references": [
+        "src/task.c:76-77",
+        "src/device.c:73-74"
+      ]
+    },
+    {
+      "id": "LOOP-001",
+      "category": "loop-patterns",
+      "name": "Pointer-Based List Traversal",
+      "shortName": "Validate Cursor in Loops",
+      "description": "When traversing linked lists, use while(__PointerIsNotNull__(cursor)) pattern. The cursor pointer must be validated at each iteration. Never assume list structure without validation.",
+      "dsl": {
+        "pattern": "list_traversal { while(__PointerIsNotNull__(cursor)) { process(cursor); cursor = cursor->next; } }",
+        "rule": "REQUIRE list.traversal USES pattern.while_pointer_not_null AND REQUIRE cursor.validation PER iteration"
+      },
+      "rationale": "Prevents null pointer dereferences and ensures safe list traversal even with corrupted structures",
+      "examples": {
+        "valid": [
+          "cursor = tlist->head;\nwhile(__PointerIsNotNull__(cursor)) {\n  tasks++;\n  cursor = cursor->next;\n}"
+        ],
+        "invalid": [
+          "for(cursor = tlist->head; cursor; cursor = cursor->next) {\n  tasks++;\n}"
+        ]
+      },
+      "severity": "error",
+      "references": [
+        "src/task.c:88-90",
+        "src/task.c:329-332"
+      ]
+    },
+    {
+      "id": "COND-001",
+      "category": "conditionals",
+      "name": "Yoda Conditionals for Constants",
+      "shortName": "Constant on Left",
+      "description": "In equality/inequality comparisons between variables and constants, place the constant on the left side (Yoda notation). This prevents accidental assignment when == is mistyped as =.",
+      "dsl": {
+        "pattern": "comparison { constant COMPARE_OP variable }",
+        "rule": "REQUIRE comparison.with_constant USES order.constant_first"
+      },
+      "rationale": "Prevents accidental assignment bugs that compile without warning but cause runtime errors",
+      "examples": {
+        "valid": [
+          "if(0x0u < task_->notificationBytes)",
+          "if(null != addr_)",
+          "if(TaskStateRunning == cursor->state)",
+          "if(true == res)"
+        ],
+        "invalid": [
+          "if(task_->notificationBytes > 0x0u)",
+          "if(addr_ != null)",
+          "if(cursor->state == TaskStateRunning)"
+        ]
+      },
+      "severity": "warning",
+      "references": [
+        "src/task.c:189",
+        "src/task.c:519",
+        "src/queue.c:241"
+      ]
+    },
+    {
+      "id": "BRK-001",
+      "category": "control-flow",
+      "name": "Break After Success in Loops",
+      "shortName": "Break on Match Found",
+      "description": "When searching through a list/collection and finding a match that sets the success return, immediately break from the loop. This prevents unnecessary iterations after the goal is achieved.",
+      "dsl": {
+        "pattern": "search_loop { if(found) { __ReturnOk__(); break; } }",
+        "rule": "REQUIRE search.success FOLLOWED_BY keyword.break WHEN inside.loop"
+      },
+      "rationale": "Optimizes performance by avoiding redundant iterations and makes search success explicit",
+      "examples": {
+        "valid": [
+          "while(__PointerIsNotNull__(cursor)) {\n  if(OK(__memcmp__(cursor->name, name_, CONFIG_TASK_NAME_BYTES, &res))) {\n    if(true == res) {\n      *task_ = cursor;\n      __ReturnOk__();\n      break;\n    }\n  }\n  cursor = cursor->next;\n}"
+        ],
+        "invalid": [
+          "while(__PointerIsNotNull__(cursor)) {\n  if(cursor->id == id_) {\n    *task_ = cursor;\n    __ReturnOk__();\n  }\n  cursor = cursor->next;\n}"
+        ]
+      },
+      "severity": "warning",
+      "references": [
+        "src/task.c:192",
+        "src/task.c:222"
+      ]
+    },
+    {
+      "id": "FMT-001",
+      "category": "formatting",
+      "name": "Blank Lines Separate Sections",
+      "shortName": "Visual Section Separation",
+      "description": "Use blank lines to separate logical sections: one blank line after FUNCTION_ENTER, one blank line between local variable declarations and logic, and no blank lines within tightly coupled logic blocks.",
+      "dsl": {
+        "pattern": "function { FUNCTION_ENTER; \\n\\n locals; \\n\\n logic; \\n\\n FUNCTION_EXIT; }",
+        "rule": "REQUIRE blank_line AFTER macro.FUNCTION_ENTER AND AFTER variable.declarations AND BEFORE macro.FUNCTION_EXIT"
+      },
+      "rationale": "Improves code readability by visually separating function setup, variables, logic, and teardown",
+      "examples": {
+        "valid": [
+          "FUNCTION_ENTER;\n\nTask_t *cursor = null;\n\nif(__PointerIsNotNull__(task_)) {\n  ...\n}\n\nFUNCTION_EXIT;"
+        ],
+        "invalid": [
+          "FUNCTION_ENTER;\nTask_t *cursor = null;\nif(__PointerIsNotNull__(task_)) {\nFUNCTION_EXIT;"
+        ]
+      },
+      "severity": "style",
+      "references": [
+        "src/task.c:66-120"
+      ]
+    },
+    {
+      "id": "API-001",
+      "category": "api-naming",
+      "name": "Public API Function Naming",
+      "shortName": "x-Prefix for Public API",
+      "description": "All public API functions (syscalls) exposed through HeliOS.h must use the naming pattern 'x' + SubsystemName + Action. The 'x' prefix indicates a public syscall accessible to user applications. Examples: xTaskCreate, xMemAlloc, xQueueSend, xDeviceRead.",
+      "dsl": {
+        "pattern": "function.public { name MATCHES /^x[A-Z][a-zA-Z0-9]*$/ AND declared_in HeliOS.h AND declared_in module.h }",
+        "rule": "REQUIRE api.public.name STARTS_WITH 'x' AND FOLLOWED_BY PascalCase AND REQUIRE declaration IN {HeliOS.h, module.h}"
+      },
+      "rationale": "Provides clear distinction between public API and internal functions, making API boundaries explicit",
+      "examples": {
+        "valid": [
+          "Return_t xTaskCreate(Task_t **task_, ...);",
+          "Return_t xMemAlloc(volatile Addr_t **addr_, ...);",
+          "Return_t xQueueSend(Queue_t *queue_, ...);",
+          "Return_t xDeviceRegisterDevice(Return_t (*device_self_register_)());"
+        ],
+        "invalid": [
+          "Return_t TaskCreate(Task_t **task_, ...);",
+          "Return_t memAlloc(volatile Addr_t **addr_, ...);",
+          "Return_t __QueueSend__(Queue_t *queue_, ...);"
+        ]
+      },
+      "severity": "error",
+      "references": [
+        "src/task.h:34-61",
+        "src/device.h:88-99",
+        "src/mem.c:432-460"
+      ]
+    },
+    {
+      "id": "API-002",
+      "category": "api-naming",
+      "name": "Internal Cross-Module Function Naming",
+      "shortName": "Double-Underscore for Internal API",
+      "description": "Internal functions exposed through module header files (*.h) for use by other kernel modules must use double underscore prefix and suffix pattern: __FunctionName__. These are NOT public API but are callable across kernel modules. Examples: __RegisterDevice__, __KernelAllocateMemory__, __DeviceListFind__.",
+      "dsl": {
+        "pattern": "function.internal_cross_module { name MATCHES /^__[A-Z][a-zA-Z0-9]*__$/ AND declared_in module.h AND NOT declared_in HeliOS.h }",
+        "rule": "REQUIRE api.internal_public.name MATCHES pattern.__NAME__ AND REQUIRE declaration IN module.h ONLY AND FORBID declaration IN HeliOS.h"
+      },
+      "rationale": "Distinguishes kernel-internal API from public API while allowing necessary cross-module communication",
+      "examples": {
+        "valid": [
+          "Return_t __RegisterDevice__(const HalfWord_t uid_, ...);",
+          "Return_t __KernelAllocateMemory__(volatile Addr_t **addr_, ...);",
+          "Return_t __HeapAllocateMemory__(volatile Addr_t **addr_, ...);",
+          "Return_t __DeviceListFind__(const HalfWord_t uid_, ...);"
+        ],
+        "invalid": [
+          "Return_t RegisterDevice(const HalfWord_t uid_, ...);",
+          "Return_t xKernelAllocateMemory(volatile Addr_t **addr_, ...);",
+          "Return_t _DeviceListFind_(const HalfWord_t uid_, ...);"
+        ]
+      },
+      "severity": "error",
+      "references": [
+        "src/device.h:89-92",
+        "src/device.h:100-104",
+        "src/mem.c:543-593"
+      ]
+    },
+    {
+      "id": "API-003",
+      "category": "api-naming",
+      "name": "Module-Private Function Naming",
+      "shortName": "Static for Module-Private",
+      "description": "Functions private to a single module (only used within one .c file) must be declared 'static' and use double underscore prefix and suffix pattern: static Return_t __FunctionName__(...). These functions are NOT exposed through any header file and have internal linkage.",
+      "dsl": {
+        "pattern": "function.private { storage_class == static AND name MATCHES /^__[A-Z][a-zA-Z0-9]*__$/ AND NOT declared_in any.header }",
+        "rule": "REQUIRE function.module_private USES storage.static AND REQUIRE name MATCHES pattern.__NAME__ AND FORBID declaration IN any.h"
+      },
+      "rationale": "Limits scope to single compilation unit, preventing namespace pollution and accidental external use",
+      "examples": {
+        "valid": [
+          "static Return_t __QueueDropmessage__(Queue_t *queue_);",
+          "static Return_t __QueuePeek__(const Queue_t *queue_, ...);",
+          "static Return_t __TaskListFindTask__(const Task_t *task_);",
+          "static Return_t __ValidateBlockHeader__(const BlockHeader_t *header_, ...);"
+        ],
+        "invalid": [
+          "Return_t __QueueDropmessage__(Queue_t *queue_);  /* missing static */",
+          "static Return_t QueueDropmessage(Queue_t *queue_);  /* missing underscores */",
+          "static Return_t _QueueDropmessage_(Queue_t *queue_);  /* wrong pattern */"
+        ]
+      },
+      "severity": "error",
+      "references": [
+        "src/queue.c:18-19",
+        "src/task.c:31-32",
+        "src/mem.c:48-54"
+      ]
+    },
+    {
+      "id": "API-004",
+      "category": "api-scope",
+      "name": "Public API Declaration in HeliOS.h",
+      "shortName": "Public API in Main Header",
+      "description": "All public API functions (x-prefixed syscalls) must be declared in both HeliOS.h (the main public header) AND the corresponding module header file (e.g., task.h, device.h). The HeliOS.h declarations provide the unified public interface for user applications.",
+      "dsl": {
+        "pattern": "function.public { declared_in HeliOS.h AND declared_in module.h }",
+        "rule": "REQUIRE api.public DECLARED_IN HeliOS.h AND DECLARED_IN corresponding.module.h"
+      },
+      "rationale": "Provides single unified header for users while maintaining modular organization for kernel development",
+      "examples": {
+        "valid": [
+          "/* In task.h */\nReturn_t xTaskCreate(Task_t **task_, ...);\n\n/* Also in HeliOS.h */\nReturn_t xTaskCreate(Task_t **task_, ...);"
+        ],
+        "invalid": [
+          "/* Only in task.h, missing from HeliOS.h */\nReturn_t xTaskCreate(Task_t **task_, ...);"
+        ]
+      },
+      "severity": "error",
+      "references": [
+        "src/HeliOS.h",
+        "src/task.h:34-61"
+      ]
+    },
+    {
+      "id": "API-005",
+      "category": "api-scope",
+      "name": "Internal API Declaration Scope",
+      "shortName": "Internal API in Module Header Only",
+      "description": "Internal cross-module functions (__FunctionName__ pattern) must be declared ONLY in their module header file (e.g., device.h, mem.h), never in HeliOS.h. These are kernel-internal APIs not meant for user application access.",
+      "dsl": {
+        "pattern": "function.internal_cross_module { declared_in module.h AND NOT declared_in HeliOS.h }",
+        "rule": "REQUIRE api.internal_public DECLARED_IN module.h ONLY AND FORBID declaration IN HeliOS.h"
+      },
+      "rationale": "Hides kernel implementation details from user applications while allowing necessary kernel-internal communication",
+      "examples": {
+        "valid": [
+          "/* In device.h only */\nReturn_t __RegisterDevice__(const HalfWord_t uid_, ...);\nReturn_t __DeviceListFind__(const HalfWord_t uid_, ...);"
+        ],
+        "invalid": [
+          "/* In HeliOS.h - WRONG! Internal API exposed to users */\nReturn_t __RegisterDevice__(const HalfWord_t uid_, ...);"
+        ]
+      },
+      "severity": "error",
+      "references": [
+        "src/device.h:89-92",
+        "src/device.h:100-104"
+      ]
+    },
+    {
+      "id": "API-006",
+      "category": "api-scope",
+      "name": "Module-Private Functions Not Declared in Headers",
+      "shortName": "Static Functions Stay in Source",
+      "description": "Static module-private functions must NOT be declared in any header file. They should only exist in the .c source file. Forward declarations within the .c file are acceptable and encouraged for organization.",
+      "dsl": {
+        "pattern": "function.private { storage_class == static AND NOT declared_in any.h AND MAY_BE forward_declared_in same.c }",
+        "rule": "REQUIRE function.static NOT declared_in any.h AND ALLOW forward_declaration IN same.source_file"
+      },
+      "rationale": "Maintains strict encapsulation and prevents exposure of implementation details outside the module",
+      "examples": {
+        "valid": [
+          "/* In queue.c - forward declaration at top */\nstatic Return_t __QueueDropmessage__(Queue_t *queue_);\nstatic Return_t __QueuePeek__(const Queue_t *queue_, ...);\n\n/* Implementation later in same file */\nstatic Return_t __QueueDropmessage__(Queue_t *queue_) { ... }"
+        ],
+        "invalid": [
+          "/* In queue.h - WRONG! Static function in header */\nstatic Return_t __QueueDropmessage__(Queue_t *queue_);"
+        ]
+      },
+      "severity": "error",
+      "references": [
+        "src/queue.c:18-19",
+        "src/task.c:31-32"
+      ]
+    },
+    {
+      "id": "API-007",
+      "category": "api-naming",
+      "name": "Subsystem Prefix Consistency",
+      "shortName": "Consistent Subsystem Names",
+      "description": "Public API functions must use consistent subsystem prefixes: xTask* for tasks, xMem* for memory, xQueue* for queues, xDevice* for devices, xTimer* for timers, xStream* for streams, xFS* for filesystem, xSystem* for system operations. The subsystem name immediately follows the 'x' prefix.",
+      "dsl": {
+        "pattern": "function.public { name MATCHES /^x(Task|Mem|Queue|Device|Timer|Stream|FS|System|Console)[A-Z][a-zA-Z0-9]*$/ }",
+        "rule": "REQUIRE api.public.name MATCHES pattern.x_SUBSYSTEM_Action AND REQUIRE subsystem IN {Task, Mem, Queue, Device, Timer, Stream, FS, System, Console}"
+      },
+      "rationale": "Organizes API by functional area and makes function purpose immediately clear from name",
+      "examples": {
+        "valid": [
+          "xTaskCreate, xTaskDelete, xTaskResume",
+          "xMemAlloc, xMemFree, xMemGetUsed",
+          "xQueueCreate, xQueueSend, xQueueReceive",
+          "xDeviceRegisterDevice, xDeviceRead, xDeviceWrite",
+          "xSystemInit, xSystemHalt, xSystemGetSystemInfo"
+        ],
+        "invalid": [
+          "xCreateTask  /* Action before subsystem */",
+          "xAllocMemory  /* Action before subsystem */",
+          "xSend  /* Missing subsystem prefix */"
+        ]
+      },
+      "severity": "error",
+      "references": [
+        "src/task.h:34-61",
+        "src/mem.c:432-688",
+        "src/device.h:88-99"
+      ]
+    }
+  ],
+  "validation_patterns": {
+    "pointer_validation": {
+      "not_null": "__PointerIsNotNull__(ptr)",
+      "is_null": "__PointerIsNull__(ptr)",
+      "description": "Standard pointer validation macros"
+    },
+    "numeric_validation": {
+      "non_zero": "(0x0u < value)",
+      "range_check": "(min <= value) && (max >= value)",
+      "description": "Standard numeric validation patterns"
+    },
+    "flag_validation": {
+      "is_set": "__FlagIsSet__(FLAG_NAME)",
+      "not_set": "__FlagIsNotSet__(FLAG_NAME)",
+      "description": "Standard flag state validation macros"
+    },
+    "return_validation": {
+      "success": "OK(expression)",
+      "failure": "ERROR(expression)",
+      "description": "Standard return value validation macros"
+    }
+  },
+  "common_patterns": {
+    "allocation_and_check": {
+      "pattern": "if(OK(__KernelAllocateMemory__((volatile Addr_t **)&ptr, size))) { if(__PointerIsNotNull__(ptr)) { /* use ptr */ } else { __AssertOnElse__(); } } else { __AssertOnElse__(); }",
+      "description": "Standard allocation pattern with double validation"
+    },
+    "list_find": {
+      "pattern": "cursor = list->head; while(__PointerIsNotNull__(cursor) && (target != cursor)) { cursor = cursor->next; } if(__PointerIsNotNull__(cursor)) { /* found */ } else { __AssertOnElse__(); }",
+      "description": "Standard linked list search pattern"
+    },
+    "compound_validation": {
+      "pattern": "if(__PointerIsNotNull__(param1_) && (0x0u < param2_) && __FlagIsNotSet__(FLAG)) { /* nested happy path */ } else { __AssertOnElse__(); }",
+      "description": "Standard multi-parameter validation pattern"
+    }
+  },
+  "severity_levels": {
+    "error": "Rule violation breaks compilation, critical safety issue, or causes undefined behavior",
+    "warning": "Rule violation may cause bugs, reduces maintainability, or violates best practices",
+    "style": "Rule violation affects code consistency and readability but not functionality"
+  },
+  "api_scope_summary": {
+    "description": "HeliOS enforces strict API visibility through naming conventions and declaration locations",
+    "scope_levels": [
+      {
+        "level": "public_api",
+        "naming_pattern": "x[SubsystemName][Action]",
+        "examples": [
+          "xTaskCreate",
+          "xMemAlloc",
+          "xQueueSend",
+          "xDeviceRead"
+        ],
+        "declaration_locations": [
+          "HeliOS.h (main public header)",
+          "module.h (e.g., task.h, device.h)"
+        ],
+        "accessibility": "User applications and kernel modules",
+        "description": "Public syscalls exposed to user applications through HeliOS.h",
+        "rules": ["API-001", "API-004", "API-007"]
+      },
+      {
+        "level": "internal_cross_module",
+        "naming_pattern": "__[FunctionName]__",
+        "examples": [
+          "__RegisterDevice__",
+          "__KernelAllocateMemory__",
+          "__DeviceListFind__",
+          "__HeapAllocateMemory__"
+        ],
+        "declaration_locations": [
+          "module.h ONLY (e.g., device.h, mem.h)"
+        ],
+        "accessibility": "Kernel modules only (NOT user applications)",
+        "description": "Internal kernel API for cross-module communication, hidden from user applications",
+        "rules": ["API-002", "API-005"]
+      },
+      {
+        "level": "module_private",
+        "naming_pattern": "static __[FunctionName]__",
+        "examples": [
+          "static __QueueDropmessage__",
+          "static __QueuePeek__",
+          "static __TaskListFindTask__",
+          "static __ValidateBlockHeader__"
+        ],
+        "declaration_locations": [
+          ".c source file ONLY (forward declarations acceptable in same file)"
+        ],
+        "accessibility": "Single module only (internal linkage)",
+        "description": "Private implementation functions for single module, not exposed through headers",
+        "rules": ["API-003", "API-006"]
+      }
+    ],
+    "visibility_matrix": {
+      "description": "Function visibility by scope level",
+      "table": [
+        {
+          "scope": "public_api (x...)",
+          "in_HeliOS.h": "YES",
+          "in_module.h": "YES",
+          "in_source.c": "NO (only implementation)",
+          "linkage": "external",
+          "user_app_visible": true,
+          "kernel_visible": true
+        },
+        {
+          "scope": "internal_cross_module (__...__)",
+          "in_HeliOS.h": "NO",
+          "in_module.h": "YES",
+          "in_source.c": "NO (only implementation)",
+          "linkage": "external",
+          "user_app_visible": false,
+          "kernel_visible": true
+        },
+        {
+          "scope": "module_private (static __...__)",
+          "in_HeliOS.h": "NO",
+          "in_module.h": "NO",
+          "in_source.c": "YES (declaration and implementation)",
+          "linkage": "internal (static)",
+          "user_app_visible": false,
+          "kernel_visible": false
+        }
+      ]
+    },
+    "subsystems": {
+      "description": "Public API subsystem prefixes and their functional areas",
+      "list": [
+        {
+          "prefix": "xTask",
+          "area": "Task Management",
+          "examples": ["xTaskCreate", "xTaskDelete", "xTaskResume", "xTaskSuspend"]
+        },
+        {
+          "prefix": "xMem",
+          "area": "Memory Management",
+          "examples": ["xMemAlloc", "xMemFree", "xMemGetUsed", "xMemGetHeapStats"]
+        },
+        {
+          "prefix": "xQueue",
+          "area": "Message Queues",
+          "examples": ["xQueueCreate", "xQueueSend", "xQueueReceive", "xQueuePeek"]
+        },
+        {
+          "prefix": "xDevice",
+          "area": "Device I/O",
+          "examples": ["xDeviceRegisterDevice", "xDeviceRead", "xDeviceWrite", "xDeviceInitDevice"]
+        },
+        {
+          "prefix": "xTimer",
+          "area": "Software Timers",
+          "examples": ["xTimerCreate", "xTimerStart", "xTimerStop", "xTimerIsTimerActive"]
+        },
+        {
+          "prefix": "xStream",
+          "area": "Stream Buffers",
+          "examples": ["xStreamCreate", "xStreamWrite", "xStreamRead"]
+        },
+        {
+          "prefix": "xFS",
+          "area": "Filesystem",
+          "examples": ["xFSMount", "xFSOpen", "xFSRead", "xFSWrite"]
+        },
+        {
+          "prefix": "xSystem",
+          "area": "System Operations",
+          "examples": ["xSystemInit", "xSystemHalt", "xSystemGetSystemInfo"]
+        },
+        {
+          "prefix": "xConsole",
+          "area": "Console Interface",
+          "examples": ["xConsoleInit"]
+        }
+      ]
+    }
+  }
+}
