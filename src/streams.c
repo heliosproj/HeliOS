@@ -28,6 +28,7 @@ Return_t xStreamCreate(StreamBuffer_t **stream_) {
   if(__PointerIsNotNull__(stream_)) {
     if(OK(__KernelAllocateMemory__((volatile Addr_t **) stream_, sizeof(StreamBuffer_t)))) {
       if(__PointerIsNotNull__(*stream_)) {
+        (*stream_)->valid = VALID;
         (*stream_)->length = 0x0u;
         __ReturnOk__();
       } else {
@@ -48,6 +49,8 @@ Return_t xStreamDelete(const StreamBuffer_t *stream_) {
   FUNCTION_ENTER;
 
   if(__ObjectIsValid__(stream_)) {
+    ((StreamBuffer_t *) stream_)->valid = INVALID;
+
     if(OK(__KernelFreeMemory__(stream_))) {
       __ReturnOk__();
     } else {

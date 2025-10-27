@@ -48,6 +48,7 @@ Return_t xQueueCreate(Queue_t **queue_, const Base_t limit_) {
   if(__PointerIsNotNull__(queue_) && (CONFIG_QUEUE_MINIMUM_LIMIT <= limit_)) {
     if(OK(__KernelAllocateMemory__((volatile Addr_t **) queue_, sizeof(Queue_t)))) {
       if(__PointerIsNotNull__(*queue_)) {
+        (*queue_)->valid = VALID;
         (*queue_)->length = 0x0u;
         (*queue_)->limit = limit_;
         (*queue_)->locked = false;
@@ -82,6 +83,8 @@ Return_t xQueueDelete(Queue_t *queue_) {
       break;
     }
   }
+
+    queue_->valid = INVALID;
 
     if(OK(__KernelFreeMemory__(queue_))) {
       __ReturnOk__();

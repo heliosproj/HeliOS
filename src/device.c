@@ -73,6 +73,7 @@ Return_t __RegisterDevice__(const HalfWord_t uid_, const Byte_t *name_, const De
           if(OK(__KernelAllocateMemory__((volatile Addr_t **) &device, sizeof(Device_t)))) {
             if(__PointerIsNotNull__(device)) {
               if(OK(__memcpy__(device->name, name_, CONFIG_DEVICE_NAME_BYTES))) {
+                device->valid = VALID;
                 device->uid = uid_;
                 device->state = state_;
                 device->mode = mode_;

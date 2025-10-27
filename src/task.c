@@ -76,6 +76,7 @@ Return_t xTaskCreate(Task_t **task_, const Byte_t *name_, void (*callback_)(Task
       if(OK(__KernelAllocateMemory__((volatile Addr_t **) task_, sizeof(Task_t)))) {
         if(__PointerIsNotNull__(*task_)) {
           if(OK(__memcpy__((*task_)->name, name_, CONFIG_TASK_NAME_BYTES))) {
+            (*task_)->valid = VALID;
             tlist->nextId++;
             (*task_)->id = tlist->nextId;
             (*task_)->state = TaskStateSuspended;
@@ -130,6 +131,7 @@ Return_t xTaskDelete(const Task_t *task_) {
 
   if(__ObjectIsValid__(task_) && __PointerIsNotNull__(tlist) && __FlagIsNotSet__(RUNNING)) {
     if(OK(__TaskListFindTask__(task_))) {
+      ((Task_t *) task_)->valid = INVALID;
       cursor = tlist->head;
 
       if(__PointerIsNotNull__(cursor) && (task_ == cursor)) {

@@ -23,6 +23,7 @@ Return_t xTimerCreate(Timer_t **timer_, const Ticks_t period_) {
   if(__PointerIsNotNull__(timer_)) {
     if(OK(__KernelAllocateMemory__((volatile Addr_t **) timer_, sizeof(Timer_t)))) {
       if(__PointerIsNotNull__(*timer_)) {
+        (*timer_)->valid = VALID;
         (*timer_)->state = TimerStateSuspended;
         (*timer_)->timerPeriod = period_;
         (*timer_)->timerStartTime = __PortGetSysTicks__();
@@ -45,6 +46,8 @@ Return_t xTimerDelete(const Timer_t *timer_) {
   FUNCTION_ENTER;
 
   if(__ObjectIsValid__(timer_)) {
+    ((Timer_t *) timer_)->valid = INVALID;
+
     if(OK(__KernelFreeMemory__(timer_))) {
       __ReturnOk__();
     } else {

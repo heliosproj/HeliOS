@@ -168,6 +168,7 @@ Return_t xFSMount(Volume_t **volume_) {
     /* Allocate volume structure in kernel heap memory */
     if(OK(__KernelAllocateMemory__((volatile Addr_t **) &vol, sizeof(Volume_t)))) {
       /* Store block device UID for all I/O operations */
+      vol->valid = VALID;
       vol->blockDeviceUID = CONFIG_FS_BLOCK_DEVICE_UID;
       vol->mounted = false;
 
@@ -237,6 +238,7 @@ Return_t xFSUnmount(Volume_t *volume_) {
     /* Remove device from mounted list */
     __RemoveMountedDevice__(volume_->blockDeviceUID);
     volume_->mounted = false;
+    volume_->valid = INVALID;
 
     /* Free volume structure from kernel heap */
     if(OK(__KernelFreeMemory__(volume_))) {
@@ -528,6 +530,7 @@ Return_t xFileOpen(File_t **file_, Volume_t *volume_, const Byte_t *path_, const
     /* Allocate file structure in kernel heap */
     if(OK(__KernelAllocateMemory__((volatile Addr_t **) &file, sizeof(File_t)))) {
       /* Store reference to parent volume */
+      file->valid = VALID;
       file->volume = volume_;
       file->mode = mode_;
       file->position = 0x0u;
@@ -668,6 +671,8 @@ Return_t xFileClose(File_t *file_) {
     }
 
     file_->isOpen = false;
+
+    file_->valid = INVALID;
 
     /* Free file structure from kernel heap */
     if(OK(__KernelFreeMemory__(file_))) {
@@ -1221,6 +1226,7 @@ Return_t xDirOpen(Dir_t **dir_, Volume_t *volume_, const Byte_t *path_) {
 
     /* Allocate directory handle in kernel heap */
     if(OK(__KernelAllocateMemory__((volatile Addr_t **) &dir, sizeof(Dir_t)))) {
+      dir->valid = VALID;
       dir->volume = volume_;
       dir->entryIndex = 0x0u;
       dir->isOpen = true;
@@ -1244,6 +1250,7 @@ Return_t xDirClose(Dir_t *dir_) {
 
   if(__ObjectIsValid__(dir_)) {
     dir_->isOpen = false;
+    dir_->valid = INVALID;
 
     /* Free directory handle from kernel heap */
     if(OK(__KernelFreeMemory__(dir_))) {
