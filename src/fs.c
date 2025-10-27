@@ -233,7 +233,7 @@ Return_t xFSMount(Volume_t **volume_) {
 Return_t xFSUnmount(Volume_t *volume_) {
   FUNCTION_ENTER;
 
-  if(__PointerIsNotNull__(volume_)) {
+  if(__ObjectIsValid__(volume_)) {
     /* Remove device from mounted list */
     __RemoveMountedDevice__(volume_->blockDeviceUID);
     volume_->mounted = false;
@@ -264,7 +264,7 @@ Return_t xFSGetVolumeInfo(const Volume_t *volume_, VolumeInfo_t **info_) {
   Word_t maxCluster = 0x0u;
 
 
-  if(__PointerIsNotNull__(volume_) && __PointerIsNotNull__(info_)) {
+  if(__ObjectIsValid__(volume_) && __PointerIsNotNull__(info_)) {
     /* Check if volume is mounted */
     if(!volume_->mounted) {
       /* Return error by default */
@@ -476,7 +476,7 @@ Return_t xFileOpen(File_t **file_, Volume_t *volume_, const Byte_t *path_, const
   Word_t i = 0x0u;
 
 
-  if(__PointerIsNotNull__(file_) && __PointerIsNotNull__(volume_) && __PointerIsNotNull__(path_)) {
+  if(__PointerIsNotNull__(file_) && __ObjectIsValid__(volume_) && __PointerIsNotNull__(path_)) {
     /* Check if volume is mounted */
     if(!volume_->mounted) {
       /* Return error by default */
@@ -620,7 +620,7 @@ Return_t xFileClose(File_t *file_) {
   Byte_t name83[11];
 
 
-  if(__PointerIsNotNull__(file_)) {
+  if(__ObjectIsValid__(file_)) {
     /* If file is dirty, create or update directory entry */
     if(file_->isDirty && (file_->path[0] != '\0')) {
       /* Extract just the filename from path */
@@ -698,7 +698,7 @@ Return_t xFileRead(File_t *file_, const Size_t size_, Byte_t **data_) {
   Word_t nextCluster = 0x0u;
 
 
-  if(__PointerIsNotNull__(file_) && __PointerIsNotNull__(data_) && file_->isOpen && (0x0u < size_)) {
+  if(__ObjectIsValid__(file_) && __PointerIsNotNull__(data_) && file_->isOpen && (0x0u < size_)) {
     /* Initialize output pointer to null for error cases */
     *data_ = null;
     clusterSize = (Word_t) file_->volume->bytesPerSector * file_->volume->sectorsPerCluster;
@@ -792,7 +792,7 @@ Return_t xFileWrite(File_t *file_, const Size_t size_, const Byte_t *data_) {
   Word_t firstSector = 0x0u;
 
 
-  if(__PointerIsNotNull__(file_) && __PointerIsNotNull__(data_) && file_->isOpen && (0x0u < size_)) {
+  if(__ObjectIsValid__(file_) && __PointerIsNotNull__(data_) && file_->isOpen && (0x0u < size_)) {
     clusterSize = (Word_t) file_->volume->bytesPerSector * file_->volume->sectorsPerCluster;
 
     /* Check write mode */
@@ -941,7 +941,7 @@ Return_t xFileSeek(File_t *file_, const Word_t offset_, const Byte_t origin_) {
   Word_t nextCluster = 0x0u;
 
 
-  if(__PointerIsNotNull__(file_) && file_->isOpen) {
+  if(__ObjectIsValid__(file_) && file_->isOpen) {
     clusterSize = (Word_t) file_->volume->bytesPerSector * file_->volume->sectorsPerCluster;
 
     /* Calculate new position based on origin */
@@ -993,7 +993,7 @@ Return_t xFileSeek(File_t *file_, const Word_t offset_, const Byte_t origin_) {
 Return_t xFileTell(const File_t *file_, Word_t *position_) {
   FUNCTION_ENTER;
 
-  if(__PointerIsNotNull__(file_) && __PointerIsNotNull__(position_)) {
+  if(__ObjectIsValid__(file_) && __PointerIsNotNull__(position_)) {
     *position_ = file_->position;
     __ReturnOk__();
   } else {
@@ -1007,7 +1007,7 @@ Return_t xFileTell(const File_t *file_, Word_t *position_) {
 Return_t xFileGetSize(const File_t *file_, Word_t *size_) {
   FUNCTION_ENTER;
 
-  if(__PointerIsNotNull__(file_) && __PointerIsNotNull__(size_)) {
+  if(__ObjectIsValid__(file_) && __PointerIsNotNull__(size_)) {
     *size_ = file_->fileSize;
     __ReturnOk__();
   } else {
@@ -1033,7 +1033,7 @@ Return_t xFileSync(File_t *file_) {
   Byte_t name83[11];
 
 
-  if(__PointerIsNotNull__(file_)) {
+  if(__ObjectIsValid__(file_)) {
     /* If file is dirty, update directory entry */
     if(file_->isDirty && (file_->path[0] != '\0')) {
       /* Extract just the filename from path */
@@ -1113,7 +1113,7 @@ Return_t xFileTruncate(File_t *file_, const Word_t size_) {
   Word_t i = 0x0u;
 
 
-  if(__PointerIsNotNull__(file_) && file_->isOpen) {
+  if(__ObjectIsValid__(file_) && file_->isOpen) {
     clusterSize = (Word_t) file_->volume->bytesPerSector * file_->volume->sectorsPerCluster;
 
     /* If truncating to larger size, file will be extended on write */
@@ -1170,7 +1170,7 @@ Return_t xFileTruncate(File_t *file_, const Word_t size_) {
 Return_t xFileEOF(const File_t *file_, Base_t *eof_) {
   FUNCTION_ENTER;
 
-  if(__PointerIsNotNull__(file_) && __PointerIsNotNull__(eof_)) {
+  if(__ObjectIsValid__(file_) && __PointerIsNotNull__(eof_)) {
     *eof_ = (file_->position >= file_->fileSize) ? true : false;
     __ReturnOk__();
   } else {
@@ -1190,7 +1190,7 @@ Return_t xDirOpen(Dir_t **dir_, Volume_t *volume_, const Byte_t *path_) {
   Word_t dirCluster = 0x0u;
 
 
-  if(__PointerIsNotNull__(dir_) && __PointerIsNotNull__(volume_) && __PointerIsNotNull__(path_)) {
+  if(__PointerIsNotNull__(dir_) && __ObjectIsValid__(volume_) && __PointerIsNotNull__(path_)) {
     /* Check if volume is mounted */
     if(!volume_->mounted) {
       /* Return error by default */
@@ -1242,7 +1242,7 @@ Return_t xDirOpen(Dir_t **dir_, Volume_t *volume_, const Byte_t *path_) {
 Return_t xDirClose(Dir_t *dir_) {
   FUNCTION_ENTER;
 
-  if(__PointerIsNotNull__(dir_)) {
+  if(__ObjectIsValid__(dir_)) {
     dir_->isOpen = false;
 
     /* Free directory handle from kernel heap */
@@ -1272,7 +1272,7 @@ Return_t xDirRead(Dir_t *dir_, DirEntry_t **entry_) {
   Word_t nextCluster = 0x0u;
 
 
-  if(__PointerIsNotNull__(dir_) && __PointerIsNotNull__(entry_) && dir_->isOpen) {
+  if(__ObjectIsValid__(dir_) && __PointerIsNotNull__(entry_) && dir_->isOpen) {
     entriesPerCluster = ((Word_t) dir_->volume->bytesPerSector * dir_->volume->sectorsPerCluster) / sizeof(FAT32DirEntry_t);
 
     /* Read current cluster */
@@ -1384,7 +1384,7 @@ Return_t xDirRead(Dir_t *dir_, DirEntry_t **entry_) {
 Return_t xDirRewind(Dir_t *dir_) {
   FUNCTION_ENTER;
 
-  if(__PointerIsNotNull__(dir_)) {
+  if(__ObjectIsValid__(dir_)) {
     dir_->entryIndex = 0x0u;
     __ReturnOk__();
   } else {
@@ -1415,7 +1415,7 @@ Return_t xDirMake(Volume_t *volume_, const Byte_t *path_) {
   Word_t parentPathLen = 0x0u;
 
 
-  if(__PointerIsNotNull__(volume_) && __PointerIsNotNull__(path_)) {
+  if(__ObjectIsValid__(volume_) && __PointerIsNotNull__(path_)) {
     /* Check if volume is mounted */
     if(!volume_->mounted) {
       /* Return error by default */
@@ -1554,7 +1554,7 @@ Return_t xDirRemove(Volume_t *volume_, const Byte_t *path_) {
   Word_t nextCluster = 0x0u;
 
 
-  if(__PointerIsNotNull__(volume_) && __PointerIsNotNull__(path_)) {
+  if(__ObjectIsValid__(volume_) && __PointerIsNotNull__(path_)) {
     /* Check if volume is mounted */
     if(!volume_->mounted) {
       /* Return error by default */
@@ -1679,7 +1679,7 @@ Return_t xFileExists(Volume_t *volume_, const Byte_t *path_, Base_t *exists_) {
   FAT32DirEntry_t entry;
 
 
-  if(__PointerIsNotNull__(volume_) && __PointerIsNotNull__(path_) && __PointerIsNotNull__(exists_)) {
+  if(__ObjectIsValid__(volume_) && __PointerIsNotNull__(path_) && __PointerIsNotNull__(exists_)) {
     /* Check if volume is mounted */
     if(!volume_->mounted) {
       *exists_ = false;
@@ -1719,7 +1719,7 @@ Return_t xFileUnlink(Volume_t *volume_, const Byte_t *path_) {
   Word_t i = 0x0u;
 
 
-  if(__PointerIsNotNull__(volume_) && __PointerIsNotNull__(path_)) {
+  if(__ObjectIsValid__(volume_) && __PointerIsNotNull__(path_)) {
     /* Check if volume is mounted */
     if(!volume_->mounted) {
       /* Return error by default */
@@ -1802,7 +1802,7 @@ Return_t xFileRename(Volume_t *volume_, const Byte_t *oldPath_, const Byte_t *ne
   const Byte_t *fileName = null;
 
 
-  if(__PointerIsNotNull__(volume_) && __PointerIsNotNull__(oldPath_) && __PointerIsNotNull__(newPath_)) {
+  if(__ObjectIsValid__(volume_) && __PointerIsNotNull__(oldPath_) && __PointerIsNotNull__(newPath_)) {
     /* Check if volume is mounted */
     if(!volume_->mounted) {
       /* Return error by default */
@@ -1890,7 +1890,7 @@ Return_t xFileGetInfo(Volume_t *volume_, const Byte_t *path_, DirEntry_t **entry
   DirEntry_t *dirEntry = null;
 
 
-  if(__PointerIsNotNull__(volume_) && __PointerIsNotNull__(path_) && __PointerIsNotNull__(entry_)) {
+  if(__ObjectIsValid__(volume_) && __PointerIsNotNull__(path_) && __PointerIsNotNull__(entry_)) {
     /* Check if volume is mounted */
     if(!volume_->mounted) {
       /* Return error by default */
@@ -2419,7 +2419,7 @@ static Return_t __ReadSector__(const Volume_t *vol_, Word_t sector_, Byte_t **da
   Size_t readSize = 0x0u;
 
 
-  if(__PointerIsNotNull__(vol_) && __PointerIsNotNull__(data_)) {
+  if(__ObjectIsValid__(vol_) && __PointerIsNotNull__(data_)) {
     /* Allocate command structure from kernel heap (required by kernel-level
      * device API) */
     if(OK(__KernelAllocateMemory__((volatile Addr_t **) &cmd, blockSize))) {
@@ -2472,7 +2472,7 @@ static Return_t __WriteSector__(const Volume_t *vol_, Word_t sector_, const Byte
   Size_t writeSize = 0x0u;
 
 
-  if(__PointerIsNotNull__(vol_) && __PointerIsNotNull__(data_)) {
+  if(__ObjectIsValid__(vol_) && __PointerIsNotNull__(data_)) {
     /* Allocate command structure from kernel heap (required by kernel-level
      * device API) */
     if(OK(__KernelAllocateMemory__((volatile Addr_t **) &cmd, blockSize))) {
@@ -2539,7 +2539,7 @@ static Return_t __ReadCluster__(const Volume_t *vol_, Word_t cluster_, Byte_t **
   Word_t i = 0x0u;
 
 
-  if(__PointerIsNotNull__(vol_) && __PointerIsNotNull__(data_)) {
+  if(__ObjectIsValid__(vol_) && __PointerIsNotNull__(data_)) {
     /* Calculate cluster size and first sector */
     clusterSize = (Word_t) vol_->bytesPerSector * vol_->sectorsPerCluster;
     firstSector = __ClusterToSector__(vol_, cluster_);
@@ -2594,7 +2594,7 @@ static Return_t __GetFATEntry__(const Volume_t *vol_, Word_t cluster_, Word_t *n
   Word_t fatEntry = 0x0u;
 
 
-  if(__PointerIsNotNull__(vol_) && __PointerIsNotNull__(nextCluster_)) {
+  if(__ObjectIsValid__(vol_) && __PointerIsNotNull__(nextCluster_)) {
     /* Calculate FAT offset (each entry is 4 bytes in FAT32) */
     fatOffset = cluster_ * 4u;
     fatSector = vol_->fatStartSector + (fatOffset / vol_->bytesPerSector);
@@ -2639,7 +2639,7 @@ static Return_t __SetFATEntry__(const Volume_t *vol_, Word_t cluster_, Word_t va
   Byte_t i = 0x0u;
 
 
-  if(__PointerIsNotNull__(vol_)) {
+  if(__ObjectIsValid__(vol_)) {
     /* Calculate FAT offset (each entry is 4 bytes in FAT32) */
     fatOffset = cluster_ * 4u;
     fatSector = vol_->fatStartSector + (fatOffset / vol_->bytesPerSector);
@@ -2693,7 +2693,7 @@ static Return_t __FindFreeCluster__(const Volume_t *vol_, Word_t startHint_, Wor
   Word_t searchStart = 0x0u;
 
 
-  if(__PointerIsNotNull__(vol_) && __PointerIsNotNull__(freeCluster_)) {
+  if(__ObjectIsValid__(vol_) && __PointerIsNotNull__(freeCluster_)) {
     /* Calculate maximum cluster number based on FAT size */
 
 

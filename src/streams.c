@@ -47,7 +47,7 @@ Return_t xStreamCreate(StreamBuffer_t **stream_) {
 Return_t xStreamDelete(const StreamBuffer_t *stream_) {
   FUNCTION_ENTER;
 
-  if(__PointerIsNotNull__(stream_)) {
+  if(__ObjectIsValid__(stream_)) {
     if(OK(__KernelFreeMemory__(stream_))) {
       __ReturnOk__();
     } else {
@@ -64,7 +64,7 @@ Return_t xStreamDelete(const StreamBuffer_t *stream_) {
 Return_t xStreamSend(StreamBuffer_t *stream_, const Byte_t byte_) {
   FUNCTION_ENTER;
 
-  if(__PointerIsNotNull__(stream_)) {
+  if(__ObjectIsValid__(stream_)) {
     if(CONFIG_STREAM_BUFFER_BYTES > stream_->length) {
       stream_->buffer[stream_->length] = byte_;
       stream_->length++;
@@ -83,7 +83,7 @@ Return_t xStreamSend(StreamBuffer_t *stream_, const Byte_t byte_) {
 Return_t xStreamReceive(const StreamBuffer_t *stream_, HalfWord_t *bytes_, Byte_t **data_) {
   FUNCTION_ENTER;
 
-  if(__PointerIsNotNull__(stream_) && __PointerIsNotNull__(bytes_) && __PointerIsNotNull__(data_)) {
+  if(__ObjectIsValid__(stream_) && __PointerIsNotNull__(bytes_) && __PointerIsNotNull__(data_)) {
     if(__StreamLengthNonZero__()) {
       if(OK(__HeapAllocateMemory__((volatile Addr_t **) data_, stream_->length * sizeof(Byte_t)))) {
         if(__PointerIsNotNull__(*data_)) {
@@ -129,7 +129,7 @@ Return_t xStreamReceive(const StreamBuffer_t *stream_, HalfWord_t *bytes_, Byte_
 Return_t xStreamBytesAvailable(const StreamBuffer_t *stream_, HalfWord_t *bytes_) {
   FUNCTION_ENTER;
 
-  if(__PointerIsNotNull__(stream_) && __PointerIsNotNull__(bytes_)) {
+  if(__ObjectIsValid__(stream_) && __PointerIsNotNull__(bytes_)) {
     if(__StreamLengthNonZero__()) {
       *bytes_ = stream_->length;
       __ReturnOk__();
@@ -147,7 +147,7 @@ Return_t xStreamBytesAvailable(const StreamBuffer_t *stream_, HalfWord_t *bytes_
 Return_t xStreamReset(const StreamBuffer_t *stream_) {
   FUNCTION_ENTER;
 
-  if(__PointerIsNotNull__(stream_)) {
+  if(__ObjectIsValid__(stream_)) {
     if(__StreamLengthNonZero__()) {
       /* Reset stream buffer and length (cast away const for modification) */
       if(OK(__memset__((Addr_t *) stream_->buffer, 0x0u, CONFIG_STREAM_BUFFER_BYTES))) {
@@ -170,7 +170,7 @@ Return_t xStreamReset(const StreamBuffer_t *stream_) {
 Return_t xStreamIsEmpty(const StreamBuffer_t *stream_, Base_t *res_) {
   FUNCTION_ENTER;
 
-  if(__PointerIsNotNull__(stream_) && __PointerIsNotNull__(res_)) {
+  if(__ObjectIsValid__(stream_) && __PointerIsNotNull__(res_)) {
     if(__StreamLengthNonZero__()) {
       *res_ = false;
       __ReturnOk__();
@@ -189,7 +189,7 @@ Return_t xStreamIsEmpty(const StreamBuffer_t *stream_, Base_t *res_) {
 Return_t xStreamIsFull(const StreamBuffer_t *stream_, Base_t *res_) {
   FUNCTION_ENTER;
 
-  if(__PointerIsNotNull__(stream_) && __PointerIsNotNull__(res_)) {
+  if(__ObjectIsValid__(stream_) && __PointerIsNotNull__(res_)) {
     if(__StreamLengthAtLimit__()) {
       *res_ = true;
       __ReturnOk__();

@@ -128,7 +128,7 @@ Return_t xTaskDelete(const Task_t *task_) {
   Task_t *previous = null;
 
 
-  if(__PointerIsNotNull__(task_) && __PointerIsNotNull__(tlist) && __FlagIsNotSet__(RUNNING)) {
+  if(__ObjectIsValid__(task_) && __PointerIsNotNull__(tlist) && __FlagIsNotSet__(RUNNING)) {
     if(OK(__TaskListFindTask__(task_))) {
       cursor = tlist->head;
 
@@ -285,7 +285,7 @@ Return_t xTaskGetAllRunTimeStats(TaskRunTimeStats_t **stats_, Base_t *tasks_) {
 Return_t xTaskGetTaskRunTimeStats(const Task_t *task_, TaskRunTimeStats_t **stats_) {
   FUNCTION_ENTER;
 
-  if(__PointerIsNotNull__(task_) && __PointerIsNotNull__(stats_) && __PointerIsNotNull__(tlist)) {
+  if(__ObjectIsValid__(task_) && __PointerIsNotNull__(stats_) && __PointerIsNotNull__(tlist)) {
     if(OK(__TaskListFindTask__(task_))) {
       if(OK(__HeapAllocateMemory__((volatile Addr_t **) stats_, sizeof(TaskRunTimeStats_t)))) {
         if(__PointerIsNotNull__(*stats_)) {
@@ -349,7 +349,7 @@ Return_t xTaskGetNumberOfTasks(Base_t *tasks_) {
 Return_t xTaskGetTaskInfo(const Task_t *task_, TaskInfo_t **info_) {
   FUNCTION_ENTER;
 
-  if(__PointerIsNotNull__(task_) && __PointerIsNotNull__(info_) && __PointerIsNotNull__(tlist)) {
+  if(__ObjectIsValid__(task_) && __PointerIsNotNull__(info_) && __PointerIsNotNull__(tlist)) {
     if(OK(__TaskListFindTask__(task_))) {
       if(OK(__HeapAllocateMemory__((volatile Addr_t **) info_, sizeof(TaskInfo_t)))) {
         if(__PointerIsNotNull__(*info_)) {
@@ -445,7 +445,7 @@ Return_t xTaskGetAllTaskInfo(TaskInfo_t **info_, Base_t *tasks_) {
 Return_t xTaskGetTaskState(const Task_t *task_, TaskState_t *state_) {
   FUNCTION_ENTER;
 
-  if(__PointerIsNotNull__(task_) && __PointerIsNotNull__(state_) && __PointerIsNotNull__(tlist)) {
+  if(__ObjectIsValid__(task_) && __PointerIsNotNull__(state_) && __PointerIsNotNull__(tlist)) {
     if(OK(__TaskListFindTask__(task_))) {
       *state_ = task_->state;
       __ReturnOk__();
@@ -463,7 +463,7 @@ Return_t xTaskGetTaskState(const Task_t *task_, TaskState_t *state_) {
 Return_t xTaskGetName(const Task_t *task_, Byte_t **name_) {
   FUNCTION_ENTER;
 
-  if(__PointerIsNotNull__(task_) && __PointerIsNotNull__(name_) && __PointerIsNotNull__(tlist)) {
+  if(__ObjectIsValid__(task_) && __PointerIsNotNull__(name_) && __PointerIsNotNull__(tlist)) {
     if(OK(__TaskListFindTask__(task_))) {
       if(OK(__HeapAllocateMemory__((volatile Addr_t **) name_, CONFIG_TASK_NAME_BYTES))) {
         if(__PointerIsNotNull__(*name_)) {
@@ -496,7 +496,7 @@ Return_t xTaskGetName(const Task_t *task_, Byte_t **name_) {
 Return_t xTaskGetId(const Task_t *task_, Base_t *id_) {
   FUNCTION_ENTER;
 
-  if(__PointerIsNotNull__(task_) && __PointerIsNotNull__(id_) && __PointerIsNotNull__(tlist)) {
+  if(__ObjectIsValid__(task_) && __PointerIsNotNull__(id_) && __PointerIsNotNull__(tlist)) {
     if(OK(__TaskListFindTask__(task_))) {
       *id_ = task_->id;
       __ReturnOk__();
@@ -514,7 +514,7 @@ Return_t xTaskGetId(const Task_t *task_, Base_t *id_) {
 Return_t xTaskNotifyStateClear(Task_t *task_) {
   FUNCTION_ENTER;
 
-  if(__PointerIsNotNull__(task_) && __PointerIsNotNull__(tlist)) {
+  if(__ObjectIsValid__(task_) && __PointerIsNotNull__(tlist)) {
     if(OK(__TaskListFindTask__(task_))) {
       if(0x0u < task_->notificationBytes) {
         if(OK(__memset__(task_->notificationValue, 0x0u, CONFIG_NOTIFICATION_VALUE_BYTES))) {
@@ -540,7 +540,7 @@ Return_t xTaskNotifyStateClear(Task_t *task_) {
 Return_t xTaskNotificationIsWaiting(const Task_t *task_, Base_t *res_) {
   FUNCTION_ENTER;
 
-  if(__PointerIsNotNull__(task_) && __PointerIsNotNull__(res_) && __PointerIsNotNull__(tlist)) {
+  if(__ObjectIsValid__(task_) && __PointerIsNotNull__(res_) && __PointerIsNotNull__(tlist)) {
     if(OK(__TaskListFindTask__(task_))) {
       if(0x0u < task_->notificationBytes) {
         *res_ = true;
@@ -563,7 +563,7 @@ Return_t xTaskNotificationIsWaiting(const Task_t *task_, Base_t *res_) {
 Return_t xTaskNotifyGive(Task_t *task_, const Base_t bytes_, const Byte_t *value_) {
   FUNCTION_ENTER;
 
-  if(__PointerIsNotNull__(task_) && (0x0u < bytes_) && (CONFIG_NOTIFICATION_VALUE_BYTES >= bytes_) && __PointerIsNotNull__(value_) && __PointerIsNotNull__(tlist)
+  if(__ObjectIsValid__(task_) && (0x0u < bytes_) && (CONFIG_NOTIFICATION_VALUE_BYTES >= bytes_) && __PointerIsNotNull__(value_) && __PointerIsNotNull__(tlist)
     ) {
     if(OK(__TaskListFindTask__(task_))) {
       if(0x0u == task_->notificationBytes) {
@@ -590,7 +590,7 @@ Return_t xTaskNotifyGive(Task_t *task_, const Base_t bytes_, const Byte_t *value
 Return_t xTaskNotifyTake(Task_t *task_, TaskNotification_t **notification_) {
   FUNCTION_ENTER;
 
-  if(__PointerIsNotNull__(task_) && __PointerIsNotNull__(notification_) && __PointerIsNotNull__(tlist)) {
+  if(__ObjectIsValid__(task_) && __PointerIsNotNull__(notification_) && __PointerIsNotNull__(tlist)) {
     if(OK(__TaskListFindTask__(task_))) {
       if(0x0u < task_->notificationBytes) {
         if(OK(__HeapAllocateMemory__((volatile Addr_t **) notification_, sizeof(TaskNotification_t)))) {
@@ -637,7 +637,7 @@ Return_t xTaskNotifyTake(Task_t *task_, TaskNotification_t **notification_) {
 Return_t xTaskResume(Task_t *task_) {
   FUNCTION_ENTER;
 
-  if(__PointerIsNotNull__(task_) && __PointerIsNotNull__(tlist)) {
+  if(__ObjectIsValid__(task_) && __PointerIsNotNull__(tlist)) {
     if(OK(__TaskListFindTask__(task_))) {
       task_->state = TaskStateRunning;
       __ReturnOk__();
@@ -655,7 +655,7 @@ Return_t xTaskResume(Task_t *task_) {
 Return_t xTaskSuspend(Task_t *task_) {
   FUNCTION_ENTER;
 
-  if(__PointerIsNotNull__(task_) && __PointerIsNotNull__(tlist)) {
+  if(__ObjectIsValid__(task_) && __PointerIsNotNull__(tlist)) {
     if(OK(__TaskListFindTask__(task_))) {
       task_->state = TaskStateSuspended;
       __ReturnOk__();
@@ -673,7 +673,7 @@ Return_t xTaskSuspend(Task_t *task_) {
 Return_t xTaskWait(Task_t *task_) {
   FUNCTION_ENTER;
 
-  if(__PointerIsNotNull__(task_) && __PointerIsNotNull__(tlist)) {
+  if(__ObjectIsValid__(task_) && __PointerIsNotNull__(tlist)) {
     if(OK(__TaskListFindTask__(task_))) {
       task_->state = TaskStateWaiting;
       __ReturnOk__();
@@ -691,7 +691,7 @@ Return_t xTaskWait(Task_t *task_) {
 Return_t xTaskChangePeriod(Task_t *task_, const Ticks_t period_) {
   FUNCTION_ENTER;
 
-  if(__PointerIsNotNull__(task_) && __PointerIsNotNull__(tlist)) {
+  if(__ObjectIsValid__(task_) && __PointerIsNotNull__(tlist)) {
     if(OK(__TaskListFindTask__(task_))) {
       task_->timerPeriod = period_;
       __ReturnOk__();
@@ -710,7 +710,7 @@ Return_t xTaskChangeWDPeriod(Task_t *task_, const Ticks_t period_) {
   FUNCTION_ENTER;
 #if defined(CONFIG_TASK_WD_TIMER_ENABLE)
 
-    if(__PointerIsNotNull__(task_) && __PointerIsNotNull__(tlist)) {
+    if(__ObjectIsValid__(task_) && __PointerIsNotNull__(tlist)) {
       if(OK(__TaskListFindTask__(task_))) {
         task_->wdTimerPeriod = period_;
         __ReturnOk__();
@@ -729,7 +729,7 @@ Return_t xTaskChangeWDPeriod(Task_t *task_, const Ticks_t period_) {
 Return_t xTaskGetPeriod(const Task_t *task_, Ticks_t *period_) {
   FUNCTION_ENTER;
 
-  if(__PointerIsNotNull__(task_) && __PointerIsNotNull__(period_) && __PointerIsNotNull__(tlist)) {
+  if(__ObjectIsValid__(task_) && __PointerIsNotNull__(period_) && __PointerIsNotNull__(tlist)) {
     if(OK(__TaskListFindTask__(task_))) {
       *period_ = task_->timerPeriod;
       __ReturnOk__();
@@ -751,7 +751,7 @@ static Return_t __TaskListFindTask__(const Task_t *task_) {
   Task_t *cursor = null;
 
 
-  if(__PointerIsNotNull__(task_) && __PointerIsNotNull__(tlist)) {
+  if(__ObjectIsValid__(task_) && __PointerIsNotNull__(tlist)) {
     cursor = tlist->head;
 
     while(__PointerIsNotNull__(cursor) && (task_ != cursor)) {
@@ -774,7 +774,7 @@ static Return_t __TaskListFindTask__(const Task_t *task_) {
 Return_t xTaskResetTimer(Task_t *task_) {
   FUNCTION_ENTER;
 
-  if(__PointerIsNotNull__(task_) && __PointerIsNotNull__(tlist)) {
+  if(__ObjectIsValid__(task_) && __PointerIsNotNull__(tlist)) {
     if(OK(__TaskListFindTask__(task_))) {
       task_->timerStartTime = __PortGetSysTicks__();
       __ReturnOk__();
@@ -980,7 +980,7 @@ Return_t xTaskGetWDPeriod(const Task_t *task_, Ticks_t *period_) {
   FUNCTION_ENTER;
 #if defined(CONFIG_TASK_WD_TIMER_ENABLE)
 
-    if(__PointerIsNotNull__(task_) && __PointerIsNotNull__(period_) && __PointerIsNotNull__(tlist)) {
+    if(__ObjectIsValid__(task_) && __PointerIsNotNull__(period_) && __PointerIsNotNull__(tlist)) {
       if(OK(__TaskListFindTask__(task_))) {
         *period_ = task_->wdTimerPeriod;
         __ReturnOk__();

@@ -294,7 +294,7 @@ Return_t __DeviceWrite__(const HalfWord_t uid_, Size_t *size_, Addr_t *data_) {
   if(__DeviceUidNonZero__() && __PointerIsNotNull__(size_) && (0x0u < *size_) && __PointerIsNotNull__(data_) && __PointerIsNotNull__(dlist)) {
     /* Look-up the device by its unique identifier */
     if(OK(__DeviceListFind__(uid_, &device))) {
-      if(__PointerIsNotNull__(device)) {
+      if(__ObjectIsValid__(device)) {
         /* Check device is running and writable */
         if(((DeviceModeReadWrite == device->mode) || (DeviceModeWriteOnly == device->mode)) && (DeviceStateRunning == device->state)) {
           /* Call driver write directly with kernel memory (no copy needed) */
@@ -467,7 +467,7 @@ Return_t __DeviceRead__(const HalfWord_t uid_, Size_t *size_, Addr_t **data_) {
   if(__DeviceUidNonZero__() && __PointerIsNotNull__(size_) && __PointerIsNotNull__(data_) && __PointerIsNotNull__(dlist)) {
     /* Look-up the device by its unique identifier */
     if(OK(__DeviceListFind__(uid_, &device))) {
-      if(__PointerIsNotNull__(device)) {
+      if(__ObjectIsValid__(device)) {
         /* Check device is running and readable */
         if(((DeviceModeReadWrite == device->mode) || (DeviceModeReadOnly == device->mode)) && (DeviceStateRunning == device->state)) {
           /* Call driver read directly - returns kernel memory */
@@ -671,7 +671,7 @@ Return_t __DeviceConfigDevice__(const HalfWord_t uid_, Size_t *size_, Addr_t *co
   if(__DeviceUidNonZero__() && (0x0u < *size_) && __PointerIsNotNull__(config_) && __PointerIsNotNull__(dlist)) {
     /* Look-up the device by its unique identifier */
     if(OK(__DeviceListFind__(uid_, &device))) {
-      if(__PointerIsNotNull__(device)) {
+      if(__ObjectIsValid__(device)) {
         /* Call driver config directly with kernel memory (no copy needed) */
         /* Note: config is bidirectional - driver may modify it */
         if(OK((*device->config)(device, size_, config_))) {

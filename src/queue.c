@@ -71,10 +71,10 @@ Return_t xQueueCreate(Queue_t **queue_, const Base_t limit_) {
 Return_t xQueueDelete(Queue_t *queue_) {
   FUNCTION_ENTER;
 
-
-  /* Loop through the queue while it contains messages and drop each message
-   * until there are no more messages. */
-  while(__PointerIsNotNull__(queue_->head)) {
+  if(__ObjectIsValid__(queue_)) {
+    /* Loop through the queue while it contains messages and drop each message
+     * until there are no more messages. */
+    while(__PointerIsNotNull__(queue_->head)) {
     if(OK(__QueueDropmessage__(queue_))) {
       /* Do nothing - literally. */
     } else {
@@ -83,8 +83,11 @@ Return_t xQueueDelete(Queue_t *queue_) {
     }
   }
 
-  if(OK(__KernelFreeMemory__(queue_))) {
-    __ReturnOk__();
+    if(OK(__KernelFreeMemory__(queue_))) {
+      __ReturnOk__();
+    } else {
+      __AssertOnElse__();
+    }
   } else {
     __AssertOnElse__();
   }
@@ -101,7 +104,7 @@ Return_t xQueueGetLength(const Queue_t *queue_, Base_t *res_) {
   Message_t *cursor = null;
 
 
-  if(__PointerIsNotNull__(queue_) && __PointerIsNotNull__(res_)) {
+  if(__ObjectIsValid__(queue_) && __PointerIsNotNull__(res_)) {
     __GetQueueLength__();
 
 
@@ -130,7 +133,7 @@ Return_t xQueueIsQueueEmpty(const Queue_t *queue_, Base_t *res_) {
   Message_t *cursor = null;
 
 
-  if(__PointerIsNotNull__(queue_) && __PointerIsNotNull__(res_)) {
+  if(__ObjectIsValid__(queue_) && __PointerIsNotNull__(res_)) {
     __GetQueueLength__();
 
 
@@ -165,7 +168,7 @@ Return_t xQueueIsQueueFull(const Queue_t *queue_, Base_t *res_) {
   Message_t *cursor = null;
 
 
-  if(__PointerIsNotNull__(queue_) && __PointerIsNotNull__(res_)) {
+  if(__ObjectIsValid__(queue_) && __PointerIsNotNull__(res_)) {
     __GetQueueLength__();
 
 
@@ -201,7 +204,7 @@ Return_t xQueueMessagesWaiting(const Queue_t *queue_, Base_t *res_) {
   Message_t *cursor = null;
 
 
-  if(__PointerIsNotNull__(queue_) && __PointerIsNotNull__(res_)) {
+  if(__ObjectIsValid__(queue_) && __PointerIsNotNull__(res_)) {
     __GetQueueLength__();
 
 
@@ -237,7 +240,7 @@ Return_t xQueueSend(Queue_t *queue_, const Base_t bytes_, const Byte_t *value_) 
   Message_t *cursor = null;
 
 
-  if(__PointerIsNotNull__(queue_) && (0x0u < bytes_) && (CONFIG_MESSAGE_VALUE_BYTES >= bytes_) && __PointerIsNotNull__(value_)) {
+  if(__ObjectIsValid__(queue_) && (0x0u < bytes_) && (CONFIG_MESSAGE_VALUE_BYTES >= bytes_) && __PointerIsNotNull__(value_)) {
     if(false == queue_->locked) {
       __GetQueueLength__();
 
@@ -292,7 +295,7 @@ Return_t xQueueSend(Queue_t *queue_, const Base_t bytes_, const Byte_t *value_) 
 Return_t xQueuePeek(const Queue_t *queue_, QueueMessage_t **message_) {
   FUNCTION_ENTER;
 
-  if(__PointerIsNotNull__(queue_) && __PointerIsNotNull__(message_)) {
+  if(__ObjectIsValid__(queue_) && __PointerIsNotNull__(message_)) {
     if(OK(__QueuePeek__(queue_, message_))) {
       __ReturnOk__();
     } else {
@@ -309,7 +312,7 @@ Return_t xQueuePeek(const Queue_t *queue_, QueueMessage_t **message_) {
 static Return_t __QueuePeek__(const Queue_t *queue_, QueueMessage_t **message_) {
   FUNCTION_ENTER;
 
-  if(__PointerIsNotNull__(queue_) && __PointerIsNotNull__(message_)) {
+  if(__ObjectIsValid__(queue_) && __PointerIsNotNull__(message_)) {
     if(__PointerIsNotNull__(queue_->head)) {
       if(OK(__HeapAllocateMemory__((volatile Addr_t **) message_, sizeof(QueueMessage_t)))) {
         if(__PointerIsNotNull__(*message_)) {
@@ -344,7 +347,7 @@ static Return_t __QueuePeek__(const Queue_t *queue_, QueueMessage_t **message_) 
 Return_t xQueueDropMessage(Queue_t *queue_) {
   FUNCTION_ENTER;
 
-  if(__PointerIsNotNull__(queue_)) {
+  if(__ObjectIsValid__(queue_)) {
     if(OK(__QueueDropmessage__(queue_))) {
       __ReturnOk__();
     } else {
@@ -365,7 +368,7 @@ static Return_t __QueueDropmessage__(Queue_t *queue_) {
   Message_t *message = null;
 
 
-  if(__PointerIsNotNull__(queue_)) {
+  if(__ObjectIsValid__(queue_)) {
     if(__PointerIsNotNull__(queue_->head)) {
       message = queue_->head;
       queue_->head = queue_->head->next;
@@ -394,7 +397,7 @@ static Return_t __QueueDropmessage__(Queue_t *queue_) {
 Return_t xQueueReceive(Queue_t *queue_, QueueMessage_t **message_) {
   FUNCTION_ENTER;
 
-  if(__PointerIsNotNull__(queue_) && __PointerIsNotNull__(message_)) {
+  if(__ObjectIsValid__(queue_) && __PointerIsNotNull__(message_)) {
     if(OK(__QueuePeek__(queue_, message_))) {
       if(__PointerIsNotNull__(*message_)) {
         if(OK(__QueueDropmessage__(queue_))) {
@@ -419,7 +422,7 @@ Return_t xQueueReceive(Queue_t *queue_, QueueMessage_t **message_) {
 Return_t xQueueLockQueue(Queue_t *queue_) {
   FUNCTION_ENTER;
 
-  if(__PointerIsNotNull__(queue_)) {
+  if(__ObjectIsValid__(queue_)) {
     if(false == queue_->locked) {
       queue_->locked = true;
       __ReturnOk__();
@@ -437,7 +440,7 @@ Return_t xQueueLockQueue(Queue_t *queue_) {
 Return_t xQueueUnLockQueue(Queue_t *queue_) {
   FUNCTION_ENTER;
 
-  if(__PointerIsNotNull__(queue_)) {
+  if(__ObjectIsValid__(queue_)) {
     if(true == queue_->locked) {
       queue_->locked = false;
       __ReturnOk__();
