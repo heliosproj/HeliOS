@@ -14,6 +14,8 @@
  *
  */
 /*UNCRUSTIFY-ON*/
+#include "config.h"
+#if defined(CONFIG_ENABLE_IO_SUBSYSTEM)
 #include "fs.h"
 
 
@@ -2852,3 +2854,4 @@ static Return_t __RemoveMountedDevice__(const HalfWord_t blockDeviceUID_) {
 
 
 #endif /* if defined(POSIX_ARCH_OTHER) */
+#endif /* if defined(CONFIG_ENABLE_IO_SUBSYSTEM) */

@@ -449,6 +449,42 @@
 
 
 /**
+ * @brief Enable the I/O subsystem (device drivers, filesystem, console)
+ *
+ * Defining CONFIG_ENABLE_IO_SUBSYSTEM will enable the complete I/O subsystem
+ * including device driver framework (device.c), filesystem support (fs.c), and
+ * console functionality (console.c). When disabled, these components are
+ * excluded from the build, reducing code size and memory footprint. The
+ * default is disabled.
+ *
+ * The I/O subsystem provides:
+ * - Device driver framework for block and character devices
+ * - FAT32 filesystem support for persistent storage
+ * - Interactive console with shell commands
+ *
+ * @note This is a master switch for the entire I/O subsystem. When disabled,
+ * individual I/O features (CONFIG_ENABLE_CONSOLE, CONFIG_FS_BLOCK_DEVICE_UID,
+ * etc.) have no effect.
+ *
+ * @note Disabling this setting can significantly reduce code size for
+ * applications that don't require device I/O, filesystem, or console features.
+ *
+ * @note To enable this feature, define CONFIG_ENABLE_IO_SUBSYSTEM in your
+ * build configuration or uncomment the definition below.
+ *
+ * @sa CONFIG_ENABLE_CONSOLE
+ * @sa CONFIG_DEVICE_NAME_BYTES
+ * @sa CONFIG_FS_BLOCK_DEVICE_UID
+ *
+ */
+  #if defined(DOXYGEN)
+    #if !defined(CONFIG_ENABLE_IO_SUBSYSTEM)
+      #define CONFIG_ENABLE_IO_SUBSYSTEM
+    #endif /* if !defined(CONFIG_ENABLE_IO_SUBSYSTEM) */
+  #endif /* if defined(DOXYGEN) */
+
+
+/**
  * @brief Define the block device UID for filesystem operations
  *
  * Setting CONFIG_FS_BLOCK_DEVICE_UID specifies which block device the
@@ -465,8 +501,12 @@
  * @note The block device must be registered and initialized before calling
  * xFSMount() or xFSFormat().
  *
+ * @note This setting only has effect when CONFIG_ENABLE_IO_SUBSYSTEM is
+ * defined.
+ *
  * @sa xFSMount()
  * @sa xFSFormat()
+ * @sa CONFIG_ENABLE_IO_SUBSYSTEM
  *
  */
   #if !defined(CONFIG_FS_BLOCK_DEVICE_UID)
@@ -485,6 +525,9 @@
  * The console provides interactive access to system diagnostics, filesystem
  * operations, task management, and memory statistics through a minimal shell.
  *
+ * @note Enabling the console requires CONFIG_ENABLE_IO_SUBSYSTEM to be defined
+ * as the console is part of the I/O subsystem.
+ *
  * @note Enabling the console requires a properly configured character device
  * driver as specified by CONFIG_CONSOLE_DEVICE_UID.
  *
@@ -493,6 +536,7 @@
  * @note To disable this feature, comment out or remove the definition of
  * CONFIG_ENABLE_CONSOLE.
  *
+ * @sa CONFIG_ENABLE_IO_SUBSYSTEM
  * @sa CONFIG_CONSOLE_DEVICE_UID
  * @sa CONFIG_CONSOLE_TASK_PRIORITY
  * @sa CONFIG_CONSOLE_TASK_MODE

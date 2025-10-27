@@ -14,6 +14,8 @@
  * 
  */
 /*UNCRUSTIFY-ON*/
+#include "config.h"
+#if defined(CONFIG_ENABLE_IO_SUBSYSTEM)
 #include "device.h"
 
 static DeviceList_t *dlist = null;
@@ -706,3 +708,4 @@ Return_t __DeviceConfigDevice__(const HalfWord_t uid_, Size_t *size_, Addr_t *co
 
 
 #endif /* if defined(POSIX_ARCH_OTHER) */
+#endif /* if defined(CONFIG_ENABLE_IO_SUBSYSTEM) */

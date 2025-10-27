@@ -14,6 +14,8 @@
  *
  */
 /*UNCRUSTIFY-ON*/
+#include "config.h"
+#if defined(CONFIG_ENABLE_IO_SUBSYSTEM)
 #include "console.h"
 #include "fs.h"
 #include "../drivers/char/char_driver.h"
@@ -1778,3 +1780,4 @@ static void __uitoah__(Word_t value_, Byte_t *buffer_, Word_t bufferSize_) {
 
 
 #endif /* if defined(POSIX_ARCH_OTHER) */
+#endif /* if defined(CONFIG_ENABLE_IO_SUBSYSTEM) */

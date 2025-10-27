@@ -18,6 +18,7 @@
   #define FS_H_
 
   #include "config.h"
+  #if defined(CONFIG_ENABLE_IO_SUBSYSTEM)
   #include "defines.h"
   #include "types.h"
   #include "port.h"
@@ -115,4 +116,5 @@
   #ifdef __cplusplus
     }
   #endif /* ifdef __cplusplus */
+  #endif /* if defined(CONFIG_ENABLE_IO_SUBSYSTEM) */
 #endif /* ifndef FS_H_ */
