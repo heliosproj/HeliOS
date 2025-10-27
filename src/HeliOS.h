@@ -13442,8 +13442,7 @@
      * - Configuration (echo mode)
      *
      * Console behavior is configured via config.h settings:
-     * - CONFIG_CONSOLE_DEVICE_UID: Character device for console I/O
-     * - CONFIG_CONSOLE_TASK_PRIORITY: Console task priority
+     * - CONFIG_CHAR_DEVICE_UID: Character device for console I/O
      * - CONFIG_CONSOLE_TASK_MODE: Continuous (0) or event-driven (1)
      * - CONFIG_CONSOLE_TIMER_PERIOD_MS: Timer period for event-driven mode
      * - CONFIG_CONSOLE_MAX_COMMAND_LENGTH: Maximum command buffer size

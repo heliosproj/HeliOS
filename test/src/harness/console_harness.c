@@ -113,7 +113,7 @@ static void test_console_initialization(void) {
   charConfig->rxBufferSize = 0x0u;  /* Use default */
   charConfig->txBufferSize = 0x0u; /* Use default */
   size = sizeof(CharDeviceConfig_t);
-  unit_assert_ok(xDeviceConfigDevice(CONFIG_CONSOLE_DEVICE_UID, &size, (Addr_t *) charConfig));
+  unit_assert_ok(xDeviceConfigDevice(CONFIG_CHAR_DEVICE_UID, &size, (Addr_t *) charConfig));
   xMemFree((Addr_t *) charConfig);
   unit_end();
 
@@ -408,7 +408,7 @@ static void __SetupConsoleEnvironment__(void) {
     charConfig->rxBufferSize = 0x0u;
     charConfig->txBufferSize = 0x0u;
     size = sizeof(CharDeviceConfig_t);
-    xDeviceConfigDevice(CONFIG_CONSOLE_DEVICE_UID, &size, (Addr_t *) charConfig);
+    xDeviceConfigDevice(CONFIG_CHAR_DEVICE_UID, &size, (Addr_t *) charConfig);
     xMemFree((Addr_t *) charConfig);
   }
 
@@ -505,7 +505,7 @@ static void __SetupConsoleEnvironment__(void) {
 
 
     /* Find the device and change its state to suspended */
-    if(OK(__DeviceListFind__(CONFIG_CONSOLE_DEVICE_UID, &device))) {
+    if(OK(__DeviceListFind__(CONFIG_CHAR_DEVICE_UID, &device))) {
       if(__PointerIsNotNull__(device)) {
         device->state = DeviceStateSuspended;
       }
@@ -521,7 +521,7 @@ static void __SetupConsoleEnvironment__(void) {
 
 
     /* Find the device and restore its state to running */
-    if(OK(__DeviceListFind__(CONFIG_CONSOLE_DEVICE_UID, &device))) {
+    if(OK(__DeviceListFind__(CONFIG_CHAR_DEVICE_UID, &device))) {
       if(__PointerIsNotNull__(device)) {
         device->state = DeviceStateRunning;
       }

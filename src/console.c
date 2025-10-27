@@ -698,7 +698,7 @@ static Return_t __ConsoleCheckDevice__(void) {
 
 
   /* Performance optimization: Use cached device if UID matches */
-  if(__PointerIsNotNull__(cachedDevice) && (CONFIG_CONSOLE_DEVICE_UID == cachedDeviceUID)) {
+  if(__PointerIsNotNull__(cachedDevice) && (CONFIG_CHAR_DEVICE_UID == cachedDeviceUID)) {
     if(DeviceStateRunning == cachedDevice->state) {
       __ReturnOk__();
     } else {
@@ -708,10 +708,10 @@ static Return_t __ConsoleCheckDevice__(void) {
 
 
       /* Cache miss or invalid - look up device */
-      if(OK(__DeviceListFind__(CONFIG_CONSOLE_DEVICE_UID, &cachedDevice))) {
+      if(OK(__DeviceListFind__(CONFIG_CHAR_DEVICE_UID, &cachedDevice))) {
         if(__PointerIsNotNull__(cachedDevice) && (DeviceStateRunning == cachedDevice->state)) {
           /* Update cache */
-          cachedDeviceUID = CONFIG_CONSOLE_DEVICE_UID;
+          cachedDeviceUID = CONFIG_CHAR_DEVICE_UID;
           __ReturnOk__();
         } else {
           cachedDevice = null;
@@ -726,10 +726,10 @@ static Return_t __ConsoleCheckDevice__(void) {
     }
   } else {
     /* Cache miss or invalid - look up device */
-    if(OK(__DeviceListFind__(CONFIG_CONSOLE_DEVICE_UID, &cachedDevice))) {
+    if(OK(__DeviceListFind__(CONFIG_CHAR_DEVICE_UID, &cachedDevice))) {
       if(__PointerIsNotNull__(cachedDevice) && (DeviceStateRunning == cachedDevice->state)) {
         /* Update cache */
-        cachedDeviceUID = CONFIG_CONSOLE_DEVICE_UID;
+        cachedDeviceUID = CONFIG_CHAR_DEVICE_UID;
         __ReturnOk__();
       } else {
         cachedDevice = null;
@@ -767,14 +767,14 @@ static Return_t __ConsoleWriteString__(const Byte_t *str_) {
 
     if(0x0u < len) {
       /* Performance optimization: Try cached device first */
-      if(__PointerIsNotNull__(cachedDevice) && (CONFIG_CONSOLE_DEVICE_UID == cachedDeviceUID)) {
+      if(__PointerIsNotNull__(cachedDevice) && (CONFIG_CHAR_DEVICE_UID == cachedDeviceUID)) {
         device = cachedDevice;
       } else {
         /* Cache miss - look up device */
-        if(OK(__DeviceListFind__(CONFIG_CONSOLE_DEVICE_UID, &device))) {
+        if(OK(__DeviceListFind__(CONFIG_CHAR_DEVICE_UID, &device))) {
           /* Update cache */
           cachedDevice = device;
-          cachedDeviceUID = CONFIG_CONSOLE_DEVICE_UID;
+          cachedDeviceUID = CONFIG_CHAR_DEVICE_UID;
         } else {
           device = null;
         }
@@ -847,14 +847,14 @@ static Return_t __ConsoleReadChar__(Byte_t *ch_) {
 
   if(__PointerIsNotNull__(ch_)) {
     /* Performance optimization: Try cached device first */
-    if(__PointerIsNotNull__(cachedDevice) && (CONFIG_CONSOLE_DEVICE_UID == cachedDeviceUID)) {
+    if(__PointerIsNotNull__(cachedDevice) && (CONFIG_CHAR_DEVICE_UID == cachedDeviceUID)) {
       device = cachedDevice;
     } else {
       /* Cache miss - look up device */
-      if(OK(__DeviceListFind__(CONFIG_CONSOLE_DEVICE_UID, &device))) {
+      if(OK(__DeviceListFind__(CONFIG_CHAR_DEVICE_UID, &device))) {
         /* Update cache */
         cachedDevice = device;
-        cachedDeviceUID = CONFIG_CONSOLE_DEVICE_UID;
+        cachedDeviceUID = CONFIG_CHAR_DEVICE_UID;
       } else {
         device = null;
       }

@@ -529,7 +529,7 @@
  * as the console is part of the I/O subsystem.
  *
  * @note Enabling the console requires a properly configured character device
- * driver as specified by CONFIG_CONSOLE_DEVICE_UID.
+ * driver as specified by CONFIG_CHAR_DEVICE_UID.
  *
  * @note The console task will only start after xStartScheduler() is called.
  *
@@ -537,8 +537,7 @@
  * CONFIG_ENABLE_CONSOLE.
  *
  * @sa CONFIG_ENABLE_IO_SUBSYSTEM
- * @sa CONFIG_CONSOLE_DEVICE_UID
- * @sa CONFIG_CONSOLE_TASK_PRIORITY
+ * @sa CONFIG_CHAR_DEVICE_UID
  * @sa CONFIG_CONSOLE_TASK_MODE
  *
  */
@@ -552,7 +551,7 @@
 /**
  * @brief Define the character device UID for console operations
  *
- * Setting CONFIG_CONSOLE_DEVICE_UID specifies which character device the
+ * Setting CONFIG_CHAR_DEVICE_UID specifies which character device the
  * console will use for input and output. This UID must match a registered
  * character device driver in the system. The default is 0x2000u (CHARDEV0).
  *
@@ -570,36 +569,9 @@
  * @sa CONFIG_ENABLE_CONSOLE
  *
  */
-  #if !defined(CONFIG_CONSOLE_DEVICE_UID)
-    #define CONFIG_CONSOLE_DEVICE_UID 0x2000u /* CHARDEV0 */
-  #endif /* if !defined(CONFIG_CONSOLE_DEVICE_UID) */
-
-
-/**
- * @brief Define the console task priority
- *
- * Setting CONFIG_CONSOLE_TASK_PRIORITY specifies the scheduling priority for
- * the console task. Lower values indicate higher priority. The default is 5
- * (medium-low priority) as the console is typically an interactive,
- * non-critical task.
- *
- * The console task priority determines when it receives CPU time relative to
- * other tasks in the system. For interactive responsiveness, a moderate
- * priority is recommended. For systems where console is primarily diagnostic, a
- * lower priority may be appropriate.
- *
- * @note The value should be set as a hexadecimal constant with the 'u' suffix
- * (e.g., 0x5u for priority 5).
- *
- * @note This setting only has effect when CONFIG_ENABLE_CONSOLE is defined.
- *
- * @sa CONFIG_ENABLE_CONSOLE
- * @sa CONFIG_CONSOLE_TASK_MODE
- *
- */
-  #if !defined(CONFIG_CONSOLE_TASK_PRIORITY)
-    #define CONFIG_CONSOLE_TASK_PRIORITY 0x5u /* 5 - medium-low priority */
-  #endif /* if !defined(CONFIG_CONSOLE_TASK_PRIORITY) */
+  #if !defined(CONFIG_CHAR_DEVICE_UID)
+    #define CONFIG_CHAR_DEVICE_UID 0x2000u /* CHARDEV0 */
+  #endif /* if !defined(CONFIG_CHAR_DEVICE_UID) */
 
 
 /**
