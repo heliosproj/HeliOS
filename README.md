@@ -10,13 +10,13 @@
 
 # :rocket: Overview
 
-HeliOS is a tiny, portable embedded operating system for resource‑constrained microcontrollers. It combines a deterministic, zero‑context‑switch scheduler with event‑driven and cooperative tasks, robust IPC, a private heap with defragmentation, a unified driver architecture, and a full FAT32 filesystem — all in clean, C90‑compliant code.
+HeliOS is a portable embedded operating system for resource‑constrained microcontrollers. It combines a deterministic, zero‑context‑switch scheduler with event‑driven and cooperative tasks, robust IPC, a private heap with defragmentation, a unified driver architecture, and a full FAT32 filesystem — all in clean and portable, C90‑compliant code.
 
 ## Why HeliOS
 
 - Simple mental model: cooperative + event‑driven tasking without preemption
 - Predictable and efficient: no context switch overhead, minimal footprint
-- Portable by design: Arduino, PlatformIO, CMSIS/ARM Cortex‑M, Teensy, ESP8266
+- Portable by design: Arduino, CMSIS/ARM Cortex‑M, Teensy, ESP8266
 - Batteries included: FAT32 filesystem, console/shell, drivers, utilities
 - Quality first: strict coding standard, extensive tests, CI, and docs
 
@@ -53,16 +53,6 @@ HeliOS is a tiny, portable embedded operating system for resource‑constrained 
 - Current working directory support and path utilities
 - Configurable command length and I/O subsystem enablement
 
-### Tooling and Quality
-- Nomic semantic analyzer for custom rule‑based checks
-- Formal JSON coding standard and enforced conventions
-- 140+ tests, colorized output, and strict `-ansi -pedantic` builds
-- PlatformIO CI workflow for broad example/board coverage
-
-### Utilities and Platform Helpers
-- Arduino helpers (e.g., byte array → `String`) across major architectures
-- Runtime endianness detection exposed via system info
-
 ## Design Principles
 
 - No preemption or context switching; cooperative by default
@@ -82,18 +72,8 @@ HeliOS 0.5.0 focuses on capability, portability, and developer experience.
 - STM32 USART driver: HAL‑based with blocking/IRQ/DMA support
 - Memory revamp: variable‑sized allocator, better alignment, richer stats
 - Object validity flags across kernel types for runtime safety
-- Standardized macro system for return/validation/assertion patterns
-- Runtime endianness detection surfaced in system info
-- Arduino helpers for byte array → `String`
-- Formal coding standard JSON and Nomic analyzer integration
-- PlatformIO CI workflow and expanded harness‑based testing
+- New CI workflows and expanded harness‑based testing
 - Documentation and templates refreshed across the project
-
-Migration notes (selected):
-- Streams renamed to `streams.[ch]`; update includes
-- Memory region size now in bytes via `CONFIG_MEMORY_REGION_SIZE`
-- Public structures include `valid`; initialize accordingly
-- Review `src/config.h` for new/changed options
 
 ***
 
