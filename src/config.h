@@ -224,16 +224,20 @@
  * Total system memory = 2 * CONFIG_MEMORY_REGION_SIZE
  *
  * @par Tuning Guidelines:
- * - Embedded systems with limited RAM: 0x1000 - 0x4000 (4KB - 16KB)
- * - Small microcontrollers: 0x4000 - 0x10000 (16KB - 64KB)
+ * - Embedded systems with limited RAM: 0x400 - 0x1000 (1KB - 4KB)
+ * - Arduino AVR (Mega 2560, 8KB RAM): 0x800 - 0x1000 (2KB - 4KB)
+ * - Small microcontrollers: 0x1000 - 0x4000 (4KB - 16KB)
+ * - Medium embedded systems: 0x4000 - 0x10000 (16KB - 64KB)
  * - Larger embedded systems: 0x10000 - 0x40000 (64KB - 256KB)
  * - Systems with external RAM: 0x40000+ (256KB+)
  *
- * The default value is 0x10000 (64KB) which provides a good balance for typical
- * embedded applications.
+ * The default value is 0x800 (2KB) which is suitable for Arduino AVR MCUs and
+ * other memory-constrained embedded systems (total usage: 4KB for both regions).
+ * For development and testing on systems with more RAM, a larger value like
+ * 0x10000 (64KB) is recommended.
  *
  * @note The value should be set as a hexadecimal constant with the 'u' suffix
- * (e.g., 0x10000u for 64KB).
+ * (e.g., 0x800u for 2KB, 0x10000u for 64KB).
  *
  * @warning Reducing this value below the minimum requirements of your
  * application will lead to memory allocation failures.
@@ -249,7 +253,7 @@
  *
  */
   #if !defined(CONFIG_MEMORY_REGION_SIZE)
-    #define CONFIG_MEMORY_REGION_SIZE 0x10000u /* 64KB default */
+    #define CONFIG_MEMORY_REGION_SIZE 0x800u /* 2KB default (4KB total) */
   #endif /* if !defined(CONFIG_MEMORY_REGION_SIZE) */
 
 

@@ -45,7 +45,7 @@ INCLUDES = -I$(BASE_DIR)/src \
 # Preprocessor definitions
 DEFINES = -DPOSIX_ARCH_OTHER \
           -DCONFIG_ENABLE_SYSTEM_ASSERT \
-          -DCONFIG_MEMORY_REGION_SIZE_IN_BLOCKS=0x1C20u \
+          -DCONFIG_MEMORY_REGION_SIZE=0x10000u \
           -DCONFIG_ENABLE_IO_SUBSYSTEM
 
 # Output binary
