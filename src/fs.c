@@ -168,9 +168,10 @@ Return_t xFSMount(Volume_t **volume_) {
     /* Allocate volume structure in kernel heap memory */
     if(OK(__KernelAllocateMemory__((volatile Addr_t **) &vol, sizeof(Volume_t)))) {
       /* Store block device UID for all I/O operations */
-      vol->valid = VALID;
       vol->blockDeviceUID = CONFIG_FS_BLOCK_DEVICE_UID;
       vol->mounted = false;
+      vol->bytesPerSector = 0x200u; /* Assume standard 512-byte sectors for boot sector read */
+      vol->valid = VALID; /* Mark valid after initializing essential fields */
 
       /* Read boot sector (sector 0x0u) */
       if(OK(__ReadSector__(vol, 0x0u, &bootSectorData))) {
@@ -205,18 +206,21 @@ Return_t xFSMount(Volume_t **volume_) {
             }
           } else {
             /* Failed to track mount - cleanup */
+            vol->valid = INVALID;
             __KernelFreeMemory__(bootSectorData);
             __KernelFreeMemory__(vol);
             __AssertOnElse__();
           }
         } else {
           /* Invalid FAT32 parameters */
+          vol->valid = INVALID;
           __KernelFreeMemory__(bootSectorData);
           __KernelFreeMemory__(vol);
           __AssertOnElse__();
         }
       } else {
         /* Failed to read boot sector */
+        vol->valid = INVALID;
         __KernelFreeMemory__(vol);
         __AssertOnElse__();
       }
@@ -341,7 +345,14 @@ Return_t xFSFormat(const Byte_t *volumeLabel_) {
   Word_t dataStart = reservedSectors + (numFATs * sectorsPerFAT);
 
 
+  if(__PointerIsNull__(volumeLabel_)) {
+    __AssertOnElse__();
+    FUNCTION_EXIT;
+  }
+
+
   /* Temporary volume structure for formatting */
+  tempVol.valid = VALID;
   tempVol.blockDeviceUID = CONFIG_FS_BLOCK_DEVICE_UID;
   tempVol.bytesPerSector = bytesPerSector;
   tempVol.sectorsPerCluster = sectorsPerCluster;
