@@ -88,8 +88,6 @@
   #if defined(POSIX_ARCH_OTHER)
     void __ConsoleStateClear__(void);
   #endif /* if defined(POSIX_ARCH_OTHER) */
-
-
   /* String and path utility functions */
   Size_t __strlen__(const Byte_t *str_);
   Return_t __strcpy__(Byte_t *dest_, const Byte_t *src_, const Size_t destSize_);

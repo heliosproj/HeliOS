@@ -76,13 +76,13 @@ Return_t xQueueDelete(Queue_t *queue_) {
     /* Loop through the queue while it contains messages and drop each message
      * until there are no more messages. */
     while(__PointerIsNotNull__(queue_->head)) {
-    if(OK(__QueueDropmessage__(queue_))) {
-      /* Do nothing - literally. */
-    } else {
-      __AssertOnElse__();
-      break;
+      if(OK(__QueueDropmessage__(queue_))) {
+        /* Do nothing - literally. */
+      } else {
+        __AssertOnElse__();
+        break;
+      }
     }
-  }
 
     queue_->valid = INVALID;
 
@@ -143,8 +143,8 @@ Return_t xQueueIsQueueEmpty(const Queue_t *queue_, Base_t *res_) {
     /* Confirm the length of the queue matches the number of the messages we
      * counted while traversing the queue.
      *
-     * If the number of messages is 0x0u, then set res_ to true because the queue
-     * is empty. Otherwise set res_ to false because the queue is *NOT*
+     * If the number of messages is 0x0u, then set res_ to true because the
+     * queue is empty. Otherwise set res_ to false because the queue is *NOT*
      * empty. */
     if(__QueueLengthZero__() && __QueueLengthCorrect__()) {
       *res_ = true;
@@ -214,9 +214,9 @@ Return_t xQueueMessagesWaiting(const Queue_t *queue_, Base_t *res_) {
     /* Confirm the length of the queue matches the number of the messages we
      * counted while traversing the queue.
      *
-     * If the number of messages greater than 0x0u, then set res_ to true because
-     * there is at least one message waiting - possibly more. Otherwise set res_
-     * to false because there are no messages waiting in the queue. */
+     * If the number of messages greater than 0x0u, then set res_ to true
+     * because there is at least one message waiting - possibly more. Otherwise
+     * set res_ to false because there are no messages waiting in the queue. */
     if(__QueueLengthNonZero__() && __QueueLengthCorrect__()) {
       *res_ = true;
       __ReturnOk__();

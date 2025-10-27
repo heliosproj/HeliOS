@@ -565,8 +565,8 @@ Return_t xTaskNotificationIsWaiting(const Task_t *task_, Base_t *res_) {
 Return_t xTaskNotifyGive(Task_t *task_, const Base_t bytes_, const Byte_t *value_) {
   FUNCTION_ENTER;
 
-  if(__ObjectIsValid__(task_) && (0x0u < bytes_) && (CONFIG_NOTIFICATION_VALUE_BYTES >= bytes_) && __PointerIsNotNull__(value_) && __PointerIsNotNull__(tlist)
-    ) {
+  if(__ObjectIsValid__(task_) && (0x0u < bytes_) && (CONFIG_NOTIFICATION_VALUE_BYTES >= bytes_) && __PointerIsNotNull__(value_) && __PointerIsNotNull__(tlist))
+      {
     if(OK(__TaskListFindTask__(task_))) {
       if(0x0u == task_->notificationBytes) {
         if(OK(__memcpy__(task_->notificationValue, value_, CONFIG_NOTIFICATION_VALUE_BYTES))) {
@@ -585,7 +585,7 @@ Return_t xTaskNotifyGive(Task_t *task_, const Base_t bytes_, const Byte_t *value
     __AssertOnElse__();
   }
 
-    FUNCTION_EXIT;
+  FUNCTION_EXIT;
 }
 
 

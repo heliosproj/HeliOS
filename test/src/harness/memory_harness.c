@@ -446,6 +446,8 @@ void test_memory_statistics(void) {
   unit_assert_equal(xMemGetUsed(&used_after), ReturnOK);
   unit_assert_true(used_after >= used_before + 3000);  /* At least 3000 bytes
                                                         * allocated */
+
+
   /* Test 5: Get heap statistics */
   unit_assert_equal(xMemGetHeapStats(&heap_stats), ReturnOK);
   unit_assert_not_null(heap_stats);

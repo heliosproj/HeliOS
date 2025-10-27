@@ -125,7 +125,6 @@ static const ConsoleCommand_t commandTable[] = {{
  * String and Path Utility Functions (used only by console)
  * ============================================================================
  */
-
 Size_t __strlen__(const Byte_t *str_) {
   Size_t len = 0x0u;
 

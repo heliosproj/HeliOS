@@ -170,7 +170,8 @@ Return_t xFSMount(Volume_t **volume_) {
       /* Store block device UID for all I/O operations */
       vol->blockDeviceUID = CONFIG_FS_BLOCK_DEVICE_UID;
       vol->mounted = false;
-      vol->bytesPerSector = 0x200u; /* Assume standard 512-byte sectors for boot sector read */
+      vol->bytesPerSector = 0x200u; /* Assume standard 512-byte sectors for boot
+                                     * sector read */
       vol->valid = VALID; /* Mark valid after initializing essential fields */
 
       /* Read boot sector (sector 0x0u) */
@@ -349,7 +350,6 @@ Return_t xFSFormat(const Byte_t *volumeLabel_) {
     __AssertOnElse__();
     FUNCTION_EXIT;
   }
-
 
   /* Temporary volume structure for formatting */
   tempVol.valid = VALID;
@@ -682,7 +682,6 @@ Return_t xFileClose(File_t *file_) {
     }
 
     file_->isOpen = false;
-
     file_->valid = INVALID;
 
     /* Free file structure from kernel heap */
@@ -2001,6 +2000,8 @@ static Base_t __ByteCompare__(const Byte_t *s1_, const Byte_t *s2_, Word_t len_)
  */
 static Return_t __ConvertToFAT83__(const Byte_t *path_, Byte_t *fat83_) {
   FUNCTION_ENTER;
+
+
   Word_t i = 0x0u;
   Word_t j = 0x0u;
   Word_t nameLen = 0x0u;
@@ -2077,6 +2078,8 @@ static Return_t __ConvertToFAT83__(const Byte_t *path_, Byte_t *fat83_) {
 static Return_t __FindDirEntry__(const Volume_t *vol_, Word_t dirCluster_, const Byte_t *name83_, FAT32DirEntry_t *entry_, Word_t *entryCluster_, Word_t *
   entryOffset_) {
   FUNCTION_ENTER;
+
+
   Byte_t *clusterData = null;
   FAT32DirEntry_t *fatEntry = null;
   Word_t entriesPerCluster = 0x0u;
@@ -2106,7 +2109,6 @@ static Return_t __FindDirEntry__(const Volume_t *vol_, Word_t dirCluster_, const
       /* Check for end of directory */
       if(fatEntry->name[0x0u] == 0x00u) {
         __KernelFreeMemory__(clusterData);
-
         FUNCTION_EXIT; /* Not found */
       }
 
@@ -2131,7 +2133,6 @@ static Return_t __FindDirEntry__(const Volume_t *vol_, Word_t dirCluster_, const
         }
 
         __KernelFreeMemory__(clusterData);
-
         ret = ReturnOK;
         FUNCTION_EXIT;
       }
@@ -2168,6 +2169,8 @@ static Return_t __FindDirEntry__(const Volume_t *vol_, Word_t dirCluster_, const
 static Return_t __FindFileByPath__(const Volume_t *vol_, const Byte_t *path_, FAT32DirEntry_t *entry_, Word_t *parentCluster_, Word_t *entryCluster_, Word_t *
   entryOffset_) {
   FUNCTION_ENTER;
+
+
   Byte_t name83[11];
   Byte_t component[256];
   Word_t pathIdx = 0x0u;

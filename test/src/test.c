@@ -31,11 +31,13 @@ int main(int argc, char **argv) {
   const char *json_file = null;
   int i;
 
+
   /* Parse command line arguments */
-  for (i = 1; i < argc; i++) {
-    if (strcmp(argv[i], "--json") == 0 || strcmp(argv[i], "-j") == 0) {
+  for(i = 1; i < argc; i++) {
+    if((strcmp(argv[i], "--json") == 0) || (strcmp(argv[i], "-j") == 0)) {
       json_output = true;
-      if (i + 1 < argc && argv[i + 1][0] != '-') {
+
+      if((i + 1 < argc) && (argv[i + 1][0] != '-')) {
         json_file = argv[++i];
       }
     }
