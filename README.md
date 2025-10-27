@@ -10,139 +10,90 @@
 
 # :rocket: Overview
 
-HeliOS is a lightweight, open-source embedded operating system designed for resource-constrained microcontrollers. Despite its small footprint, HeliOS provides a rich feature set including cooperative multitasking, event-driven task scheduling, inter-process communication, memory management with defragmentation, device driver support, and a complete FAT32 filesystem implementation.
+HeliOS is a tiny, portable embedded operating system for resource‑constrained microcontrollers. It combines a deterministic, zero‑context‑switch scheduler with event‑driven and cooperative tasks, robust IPC, a private heap with defragmentation, a unified driver architecture, and a full FAT32 filesystem — all in clean, C90‑compliant code.
 
-## Key Features
+## Why HeliOS
 
-### Multitasking Models
-HeliOS supports two complementary multitasking approaches that work seamlessly together:
+- Simple mental model: cooperative + event‑driven tasking without preemption
+- Predictable and efficient: no context switch overhead, minimal footprint
+- Portable by design: Arduino, PlatformIO, CMSIS/ARM Cortex‑M, Teensy, ESP8266
+- Batteries included: FAT32 filesystem, console/shell, drivers, utilities
+- Quality first: strict coding standard, extensive tests, CI, and docs
 
-**Event-Driven Tasks**
-- Tasks respond only to specific events (direct-to-task notifications or timer expirations)
-- Remain dormant when no events are pending, conserving CPU cycles
-- Automatically scheduled by the kernel when events occur
-- Ideal for periodic operations, interrupt handling, and reactive behaviors
+## Core Features
 
-**Cooperative Tasks**
-- Always eligible for execution unless explicitly suspended
-- Scheduled using HeliOS's unique **runtime-balanced algorithm**
-- Tasks consuming more CPU time are automatically deprioritized
-- Prevents any single task from monopolizing system resources
-- No context switching required—simplifies development and reduces overhead
+### Scheduling and Tasks
+- Event‑driven tasks wake on notifications or timers and run first
+- Cooperative tasks share CPU via a runtime‑balanced algorithm
+- No context switching; responsive behavior with explicit yields
 
-Event-driven tasks always receive execution priority over cooperative tasks, ensuring responsive behavior when consistent execution is important.
-
-### Inter-Process Communication
-HeliOS provides three powerful IPC mechanisms:
-
-1. **Direct-to-Task Notifications** - Lightweight signaling between tasks with optional data payloads
-2. **Message Queues** - FIFO communication channels for variable-length messages between multiple tasks
-3. **Stream Buffers** - Byte-oriented circular buffers optimized for serial data and protocol parsing
+### Inter‑Process Communication
+- Direct‑to‑task notifications with optional payloads
+- Message queues for FIFO delivery between tasks
+- Stream buffers for byte‑oriented data and protocol parsing
 
 ### Memory Management
-- **Private heap implementation** using statically allocated memory—no reliance on **`malloc()/free()`**
-- **Separate kernel memory region** protects critical kernel objects from user code corruption
-- **Automatic defragmentation** maintains memory efficiency over long run times
-- **Consistency checking** detects memory corruption early
-- **Detailed statistics** for monitoring heap usage and fragmentation
+- Private, statically‑backed heap — no `malloc()`/`free()` dependency
+- Variable‑sized allocations with automatic defragmentation
+- Separate kernel region for critical objects and metadata
+- Integrity checks and detailed heap/kernel statistics
 
-### Device Driver Framework
-- Kernel-mode device driver support with self-registration pattern
-- Abstract device layer enables portable driver development
-- Essential for systems with MMU/MPU memory protection
-- Template drivers provided in **`/drivers/template/`**
+### Filesystem (FAT32)
+- Full FAT32 implementation: files, directories, timestamps, attributes
+- Block device abstraction for RAM disk, SD cards, and flash
+- Mount/unmount/format, seek/tell/truncate/sync, directory enumeration
 
-### FAT32 Filesystem (New in 0.5.0)
-- **Full FAT32 implementation** with support for files and directories
-- **Block device abstraction** works with RAM disks, SD cards, flash memory
-- **Standard file operations**: open, close, read, write, seek, truncate
-- **Directory management**: create, remove, enumerate directory entries
-- **Volume operations**: format, mount, unmount, query volume information
-- **File metadata**: timestamps, attributes, file size tracking
-- **Internal kernel API** for filesystem drivers and device access
+### Drivers and I/O
+- Unified Block I/O interface and Character I/O interface
+- RAM Disk driver for fast testing and simulations
+- STM32 USART driver with HAL integration (blocking/IRQ/DMA modes)
 
-### Code Quality and Robustness
-- Comprehensive error handling with consistent return types
-- Extensive unit test coverage (147+ test cases)
-- Extensive documentation and code examples
-- **Not certified for safety-critical applications**
+### Console and Shell
+- Interactive shell with command buffer, echo control, and device readiness
+- Current working directory support and path utilities
+- Configurable command length and I/O subsystem enablement
 
-### Broad Platform Support
-- **Arduino** - Available via Arduino Library Manager
-- **PlatformIO** - Available via PlatformIO Registry
-- **ARM Cortex-M** - CMSIS support for Keil µVision and vendor IDEs
-- **ESP8266** - Native support (note: ESP32 requires ESP-IDF, not Arduino core)
-- **Teensy 3/4** - Full support
-- Easily portable to other microcontroller platforms
+### Tooling and Quality
+- Nomic semantic analyzer for custom rule‑based checks
+- Formal JSON coding standard and enforced conventions
+- 140+ tests, colorized output, and strict `-ansi -pedantic` builds
+- PlatformIO CI workflow for broad example/board coverage
 
-## Design Philosophy
+### Utilities and Platform Helpers
+- Arduino helpers (e.g., byte array → `String`) across major architectures
+- Runtime endianness detection exposed via system info
 
-### No Context Switching
-HeliOS uses cooperative multitasking without context switching. This design:
-- **Eliminates race conditions** on shared resources—no mutexes or semaphores needed
-- **Simplifies portability**—no architecture-specific context save/restore code
-- **Reduces overhead**—lower memory footprint and faster task switching
-- **Eases debugging**—predictable execution flow
+## Design Principles
 
-**Trade-offs:**
-- Tasks must voluntarily yield control to the scheduler
-- Soft real-time guarantees only (no hard deadlines)
-- Long-running tasks can impact system responsiveness if not properly designed
-
-### Configurable and Customizable
-Many kernel parameters are easily configured through **`/src/config.h`**:
+- No preemption or context switching; cooperative by default
+- Event‑driven first: timers and notifications drive responsiveness
+- Separation of concerns: kernel, drivers, filesystem, and I/O layers
+- Configurable via `src/config.h` with documented trade‑offs
 
 ***
 
-# :loudspeaker: What's New
+# :loudspeaker: What’s New in 0.5.0
 
-## Version 0.5.0 - FAT32 Filesystem & Enhanced Testing
+HeliOS 0.5.0 focuses on capability, portability, and developer experience.
 
-The latest HeliOS 0.5.0 release brings major improvements to both functionality and quality assurance:
+- FAT32 filesystem: full stack with block device abstraction and RAM disk
+- Console subsystem: interactive shell with command buffer and utilities
+- Unified driver architecture: standard Block/Char I/O interfaces
+- STM32 USART driver: HAL‑based with blocking/IRQ/DMA support
+- Memory revamp: variable‑sized allocator, better alignment, richer stats
+- Object validity flags across kernel types for runtime safety
+- Standardized macro system for return/validation/assertion patterns
+- Runtime endianness detection surfaced in system info
+- Arduino helpers for byte array → `String`
+- Formal coding standard JSON and Nomic analyzer integration
+- PlatformIO CI workflow and expanded harness‑based testing
+- Documentation and templates refreshed across the project
 
-### FAT32 Filesystem Support
-
-HeliOS now includes a complete FAT32 filesystem implementation:
-
-- **Complete filesystem stack**: boot sector, FAT tables, directory entries, cluster allocation
-- **Block device layer**: abstract interface for storage devices (RAM disk, SD card, flash)
-- **Comprehensive file API**: Full POSIX-style file operations
-- **Directory support**: Create, remove, and traverse directory hierarchies
-- **RAM disk driver**: Built-in RAM-based storage for testing and embedded applications
-
-Example filesystem usage:
-```c
-xVolume vol;
-xFile file;
-
-// Format and mount a block device
-xFSFormat(blockDeviceUID, (xByte*)"HELIOS_VOL");
-xFSMount(&vol, blockDeviceUID);
-
-// Create and write to a file
-xFileOpen(&file, vol, (xByte*)"/config.txt", FS_MODE_WRITE | FS_MODE_CREATE);
-xFileWrite(file, sizeof(data), data);
-xFileClose(file);
-
-// Read from a file
-xFileOpen(&file, vol, (xByte*)"/config.txt", FS_MODE_READ);
-xByte *data;
-xFileRead(file, 100, &data);
-// ... process data ...
-xMemFree((xAddr)data);
-xFileClose(file);
-```
-
-### Enhanced Unit Testing Framework
-
-The testing framework has been significantly enhanced with modern development practices:
-
-- **Enhanced assertion macros** with detailed failure diagnostics (file, line, expected vs actual values)
-- **Descriptive test case names** that clearly explain what is being tested
-- **Named constants** replacing magic numbers throughout test code for better readability
-- **Color-coded output** for easy visual scanning of test results
-- **147 comprehensive test cases** covering all kernel subsystems including edge cases
-- **C90 compliance** with strict **`-ansi -pedantic`** compilation
+Migration notes (selected):
+- Streams renamed to `streams.[ch]`; update includes
+- Memory region size now in bytes via `CONFIG_MEMORY_REGION_SIZE`
+- Public structures include `valid`; initialize accordingly
+- Review `src/config.h` for new/changed options
 
 ***
 
@@ -224,129 +175,9 @@ To use HeliOS on ESP32, you must:
 
 ***
 
-# :man_teacher: Example: Arduino "Blink" with HeliOS
+# :man_teacher: Examples
 
-This example demonstrates HeliOS's event-driven multitasking by reimplementing the classic Arduino "Blink" sketch.
-
-## Traditional Arduino "Blink"
-
-```c
-void setup() {
-  pinMode(LED_BUILTIN, OUTPUT);
-}
-
-void loop() {
-  digitalWrite(LED_BUILTIN, HIGH);
-  delay(1000);
-  digitalWrite(LED_BUILTIN, LOW);
-  delay(1000);
-}
-```
-
-**Problems with this approach:**
-- **`delay()`** blocks all other operations
-- Difficult to add additional tasks
-- Hard to implement different timing for multiple tasks
-- No way to respond to events while waiting
-
-## HeliOS Event-Driven "Blink"
-
-```c
-#include <HeliOS.h>
-
-// Task function: toggles LED state
-void blinkTask_main(xTask task_, xTaskParm parm_) {
-  // Retrieve LED state from task parameter
-  int ledState = DEREF_TASKPARM(int, parm_);
-
-  // Toggle LED
-  if(ledState) {
-    digitalWrite(LED_BUILTIN, HIGH);
-    ledState = 0;
-  } else {
-    digitalWrite(LED_BUILTIN, LOW);
-    ledState = 1;
-  }
-
-  // Save new state back to task parameter
-  DEREF_TASKPARM(int, parm_) = ledState;
-}
-
-void setup() {
-  int ledState = 0;
-  pinMode(LED_BUILTIN, OUTPUT);
-
-  // Initialize HeliOS
-  if(ERROR(xSystemInit())) {
-    xSystemHalt();
-  }
-
-  // Create blink task
-  xTask blink;
-  if(ERROR(xTaskCreate(&blink, (const xByte *) "BLINKTSK", blinkTask_main, &ledState))) {
-    xSystemHalt();
-  }
-
-  // Place task in waiting state (event-driven)
-  if(ERROR(xTaskWait(blink))) {
-    xSystemHalt();
-  }
-
-  // Set task timer to 1000 ticks (1 second on most platforms)
-  if(ERROR(xTaskChangePeriod(blink, 1000))) {
-    xSystemHalt();
-  }
-
-  // Start the scheduler (never returns)
-  if(ERROR(xTaskStartScheduler())) {
-    xSystemHalt();
-  }
-
-  xSystemHalt();
-}
-
-void loop() {
-  // Not used - HeliOS scheduler handles execution
-}
-```
-
-**Benefits of the HeliOS approach:**
-- Non-blocking—other tasks can run concurrently
-- Easy to add more tasks with different timings
-- Event-driven tasks only run when needed
-- Can respond to notifications and other events
-- Clean separation of task logic
-
-## Adding More Tasks
-
-With HeliOS, adding additional tasks is straightforward:
-
-```c
-void sensorTask_main(xTask task_, xTaskParm parm_) {
-  int sensorValue = analogRead(A0);
-  // Process sensor data...
-}
-
-void setup() {
-  // ... initialize HeliOS ...
-
-  // Create multiple tasks
-  xTask blink, sensor;
-  xTaskCreate(&blink, (const xByte *) "BLINKTSK", blinkTask_main, &ledState);
-  xTaskCreate(&sensor, (const xByte *) "SENSRTSK", sensorTask_main, null);
-
-  // Configure timers
-  xTaskWait(blink);
-  xTaskChangePeriod(blink, 1000);  // Run every 1 second
-
-  xTaskWait(sensor);
-  xTaskChangePeriod(sensor, 100);   // Run every 100ms
-
-  xTaskStartScheduler();
-}
-```
-
-Each task runs independently at its own rate without blocking others.
+Explore ready‑to‑run sketches in `examples/` covering scheduling, IPC, memory, filesystem, console, and drivers. The classic “Blink” example is included alongside multi‑task patterns and I/O demos.
 
 ***
 
