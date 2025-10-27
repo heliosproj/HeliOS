@@ -129,6 +129,7 @@
   #ifndef DEVICE_T_
     #define DEVICE_T_
     typedef struct Device_s {
+      Base_t valid;
       HalfWord_t uid;
       Byte_t name[CONFIG_DEVICE_NAME_BYTES];
       DeviceState_t state;
@@ -152,31 +153,10 @@
     } Device_t;
   #endif /* ifndef DEVICE_T_ */
 
-  #ifndef BLOCKHEADER_T_
-    #define BLOCKHEADER_T_
-    typedef struct BlockHeader_s {
-      struct BlockHeader_s *next;  /* Pointer to the next block header within
-                                    * mem[] */
-      Word_t checksum; /* Checksum for integrity verification */
-      Word_t size; /* Number of bytes available for data (excludes header) */
-      Byte_t free; /* FREE or INUSE status */
-    } BlockHeader_t;
-  #endif /* ifndef BLOCKHEADER_T_ */
-
-  #ifndef MEMORYREGION_T_
-    #define MEMORYREGION_T_
-    typedef struct MemoryRegion_s {
-      volatile Byte_t mem[MEMORY_REGION_SIZE];  /* Memory pool */
-      BlockHeader_t *first; /* Pointer to first block header in mem[] */
-      HalfWord_t allocations; /* Number of successful allocations */
-      HalfWord_t frees; /* Number of successful frees */
-      Word_t minAvailableEver; /* Lower water mark of free bytes */
-    } MemoryRegion_t;
-  #endif /* ifndef MEMORYREGION_T_ */
-
   #ifndef TASKNOTIFICATION_T_
     #define TASKNOTIFICATION_T_
     typedef struct TaskNotification_s {
+      Base_t valid;
       Base_t notificationBytes;
       Byte_t notificationValue[CONFIG_NOTIFICATION_VALUE_BYTES];
     } TaskNotification_t;
@@ -185,6 +165,7 @@
   #ifndef TASKRUNTIMESTATS_T_
     #define TASKRUNTIMESTATS_T_
     typedef struct TaskRunTimeStats_s {
+      Base_t valid;
       Base_t id;
       Ticks_t lastRunTime;
       Ticks_t totalRunTime;
@@ -194,6 +175,7 @@
   #ifndef MEMORYREGIONSTATS_T_
     #define MEMORYREGIONSTATS_T_
     typedef struct MemoryRegionStats_s {
+      Base_t valid;
       Word_t largestFreeEntryInBytes;
       Word_t smallestFreeEntryInBytes;
       Word_t numberOfFreeBlocks;
@@ -207,6 +189,7 @@
   #ifndef TASKINFO_T_
     #define TASKINFO_T_
     typedef struct TaskInfo_s {
+      Base_t valid;
       Base_t id;
       Byte_t name[CONFIG_TASK_NAME_BYTES];
       TaskState_t state;
@@ -218,6 +201,7 @@
   #ifndef QUEUEMESSAGE_T_
     #define QUEUEMESSAGE_T_
     typedef struct QueueMessage_s {
+      Base_t valid;
       Base_t messageBytes;
       Byte_t messageValue[CONFIG_MESSAGE_VALUE_BYTES];
     } QueueMessage_t;
@@ -226,6 +210,7 @@
   #ifndef SYSTEMINFO_T_
     #define SYSTEMINFO_T_
     typedef struct SystemInfo_s {
+      Base_t valid;
       Byte_t productName[OS_PRODUCT_NAME_SIZE];
       Base_t majorVersion;
       Base_t minorVersion;
@@ -238,6 +223,7 @@
   #ifndef TASK_T_
     #define TASK_T_
     typedef struct Task_s {
+      Base_t valid;
       Base_t id;
       Byte_t name[CONFIG_TASK_NAME_BYTES];
       TaskState_t state;
@@ -271,6 +257,7 @@
   #ifndef TASKLIST_T_
     #define TASKLIST_T_
     typedef struct TaskList_s {
+      Base_t valid;
       Base_t nextId;
       Base_t length;
       Task_t *head;
@@ -280,6 +267,7 @@
   #ifndef DEVICELIST_T_
     #define DEVICELIST_T_
     typedef struct DeviceList_s {
+      Base_t valid;
       Base_t length;
       Device_t *head;
     } DeviceList_t;
@@ -288,6 +276,7 @@
   #ifndef TIMER_T_
     #define TIMER_T_
     typedef struct Timer_s {
+      Base_t valid;
       TimerState_t state;
       Ticks_t timerPeriod;
       Ticks_t timerStartTime;
@@ -297,6 +286,7 @@
   #ifndef TIMERLIST_T_
     #define TIMERLIST_T_
     typedef struct TimerList_s {
+      Base_t valid;
       Base_t length;
       Timer_t *head;
     } TimerList_t;
@@ -305,6 +295,7 @@
   #ifndef FLAGS_T_
     #define FLAGS_T_
     typedef struct Flags_s {
+      Base_t valid;
       Base_t running;
       Base_t overflow;
       Base_t memfault;
@@ -315,6 +306,7 @@
   #ifndef MESSAGE_T_
     #define MESSAGE_T_
     typedef struct Message_s {
+      Base_t valid;
       Base_t messageBytes;
       Byte_t messageValue[CONFIG_MESSAGE_VALUE_BYTES];
       struct Message_s *next;
@@ -324,6 +316,7 @@
   #ifndef QUEUE_T_
     #define QUEUE_T_
     typedef struct Queue_s {
+      Base_t valid;
       Base_t length;
       Base_t limit;
       Base_t locked;
@@ -335,6 +328,7 @@
   #ifndef STREAMBUFFER_T_
     #define STREAMBUFFER_T_
     typedef struct StreamBuffer_s {
+      Base_t valid;
       Byte_t buffer[CONFIG_STREAM_BUFFER_BYTES];
       HalfWord_t length;
     } StreamBuffer_t;
@@ -343,6 +337,7 @@
   #ifndef VOLUME_T_
     #define VOLUME_T_
     typedef struct Volume_s {
+      Base_t valid;
       HalfWord_t blockDeviceUID;
       Word_t fatStartSector;
       Word_t dataStartSector;
@@ -359,6 +354,7 @@
   #ifndef FILE_T_
     #define FILE_T_
     typedef struct File_s {
+      Base_t valid;
       struct Volume_s *volume;
       Word_t firstCluster;
       Word_t currentCluster;
@@ -375,6 +371,7 @@
   #ifndef DIRENTRY_T_
     #define DIRENTRY_T_
     typedef struct DirEntry_s {
+      Base_t valid;
       Byte_t name[0x100];
       Word_t size;
       Word_t firstCluster;
@@ -388,6 +385,7 @@
   #ifndef DIR_T_
     #define DIR_T_
     typedef struct Dir_s {
+      Base_t valid;
       struct Volume_s *volume;
       Word_t currentCluster;
       HalfWord_t entryIndex;
@@ -398,6 +396,7 @@
   #ifndef VOLUMEINFO_T_
     #define VOLUMEINFO_T_
     typedef struct VolumeInfo_s {
+      Base_t valid;
       Word_t totalClusters;
       Word_t freeClusters;
       Word_t totalBytes;

@@ -121,6 +121,25 @@
     #define __ReturnOk__() ret = ReturnOK
   #endif /* if !defined(__ReturnOk__) */
 
+  #if defined(VALID)
+    #undef VALID
+  #endif /* if defined(VALID) */
+  #define VALID 0xAAu /* 170 - Object is valid */
+
+  #if defined(INVALID)
+    #undef INVALID
+  #endif /* if defined(INVALID) */
+  #define INVALID 0x55u /* 85 - Object is invalid */
+
+
+  #if !defined(__ObjectIsValid__)
+    #define __ObjectIsValid__(obj_) (__PointerIsNotNull__(obj_) && (VALID == (obj_)->valid))
+  #endif /* if !defined(__ObjectIsValid__) */
+
+
+  #if !defined(__ObjectIsNotValid__)
+    #define __ObjectIsNotValid__(obj_) (!__ObjectIsValid__(obj_))
+  #endif /* if !defined(__ObjectIsNotValid__) */
 
   #if !defined(__AssertOnElse__)
     #if defined(CONFIG_ENABLE_SYSTEM_ASSERT)

@@ -41,11 +41,29 @@
   #if defined(FREE)
     #undef FREE
   #endif /* if defined(FREE) */
-  #define FREE 0xD5u /* 213 - Block is free */
+  #define FREE 0x55u /* 85 - Block is free */
 
+  #ifndef BLOCKHEADER_T_
+    #define BLOCKHEADER_T_
+    typedef struct BlockHeader_s {
+      struct BlockHeader_s *next;  /* Pointer to the next block header within
+                                    * mem[] */
+      Word_t checksum; /* Checksum for integrity verification */
+      Word_t size; /* Number of bytes available for data (excludes header) */
+      Byte_t free; /* FREE or INUSE status */
+    } BlockHeader_t;
+  #endif /* ifndef BLOCKHEADER_T_ */
 
-  /* The BlockHeader_t and updated MemoryRegion_t structures are now defined in
-   * types.h */
+  #ifndef MEMORYREGION_T_
+    #define MEMORYREGION_T_
+    typedef struct MemoryRegion_s {
+      volatile Byte_t mem[MEMORY_REGION_SIZE];  /* Memory pool */
+      BlockHeader_t *first; /* Pointer to first block header in mem[] */
+      HalfWord_t allocations; /* Number of successful allocations */
+      HalfWord_t frees; /* Number of successful frees */
+      Word_t minAvailableEver; /* Lower water mark of free bytes */
+    } MemoryRegion_t;
+  #endif /* ifndef MEMORYREGION_T_ */
 
   #ifdef __cplusplus
     extern "C" {

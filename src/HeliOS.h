@@ -478,6 +478,7 @@
   #ifndef VOLUME_T_
     #define VOLUME_T_
     typedef struct Volume_s {
+      Base_t valid;
       HalfWord_t blockDeviceUID;
       Word_t fatStartSector;
       Word_t dataStartSector;
@@ -512,6 +513,7 @@
   #ifndef FILE_T_
     #define FILE_T_
     typedef struct File_s {
+      Base_t valid;
       struct Volume_s *volume;
       Word_t firstCluster;
       Word_t currentCluster;
@@ -544,6 +546,7 @@
   #ifndef DIR_T_
     #define DIR_T_
     typedef struct Dir_s {
+      Base_t valid;
       struct Volume_s *volume;
       Word_t currentCluster;
       HalfWord_t entryIndex;
@@ -572,6 +575,7 @@
   #ifndef DIRENTRY_T_
     #define DIRENTRY_T_
     typedef struct DirEntry_s {
+      Base_t valid;
       Byte_t name[256];
       Word_t size;
       Word_t firstCluster;
@@ -602,6 +606,7 @@
   #ifndef VOLUMEINFO_T_
     #define VOLUMEINFO_T_
     typedef struct VolumeInfo_s {
+      Base_t valid;
       Word_t totalClusters;
       Word_t freeClusters;
       Word_t totalBytes;
@@ -644,6 +649,7 @@
   #ifndef TASKNOTIFICATION_T_
     #define TASKNOTIFICATION_T_
     typedef struct TaskNotification_s {
+      Base_t valid;
       Base_t notificationBytes; /**< The length in bytes of the notification
                                  * value which cannot exceed
                                  * CONFIG_NOTIFICATION_VALUE_BYTES. */
@@ -683,6 +689,7 @@
   #ifndef TASKRUNTIMESTATS_T_
     #define TASKRUNTIMESTATS_T_
     typedef struct TaskRunTimeStats_s {
+      Base_t valid;
       Base_t id; /**< The ID of the task. */
       Ticks_t lastRunTime; /**< The duration in ticks of the task's last
                             * runtime.
@@ -713,6 +720,7 @@
   #ifndef MEMORYREGIONSTATS_T_
     #define MEMORYREGIONSTATS_T_
     typedef struct MemoryRegionStats_s {
+      Base_t valid;
       Word_t largestFreeEntryInBytes; /**< The largest free entry in bytes. */
       Word_t smallestFreeEntryInBytes; /**< The smallest free entry in bytes. */
       Word_t numberOfFreeBlocks; /**< The number of free blocks. See for block
@@ -756,6 +764,7 @@
   #ifndef TASKINFO_T_
     #define TASKINFO_T_
     typedef struct TaskInfo_s {
+      Base_t valid;
       Base_t id; /**< The ID of the task. */
       Byte_t name[CONFIG_TASK_NAME_BYTES]; /**< The name of the task which must
                                             * be exactly CONFIG_TASK_NAME_BYTES
@@ -794,6 +803,7 @@
   #ifndef QUEUEMESSAGE_T_
     #define QUEUEMESSAGE_T_
     typedef struct QueueMessage_s {
+      Base_t valid;
       Base_t messageBytes; /**< The number of bytes contained in the message
                             * value which cannot exceed
                             * CONFIG_MESSAGE_VALUE_BYTES. */
@@ -823,6 +833,7 @@
   #ifndef SYSTEMINFO_T_
     #define SYSTEMINFO_T_
     typedef struct SystemInfo_s {
+      Base_t valid;
       Byte_t productName[OS_PRODUCT_NAME_SIZE]; /**< The product name of the
                                                  * operating system (always
                                                  * "HeliOS"). */
