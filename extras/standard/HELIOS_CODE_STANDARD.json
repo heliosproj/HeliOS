@@ -1,11 +1,11 @@
 {
   "metadata": {
     "name": "HeliOS Coding Standard",
-    "version": "1.1.0",
-    "description": "DSL-like coding rules for HeliOS embedded operating system covering function structure, control flow, parameter validation, API naming conventions, and scope visibility",
+    "version": "1.2.0",
+    "description": "DSL-like coding rules for HeliOS embedded operating system covering function structure, control flow, parameter validation, API naming conventions, scope visibility, and object validation paradigm",
     "author": "HeliOS Project",
-    "date": "2025-10-26",
-    "rule_count": 27,
+    "date": "2025-10-28",
+    "rule_count": 31,
     "categories": [
       "function-structure",
       "parameter-validation",
@@ -23,7 +23,8 @@
       "conditionals",
       "formatting",
       "api-naming",
-      "api-scope"
+      "api-scope",
+      "object-validation"
     ]
   },
   "rules": [
@@ -821,6 +822,110 @@
         "src/mem.c:432-688",
         "src/device.h:88-99"
       ]
+    },
+    {
+      "id": "OBJ-001",
+      "category": "object-validation",
+      "name": "Objects Must Have Valid Field",
+      "shortName": "Valid Field Required",
+      "description": "All HeliOS object types (structs representing managed kernel objects like Task_t, Queue_t, Device_t, etc.) must include a Base_t valid field. This field serves as an object state marker to detect invalid, uninitialized, or freed objects.",
+      "dsl": {
+        "pattern": "struct.kernel_object { Base_t valid; ... }",
+        "rule": "REQUIRE kernel_object.struct CONTAINS field.valid OF_TYPE Base_t"
+      },
+      "rationale": "Enables runtime detection of use-after-free, double-free, and uninitialized object access bugs",
+      "examples": {
+        "valid": [
+          "typedef struct Queue_s {\n  Base_t valid;\n  Base_t length;\n  Base_t limit;\n  ...\n} Queue_t;"
+        ],
+        "invalid": [
+          "typedef struct Queue_s {\n  Base_t length;\n  Base_t limit;\n  // Missing valid field\n} Queue_t;"
+        ]
+      },
+      "severity": "error",
+      "references": [
+        "src/defines.h:127-132",
+        "src/queue.h",
+        "src/task.h"
+      ]
+    },
+    {
+      "id": "OBJ-002",
+      "category": "object-validation",
+      "name": "Set Valid on Object Creation",
+      "shortName": "Initialize Valid to VALID",
+      "description": "When creating/allocating a kernel object, immediately set its valid field to VALID (0xAAu) after successful allocation and before populating other fields. This marks the object as initialized and ready for use.",
+      "dsl": {
+        "pattern": "object_creation { if(OK(allocate(&obj))) { if(__PointerIsNotNull__(obj)) { obj->valid = VALID; /* initialize other fields */ } } }",
+        "rule": "REQUIRE object.creation SETS field.valid TO constant.VALID AFTER allocation.success"
+      },
+      "rationale": "Establishes object validity state immediately upon creation, enabling validation in all subsequent operations",
+      "examples": {
+        "valid": [
+          "if(OK(__KernelAllocateMemory__((volatile Addr_t **) queue_, sizeof(Queue_t)))) {\n  if(__PointerIsNotNull__(*queue_)) {\n    (*queue_)->valid = VALID;\n    (*queue_)->length = 0x0u;\n    (*queue_)->limit = limit_;\n    ...\n  }\n}"
+        ],
+        "invalid": [
+          "if(OK(__KernelAllocateMemory__((volatile Addr_t **) queue_, sizeof(Queue_t)))) {\n  if(__PointerIsNotNull__(*queue_)) {\n    (*queue_)->length = 0x0u;\n    // Missing: (*queue_)->valid = VALID;\n  }\n}"
+        ]
+      },
+      "severity": "error",
+      "references": [
+        "src/queue.c:51",
+        "src/defines.h:127"
+      ]
+    },
+    {
+      "id": "OBJ-003",
+      "category": "object-validation",
+      "name": "Set Invalid Before Object Deletion",
+      "shortName": "Mark Invalid Before Free",
+      "description": "Before freeing/deleting a kernel object, set its valid field to INVALID (0x55u). This marks the object as destroyed and helps detect use-after-free bugs if any code attempts to use the freed object.",
+      "dsl": {
+        "pattern": "object_deletion { obj->valid = INVALID; if(OK(__KernelFreeMemory__(obj))) { success; } }",
+        "rule": "REQUIRE object.deletion SETS field.valid TO constant.INVALID BEFORE free.operation"
+      },
+      "rationale": "Provides defense against use-after-free by poisoning the object state before deallocation",
+      "examples": {
+        "valid": [
+          "queue_->valid = INVALID;\n\nif(OK(__KernelFreeMemory__(queue_))) {\n  __ReturnOk__();\n} else {\n  __AssertOnElse__();\n}"
+        ],
+        "invalid": [
+          "if(OK(__KernelFreeMemory__(queue_))) {\n  // Missing: queue_->valid = INVALID;\n  __ReturnOk__();\n}"
+        ]
+      },
+      "severity": "error",
+      "references": [
+        "src/queue.c:87",
+        "src/defines.h:132"
+      ]
+    },
+    {
+      "id": "OBJ-004",
+      "category": "object-validation",
+      "name": "Use __ObjectIsValid__ for Object Validation",
+      "shortName": "Validate Objects with Macro",
+      "description": "When validating kernel objects, use __ObjectIsValid__(obj) instead of only __PointerIsNotNull__(obj). The __ObjectIsValid__ macro checks both that the pointer is not null AND that the object's valid field equals VALID. This provides defense-in-depth validation.",
+      "dsl": {
+        "pattern": "object_validation { if(__ObjectIsValid__(obj)) { /* process */ } else { __AssertOnElse__(); } }",
+        "rule": "REQUIRE object.validation USES macro.__ObjectIsValid__ INSTEAD_OF only.__PointerIsNotNull__"
+      },
+      "rationale": "Detects invalid/freed/uninitialized objects beyond simple null pointer checks, preventing subtle bugs",
+      "examples": {
+        "valid": [
+          "if(__ObjectIsValid__(queue_)) {\n  // process queue\n} else {\n  __AssertOnElse__();\n}",
+          "if(__ObjectIsValid__(queue_) && __PointerIsNotNull__(res_)) {\n  // compound validation\n}"
+        ],
+        "invalid": [
+          "if(__PointerIsNotNull__(queue_)) {\n  // Only checks null, not validity\n}",
+          "if(queue_ && queue_->valid) {\n  // Raw check instead of macro\n}"
+        ]
+      },
+      "severity": "error",
+      "references": [
+        "src/queue.c:75",
+        "src/queue.c:110",
+        "src/defines.h:136"
+      ]
     }
   ],
   "validation_patterns": {
@@ -828,6 +933,13 @@
       "not_null": "__PointerIsNotNull__(ptr)",
       "is_null": "__PointerIsNull__(ptr)",
       "description": "Standard pointer validation macros"
+    },
+    "object_validation": {
+      "is_valid": "__ObjectIsValid__(obj)",
+      "is_not_valid": "__ObjectIsNotValid__(obj)",
+      "valid_constant": "VALID (0xAAu)",
+      "invalid_constant": "INVALID (0x55u)",
+      "description": "Object state validation macros - checks both pointer and valid field"
     },
     "numeric_validation": {
       "non_zero": "(0x0u < value)",
@@ -849,6 +961,18 @@
     "allocation_and_check": {
       "pattern": "if(OK(__KernelAllocateMemory__((volatile Addr_t **)&ptr, size))) { if(__PointerIsNotNull__(ptr)) { /* use ptr */ } else { __AssertOnElse__(); } } else { __AssertOnElse__(); }",
       "description": "Standard allocation pattern with double validation"
+    },
+    "object_creation": {
+      "pattern": "if(OK(__KernelAllocateMemory__((volatile Addr_t **)&obj, sizeof(ObjType_t)))) { if(__PointerIsNotNull__(obj)) { obj->valid = VALID; obj->field1 = value1; obj->field2 = value2; __ReturnOk__(); } else { __AssertOnElse__(); } } else { __AssertOnElse__(); }",
+      "description": "Standard object creation pattern - allocate, validate pointer, set valid field, initialize other fields"
+    },
+    "object_deletion": {
+      "pattern": "if(__ObjectIsValid__(obj)) { /* cleanup resources */ obj->valid = INVALID; if(OK(__KernelFreeMemory__(obj))) { __ReturnOk__(); } else { __AssertOnElse__(); } } else { __AssertOnElse__(); }",
+      "description": "Standard object deletion pattern - validate object, cleanup, mark invalid, then free"
+    },
+    "object_operation": {
+      "pattern": "if(__ObjectIsValid__(obj) && __PointerIsNotNull__(param_)) { /* perform operation */ __ReturnOk__(); } else { __AssertOnElse__(); }",
+      "description": "Standard object operation pattern - validate object and parameters before processing"
     },
     "list_find": {
       "pattern": "cursor = list->head; while(__PointerIsNotNull__(cursor) && (target != cursor)) { cursor = cursor->next; } if(__PointerIsNotNull__(cursor)) { /* found */ } else { __AssertOnElse__(); }",
