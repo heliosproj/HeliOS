@@ -126,19 +126,29 @@ static std::vector<Rule> loadRulesFromFile(const std::string& file_path) {
         // Load and parse YAML file
         YAML::Node doc = YAML::LoadFile(file_path);
 
-        // Check if 'rules' key exists
-        if (!doc["rules"]) {
-            spdlog::warn("File {} does not contain 'rules' key, skipping", file_path);
+        // Determine if rules are at top-level or under 'rules' key
+        YAML::Node rules_node;
+
+        if (doc.IsSequence()) {
+            // Rules are at the top level as a sequence
+            spdlog::debug("Detected top-level sequence format in {}", file_path);
+            rules_node = doc;
+        } else if (doc["rules"]) {
+            // Rules are under 'rules' key
+            spdlog::debug("Detected 'rules' key format in {}", file_path);
+            rules_node = doc["rules"];
+        } else {
+            spdlog::warn("File {} does not contain rules in expected format", file_path);
+            return rules;
+        }
+
+        // Validate rules_node is a sequence
+        if (!rules_node.IsSequence()) {
+            spdlog::error("Rules in {} are not a sequence", file_path);
             return rules;
         }
 
         // Parse each rule
-        const YAML::Node& rules_node = doc["rules"];
-        if (!rules_node.IsSequence()) {
-            spdlog::error("'rules' in {} is not a sequence", file_path);
-            return rules;
-        }
-
         for (const auto& rule_node : rules_node) {
             try {
                 Rule rule = parseRule(rule_node);
@@ -167,27 +177,34 @@ static bool validateYamlSchema(const std::string& file_path) {
     try {
         YAML::Node doc = YAML::LoadFile(file_path);
 
-        // Check for 'rules' key
-        if (!doc["rules"]) {
-            spdlog::debug("File {} missing 'rules' key", file_path);
+        // Determine if rules are at top-level or under 'rules' key
+        YAML::Node rules_node;
+
+        if (doc.IsSequence()) {
+            // Rules are at the top level as a sequence
+            rules_node = doc;
+        } else if (doc["rules"]) {
+            // Rules are under 'rules' key
+            rules_node = doc["rules"];
+        } else {
+            spdlog::debug("File {} missing rules", file_path);
             return false;
         }
 
         // Check that rules is a sequence
-        if (!doc["rules"].IsSequence()) {
-            spdlog::debug("'rules' in {} is not a sequence", file_path);
+        if (!rules_node.IsSequence()) {
+            spdlog::debug("Rules in {} are not a sequence", file_path);
             return false;
         }
 
         // Validate at least one rule has required fields
-        const YAML::Node& rules = doc["rules"];
-        if (rules.size() == 0) {
+        if (rules_node.size() == 0) {
             spdlog::debug("File {} contains no rules", file_path);
             return false;
         }
 
         // Check first rule has required fields
-        const YAML::Node& first_rule = rules[0];
+        const YAML::Node& first_rule = rules_node[0];
         if (!first_rule["id"] || !first_rule["description"] || !first_rule["severity"]) {
             spdlog::debug("First rule in {} missing required fields", file_path);
             return false;

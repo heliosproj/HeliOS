@@ -77,7 +77,8 @@ file(GLOB_RECURSE NOMIC_SOURCES
 )
 
 # Collect LLVM/Clang libraries
-llvm_map_components_to_libnames(llvm_libs support core irreader)
+# Note: Clang libraries already include necessary LLVM components transitively
+# Explicitly linking LLVM libs can cause command line option registration conflicts
 
 set(CLANG_LIBS
     clangAST
@@ -97,7 +98,6 @@ add_executable(nomic ${NOMIC_SOURCES})
 target_link_libraries(nomic
     PRIVATE
     ${CLANG_LIBS}
-    ${llvm_libs}
     spdlog::spdlog
     yaml-cpp
     nlohmann_json::nlohmann_json

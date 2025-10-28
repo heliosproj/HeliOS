@@ -161,36 +161,55 @@ RuleSet RuleEngine::loadRulesFromString(const std::string& yaml_content) {
     try {
         YAML::Node root = YAML::Load(yaml_content);
 
-        // Load metadata if present
-        if (root["metadata"]) {
-            const auto& metadata = root["metadata"];
-            if (metadata["version"]) {
-                rule_set.global_settings["version"] = metadata["version"].as<std::string>();
+        // Determine if rules are at top-level or in structured format
+        YAML::Node rules_node;
+        bool has_rules = false;
+
+        if (root.IsSequence()) {
+            // Rules are at the top level as a sequence (e.g., - id: RULE-001)
+            spdlog::debug("Detected top-level sequence format");
+            rules_node = root;
+            has_rules = true;
+        } else if (root["rules"]) {
+            // Rules are under 'rules' key
+            spdlog::debug("Detected structured format with 'rules' key");
+            rules_node = root["rules"];
+            has_rules = true;
+
+            // Load metadata if present
+            if (root["metadata"]) {
+                const auto& metadata = root["metadata"];
+                if (metadata["version"]) {
+                    rule_set.global_settings["version"] = metadata["version"].as<std::string>();
+                }
+                if (metadata["description"]) {
+                    rule_set.global_settings["description"] = metadata["description"].as<std::string>();
+                }
             }
-            if (metadata["description"]) {
-                rule_set.global_settings["description"] = metadata["description"].as<std::string>();
+
+            // Load global settings
+            if (root["global_settings"]) {
+                const auto& settings = root["global_settings"];
+                for (const auto& setting : settings) {
+                    rule_set.global_settings[setting.first.as<std::string>()] =
+                        setting.second.as<std::string>();
+                }
             }
         }
 
-        // Load global settings
-        if (root["global_settings"]) {
-            const auto& settings = root["global_settings"];
-            for (const auto& setting : settings) {
-                rule_set.global_settings[setting.first.as<std::string>()] =
-                    setting.second.as<std::string>();
-            }
-        }
-
-        // Load rules
-        if (root["rules"]) {
-            const auto& rules_node = root["rules"];
-
+        // Load rules if found
+        if (has_rules && rules_node.IsSequence()) {
             for (const auto& rule_node : rules_node) {
-                Rule rule = parseRule(rule_node);
-                if (validateRule(rule)) {
-                    rule_set.rules.push_back(rule);
-                } else {
-                    spdlog::warn("Invalid rule skipped: {}", rule.getId());
+                try {
+                    Rule rule = parseRule(rule_node);
+                    if (validateRule(rule)) {
+                        rule_set.rules.push_back(rule);
+                    } else {
+                        spdlog::warn("Invalid rule skipped: {}", rule.getId());
+                    }
+                } catch (const std::exception& e) {
+                    spdlog::error("Failed to parse rule: {}", e.what());
+                    // Continue with next rule
                 }
             }
         }
@@ -366,14 +385,17 @@ std::vector<Violation> RuleEngine::executeRule(const Rule& rule,
     current_db_ = &db;
 
     try {
-        // Select entities based on scope
-        if (rule.getScope() == "Function") {
+        // Select entities based on scope (case-insensitive comparison)
+        std::string scope_lower = rule.getScope();
+        std::transform(scope_lower.begin(), scope_lower.end(), scope_lower.begin(), ::tolower);
+
+        if (scope_lower == "function") {
             for (const auto& func : db.getFunctions()) {
                 if (evaluateRuleOnEntity(rule, *func)) {
                     violations.push_back(createViolation(rule, *func));
                 }
             }
-        } else if (rule.getScope() == "Variable") {
+        } else if (scope_lower == "variable") {
             for (const auto& var : db.getGlobalVariables()) {
                 if (evaluateRuleOnEntity(rule, *var)) {
                     violations.push_back(createViolation(rule, *var));

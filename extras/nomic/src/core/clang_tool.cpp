@@ -22,7 +22,6 @@
 #include <clang/Tooling/Tooling.h>
 #include <clang/Tooling/JSONCompilationDatabase.h>
 #include <clang/Frontend/FrontendActions.h>
-#include <llvm/Support/CommandLine.h>
 #include <spdlog/spdlog.h>
 #include <fstream>
 #include <filesystem>
@@ -79,9 +78,26 @@ bool ClangAnalyzer::analyzeWithCompilationDatabase(const std::string& compilatio
                                                     const std::vector<std::string>& source_files) {
     spdlog::info("Loading compilation database: {}", compilation_db_path);
 
+    // Determine if path is a directory or file
+    std::filesystem::path db_path(compilation_db_path);
+    std::string actual_db_file;
+
+    if (std::filesystem::is_directory(db_path)) {
+        // Look for compile_commands.json in the directory
+        actual_db_file = (db_path / "compile_commands.json").string();
+        if (!std::filesystem::exists(actual_db_file)) {
+            spdlog::error("compile_commands.json not found in directory: {}", compilation_db_path);
+            return false;
+        }
+    } else {
+        actual_db_file = compilation_db_path;
+    }
+
+    spdlog::debug("Loading compilation database from: {}", actual_db_file);
+
     std::string error_message;
     auto compilation_db = clang::tooling::JSONCompilationDatabase::loadFromFile(
-        compilation_db_path, error_message, clang::tooling::JSONCommandLineSyntax::AutoDetect);
+        actual_db_file, error_message, clang::tooling::JSONCommandLineSyntax::AutoDetect);
 
     if (!compilation_db) {
         spdlog::error("Failed to load compilation database: {}", error_message);

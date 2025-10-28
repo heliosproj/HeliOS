@@ -28,6 +28,7 @@
 #include <exception>
 #include <chrono>
 #include <spdlog/spdlog.h>
+#include <llvm/Support/CommandLine.h>
 
 using namespace nomic;
 
@@ -36,6 +37,10 @@ using namespace nomic;
  */
 int main(int argc, char* argv[]) {
     try {
+        // Reset LLVM command line parser to prevent "option registered more than once" errors
+        // This is necessary because both LLVM and Clang libraries register command line options
+        llvm::cl::ResetCommandLineParser();
+
         auto start_time = std::chrono::steady_clock::now();
 
         // Parse command-line arguments

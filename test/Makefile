@@ -33,7 +33,13 @@ CFLAGS = -fdiagnostics-color=always \
          -Wall \
          -Wextra
 
-# Include paths
+# Include paths (absolute for compilation database)
+INCLUDES_ABS = -I$(shell pwd)/$(BASE_DIR)/src \
+               -I$(shell pwd)/$(BASE_DIR)/drivers/ramdisk \
+               -I$(shell pwd)/$(BASE_DIR)/drivers/block \
+               -I$(shell pwd)/$(BASE_DIR)/drivers/char
+
+# Include paths (relative for normal compilation)
 INCLUDES = -I$(BASE_DIR)/src \
            -I$(BASE_DIR)/drivers/ramdisk \
            -I$(BASE_DIR)/drivers/block \
@@ -86,12 +92,17 @@ test: $(TARGET)
 	@echo "Test report saved to: $(TEST_REPORT)"
 
 # Run Nomic semantic source code analyzer
-analyze: nomic
+analyze: nomic compile_commands
 	@$(NOMIC_BIN) analyze $(BASE_DIR)/src/*.c \
+		--compilation-database $(BASE_DIR) \
 		--rules $(NOMIC_DIR)/helios.yaml \
 		--format json \
-		--output $(ANALYSIS_REPORT) 2>/dev/null || true
+		--output $(ANALYSIS_REPORT)
 	@echo "Analysis report saved to: $(ANALYSIS_REPORT)"
+
+# Generate compilation database for nomic
+compile_commands:
+	@python3 -c "import json, glob, os; base = os.path.abspath('$(BASE_DIR)'); commands = [{'directory': base, 'command': 'gcc -std=c11 -Wall $(INCLUDES_ABS) $(DEFINES) -c ' + os.path.abspath(f), 'file': os.path.abspath(f)} for f in glob.glob('$(BASE_DIR)/src/*.c')]; json.dump(commands, open(os.path.join(base, 'compile_commands.json'), 'w'), indent=2)"
 
 # Run tests with gdb for debugging
 debug: $(TARGET)
@@ -105,7 +116,7 @@ clean:
 	@rm -rf $(NOMIC_BUILD_DIR)
 
 # Phony targets
-.PHONY: all test analyze debug clean help nomic
+.PHONY: all test analyze debug clean help nomic compile_commands
 
 # Help target
 help:

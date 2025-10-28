@@ -23,6 +23,8 @@
 #include <regex>
 #include <algorithm>
 #include <cctype>
+#include <mutex>
+#include <chrono>
 
 namespace nomic::patterns {
 
@@ -626,14 +628,170 @@ std::map<std::string, std::string> ASTQueryMatcher::extractAttributes(const clan
 }
 
 bool ASTQueryMatcher::matchChildren(const ASTQueryNode& query_node, const clang::Stmt* stmt, ASTQueryMatch& match) {
-    // Simplified child matching - full implementation would handle combinators
-    return true;
+    const auto& children = query_node.getChildren();
+    if (children.empty()) {
+        return true;
+    }
+
+    // Get combinator type
+    auto combinator = query_node.getCombinator();
+
+    if (combinator == ASTQueryNodeType::CHILD) {
+        // Direct child combinator (>)
+        for (auto* child_stmt : stmt->children()) {
+            if (child_stmt) {
+                for (const auto& child_query : children) {
+                    if (matchNode(*child_query, child_stmt, match)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+
+    } else if (combinator == ASTQueryNodeType::DESCENDANT) {
+        // Descendant combinator (...)
+        // Match any descendant, not just direct children
+        class DescendantMatcher : public clang::RecursiveASTVisitor<DescendantMatcher> {
+        public:
+            DescendantMatcher(const ASTQueryNode& query, ASTQueryMatcher& parent)
+                : query_(query), parent_(parent) {}
+
+            bool VisitStmt(clang::Stmt* s) {
+                if (parent_.matchNode(query_, s, match_)) {
+                    found_ = true;
+                }
+                return !found_;  // Stop if found
+            }
+
+            bool wasFound() const { return found_; }
+            const ASTQueryMatch& getMatch() const { return match_; }
+
+        private:
+            const ASTQueryNode& query_;
+            ASTQueryMatcher& parent_;
+            ASTQueryMatch match_;
+            bool found_ = false;
+        };
+
+        for (const auto& child_query : children) {
+            DescendantMatcher desc_matcher(*child_query, *this);
+            for (auto* child_stmt : stmt->children()) {
+                if (child_stmt) {
+                    desc_matcher.TraverseStmt(const_cast<clang::Stmt*>(child_stmt));
+                    if (desc_matcher.wasFound()) {
+                        match = desc_matcher.getMatch();
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    // Default: just check direct children
+    for (auto* child_stmt : stmt->children()) {
+        if (child_stmt) {
+            for (const auto& child_query : children) {
+                if (matchNode(*child_query, child_stmt, match)) {
+                    return true;
+                }
+            }
+        }
+    }
+
+    return false;
 }
 
 // ==================== ASTQueryEngine ====================
 
+/**
+ * @brief Query cache for performance optimization
+ */
+class ASTQueryCache {
+public:
+    struct CacheEntry {
+        std::unique_ptr<ASTQueryNode> parsed_query;
+        std::chrono::steady_clock::time_point last_used;
+        size_t use_count = 0;
+    };
+
+    std::unique_ptr<ASTQueryNode> getOrParse(const std::string& query_str, ASTQueryParser& parser) {
+        std::lock_guard<std::mutex> lock(mutex_);
+
+        auto it = cache_.find(query_str);
+        if (it != cache_.end()) {
+            it->second.last_used = std::chrono::steady_clock::now();
+            it->second.use_count++;
+
+            // Deep copy the cached query tree
+            return cloneQueryNode(*it->second.parsed_query);
+        }
+
+        // Parse and cache
+        auto query_tree = parser.parse(query_str);
+        if (query_tree) {
+            CacheEntry entry;
+            entry.parsed_query = cloneQueryNode(*query_tree);
+            entry.last_used = std::chrono::steady_clock::now();
+            entry.use_count = 1;
+            cache_[query_str] = std::move(entry);
+        }
+
+        return query_tree;
+    }
+
+    void clear() {
+        std::lock_guard<std::mutex> lock(mutex_);
+        cache_.clear();
+    }
+
+    size_t size() const {
+        std::lock_guard<std::mutex> lock(mutex_);
+        return cache_.size();
+    }
+
+private:
+    mutable std::mutex mutex_;
+    std::map<std::string, CacheEntry> cache_;
+
+    std::unique_ptr<ASTQueryNode> cloneQueryNode(const ASTQueryNode& node) {
+        auto cloned = std::make_unique<ASTQueryNode>(node.getNodeType());
+
+        // Copy predicates
+        for (const auto& pred : node.getPredicates()) {
+            cloned->addPredicate(pred);
+        }
+
+        // Clone children recursively
+        for (const auto& child : node.getChildren()) {
+            cloned->addChild(cloneQueryNode(*child));
+        }
+
+        if (node.getCombinator().has_value()) {
+            cloned->setCombinator(node.getCombinator().value());
+        }
+
+        if (node.getCaptureName().has_value()) {
+            cloned->setCaptureName(node.getCaptureName().value());
+        }
+
+        cloned->setOptional(node.isOptional());
+
+        if (node.getQuantifier().has_value()) {
+            cloned->setQuantifier(node.getQuantifier().value());
+        }
+
+        return cloned;
+    }
+};
+
+// Global query cache (singleton pattern for optimization)
+static ASTQueryCache global_query_cache;
+
 std::vector<ASTQueryMatch> ASTQueryEngine::query(const std::string& query_str, clang::Decl* root) {
-    auto query_tree = parser_.parse(query_str);
+    // Use cached parsed query if available
+    auto query_tree = global_query_cache.getOrParse(query_str, parser_);
     if (!query_tree) {
         spdlog::error("Failed to parse query: {}", query_str);
         return {};
@@ -644,7 +802,8 @@ std::vector<ASTQueryMatch> ASTQueryEngine::query(const std::string& query_str, c
 }
 
 std::vector<ASTQueryMatch> ASTQueryEngine::query(const std::string& query_str, clang::Stmt* root) {
-    auto query_tree = parser_.parse(query_str);
+    // Use cached parsed query if available
+    auto query_tree = global_query_cache.getOrParse(query_str, parser_);
     if (!query_tree) {
         spdlog::error("Failed to parse query: {}", query_str);
         return {};
@@ -655,11 +814,27 @@ std::vector<ASTQueryMatch> ASTQueryEngine::query(const std::string& query_str, c
 }
 
 bool ASTQueryEngine::matches(const std::string& query_str, clang::Decl* root) {
-    return !query(query_str, root).empty();
+    // Optimized: stop at first match
+    auto query_tree = global_query_cache.getOrParse(query_str, parser_);
+    if (!query_tree) {
+        return false;
+    }
+
+    ASTQueryMatcher matcher(*query_tree);
+    auto matches = matcher.match(root);
+    return !matches.empty();
 }
 
 bool ASTQueryEngine::matches(const std::string& query_str, clang::Stmt* root) {
-    return !query(query_str, root).empty();
+    // Optimized: stop at first match
+    auto query_tree = global_query_cache.getOrParse(query_str, parser_);
+    if (!query_tree) {
+        return false;
+    }
+
+    ASTQueryMatcher matcher(*query_tree);
+    auto matches = matcher.match(root);
+    return !matches.empty();
 }
 
 size_t ASTQueryEngine::count(const std::string& query_str, clang::Decl* root) {

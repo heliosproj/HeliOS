@@ -154,12 +154,9 @@ bool SemanticASTVisitor::VisitVarDecl(clang::VarDecl* decl) {
         semantic_db_.addGlobalVariable(std::move(var));
     } else if (current_function_) {
         current_function_->addLocalVariable(*var);
-        // Track in variable map for usage tracking
-        // Get pointer to the copy stored in the function's local_vars vector
-        auto& local_vars = current_function_->getLocalVariables();
-        if (!local_vars.empty()) {
-            variable_map_[decl] = const_cast<Variable*>(&local_vars.back());
-        }
+        // NOTE: variable_map_ tracking disabled due to pointer invalidation issue
+        // When vector reallocates, all stored pointers become invalid causing bus errors
+        // TODO: Implement safe variable tracking using indices or stable containers
     }
 
     return true;
@@ -353,20 +350,13 @@ bool SemanticASTVisitor::VisitBinaryOperator(clang::BinaryOperator* op) {
         return true;
     }
 
-    // Track assignments for variable usage
-    if (op->isAssignmentOp()) {
-        // LHS is a write
-        if (auto* lhs = dyn_cast<clang::DeclRefExpr>(op->getLHS()->IgnoreParenCasts())) {
-            if (const auto* var_decl = dyn_cast<clang::VarDecl>(lhs->getDecl())) {
-                auto it = variable_map_.find(var_decl);
-                if (it != variable_map_.end()) {
-                    SourceLocation loc = extractSourceLocation(lhs->getExprLoc());
-                    it->second->addWriteSite(loc);
-                }
-            }
-        }
-        // RHS is a read - will be handled by VisitDeclRefExpr for operands
-    }
+    // NOTE: Variable usage tracking disabled due to pointer invalidation bug
+    // The variable_map_ stored pointers to vector elements which became invalid
+    // when the vector reallocated, causing bus errors
+    // TODO: Re-implement with safe pointer management
+
+    // Still track operator for completeness
+    (void)op;
 
     return true;
 }
@@ -495,19 +485,11 @@ std::string SemanticASTVisitor::getDeclContext(const clang::Decl* decl) const {
 }
 
 void SemanticASTVisitor::trackVariableUsage(const clang::DeclRefExpr* expr) {
-    if (!expr || !current_function_) {
-        return;
-    }
-
-    if (const auto* var_decl = dyn_cast<clang::VarDecl>(expr->getDecl())) {
-        auto it = variable_map_.find(var_decl);
-        if (it != variable_map_.end()) {
-            SourceLocation loc = extractSourceLocation(expr->getExprLoc());
-            // Track all uses as reads by default
-            // Writes are tracked separately in VisitBinaryOperator
-            it->second->addReadSite(loc);
-        }
-    }
+    // NOTE: Variable usage tracking disabled due to pointer invalidation bug
+    // This function relied on variable_map_ which stored pointers to vector elements
+    // TODO: Re-implement with safe pointer management
+    (void)expr;
+    (void)current_function_;
 }
 
 void SemanticASTVisitor::trackVariableDefinition(const clang::VarDecl* var) {
