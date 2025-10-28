@@ -1,0 +1,566 @@
+# HeliOS Coding Standard - Nomic Rules
+# Version: 1.3.0
+# Based on: HELIOS_CODE_STANDARD.json
+#
+# This file contains Nomic checker rules implementing the HeliOS coding standard.
+# Each rule references its corresponding HeliOS standard rule via tags (helios:RULE-ID).
+
+---
+# =============================================================================
+# Function Structure Rules (FN-*)
+# =============================================================================
+
+- id: HELIOS-FN-001
+  description: "Functions returning Return_t must use FUNCTION_ENTER and FUNCTION_EXIT macros (HeliOS FN-001)"
+  severity: error
+  scope: function
+  select: functions
+  where: returns("Return_t")
+  assert: ast_query("macro_expansion[@name='FUNCTION_ENTER']") and ast_query("macro_expansion[@name='FUNCTION_EXIT']")
+  message: "Function {name} must begin with FUNCTION_ENTER and end with FUNCTION_EXIT macros"
+  fixit: "Add FUNCTION_ENTER at function start and FUNCTION_EXIT before final brace"
+  tags:
+    - helios:FN-001
+    - function-structure
+    - error-handling
+    - best-practices
+
+- id: HELIOS-FN-002
+  description: "Functions must not directly assign to 'ret' variable, only macros may modify it (HeliOS FN-002)"
+  severity: error
+  scope: function
+  select: functions
+  where: returns("Return_t")
+  assert: not ast_query("binary_operator[@operator='='][left[@name='ret']][!ancestor::macro_expansion]")
+  message: "Function {name} directly assigns to 'ret' variable. Use __ReturnOk__() macro instead"
+  fixit: "Replace 'ret = ReturnOK' with __ReturnOk__() macro call"
+  tags:
+    - helios:FN-002
+    - function-structure
+    - error-handling
+    - controlled-return
+
+- id: HELIOS-FN-003
+  description: "FUNCTION_ENTER and FUNCTION_EXIT must appear exactly once in each function (HeliOS FN-003)"
+  severity: error
+  scope: function
+  select: functions
+  where: returns("Return_t")
+  assert: ast_query_count("macro_expansion[@name='FUNCTION_ENTER']") == 1 and ast_query_count("macro_expansion[@name='FUNCTION_EXIT']") == 1
+  message: "Function {name} must have exactly one FUNCTION_ENTER and one FUNCTION_EXIT"
+  fixit: "Remove duplicate FUNCTION_ENTER/EXIT macros or add missing ones"
+  tags:
+    - helios:FN-003
+    - function-structure
+    - single-entry-exit
+    - best-practices
+
+# =============================================================================
+# Control Flow Rules (CTL-*)
+# =============================================================================
+
+- id: HELIOS-CTL-001
+  description: "Functions must not use early return statements (HeliOS CTL-001)"
+  severity: error
+  scope: function
+  select: functions
+  where: returns("Return_t")
+  assert: not has_early_return()
+  message: "Function {name} has early return statements. Use single-exit pattern with FUNCTION_EXIT only"
+  fixit: "Remove early returns and restructure to use nested if statements with FUNCTION_EXIT at end"
+  tags:
+    - helios:CTL-001
+    - control-flow
+    - single-exit
+    - best-practices
+
+- id: HELIOS-CTL-002
+  description: "Success path must use nested if-statements with __ReturnOk__() in deepest block (HeliOS CTL-002)"
+  severity: error
+  scope: function
+  select: functions
+  where: returns("Return_t") and calls("__ReturnOk__")
+  assert: getMaxNestingDepth() >= 2
+  message: "Function {name} must use nested if-statements for happy path (current nesting depth: {nestingDepth})"
+  fixit: "Restructure code to use nested if-statements with __ReturnOk__() in deepest success block"
+  tags:
+    - helios:CTL-002
+    - control-flow
+    - happy-path
+    - nested-if
+
+- id: HELIOS-BRK-001
+  description: "Search loops must break immediately after setting success return (HeliOS BRK-001)"
+  severity: warning
+  scope: function
+  select: functions
+  where: has_loop() and calls("__ReturnOk__")
+  assert: ast_query("while_stmt//macro_expansion[@name='__ReturnOk__']/following-sibling::break_stmt")
+  message: "Function {name} should break immediately after __ReturnOk__() in search loops"
+  fixit: "Add 'break;' statement immediately after __ReturnOk__() call"
+  tags:
+    - helios:BRK-001
+    - control-flow
+    - loop-optimization
+    - best-practices
+
+# =============================================================================
+# Return Handling Rules (RET-*)
+# =============================================================================
+
+- id: HELIOS-RET-001
+  description: "Functions must use __ReturnOk__() macro for success indication (HeliOS RET-001)"
+  severity: error
+  scope: function
+  select: functions
+  where: returns("Return_t")
+  assert: not ast_query("binary_operator[@operator='='][left[@name='ret']][right[@name='ReturnOK']]")
+  message: "Function {name} manually assigns ret = ReturnOK. Use __ReturnOk__() macro instead"
+  fixit: "Replace 'ret = ReturnOK' with __ReturnOk__() macro call"
+  tags:
+    - helios:RET-001
+    - return-handling
+    - success-indication
+    - best-practices
+
+- id: HELIOS-RET-003
+  description: "Functions must not use __ReturnError__() macro or manually assign error (HeliOS RET-003)"
+  severity: error
+  scope: function
+  select: functions
+  where: returns("Return_t")
+  assert: not calls("__ReturnError__") and not ast_query("binary_operator[@operator='='][left[@name='ret']][right[@name='ReturnError']]")
+  message: "Function {name} explicitly sets error. Remove __ReturnError__() or 'ret = ReturnError' (error is default)"
+  fixit: "Remove explicit error setting - FUNCTION_ENTER initializes ret to ReturnError by default"
+  tags:
+    - helios:RET-003
+    - return-handling
+    - fail-by-default
+    - antipattern
+
+# =============================================================================
+# Variable Naming Rules (VAR-*)
+# =============================================================================
+
+- id: HELIOS-VAR-001
+  description: "Function parameters must use trailing underscore naming convention (HeliOS VAR-001)"
+  severity: error
+  scope: function
+  select: functions
+  assert: forall p in fn.parameters, regex_matches(p.name, "^[a-z][a-zA-Z0-9]*_$")
+  message: "Function {name} has parameter(s) without trailing underscore"
+  fixit: "Add trailing underscore to all parameter names (e.g., 'task' -> 'task_')"
+  tags:
+    - helios:VAR-001
+    - variable-naming
+    - naming-convention
+    - parameters
+
+- id: HELIOS-VAR-002
+  description: "Local variables must be initialized at declaration (HeliOS VAR-002)"
+  severity: error
+  scope: variable
+  select: local_variables
+  where: not var.is_parameter
+  assert: var.is_initialized or var.initial_value != ""
+  message: "Local variable {name} is not initialized at declaration"
+  fixit: "Initialize variable to null for pointers or 0x0u for numeric types"
+  tags:
+    - helios:VAR-002
+    - variable-naming
+    - initialization
+    - defensive-programming
+
+# =============================================================================
+# Type Usage Rules (TYP-*)
+# =============================================================================
+
+- id: HELIOS-TYP-001-NULL
+  description: "Code must use 'null' macro instead of NULL (HeliOS TYP-001)"
+  severity: error
+  scope: function
+  select: functions
+  assert: not ast_query("identifier[@name='NULL']")
+  message: "Function {name} uses NULL instead of HeliOS 'null' macro"
+  fixit: "Replace NULL with null macro"
+  tags:
+    - helios:TYP-001
+    - type-usage
+    - helios-types
+    - portability
+
+- id: HELIOS-TYP-001-BOOL
+  description: "Code must use 'true'/'false' instead of 1/0 for boolean values (HeliOS TYP-001)"
+  severity: warning
+  scope: function
+  select: functions
+  assert: not ast_query("binary_operator[@operator='='][left[type='Base_t']][right[@value='0' or @value='1']]")
+  message: "Function {name} uses numeric literals for boolean values. Use 'true'/'false' instead"
+  fixit: "Replace 0 with false and 1 with true for boolean assignments"
+  tags:
+    - helios:TYP-001
+    - type-usage
+    - boolean-values
+    - readability
+
+# =============================================================================
+# Numeric Literals Rules (NUM-*)
+# =============================================================================
+
+- id: HELIOS-NUM-001
+  description: "Integer literals must be expressed in hexadecimal notation with type suffix (HeliOS NUM-001)"
+  severity: warning
+  scope: function
+  select: functions
+  assert: not ast_query("integer_literal[not(regex_match(@value, '^0[xX][0-9A-Fa-f]+[uU]?$'))]")
+  message: "Function {name} contains decimal integer literals. Use hexadecimal notation (e.g., 0x0u, 0x1u)"
+  fixit: "Convert decimal literals to hexadecimal with 'u' suffix (0 -> 0x0u, 1 -> 0x1u, 255 -> 0xFFu)"
+  tags:
+    - helios:NUM-001
+    - numeric-literals
+    - hexadecimal
+    - code-style
+
+# =============================================================================
+# Macro Usage Rules (MAC-*)
+# =============================================================================
+
+- id: HELIOS-MAC-001
+  description: "Internal macros and functions must use double underscore pattern (HeliOS MAC-001)"
+  severity: error
+  scope: function
+  select: functions
+  where: is_static_function() or fn.linkage == "internal"
+  assert: regex_matches(fn.name, "^__[A-Z][a-zA-Z0-9]*__$") or starts_with(fn.name, "x")
+  message: "Internal function {name} must use __Name__ pattern (not x-prefixed public API)"
+  fixit: "Rename to __FunctionName__ pattern with double underscores"
+  tags:
+    - helios:MAC-001
+    - macro-usage
+    - naming-convention
+    - internal-api
+
+# =============================================================================
+# Error Checking Rules (CHK-*)
+# =============================================================================
+
+- id: HELIOS-CHK-001
+  description: "Syscall results must be checked using OK() or ERROR() macros (HeliOS CHK-001)"
+  severity: error
+  scope: function
+  select: functions
+  where: calls_function("__.*__")
+  assert: ast_query("call_expr[callee[starts_with(@name, '__')]]/ancestor::call_expr[@callee='OK' or @callee='ERROR']")
+  message: "Function {name} calls internal functions without checking result with OK()/ERROR() macros"
+  fixit: "Wrap syscall in if(OK(syscall(...))) { ... } else { __AssertOnElse__(); }"
+  tags:
+    - helios:CHK-001
+    - error-checking
+    - syscall-validation
+    - defensive-programming
+
+# =============================================================================
+# Loop Pattern Rules (LOOP-*)
+# =============================================================================
+
+- id: HELIOS-LOOP-001
+  description: "List traversal must use while(__PointerIsNotNull__(cursor)) pattern (HeliOS LOOP-001)"
+  severity: error
+  scope: function
+  select: functions
+  where: has_loop()
+  assert: not ast_query("for_stmt[condition[@name='cursor' or contains(@text, 'cursor')]]")
+  message: "Function {name} uses for-loop for list traversal. Use while(__PointerIsNotNull__(cursor)) pattern"
+  fixit: "Replace for-loop with: cursor = list->head; while(__PointerIsNotNull__(cursor)) { ...; cursor = cursor->next; }"
+  tags:
+    - helios:LOOP-001
+    - loop-patterns
+    - list-traversal
+    - pointer-safety
+
+- id: HELIOS-LOOP-002
+  description: "Cursor variable must be initialized to null before list traversal (HeliOS LOOP-002)"
+  severity: error
+  scope: function
+  select: functions
+  where: has_loop() and variable_is_defined("cursor")
+  assert: ast_query("var_decl[@name='cursor'][@initializer='null']")
+  message: "Function {name} does not initialize cursor to null before list traversal"
+  fixit: "Declare cursor with initialization: Type_t *cursor = null;"
+  tags:
+    - helios:LOOP-002
+    - loop-patterns
+    - cursor-initialization
+    - defensive-programming
+
+# =============================================================================
+# Conditionals Rules (COND-*)
+# =============================================================================
+
+- id: HELIOS-COND-001
+  description: "Constants must be on left side of comparison (Yoda conditionals) (HeliOS COND-001)"
+  severity: warning
+  scope: function
+  select: functions
+  assert: not ast_query("binary_operator[@operator='==' or @operator='!=' or @operator='<' or @operator='>'][left[not(@constant='true')][@variable='true']][right[@constant='true']]")
+  message: "Function {name} has variables on left of comparison. Use Yoda conditionals (constant first)"
+  fixit: "Reverse comparison: change 'variable == constant' to 'constant == variable'"
+  tags:
+    - helios:COND-001
+    - conditionals
+    - yoda-notation
+    - defensive-programming
+
+# =============================================================================
+# API Naming Rules (API-*)
+# =============================================================================
+
+- id: HELIOS-API-001
+  description: "Public API functions must use x-prefix naming pattern (HeliOS API-001)"
+  severity: error
+  scope: function
+  select: functions
+  where: is_public_function() and not is_static_function()
+  assert: starts_with(fn.name, "x") and regex_matches(fn.name, "^x[A-Z][a-zA-Z0-9]*$")
+  message: "Public function {name} must use x-prefix naming (e.g., xTaskCreate, xMemAlloc)"
+  fixit: "Rename to x<SubsystemName><Action> pattern"
+  tags:
+    - helios:API-001
+    - api-naming
+    - public-api
+    - naming-convention
+
+- id: HELIOS-API-002
+  description: "Internal cross-module functions must use __Name__ pattern (HeliOS API-002)"
+  severity: error
+  scope: function
+  select: functions
+  where: not is_static_function() and not starts_with(fn.name, "x")
+  assert: regex_matches(fn.name, "^__[A-Z][a-zA-Z0-9]*__$")
+  message: "Internal cross-module function {name} must use __Name__ pattern with double underscores"
+  fixit: "Rename to __FunctionName__ pattern (e.g., __KernelAllocateMemory__)"
+  tags:
+    - helios:API-002
+    - api-naming
+    - internal-api
+    - naming-convention
+
+- id: HELIOS-API-003
+  description: "Module-private functions must be declared static (HeliOS API-003)"
+  severity: error
+  scope: function
+  select: functions
+  where: regex_matches(fn.name, "^__[A-Z][a-zA-Z0-9]*__$") and not starts_with(fn.name, "x")
+  assert: is_static_function()
+  message: "Module-private function {name} must be declared static"
+  fixit: "Add 'static' storage class specifier to function declaration"
+  tags:
+    - helios:API-003
+    - api-naming
+    - module-private
+    - static-linkage
+
+- id: HELIOS-API-007
+  description: "Public API functions must use consistent subsystem prefixes (HeliOS API-007)"
+  severity: error
+  scope: function
+  select: functions
+  where: starts_with(fn.name, "x")
+  assert: regex_matches(fn.name, "^x(Task|Mem|Queue|Device|Timer|Stream|FS|System|Console)[A-Z][a-zA-Z0-9]*$")
+  message: "Public function {name} does not follow subsystem naming pattern (xTask*, xMem*, xQueue*, etc.)"
+  fixit: "Rename to x<Subsystem><Action> pattern (e.g., xTaskCreate, xMemAlloc)"
+  tags:
+    - helios:API-007
+    - api-naming
+    - subsystem-prefix
+    - naming-convention
+
+- id: HELIOS-API-008
+  description: "Functions must return Return_t type (HeliOS API-008)"
+  severity: error
+  scope: function
+  select: functions
+  where: not regex_matches(fn.name, "^(main|_start)$")
+  assert: returns("Return_t")
+  message: "Function {name} does not return Return_t. All HeliOS functions must return Return_t"
+  fixit: "Change return type to Return_t and use FUNCTION_ENTER/EXIT macros"
+  exceptions:
+    - main
+    - _start
+  tags:
+    - helios:API-008
+    - api-naming
+    - return-type
+    - consistency
+
+# =============================================================================
+# Object Validation Rules (OBJ-*)
+# =============================================================================
+
+- id: HELIOS-OBJ-001
+  description: "Kernel object structs must have Base_t valid field (HeliOS OBJ-001)"
+  severity: error
+  scope: function
+  select: functions
+  where: ast_query("type_decl[@kind='struct'][ends_with(@name, '_t')]")
+  assert: ast_query("field_decl[@name='valid'][@type='Base_t']")
+  message: "Kernel object struct in {name} is missing Base_t valid field"
+  fixit: "Add 'Base_t valid;' as first field in struct definition"
+  tags:
+    - helios:OBJ-001
+    - object-validation
+    - struct-design
+    - defensive-programming
+
+- id: HELIOS-OBJ-002
+  description: "Objects must have valid field set to VALID after allocation (HeliOS OBJ-002)"
+  severity: error
+  scope: function
+  select: functions
+  where: calls("__KernelAllocateMemory__") or calls("__HeapAllocateMemory__")
+  assert: ast_query("binary_operator[@operator='='][left[member_access[@member='valid']]][right[@name='VALID']]")
+  message: "Function {name} allocates object but does not set valid field to VALID"
+  fixit: "Add 'object->valid = VALID;' immediately after successful allocation"
+  tags:
+    - helios:OBJ-002
+    - object-validation
+    - initialization
+    - memory-safety
+
+- id: HELIOS-OBJ-003
+  description: "Objects must have valid field set to INVALID before freeing (HeliOS OBJ-003)"
+  severity: error
+  scope: function
+  select: functions
+  where: calls("__KernelFreeMemory__") or calls("__HeapFreeMemory__")
+  assert: ast_query("binary_operator[@operator='='][left[member_access[@member='valid']]][right[@name='INVALID']]")
+  message: "Function {name} frees object but does not set valid field to INVALID first"
+  fixit: "Add 'object->valid = INVALID;' before calling free function"
+  tags:
+    - helios:OBJ-003
+    - object-validation
+    - cleanup
+    - use-after-free-prevention
+
+- id: HELIOS-OBJ-004
+  description: "Object validation must use __ObjectIsValid__() macro (HeliOS OBJ-004)"
+  severity: error
+  scope: function
+  select: functions
+  where: ast_query("parameter[@type[ends_with(@name, '_t')]]")
+  assert: calls("__ObjectIsValid__") or not has_pointer_param()
+  message: "Function {name} takes object parameter but does not validate with __ObjectIsValid__()"
+  fixit: "Use __ObjectIsValid__(obj) instead of just __PointerIsNotNull__(obj)"
+  tags:
+    - helios:OBJ-004
+    - object-validation
+    - parameter-checking
+    - defensive-programming
+
+# =============================================================================
+# Memory Management Rules (MEM-*)
+# =============================================================================
+
+- id: HELIOS-MEM-001
+  description: "Cleanup on allocation failure must free previously allocated resources (HeliOS MEM-001)"
+  severity: error
+  scope: function
+  select: functions
+  where: calls("__KernelAllocateMemory__") or calls("__HeapAllocateMemory__")
+  assert: ast_query("if_stmt[condition[calls('OK')]]//else_clause//call_expr[callee[starts_with(@name, '__')][ends_with(@name, 'FreeMemory__')]]")
+  message: "Function {name} has nested allocations without cleanup in error paths (potential memory leak)"
+  fixit: "Add __KernelFreeMemory__() or __HeapFreeMemory__() in else clause after __AssertOnElse__()"
+  tags:
+    - helios:MEM-001
+    - memory-management
+    - cleanup
+    - leak-prevention
+
+# =============================================================================
+# Code Quality Rules (QUALITY-*)
+# =============================================================================
+
+- id: HELIOS-QUALITY-001
+  description: "Functions should not be overly complex (cyclomatic complexity <= 15)"
+  severity: warning
+  scope: function
+  select: functions
+  assert: getCyclomaticComplexity() <= 15
+  message: "Function {name} has cyclomatic complexity {cyclomaticComplexity}. Consider refactoring (threshold: 15)"
+  fixit: "Break function into smaller helper functions"
+  tags:
+    - code-quality
+    - complexity
+    - maintainability
+
+- id: HELIOS-QUALITY-002
+  description: "Functions should not be excessively long (line count <= 100)"
+  severity: warning
+  scope: function
+  select: functions
+  assert: getLineCount() <= 100
+  message: "Function {name} has {lineCount} lines. Consider breaking into smaller functions (threshold: 100)"
+  fixit: "Extract logical sections into separate static helper functions"
+  tags:
+    - code-quality
+    - length
+    - maintainability
+
+- id: HELIOS-QUALITY-003
+  description: "Functions should not have too many parameters (max 5)"
+  severity: warning
+  scope: function
+  select: functions
+  assert: param_count() <= 5
+  message: "Function {name} has {paramCount} parameters. Consider using a struct (threshold: 5)"
+  fixit: "Group related parameters into a struct"
+  tags:
+    - code-quality
+    - design
+    - maintainability
+
+- id: HELIOS-QUALITY-004
+  description: "Functions should not have excessive nesting depth (max 4)"
+  severity: warning
+  scope: function
+  select: functions
+  assert: getMaxNestingDepth() <= 4
+  message: "Function {name} has nesting depth {nestingDepth}. Refactor to reduce nesting (threshold: 4)"
+  fixit: "Extract nested blocks into helper functions or use early validation"
+  tags:
+    - code-quality
+    - nesting
+    - readability
+
+# =============================================================================
+# Documentation Rules (DOC-*)
+# =============================================================================
+
+- id: HELIOS-DOC-001
+  description: "Public API functions should be documented"
+  severity: info
+  scope: function
+  select: functions
+  where: starts_with(fn.name, "x")
+  assert: has_function_doc()
+  message: "Public API function {name} is missing documentation"
+  fixit: "Add function documentation comment describing purpose, parameters, and return value"
+  tags:
+    - documentation
+    - public-api
+    - maintainability
+
+- id: HELIOS-DOC-002
+  description: "Cleanup code must have explanatory comments"
+  severity: warning
+  scope: function
+  select: functions
+  where: calls("__KernelFreeMemory__") or calls("__HeapFreeMemory__")
+  assert: ast_query("call_expr[callee[ends_with(@name, 'FreeMemory__')]]/preceding-sibling::comment")
+  message: "Function {name} has cleanup code without explanatory comment"
+  fixit: "Add comment: /* Free [resource] because [operation] failed. */"
+  tags:
+    - helios:CMT-001
+    - documentation
+    - cleanup
+    - maintainability
