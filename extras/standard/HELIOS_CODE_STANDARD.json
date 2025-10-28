@@ -5,7 +5,7 @@
     "description": "DSL-like coding rules for HeliOS embedded operating system covering function structure, control flow, parameter validation, API naming conventions, scope visibility, and object validation paradigm",
     "author": "HeliOS Project",
     "date": "2025-10-28",
-    "rule_count": 31,
+    "rule_count": 33,
     "categories": [
       "function-structure",
       "parameter-validation",
@@ -103,7 +103,8 @@
         "src/task.c:72",
         "src/queue.c:48",
         "src/device.c:57-61"
-      ]
+      ],
+      "review_comment": "This rule needs to be updated to use both __PointerIsNotNull__() and __ObjectIsValid__() checks for parameter validation. The object validity check must occur on onbjects (structures) defined in HeliOS.h and types.h which have a \"Base_t valid\" structure member."
     },
     {
       "id": "VAL-002",
@@ -135,7 +136,8 @@
         "src/defines.h:116",
         "src/sys.h:95",
         "src/sys.h:101"
-      ]
+      ],
+      "review_comment": "We need rules to validate pointers before use (as this rule does) but not sure __FlagIsSet__() and __FlagIsNotSet__() belong in validation rules."
     },
     {
       "id": "CTL-001",
@@ -186,7 +188,8 @@
       "references": [
         "src/task.c:448-457",
         "src/queue.c:295-303"
-      ]
+      ],
+      "review_comment": "Make sure it is clear that __ReturnOk__() should be used in the final if() block of the happy path."
     },
     {
       "id": "CTL-003",
@@ -240,7 +243,8 @@
       "references": [
         "src/task.c:98",
         "src/defines.h:121"
-      ]
+      ],
+      "review_comment": "Generally __ReturnOk__() should appear once in the deepest point of the nested if() happy path. There may be RARE cases where __ReturnOk__() may appear in additional places in the function. Please make sure there is a DIFFERENT rule that deals with setting \"ret\" to error or using a __ReturnError__() macro as those are antipaterns."
     },
     {
       "id": "RET-002",
@@ -404,7 +408,8 @@
         "src/task.c:240",
         "src/queue.c:100",
         "src/device.c:79"
-      ]
+      ],
+      "review_comment": "Make sure this rule or a different rule states that all integer (numeric) constants must be expressed in hex format - generally followed by a type qualifier (e.g., \"u\" for unsigned integers)."
     },
     {
       "id": "MAC-001",
@@ -541,7 +546,8 @@
       "references": [
         "src/task.c:88-90",
         "src/task.c:329-332"
-      ]
+      ],
+      "review_comment": "We should add a new rule that linked list traversal uses cursor as the pointer to the current node and is initialized to list->head before entry into the while loop."
     },
     {
       "id": "COND-001",
@@ -652,7 +658,8 @@
         "src/task.h:34-61",
         "src/device.h:88-99",
         "src/mem.c:432-460"
-      ]
+      ],
+      "review_comment": "We need to add a rule that all public functions must return Return_t and that generally applies to all internal functions too. There are SOME cases where helper functions may return some other value but those cases should be rare."
     },
     {
       "id": "API-002",
@@ -683,7 +690,8 @@
         "src/device.h:89-92",
         "src/device.h:100-104",
         "src/mem.c:543-593"
-      ]
+      ],
+      "review_comment": "We need a rule that addresses the scop of internal functions. Functions with a kernel wide scope must go in the header file whereas functions with a module only scope must be defined in the C file and should be static."
     },
     {
       "id": "API-003",
@@ -925,7 +933,8 @@
         "src/queue.c:75",
         "src/queue.c:110",
         "src/defines.h:136"
-      ]
+      ],
+      "review_comment": "THIS COMMENT IS NOT RELATED TO THIS RULE. We need to add a NEW RULE that states FUNCTION_ENTER and FUNCTION_EXIT mjst each only appear ONCE in a function."
     }
   ],
   "validation_patterns": {
@@ -1006,7 +1015,11 @@
         ],
         "accessibility": "User applications and kernel modules",
         "description": "Public syscalls exposed to user applications through HeliOS.h",
-        "rules": ["API-001", "API-004", "API-007"]
+        "rules": [
+          "API-001",
+          "API-004",
+          "API-007"
+        ]
       },
       {
         "level": "internal_cross_module",
@@ -1022,7 +1035,10 @@
         ],
         "accessibility": "Kernel modules only (NOT user applications)",
         "description": "Internal kernel API for cross-module communication, hidden from user applications",
-        "rules": ["API-002", "API-005"]
+        "rules": [
+          "API-002",
+          "API-005"
+        ]
       },
       {
         "level": "module_private",
@@ -1038,7 +1054,10 @@
         ],
         "accessibility": "Single module only (internal linkage)",
         "description": "Private implementation functions for single module, not exposed through headers",
-        "rules": ["API-003", "API-006"]
+        "rules": [
+          "API-003",
+          "API-006"
+        ]
       }
     ],
     "visibility_matrix": {
@@ -1079,47 +1098,87 @@
         {
           "prefix": "xTask",
           "area": "Task Management",
-          "examples": ["xTaskCreate", "xTaskDelete", "xTaskResume", "xTaskSuspend"]
+          "examples": [
+            "xTaskCreate",
+            "xTaskDelete",
+            "xTaskResume",
+            "xTaskSuspend"
+          ]
         },
         {
           "prefix": "xMem",
           "area": "Memory Management",
-          "examples": ["xMemAlloc", "xMemFree", "xMemGetUsed", "xMemGetHeapStats"]
+          "examples": [
+            "xMemAlloc",
+            "xMemFree",
+            "xMemGetUsed",
+            "xMemGetHeapStats"
+          ]
         },
         {
           "prefix": "xQueue",
           "area": "Message Queues",
-          "examples": ["xQueueCreate", "xQueueSend", "xQueueReceive", "xQueuePeek"]
+          "examples": [
+            "xQueueCreate",
+            "xQueueSend",
+            "xQueueReceive",
+            "xQueuePeek"
+          ]
         },
         {
           "prefix": "xDevice",
           "area": "Device I/O",
-          "examples": ["xDeviceRegisterDevice", "xDeviceRead", "xDeviceWrite", "xDeviceInitDevice"]
+          "examples": [
+            "xDeviceRegisterDevice",
+            "xDeviceRead",
+            "xDeviceWrite",
+            "xDeviceInitDevice"
+          ]
         },
         {
           "prefix": "xTimer",
           "area": "Software Timers",
-          "examples": ["xTimerCreate", "xTimerStart", "xTimerStop", "xTimerIsTimerActive"]
+          "examples": [
+            "xTimerCreate",
+            "xTimerStart",
+            "xTimerStop",
+            "xTimerIsTimerActive"
+          ]
         },
         {
           "prefix": "xStream",
           "area": "Stream Buffers",
-          "examples": ["xStreamCreate", "xStreamWrite", "xStreamRead"]
+          "examples": [
+            "xStreamCreate",
+            "xStreamWrite",
+            "xStreamRead"
+          ]
         },
         {
           "prefix": "xFS",
           "area": "Filesystem",
-          "examples": ["xFSMount", "xFSOpen", "xFSRead", "xFSWrite"]
+          "examples": [
+            "xFSMount",
+            "xFSOpen",
+            "xFSRead",
+            "xFSWrite"
+          ]
         },
         {
           "prefix": "xSystem",
           "area": "System Operations",
-          "examples": ["xSystemInit", "xSystemHalt", "xSystemGetSystemInfo"]
+          "examples": [
+            "xSystemInit",
+            "xSystemHalt",
+            "xSystemGetSystemInfo"
+          ]
         },
         {
           "prefix": "xConsole",
           "area": "Console Interface",
-          "examples": ["xConsoleInit"]
+          "examples": [
+            "xConsoleInit"
+          ]
         }
       ]
     }
