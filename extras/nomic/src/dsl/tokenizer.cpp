@@ -212,7 +212,7 @@ bool Tokenizer::isWhitespace(char c) const {
 }
 
 TokenType Tokenizer::getKeywordType(const std::string& word) const {
-    if (word == "all") return TokenType::ALL;
+    if (word == "all" || word == "forall") return TokenType::ALL;
     if (word == "any") return TokenType::ANY;
     if (word == "exists") return TokenType::EXISTS;
     if (word == "none") return TokenType::NONE;

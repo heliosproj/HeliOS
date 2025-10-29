@@ -3919,6 +3919,74 @@ static std::any callBuiltinFunction(const std::string& name,
         return true;
     }
 
+    // ==================== HELIOS CODE STANDARD FUNCTIONS ====================
+
+    // regex_matches(text, pattern) - regex matching for code standard rules
+    if (name == "regex_matches") {
+        if (args.size() < 2) return false;
+        std::string text = anyToString(args[0]);
+        std::string pattern = anyToString(args[1]);
+        try {
+            std::regex re(pattern);
+            return std::regex_match(text, re);  // Use regex_match for full string match
+        } catch (const std::regex_error& e) {
+            spdlog::warn("Invalid regex pattern '{}': {}", pattern, e.what());
+            return false;
+        }
+    }
+
+    // getLineCount() - get line count of current function
+    if (name == "getLineCount") {
+        if (!context.current_function) {
+            spdlog::warn("getLineCount() called without current function context");
+            return 0;
+        }
+        const auto& loc = context.current_function->getLocation();
+        return static_cast<int>(loc.getEnd().getLine() - loc.getStart().getLine() + 1);
+    }
+
+    // getCyclomaticComplexity() - get cyclomatic complexity of current function
+    if (name == "getCyclomaticComplexity") {
+        if (!context.current_function) {
+            spdlog::warn("getCyclomaticComplexity() called without current function context");
+            return 0;
+        }
+        return static_cast<int>(context.current_function->getCyclomaticComplexity());
+    }
+
+    // getMaxNestingDepth() - get max nesting depth of current function
+    if (name == "getMaxNestingDepth") {
+        if (!context.current_function) {
+            spdlog::warn("getMaxNestingDepth() called without current function context");
+            return 0;
+        }
+        // Calculate max nesting depth from statements
+        int max_depth = 0;
+        int current_depth = 0;
+        for (const auto& stmt : context.current_function->getStatements()) {
+            if (stmt.getType() == Statement::COMPOUND_STMT ||
+                stmt.getType() == Statement::IF_STMT ||
+                stmt.getType() == Statement::FOR_STMT ||
+                stmt.getType() == Statement::WHILE_STMT) {
+                current_depth++;
+                if (current_depth > max_depth) {
+                    max_depth = current_depth;
+                }
+            }
+            // This is simplified - a proper implementation would track braces/scopes
+        }
+        return max_depth > 0 ? max_depth : 1;
+    }
+
+    // param_count() - get parameter count of current function
+    if (name == "param_count") {
+        if (!context.current_function) {
+            spdlog::warn("param_count() called without current function context");
+            return 0;
+        }
+        return static_cast<int>(context.current_function->getParameters().size());
+    }
+
     spdlog::warn("Unknown built-in function: {}", name);
     return std::any();
 }

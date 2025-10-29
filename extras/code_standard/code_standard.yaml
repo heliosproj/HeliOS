@@ -137,7 +137,7 @@
   severity: error
   scope: function
   select: functions
-  assert: forall p in fn.parameters, regex_matches(p.name, "^[a-z][a-zA-Z0-9]*_$")
+  assert: forall(p in fn.parameters satisfies regex_matches(p.name, "^[a-z][a-zA-Z0-9]*_$"))
   message: "Function {name} has parameter(s) without trailing underscore"
   fixit: "Add trailing underscore to all parameter names (e.g., 'task' -> 'task_')"
   tags:
