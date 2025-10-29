@@ -6,7 +6,7 @@
 # @date 2024-10-24
 #
 # @copyright
-# HeliOS Embedded Operating System Copyright (C) 2020-2026 HeliOS Project <license@heliosproj.org>
+# HeliOS Embedded Operating System Copyright (C) 2020-2026 Manny Peterson <manny@heliosproj.org>
 #
 # SPDX-License-Identifier: GPL-2.0-or-later
 #
