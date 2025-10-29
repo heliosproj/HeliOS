@@ -1,7 +1,7 @@
 # HeliOS Coding Standard - Nomic Rules
 # Version: 1.3.0
 #
-# This file contains Nomic checker rules implementing the HeliOS coding standard.
+# This file is the official HeliOS coding standard implemented as Nomic checker rules.
 
 ---
 # =============================================================================
@@ -18,7 +18,6 @@
   message: "Function {name} must begin with FUNCTION_ENTER and end with FUNCTION_EXIT macros"
   fixit: "Add FUNCTION_ENTER at function start and FUNCTION_EXIT before final brace"
   tags:
-    - helios:FN-001
     - function-structure
     - error-handling
     - best-practices
@@ -33,7 +32,6 @@
   message: "Function {name} directly assigns to 'ret' variable. Use __ReturnOk__() macro instead"
   fixit: "Replace 'ret = ReturnOK' with __ReturnOk__() macro call"
   tags:
-    - helios:FN-002
     - function-structure
     - error-handling
     - controlled-return
@@ -48,7 +46,6 @@
   message: "Function {name} must have exactly one FUNCTION_ENTER and one FUNCTION_EXIT"
   fixit: "Remove duplicate FUNCTION_ENTER/EXIT macros or add missing ones"
   tags:
-    - helios:FN-003
     - function-structure
     - single-entry-exit
     - best-practices
@@ -67,7 +64,6 @@
   message: "Function {name} has early return statements. Use single-exit pattern with FUNCTION_EXIT only"
   fixit: "Remove early returns and restructure to use nested if statements with FUNCTION_EXIT at end"
   tags:
-    - helios:CTL-001
     - control-flow
     - single-exit
     - best-practices
@@ -82,7 +78,6 @@
   message: "Function {name} must use nested if-statements for happy path (current nesting depth: {nestingDepth})"
   fixit: "Restructure code to use nested if-statements with __ReturnOk__() in deepest success block"
   tags:
-    - helios:CTL-002
     - control-flow
     - happy-path
     - nested-if
@@ -97,7 +92,6 @@
   message: "Function {name} should break immediately after __ReturnOk__() in search loops"
   fixit: "Add 'break;' statement immediately after __ReturnOk__() call"
   tags:
-    - helios:BRK-001
     - control-flow
     - loop-optimization
     - best-practices
@@ -116,7 +110,6 @@
   message: "Function {name} manually assigns ret = ReturnOK. Use __ReturnOk__() macro instead"
   fixit: "Replace 'ret = ReturnOK' with __ReturnOk__() macro call"
   tags:
-    - helios:RET-001
     - return-handling
     - success-indication
     - best-practices
@@ -131,7 +124,6 @@
   message: "Function {name} explicitly sets error. Remove __ReturnError__() or 'ret = ReturnError' (error is default)"
   fixit: "Remove explicit error setting - FUNCTION_ENTER initializes ret to ReturnError by default"
   tags:
-    - helios:RET-003
     - return-handling
     - fail-by-default
     - antipattern
@@ -149,7 +141,6 @@
   message: "Function {name} has parameter(s) without trailing underscore"
   fixit: "Add trailing underscore to all parameter names (e.g., 'task' -> 'task_')"
   tags:
-    - helios:VAR-001
     - variable-naming
     - naming-convention
     - parameters
@@ -164,7 +155,6 @@
   message: "Local variable {name} is not initialized at declaration"
   fixit: "Initialize variable to null for pointers or 0x0u for numeric types"
   tags:
-    - helios:VAR-002
     - variable-naming
     - initialization
     - defensive-programming
@@ -182,7 +172,6 @@
   message: "Function {name} uses NULL instead of HeliOS 'null' macro"
   fixit: "Replace NULL with null macro"
   tags:
-    - helios:TYP-001
     - type-usage
     - helios-types
     - portability
@@ -196,7 +185,6 @@
   message: "Function {name} uses numeric literals for boolean values. Use 'true'/'false' instead"
   fixit: "Replace 0 with false and 1 with true for boolean assignments"
   tags:
-    - helios:TYP-001
     - type-usage
     - boolean-values
     - readability
@@ -214,7 +202,6 @@
   message: "Function {name} contains decimal integer literals. Use hexadecimal notation (e.g., 0x0u, 0x1u)"
   fixit: "Convert decimal literals to hexadecimal with 'u' suffix (0 -> 0x0u, 1 -> 0x1u, 255 -> 0xFFu)"
   tags:
-    - helios:NUM-001
     - numeric-literals
     - hexadecimal
     - code-style
@@ -233,7 +220,6 @@
   message: "Internal function {name} must use __Name__ pattern (not x-prefixed public API)"
   fixit: "Rename to __FunctionName__ pattern with double underscores"
   tags:
-    - helios:MAC-001
     - macro-usage
     - naming-convention
     - internal-api
@@ -252,7 +238,6 @@
   message: "Function {name} calls internal functions without checking result with OK()/ERROR() macros"
   fixit: "Wrap syscall in if(OK(syscall(...))) { ... } else { __AssertOnElse__(); }"
   tags:
-    - helios:CHK-001
     - error-checking
     - syscall-validation
     - defensive-programming
@@ -271,7 +256,6 @@
   message: "Function {name} uses for-loop for list traversal. Use while(__PointerIsNotNull__(cursor)) pattern"
   fixit: "Replace for-loop with: cursor = list->head; while(__PointerIsNotNull__(cursor)) { ...; cursor = cursor->next; }"
   tags:
-    - helios:LOOP-001
     - loop-patterns
     - list-traversal
     - pointer-safety
@@ -286,7 +270,6 @@
   message: "Function {name} does not initialize cursor to null before list traversal"
   fixit: "Declare cursor with initialization: Type_t *cursor = null;"
   tags:
-    - helios:LOOP-002
     - loop-patterns
     - cursor-initialization
     - defensive-programming
@@ -304,7 +287,6 @@
   message: "Function {name} has variables on left of comparison. Use Yoda conditionals (constant first)"
   fixit: "Reverse comparison: change 'variable == constant' to 'constant == variable'"
   tags:
-    - helios:COND-001
     - conditionals
     - yoda-notation
     - defensive-programming
@@ -323,7 +305,6 @@
   message: "Public function {name} must use x-prefix naming (e.g., xTaskCreate, xMemAlloc)"
   fixit: "Rename to x<SubsystemName><Action> pattern"
   tags:
-    - helios:API-001
     - api-naming
     - public-api
     - naming-convention
@@ -338,7 +319,6 @@
   message: "Internal cross-module function {name} must use __Name__ pattern with double underscores"
   fixit: "Rename to __FunctionName__ pattern (e.g., __KernelAllocateMemory__)"
   tags:
-    - helios:API-002
     - api-naming
     - internal-api
     - naming-convention
@@ -353,7 +333,6 @@
   message: "Module-private function {name} must be declared static"
   fixit: "Add 'static' storage class specifier to function declaration"
   tags:
-    - helios:API-003
     - api-naming
     - module-private
     - static-linkage
@@ -368,7 +347,6 @@
   message: "Public function {name} does not follow subsystem naming pattern (xTask*, xMem*, xQueue*, etc.)"
   fixit: "Rename to x<Subsystem><Action> pattern (e.g., xTaskCreate, xMemAlloc)"
   tags:
-    - helios:API-007
     - api-naming
     - subsystem-prefix
     - naming-convention
@@ -386,7 +364,6 @@
     - main
     - _start
   tags:
-    - helios:API-008
     - api-naming
     - return-type
     - consistency
@@ -405,7 +382,6 @@
   message: "Kernel object struct in {name} is missing Base_t valid field"
   fixit: "Add 'Base_t valid;' as first field in struct definition"
   tags:
-    - helios:OBJ-001
     - object-validation
     - struct-design
     - defensive-programming
@@ -420,7 +396,6 @@
   message: "Function {name} allocates object but does not set valid field to VALID"
   fixit: "Add 'object->valid = VALID;' immediately after successful allocation"
   tags:
-    - helios:OBJ-002
     - object-validation
     - initialization
     - memory-safety
@@ -435,7 +410,6 @@
   message: "Function {name} frees object but does not set valid field to INVALID first"
   fixit: "Add 'object->valid = INVALID;' before calling free function"
   tags:
-    - helios:OBJ-003
     - object-validation
     - cleanup
     - use-after-free-prevention
@@ -450,7 +424,6 @@
   message: "Function {name} takes object parameter but does not validate with __ObjectIsValid__()"
   fixit: "Use __ObjectIsValid__(obj) instead of just __PointerIsNotNull__(obj)"
   tags:
-    - helios:OBJ-004
     - object-validation
     - parameter-checking
     - defensive-programming
@@ -469,7 +442,6 @@
   message: "Function {name} has nested allocations without cleanup in error paths (potential memory leak)"
   fixit: "Add __KernelFreeMemory__() or __HeapFreeMemory__() in else clause after __AssertOnElse__()"
   tags:
-    - helios:MEM-001
     - memory-management
     - cleanup
     - leak-prevention
@@ -558,7 +530,6 @@
   message: "Function {name} has cleanup code without explanatory comment"
   fixit: "Add comment: /* Free [resource] because [operation] failed. */"
   tags:
-    - helios:CMT-001
     - documentation
     - cleanup
     - maintainability
