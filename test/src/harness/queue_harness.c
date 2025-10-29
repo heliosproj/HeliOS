@@ -26,7 +26,6 @@
 #define MESSAGE_SIZE 0x8 /* Size of test messages */
 #define MAX_QUEUES_STRESS 30 /* Number of queues for stress testing */
 #define STRESS_CYCLE_COUNT 20 /* Number of stress test cycles */
-
 /* Test message strings */
 #define TEST_MESSAGE_1 "MESSAGE1"
 #define TEST_MESSAGE_2 "MESSAGE2"
@@ -56,7 +55,8 @@ void queue_harness(void) {
   unit_print("=== COMPREHENSIVE QUEUE TEST SUITE ===");
 
 
-  /* ============================================================================
+  /*
+   * ============================================================================
    * SECTION 1: ERROR HANDLING AND NULL POINTER VALIDATION
    * ============================================================================
    */
@@ -197,7 +197,8 @@ void queue_harness(void) {
   unit_end();
 
 
-  /* ============================================================================
+  /*
+   * ============================================================================
    * SECTION 2: QUEUE CREATION
    * ============================================================================
    */
@@ -273,7 +274,8 @@ void queue_harness(void) {
   unit_end();
 
 
-  /* ============================================================================
+  /*
+   * ============================================================================
    * SECTION 3: QUEUE SEND OPERATIONS
    * ============================================================================
    */
@@ -330,7 +332,8 @@ void queue_harness(void) {
   queue = null;
 
 
-  /* ============================================================================
+  /*
+   * ============================================================================
    * SECTION 4: QUEUE RECEIVE OPERATIONS
    * ============================================================================
    */
@@ -361,15 +364,12 @@ void queue_harness(void) {
   unit_assert_ok(xQueueSend(queue, MESSAGE_SIZE, (Byte_t *) TEST_MESSAGE_1));
   unit_assert_ok(xQueueSend(queue, MESSAGE_SIZE, (Byte_t *) TEST_MESSAGE_2));
   unit_assert_ok(xQueueSend(queue, MESSAGE_SIZE, (Byte_t *) TEST_MESSAGE_3));
-
   unit_assert_ok(xQueueReceive(queue, &message));
   unit_assert_equal(strncmp(TEST_MESSAGE_1, (char *) message->messageValue, MESSAGE_SIZE), 0x0u);
   unit_assert_ok(xMemFree(message));
-
   unit_assert_ok(xQueueReceive(queue, &message));
   unit_assert_equal(strncmp(TEST_MESSAGE_2, (char *) message->messageValue, MESSAGE_SIZE), 0x0u);
   unit_assert_ok(xMemFree(message));
-
   unit_assert_ok(xQueueReceive(queue, &message));
   unit_assert_equal(strncmp(TEST_MESSAGE_3, (char *) message->messageValue, MESSAGE_SIZE), 0x0u);
   unit_assert_ok(xMemFree(message));
@@ -394,6 +394,7 @@ void queue_harness(void) {
   unit_assert_ok(xQueueSend(queue, MESSAGE_SIZE, (Byte_t *) TEST_MESSAGE_6));
   unit_assert_ok(xQueueSend(queue, MESSAGE_SIZE, (Byte_t *) TEST_MESSAGE_7));
 
+
   /* Drain all messages */
   for(i = 0x0u; i < 7; i++) {
     unit_assert_ok(xQueueReceive(queue, &message));
@@ -410,7 +411,8 @@ void queue_harness(void) {
   queue = null;
 
 
-  /* ============================================================================
+  /*
+   * ============================================================================
    * SECTION 5: QUEUE PEEK OPERATIONS
    * ============================================================================
    */
@@ -448,7 +450,6 @@ void queue_harness(void) {
   unit_assert_ok(xQueuePeek(queue, &message));
   unit_assert_equal(strncmp(TEST_MESSAGE_1, (char *) message->messageValue, MESSAGE_SIZE), 0x0u);
   unit_assert_ok(xMemFree(message));
-
   unit_assert_ok(xQueuePeek(queue, &message));
   unit_assert_equal(strncmp(TEST_MESSAGE_1, (char *) message->messageValue, MESSAGE_SIZE), 0x0u);
   unit_assert_ok(xMemFree(message));
@@ -461,7 +462,6 @@ void queue_harness(void) {
   unit_assert_ok(xQueuePeek(queue, &message));
   unit_assert_equal(strncmp(TEST_MESSAGE_1, (char *) message->messageValue, MESSAGE_SIZE), 0x0u);
   unit_assert_ok(xMemFree(message));
-
   unit_assert_ok(xQueueReceive(queue, &message));
   unit_assert_equal(strncmp(TEST_MESSAGE_1, (char *) message->messageValue, MESSAGE_SIZE), 0x0u);
   unit_assert_ok(xMemFree(message));
@@ -474,7 +474,8 @@ void queue_harness(void) {
   queue = null;
 
 
-  /* ============================================================================
+  /*
+   * ============================================================================
    * SECTION 6: QUEUE STATUS CHECKS
    * ============================================================================
    */
@@ -544,7 +545,8 @@ void queue_harness(void) {
   queue = null;
 
 
-  /* ============================================================================
+  /*
+   * ============================================================================
    * SECTION 7: QUEUE DROP OPERATIONS
    * ============================================================================
    */
@@ -570,6 +572,8 @@ void queue_harness(void) {
 
   /* Test 7.3: Drop removes first message (FIFO) */
   unit_begin("Drop removes first message in FIFO order");
+
+
   /* MESSAGE_2 should still be in queue */
   unit_assert_ok(xQueueReceive(queue, &message));
   unit_assert_equal(strncmp(TEST_MESSAGE_2, (char *) message->messageValue, MESSAGE_SIZE), 0x0u);
@@ -603,7 +607,8 @@ void queue_harness(void) {
   queue = null;
 
 
-  /* ============================================================================
+  /*
+   * ============================================================================
    * SECTION 8: QUEUE LOCK AND UNLOCK OPERATIONS
    * ============================================================================
    */
@@ -663,7 +668,8 @@ void queue_harness(void) {
   queue = null;
 
 
-  /* ============================================================================
+  /*
+   * ============================================================================
    * SECTION 9: MULTIPLE QUEUES
    * ============================================================================
    */
@@ -686,7 +692,6 @@ void queue_harness(void) {
   unit_assert_ok(xQueueSend(queue3, MESSAGE_SIZE, (Byte_t *) TEST_MESSAGE_4));
   unit_assert_ok(xQueueSend(queue3, MESSAGE_SIZE, (Byte_t *) TEST_MESSAGE_5));
   unit_assert_ok(xQueueSend(queue3, MESSAGE_SIZE, (Byte_t *) TEST_MESSAGE_6));
-
   unit_assert_ok(xQueueGetLength(queue, &length));
   unit_assert_equal(length, 1);
   unit_assert_ok(xQueueGetLength(queue2, &length));
@@ -710,7 +715,6 @@ void queue_harness(void) {
   unit_begin("Delete one queue doesn't affect others");
   unit_assert_ok(xQueueDelete(queue2));
   queue2 = null;
-
   unit_assert_ok(xQueueGetLength(queue, &length));
   unit_assert_equal(length, 2);
   unit_assert_ok(xQueueGetLength(queue3, &length));
@@ -725,7 +729,8 @@ void queue_harness(void) {
   queue3 = null;
 
 
-  /* ============================================================================
+  /*
+   * ============================================================================
    * SECTION 10: QUEUE STRESS OPERATIONS
    * ============================================================================
    */
@@ -734,40 +739,49 @@ void queue_harness(void) {
 
   /* Test 10.1: Create many queues successfully */
   unit_begin("Create many queues successfully");
+
   for(i = 0x0u; i < MAX_QUEUES_STRESS; i++) {
     unit_assert_ok(xQueueCreate(&queues[i], QUEUE_MIN_CAPACITY));
   }
+
   unit_end();
 
 
   /* Test 10.2: Send messages to all queues */
   unit_begin("Send messages to all queues");
+
   for(i = 0x0u; i < MAX_QUEUES_STRESS; i++) {
     unit_assert_ok(xQueueSend(queues[i], MESSAGE_SIZE, (Byte_t *) TEST_MESSAGE_1));
   }
+
   unit_end();
 
 
   /* Test 10.3: Verify all queues have messages */
   unit_begin("Verify all queues have messages");
+
   for(i = 0x0u; i < MAX_QUEUES_STRESS; i++) {
     unit_assert_ok(xQueueGetLength(queues[i], &length));
     unit_assert_equal(length, 1);
   }
+
   unit_end();
 
 
   /* Test 10.4: Delete all queues */
   unit_begin("Delete all queues");
+
   for(i = 0x0u; i < MAX_QUEUES_STRESS; i++) {
     unit_assert_ok(xQueueDelete(queues[i]));
   }
+
   unit_end();
 
 
   /* Test 10.5: Rapid send/receive operations */
   unit_begin("Rapid send/receive operations work correctly");
   unit_assert_ok(xQueueCreate(&queue, QUEUE_MEDIUM_CAPACITY));
+
   for(i = 0x0u; i < STRESS_CYCLE_COUNT; i++) {
     unit_assert_ok(xQueueSend(queue, MESSAGE_SIZE, (Byte_t *) TEST_MESSAGE_1));
     unit_assert_ok(xQueueSend(queue, MESSAGE_SIZE, (Byte_t *) TEST_MESSAGE_2));
@@ -776,6 +790,7 @@ void queue_harness(void) {
     unit_assert_ok(xQueueReceive(queue, &message));
     unit_assert_ok(xMemFree(message));
   }
+
   xQueueDelete(queue);
   queue = null;
   unit_end();
@@ -783,16 +798,19 @@ void queue_harness(void) {
 
   /* Test 10.6: Rapid create/delete operations */
   unit_begin("Rapid create/delete operations work correctly");
+
   for(i = 0x0u; i < STRESS_CYCLE_COUNT; i++) {
     unit_assert_ok(xQueueCreate(&queue, QUEUE_MIN_CAPACITY));
     unit_assert_ok(xQueueSend(queue, MESSAGE_SIZE, (Byte_t *) TEST_MESSAGE_1));
     unit_assert_ok(xQueueDelete(queue));
   }
+
   queue = null;
   unit_end();
 
 
-  /* ============================================================================
+  /*
+   * ============================================================================
    * SECTION 11: QUEUE BOUNDARY CONDITIONS
    * ============================================================================
    */
@@ -802,9 +820,11 @@ void queue_harness(void) {
   /* Test 11.1: Fill to exact capacity */
   unit_begin("Fill to exact capacity works correctly");
   unit_assert_ok(xQueueCreate(&queue, QUEUE_MIN_CAPACITY));
+
   for(i = 0x0u; i < 7; i++) {
     unit_assert_ok(xQueueSend(queue, MESSAGE_SIZE, (Byte_t *) TEST_MESSAGE_1));
   }
+
   unit_assert_ok(xQueueIsQueueFull(queue, &isFull));
   unit_assert_true(isFull);
   unit_assert_not_ok(xQueueSend(queue, MESSAGE_SIZE, (Byte_t *) TEST_MESSAGE_2));
@@ -816,9 +836,11 @@ void queue_harness(void) {
   /* Test 11.2: One message away from full */
   unit_begin("One message away from full behaves correctly");
   unit_assert_ok(xQueueCreate(&queue, QUEUE_MIN_CAPACITY));
+
   for(i = 0x0u; i < 6; i++) {
     unit_assert_ok(xQueueSend(queue, MESSAGE_SIZE, (Byte_t *) TEST_MESSAGE_1));
   }
+
   unit_assert_ok(xQueueIsQueueFull(queue, &isFull));
   unit_assert_false(isFull);
   unit_assert_ok(xQueueSend(queue, MESSAGE_SIZE, (Byte_t *) TEST_MESSAGE_2));
@@ -844,9 +866,11 @@ void queue_harness(void) {
   /* Test 11.4: Large capacity queue operations */
   unit_begin("Large capacity queue operations work correctly");
   unit_assert_ok(xQueueCreate(&queue, QUEUE_LARGE_CAPACITY));
+
   for(i = 0x0u; i < 10; i++) {
     unit_assert_ok(xQueueSend(queue, MESSAGE_SIZE, (Byte_t *) TEST_MESSAGE_1));
   }
+
   unit_assert_ok(xQueueGetLength(queue, &length));
   unit_assert_equal(length, 10);
   xQueueDelete(queue);
@@ -854,7 +878,8 @@ void queue_harness(void) {
   unit_end();
 
 
-  /* ============================================================================
+  /*
+   * ============================================================================
    * SECTION 12: QUEUE STATE PERSISTENCE
    * ============================================================================
    */
@@ -889,12 +914,16 @@ void queue_harness(void) {
 
   /* Test 12.3: Rapid state transitions maintain consistency */
   unit_begin("Rapid state transitions maintain consistency");
+
+
   /* Queue currently has 2 messages from previous tests */
   for(i = 0x0u; i < 10; i++) {
     unit_assert_ok(xQueueReceive(queue, &message));
     unit_assert_ok(xMemFree(message));
     unit_assert_ok(xQueueSend(queue, MESSAGE_SIZE, (Byte_t *) TEST_MESSAGE_1));
   }
+
+
   /* After 10 receive/send cycles, queue still has 2 messages */
   unit_assert_ok(xQueueGetLength(queue, &length));
   unit_assert_equal(length, 2);
@@ -906,7 +935,8 @@ void queue_harness(void) {
   queue = null;
 
 
-  /* ============================================================================
+  /*
+   * ============================================================================
    * SECTION 13: QUEUE EDGE CASES
    * ============================================================================
    */
@@ -965,7 +995,8 @@ void queue_harness(void) {
   queue = null;
 
 
-  /* ============================================================================
+  /*
+   * ============================================================================
    * SECTION 14: QUEUE DELETE AND CLEANUP
    * ============================================================================
    */
@@ -993,9 +1024,11 @@ void queue_harness(void) {
   /* Test 14.3: Delete full queue succeeds */
   unit_begin("Delete full queue succeeds");
   unit_assert_ok(xQueueCreate(&queue, QUEUE_MIN_CAPACITY));
+
   for(i = 0x0u; i < 7; i++) {
     unit_assert_ok(xQueueSend(queue, MESSAGE_SIZE, (Byte_t *) TEST_MESSAGE_1));
   }
+
   unit_assert_ok(xQueueDelete(queue));
   queue = null;
   unit_end();
@@ -1026,7 +1059,8 @@ void queue_harness(void) {
   unit_end();
 
 
-  /* ============================================================================
+  /*
+   * ============================================================================
    * SECTION 15: QUEUE WRAP-AROUND BEHAVIOR
    * ============================================================================
    */
@@ -1037,16 +1071,19 @@ void queue_harness(void) {
   unit_begin("Fill, drain, fill again works correctly");
   unit_assert_ok(xQueueCreate(&queue, QUEUE_MIN_CAPACITY));
 
+
   /* Fill */
   for(i = 0x0u; i < 7; i++) {
     unit_assert_ok(xQueueSend(queue, MESSAGE_SIZE, (Byte_t *) TEST_MESSAGE_1));
   }
+
 
   /* Drain */
   for(i = 0x0u; i < 7; i++) {
     unit_assert_ok(xQueueReceive(queue, &message));
     unit_assert_ok(xMemFree(message));
   }
+
 
   /* Fill again */
   for(i = 0x0u; i < 7; i++) {
@@ -1060,20 +1097,25 @@ void queue_harness(void) {
 
   /* Test 15.2: Partial send, receive, send again works */
   unit_begin("Partial send, receive, send again works correctly");
+
+
   /* Drain previous messages */
   for(i = 0x0u; i < 7; i++) {
     unit_assert_ok(xQueueReceive(queue, &message));
     unit_assert_ok(xMemFree(message));
   }
 
+
   /* Partial send */
   for(i = 0x0u; i < 3; i++) {
     unit_assert_ok(xQueueSend(queue, MESSAGE_SIZE, (Byte_t *) TEST_MESSAGE_3));
   }
 
+
   /* Receive one */
   unit_assert_ok(xQueueReceive(queue, &message));
   unit_assert_ok(xMemFree(message));
+
 
   /* Send more */
   for(i = 0x0u; i < 5; i++) {
@@ -1087,12 +1129,14 @@ void queue_harness(void) {
 
   /* Test 15.3: Repeated fill/drain cycles work correctly */
   unit_begin("Repeated fill/drain cycles work correctly");
+
   for(j = 0x0u; j < 5; j++) {
     /* Drain */
     for(i = 0x0u; i < 7; i++) {
       unit_assert_ok(xQueueReceive(queue, &message));
       unit_assert_ok(xMemFree(message));
     }
+
 
     /* Fill */
     for(i = 0x0u; i < 7; i++) {
@@ -1108,8 +1152,8 @@ void queue_harness(void) {
   /* Cleanup */
   xQueueDelete(queue);
   queue = null;
-
-
   unit_print("=== QUEUE TEST SUITE COMPLETE ===");
 }
+
+
 /*UNCRUSTIFY-ON*/

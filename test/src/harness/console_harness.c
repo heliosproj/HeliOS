@@ -36,11 +36,11 @@ extern void __CharDeviceStateClear__(void);
 
 /* Test constant for expected buffer size (matches console.c) */
 #define TEST_CAT_BUFFER_SIZE 0x100u /* 256 bytes */
-
 /* Stress test constants */
 #define STRESS_CHARACTER_COUNT 100u
 #define STRESS_COMMAND_COUNT 50u
 #define MAX_BUFFER_OVERFLOW_SIZE 200u
+
 
 /* Helper function prototypes */
 static void test_console_initialization(void);
@@ -223,8 +223,6 @@ static void test_character_input_handling(void) {
   /* Inject multiple characters */
   xMockUSARTInjectInput((const Byte_t *) "test");
   __SimulateConsoleCycles__(20u);
-
-
   xMockUSARTGetOutput(output, TEST_OUTPUT_BUFFER_SIZE, &outputLen);
   unit_assert_true(outputLen > 0x0u);
   unit_end();
@@ -233,12 +231,8 @@ static void test_character_input_handling(void) {
   /* Test 2.5: Multiple backspaces */
   unit_begin("Multiple backspaces are handled correctly");
   __SetupConsoleEnvironment__();
-
-
   xMockUSARTInjectInput((const Byte_t *) "abcd\b\b");
   __SimulateConsoleCycles__(20u);
-
-
   xMockUSARTGetOutput(output, TEST_OUTPUT_BUFFER_SIZE, &outputLen);
   unit_assert_true(outputLen > 0x0u);
   unit_end();
@@ -548,7 +542,6 @@ static void test_null_pointer_validation(void) {
 
   /* Test NULL in path_basename */
   __path_basename__(result, null, CONFIG_FS_MAX_PATH_LENGTH);
-
   unit_end();
 
 
@@ -620,10 +613,9 @@ static void test_device_caching(void) {
 
 
   /* Inject multiple characters as a string */
-  xMockUSARTInjectInput((const Byte_t *) "aaaaaaaaaaaaaaaa"); /* 16 'a' characters */
+  xMockUSARTInjectInput((const Byte_t *) "aaaaaaaaaaaaaaaa"); /* 16 'a'
+                                                               * characters */
   __SimulateConsoleCycles__(0x50u); /* Allow sufficient time for processing */
-
-
   /* Verify at least some characters were processed */
   xMockUSARTGetOutput(output, TEST_OUTPUT_BUFFER_SIZE, &outputLen);
   unit_assert_true(outputLen > 0x0u);
@@ -642,7 +634,6 @@ static void test_device_caching(void) {
   __SimulateConsoleCycles__(20u);
   xMockUSARTInjectInput((const Byte_t *) "test3\r");
   __SimulateConsoleCycles__(20u);
-
   xMockUSARTGetOutput(output, TEST_OUTPUT_BUFFER_SIZE, &outputLen);
   unit_assert_true(outputLen > 0x0u);
   unit_end();
@@ -653,11 +644,9 @@ static void test_device_caching(void) {
   __SetupConsoleEnvironment__();
   xMockUSARTInjectInput((const Byte_t *) "help\r");
   __SimulateConsoleCycles__(20u);
-
   __SetupConsoleEnvironment__();
   xMockUSARTInjectInput((const Byte_t *) "version\r");
   __SimulateConsoleCycles__(20u);
-
   xMockUSARTGetOutput(output, TEST_OUTPUT_BUFFER_SIZE, &outputLen);
   unit_assert_true(outputLen > 0x0u);
   unit_end();
@@ -713,7 +702,6 @@ static void test_buffer_overflow_protection(void) {
   longCommand[100] = 0x00u;
   xMockUSARTInjectInput(longCommand);
   __SimulateConsoleCycles__(TEST_CONSOLE_EXTENDED_DELAY);
-
   unit_assert_true(true);
   unit_end();
 
@@ -757,7 +745,6 @@ static void test_special_character_sequences(void) {
   /* Inject control characters */
   xMockUSARTInjectInput((const Byte_t *) "\x01\x02\x03");
   __SimulateConsoleCycles__(TEST_CONSOLE_CYCLE_DELAY);
-
   unit_assert_true(true);
   unit_end();
 
@@ -770,7 +757,6 @@ static void test_special_character_sequences(void) {
   /* More backspaces than characters */
   xMockUSARTInjectInput((const Byte_t *) "ab\b\b\b\b\b");
   __SimulateConsoleCycles__(TEST_CONSOLE_CYCLE_DELAY);
-
   unit_assert_true(true);
   unit_end();
 
@@ -789,7 +775,6 @@ static void test_special_character_sequences(void) {
   xMockUSARTClearOutput();
   xMockUSARTInjectInput((const Byte_t *) "help\n");
   __SimulateConsoleCycles__(TEST_CONSOLE_LONG_DELAY);
-
   unit_assert_true(true);
   unit_end();
 
@@ -797,10 +782,8 @@ static void test_special_character_sequences(void) {
   /* Test 12.4: Escape sequences */
   unit_begin("Console handles escape sequences");
   __SetupConsoleEnvironment__();
-
   xMockUSARTInjectInput((const Byte_t *) "\x1b[A\x1b[B");
   __SimulateConsoleCycles__(TEST_CONSOLE_CYCLE_DELAY);
-
   unit_assert_true(true);
   unit_end();
 
@@ -808,10 +791,8 @@ static void test_special_character_sequences(void) {
   /* Test 12.5: Tab characters */
   unit_begin("Console handles tab characters");
   __SetupConsoleEnvironment__();
-
   xMockUSARTInjectInput((const Byte_t *) "echo\ttest\r");
   __SimulateConsoleCycles__(TEST_CONSOLE_EXTENDED_DELAY);
-
   unit_assert_true(true);
   unit_end();
 }
@@ -887,18 +868,14 @@ static void test_command_stress_testing(void) {
   /* Test 13.4: Command with argument variations */
   unit_begin("Console handles commands with varying argument counts");
   __SetupConsoleEnvironment__();
-
   xMockUSARTInjectInput((const Byte_t *) "echo\r");
   __SimulateConsoleCycles__(TEST_CONSOLE_LONG_DELAY);
   xMockUSARTClearOutput();
-
   xMockUSARTInjectInput((const Byte_t *) "echo one\r");
   __SimulateConsoleCycles__(TEST_CONSOLE_LONG_DELAY);
   xMockUSARTClearOutput();
-
   xMockUSARTInjectInput((const Byte_t *) "echo one two three\r");
   __SimulateConsoleCycles__(TEST_CONSOLE_LONG_DELAY);
-
   xMockUSARTGetOutput(output, TEST_OUTPUT_BUFFER_SIZE, &outputLen);
   unit_assert_true(outputLen > 0x0u);
   unit_end();
@@ -920,14 +897,11 @@ static void test_console_state_persistence(void) {
   /* Test 14.1: State persistence across commands */
   unit_begin("Console state persists across multiple commands");
   __SetupConsoleEnvironment__();
-
   xMockUSARTInjectInput((const Byte_t *) "help\r");
   __SimulateConsoleCycles__(TEST_CONSOLE_LONG_DELAY);
-
   xMockUSARTClearOutput();
   xMockUSARTInjectInput((const Byte_t *) "version\r");
   __SimulateConsoleCycles__(TEST_CONSOLE_LONG_DELAY);
-
   xMockUSARTGetOutput(output, TEST_OUTPUT_BUFFER_SIZE, &outputLen);
   output[outputLen] = 0x00u;
   unit_assert_true(__OutputContains__(output, (const Byte_t *) "HeliOS"));
@@ -942,14 +916,12 @@ static void test_console_state_persistence(void) {
   /* Toggle echo off */
   xMockUSARTInjectInput((const Byte_t *) "echo\r");
   __SimulateConsoleCycles__(TEST_CONSOLE_LONG_DELAY);
-
   xMockUSARTClearOutput();
 
 
   /* Input characters - should have different echo behavior */
   xMockUSARTInjectInput((const Byte_t *) "test");
   __SimulateConsoleCycles__(TEST_CONSOLE_CYCLE_DELAY);
-
   xMockUSARTGetOutput(output, TEST_OUTPUT_BUFFER_SIZE, &outputLen);
 
 
@@ -966,14 +938,12 @@ static void test_console_state_persistence(void) {
   /* Send invalid command */
   xMockUSARTInjectInput((const Byte_t *) "invalidcmd\r");
   __SimulateConsoleCycles__(TEST_CONSOLE_LONG_DELAY);
-
   xMockUSARTClearOutput();
 
 
   /* Send valid command */
   xMockUSARTInjectInput((const Byte_t *) "help\r");
   __SimulateConsoleCycles__(TEST_CONSOLE_LONG_DELAY);
-
   xMockUSARTGetOutput(output, TEST_OUTPUT_BUFFER_SIZE, &outputLen);
   output[outputLen] = 0x00u;
   unit_assert_true(__OutputContains__(output, (const Byte_t *) "Available commands"));
@@ -997,7 +967,6 @@ static void test_error_conditions(void) {
   /* Send just CR without any command */
   xMockUSARTInjectInput((const Byte_t *) "\r");
   __SimulateConsoleCycles__(TEST_CONSOLE_LONG_DELAY);
-
   unit_assert_true(true);
   unit_end();
 
@@ -1005,7 +974,6 @@ static void test_error_conditions(void) {
   /* Test 15.2: Console operation after multiple errors */
   unit_begin("Console continues operation after multiple errors");
   __SetupConsoleEnvironment__();
-
   xMockUSARTInjectInput((const Byte_t *) "invalid1\r");
   __SimulateConsoleCycles__(TEST_CONSOLE_CYCLE_DELAY);
   xMockUSARTInjectInput((const Byte_t *) "invalid2\r");
@@ -1018,7 +986,6 @@ static void test_error_conditions(void) {
   xMockUSARTClearOutput();
   xMockUSARTInjectInput((const Byte_t *) "help\r");
   __SimulateConsoleCycles__(TEST_CONSOLE_LONG_DELAY);
-
   unit_assert_true(true);
   unit_end();
 
@@ -1026,14 +993,12 @@ static void test_error_conditions(void) {
   /* Test 15.3: Mixed valid and invalid commands */
   unit_begin("Console handles mixed valid and invalid commands");
   __SetupConsoleEnvironment__();
-
   xMockUSARTInjectInput((const Byte_t *) "help\r");
   __SimulateConsoleCycles__(TEST_CONSOLE_LONG_DELAY);
   xMockUSARTInjectInput((const Byte_t *) "invalid\r");
   __SimulateConsoleCycles__(TEST_CONSOLE_LONG_DELAY);
   xMockUSARTInjectInput((const Byte_t *) "version\r");
   __SimulateConsoleCycles__(TEST_CONSOLE_LONG_DELAY);
-
   unit_assert_true(true);
   unit_end();
 }

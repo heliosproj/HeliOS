@@ -19,15 +19,16 @@
 
 /* Test constants */
 #define STREAM_BUFFER_SIZE CONFIG_STREAM_BUFFER_BYTES /* Buffer capacity */
-#define STREAM_LAST_BYTE_INDEX (CONFIG_STREAM_BUFFER_BYTES - 1) /* Last byte index */
+#define STREAM_LAST_BYTE_INDEX (CONFIG_STREAM_BUFFER_BYTES - 1) /* Last byte
+                                                                 * index */
 #define STREAM_FILL_COUNT CONFIG_STREAM_BUFFER_BYTES /* Bytes to fill buffer */
 #define TEST_BYTE_VALUE 0xAAu /* Test byte value */
 #define TEST_PATTERN_START 0x42u /* Starting pattern value */
-
 /* Stress test constants */
 #define MAX_STREAMS_STRESS 30
 #define STRESS_SEND_COUNT 100
 #define STRESS_CYCLE_COUNT 50
+
 
 /* Helper function prototypes */
 static void test_error_handling_and_null_pointers(void);
@@ -254,9 +255,11 @@ static void test_stream_send_operations(void) {
 
   /* Test 3.2: Multiple byte sends succeed */
   unit_begin("Multiple byte sends succeed");
+
   for(i = 0x0u; i < 10; i++) {
     unit_assert_ok(xStreamSend(stream, i));
   }
+
   unit_end();
 
 
@@ -333,6 +336,7 @@ static void test_stream_receive_operations(void) {
 
   /* Test 4.3: Receive multiple bytes */
   unit_begin("Receive multiple bytes succeeds");
+
   for(i = 0x0u; i < 10; i++) {
     unit_assert_ok(xStreamSend(stream, i));
   }
@@ -359,6 +363,7 @@ static void test_stream_receive_operations(void) {
 
   /* Test 4.5: Receive full buffer */
   unit_begin("Receive full buffer succeeds");
+
   for(i = 0x0u; i < STREAM_FILL_COUNT; i++) {
     unit_assert_ok(xStreamSend(stream, i));
   }
@@ -399,7 +404,6 @@ static void test_stream_status_checks(void) {
   unit_assert_ok(xStreamSend(stream, TEST_BYTE_VALUE));
   unit_assert_ok(xStreamBytesAvailable(stream, &bytesAvailable));
   unit_assert_equal(bytesAvailable, 1);
-
   unit_assert_ok(xStreamSend(stream, TEST_BYTE_VALUE));
   unit_assert_ok(xStreamBytesAvailable(stream, &bytesAvailable));
   unit_assert_equal(bytesAvailable, 2);
@@ -471,6 +475,7 @@ static void test_stream_empty_and_full(void) {
 
   /* Test 6.3: Full stream check */
   unit_begin("Full stream check returns true");
+
   for(i = 0x0u; i < STREAM_FILL_COUNT - 1; i++) {
     unit_assert_ok(xStreamSend(stream, i));
   }
@@ -500,7 +505,6 @@ static void test_stream_empty_and_full(void) {
   unit_assert_ok(xStreamSend(stream, TEST_BYTE_VALUE));
   unit_assert_ok(xStreamIsEmpty(stream, &isEmpty));
   unit_assert_false(isEmpty);
-
   unit_assert_ok(xStreamReset(stream));
   unit_assert_ok(xStreamIsEmpty(stream, &isEmpty));
   unit_assert_true(isEmpty);
@@ -547,13 +551,13 @@ static void test_stream_reset_operations(void) {
 
   /* Test 7.3: Reset full stream */
   unit_begin("Reset full stream clears contents");
+
   for(i = 0x0u; i < STREAM_FILL_COUNT; i++) {
     unit_assert_ok(xStreamSend(stream, i));
   }
 
   unit_assert_ok(xStreamIsFull(stream, &isFull));
   unit_assert_true(isFull);
-
   unit_assert_ok(xStreamReset(stream));
   unit_assert_ok(xStreamIsEmpty(stream, &isEmpty));
   unit_assert_true(isEmpty);
@@ -572,10 +576,15 @@ static void test_stream_reset_operations(void) {
 
   /* Test 7.5: Multiple consecutive resets - only first succeeds */
   unit_begin("Reset only works on non-empty streams");
+
+
   /* Stream has data from previous test */
-  unit_assert_ok(xStreamReset(stream));  /* First reset succeeds (stream has data) */
-  unit_assert_not_ok(xStreamReset(stream));  /* Second reset fails (stream now empty) */
-  unit_assert_not_ok(xStreamReset(stream));  /* Third reset fails (stream still empty) */
+  unit_assert_ok(xStreamReset(stream)); /* First reset succeeds (stream has
+                                         * data) */
+  unit_assert_not_ok(xStreamReset(stream)); /* Second reset fails (stream now
+                                             * empty) */
+  unit_assert_not_ok(xStreamReset(stream)); /* Third reset fails (stream still
+                                             * empty) */
   unit_assert_ok(xStreamIsEmpty(stream, &isEmpty));
   unit_assert_true(isEmpty);
   unit_end();
@@ -604,6 +613,7 @@ static void test_stream_wrap_around(void) {
   unit_begin("Fill, receive, fill again works correctly");
   unit_assert_ok(xStreamCreate(&stream));
 
+
   /* First fill */
   for(i = 0x0u; i < STREAM_FILL_COUNT; i++) {
     unit_assert_ok(xStreamSend(stream, i));
@@ -611,6 +621,7 @@ static void test_stream_wrap_around(void) {
 
   unit_assert_ok(xStreamReceive(stream, &bytesReceived, &data));
   unit_assert_equal(bytesReceived, STREAM_BUFFER_SIZE);
+
 
   /* Second fill */
   for(i = 0x0u; i < STREAM_FILL_COUNT; i++) {
@@ -624,6 +635,7 @@ static void test_stream_wrap_around(void) {
 
   /* Test 8.2: Partial send, receive, send again */
   unit_begin("Partial send, receive, send again works correctly");
+
   for(i = 0x0u; i < 10; i++) {
     unit_assert_ok(xStreamSend(stream, i));
   }
@@ -694,11 +706,9 @@ static void test_multiple_streams(void) {
   unit_assert_ok(xStreamSend(stream3, 0x33));
   unit_assert_ok(xStreamSend(stream3, 0x33));
   unit_assert_ok(xStreamSend(stream3, 0x33));
-
   unit_assert_ok(xStreamBytesAvailable(stream1, &bytes1));
   unit_assert_ok(xStreamBytesAvailable(stream2, &bytes2));
   unit_assert_ok(xStreamBytesAvailable(stream3, &bytes3));
-
   unit_assert_equal(bytes1, 1);
   unit_assert_equal(bytes2, 2);
   unit_assert_equal(bytes3, 3);
@@ -708,11 +718,10 @@ static void test_multiple_streams(void) {
   /* Test 9.3: Reset one stream doesn't affect others */
   unit_begin("Reset one stream doesn't affect others");
   unit_assert_ok(xStreamReset(stream2));
-
   unit_assert_ok(xStreamBytesAvailable(stream1, &bytes1));
-  unit_assert_not_ok(xStreamBytesAvailable(stream2, &bytes2));  /* stream2 is now empty */
+  unit_assert_not_ok(xStreamBytesAvailable(stream2, &bytes2));  /* stream2 is
+                                                                 * now empty */
   unit_assert_ok(xStreamBytesAvailable(stream3, &bytes3));
-
   unit_assert_equal(bytes1, 1);
   unit_assert_equal(bytes3, 3);
   unit_end();
@@ -721,10 +730,8 @@ static void test_multiple_streams(void) {
   /* Test 9.4: Delete one stream doesn't affect others */
   unit_begin("Delete one stream doesn't affect others");
   unit_assert_ok(xStreamDelete(stream2));
-
   unit_assert_ok(xStreamBytesAvailable(stream1, &bytes1));
   unit_assert_ok(xStreamBytesAvailable(stream3, &bytes3));
-
   unit_assert_equal(bytes1, 1);
   unit_assert_equal(bytes3, 3);
   unit_end();
@@ -751,6 +758,7 @@ static void test_stream_stress_operations(void) {
 
   /* Test 10.1: Create many streams */
   unit_begin("Create many streams successfully");
+
   for(i = 0x0u; i < MAX_STREAMS_STRESS; i++) {
     streams[i] = null;
 
@@ -898,6 +906,7 @@ static void test_stream_partial_operations(void) {
 
   /* Test 11.3: Varying send sizes */
   unit_begin("Varying send sizes work correctly");
+
   for(i = 1; i <= 10; i++) {
     HalfWord_t j;
 
@@ -962,7 +971,6 @@ static void test_stream_boundary_conditions(void) {
   unit_begin("Send maximum value byte works correctly");
   unit_assert_ok(xStreamReset(stream));
   unit_assert_ok(xStreamSend(stream, 0xFF));
-
   {
     HalfWord_t bytesReceived;
     Byte_t *data;
@@ -970,15 +978,12 @@ static void test_stream_boundary_conditions(void) {
 
     unit_assert_ok(xStreamReceive(stream, &bytesReceived, &data));
     unit_assert_equal(data[0], 0xFF);
-  }
-
-  unit_end();
+  } unit_end();
 
 
   /* Test 12.4: Send zero value byte */
   unit_begin("Send zero value byte works correctly");
   unit_assert_ok(xStreamSend(stream, 0x00));
-
   {
     HalfWord_t bytesReceived;
     Byte_t *data;
@@ -986,9 +991,7 @@ static void test_stream_boundary_conditions(void) {
 
     unit_assert_ok(xStreamReceive(stream, &bytesReceived, &data));
     unit_assert_equal(data[0], 0x00);
-  }
-
-  unit_end();
+  } unit_end();
 
 
   /* Cleanup */
@@ -1016,7 +1019,6 @@ static void test_stream_state_persistence(void) {
   unit_assert_ok(xStreamSend(stream, TEST_BYTE_VALUE));
   unit_assert_ok(xStreamBytesAvailable(stream, &bytesAvailable));
   unit_assert_equal(bytesAvailable, 1);
-
   unit_assert_ok(xStreamSend(stream, TEST_BYTE_VALUE));
   unit_assert_ok(xStreamBytesAvailable(stream, &bytesAvailable));
   unit_assert_equal(bytesAvailable, 2);
@@ -1048,7 +1050,6 @@ static void test_stream_state_persistence(void) {
       unit_assert_ok(xStreamSend(stream, TEST_BYTE_VALUE));
       unit_assert_ok(xStreamIsEmpty(stream, &isEmpty));
       unit_assert_false(isEmpty);
-
       unit_assert_ok(xStreamReceive(stream, &bytesReceived, &data));
       unit_assert_ok(xStreamIsEmpty(stream, &isEmpty));
       unit_assert_true(isEmpty);
@@ -1078,25 +1079,24 @@ static void test_stream_edge_cases(void) {
   unit_begin("Reset on empty stream returns error");
   unit_assert_ok(xStreamCreate(&stream));
   unit_assert_not_ok(xStreamReset(stream));
-
   {
     Base_t isEmpty;
 
 
     unit_assert_ok(xStreamIsEmpty(stream, &isEmpty));
     unit_assert_true(isEmpty);
-  }
-
-  unit_end();
+  } unit_end();
 
 
   /* Test 14.2: Reset only works on non-empty streams */
   unit_begin("Reset requires stream to have data");
+
+
   /* Add data so reset can work */
   unit_assert_ok(xStreamSend(stream, 0xAA));
   unit_assert_ok(xStreamReset(stream));  /* Works - stream had data */
-  unit_assert_not_ok(xStreamReset(stream));  /* Fails - stream now empty */
-  unit_assert_not_ok(xStreamReset(stream));  /* Fails - stream still empty */
+  unit_assert_not_ok(xStreamReset(stream)); /* Fails - stream now empty */
+  unit_assert_not_ok(xStreamReset(stream)); /* Fails - stream still empty */
   unit_end();
 
 
@@ -1119,17 +1119,13 @@ static void test_stream_edge_cases(void) {
 
     unit_assert_ok(xStreamCreate(&stream1));
     unit_assert_ok(xStreamCreate(&stream2));
-
     unit_assert_ok(xStreamSend(stream1, 0x11));
     unit_assert_ok(xStreamSend(stream2, 0x22));
     unit_assert_ok(xStreamSend(stream1, 0x33));
-
     unit_assert_ok(xStreamReceive(stream2, &bytesReceived, &data));
     unit_assert_equal(data[0], 0x22);
-
     unit_assert_ok(xStreamReceive(stream1, &bytesReceived, &data));
     unit_assert_equal(bytesReceived, 2);
-
     xStreamDelete(stream1);
     xStreamDelete(stream2);
   } unit_end();
@@ -1188,6 +1184,7 @@ static void test_stream_delete_and_cleanup(void) {
   unit_assert_ok(xStreamCreate(&stream));
   unit_assert_ok(xStreamDelete(stream));
 
+
   /* These should fail */
   unit_assert_not_ok(xStreamSend(stream, TEST_BYTE_VALUE));
   unit_assert_not_ok(xStreamBytesAvailable(stream, &bytes));
@@ -1199,7 +1196,6 @@ static void test_stream_delete_and_cleanup(void) {
   unit_assert_ok(xStreamCreate(&stream));
   unit_assert_ok(xStreamSend(stream, 0xAA));
   unit_assert_ok(xStreamDelete(stream));
-
   unit_assert_ok(xStreamCreate(&stream));
   unit_assert_ok(xStreamSend(stream, 0xBB));
   unit_assert_ok(xStreamBytesAvailable(stream, &bytes));

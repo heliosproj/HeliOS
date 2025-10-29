@@ -232,9 +232,9 @@
  * - Systems with external RAM: 0x40000+ (256KB+)
  *
  * The default value is 0x800 (2KB) which is suitable for Arduino AVR MCUs and
- * other memory-constrained embedded systems (total usage: 4KB for both regions).
- * For development and testing on systems with more RAM, a larger value like
- * 0x10000 (64KB) is recommended.
+ * other memory-constrained embedded systems (total usage: 4KB for both
+ * regions). For development and testing on systems with more RAM, a larger
+ * value like 0x10000 (64KB) is recommended.
  *
  * @note The value should be set as a hexadecimal constant with the 'u' suffix
  * (e.g., 0x800u for 2KB, 0x10000u for 64KB).
@@ -458,8 +458,8 @@
  * Defining CONFIG_ENABLE_IO_SUBSYSTEM will enable the complete I/O subsystem
  * including device driver framework (device.c), filesystem support (fs.c), and
  * console functionality (console.c). When disabled, these components are
- * excluded from the build, reducing code size and memory footprint. The
- * default is disabled.
+ * excluded from the build, reducing code size and memory footprint. The default
+ * is disabled.
  *
  * The I/O subsystem provides:
  * - Device driver framework for block and character devices
@@ -473,8 +473,8 @@
  * @note Disabling this setting can significantly reduce code size for
  * applications that don't require device I/O, filesystem, or console features.
  *
- * @note To enable this feature, define CONFIG_ENABLE_IO_SUBSYSTEM in your
- * build configuration or uncomment the definition below.
+ * @note To enable this feature, define CONFIG_ENABLE_IO_SUBSYSTEM in your build
+ * configuration or uncomment the definition below.
  *
  * @sa CONFIG_ENABLE_CONSOLE
  * @sa CONFIG_DEVICE_NAME_BYTES
@@ -555,9 +555,9 @@
 /**
  * @brief Define the character device UID for console operations
  *
- * Setting CONFIG_CHAR_DEVICE_UID specifies which character device the
- * console will use for input and output. This UID must match a registered
- * character device driver in the system. The default is 0x2000u (CHARDEV0).
+ * Setting CONFIG_CHAR_DEVICE_UID specifies which character device the console
+ * will use for input and output. This UID must match a registered character
+ * device driver in the system. The default is 0x2000u (CHARDEV0).
  *
  * The console requires a bidirectional character device, typically a UART,
  * USART, or USB CDC virtual COM port, to communicate with the user.

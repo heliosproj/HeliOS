@@ -107,12 +107,11 @@ void memory_harness(void) {
 
   /* Clear memory before starting tests */
   xMemFreeAll();
-
-
   unit_print("=== COMPREHENSIVE MEMORY TEST SUITE ===");
 
 
-  /* ============================================================================
+  /*
+   * ============================================================================
    * SECTION 1: BASIC MEMORY ALLOCATION
    * ============================================================================
    */
@@ -165,7 +164,8 @@ void memory_harness(void) {
   unit_end();
 
 
-  /* ============================================================================
+  /*
+   * ============================================================================
    * SECTION 2: STRESS ALLOCATION
    * ============================================================================
    */
@@ -174,6 +174,7 @@ void memory_harness(void) {
 
   /* Test 2.1: Initialize pointers and allocate many small blocks */
   unit_begin("Memory stress allocation");
+
   for(i = 0; i < 100; i++) {
     ptrs[i] = null;
     sizes[i] = 0;
@@ -190,14 +191,17 @@ void memory_harness(void) {
       break;
     }
   }
+
   unit_end();
 
 
   /* Test 2.2: Verify all allocated blocks */
   unit_begin("Verify all allocated blocks");
+
   for(i = 0; i < total_allocated; i++) {
     unit_assert_true(verify_pattern(ptrs[i], sizes[i], (Byte_t) (i & 0xFF)));
   }
+
   unit_end();
 
 
@@ -210,41 +214,49 @@ void memory_harness(void) {
 
   /* Test 2.4: Free every other block to create fragmentation */
   unit_begin("Free every other block");
+
   for(i = 0; i < total_allocated; i += 2) {
     unit_assert_equal(xMemFree(ptrs[i]), ReturnOK);
     ptrs[i] = null;
   }
+
   unit_end();
 
 
   /* Test 2.5: Try to allocate in the gaps */
   unit_begin("Allocate in fragmented gaps");
+
   for(i = 0; i < total_allocated; i += 2) {
     if(xMemAlloc(&ptrs[i], sizes[i]) == ReturnOK) {
       unit_assert_not_null(ptrs[i]);
       fill_pattern(ptrs[i], sizes[i], (Byte_t) (i & 0xFF));
     }
   }
+
   unit_end();
 
 
   /* Test 2.6: Verify all blocks again */
   unit_begin("Verify all blocks after reallocation");
+
   for(i = 0; i < total_allocated; i++) {
     if(ptrs[i] != null) {
       unit_assert_true(verify_pattern(ptrs[i], sizes[i], (Byte_t) (i & 0xFF)));
     }
   }
+
   unit_end();
 
 
   /* Test 2.7: Free all remaining blocks */
   unit_begin("Free all remaining blocks");
+
   for(i = 0; i < total_allocated; i++) {
     if(ptrs[i] != null) {
       unit_assert_equal(xMemFree(ptrs[i]), ReturnOK);
     }
   }
+
   unit_end();
 
 
@@ -255,7 +267,8 @@ void memory_harness(void) {
   unit_end();
 
 
-  /* ============================================================================
+  /*
+   * ============================================================================
    * SECTION 3: MEMORY FRAGMENTATION AND DEFRAGMENTATION
    * ============================================================================
    */
@@ -264,19 +277,23 @@ void memory_harness(void) {
 
   /* Test 3.1: Create fragmented memory */
   unit_begin("Memory fragmentation and defragmentation");
+
   for(i = 0; i < 50; i++) {
     unit_assert_equal(xMemAlloc(&ptrs[i], block_size), ReturnOK);
     unit_assert_not_null(ptrs[i]);
   }
+
   unit_end();
 
 
   /* Test 3.2: Free every other block to fragment memory */
   unit_begin("Fragment memory");
+
   for(i = 1; i < 50; i += 2) {
     unit_assert_equal(xMemFree(ptrs[i]), ReturnOK);
     ptrs[i] = null;
   }
+
   unit_end();
 
 
@@ -291,12 +308,14 @@ void memory_harness(void) {
 
   /* Test 3.4: Free adjacent blocks to trigger defragmentation */
   unit_begin("Trigger defragmentation");
+
   for(i = 0; i < 50; i += 2) {
     if(ptrs[i] != null) {
       unit_assert_equal(xMemFree(ptrs[i]), ReturnOK);
       ptrs[i] = null;
     }
   }
+
   unit_end();
 
 
@@ -317,7 +336,8 @@ void memory_harness(void) {
   unit_end();
 
 
-  /* ============================================================================
+  /*
+   * ============================================================================
    * SECTION 4: EDGE CASES AND BOUNDARY CONDITIONS
    * ============================================================================
    */
@@ -382,11 +402,13 @@ void memory_harness(void) {
   /* Test 4.9: Maximum practical allocation */
   unit_begin("Maximum practical allocation");
   unit_assert_equal(xMemAlloc(&ptr, max_safe_size), ReturnOK);
+
   if(ptr != null) {
     fill_pattern(ptr, 100, PATTERN_BYTE);
     unit_assert_true(verify_pattern(ptr, 100, PATTERN_BYTE));
     unit_assert_equal(xMemFree(ptr), ReturnOK);
   }
+
   unit_end();
 
 
@@ -399,7 +421,8 @@ void memory_harness(void) {
   unit_end();
 
 
-  /* ============================================================================
+  /*
+   * ============================================================================
    * SECTION 5: MEMORY UTILITY FUNCTIONS
    * ============================================================================
    */
@@ -408,23 +431,29 @@ void memory_harness(void) {
 
   /* Test 5.1: Initialize buffers and test memset */
   unit_begin("Memory utility functions");
+
   for(i = 0; i < 256; i++) {
     src[i] = (Byte_t) i;
     dest[i] = 0;
   }
+
   unit_assert_equal(__memset__((volatile Addr_t *) dest, PATTERN_BYTE, 256), ReturnOK);
+
   for(i = 0; i < 256; i++) {
     unit_assert_equal(dest[i], PATTERN_BYTE);
   }
+
   unit_end();
 
 
   /* Test 5.2: memcpy */
   unit_begin("memcpy test");
   unit_assert_equal(__memcpy__((volatile Addr_t *) dest, (volatile Addr_t *) src, 256), ReturnOK);
+
   for(i = 0; i < 256; i++) {
     unit_assert_equal(dest[i], src[i]);
   }
+
   unit_end();
 
 
@@ -472,7 +501,8 @@ void memory_harness(void) {
   unit_end();
 
 
-  /* ============================================================================
+  /*
+   * ============================================================================
    * SECTION 6: MEMORY STATISTICS
    * ============================================================================
    */
@@ -562,7 +592,8 @@ void memory_harness(void) {
   unit_end();
 
 
-  /* ============================================================================
+  /*
+   * ============================================================================
    * SECTION 7: MEMORY ALIGNMENT
    * ============================================================================
    */
@@ -571,6 +602,7 @@ void memory_harness(void) {
 
   /* Test 7.1: Various sizes ensure proper alignment */
   unit_begin("Memory alignment");
+
   for(i = 0; i < num_sizes; i++) {
     unit_assert_equal(xMemAlloc(&ptr, test_sizes[i]), ReturnOK);
     unit_assert_not_null(ptr);
@@ -579,6 +611,7 @@ void memory_harness(void) {
     unit_assert_true(verify_pattern(ptr, test_sizes[i], (Byte_t) i));
     unit_assert_equal(xMemFree(ptr), ReturnOK);
   }
+
   unit_end();
 
 
@@ -591,7 +624,8 @@ void memory_harness(void) {
   unit_end();
 
 
-  /* ============================================================================
+  /*
+   * ============================================================================
    * SECTION 8: KERNEL MEMORY REGION
    * ============================================================================
    */
@@ -647,7 +681,8 @@ void memory_harness(void) {
   unit_end();
 
 
-  /* ============================================================================
+  /*
+   * ============================================================================
    * SECTION 9: MEMORY FREE ALL
    * ============================================================================
    */
@@ -656,11 +691,13 @@ void memory_harness(void) {
 
   /* Test 9.1: Allocate multiple blocks */
   unit_begin("Memory free all");
+
   for(i = 0; i < 10; i++) {
     unit_assert_equal(xMemAlloc(&ptrs[i], (i + 1) * 100), ReturnOK);
     unit_assert_not_null(ptrs[i]);
     fill_pattern(ptrs[i], (i + 1) * 100, (Byte_t) i);
   }
+
   unit_end();
 
 
@@ -699,7 +736,8 @@ void memory_harness(void) {
   unit_end();
 
 
-  /* ============================================================================
+  /*
+   * ============================================================================
    * SECTION 10: PATTERN VERIFICATION
    * ============================================================================
    */
@@ -708,70 +746,85 @@ void memory_harness(void) {
 
   /* Test 10.1: Generate unique patterns and allocate */
   unit_begin("Memory pattern verification");
+
   for(i = 0; i < 20; i++) {
     patterns[i] = (Byte_t) (0x10 + i);
     ptrs[i] = null;
   }
+
   for(i = 0; i < 20; i++) {
     unit_assert_equal(xMemAlloc(&ptrs[i], 256), ReturnOK);
     unit_assert_not_null(ptrs[i]);
     fill_pattern(ptrs[i], 256, patterns[i]);
   }
+
   unit_end();
 
 
   /* Test 10.2: Verify all patterns intact */
   unit_begin("Verify patterns intact");
+
   for(i = 0; i < 20; i++) {
     unit_assert_true(verify_pattern(ptrs[i], 256, patterns[i]));
   }
+
   unit_end();
 
 
   /* Test 10.3: Free some blocks */
   unit_begin("Free some blocks");
+
   for(i = 0; i < 20; i += 3) {
     unit_assert_equal(xMemFree(ptrs[i]), ReturnOK);
     ptrs[i] = null;
   }
+
   unit_end();
 
 
   /* Test 10.4: Verify remaining patterns */
   unit_begin("Verify remaining patterns");
+
   for(i = 0; i < 20; i++) {
     if(ptrs[i] != null) {
       unit_assert_true(verify_pattern(ptrs[i], 256, patterns[i]));
     }
   }
+
   unit_end();
 
 
   /* Test 10.5: Reallocate with new patterns */
   unit_begin("Reallocate with new patterns");
+
   for(i = 0; i < 20; i += 3) {
     unit_assert_equal(xMemAlloc(&ptrs[i], 256), ReturnOK);
     unit_assert_not_null(ptrs[i]);
     patterns[i] = (Byte_t) (0x80 + i);
     fill_pattern(ptrs[i], 256, patterns[i]);
   }
+
   unit_end();
 
 
   /* Test 10.6: Final verification */
   unit_begin("Final pattern verification");
+
   for(i = 0; i < 20; i++) {
     unit_assert_true(verify_pattern(ptrs[i], 256, patterns[i]));
   }
+
   for(i = 0; i < 20; i++) {
     if(ptrs[i] != null) {
       unit_assert_equal(xMemFree(ptrs[i]), ReturnOK);
     }
   }
+
   unit_end();
 
 
-  /* ============================================================================
+  /*
+   * ============================================================================
    * SECTION 11: LARGE ALLOCATIONS
    * ============================================================================
    */
@@ -790,35 +843,43 @@ void memory_harness(void) {
   /* Test 11.2: Allocate 50% of available */
   unit_begin("Allocate 50% of available");
   large_size = available / 2;
+
   if(large_size > 100) {
     unit_assert_equal(xMemAlloc(&large_ptr, large_size), ReturnOK);
+
     if(large_ptr != null) {
       fill_pattern(large_ptr, 100, PATTERN_BYTE);
       unit_assert_true(verify_pattern(large_ptr, 100, PATTERN_BYTE));
       unit_assert_equal(xMemAlloc(&small_ptr, 100), ReturnOK);
+
       if(small_ptr != null) {
         fill_pattern(small_ptr, 100, INVERSE_PATTERN_BYTE);
         unit_assert_true(verify_pattern(small_ptr, 100, INVERSE_PATTERN_BYTE));
         unit_assert_equal(xMemFree(small_ptr), ReturnOK);
       }
+
       unit_assert_equal(xMemFree(large_ptr), ReturnOK);
     }
   }
+
   unit_end();
 
 
   /* Test 11.3: Allocate 90% of total */
   unit_begin("Allocate 90% of total");
   large_size = (MEMORY_REGION_SIZE * 9) / 10;
+
   if(xMemAlloc(&large_ptr, large_size) == ReturnOK) {
     fill_pattern(large_ptr, 100, PATTERN_BYTE);
     unit_assert_true(verify_pattern(large_ptr, 100, PATTERN_BYTE));
     unit_assert_equal(xMemFree(large_ptr), ReturnOK);
   }
+
   unit_end();
 
 
-  /* ============================================================================
+  /*
+   * ============================================================================
    * SECTION 12: CYCLE DETECTION
    * ============================================================================
    */
@@ -828,6 +889,7 @@ void memory_harness(void) {
   /* Test 12.1: Allocate many blocks */
   unit_begin("Memory cycle detection");
   count = 0;
+
   for(i = 0; i < 100; i++) {
     if(xMemAlloc(&ptrs[i], 50) == ReturnOK) {
       count++;
@@ -837,39 +899,47 @@ void memory_harness(void) {
       break;
     }
   }
+
   unit_end();
 
 
   /* Test 12.2: Free blocks to create fragmentation */
   unit_begin("Create fragmentation");
+
   for(i = 1; i < count; i += 2) {
     unit_assert_equal(xMemFree(ptrs[i]), ReturnOK);
     ptrs[i] = null;
   }
+
   unit_end();
 
 
   /* Test 12.3: Trigger defragmentation */
   unit_begin("Trigger defragmentation");
+
   for(i = 0; i < count; i += 2) {
     if(ptrs[i] != null) {
       unit_assert_equal(xMemFree(ptrs[i]), ReturnOK);
       ptrs[i] = null;
     }
   }
+
   unit_end();
 
 
   /* Test 12.4: Allocate large block */
   unit_begin("Allocate after defragmentation");
   unit_assert_equal(xMemAlloc(&large, count * 25), ReturnOK);
+
   if(large != null) {
     unit_assert_equal(xMemFree(large), ReturnOK);
   }
+
   unit_end();
 
 
-  /* ============================================================================
+  /*
+   * ============================================================================
    * SECTION 13: DEFRAGMENTATION BEHAVIOR
    * ============================================================================
    */
@@ -878,18 +948,22 @@ void memory_harness(void) {
 
   /* Test 13.1: Create maximum fragmentation */
   unit_begin("Memory defragmentation behavior");
+
   for(i = 0; i < 30; i++) {
     unit_assert_equal(xMemAlloc(&ptrs[i], 64), ReturnOK);
   }
+
   unit_end();
 
 
   /* Test 13.2: Free every third block */
   unit_begin("Free every third block");
+
   for(i = 0; i < 30; i += 3) {
     unit_assert_equal(xMemFree(ptrs[i]), ReturnOK);
     ptrs[i] = null;
   }
+
   unit_end();
 
 
@@ -902,10 +976,12 @@ void memory_harness(void) {
 
   /* Test 13.4: Free adjacent blocks */
   unit_begin("Free adjacent blocks");
+
   for(i = 1; i < 30; i += 3) {
     unit_assert_equal(xMemFree(ptrs[i]), ReturnOK);
     ptrs[i] = null;
   }
+
   xMemFree((const volatile Addr_t *) stats);
   unit_end();
 
@@ -921,9 +997,11 @@ void memory_harness(void) {
 
   /* Test 13.6: Free remaining blocks */
   unit_begin("Free remaining blocks");
+
   for(i = 2; i < 30; i += 3) {
     unit_assert_equal(xMemFree(ptrs[i]), ReturnOK);
   }
+
   unit_end();
 
 
@@ -935,7 +1013,8 @@ void memory_harness(void) {
   unit_end();
 
 
-  /* ============================================================================
+  /*
+   * ============================================================================
    * SECTION 14: CORRUPTION DETECTION
    * ============================================================================
    */
@@ -974,7 +1053,8 @@ void memory_harness(void) {
   unit_end();
 
 
-  /* ============================================================================
+  /*
+   * ============================================================================
    * SECTION 15: SIZE TRACKING
    * ============================================================================
    */
@@ -984,6 +1064,7 @@ void memory_harness(void) {
   /* Test 15.1: Allocate various sizes */
   unit_begin("Memory size tracking");
   total_requested = 0;
+
   for(i = 0; i < 10; i++) {
     unit_assert_equal(xMemAlloc(&ptrs[i], requested_sizes[i]), ReturnOK);
     unit_assert_not_null(ptrs[i]);
@@ -992,6 +1073,7 @@ void memory_harness(void) {
     unit_assert_true((actual_size % CONFIG_MEMORY_ALIGNMENT) == 0);
     total_requested += requested_sizes[i];
   }
+
   unit_end();
 
 
@@ -1004,9 +1086,11 @@ void memory_harness(void) {
 
   /* Test 15.3: Free half the blocks */
   unit_begin("Free half blocks");
+
   for(i = 0; i < 10; i += 2) {
     unit_assert_equal(xMemFree(ptrs[i]), ReturnOK);
   }
+
   unit_end();
 
 
@@ -1019,9 +1103,11 @@ void memory_harness(void) {
 
   /* Test 15.5: Free remaining blocks */
   unit_begin("Free remaining blocks");
+
   for(i = 1; i < 10; i += 2) {
     unit_assert_equal(xMemFree(ptrs[i]), ReturnOK);
   }
+
   unit_end();
 
 
@@ -1034,8 +1120,8 @@ void memory_harness(void) {
 
   /* Final cleanup */
   xMemFreeAll();
-
-
   unit_print("=== MEMORY TEST SUITE COMPLETE ===");
 }
+
+
 /*UNCRUSTIFY-ON*/

@@ -27,7 +27,6 @@
 #define TEST_POINTER_ADDR 0x12345678u /* Arbitrary test address */
 #define PRODUCT_NAME_MIN_LENGTH 1 /* Minimum product name length */
 #define MAX_CONCURRENT_CALLS 50 /* Maximum concurrent system calls */
-
 /* Helper function prototypes */
 static void test_system_initialization(void);
 static void test_system_information(void);
@@ -151,7 +150,6 @@ static void test_system_information(void) {
   unit_assert_true(info->majorVersion >= 0x0u);
   unit_assert_true(info->minorVersion >= 0x0u);
   unit_assert_true(info->patchVersion >= 0x0u);
-
   unit_assert_ok(xMemFree(info));
   unit_end();
 
@@ -167,19 +165,19 @@ static void test_system_information(void) {
     unit_assert_ok(xSystemGetSystemInfo(&info1));
     unit_assert_ok(xSystemGetSystemInfo(&info2));
     unit_assert_ok(xSystemGetSystemInfo(&info3));
-
     unit_assert_not_null(info1);
     unit_assert_not_null(info2);
     unit_assert_not_null(info3);
+
 
     /* Verify all return same product name */
     unit_assert_equal(__strcmp__(info1->productName, info2->productName), 0x0u);
     unit_assert_equal(__strcmp__(info2->productName, info3->productName), 0x0u);
 
+
     /* Verify version numbers match */
     unit_assert_equal(info1->majorVersion, info2->majorVersion);
     unit_assert_equal(info2->majorVersion, info3->majorVersion);
-
     unit_assert_ok(xMemFree(info1));
     unit_assert_ok(xMemFree(info2));
     unit_assert_ok(xMemFree(info3));
@@ -229,7 +227,6 @@ static void test_null_pointer_validation(void) {
     unit_assert_ok(xSystemGetSystemInfo(&info));
     unit_assert_not_null(info);
     unit_assert_ok(xMemFree(info));
-
     info = null;
     unit_assert_not_ok(xSystemGetSystemInfo(null));
     unit_assert_ok(xSystemGetSystemInfo(&info));
@@ -285,10 +282,8 @@ static void test_system_info_stress(void) {
 
     unit_assert_ok(xSystemGetSystemInfo(&info1));
     unit_assert_ok(xSystemGetSystemInfo(&info2));
-
     unit_assert_not_null(info1);
     unit_assert_not_null(info2);
-
     unit_assert_ok(xMemFree(info1));
     unit_assert_ok(xMemFree(info2));
   }
@@ -317,6 +312,7 @@ static void test_system_info_stress(void) {
     unit_assert_ok(xSystemGetSystemInfo(&info));
     unit_assert_not_null(info);
     unit_assert_ok(xMemFree(info));
+
 
     /* Free memory blocks */
     for(i = 0x0u; i < 20; i++) {
@@ -347,7 +343,6 @@ static void test_system_info_content_validation(void) {
 
   /* Check product name is valid and not empty */
   unit_assert_true(__strlen__(info->productName) > 0x0u);
-
   unit_assert_ok(xMemFree(info));
   unit_end();
 
@@ -361,11 +356,9 @@ static void test_system_info_content_validation(void) {
 
     unit_assert_ok(xSystemGetSystemInfo(&info1));
     unit_assert_ok(xSystemGetSystemInfo(&info2));
-
     unit_assert_equal(info1->majorVersion, info2->majorVersion);
     unit_assert_equal(info1->minorVersion, info2->minorVersion);
     unit_assert_equal(info1->patchVersion, info2->patchVersion);
-
     unit_assert_ok(xMemFree(info1));
     unit_assert_ok(xMemFree(info2));
   } unit_end();
@@ -381,9 +374,9 @@ static void test_system_info_content_validation(void) {
     unit_assert_ok(xSystemGetSystemInfo(&info1));
     unit_assert_ok(xSystemGetSystemInfo(&info2));
 
+
     /* Little endian flag should be consistent */
     unit_assert_equal(info1->littleEndian, info2->littleEndian);
-
     unit_assert_ok(xMemFree(info1));
     unit_assert_ok(xMemFree(info2));
   } unit_end();
@@ -394,9 +387,9 @@ static void test_system_info_content_validation(void) {
   unit_assert_ok(xSystemGetSystemInfo(&info));
   unit_assert_not_null(info);
 
+
   /* Check numberOfTasks field is accessible (may be 0 or greater) */
   unit_assert_true(info->numberOfTasks >= 0x0u);
-
   unit_assert_ok(xMemFree(info));
   unit_end();
 }
@@ -413,8 +406,10 @@ static void test_system_critical_functions(void) {
   /* Test 6.1: System initialization continues normal operation */
   unit_begin("System initialization allows continued operation");
 
+
   /* Initialize system */
   unit_assert_ok(xSystemInit());
+
 
   /* Verify operations work after init */
   {
@@ -424,14 +419,13 @@ static void test_system_critical_functions(void) {
     unit_assert_ok(xSystemGetSystemInfo(&info));
     unit_assert_not_null(info);
     unit_assert_ok(xMemFree(info));
-  }
-
-  unit_end();
+  } unit_end();
 
 
   /* Test 6.2: System functions available after initialization */
   unit_begin("All system functions available after initialization");
   unit_assert_ok(xSystemInit());
+
 
   /* Test that we can call various system functions */
   {
@@ -441,14 +435,13 @@ static void test_system_critical_functions(void) {
     unit_assert_ok(xSystemGetSystemInfo(&info));
     unit_assert_not_null(info);
     unit_assert_ok(xMemFree(info));
-  }
-
-  unit_end();
+  } unit_end();
 
 
   /* Test 6.3: System state maintained across operations */
   unit_begin("System state maintained across various operations");
   unit_assert_ok(xSystemInit());
+
 
   /* Do some operations */
   {
@@ -458,15 +451,11 @@ static void test_system_critical_functions(void) {
 
     unit_assert_ok(xMemAlloc(&ptr, 100));
     unit_assert_ok(xSystemGetSystemInfo(&info));
-
     unit_assert_not_null(ptr);
     unit_assert_not_null(info);
-
     unit_assert_ok(xMemFree(ptr));
     unit_assert_ok(xMemFree(info));
-  }
-
-  unit_end();
+  } unit_end();
 }
 
 
@@ -490,37 +479,38 @@ static void test_enhanced_assertions(void) {
   /* Test 7.1: Equality checks */
   unit_begin("Assertion equality checks work correctly");
 
+
   /* These should pass */
   unit_assert_equal(size1, size2);
   unit_assert_equal(ASSERT_TEST_VALUE_256, size1);
   unit_assert_equal(0x100, ASSERT_TEST_VALUE_256);
-
   unit_end();
 
 
   /* Test 7.2: Inequality checks */
   unit_begin("Assertion inequality checks work correctly");
 
+
   /* These should pass */
   unit_assert_not_equal(size1, size3);
   unit_assert_not_equal(ASSERT_TEST_VALUE_256, ASSERT_TEST_VALUE_512);
   unit_assert_not_equal(0x100, 0x200);
-
   unit_end();
 
 
   /* Test 7.3: Pointer checks */
   unit_begin("Assertion pointer checks work correctly");
 
+
   /* These should pass */
   unit_assert_null(ptr1);
   unit_assert_not_null(ptr2);
-
   unit_end();
 
 
   /* Test 7.4: Boolean checks */
   unit_begin("Assertion boolean checks work correctly");
+
 
   /* These should pass */
   unit_assert_true(size1 == size2);
@@ -529,17 +519,14 @@ static void test_enhanced_assertions(void) {
   unit_assert_false(zero);
   unit_assert_true(1);
   unit_assert_false(0);
-
   unit_end();
 
 
   /* Test 7.5: Complex expressions */
   unit_begin("Assertion macros handle complex expressions");
-
   unit_assert_true((size1 + size2) == (ASSERT_TEST_VALUE_256 * 2));
   unit_assert_false((size1 + size3) == size1);
   unit_assert_equal((size1 + size2), (ASSERT_TEST_VALUE_256 + ASSERT_TEST_VALUE_256));
-
   unit_end();
 }
 
@@ -679,9 +666,7 @@ static void test_concurrent_system_operations(void) {
 
     unit_assert_ok(xSystemInit());
     unit_assert_ok(xSystemGetSystemInfo(&info));
-
     unit_assert_not_null(info);
-
     unit_assert_ok(xMemFree((Addr_t *) info));
   }
 
@@ -708,6 +693,7 @@ static void test_scheduler_state_integration(void) {
     unit_assert_ok(xSystemGetSystemInfo(&info));
     unit_assert_not_null(info);
 
+
     /* Try to get scheduler state */
     if(OK(xTaskGetSchedulerState(&schedState))) {
       /* Scheduler state available - verify it's valid */
@@ -729,14 +715,17 @@ static void test_scheduler_state_integration(void) {
     unit_assert_ok(xSystemGetSystemInfo(&info1));
     unit_assert_not_null(info1);
 
+
     /* Try to suspend scheduler (may not be running in test environment) */
     if(OK(xTaskSuspendAll())) {
       /* Get info while suspended */
       unit_assert_ok(xSystemGetSystemInfo(&info2));
       unit_assert_not_null(info2);
 
+
       /* Verify info is consistent */
       unit_assert_equal(__strcmp__(info1->productName, info2->productName), 0x0u);
+
 
       /* Resume scheduler */
       if(ERROR(xTaskResumeAll())) {
@@ -753,10 +742,13 @@ static void test_scheduler_state_integration(void) {
   /* Test 10.3: System initialization with scheduler state */
   unit_begin("System initialization works with various scheduler states");
 
+
   /* Initialize in running state */
   unit_assert_ok(xSystemInit());
 
-  /* Try to suspend scheduler and initialize (may not work in test environment) */
+
+  /* Try to suspend scheduler and initialize (may not work in test environment)
+   */
   if(OK(xTaskSuspendAll())) {
     unit_assert_ok(xSystemInit());
 
@@ -765,9 +757,9 @@ static void test_scheduler_state_integration(void) {
     }
   }
 
+
   /* Initialize again after attempting scheduler operations */
   unit_assert_ok(xSystemInit());
-
   unit_end();
 
 

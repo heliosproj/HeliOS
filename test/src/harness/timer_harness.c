@@ -27,11 +27,11 @@
 #define TIMER_WAIT_MEDIUM 2 /* Sleep 2 seconds */
 #define TIMER_WAIT_LONG 3 /* Sleep 3 seconds */
 #define TIMER_WAIT_EXTENDED 6 /* Sleep 6 seconds */
-
 /* Stress test constants */
 #define MAX_TIMERS_STRESS 50
 #define MAX_TIMERS_CONCURRENT 20
 #define MAX_PERIOD_VALUE 0xFFFFFFFF
+
 
 /* Helper function prototypes */
 static void test_error_handling_and_null_pointers(void);
@@ -295,6 +295,8 @@ static void test_timer_activation_and_state(void) {
 
   /* Test 3.5: Start already started timer requires stop first */
   unit_begin("Starting already started timer requires stop first");
+
+
   /* Timer is already started from previous test, attempt to start again */
   unit_assert_not_ok(xTimerStart(timer));
   unit_assert_ok(xTimerIsTimerActive(timer, &isActive));
@@ -480,7 +482,6 @@ static void test_timer_period_modifications(void) {
   unit_assert_ok(xTimerChangePeriod(timer, TIMER_PERIOD_MEDIUM));
   unit_assert_ok(xTimerGetPeriod(timer, &newPeriod));
   unit_assert_equal(newPeriod, TIMER_PERIOD_MEDIUM);
-
   unit_assert_ok(xTimerChangePeriod(timer, TIMER_PERIOD_1_SECOND));
   unit_assert_ok(xTimerGetPeriod(timer, &newPeriod));
   unit_assert_equal(newPeriod, TIMER_PERIOD_1_SECOND);
@@ -764,7 +765,6 @@ static void test_timer_boundary_conditions(void) {
   unit_assert_ok(xTimerChangePeriod(timer, 1));
   unit_assert_ok(xTimerGetPeriod(timer, &period));
   unit_assert_equal(period, 1);
-
   unit_assert_ok(xTimerChangePeriod(timer, MAX_PERIOD_VALUE));
   unit_assert_ok(xTimerGetPeriod(timer, &period));
   unit_assert_equal(period, MAX_PERIOD_VALUE);
@@ -801,7 +801,6 @@ static void test_timer_state_persistence(void) {
   unit_assert_ok(xTimerStop(timer));
   unit_assert_ok(xTimerGetPeriod(timer, &period));
   unit_assert_equal(period, TIMER_PERIOD_2_SECONDS);
-
   unit_assert_ok(xTimerStart(timer));
   unit_assert_ok(xTimerGetPeriod(timer, &period));
   unit_assert_equal(period, TIMER_PERIOD_2_SECONDS);
@@ -906,7 +905,6 @@ static void test_timer_edge_cases(void) {
     unit_assert_ok(xTimerStart(timer2));
     unit_assert_ok(xTimerStop(timer1));
     unit_assert_ok(xTimerReset(timer2));
-
     unit_assert_ok(xTimerDelete(timer1));
     unit_assert_ok(xTimerDelete(timer2));
   } unit_end();
@@ -968,7 +966,6 @@ static void test_timer_delete_and_cleanup(void) {
     unit_assert_ok(xTimerCreate(&timer1, TIMER_PERIOD_SHORT));
     unit_assert_ok(xTimerCreate(&timer2, TIMER_PERIOD_MEDIUM));
     unit_assert_ok(xTimerCreate(&timer3, TIMER_PERIOD_1_SECOND));
-
     unit_assert_ok(xTimerDelete(timer1));
     unit_assert_ok(xTimerDelete(timer2));
     unit_assert_ok(xTimerDelete(timer3));
