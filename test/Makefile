@@ -112,6 +112,7 @@ debug: $(TARGET)
 clean:
 	@rm -f $(TARGET)
 	@rm -f $(TEST_REPORT) $(ANALYSIS_REPORT)
+	@rm -f $(BASE_DIR)/compile_commands.json
 	@rm -rf bin
 	@rm -rf $(NOMIC_BUILD_DIR)
 
