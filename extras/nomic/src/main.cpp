@@ -1,6 +1,6 @@
 /*
  * Nomic C Semantic Source Code Analyzer
- * Copyright (C) 2025 Manny Peterson <me@mannypeterson.com>
+ * (C) 2020-2026 Manny Peterson <manny@heliosproject.org>
  *
  * This file is part of Nomic.
  *
@@ -33,7 +33,7 @@
 using namespace nomic;
 
 /**
- * @brief Main entry point for Nomic C++ analyzer
+ * @brief Main entry point for Nomic C analyzer
  */
 int main(int argc, char* argv[]) {
     try {
@@ -80,7 +80,7 @@ int main(int argc, char* argv[]) {
             return 1;
         }
 
-        spdlog::info("Nomic C++ Semantic Analyzer v1.0.0");
+        spdlog::info("Nomic C Semantic Source Code Analyzerv1.0.0");
         spdlog::info("Loading rules from: {}", options.rules_file);
 
         // Initialize the Clang analyzer

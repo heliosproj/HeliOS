@@ -1,6 +1,6 @@
 /*
  * Nomic C Semantic Source Code Analyzer
- * Copyright (C) 2025 Manny Peterson <me@mannypeterson.com>
+ * (C) 2020-2026 Manny Peterson <manny@heliosproject.org>
  *
  * This file is part of Nomic.
  *
@@ -292,7 +292,7 @@ CLIOptions CLIParser::parse(int argc, char* argv[]) {
 void CLIParser::printHelp(std::ostream& out) const {
     out << "Usage: nomic [options] <source-files...>\n";
     out << "\n";
-    out << "Nomic C++ - Semantic C Code Analysis Tool\n";
+    out << "Nomic C Semantic Source Code Analyzer\n";
     out << "\n";
     out << "Input/Output Options:\n";
     out << "  -r, --rules <file>           Path to YAML rules file (required)\n";
@@ -359,7 +359,7 @@ void CLIParser::printHelp(std::ostream& out) const {
 }
 
 void CLIParser::printVersion(std::ostream& out) const {
-    out << "Nomic C++ version 1.0.0\n";
+    out << "Nomic C Semantic Source Code Analyzer 1.0.0\n";
     out << "Copyright (c) 2024 Nomic Project Contributors\n";
     out << "Built with LLVM/Clang 15.0\n";
     out << "License: MIT\n";

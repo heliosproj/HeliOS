@@ -1,3 +1,19 @@
+/*UNCRUSTIFY-OFF*/
+/**
+ * @file arduino_helpers.cpp
+ * @author Manny Peterson <manny@heliosproject.org>
+ * @brief Arduino helper function implementations
+ * @version 0.5.0
+ * @date 2023-03-19
+ *
+ * @copyright
+ * (C) 2020-2026 Manny Peterson <manny@heliosproject.org>
+ *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *
+ *
+ */
+/*UNCRUSTIFY-ON*/
 #include "arduino_helpers.h"
 
 #ifdef __cplusplus

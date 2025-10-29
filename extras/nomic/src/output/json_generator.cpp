@@ -1,6 +1,6 @@
 /*
  * Nomic C Semantic Source Code Analyzer
- * Copyright (C) 2025 Manny Peterson <me@mannypeterson.com>
+ * (C) 2020-2026 Manny Peterson <manny@heliosproject.org>
  *
  * This file is part of Nomic.
  *
@@ -36,7 +36,7 @@ void JSONOutputGenerator::generateReport(const std::vector<Violation>& violation
 
     // Add metadata
     report["metadata"] = {
-        {"generator", "Nomic C++"},
+        {"generator", "Nomic C"},
         {"version", "1.0.0"},
         {"timestamp", std::time(nullptr)},
         {"total_violations", violations.size()}
