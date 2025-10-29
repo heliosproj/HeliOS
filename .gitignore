@@ -4,7 +4,7 @@
 __pycache__
 .check_cache
 .claude
-/test/compliance-report.json
+/test/analysis-report.json
 /test/test-report.json
 !.gitignore
 !.gitattributes
