@@ -210,8 +210,7 @@ Ready to contribute code? See [CONTRIBUTING.md](/CONTRIBUTING.md) for complete d
 
 # :scroll: Copyright & License
 
-**HeliOS Embedded Operating System**
-Copyright (C) 2020-2026 HeliOS Project <license@heliosproj.org>
+HeliOS Embedded Operating System Copyright (C) 2020-2026 Manny Peterson <manny@heliosproj.org>
 
 HeliOS is licensed under the **GNU General Public License (GPL) Version 2** as published by the Free Software Foundation.
 
