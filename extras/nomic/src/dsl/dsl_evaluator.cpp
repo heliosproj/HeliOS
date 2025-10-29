@@ -1653,16 +1653,14 @@ static std::any callBuiltinFunction(const std::string& name,
         return static_cast<int>(context.current_function->getReturnStatements().size());
     }
 
-    // returns(pattern) - check if any return matches pattern
+    // returns(type) - check if function return type matches
     if (name == "returns") {
         if (args.empty() || !context.current_function) return false;
-        std::string pattern = anyToString(args[0]);
-        for (const auto& ret : context.current_function->getReturnStatements()) {
-            if (ret.hasValue() && ret.getReturnExpression().find(pattern) != std::string::npos) {
-                return true;
-            }
-        }
-        return false;
+        std::string type_pattern = anyToString(args[0]);
+        std::string return_type = context.current_function->getReturnType().getCanonicalType();
+
+        // Exact match for the type
+        return return_type == type_pattern;
     }
 
     // returns_null() - check if function returns NULL/nullptr

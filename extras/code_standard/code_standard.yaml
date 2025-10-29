@@ -233,8 +233,8 @@
   severity: error
   scope: function
   select: functions
-  where: calls_function("__.*__")
-  assert: ast_query("call_expr[callee[starts_with(@name, '__')]]/ancestor::call_expr[@callee='OK' or @callee='ERROR']")
+  where: returns("Return_t")
+  assert: not ast_query("call_expr[callee[starts_with(@name, '__')][!ancestor::call_expr[@callee='OK' or @callee='ERROR']]]")
   message: "Function {name} calls internal functions without checking result with OK()/ERROR() macros"
   fixit: "Wrap syscall in if(OK(syscall(...))) { ... } else { __AssertOnElse__(); }"
   tags:
@@ -352,17 +352,16 @@
     - naming-convention
 
 - id: HELIOS-API-008
-  description: "Functions must return Return_t type (HeliOS API-008)"
-  severity: error
+  description: "Public API functions should return Return_t for status (HeliOS API-008)"
+  severity: warning
   scope: function
   select: functions
-  where: not regex_matches(fn.name, "^(main|_start)$")
+  where: >
+    regex_matches(fn.name, "^x[A-Z]")
+    and not returns("void")
   assert: returns("Return_t")
-  message: "Function {name} does not return Return_t. All HeliOS functions must return Return_t"
-  fixit: "Change return type to Return_t and use FUNCTION_ENTER/EXIT macros"
-  exceptions:
-    - main
-    - _start
+  message: "Public API function {name} should return Return_t for consistent error handling"
+  fixit: "Consider returning Return_t for status, with output via parameters if needed"
   tags:
     - api-naming
     - return-type
