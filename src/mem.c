@@ -105,7 +105,7 @@ static Word_t __checksum__(const BlockHeader_t *header_) {
 }
 
 
-/* GOOD - DO NOT TOUCH!! */
+
 static Return_t __ValidateBlockHeader__(const BlockHeader_t *header_, const volatile MemoryRegion_t *region_) {
   FUNCTION_ENTER;
 
@@ -143,7 +143,7 @@ static Return_t __ValidateBlockHeader__(const BlockHeader_t *header_, const vola
 }
 
 
-/* GOOD - DO NOT TOUCH!! */
+
 Return_t __MemoryInit__(void) {
   FUNCTION_ENTER;
 
@@ -180,7 +180,7 @@ Return_t __MemoryInit__(void) {
 }
 
 
-/* GOOD - DO NOT TOUCH!! */
+
 static Return_t __MemoryRegionInit__(volatile MemoryRegion_t *region_) {
   FUNCTION_ENTER;
 
@@ -212,7 +212,7 @@ static Return_t __MemoryRegionInit__(volatile MemoryRegion_t *region_) {
 }
 
 
-/* GOOD - DO NOT TOUCH!! */
+
 static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **addr_, const Size_t size_) {
   FUNCTION_ENTER;
 
@@ -312,7 +312,7 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
 }
 
 
-/* GOOD - DO NOT TOUCH!! */
+
 static Return_t __free__(volatile MemoryRegion_t *region_, const volatile Addr_t *addr_) {
   FUNCTION_ENTER;
 
@@ -356,7 +356,7 @@ static Return_t __free__(volatile MemoryRegion_t *region_, const volatile Addr_t
 }
 
 
-/* GOOD - DO NOT TOUCH!! */
+
 static Return_t __DefragMemoryRegion__(volatile MemoryRegion_t *region_) {
   FUNCTION_ENTER;
 
@@ -428,7 +428,7 @@ static Return_t __DefragMemoryRegion__(volatile MemoryRegion_t *region_) {
 }
 
 
-/* GOOD - DO NOT TOUCH!! */
+
 Return_t xMemAlloc(volatile Addr_t **addr_, const Size_t size_) {
   FUNCTION_ENTER;
 
@@ -442,7 +442,7 @@ Return_t xMemAlloc(volatile Addr_t **addr_, const Size_t size_) {
 }
 
 
-/* GOOD - DO NOT TOUCH!! */
+
 Return_t xMemFree(const volatile Addr_t *addr_) {
   FUNCTION_ENTER;
 
@@ -456,7 +456,7 @@ Return_t xMemFree(const volatile Addr_t *addr_) {
 }
 
 
-/* GOOD - DO NOT TOUCH!! */
+
 Return_t xMemFreeAll(void) {
   FUNCTION_ENTER;
 
@@ -470,7 +470,7 @@ Return_t xMemFreeAll(void) {
 }
 
 
-/* GOOD - DO NOT TOUCH!! */
+
 Return_t xMemGetUsed(Size_t *size_) {
   FUNCTION_ENTER;
 
@@ -510,7 +510,7 @@ Return_t xMemGetUsed(Size_t *size_) {
 }
 
 
-/* GOOD - DO NOT TOUCH!! */
+
 Return_t xMemGetSize(const volatile Addr_t *addr_, Size_t *size_) {
   FUNCTION_ENTER;
 
@@ -539,7 +539,7 @@ Return_t xMemGetSize(const volatile Addr_t *addr_, Size_t *size_) {
 }
 
 
-/* GOOD - DO NOT TOUCH!! */
+
 Return_t __KernelAllocateMemory__(volatile Addr_t **addr_, const Size_t size_) {
   FUNCTION_ENTER;
 
@@ -557,7 +557,7 @@ Return_t __KernelAllocateMemory__(volatile Addr_t **addr_, const Size_t size_) {
 }
 
 
-/* GOOD - DO NOT TOUCH!! */
+
 Return_t __KernelFreeMemory__(const volatile Addr_t *addr_) {
   FUNCTION_ENTER;
 
@@ -571,7 +571,7 @@ Return_t __KernelFreeMemory__(const volatile Addr_t *addr_) {
 }
 
 
-/* GOOD - DO NOT TOUCH!! */
+
 Return_t __HeapAllocateMemory__(volatile Addr_t **addr_, const Size_t size_) {
   FUNCTION_ENTER;
 
@@ -589,7 +589,7 @@ Return_t __HeapAllocateMemory__(volatile Addr_t **addr_, const Size_t size_) {
 }
 
 
-/* GOOD - DO NOT TOUCH!! */
+
 Return_t __HeapFreeMemory__(const volatile Addr_t *addr_) {
   FUNCTION_ENTER;
 
