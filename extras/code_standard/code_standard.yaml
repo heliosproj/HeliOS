@@ -1,9 +1,7 @@
 # HeliOS Coding Standard - Nomic Rules
 # Version: 1.3.0
-# Based on: HELIOS_CODE_STANDARD.json
 #
 # This file contains Nomic checker rules implementing the HeliOS coding standard.
-# Each rule references its corresponding HeliOS standard rule via tags (helios:RULE-ID).
 
 ---
 # =============================================================================

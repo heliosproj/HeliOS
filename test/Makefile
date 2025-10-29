@@ -95,7 +95,7 @@ test: $(TARGET)
 analyze: nomic compile_commands
 	@$(NOMIC_BIN) analyze $(BASE_DIR)/src/*.c \
 		--compilation-database $(BASE_DIR) \
-		--rules $(NOMIC_DIR)/helios.yaml \
+		--rules $(BASE_DIR)/extras/code_standard/code_standard.yaml \
 		--format json \
 		--output $(ANALYSIS_REPORT)
 	@echo "Analysis report saved to: $(ANALYSIS_REPORT)"
