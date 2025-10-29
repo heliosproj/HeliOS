@@ -8,6 +8,16 @@
 
 ***
 
+# :speech_balloon: Join the HeliOS Community
+
+**Connect with fellow HeliOS developers and enthusiasts!**
+
+Join the [HeliOS Project Discord Community](https://discord.gg/3TZP6SKrW7) to discuss all things related to HeliOS — from embedded system design and real-time scheduling to driver development, filesystem features, and project showcases. While the Discord server is open for any HeliOS-related discussion, please consult [SUPPORT.md](/SUPPORT.md) for formal support requests and [CONTRIBUTING.md](/CONTRIBUTING.md) if you're interested in contributing code to the project.
+
+**We'd** :heart: **to see you there!**
+
+***
+
 # :rocket: Overview
 
 HeliOS is a portable embedded operating system for resource‑constrained microcontrollers. It combines a deterministic, zero‑context‑switch scheduler with event‑driven and cooperative tasks, robust IPC, a private heap with defragmentation, a unified driver architecture, and a full FAT32 filesystem — all in clean and portable, C90‑compliant code.
