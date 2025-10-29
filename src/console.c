@@ -1,13 +1,13 @@
 /*UNCRUSTIFY-OFF*/
 /**
  * @file console.c
- * @author Manny Peterson <manny@heliosproject.org>
+ * @author Manny Peterson <manny@heliosproj.org>
  * @brief Kernel source for console and shell support
  * @version 0.5.0
  * @date 2025-01-19
  *
  * @copyright
- * (C) 2020-2026 Manny Peterson <manny@heliosproject.org>
+ * (C) 2020-2026 Manny Peterson <manny@heliosproj.org>
  *
  * SPDX-License-Identifier: GPL-2.0-or-later
  *
@@ -1035,7 +1035,7 @@ static Return_t __ConsoleCmdVersion__(const Byte_t *args_) {
   (void) args_;
   __ConsoleWriteString__((const Byte_t *) "HeliOS Embedded Operating System\r\n");
   __ConsoleWriteString__((const Byte_t *) "Version: 0.5.0\r\n");
-  __ConsoleWriteString__((const Byte_t *) "(C) 2020-2026 Manny Peterson <manny@heliosproject.org>\r\n");
+  __ConsoleWriteString__((const Byte_t *) "(C) 2020-2026 Manny Peterson <manny@heliosproj.org>\r\n");
   __ConsoleWriteString__((const Byte_t *) "License: GPL-2.0-or-later\r\n");
   __ReturnOk__();
   FUNCTION_EXIT;

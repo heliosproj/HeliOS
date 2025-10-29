@@ -1,13 +1,13 @@
 /*UNCRUSTIFY-OFF*/
 /**
  * @file console.h
- * @author Manny Peterson <manny@heliosproject.org>
+ * @author Manny Peterson <manny@heliosproj.org>
  * @brief Kernel source for console and shell support
  * @version 0.5.0
  * @date 2025-01-19
  *
  * @copyright
- * (C) 2020-2026 Manny Peterson <manny@heliosproject.org>
+ * (C) 2020-2026 Manny Peterson <manny@heliosproj.org>
  *
  * SPDX-License-Identifier: GPL-2.0-or-later
  *
@@ -44,7 +44,7 @@
           "\r\n" \
           "  HeliOS Embedded Operating System\r\n" \
           "  Version 0.5.0\r\n" \
-          "  (C) 2020-2026 Manny Peterson <manny@heliosproject.org>\r\n" \
+          "  (C) 2020-2026 Manny Peterson <manny@heliosproj.org>\r\n" \
           "  Licensed under GPL-2.0-or-later\r\n" \
           "\r\n"
 

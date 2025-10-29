@@ -1,13 +1,13 @@
 /*UNCRUSTIFY-OFF*/
 /**
  * @file mem.h
- * @author Manny Peterson <manny@heliosproject.org>
+ * @author Manny Peterson <manny@heliosproj.org>
  * @brief Kernel source for memory management with multiple region support
  * @version 0.5.0
  * @date 2023-03-19
  *
  * @copyright
- * (C) 2020-2026 Manny Peterson <manny@heliosproject.org>
+ * (C) 2020-2026 Manny Peterson <manny@heliosproj.org>
  *
  *  SPDX-License-Identifier: GPL-2.0-or-later
  *

@@ -1,5 +1,5 @@
 # Nomic C Semantic Source Code Analyzer
-# Copyright (C) 2025-2026 Manny Peterson <manny@heliosproject.org>
+# Copyright (C) 2025-2026 Manny Peterson <manny@heliosproj.org>
 #
 # This file is part of Nomic.
 #

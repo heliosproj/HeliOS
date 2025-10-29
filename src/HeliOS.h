@@ -1,7 +1,7 @@
 /*UNCRUSTIFY-OFF*/
 /**
  * @file HeliOS.h
- * @author Manny Peterson <manny@heliosproject.org>
+ * @author Manny Peterson <manny@heliosproj.org>
  * @brief Public API header for HeliOS embedded operating system applications
  * @version 0.5.0
  * @date 2023-03-19
@@ -26,7 +26,7 @@
  * (e.g., Task_t *, xMem, Queue_t *).
  *
  * @copyright
- * (C) 2020-2026 Manny Peterson <manny@heliosproject.org>
+ * (C) 2020-2026 Manny Peterson <manny@heliosproj.org>
  *
  * SPDX-License-Identifier: GPL-2.0-or-later
  *
