@@ -89,43 +89,24 @@
     const Byte_t *dotPos = null;
 
 
-    if(__PointerIsNull__(path_) || __PointerIsNull__(fat83_)) {
-      FUNCTION_EXIT;
-    }
-
-    /* Initialize output to spaces */
-    for(i = 0x0u; i < 11; i++) {
-      fat83_[i] = ' ';
-    }
-
-    /* Find dot position for extension */
-    for(i = 0x0u; path_[i] != '\0'; i++) {
-      if(path_[i] == '.') {
-        dotPos = &path_[i];
-      }
-    }
-
-    /* Copy name part (up to 8 chars, before dot or end) */
-    nameLen = 0x0u;
-
-    for(i = 0x0u; path_[i] != '\0' && path_[i] != '.' && nameLen < 8; i++) {
-      Byte_t c = path_[i];
-
-
-      /* Convert to uppercase */
-      if((c >= 'a') && (c <= 'z')) {
-        c = c - 'a' + 'A';
+    if(__PointerIsNotNull__(path_) && __PointerIsNotNull__(fat83_)) {
+      /* Initialize output to spaces */
+      for(i = 0x0u; i < 11; i++) {
+        fat83_[i] = ' ';
       }
 
-      fat83_[nameLen++] = c;
-    }
+      /* Find dot position for extension */
+      for(i = 0x0u; path_[i] != '\0'; i++) {
+        if(path_[i] == '.') {
+          dotPos = &path_[i];
+        }
+      }
 
-    /* Copy extension part (up to 3 chars, after dot) */
-    if(__PointerIsNotNull__(dotPos)) {
-      extLen = 0x0u;
+      /* Copy name part (up to 8 chars, before dot or end) */
+      nameLen = 0x0u;
 
-      for(j = 1; dotPos[j] != '\0' && extLen < 3; j++) {
-        Byte_t c = dotPos[j];
+      for(i = 0x0u; path_[i] != '\0' && path_[i] != '.' && nameLen < 8; i++) {
+        Byte_t c = path_[i];
 
 
         /* Convert to uppercase */
@@ -133,11 +114,31 @@
           c = c - 'a' + 'A';
         }
 
-        fat83_[8 + extLen++] = c;
+        fat83_[nameLen++] = c;
       }
+
+      /* Copy extension part (up to 3 chars, after dot) */
+      if(__PointerIsNotNull__(dotPos)) {
+        extLen = 0x0u;
+
+        for(j = 1; dotPos[j] != '\0' && extLen < 3; j++) {
+          Byte_t c = dotPos[j];
+
+
+          /* Convert to uppercase */
+          if((c >= 'a') && (c <= 'z')) {
+            c = c - 'a' + 'A';
+          }
+
+          fat83_[8 + extLen++] = c;
+        }
+      }
+
+      __ReturnOk__();
+    } else {
+      __AssertOnElse__();
     }
 
-    __ReturnOk__();
     FUNCTION_EXIT;
   }
 

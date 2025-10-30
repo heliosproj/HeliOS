@@ -315,50 +315,43 @@
     Base_t needSlash = false;
 
 
-    if(__PointerIsNull__(dest_) || __PointerIsNull__(base_) || __PointerIsNull__(path_) || (0x0u == destSize_)) {
-      __AssertOnElse__();
-      FUNCTION_EXIT;
-    }
+    if(__PointerIsNotNull__(dest_) && __PointerIsNotNull__(base_) && __PointerIsNotNull__(path_) && (0x0u != destSize_)) {
+      baseLen = __strlen__(base_);
+      pathLen = __strlen__(path_);
 
-    baseLen = __strlen__(base_);
-    pathLen = __strlen__(path_);
+      if((0x0u != baseLen) && (0x0u != pathLen)) {
+        if(CHAR_SLASH == path_[0x0u]) {
+          if(pathLen < destSize_) {
+            if(OK(__strcpy__(dest_, path_, destSize_))) {
+              __ReturnOk__();
+            } else {
+              __AssertOnElse__();
+            }
+          } else {
+            __AssertOnElse__();
+          }
+        } else {
+          needSlash = (CHAR_SLASH != base_[baseLen - 0x1u]) && (CHAR_SLASH != path_[0x0u]);
 
-    if((0x0u == baseLen) || (0x0u == pathLen)) {
-      __AssertOnElse__();
-      FUNCTION_EXIT;
-    }
+          if((baseLen + pathLen + (needSlash ? 0x1u : 0x0u)) < destSize_) {
+            if(OK(__strcpy__(dest_, base_, destSize_))) {
+              if(needSlash) {
+                dest_[baseLen] = CHAR_SLASH;
+                dest_[baseLen + 0x1u] = CHAR_NULL;
+              }
 
-    if(CHAR_SLASH == path_[0x0u]) {
-      if(pathLen >= destSize_) {
-        __AssertOnElse__();
-        __AssertOnElse__();
-        FUNCTION_EXIT;
-      }
-
-      if(OK(__strcpy__(dest_, path_, destSize_))) {
-        __ReturnOk__();
-      } else {
-        __AssertOnElse__();
-      }
-
-      FUNCTION_EXIT;
-    }
-
-    needSlash = (CHAR_SLASH != base_[baseLen - 0x1u]) && (CHAR_SLASH != path_[0x0u]);
-
-    if((baseLen + pathLen + (needSlash ? 0x1u : 0x0u)) >= destSize_) {
-      __AssertOnElse__();
-      FUNCTION_EXIT;
-    }
-
-    if(OK(__strcpy__(dest_, base_, destSize_))) {
-      if(needSlash) {
-        dest_[baseLen] = CHAR_SLASH;
-        dest_[baseLen + 0x1u] = CHAR_NULL;
-      }
-
-      if(OK(__strcat__(dest_, path_, destSize_))) {
-        __ReturnOk__();
+              if(OK(__strcat__(dest_, path_, destSize_))) {
+                __ReturnOk__();
+              } else {
+                __AssertOnElse__();
+              }
+            } else {
+              __AssertOnElse__();
+            }
+          } else {
+            __AssertOnElse__();
+          }
+        }
       } else {
         __AssertOnElse__();
       }
@@ -385,78 +378,77 @@
     Size_t segIdx = 0x0u;
 
 
-    if(__PointerIsNull__(path_) || (0x0u == pathSize_)) {
-      __AssertOnElse__();
-      FUNCTION_EXIT;
-    }
+    if(__PointerIsNotNull__(path_) && (0x0u != pathSize_)) {
+      len = __strlen__(path_);
 
-    len = __strlen__(path_);
+      if((0x0u != len) && (len < CONFIG_FS_MAX_PATH_LENGTH)) {
+        for(i = 0x0u; i <= len; i++) {
+          temp[i] = path_[i];
+        }
 
-    if((0x0u == len) || (len >= CONFIG_FS_MAX_PATH_LENGTH)) {
-      __AssertOnElse__();
-      FUNCTION_EXIT;
-    }
+        i = 0x0u;
 
-    for(i = 0x0u; i <= len; i++) {
-      temp[i] = path_[i];
-    }
+        if(CHAR_SLASH == temp[0x0u]) {
+          i = 0x1u;
+        }
 
-    i = 0x0u;
+        segIdx = 0x0u;
 
-    if(CHAR_SLASH == temp[0x0u]) {
-      i = 0x1u;
-    }
+        for(; i <= len; i++) {
+          if((CHAR_SLASH == temp[i]) || (CHAR_NULL == temp[i])) {
+            if(segIdx > 0x0u) {
+              segments[segmentCount][segIdx] = CHAR_NULL;
 
-    segIdx = 0x0u;
+              if((segments[segmentCount][0x0u] == '.') && (segments[segmentCount][0x1u] == '.') && (segments[segmentCount][0x2u] == CHAR_NULL)) {
+                if(segmentCount > 0x0u) {
+                  segmentCount--;
+                }
+              } else if(!((segments[segmentCount][0x0u] == '.') && (segments[segmentCount][0x1u] == CHAR_NULL))) {
+                segmentCount++;
+              }
 
-    for(; i <= len; i++) {
-      if((CHAR_SLASH == temp[i]) || (CHAR_NULL == temp[i])) {
-        if(segIdx > 0x0u) {
-          segments[segmentCount][segIdx] = CHAR_NULL;
-
-          if((segments[segmentCount][0x0u] == '.') && (segments[segmentCount][0x1u] == '.') && (segments[segmentCount][0x2u] == CHAR_NULL)) {
-            if(segmentCount > 0x0u) {
-              segmentCount--;
+              segIdx = 0x0u;
             }
-          } else if(!((segments[segmentCount][0x0u] == '.') && (segments[segmentCount][0x1u] == CHAR_NULL))) {
-            segmentCount++;
+          } else {
+            segments[segmentCount][segIdx++] = temp[i];
+          }
+        }
+
+        j = 0x0u;
+
+        if(CHAR_SLASH == path_[0x0u]) {
+          path_[j++] = CHAR_SLASH;
+        }
+
+        for(k = 0x0u; k < segmentCount; k++) {
+          Size_t m;
+
+
+          segLen = __strlen__(segments[k]);
+
+          if(k > 0x0u) {
+            path_[j++] = CHAR_SLASH;
           }
 
-          segIdx = 0x0u;
+          for(m = 0x0u; m < segLen; m++) {
+            path_[j++] = segments[k][m];
+          }
         }
+
+        if((0x0u == j) || ((0x1u == j) && (CHAR_SLASH == path_[0x0u]))) {
+          path_[0x0u] = CHAR_SLASH;
+          j = 0x1u;
+        }
+
+        path_[j] = CHAR_NULL;
+        __ReturnOk__();
       } else {
-        segments[segmentCount][segIdx++] = temp[i];
+        __AssertOnElse__();
       }
+    } else {
+      __AssertOnElse__();
     }
 
-    j = 0x0u;
-
-    if(CHAR_SLASH == path_[0x0u]) {
-      path_[j++] = CHAR_SLASH;
-    }
-
-    for(k = 0x0u; k < segmentCount; k++) {
-      Size_t m;
-
-
-      segLen = __strlen__(segments[k]);
-
-      if(k > 0x0u) {
-        path_[j++] = CHAR_SLASH;
-      }
-
-      for(m = 0x0u; m < segLen; m++) {
-        path_[j++] = segments[k][m];
-      }
-    }
-
-    if((0x0u == j) || ((0x1u == j) && (CHAR_SLASH == path_[0x0u]))) {
-      path_[0x0u] = CHAR_SLASH;
-      j = 0x1u;
-    }
-
-    path_[j] = CHAR_NULL;
-    __ReturnOk__();
     FUNCTION_EXIT;
   }
 
@@ -478,48 +470,43 @@
     Size_t i = 0x0u;
 
 
-    if(__PointerIsNull__(dest_) || __PointerIsNull__(path_) || (0x0u == destSize_)) {
-      __AssertOnElse__();
-      FUNCTION_EXIT;
-    }
+    if(__PointerIsNotNull__(dest_) && __PointerIsNotNull__(path_) && (0x0u != destSize_)) {
+      len = __strlen__(path_);
 
-    len = __strlen__(path_);
-
-    if(0x0u == len) {
-      if(OK(__strcpy__(dest_, (const Byte_t *) ".", destSize_))) {
-        __ReturnOk__();
+      if(0x0u == len) {
+        if(OK(__strcpy__(dest_, (const Byte_t *) ".", destSize_))) {
+          __ReturnOk__();
+        } else {
+          __AssertOnElse__();
+        }
       } else {
-        __AssertOnElse__();
-      }
+        for(i = len; i > 0x0u; i--) {
+          if(CHAR_SLASH == path_[i - 0x1u]) {
+            break;
+          }
+        }
 
-      FUNCTION_EXIT;
-    }
-
-    for(i = len; i > 0x0u; i--) {
-      if(CHAR_SLASH == path_[i - 0x1u]) {
-        break;
-      }
-    }
-
-    if(0x0u == i) {
-      if(OK(__strcpy__(dest_, (const Byte_t *) ".", destSize_))) {
-        __ReturnOk__();
-      } else {
-        __AssertOnElse__();
+        if(0x0u == i) {
+          if(OK(__strcpy__(dest_, (const Byte_t *) ".", destSize_))) {
+            __ReturnOk__();
+          } else {
+            __AssertOnElse__();
+          }
+        } else {
+          if(i <= destSize_) {
+            if(OK(__strncpy__(dest_, path_, i - 0x1u))) {
+              dest_[i - 0x1u] = CHAR_NULL;
+              __ReturnOk__();
+            } else {
+              __AssertOnElse__();
+            }
+          } else {
+            __AssertOnElse__();
+          }
+        }
       }
     } else {
-      if(i > destSize_) {
-        __AssertOnElse__();
-        __AssertOnElse__();
-        FUNCTION_EXIT;
-      }
-
-      if(OK(__strncpy__(dest_, path_, i - 0x1u))) {
-        dest_[i - 0x1u] = CHAR_NULL;
-        __ReturnOk__();
-      } else {
-        __AssertOnElse__();
-      }
+      __AssertOnElse__();
     }
 
     FUNCTION_EXIT;
@@ -535,37 +522,33 @@
     Size_t start = 0x0u;
 
 
-    if(__PointerIsNull__(dest_) || __PointerIsNull__(path_) || (0x0u == destSize_)) {
-      __AssertOnElse__();
-      FUNCTION_EXIT;
-    }
+    if(__PointerIsNotNull__(dest_) && __PointerIsNotNull__(path_) && (0x0u != destSize_)) {
+      len = __strlen__(path_);
 
-    len = __strlen__(path_);
-
-    if(0x0u == len) {
-      if(OK(__strcpy__(dest_, (const Byte_t *) ".", destSize_))) {
-        __ReturnOk__();
+      if(0x0u == len) {
+        if(OK(__strcpy__(dest_, (const Byte_t *) ".", destSize_))) {
+          __ReturnOk__();
+        } else {
+          __AssertOnElse__();
+        }
       } else {
-        __AssertOnElse__();
+        for(i = len; i > 0x0u; i--) {
+          if(CHAR_SLASH == path_[i - 0x1u]) {
+            start = i;
+            break;
+          }
+        }
+
+        if((len - start) < destSize_) {
+          if(OK(__strcpy__(dest_, &path_[start], destSize_))) {
+            __ReturnOk__();
+          } else {
+            __AssertOnElse__();
+          }
+        } else {
+          __AssertOnElse__();
+        }
       }
-
-      FUNCTION_EXIT;
-    }
-
-    for(i = len; i > 0x0u; i--) {
-      if(CHAR_SLASH == path_[i - 0x1u]) {
-        start = i;
-        break;
-      }
-    }
-
-    if((len - start) >= destSize_) {
-      __AssertOnElse__();
-      FUNCTION_EXIT;
-    }
-
-    if(OK(__strcpy__(dest_, &path_[start], destSize_))) {
-      __ReturnOk__();
     } else {
       __AssertOnElse__();
     }
@@ -693,40 +676,26 @@
     FUNCTION_ENTER;
 
 
+    Base_t needLookup = true;
+
+
     /* Performance optimization: Use cached device if UID matches */
     if(__PointerIsNotNull__(cachedDevice) && (CONFIG_CHAR_DEVICE_UID == cachedDeviceUID)) {
       if(DeviceStateRunning == cachedDevice->state) {
-        __ReturnOk__();
+        needLookup = false;
       } else {
         /* Device state changed, invalidate cache */
         cachedDevice = null;
         cachedDeviceUID = 0x0u;
-
-
-        /* Cache miss or invalid - look up device */
-        if(OK(__DeviceListFind__(CONFIG_CHAR_DEVICE_UID, &cachedDevice))) {
-          if(__PointerIsNotNull__(cachedDevice) && (DeviceStateRunning == cachedDevice->state)) {
-            /* Update cache */
-            cachedDeviceUID = CONFIG_CHAR_DEVICE_UID;
-            __ReturnOk__();
-          } else {
-            cachedDevice = null;
-            cachedDeviceUID = 0x0u;
-            __AssertOnElse__();
-          }
-        } else {
-          cachedDevice = null;
-          cachedDeviceUID = 0x0u;
-          __AssertOnElse__();
-        }
       }
-    } else {
+    }
+
+    if(needLookup) {
       /* Cache miss or invalid - look up device */
       if(OK(__DeviceListFind__(CONFIG_CHAR_DEVICE_UID, &cachedDevice))) {
         if(__PointerIsNotNull__(cachedDevice) && (DeviceStateRunning == cachedDevice->state)) {
           /* Update cache */
           cachedDeviceUID = CONFIG_CHAR_DEVICE_UID;
-          __ReturnOk__();
         } else {
           cachedDevice = null;
           cachedDeviceUID = 0x0u;
@@ -737,6 +706,12 @@
         cachedDeviceUID = 0x0u;
         __AssertOnElse__();
       }
+    }
+
+    if(!needLookup || (__PointerIsNotNull__(cachedDevice) && (DeviceStateRunning == cachedDevice->state))) {
+      __ReturnOk__();
+    } else {
+      __AssertOnElse__();
     }
 
     FUNCTION_EXIT;
@@ -756,6 +731,7 @@
     Size_t size = 0x0u;
     Device_t *device = null;
     CharDeviceCommand_t cmd;
+    Base_t success = false;
 
 
     if(__PointerIsNotNull__(str_)) {
@@ -791,7 +767,7 @@
             size = len;
 
             if(OK((*device->write)(device, &size, (Addr_t *) str_))) {
-              __ReturnOk__();
+              success = true;
             } else {
               /* Fall back to blocking mode if interrupt fails */
               cmd.transferMode = CHAR_IO_MODE_BLOCKING;
@@ -801,7 +777,7 @@
                 size = len;
 
                 if(OK((*device->write)(device, &size, (Addr_t *) str_))) {
-                  __ReturnOk__();
+                  success = true;
                 } else {
                   __AssertOnElse__();
                 }
@@ -818,6 +794,12 @@
       } else {
         __AssertOnElse__();
       }
+    } else {
+      __AssertOnElse__();
+    }
+
+    if(success) {
+      __ReturnOk__();
     } else {
       __AssertOnElse__();
     }
@@ -839,6 +821,7 @@
     Addr_t *readData = null;
     Device_t *device = null;
     CharDeviceCommand_t cmd;
+    Base_t success = false;
 
 
     if(__PointerIsNotNull__(ch_)) {
@@ -874,7 +857,7 @@
             if(__PointerIsNotNull__(readData) && (0x0u < size)) {
               *ch_ = *((Byte_t *) readData);
               __KernelFreeMemory__(readData);
-              __ReturnOk__();
+              success = true;
             } else {
               if(__PointerIsNotNull__(readData)) {
                 __KernelFreeMemory__(readData);
@@ -892,6 +875,12 @@
       } else {
         __AssertOnElse__();
       }
+    } else {
+      __AssertOnElse__();
+    }
+
+    if(success) {
+      __ReturnOk__();
     } else {
       __AssertOnElse__();
     }
@@ -946,6 +935,7 @@
     Byte_t *cmdArgs = null;
     Word_t i = 0x0u;
     Base_t commandFound = false;
+    Base_t success = false;
 
 
     /* Skip leading whitespace */
@@ -965,14 +955,14 @@
 
     /* Empty command - return success */
     if(CHAR_NULL == cmdName[0x0u]) {
-      __ReturnOk__();
+      success = true;
     } else {
       /* Search command table */
       for(i = 0x0u; __PointerIsNotNull__(commandTable[i].name) && !commandFound; i++) {
         if(0 == __strcmp__(cmdName, commandTable[i].name)) {
           if(__PointerIsNotNull__(commandTable[i].handler)) {
             if(OK(commandTable[i].handler((const Byte_t *) cmdArgs))) {
-              __ReturnOk__();
+              success = true;
             } else {
               __AssertOnElse__();
             }
@@ -989,6 +979,12 @@
         __ConsoleWriteString__((const Byte_t *) "\r\nType 'help' for available commands.\r\n");
         __AssertOnElse__();
       }
+    }
+
+    if(success) {
+      __ReturnOk__();
+    } else {
+      __AssertOnElse__();
     }
 
     FUNCTION_EXIT;
@@ -1205,72 +1201,73 @@
     DirEntry_t *entry = null;
     Byte_t path[CONFIG_FS_MAX_PATH_LENGTH];
     Byte_t numBuf[0x10];
+    Base_t success = false;
 
 
-    if(!__PointerIsNotNull__(mountedVolume)) {
-      __ConsoleWriteString__((const Byte_t *) "Error: No filesystem mounted.\r\n");
-
-
-      /* Return error by default */
-      FUNCTION_EXIT;
-    }
-
-
-    /* Determine path */
-    if(__PointerIsNotNull__(args_) && (CHAR_NULL != args_[0x0u])) {
-      __strcpy__(path, args_, CONFIG_FS_MAX_PATH_LENGTH);
-    } else {
-      __strcpy__(path, consoleState.currentWorkingDirectory, CONFIG_FS_MAX_PATH_LENGTH);
-    }
-
-
-    /* Open directory */
-    if(OK(xDirOpen(&dir, mountedVolume, path))) {
-      __ConsoleWriteString__((const Byte_t *) "Directory listing for: ");
-      __ConsoleWriteString__(path);
-      __ConsoleWriteString__((const Byte_t *) "\r\n");
-
-
-      /* Read directory entries */
-      while(OK(xDirRead(dir, &entry))) {
-        if(__PointerIsNotNull__(entry)) {
-          /* Print entry name */
-          __ConsoleWriteString__((const Byte_t *) "  ");
-
-          if(entry->isDirectory) {
-            __ConsoleWriteString__((const Byte_t *) "[DIR]  ");
-          } else {
-            __ConsoleWriteString__((const Byte_t *) "[FILE] ");
-          }
-
-          __ConsoleWriteString__(entry->name);
-
-
-          /* Print file size for files */
-          if(!entry->isDirectory) {
-            __ConsoleWriteString__((const Byte_t *) " (");
-            __uitoah__((Word_t) entry->size, numBuf, sizeof(numBuf));
-            __ConsoleWriteString__(numBuf);
-            __ConsoleWriteString__((const Byte_t *) " bytes)");
-          }
-
-          __ConsoleWriteString__((const Byte_t *) "\r\n");
-
-
-          /* Free entry */
-          xMemFree(entry);
-        }
+    if(__PointerIsNotNull__(mountedVolume)) {
+      /* Determine path */
+      if(__PointerIsNotNull__(args_) && (CHAR_NULL != args_[0x0u])) {
+        __strcpy__(path, args_, CONFIG_FS_MAX_PATH_LENGTH);
+      } else {
+        __strcpy__(path, consoleState.currentWorkingDirectory, CONFIG_FS_MAX_PATH_LENGTH);
       }
 
 
-      /* Close directory */
-      xDirClose(dir);
+      /* Open directory */
+      if(OK(xDirOpen(&dir, mountedVolume, path))) {
+        __ConsoleWriteString__((const Byte_t *) "Directory listing for: ");
+        __ConsoleWriteString__(path);
+        __ConsoleWriteString__((const Byte_t *) "\r\n");
+
+
+        /* Read directory entries */
+        while(OK(xDirRead(dir, &entry))) {
+          if(__PointerIsNotNull__(entry)) {
+            /* Print entry name */
+            __ConsoleWriteString__((const Byte_t *) "  ");
+
+            if(entry->isDirectory) {
+              __ConsoleWriteString__((const Byte_t *) "[DIR]  ");
+            } else {
+              __ConsoleWriteString__((const Byte_t *) "[FILE] ");
+            }
+
+            __ConsoleWriteString__(entry->name);
+
+
+            /* Print file size for files */
+            if(!entry->isDirectory) {
+              __ConsoleWriteString__((const Byte_t *) " (");
+              __uitoah__((Word_t) entry->size, numBuf, sizeof(numBuf));
+              __ConsoleWriteString__(numBuf);
+              __ConsoleWriteString__((const Byte_t *) " bytes)");
+            }
+
+            __ConsoleWriteString__((const Byte_t *) "\r\n");
+
+
+            /* Free entry */
+            xMemFree(entry);
+          }
+        }
+
+
+        /* Close directory */
+        xDirClose(dir);
+        success = true;
+      } else {
+        __ConsoleWriteString__((const Byte_t *) "Error: Unable to open directory.\r\n");
+        __AssertOnElse__();
+      }
+    } else {
+      __ConsoleWriteString__((const Byte_t *) "Error: No filesystem mounted.\r\n");
+      __AssertOnElse__();
+    }
+
+    if(success) {
       __ReturnOk__();
     } else {
-      __ConsoleWriteString__((const Byte_t *) "Error: Unable to open directory.\r\n");
-
-
-      /* Return error by default */
+      __AssertOnElse__();
     }
 
     FUNCTION_EXIT;
@@ -1288,62 +1285,61 @@
 
     Base_t exists = false;
     Byte_t newPath[CONFIG_FS_MAX_PATH_LENGTH];
+    Base_t success = false;
+    Base_t pathBuilt = false;
 
 
     if(__PointerIsNotNull__(mountedVolume)) {
       if(!__PointerIsNotNull__(args_) || (CHAR_NULL == args_[0x0u])) {
         /* No argument - go to root */
         __strcpy__(newPath, (const Byte_t *) "/", CONFIG_FS_MAX_PATH_LENGTH);
+        pathBuilt = true;
       } else if(0 == __strcmp__(args_, (const Byte_t *) "..")) {
         /* Go up one directory - use path utility */
         if(OK(__path_dirname__(newPath, consoleState.currentWorkingDirectory, CONFIG_FS_MAX_PATH_LENGTH))) {
-          /* Successfully got parent directory */
+          pathBuilt = true;
         } else {
           __strcpy__(newPath, (const Byte_t *) "/", CONFIG_FS_MAX_PATH_LENGTH);
+          pathBuilt = true;
         }
       } else if(__path_is_absolute__(args_)) {
         /* Absolute path */
         __strcpy__(newPath, args_, CONFIG_FS_MAX_PATH_LENGTH);
+        pathBuilt = true;
       } else {
         /* Relative path - use path join */
         if(OK(__path_join__(newPath, consoleState.currentWorkingDirectory, args_, CONFIG_FS_MAX_PATH_LENGTH))) {
-          /* Path joined successfully */
+          pathBuilt = true;
         } else {
           __ConsoleWriteString__((const Byte_t *) "Error: Path too long.\r\n");
-
-
-          /* Return error by default */
           __AssertOnElse__();
-          FUNCTION_EXIT;
         }
       }
 
-
-      /* Normalize the path to remove . and .. references */
-      if(OK(__path_normalize__(newPath, CONFIG_FS_MAX_PATH_LENGTH))) {
-        /* Verify directory exists */
-        if(OK(xFileExists(mountedVolume, newPath, &exists)) && exists) {
-          __strcpy__(consoleState.currentWorkingDirectory, newPath, CONFIG_FS_MAX_PATH_LENGTH);
-          __ReturnOk__();
+      if(pathBuilt) {
+        /* Normalize the path to remove . and .. references */
+        if(OK(__path_normalize__(newPath, CONFIG_FS_MAX_PATH_LENGTH))) {
+          /* Verify directory exists */
+          if(OK(xFileExists(mountedVolume, newPath, &exists)) && exists) {
+            __strcpy__(consoleState.currentWorkingDirectory, newPath, CONFIG_FS_MAX_PATH_LENGTH);
+            success = true;
+          } else {
+            __ConsoleWriteString__((const Byte_t *) "Error: Directory not found.\r\n");
+            __AssertOnElse__();
+          }
         } else {
-          __ConsoleWriteString__((const Byte_t *) "Error: Directory not found.\r\n");
-
-
-          /* Return error by default */
+          __ConsoleWriteString__((const Byte_t *) "Error: Invalid path.\r\n");
           __AssertOnElse__();
         }
-      } else {
-        __ConsoleWriteString__((const Byte_t *) "Error: Invalid path.\r\n");
-
-
-        /* Return error by default */
-        __AssertOnElse__();
       }
     } else {
       __ConsoleWriteString__((const Byte_t *) "Error: No filesystem mounted.\r\n");
+      __AssertOnElse__();
+    }
 
-
-      /* Return error by default */
+    if(success) {
+      __ReturnOk__();
+    } else {
       __AssertOnElse__();
     }
 
@@ -1384,114 +1380,101 @@
     Word_t fileSize = 0x0u;
     Word_t totalRead = 0x0u;
     Byte_t path[CONFIG_FS_MAX_PATH_LENGTH];
+    Base_t success = false;
+    Base_t pathBuilt = false;
+    Base_t fileOpened = false;
 
 
     if(__PointerIsNotNull__(mountedVolume) && __PointerIsNotNull__(args_) && (0x00u != args_[0x0u])) {
       /* Use path utility to build full path */
       if(__path_is_absolute__(args_)) {
         __strcpy__(path, args_, CONFIG_FS_MAX_PATH_LENGTH);
+        pathBuilt = true;
       } else {
         if(OK(__path_join__(path, consoleState.currentWorkingDirectory, args_, CONFIG_FS_MAX_PATH_LENGTH))) {
-          /* Path joined successfully */
+          pathBuilt = true;
         } else {
           __ConsoleWriteString__((const Byte_t *) "Error: Path too long.\r\n");
-
-
-          /* Return error by default */
           __AssertOnElse__();
-          FUNCTION_EXIT;
         }
       }
 
+      if(pathBuilt) {
+        /* Open file for reading */
+        if(OK(xFileOpen(&file, mountedVolume, path, FS_MODE_READ))) {
+          fileOpened = true;
 
-      /* Open file for reading */
-      if(OK(xFileOpen(&file, mountedVolume, path, FS_MODE_READ))) {
-        /* Get file size for progress tracking */
-        if(OK(xFileGetSize(file, &fileSize))) {
-          if(0x0u < fileSize) {
-            /* Allocate buffer for chunked reading */
-            if(OK(xMemAlloc((volatile Addr_t **) &buffer, CAT_BUFFER_SIZE))) {
-              /* Read file in chunks */
-              while(totalRead < fileSize) {
-                /* Calculate bytes to read in this chunk */
-                bytesToRead = (fileSize - totalRead) > CAT_BUFFER_SIZE ? CAT_BUFFER_SIZE : (fileSize - totalRead);
-
-
-                /* Read chunk from file */
-                if(OK(xFileRead(file, bytesToRead, &buffer))) {
-                  /* Display chunk contents */
-                  Word_t i = 0x0u;
-                  Byte_t ch[0x2] = {
-                    0x00u, 0x00u
-                  };
+          /* Get file size for progress tracking */
+          if(OK(xFileGetSize(file, &fileSize))) {
+            if(0x0u < fileSize) {
+              /* Allocate buffer for chunked reading */
+              if(OK(xMemAlloc((volatile Addr_t **) &buffer, CAT_BUFFER_SIZE))) {
+                Base_t readError = false;
 
 
-                  for(i = 0x0u; i < bytesToRead; i++) {
-                    ch[0x0u] = buffer[i];
+                /* Read file in chunks */
+                while((totalRead < fileSize) && !readError) {
+                  /* Calculate bytes to read in this chunk */
+                  bytesToRead = (fileSize - totalRead) > CAT_BUFFER_SIZE ? CAT_BUFFER_SIZE : (fileSize - totalRead);
 
 
-                    /* Convert LF to CRLF for terminal */
-                    if(CHAR_LF == ch[0x0u]) {
-                      __ConsoleWriteString__((const Byte_t *) "\r\n");
-                    } else {
-                      __ConsoleWriteString__(ch);
+                  /* Read chunk from file */
+                  if(OK(xFileRead(file, bytesToRead, &buffer))) {
+                    /* Display chunk contents */
+                    Word_t i = 0x0u;
+                    Byte_t ch[0x2] = {
+                      0x00u, 0x00u
+                    };
+
+
+                    for(i = 0x0u; i < bytesToRead; i++) {
+                      ch[0x0u] = buffer[i];
+
+
+                      /* Convert LF to CRLF for terminal */
+                      if(CHAR_LF == ch[0x0u]) {
+                        __ConsoleWriteString__((const Byte_t *) "\r\n");
+                      } else {
+                        __ConsoleWriteString__(ch);
+                      }
                     }
+
+                    totalRead += bytesToRead;
+                  } else {
+                    __ConsoleWriteString__((const Byte_t *) "Error: Failed to read file.\r\n");
+                    readError = true;
+                    __AssertOnElse__();
+                  }
+                }
+
+                if(!readError) {
+                  /* Ensure final newline */
+                  if(buffer[bytesToRead - 0x1u] != CHAR_LF) {
+                    __ConsoleWriteString__((const Byte_t *) "\r\n");
                   }
 
-                  totalRead += bytesToRead;
-                } else {
-                  __ConsoleWriteString__((const Byte_t *) "Error: Failed to read file.\r\n");
-                  xMemFree(buffer);
-                  xFileClose(file);
-
-
-                  /* Return error by default */
-                  __AssertOnElse__();
-                  FUNCTION_EXIT;
+                  success = true;
                 }
+
+
+                /* Free buffer */
+                xMemFree(buffer);
+              } else {
+                __ConsoleWriteString__((const Byte_t *) "Error: Unable to allocate buffer.\r\n");
+                __AssertOnElse__();
               }
-
-
-              /* Ensure final newline */
-              if(buffer[bytesToRead - 0x1u] != CHAR_LF) {
-                __ConsoleWriteString__((const Byte_t *) "\r\n");
-              }
-
-
-              /* Free buffer */
-              xMemFree(buffer);
             } else {
-              __ConsoleWriteString__((const Byte_t *) "Error: Unable to allocate buffer.\r\n");
-              xFileClose(file);
-
-
-              /* Return error by default */
-              __AssertOnElse__();
-              FUNCTION_EXIT;
+              __ConsoleWriteString__((const Byte_t *) "(empty file)\r\n");
+              success = true;
             }
           } else {
-            __ConsoleWriteString__((const Byte_t *) "(empty file)\r\n");
+            __ConsoleWriteString__((const Byte_t *) "Error: Unable to get file size.\r\n");
+            __AssertOnElse__();
           }
         } else {
-          __ConsoleWriteString__((const Byte_t *) "Error: Unable to get file size.\r\n");
-          xFileClose(file);
-
-
-          /* Return error by default */
+          __ConsoleWriteString__((const Byte_t *) "Error: Unable to open file.\r\n");
           __AssertOnElse__();
-          FUNCTION_EXIT;
         }
-
-
-        /* Close file */
-        xFileClose(file);
-        __ReturnOk__();
-      } else {
-        __ConsoleWriteString__((const Byte_t *) "Error: Unable to open file.\r\n");
-
-
-        /* Return error by default */
-        __AssertOnElse__();
       }
     } else {
       if(!__PointerIsNotNull__(mountedVolume)) {
@@ -1500,8 +1483,16 @@
         __ConsoleWriteString__((const Byte_t *) "Error: No file specified.\r\n");
       }
 
+      __AssertOnElse__();
+    }
 
-      /* Return error by default */
+    if(fileOpened) {
+      xFileClose(file);
+    }
+
+    if(success) {
+      __ReturnOk__();
+    } else {
       __AssertOnElse__();
     }
 
@@ -1523,6 +1514,7 @@
     const Byte_t *src = args_;
     const Byte_t *dst = null;
     Word_t i = 0x0u;
+    Base_t success = false;
 
 
     if(__PointerIsNotNull__(mountedVolume) && __PointerIsNotNull__(args_) && (CHAR_NULL != args_[0x0u])) {
@@ -1547,7 +1539,7 @@
 
         /* Rename file */
         if(OK(xFileRename(mountedVolume, oldPath, newPath))) {
-          __ReturnOk__();
+          success = true;
         } else {
           __ConsoleWriteString__((const Byte_t *) "Error: Unable to rename/move file.\r\n");
           __AssertOnElse__();
@@ -1566,6 +1558,12 @@
       __AssertOnElse__();
     }
 
+    if(success) {
+      __ReturnOk__();
+    } else {
+      __AssertOnElse__();
+    }
+
     FUNCTION_EXIT;
   }
 
@@ -1580,35 +1578,32 @@
 
 
     Byte_t path[CONFIG_FS_MAX_PATH_LENGTH];
+    Base_t success = false;
+    Base_t pathBuilt = false;
 
 
     if(__PointerIsNotNull__(mountedVolume) && __PointerIsNotNull__(args_) && (CHAR_NULL != args_[0x0u])) {
       /* Build full path using path utilities */
       if(__path_is_absolute__(args_)) {
         __strcpy__(path, args_, CONFIG_FS_MAX_PATH_LENGTH);
+        pathBuilt = true;
       } else {
         if(OK(__path_join__(path, consoleState.currentWorkingDirectory, args_, CONFIG_FS_MAX_PATH_LENGTH))) {
-          /* Path joined successfully */
+          pathBuilt = true;
         } else {
           __ConsoleWriteString__((const Byte_t *) "Error: Path too long.\r\n");
-
-
-          /* Return error by default */
           __AssertOnElse__();
-          FUNCTION_EXIT;
         }
       }
 
-
-      /* Remove file */
-      if(OK(xFileUnlink(mountedVolume, path))) {
-        __ReturnOk__();
-      } else {
-        __ConsoleWriteString__((const Byte_t *) "Error: Unable to remove file.\r\n");
-
-
-        /* Return error by default */
-        __AssertOnElse__();
+      if(pathBuilt) {
+        /* Remove file */
+        if(OK(xFileUnlink(mountedVolume, path))) {
+          success = true;
+        } else {
+          __ConsoleWriteString__((const Byte_t *) "Error: Unable to remove file.\r\n");
+          __AssertOnElse__();
+        }
       }
     } else {
       if(!__PointerIsNotNull__(mountedVolume)) {
@@ -1617,8 +1612,12 @@
         __ConsoleWriteString__((const Byte_t *) "Error: No file specified.\r\n");
       }
 
+      __AssertOnElse__();
+    }
 
-      /* Return error by default */
+    if(success) {
+      __ReturnOk__();
+    } else {
       __AssertOnElse__();
     }
 
@@ -1636,35 +1635,32 @@
 
 
     Byte_t path[CONFIG_FS_MAX_PATH_LENGTH];
+    Base_t success = false;
+    Base_t pathBuilt = false;
 
 
     if(__PointerIsNotNull__(mountedVolume) && __PointerIsNotNull__(args_) && (CHAR_NULL != args_[0x0u])) {
       /* Build full path using path utilities */
       if(__path_is_absolute__(args_)) {
         __strcpy__(path, args_, CONFIG_FS_MAX_PATH_LENGTH);
+        pathBuilt = true;
       } else {
         if(OK(__path_join__(path, consoleState.currentWorkingDirectory, args_, CONFIG_FS_MAX_PATH_LENGTH))) {
-          /* Path joined successfully */
+          pathBuilt = true;
         } else {
           __ConsoleWriteString__((const Byte_t *) "Error: Path too long.\r\n");
-
-
-          /* Return error by default */
           __AssertOnElse__();
-          FUNCTION_EXIT;
         }
       }
 
-
-      /* Create directory */
-      if(OK(xDirMake(mountedVolume, path))) {
-        __ReturnOk__();
-      } else {
-        __ConsoleWriteString__((const Byte_t *) "Error: Unable to create directory.\r\n");
-
-
-        /* Return error by default */
-        __AssertOnElse__();
+      if(pathBuilt) {
+        /* Create directory */
+        if(OK(xDirMake(mountedVolume, path))) {
+          success = true;
+        } else {
+          __ConsoleWriteString__((const Byte_t *) "Error: Unable to create directory.\r\n");
+          __AssertOnElse__();
+        }
       }
     } else {
       if(!__PointerIsNotNull__(mountedVolume)) {
@@ -1673,8 +1669,12 @@
         __ConsoleWriteString__((const Byte_t *) "Error: No directory specified.\r\n");
       }
 
+      __AssertOnElse__();
+    }
 
-      /* Return error by default */
+    if(success) {
+      __ReturnOk__();
+    } else {
       __AssertOnElse__();
     }
 
