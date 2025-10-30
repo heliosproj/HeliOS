@@ -152,6 +152,12 @@
     "typeindex": "cpp",
     "typeinfo": "cpp",
     "valarray": "cpp",
-    "variant": "cpp"
+    "variant": "cpp",
+    "config.h": "c",
+    "streams.h": "c",
+    "device.h": "c",
+    "defines.h": "c",
+    "timer.h": "c",
+    "fat.h": "c"
   }
 }

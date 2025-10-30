@@ -20,8 +20,14 @@
   #include "config.h"
   #include "defines.h"
   #include "types.h"
+  #if defined(CONFIG_ENABLE_IO_SUBSYSTEM)
+    #include "console.h"
+    #include "device.h"
+    #include "fat.h"
+    #include "fs.h"
+  #endif /* if defined(CONFIG_ENABLE_IO_SUBSYSTEM) */
   #include "port.h"
-  #include "device.h"
+  #include "posix.h"
   #include "queue.h"
   #include "streams.h"
   #include "sys.h"

@@ -36,9 +36,7 @@
   #define CHAR_PRINTABLE_MIN 0x20u
   #define CHAR_PRINTABLE_MAX 0x7Eu
 
-  #if !defined(CONFIG_FS_MAX_PATH_LENGTH)
-    #define CONFIG_FS_MAX_PATH_LENGTH 256u
-  #endif /* if !defined(CONFIG_FS_MAX_PATH_LENGTH) */
+
 /* Console state */
   static ConsoleState_t consoleState;
   static Volume_t *mountedVolume = null;

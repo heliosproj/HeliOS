@@ -710,4 +710,9 @@
   #if !defined(CONFIG_CONSOLE_PROMPT)
     #define CONFIG_CONSOLE_PROMPT "$ "
   #endif /* if !defined(CONFIG_CONSOLE_PROMPT) */
+
+  #if !defined(CONFIG_FS_MAX_PATH_LENGTH)
+    #define CONFIG_FS_MAX_PATH_LENGTH 0xFFu /* 255 characters */
+  #endif /* if !defined(CONFIG_FS_MAX_PATH_LENGTH) */
+
 #endif /* ifndef CONFIG_H_ */

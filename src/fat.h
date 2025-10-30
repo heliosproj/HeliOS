@@ -21,9 +21,12 @@
   #if defined(CONFIG_ENABLE_IO_SUBSYSTEM)
     #include "defines.h"
     #include "types.h"
-    #include "port.h"
+    #include "console.h"
     #include "device.h"
+    #include "fs.h"
     #include "mem.h"
+    #include "port.h"
+    #include "posix.h"
     #include "queue.h"
     #include "streams.h"
     #include "sys.h"
@@ -34,13 +37,6 @@
 /* Forward declaration of block device command structure */
     #define BLOCK_CMD_SET_ADDRESS 0x02u
     #define BLOCK_IO_MODE_BLOCKING 0x00u
-
-    typedef struct BlockDeviceCommand_s {
-      Byte_t command;
-      Word_t blockNumber;
-      HalfWord_t blockCount;
-      Byte_t transferMode;
-    } BlockDeviceCommand_t;
 
 
 /* FAT32 Boot Sector Structure (aligned for direct memory mapping) */

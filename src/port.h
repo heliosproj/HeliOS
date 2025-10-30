@@ -20,14 +20,19 @@
   #include "config.h"
   #include "defines.h"
   #include "types.h"
-  #include "device.h"
+  #if defined(CONFIG_ENABLE_IO_SUBSYSTEM)
+    #include "console.h"
+    #include "device.h"
+    #include "fat.h"
+    #include "fs.h"
+  #endif /* if defined(CONFIG_ENABLE_IO_SUBSYSTEM) */
   #include "mem.h"
+  #include "posix.h"
   #include "queue.h"
   #include "streams.h"
   #include "sys.h"
   #include "task.h"
   #include "timer.h"
-
 
   #if defined(ARDUINO_ARCH_AVR) || defined(ARDUINO_ARCH_SAM) || defined(ARDUINO_ARCH_SAMD) || defined(ARDUINO_ARCH_ESP8266) || defined(ARDUINO_ARCH_STM32) || \
   defined(ARDUINO_TEENSY_MICROMOD) || defined(ARDUINO_TEENSY40) || defined(ARDUINO_TEENSY41) || defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY35) || \

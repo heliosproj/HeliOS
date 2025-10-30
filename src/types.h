@@ -407,5 +407,16 @@
     } VolumeInfo_t;
   #endif /* ifndef VOLUMEINFO_T_ */
 
+  #if defined(CONFIG_ENABLE_IO_SUBSYSTEM)
+    #ifndef BLOCKDEVICECOMMAND_T_
+      #define BLOCKDEVICECOMMAND_T_
+      typedef struct BlockDeviceCommand_s {
+        Byte_t command;               /* BLOCK_CMD_SET_ADDRESS */
+        Word_t blockNumber; /* Starting block/sector number */
+        HalfWord_t blockCount; /* Number of blocks to read/write */
+        Byte_t transferMode; /* BLOCK_IO_MODE_* constant */
+      } BlockDeviceCommand_t;
+    #endif /* ifndef BLOCKDEVICECOMMAND_T_ */
+  #endif /* if defined(CONFIG_ENABLE_IO_SUBSYSTEM) */
 
 #endif /* ifndef TYPES_H_ */

@@ -21,15 +21,17 @@
   #if defined(CONFIG_ENABLE_IO_SUBSYSTEM)
     #include "defines.h"
     #include "types.h"
-    #include "port.h"
     #include "device.h"
+    #include "fat.h"
+    #include "fs.h"
     #include "mem.h"
+    #include "port.h"
+    #include "posix.h"
     #include "queue.h"
     #include "streams.h"
     #include "sys.h"
     #include "task.h"
     #include "timer.h"
-    #include "fs.h"
 
 
     /* Console banner displayed on connect */

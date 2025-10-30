@@ -20,9 +20,15 @@
   #include "config.h"
   #include "defines.h"
   #include "types.h"
-  #include "port.h"
-  #include "device.h"
+  #if defined(CONFIG_ENABLE_IO_SUBSYSTEM)
+    #include "console.h"
+    #include "device.h"
+    #include "fat.h"
+    #include "fs.h"
+  #endif /* if defined(CONFIG_ENABLE_IO_SUBSYSTEM) */
   #include "mem.h"
+  #include "port.h"
+  #include "posix.h"
   #include "queue.h"
   #include "streams.h"
   #include "sys.h"
@@ -69,19 +75,6 @@
     HalfWord_t blockSize; /* Block/sector size (typically 512) */
     Word_t totalBlocks; /* Total capacity in blocks (0 = auto-detect) */
   } BlockDeviceConfig_t;
-
-
-  /**
-   * @brief Block device command structure
-   *
-   * Specifies block-level operations. Used to set addressing before read/write.
-   */
-  typedef struct BlockDeviceCommand_s {
-    Byte_t command;                   /* BLOCK_CMD_SET_ADDRESS */
-    Word_t blockNumber; /* Starting block/sector number */
-    HalfWord_t blockCount; /* Number of blocks to read/write */
-    Byte_t transferMode; /* BLOCK_IO_MODE_* constant */
-  } BlockDeviceCommand_t;
 
 
   /**
