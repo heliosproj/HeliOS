@@ -59,6 +59,13 @@
       __DeviceUidNonZero__() && __PointerIsNotNull__(name_) && __PointerIsNotNull__(init_) && __PointerIsNotNull__(config_) && __PointerIsNotNull__(read_) &&
       __PointerIsNotNull__(write_) && __PointerIsNotNull__(simple_read_) && __PointerIsNotNull__(simple_write_) && __PointerIsNull__(dlist) && OK(
       __KernelAllocateMemory__((volatile Addr_t **) &dlist, sizeof(DeviceList_t))))) {
+      /* If dlist was just allocated (second condition in if), initialize it */
+      if(__PointerIsNotNull__(dlist) && !__ObjectIsValid__(dlist)) {
+        dlist->valid = VALID;
+        dlist->length = 0x0u;
+        dlist->head = null;
+      }
+
       if(__PointerIsNotNull__(dlist)) {
         /* We are expecting *NOT* to find the device unique identifier in the
          * device list. This is to confirm there isn't already a device with the

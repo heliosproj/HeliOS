@@ -71,6 +71,14 @@ Return_t xTaskCreate(Task_t **task_, const Byte_t *name_, void (*callback_)(Task
     /* NOTE: There is a __KernelAllocateMemory__() syscall buried in this if()
      * statement. */
     if(__PointerIsNotNull__(tlist) || (__PointerIsNull__(tlist) && OK(__KernelAllocateMemory__((volatile Addr_t **) &tlist, sizeof(TaskList_t))))) {
+      /* If tlist was just allocated (second condition in if), initialize it */
+      if(__PointerIsNotNull__(tlist) && !__ObjectIsValid__(tlist)) {
+        tlist->valid = VALID;
+        tlist->nextId = 0x0u;
+        tlist->length = 0x0u;
+        tlist->head = null;
+      }
+
       if(OK(__KernelAllocateMemory__((volatile Addr_t **) task_, sizeof(Task_t)))) {
         if(__PointerIsNotNull__(*task_)) {
           if(OK(__memcpy__((*task_)->name, name_, CONFIG_TASK_NAME_BYTES))) {

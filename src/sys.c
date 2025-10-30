@@ -33,9 +33,13 @@
  *
  */
 /*UNCRUSTIFY-ON*/
-/* Global system flags - zero-initialized by C standard for static storage */
+/* Global system flags - initialized with VALID flag */
 Flags_t flag = {
-  0
+  VALID,  /* valid */
+  0,      /* running */
+  0,      /* overflow */
+  0,      /* memfault */
+  0       /* littleend */
 };
 
 

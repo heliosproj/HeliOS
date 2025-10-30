@@ -248,6 +248,7 @@ Return_t xQueueSend(Queue_t *queue_, const Base_t bytes_, const Byte_t *value_) 
       if((queue_->limit > queue_->length) && __QueueLengthCorrect__()) {
         if(OK(__KernelAllocateMemory__((volatile Addr_t **) &message, sizeof(Message_t)))) {
           if(__PointerIsNotNull__(message)) {
+            message->valid = VALID;
             if(OK(__memcpy__(message->messageValue, value_, CONFIG_MESSAGE_VALUE_BYTES))) {
               message->messageBytes = bytes_;
               message->next = null;
@@ -379,6 +380,8 @@ static Return_t __QueueDropmessage__(Queue_t *queue_) {
       if(__PointerIsNull__(queue_->head)) {
         queue_->tail = null;
       }
+
+      message->valid = INVALID;
 
       if(OK(__KernelFreeMemory__(message))) {
         queue_->length--;
