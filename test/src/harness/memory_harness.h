@@ -3,8 +3,6 @@
  * @file memory_harness.h
  * @author Test Harness
  * @brief Comprehensive memory management test harness
- * @version 1.0.0
- * @date 2025-01-23
  *
  * @copyright
  * HeliOS Embedded Operating System Test Suite

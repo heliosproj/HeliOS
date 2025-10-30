@@ -3,8 +3,6 @@
  * @file arduino.cpp
  * @author Manny Peterson <manny@heliosproj.org>
  * @brief Kernel source to allow kernel to interface with Arduino C++ API
- * @version 0.5.0
- * @date 2023-03-19
  * 
  * @copyright
  * HeliOS Embedded Operating System Copyright (C) 2020-2026 Manny Peterson <manny@heliosproj.org>

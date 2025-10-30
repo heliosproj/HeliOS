@@ -3,8 +3,6 @@
  * @file HeliOS.h
  * @author Manny Peterson <manny@heliosproj.org>
  * @brief Public API header for HeliOS embedded operating system applications
- * @version 0.5.0
- * @date 2023-03-19
  *
  * This header file provides the complete public API for HeliOS, a lightweight
  * embedded operating system designed for resource-constrained microcontrollers.

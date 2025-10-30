@@ -3,8 +3,6 @@
  * @file defines.h
  * @author Manny Peterson <manny@heliosproj.org>
  * @brief Kernel source for macro definitions
- * @version 0.5.0
- * @date 2023-03-19
  * 
  * @copyright
  * (C) 2020-2026 Manny Peterson <manny@heliosproj.org>

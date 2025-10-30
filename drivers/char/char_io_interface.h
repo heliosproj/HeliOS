@@ -3,8 +3,6 @@
  * @file char_io_interface.h
  * @author Manny Peterson <manny@heliosproj.org>
  * @brief Common interface for character I/O drivers
- * @version 0.5.0
- * @date 2025-10-19
  *
  * @copyright
  * HeliOS Embedded Operating System Copyright (C) 2020-2026 Manny Peterson <manny@heliosproj.org>

@@ -3,8 +3,6 @@
  * @file mock_usart.h
  * @author Manny Peterson <manny@heliosproj.org>
  * @brief Mock USART device for console unit testing
- * @version 0.5.0
- * @date 2025-01-19
  *
  * @copyright
  * HeliOS Embedded Operating System Copyright (C) 2020-2026 Manny Peterson <manny@heliosproj.org>

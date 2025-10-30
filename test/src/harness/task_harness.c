@@ -3,8 +3,6 @@
  * @file task_harness.c
  * @author Manny Peterson <manny@heliosproj.org>
  * @brief Comprehensive unit testing for task subsystem
- * @version 0.5.0
- * @date 2023-03-19
  *
  * @copyright
  * HeliOS Embedded Operating System Copyright (C) 2020-2026 Manny Peterson <manny@heliosproj.org>

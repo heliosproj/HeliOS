@@ -3,8 +3,6 @@
  * @file usart_stm32_driver.h
  * @author Manny Peterson <manny@heliosproj.org>
  * @brief STM32 USART HAL I/O driver for HeliOS character devices
- * @version 0.5.0
- * @date 2025-10-19
  *
  * @copyright
  * HeliOS Embedded Operating System Copyright (C) 2020-2026 Manny Peterson <manny@heliosproj.org>

@@ -3,8 +3,6 @@
  * @file console.c
  * @author Manny Peterson <manny@heliosproj.org>
  * @brief Kernel source for console and shell support
- * @version 0.5.0
- * @date 2025-01-19
  *
  * @copyright
  * (C) 2020-2026 Manny Peterson <manny@heliosproj.org>
