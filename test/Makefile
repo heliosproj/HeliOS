@@ -116,9 +116,6 @@ clean:
 
 # Sync version from VERSION file to all project files
 version:
-	@echo "========================================"
-	@echo "HeliOS Version Sync"
-	@echo "========================================"
 	@if [ ! -f ../VERSION ]; then \
 		echo "ERROR: VERSION file not found at ../VERSION"; \
 		exit 1; \
@@ -147,10 +144,6 @@ version:
 	sed -i "s/\"version\":\"[^\"]*\"/\"version\":\"$$VERSION\"/" ../library.json && echo "✓ ../library.json"; \
 	sed -i "s/^version=.*/version=$$VERSION/" ../library.properties && echo "✓ ../library.properties"; \
 	sed -i "s/PROJECT_NUMBER = Kernel [0-9.]*'/PROJECT_NUMBER = Kernel $$VERSION'/" ../.github/workflows/HeliOS_CI_Workflow.yml && echo "✓ ../.github/workflows/HeliOS_CI_Workflow.yml"; \
-	echo ""; \
-	echo "========================================"; \
-	echo "Version sync complete!"; \
-	echo "========================================"; \
 	echo "All files updated to version $$VERSION"
 
 # Phony targets
