@@ -109,10 +109,6 @@
     Return_t xFileRename(Volume_t *volume_, const Byte_t *oldPath_, const Byte_t *newPath_);
     Return_t xFileGetInfo(Volume_t *volume_, const Byte_t *path_, DirEntry_t **entry_);
 
-    #if defined(POSIX_ARCH_OTHER)
-      void __FSStateClear__(void);
-    #endif /* if defined(POSIX_ARCH_OTHER) */
-
     #ifdef __cplusplus
       }
     #endif /* ifdef __cplusplus */
