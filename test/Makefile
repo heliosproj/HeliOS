@@ -2,8 +2,6 @@
 # @file Makefile
 # @author Manny Peterson <manny@heliosproj.org>
 # @brief Makefile for HeliOS unit tests
-# @version 0.5.0
-# @date 2024-10-24
 #
 # @copyright
 # HeliOS Embedded Operating System Copyright (C) 2020-2026 Manny Peterson <manny@heliosproj.org>

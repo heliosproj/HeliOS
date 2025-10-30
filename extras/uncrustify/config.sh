@@ -3,8 +3,6 @@
 # @file config.sh
 # @author Manny Peterson <manny@heliosproj.org>
 # @brief A shell script to build Uncrustify configuration file
-# @version 0.5.0
-# @date 2023-03-19
 # 
 # @copyright
 # HeliOS Embedded Operating System Copyright (C) 2020-2026 Manny Peterson <manny@heliosproj.org>

@@ -1,8 +1,8 @@
-# HeliOS 0.5.0 Build Guide for ST NUCLEO-H723ZG
+# HeliOS Build Guide for ST NUCLEO-H723ZG
 
 ## Overview
 
-The purpose of this guide is to demonstrate how **HeliOS 0.5.0** can be built and deployed to other MCUs without the Arduino Core. This guide is meant for more advanced use cases and provides step-by-step instructions for building and deploying **HeliOS 0.5.0** on the **ST NUCLEO-H723ZG** development board. While this guide is specific to the **ST NUCLEO-H723ZG**, these same steps may be taken to build and deploy **HeliOS 0.5.0** on other ST MCUs and development boards.
+The purpose of this guide is to demonstrate how **HeliOS** can be built and deployed to other MCUs without the Arduino Core. This guide is meant for more advanced use cases and provides step-by-step instructions for building and deploying **HeliOS** on the **ST NUCLEO-H723ZG** development board. While this guide is specific to the **ST NUCLEO-H723ZG**, these same steps may be taken to build and deploy **HeliOS** on other ST MCUs and development boards.
 
 ### Target Hardware
 

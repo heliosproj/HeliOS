@@ -29,6 +29,6 @@ To help us assist you effectively, please provide:
 - **Error output** - Include compiler errors or serial output if applicable (text format, **NOT screenshots**)
 
 **Environment Information:**
-- **HeliOS version** - e.g., 0.5.0, develop branch, or specific commit hash
+- **HeliOS version** - e.g., version number, develop branch, or specific commit hash
 - **Hardware platform** - e.g., Arduino UNO, Teensy 4.1, STM32F429, ESP8266
 - **Development environment** - e.g., Arduino IDE 2.0, PlatformIO, STM32CubeIDE, Keil µVision

@@ -31,7 +31,7 @@ assignees: MannyPeterson
 ### Environment
 
 **HeliOS Version:**
-<!-- e.g., 0.5.0, develop branch commit abc1234 -->
+<!-- e.g., version number, develop branch commit abc1234 -->
 
 **Hardware:**
 <!-- e.g., Arduino UNO, Teensy 4.1, STM32F429 -->

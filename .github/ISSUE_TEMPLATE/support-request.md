@@ -28,7 +28,7 @@ assignees: MannyPeterson
 ### Environment
 
 **HeliOS Version:**
-<!-- e.g., 0.5.0, develop branch -->
+<!-- e.g., verison number, develop branch -->
 
 **Hardware:**
 <!-- e.g., Arduino UNO, Teensy 4.1, ESP8266 -->
