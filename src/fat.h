@@ -92,7 +92,6 @@
     } FAT32DirEntry_t;
 
 
-
 /* FAT32 File Attributes */
     #define FAT_ATTR_READ_ONLY 0x01u
     #define FAT_ATTR_HIDDEN 0x02u
@@ -113,36 +112,29 @@
     #ifdef __cplusplus
       extern "C" {
     #endif /* ifdef __cplusplus */
-
 /* Endian conversion functions */
     HalfWord_t __ReadLE16__(const Byte_t *data_);
     Word_t __ReadLE32__(const Byte_t *data_);
     void __WriteLE16__(Byte_t *data_, HalfWord_t value_);
     void __WriteLE32__(Byte_t *data_, Word_t value_);
-
 /* Block I/O operations */
     Return_t __ReadSector__(const Volume_t *vol_, Word_t sector_, Byte_t **data_);
     Return_t __WriteSector__(const Volume_t *vol_, Word_t sector_, const Byte_t *data_);
     Return_t __ReadCluster__(const Volume_t *vol_, Word_t cluster_, Byte_t **data_);
-
 /* FAT table operations */
     Return_t __GetFATEntry__(const Volume_t *vol_, Word_t cluster_, Word_t *nextCluster_);
     Return_t __SetFATEntry__(const Volume_t *vol_, Word_t cluster_, Word_t value_);
     Return_t __FindFreeCluster__(const Volume_t *vol_, Word_t startHint_, Word_t *freeCluster_);
     Return_t __FreeClusters__(const Volume_t *vol_, Word_t startCluster_);
-
 /* Cluster/sector calculations */
     Word_t __ClusterToSector__(const Volume_t *vol_, Word_t cluster_);
-
 /* Mount tracking */
     Base_t __IsDeviceMounted__(const HalfWord_t blockDeviceUID_);
     Return_t __AddMountedDevice__(const HalfWord_t blockDeviceUID_);
     Return_t __RemoveMountedDevice__(const HalfWord_t blockDeviceUID_);
-
 /* Path/name utilities */
     Base_t __ByteCompare__(const Byte_t *s1_, const Byte_t *s2_, Word_t len_);
     Return_t __ConvertToFAT83__(const Byte_t *path_, Byte_t *fat83_);
-
 /* Directory entry helpers */
     Return_t __FindDirEntry__(const Volume_t *vol_, Word_t dirCluster_, const Byte_t *name83_, FAT32DirEntry_t *entry_, Word_t *entryCluster_, Word_t *
       entryOffset_);

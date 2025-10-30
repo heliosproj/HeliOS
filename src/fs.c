@@ -1839,4 +1839,5 @@ check_empty:
     FUNCTION_EXIT;
   }
 
+
 #endif /* if defined(CONFIG_ENABLE_IO_SUBSYSTEM) */

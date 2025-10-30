@@ -24,6 +24,7 @@
   static HalfWord_t mountedDevices[MAX_MOUNTED_VOLUMES];
   static Byte_t mountedDeviceCount = 0x0u;
 
+
 /* Helper function to read 16-bit little-endian value */
   HalfWord_t __ReadLE16__(const Byte_t *data_) {
     return((HalfWord_t) data_[0x0u] | ((HalfWord_t) data_[0x1] << 0x8));
