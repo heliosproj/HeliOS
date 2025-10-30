@@ -1055,6 +1055,12 @@
 
     if(OK(xTaskGetAllTaskInfo(&taskList, &taskCount))) {
       for(i = 0x0u; i < taskCount; i++) {
+        /* Validate object before use */
+        if(!__ObjectIsValid__(&taskList[i])) {
+          __ConsoleWriteString__((const Byte_t *) "  [CORRUPTED TASK ENTRY]\r\n");
+          continue;
+        }
+
         /* Print task ID */
         __ConsoleWriteString__((const Byte_t *) "  ");
         __uitoah__((Word_t) taskList[i].id, numBuf, sizeof(numBuf));
@@ -1112,6 +1118,13 @@
     __ConsoleWriteString__((const Byte_t *) "Memory Statistics:\r\n");
 
     if(OK(xMemGetHeapStats(&memState))) {
+      /* Validate object before use */
+      if(!__ObjectIsValid__(memState)) {
+        __ConsoleWriteString__((const Byte_t *) "Error: Corrupted memory statistics.\r\n");
+        xMemFree(memState);
+        FUNCTION_EXIT;
+      }
+
       __ConsoleWriteString__((const Byte_t *) "  Available Space:  ");
       __uitoah__((Word_t) memState->availableSpaceInBytes, numBuf, sizeof(numBuf));
       __ConsoleWriteString__(numBuf);
@@ -1222,33 +1235,38 @@
 
         /* Read directory entries */
         while(OK(xDirRead(dir, &entry))) {
-          if(__PointerIsNotNull__(entry)) {
-            /* Print entry name */
-            __ConsoleWriteString__((const Byte_t *) "  ");
-
-            if(entry->isDirectory) {
-              __ConsoleWriteString__((const Byte_t *) "[DIR]  ");
-            } else {
-              __ConsoleWriteString__((const Byte_t *) "[FILE] ");
-            }
-
-            __ConsoleWriteString__(entry->name);
-
-
-            /* Print file size for files */
-            if(!entry->isDirectory) {
-              __ConsoleWriteString__((const Byte_t *) " (");
-              __uitoah__((Word_t) entry->size, numBuf, sizeof(numBuf));
-              __ConsoleWriteString__(numBuf);
-              __ConsoleWriteString__((const Byte_t *) " bytes)");
-            }
-
-            __ConsoleWriteString__((const Byte_t *) "\r\n");
-
-
-            /* Free entry */
+          /* Validate object before use */
+          if(!__ObjectIsValid__(entry)) {
+            __ConsoleWriteString__((const Byte_t *) "  [CORRUPTED DIR ENTRY]\r\n");
             xMemFree(entry);
+            continue;
           }
+
+          /* Print entry name */
+          __ConsoleWriteString__((const Byte_t *) "  ");
+
+          if(entry->isDirectory) {
+            __ConsoleWriteString__((const Byte_t *) "[DIR]  ");
+          } else {
+            __ConsoleWriteString__((const Byte_t *) "[FILE] ");
+          }
+
+          __ConsoleWriteString__(entry->name);
+
+
+          /* Print file size for files */
+          if(!entry->isDirectory) {
+            __ConsoleWriteString__((const Byte_t *) " (");
+            __uitoah__((Word_t) entry->size, numBuf, sizeof(numBuf));
+            __ConsoleWriteString__(numBuf);
+            __ConsoleWriteString__((const Byte_t *) " bytes)");
+          }
+
+          __ConsoleWriteString__((const Byte_t *) "\r\n");
+
+
+          /* Free entry */
+          xMemFree(entry);
         }
 
 

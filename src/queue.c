@@ -317,6 +317,7 @@ static Return_t __QueuePeek__(const Queue_t *queue_, QueueMessage_t **message_) 
     if(__PointerIsNotNull__(queue_->head)) {
       if(OK(__HeapAllocateMemory__((volatile Addr_t **) message_, sizeof(QueueMessage_t)))) {
         if(__PointerIsNotNull__(*message_)) {
+          (*message_)->valid = VALID;
           (*message_)->messageBytes = queue_->head->messageBytes;
 
           if(OK(__memcpy__((*message_)->messageValue, queue_->head->messageValue, CONFIG_MESSAGE_VALUE_BYTES))) {
@@ -326,6 +327,7 @@ static Return_t __QueuePeek__(const Queue_t *queue_, QueueMessage_t **message_) 
 
 
             /* Free the heap memory because __memcpy__() failed. */
+            (*message_)->valid = INVALID;
             __HeapFreeMemory__(*message_);
           }
         } else {

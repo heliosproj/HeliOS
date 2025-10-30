@@ -256,6 +256,7 @@ Return_t xTaskGetAllRunTimeStats(TaskRunTimeStats_t **stats_, Base_t *tasks_) {
           cursor = tlist->head;
 
           while(__PointerIsNotNull__(cursor)) {
+            (*stats_)[task].valid = VALID;
             (*stats_)[task].id = cursor->id;
             (*stats_)[task].lastRunTime = cursor->lastRunTime;
             (*stats_)[task].totalRunTime = cursor->totalRunTime;
@@ -289,6 +290,7 @@ Return_t xTaskGetTaskRunTimeStats(const Task_t *task_, TaskRunTimeStats_t **stat
     if(OK(__TaskListFindTask__(task_))) {
       if(OK(__HeapAllocateMemory__((volatile Addr_t **) stats_, sizeof(TaskRunTimeStats_t)))) {
         if(__PointerIsNotNull__(*stats_)) {
+          (*stats_)->valid = VALID;
           (*stats_)->id = task_->id;
           (*stats_)->lastRunTime = task_->lastRunTime;
           (*stats_)->totalRunTime = task_->totalRunTime;
@@ -353,6 +355,7 @@ Return_t xTaskGetTaskInfo(const Task_t *task_, TaskInfo_t **info_) {
     if(OK(__TaskListFindTask__(task_))) {
       if(OK(__HeapAllocateMemory__((volatile Addr_t **) info_, sizeof(TaskInfo_t)))) {
         if(__PointerIsNotNull__(*info_)) {
+          (*info_)->valid = VALID;
           if(OK(__memcpy__((*info_)->name, task_->name, CONFIG_TASK_NAME_BYTES))) {
             (*info_)->id = task_->id;
             (*info_)->state = task_->state;
@@ -364,6 +367,7 @@ Return_t xTaskGetTaskInfo(const Task_t *task_, TaskInfo_t **info_) {
 
 
             /* Free heap memory because __memcpy__() failed. */
+            (*info_)->valid = INVALID;
             __HeapFreeMemory__(*info_);
           }
         } else {
@@ -407,6 +411,7 @@ Return_t xTaskGetAllTaskInfo(TaskInfo_t **info_, Base_t *tasks_) {
 
           while(__PointerIsNotNull__(cursor)) {
             if(OK(__memcpy__((*info_)[task].name, cursor->name, CONFIG_TASK_NAME_BYTES))) {
+              (*info_)[task].valid = VALID;
               (*info_)[task].id = cursor->id;
               (*info_)[task].state = cursor->state;
               (*info_)[task].lastRunTime = cursor->lastRunTime;
@@ -418,6 +423,7 @@ Return_t xTaskGetAllTaskInfo(TaskInfo_t **info_, Base_t *tasks_) {
 
 
               /* Free heap memory because __memcpy__() failed. */
+              (*info_)->valid = INVALID;
               __HeapFreeMemory__(*info_);
               FUNCTION_EXIT;
             }
@@ -595,6 +601,7 @@ Return_t xTaskNotifyTake(Task_t *task_, TaskNotification_t **notification_) {
       if(0x0u < task_->notificationBytes) {
         if(OK(__HeapAllocateMemory__((volatile Addr_t **) notification_, sizeof(TaskNotification_t)))) {
           if(__PointerIsNotNull__(*notification_)) {
+            (*notification_)->valid = VALID;
             if(OK(__memcpy__((*notification_)->notificationValue, task_->notificationValue, CONFIG_NOTIFICATION_VALUE_BYTES))) {
               if(OK(__memset__(task_->notificationValue, 0x0u, CONFIG_NOTIFICATION_VALUE_BYTES))) {
                 (*notification_)->notificationBytes = task_->notificationBytes;
@@ -605,6 +612,7 @@ Return_t xTaskNotifyTake(Task_t *task_, TaskNotification_t **notification_) {
 
 
                 /* Free heap memory because __memset__() failed. */
+                (*notification_)->valid = INVALID;
                 __HeapFreeMemory__(*notification_);
               }
             } else {
@@ -612,6 +620,7 @@ Return_t xTaskNotifyTake(Task_t *task_, TaskNotification_t **notification_) {
 
 
               /* Free heap memory because __memcpy__() failed. */
+              (*notification_)->valid = INVALID;
               __HeapFreeMemory__(*notification_);
             }
           } else {

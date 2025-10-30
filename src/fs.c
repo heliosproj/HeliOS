@@ -144,6 +144,7 @@
       if(volume_->mounted) {
         /* Allocate info structure in user heap (returned to caller) */
         if(OK(xMemAlloc((volatile Addr_t **) &info, sizeof(VolumeInfo_t)))) {
+        info->valid = VALID;
         info->bytesPerSector = volume_->bytesPerSector;
         info->sectorsPerCluster = volume_->sectorsPerCluster;
         info->bytesPerCluster = (Word_t) volume_->bytesPerSector * volume_->sectorsPerCluster;
@@ -1247,6 +1248,8 @@
               Word_t i = 0x0u;
               Word_t j = 0x0u;
 
+              dirEntry->valid = VALID;
+
 
               /* Copy name part (8 chars) */
               for(i = 0x0u; i < 8 && fatEntry->name[i] != ' '; i++) {
@@ -1811,6 +1814,8 @@
             /* Convert 8.3 filename to null-terminated string */
             Word_t i = 0x0u;
             Word_t j = 0x0u;
+
+            dirEntry->valid = VALID;
 
 
             /* Copy name part (8 chars) */

@@ -87,6 +87,7 @@ Return_t xSystemGetSystemInfo(SystemInfo_t **info_) {
   if(__PointerIsNotNull__(info_)) {
     if(OK(__HeapAllocateMemory__((volatile Addr_t **) info_, sizeof(SystemInfo_t)))) {
       if(__PointerIsNotNull__(*info_)) {
+        (*info_)->valid = VALID;
         if(OK(__memcpy__((*info_)->productName, OS_PRODUCT_NAME, OS_PRODUCT_NAME_SIZE))) {
           (*info_)->majorVersion = OS_MAJOR_VERSION_NO;
           (*info_)->minorVersion = OS_MINOR_VERSION_NO;
@@ -105,6 +106,7 @@ Return_t xSystemGetSystemInfo(SystemInfo_t **info_) {
 
 
             /* Free heap memory because xTaskGetNumberOfTasks() failed. */
+            (*info_)->valid = INVALID;
             __HeapFreeMemory__(*info_);
           }
         } else {
@@ -112,6 +114,7 @@ Return_t xSystemGetSystemInfo(SystemInfo_t **info_) {
 
 
           /* Free heap memory because __memcpy__() failed. */
+          (*info_)->valid = INVALID;
           __HeapFreeMemory__(*info_);
         }
       } else {

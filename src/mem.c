@@ -602,6 +602,7 @@ static Return_t __MemGetRegionStats__(const volatile MemoryRegion_t *region_, Me
 
   if(__PointerIsNotNull__(region_) && __PointerIsNotNull__(stats_)) {
     if(OK(xMemAlloc((volatile Addr_t **) &stats, sizeof(MemoryRegionStats_t)))) {
+      stats->valid = VALID;
       cursor = region_->first;
 
       while(__PointerIsNotNull__(cursor)) {
@@ -623,6 +624,7 @@ static Return_t __MemGetRegionStats__(const volatile MemoryRegion_t *region_, Me
 
           cursor = cursor->next;
         } else {
+          stats->valid = INVALID;
           xMemFree((const volatile Addr_t *) stats);
           __HeapFreeMemory__((const volatile Addr_t *) stats);
           stats = null;
