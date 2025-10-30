@@ -80,6 +80,42 @@
   #endif /* if !defined(OS_PRODUCT_NAME_SIZE) */
 
 
+  #if defined(OS_MAJOR_VERSION_NO)
+    #undef OS_MAJOR_VERSION_NO
+  #endif /* if defined(OS_MAJOR_VERSION_NO) */
+  #define OS_MAJOR_VERSION_NO 0x0u /* 0 */
+
+
+  #if defined(OS_MINOR_VERSION_NO)
+    #undef OS_MINOR_VERSION_NO
+  #endif /* if defined(OS_MINOR_VERSION_NO) */
+  #define OS_MINOR_VERSION_NO 0x5u /* 5 */
+
+
+  #if defined(OS_PATCH_VERSION_NO)
+    #undef OS_PATCH_VERSION_NO
+  #endif /* if defined(OS_PATCH_VERSION_NO) */
+  #define OS_PATCH_VERSION_NO 0x0u /* 0 */
+
+
+  #if defined(__STRINGIFY__)
+    #undef __STRINGIFY__
+  #endif /* if defined(__STRINGIFY__) */
+  #define __STRINGIFY__(x) #x
+
+
+  #if defined(__TOSTRING__)
+    #undef __TOSTRING__
+  #endif /* if defined(__TOSTRING__) */
+  #define __TOSTRING__(x) __STRINGIFY__(x)
+
+
+  #if defined(OS_VERSION_STRING)
+    #undef OS_VERSION_STRING
+  #endif /* if defined(OS_VERSION_STRING) */
+  #define OS_VERSION_STRING __TOSTRING__(OS_MAJOR_VERSION_NO) "." __TOSTRING__(OS_MINOR_VERSION_NO) "." __TOSTRING__(OS_PATCH_VERSION_NO)
+
+
   #if !defined(MEMORY_REGION_SIZE)
     #define MEMORY_REGION_SIZE CONFIG_MEMORY_REGION_SIZE
   #endif /* if !defined(MEMORY_REGION_SIZE) */

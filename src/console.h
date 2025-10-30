@@ -43,7 +43,7 @@
             "  |_|  |_|\\___|_|_|\\____/|_____/ \r\n" \
             "\r\n" \
             "  HeliOS Embedded Operating System\r\n" \
-            "  Version 0.5.0\r\n" \
+            "  Version " OS_VERSION_STRING "\r\n" \
             "  (C) 2020-2026 Manny Peterson <manny@heliosproj.org>\r\n" \
             "  Licensed under GPL-2.0-or-later\r\n" \
             "\r\n"

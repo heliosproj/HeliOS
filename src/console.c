@@ -1030,7 +1030,7 @@
     FUNCTION_ENTER;
     (void) args_;
     __ConsoleWriteString__((const Byte_t *) "HeliOS Embedded Operating System\r\n");
-    __ConsoleWriteString__((const Byte_t *) "Version: 0.5.0\r\n");
+    __ConsoleWriteString__((const Byte_t *) "Version: " OS_VERSION_STRING "\r\n");
     __ConsoleWriteString__((const Byte_t *) "(C) 2020-2026 Manny Peterson <manny@heliosproj.org>\r\n");
     __ConsoleWriteString__((const Byte_t *) "License: GPL-2.0-or-later\r\n");
     __ReturnOk__();

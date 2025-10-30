@@ -114,8 +114,47 @@ clean:
 	@rm -rf bin
 	@rm -rf $(NOMIC_BUILD_DIR)
 
+# Sync version from VERSION file to all project files
+version:
+	@echo "========================================"
+	@echo "HeliOS Version Sync"
+	@echo "========================================"
+	@if [ ! -f ../VERSION ]; then \
+		echo "ERROR: VERSION file not found at ../VERSION"; \
+		exit 1; \
+	fi
+	@VERSION=$$(cat ../VERSION | tr -d '[:space:]'); \
+	if ! echo "$$VERSION" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$$'; then \
+		echo "ERROR: Invalid version format in VERSION file: $$VERSION"; \
+		echo "Expected format: X.Y.Z (e.g., 0.5.0)"; \
+		exit 1; \
+	fi; \
+	MAJOR=$$(echo $$VERSION | cut -d'.' -f1); \
+	MINOR=$$(echo $$VERSION | cut -d'.' -f2); \
+	PATCH=$$(echo $$VERSION | cut -d'.' -f3); \
+	MAJOR_HEX=$$(printf "0x%xu" $$MAJOR); \
+	MINOR_HEX=$$(printf "0x%xu" $$MINOR); \
+	PATCH_HEX=$$(printf "0x%xu" $$PATCH); \
+	echo "Version: $$VERSION"; \
+	echo "Components: Major=$$MAJOR, Minor=$$MINOR, Patch=$$PATCH"; \
+	echo "Hex format: $$MAJOR_HEX, $$MINOR_HEX, $$PATCH_HEX"; \
+	echo ""; \
+	echo "Updating files..."; \
+	echo ""; \
+	sed -i "s/#define OS_MAJOR_VERSION_NO 0x[0-9a-fA-F]*u \/\* [0-9]* \*\//#define OS_MAJOR_VERSION_NO $$MAJOR_HEX \/\* $$MAJOR \*\//" ../src/defines.h && echo "✓ ../src/defines.h (MAJOR)"; \
+	sed -i "s/#define OS_MINOR_VERSION_NO 0x[0-9a-fA-F]*u \/\* [0-9]* \*\//#define OS_MINOR_VERSION_NO $$MINOR_HEX \/\* $$MINOR \*\//" ../src/defines.h && echo "✓ ../src/defines.h (MINOR)"; \
+	sed -i "s/#define OS_PATCH_VERSION_NO 0x[0-9a-fA-F]*u \/\* [0-9]* \*\//#define OS_PATCH_VERSION_NO $$PATCH_HEX \/\* $$PATCH \*\//" ../src/defines.h && echo "✓ ../src/defines.h (PATCH)"; \
+	sed -i "s/\"version\":\"[^\"]*\"/\"version\":\"$$VERSION\"/" ../library.json && echo "✓ ../library.json"; \
+	sed -i "s/^version=.*/version=$$VERSION/" ../library.properties && echo "✓ ../library.properties"; \
+	sed -i "s/PROJECT_NUMBER = Kernel [0-9.]*'/PROJECT_NUMBER = Kernel $$VERSION'/" ../.github/workflows/HeliOS_CI_Workflow.yml && echo "✓ ../.github/workflows/HeliOS_CI_Workflow.yml"; \
+	echo ""; \
+	echo "========================================"; \
+	echo "Version sync complete!"; \
+	echo "========================================"; \
+	echo "All files updated to version $$VERSION"
+
 # Phony targets
-.PHONY: all test analyze debug clean help nomic compile_commands
+.PHONY: all test analyze debug clean help nomic compile_commands version
 
 # Help target
 help:
@@ -123,6 +162,7 @@ help:
 	@echo "  test     - Run unit tests and generate test-report.json"
 	@echo "  analyze  - Run Nomic semantic analyzer and generate analysis-report.json"
 	@echo "  nomic    - Build the Nomic C semantic analyzer"
+	@echo "  version  - Sync version from VERSION file to all project files"
 	@echo "  debug    - Run tests in gdb debugger"
 	@echo "  clean    - Remove all build artifacts and Nomic build directory"
 	@echo "  help     - Show this help message"
@@ -132,4 +172,5 @@ help:
 	@echo "  make test         # Run tests"
 	@echo "  make nomic        # Build Nomic analyzer"
 	@echo "  make analyze      # Build Nomic and analyze source code"
+	@echo "  make version      # Update all files with version from VERSION file"
 	@echo "  make clean all    # Clean rebuild"

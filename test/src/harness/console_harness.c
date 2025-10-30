@@ -368,7 +368,7 @@ static void test_version_command(void) {
   xMockUSARTGetOutput(output, TEST_OUTPUT_BUFFER_SIZE, &outputLen);
   output[outputLen] = 0x00u;
   unit_assert_true(__OutputContains__(output, (const Byte_t *) "HeliOS"));
-  unit_assert_true(__OutputContains__(output, (const Byte_t *) "0.5.0"));
+  unit_assert_true(__OutputContains__(output, (const Byte_t *) OS_VERSION_STRING));
   unit_end();
 
 
