@@ -1,8 +1,8 @@
 # HeliOS Coding Standard - Nomic Rules
-# Version: 1.4.0
+# Version: 1.6.0
 #
 # This file is the official HeliOS coding standard implemented as Nomic checker rules.
-# Updated: 2025-10-31 - Converted all where clauses to assert logic as workaround for DSL evaluator bug
+# Updated: 2025-10-31 - Fixed MAC-001/API-002 regex and QUALITY-004 nesting depth logic
 
 ---
 # =============================================================================
@@ -14,8 +14,9 @@
   severity: error
   scope: function
   select: functions
-  assert: (not returns("Return_t") or (ast_query("macro_expansion[@name='FUNCTION_ENTER']") and ast_query("macro_expansion[@name='FUNCTION_EXIT']")))
-  message: "Function {name} must begin with FUNCTION_ENTER and end with FUNCTION_EXIT macros"
+  where: returns("Return_t")
+  assert: ast_query("macro_expansion[@name='FUNCTION_ENTER']") and ast_query("macro_expansion[@name='FUNCTION_EXIT']")
+  message: "Function {{fn.name}} must begin with FUNCTION_ENTER and end with FUNCTION_EXIT macros"
   fixit: "Add FUNCTION_ENTER at function start and FUNCTION_EXIT before final brace"
   tags:
     - function-structure
@@ -27,8 +28,9 @@
   severity: error
   scope: function
   select: functions
-  assert: (not returns("Return_t") or not ast_query("binary_operator[@operator='='][left[@name='ret']][!ancestor::macro_expansion]"))
-  message: "Function {name} directly assigns to 'ret' variable. Use __ReturnOk__() macro instead"
+  where: returns("Return_t")
+  assert: not ast_query("binary_operator[@operator='='][left[@name='ret']][!ancestor::macro_expansion]")
+  message: "Function {{fn.name}} directly assigns to 'ret' variable. Use __ReturnOk__() macro instead"
   fixit: "Replace 'ret = ReturnOK' with __ReturnOk__() macro call"
   tags:
     - function-structure
@@ -40,8 +42,9 @@
   severity: error
   scope: function
   select: functions
-  assert: (not returns("Return_t") or (ast_query_count("macro_expansion[@name='FUNCTION_ENTER']") == 1 and ast_query_count("macro_expansion[@name='FUNCTION_EXIT']") == 1))
-  message: "Function {name} must have exactly one FUNCTION_ENTER and one FUNCTION_EXIT"
+  where: returns("Return_t")
+  assert: ast_query_count("macro_expansion[@name='FUNCTION_ENTER']") == 1 and ast_query_count("macro_expansion[@name='FUNCTION_EXIT']") == 1
+  message: "Function {{fn.name}} must have exactly one FUNCTION_ENTER and one FUNCTION_EXIT"
   fixit: "Remove duplicate FUNCTION_ENTER/EXIT macros or add missing ones"
   tags:
     - function-structure
@@ -57,8 +60,9 @@
   severity: error
   scope: function
   select: functions
-  assert: (not returns("Return_t") or not has_early_return())
-  message: "Function {name} has early return statements. Use single-exit pattern with FUNCTION_EXIT only"
+  where: returns("Return_t")
+  assert: not has_early_return()
+  message: "Function {{fn.name}} has early return statements. Use single-exit pattern with FUNCTION_EXIT only"
   fixit: "Remove early returns and restructure to use nested if statements with FUNCTION_EXIT at end"
   tags:
     - control-flow
@@ -70,8 +74,9 @@
   severity: error
   scope: function
   select: functions
-  assert: (not returns("Return_t") or not calls("__ReturnOk__") or getMaxNestingDepth() >= 2)
-  message: "Function {name} must use nested if-statements for happy path (current nesting depth: {nestingDepth})"
+  where: returns("Return_t") and calls("__ReturnOk__")
+  assert: getMaxNestingDepth() >= 2
+  message: "Function {{fn.name}} must use nested if-statements for happy path (current nesting depth: {{fn.nesting_depth}})"
   fixit: "Restructure code to use nested if-statements with __ReturnOk__() in deepest success block"
   tags:
     - control-flow
@@ -84,7 +89,7 @@
   scope: function
   select: functions
   assert: (not has_loop() or not calls("__ReturnOk__") or ast_query("while_stmt//macro_expansion[@name='__ReturnOk__']/following-sibling::break_stmt"))
-  message: "Function {name} should break immediately after __ReturnOk__() in search loops"
+  message: "Function {{fn.name}} should break immediately after __ReturnOk__() in search loops"
   fixit: "Add 'break;' statement immediately after __ReturnOk__() call"
   tags:
     - control-flow
@@ -101,7 +106,7 @@
   scope: function
   select: functions
   assert: (not returns("Return_t") or not ast_query("binary_operator[@operator='='][left[@name='ret']][right[@name='ReturnOK']]"))
-  message: "Function {name} manually assigns ret = ReturnOK. Use __ReturnOk__() macro instead"
+  message: "Function {{fn.name}} manually assigns ret = ReturnOK. Use __ReturnOk__() macro instead"
   fixit: "Replace 'ret = ReturnOK' with __ReturnOk__() macro call"
   tags:
     - return-handling
@@ -114,7 +119,7 @@
   scope: function
   select: functions
   assert: (not returns("Return_t") or (not calls("__ReturnError__") and not ast_query("binary_operator[@operator='='][left[@name='ret']][right[@name='ReturnError']]")))
-  message: "Function {name} explicitly sets error. Remove __ReturnError__() or 'ret = ReturnError' (error is default)"
+  message: "Function {{fn.name}} explicitly sets error. Remove __ReturnError__() or 'ret = ReturnError' (error is default)"
   fixit: "Remove explicit error setting - FUNCTION_ENTER initializes ret to ReturnError by default"
   tags:
     - return-handling
@@ -131,7 +136,7 @@
   scope: function
   select: functions
   assert: forall(p in fn.parameters satisfies regex_matches(p.name, "^[a-z][a-zA-Z0-9]*_$"))
-  message: "Function {name} has parameter(s) without trailing underscore"
+  message: "Function {{fn.name}} has parameter(s) without trailing underscore"
   fixit: "Add trailing underscore to all parameter names (e.g., 'task' -> 'task_')"
   tags:
     - variable-naming
@@ -144,7 +149,7 @@
   scope: variable
   select: local_variables
   assert: (var.is_parameter or var.is_initialized or var.initial_value != "")
-  message: "Local variable {name} is not initialized at declaration"
+  message: "Local variable {{var.name}} is not initialized at declaration"
   fixit: "Initialize variable to null for pointers or 0x0u for numeric types"
   tags:
     - variable-naming
@@ -161,7 +166,7 @@
   scope: function
   select: functions
   assert: not ast_query("identifier[@name='NULL']")
-  message: "Function {name} uses NULL instead of HeliOS 'null' macro"
+  message: "Function {{fn.name}} uses NULL instead of HeliOS 'null' macro"
   fixit: "Replace NULL with null macro"
   tags:
     - type-usage
@@ -174,7 +179,7 @@
   scope: function
   select: functions
   assert: not ast_query("binary_operator[@operator='='][left[type='Base_t']][right[@value='0' or @value='1']]")
-  message: "Function {name} uses numeric literals for boolean values. Use 'true'/'false' instead"
+  message: "Function {{fn.name}} uses numeric literals for boolean values. Use 'true'/'false' instead"
   fixit: "Replace 0 with false and 1 with true for boolean assignments"
   tags:
     - type-usage
@@ -191,7 +196,7 @@
   scope: function
   select: functions
   assert: not ast_query("integer_literal[not(regex_match(@value, '^0[xX][0-9A-Fa-f]+[uU]?$'))]")
-  message: "Function {name} contains decimal integer literals. Use hexadecimal notation (e.g., 0x0u, 0x1u)"
+  message: "Function {{fn.name}} contains decimal integer literals. Use hexadecimal notation (e.g., 0x0u, 0x1u)"
   fixit: "Convert decimal literals to hexadecimal with 'u' suffix (0 -> 0x0u, 1 -> 0x1u, 255 -> 0xFFu)"
   tags:
     - numeric-literals
@@ -207,9 +212,9 @@
   severity: error
   scope: function
   select: functions
-  assert: ((not is_static_function() and fn.linkage != "internal") or regex_matches(fn.name, "^__[A-Z][a-zA-Z0-9]*__$") or starts_with(fn.name, "x"))
-  message: "Internal function {name} must use __Name__ pattern (not x-prefixed public API)"
-  fixit: "Rename to __FunctionName__ pattern with double underscores"
+  assert: ((not is_static_function() and fn.linkage != "internal") or regex_matches(fn.name, "^__[a-zA-Z][a-zA-Z0-9]*__$") or starts_with(fn.name, "x"))
+  message: "Internal function {{fn.name}} must use __Name__ or __name__ pattern (not x-prefixed public API)"
+  fixit: "Rename to __FunctionName__ or __functionname__ pattern with double underscores"
   tags:
     - macro-usage
     - naming-convention
@@ -225,7 +230,7 @@
   scope: function
   select: functions
   assert: (not returns("Return_t") or not ast_query("call_expr[callee[starts_with(@name, '__')][!ancestor::call_expr[@callee='OK' or @callee='ERROR']]]"))
-  message: "Function {name} calls internal functions without checking result with OK()/ERROR() macros"
+  message: "Function {{fn.name}} calls internal functions without checking result with OK()/ERROR() macros"
   fixit: "Wrap syscall in if(OK(syscall(...))) { ... } else { __AssertOnElse__(); }"
   tags:
     - error-checking
@@ -242,7 +247,7 @@
   scope: function
   select: functions
   assert: (not has_loop() or not ast_query("for_stmt[condition[@name='cursor' or contains(@text, 'cursor')]]"))
-  message: "Function {name} uses for-loop for list traversal. Use while(__PointerIsNotNull__(cursor)) pattern"
+  message: "Function {{fn.name}} uses for-loop for list traversal. Use while(__PointerIsNotNull__(cursor)) pattern"
   fixit: "Replace for-loop with: cursor = list->head; while(__PointerIsNotNull__(cursor)) { ...; cursor = cursor->next; }"
   tags:
     - loop-patterns
@@ -255,7 +260,7 @@
   scope: function
   select: functions
   assert: (not has_loop() or not variable_is_defined("cursor") or ast_query("var_decl[@name='cursor'][@initializer='null']"))
-  message: "Function {name} does not initialize cursor to null before list traversal"
+  message: "Function {{fn.name}} does not initialize cursor to null before list traversal"
   fixit: "Declare cursor with initialization: Type_t *cursor = null;"
   tags:
     - loop-patterns
@@ -272,7 +277,7 @@
   scope: function
   select: functions
   assert: not ast_query("binary_operator[@operator='==' or @operator='!=' or @operator='<' or @operator='>'][left[not(@constant='true')][@variable='true']][right[@constant='true']]")
-  message: "Function {name} has variables on left of comparison. Use Yoda conditionals (constant first)"
+  message: "Function {{fn.name}} has variables on left of comparison. Use Yoda conditionals (constant first)"
   fixit: "Reverse comparison: change 'variable == constant' to 'constant == variable'"
   tags:
     - conditionals
@@ -289,7 +294,7 @@
   scope: function
   select: functions
   assert: (not is_public_function() or is_static_function() or regex_matches(fn.name, "^__.*__$") or (starts_with(fn.name, "x") and regex_matches(fn.name, "^x[A-Z][a-zA-Z0-9]*$")))
-  message: "Public function {name} must use x-prefix naming (e.g., xTaskCreate, xMemAlloc)"
+  message: "Public function {{fn.name}} must use x-prefix naming (e.g., xTaskCreate, xMemAlloc)"
   fixit: "Rename to x<SubsystemName><Action> pattern"
   tags:
     - api-naming
@@ -301,9 +306,9 @@
   severity: error
   scope: function
   select: functions
-  assert: (is_static_function() or starts_with(fn.name, "x") or regex_matches(fn.name, "^__[A-Z][a-zA-Z0-9]*__$"))
-  message: "Internal cross-module function {name} must use __Name__ pattern with double underscores"
-  fixit: "Rename to __FunctionName__ pattern (e.g., __KernelAllocateMemory__)"
+  assert: (is_static_function() or starts_with(fn.name, "x") or regex_matches(fn.name, "^__[a-zA-Z][a-zA-Z0-9]*__$"))
+  message: "Internal cross-module function {{fn.name}} must use __Name__ or __name__ pattern with double underscores"
+  fixit: "Rename to __FunctionName__ or __functionname__ pattern (e.g., __KernelAllocateMemory__ or __memcpy__)"
   tags:
     - api-naming
     - internal-api
@@ -315,7 +320,7 @@
   scope: function
   select: functions
   assert: (not regex_matches(fn.name, "^__[A-Z][a-zA-Z0-9]*__$") or is_static_function())
-  message: "Module-private function {name} must be declared static"
+  message: "Module-private function {{fn.name}} must be declared static"
   fixit: "Add 'static' storage class specifier to function declaration"
   tags:
     - api-naming
@@ -328,7 +333,7 @@
   scope: function
   select: functions
   assert: (not starts_with(fn.name, "x") or regex_matches(fn.name, "^x(Task|Mem|Queue|Device|Timer|Stream|FS|System|Console)[A-Z][a-zA-Z0-9]*$"))
-  message: "Public function {name} does not follow subsystem naming pattern (xTask*, xMem*, xQueue*, etc.)"
+  message: "Public function {{fn.name}} does not follow subsystem naming pattern (xTask*, xMem*, xQueue*, etc.)"
   fixit: "Rename to x<Subsystem><Action> pattern (e.g., xTaskCreate, xMemAlloc)"
   tags:
     - api-naming
@@ -341,7 +346,7 @@
   scope: function
   select: functions
   assert: (not regex_matches(fn.name, "^x[A-Z]") or returns("void") or regex_matches(fn.name, "^x[A-Z][a-zA-Z0-9]*Get[A-Z]") or regex_matches(fn.name, "^x[A-Z][a-zA-Z0-9]*Is[A-Z]") or regex_matches(fn.name, "^x[A-Z][a-zA-Z0-9]*Has[A-Z]") or returns("Return_t"))
-  message: "Public API function {name} should return Return_t for consistent error handling"
+  message: "Public API function {{fn.name}} should return Return_t for consistent error handling"
   fixit: "Consider returning Return_t for status, with output via parameters if needed"
   tags:
     - api-naming
@@ -358,7 +363,7 @@
   scope: function
   select: functions
   assert: (not ast_query("type_decl[@kind='struct'][regex_match(@name, '^(Task|Memory|Queue|Device|Timer|Stream).*_t$')]") or ast_query("field_decl[@name='valid'][@type='Base_t']"))
-  message: "Kernel object struct in {name} is missing Base_t valid field"
+  message: "Kernel object struct in {{fn.name}} is missing Base_t valid field"
   fixit: "Add 'Base_t valid;' as first field in struct definition"
   tags:
     - object-validation
@@ -371,7 +376,7 @@
   scope: function
   select: functions
   assert: ((not calls("__KernelAllocateMemory__") and not calls("__HeapAllocateMemory__")) or ast_query("binary_operator[@operator='='][left[member_access[@member='valid']]][right[@name='VALID']]"))
-  message: "Function {name} allocates object but does not set valid field to VALID"
+  message: "Function {{fn.name}} allocates object but does not set valid field to VALID"
   fixit: "Add 'object->valid = VALID;' immediately after successful allocation"
   tags:
     - object-validation
@@ -384,7 +389,7 @@
   scope: function
   select: functions
   assert: ((not calls("__KernelFreeMemory__") and not calls("__HeapFreeMemory__")) or ast_query("binary_operator[@operator='='][left[member_access[@member='valid']]][right[@name='INVALID']]"))
-  message: "Function {name} frees object but does not set valid field to INVALID first"
+  message: "Function {{fn.name}} frees object but does not set valid field to INVALID first"
   fixit: "Add 'object->valid = INVALID;' before calling free function"
   tags:
     - object-validation
@@ -397,7 +402,7 @@
   scope: function
   select: functions
   assert: (not ast_query("parameter[@type[regex_match(@name, '^(Task|Memory|Queue|Device|Timer|Stream).*_t$')]]") or calls("__ObjectIsValid__") or not has_pointer_param())
-  message: "Function {name} takes object parameter but does not validate with __ObjectIsValid__()"
+  message: "Function {{fn.name}} takes object parameter but does not validate with __ObjectIsValid__()"
   fixit: "Use __ObjectIsValid__(obj) instead of just __PointerIsNotNull__(obj)"
   tags:
     - object-validation
@@ -414,7 +419,7 @@
   scope: function
   select: functions
   assert: ((not calls("__KernelAllocateMemory__") and not calls("__HeapAllocateMemory__")) or ast_query_count("call_expr[callee[contains(@name, 'AllocateMemory')]]") <= 1 or ast_query("if_stmt[condition[calls('OK')]]//else_clause//call_expr[callee[starts_with(@name, '__')][ends_with(@name, 'FreeMemory__')]]"))
-  message: "Function {name} has nested allocations without cleanup in error paths (potential memory leak)"
+  message: "Function {{fn.name}} has nested allocations without cleanup in error paths (potential memory leak)"
   fixit: "Add __KernelFreeMemory__() or __HeapFreeMemory__() in else clause after __AssertOnElse__()"
   tags:
     - memory-management
@@ -431,7 +436,7 @@
   scope: function
   select: functions
   assert: getCyclomaticComplexity() <= 15
-  message: "Function {name} has cyclomatic complexity {cyclomaticComplexity}. Consider refactoring (threshold: 15)"
+  message: "Function {{fn.name}} has cyclomatic complexity {{fn.cyclomatic_complexity}}. Consider refactoring (threshold: 15)"
   fixit: "Break function into smaller helper functions"
   tags:
     - code-quality
@@ -444,7 +449,7 @@
   scope: function
   select: functions
   assert: getLineCount() <= 100
-  message: "Function {name} has {lineCount} lines. Consider breaking into smaller functions (threshold: 100)"
+  message: "Function {{fn.name}} has {{fn.line_count}} lines. Consider breaking into smaller functions (threshold: 100)"
   fixit: "Extract logical sections into separate static helper functions"
   tags:
     - code-quality
@@ -457,7 +462,7 @@
   scope: function
   select: functions
   assert: param_count() <= 5
-  message: "Function {name} has {paramCount} parameters. Consider using a struct (threshold: 5)"
+  message: "Function {{fn.name}} has {{fn.parameter_count}} parameters. Consider using a struct (threshold: 5)"
   fixit: "Group related parameters into a struct"
   tags:
     - code-quality
@@ -469,8 +474,9 @@
   severity: warning
   scope: function
   select: functions
-  assert: getMaxNestingDepth() <= 6
-  message: "Function {name} has nesting depth {nestingDepth}. Refactor to reduce nesting (threshold: 6)"
+  where: fn.nesting_depth > 6
+  assert: false
+  message: "Function {{fn.name}} has nesting depth {{fn.nesting_depth}}. Refactor to reduce nesting (threshold: 6)"
   fixit: "Extract nested blocks into helper functions or use early validation"
   tags:
     - code-quality
@@ -487,7 +493,7 @@
   scope: function
   select: functions
   assert: (not starts_with(fn.name, "x") or has_function_doc())
-  message: "Public API function {name} is missing documentation"
+  message: "Public API function {{fn.name}} is missing documentation"
   fixit: "Add function documentation comment describing purpose, parameters, and return value"
   tags:
     - documentation
@@ -500,7 +506,7 @@
   scope: function
   select: functions
   assert: ((not calls("__KernelFreeMemory__") and not calls("__HeapFreeMemory__")) or ast_query("call_expr[callee[ends_with(@name, 'FreeMemory__')]]/preceding-sibling::comment"))
-  message: "Function {name} has cleanup code without explanatory comment"
+  message: "Function {{fn.name}} has cleanup code without explanatory comment"
   fixit: "Add comment: /* Free [resource] because [operation] failed. */"
   tags:
     - documentation

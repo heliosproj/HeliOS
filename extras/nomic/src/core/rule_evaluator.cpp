@@ -56,6 +56,25 @@ public:
         // Populate collections from function
         populateFunctionCollections(func, context);
 
+        // Check where clause first (if present)
+        if (rule.getWhereClause().has_value() && !rule.getWhereClause().value().empty()) {
+            try {
+                bool where_result = dsl_evaluator_.evaluateAssertion(rule.getWhereClause().value(), context);
+                if (!where_result) {
+                    // Where clause is false, skip this entity (no violation)
+                    spdlog::debug("Rule {} on function {}: SKIP (where clause false)",
+                                 rule.getId(), func.getName());
+                    return false;
+                }
+                spdlog::debug("Rule {} on function {}: where clause PASS",
+                             rule.getId(), func.getName());
+            } catch (const std::exception& e) {
+                spdlog::error("Error evaluating where clause for rule {} on function {}: {}",
+                             rule.getId(), func.getName(), e.what());
+                return false;
+            }
+        }
+
         // Evaluate the assertion
         try {
             bool result = dsl_evaluator_.evaluateAssertion(assertion, context);
@@ -89,6 +108,25 @@ public:
             const std::string& file_path = var.getLocation().getStart().getFile();
             if (!file_path.empty()) {
                 context.current_file = db->findFileInfo(file_path);
+            }
+        }
+
+        // Check where clause first (if present)
+        if (rule.getWhereClause().has_value() && !rule.getWhereClause().value().empty()) {
+            try {
+                bool where_result = dsl_evaluator_.evaluateAssertion(rule.getWhereClause().value(), context);
+                if (!where_result) {
+                    // Where clause is false, skip this entity (no violation)
+                    spdlog::debug("Rule {} on variable {}: SKIP (where clause false)",
+                                 rule.getId(), var.getName());
+                    return false;
+                }
+                spdlog::debug("Rule {} on variable {}: where clause PASS",
+                             rule.getId(), var.getName());
+            } catch (const std::exception& e) {
+                spdlog::error("Error evaluating where clause for rule {} on variable {}: {}",
+                             rule.getId(), var.getName(), e.what());
+                return false;
             }
         }
 
