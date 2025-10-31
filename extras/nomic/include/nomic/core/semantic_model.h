@@ -290,6 +290,7 @@ public:
     void setParameter(bool is_param) { is_parameter_ = is_param; }
     void setInitialized(bool is_init) { is_initialized_ = is_init; }
     void setInitialValue(const std::string& value) { initial_value_ = value; }
+    void setExtern(bool is_extern) { is_extern_ = is_extern; }
     void addReadSite(const SourceLocation& loc) { read_sites_.push_back(loc); }
     void addWriteSite(const SourceLocation& loc) { write_sites_.push_back(loc); }
 
@@ -307,6 +308,7 @@ public:
     bool isParameter() const { return is_parameter_; }
     bool isInitialized() const { return is_initialized_; }
     const std::optional<std::string>& getInitialValue() const { return initial_value_; }
+    bool isExtern() const { return is_extern_; }
     const std::vector<SourceLocation>& getReadSites() const { return read_sites_; }
     const std::vector<SourceLocation>& getWriteSites() const { return write_sites_; }
 
@@ -323,6 +325,7 @@ private:
     bool is_static_ = false;
     bool is_parameter_ = false;
     bool is_initialized_ = false;
+    bool is_extern_ = false;
     std::vector<SourceLocation> read_sites_;
     std::vector<SourceLocation> write_sites_;
     std::optional<std::string> initial_value_;

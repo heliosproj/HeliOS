@@ -886,6 +886,10 @@ private:
             return var->isParameter();
         }
 
+        if (member == "is_extern") {
+            return var->isExtern();
+        }
+
         if (member == "is_const") {
             return var->getType().isConst();
         }

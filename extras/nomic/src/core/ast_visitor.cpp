@@ -40,6 +40,18 @@ bool SemanticASTVisitor::VisitFunctionDecl(clang::FunctionDecl* decl) {
         return true;
     }
 
+    // Skip forward declarations - only process the definition
+    if (!decl->isThisDeclarationADefinition()) {
+        return true;
+    }
+
+    // Skip functions not defined in the main file (avoid duplicates from headers)
+    const clang::SourceManager& sm = ast_context_.getSourceManager();
+    clang::SourceLocation declLoc = decl->getLocation();
+    if (!sm.isInMainFile(declLoc)) {
+        return true;
+    }
+
     spdlog::debug("Visiting function: {}", decl->getNameAsString());
 
     // Track file-level metrics
@@ -133,6 +145,7 @@ bool SemanticASTVisitor::VisitVarDecl(clang::VarDecl* decl) {
     var->setGlobal(decl->hasGlobalStorage());
     var->setStatic(decl->isStaticLocal() || decl->isStaticDataMember());
     var->setInitialized(decl->hasInit());
+    var->setExtern(decl->hasExternalStorage());
 
     // Extract initial value if present
     if (decl->hasInit()) {

@@ -396,9 +396,38 @@ std::vector<Violation> RuleEngine::executeRule(const Rule& rule,
                 }
             }
         } else if (scope_lower == "variable") {
-            for (const auto& var : db.getGlobalVariables()) {
-                if (evaluateRuleOnEntity(rule, *var)) {
-                    violations.push_back(createViolation(rule, *var));
+            // Check if we should select local or global variables
+            std::string select_expr = rule.getSelectExpression();
+
+            if (select_expr == "local_variables") {
+                // Check local variables in all functions
+                for (const auto& func : db.getFunctions()) {
+                    for (const auto& var : func->getLocalVariables()) {
+                        if (evaluateRuleOnEntity(rule, var)) {
+                            violations.push_back(createViolation(rule, var));
+                        }
+                    }
+                }
+            } else if (select_expr == "global_variables") {
+                // Check global variables
+                for (const auto& var : db.getGlobalVariables()) {
+                    if (evaluateRuleOnEntity(rule, *var)) {
+                        violations.push_back(createViolation(rule, *var));
+                    }
+                }
+            } else {
+                // Default: check all variables (both local and global)
+                for (const auto& var : db.getGlobalVariables()) {
+                    if (evaluateRuleOnEntity(rule, *var)) {
+                        violations.push_back(createViolation(rule, *var));
+                    }
+                }
+                for (const auto& func : db.getFunctions()) {
+                    for (const auto& var : func->getLocalVariables()) {
+                        if (evaluateRuleOnEntity(rule, var)) {
+                            violations.push_back(createViolation(rule, var));
+                        }
+                    }
                 }
             }
         }

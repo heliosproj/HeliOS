@@ -148,7 +148,7 @@
   severity: error
   scope: variable
   select: local_variables
-  assert: (var.is_parameter or var.is_initialized or var.initial_value != "")
+  assert: (var.is_parameter or var.is_extern or var.is_initialized or var.initial_value != "")
   message: "Local variable {{var.name}} is not initialized at declaration"
   fixit: "Initialize variable to null for pointers or 0x0u for numeric types"
   tags:
@@ -165,6 +165,7 @@
   severity: error
   scope: function
   select: functions
+  where: fn.has_body
   assert: not ast_query("identifier[@name='NULL']")
   message: "Function {{fn.name}} uses NULL instead of HeliOS 'null' macro"
   fixit: "Replace NULL with null macro"
@@ -319,6 +320,7 @@
   severity: error
   scope: function
   select: functions
+  where: fn.has_body
   assert: (not regex_matches(fn.name, "^__[A-Z][a-zA-Z0-9]*__$") or is_static_function())
   message: "Module-private function {{fn.name}} must be declared static"
   fixit: "Add 'static' storage class specifier to function declaration"
@@ -388,6 +390,7 @@
   severity: error
   scope: function
   select: functions
+  where: ast_query("member_access[@member='valid']")
   assert: ((not calls("__KernelFreeMemory__") and not calls("__HeapFreeMemory__")) or ast_query("binary_operator[@operator='='][left[member_access[@member='valid']]][right[@name='INVALID']]"))
   message: "Function {{fn.name}} frees object but does not set valid field to INVALID first"
   fixit: "Add 'object->valid = INVALID;' before calling free function"

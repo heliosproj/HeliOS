@@ -14,8 +14,8 @@
 CC = /usr/bin/gcc
 CXX = /usr/bin/c++
 
-# Base directory (parent of test directory)
-BASE_DIR = ..
+# Base directory (now the current directory)
+BASE_DIR = .
 
 # Nomic directories
 NOMIC_DIR = $(BASE_DIR)/extras/nomic
@@ -53,31 +53,31 @@ DEFINES = -DPOSIX_ARCH_OTHER \
           -DCONFIG_ENABLE_IO_SUBSYSTEM
 
 # Output binary
-TARGET = bin/test
+TARGET = test/bin/test
 
 # Report output files
-TEST_REPORT = test-report.json
-ANALYSIS_REPORT = analysis-report.json
+TEST_REPORT = test/test-report.json
+ANALYSIS_REPORT = test/analysis-report.json
 
 # Source files
 SOURCES = $(wildcard $(BASE_DIR)/src/*.c) \
           $(wildcard $(BASE_DIR)/drivers/ramdisk/*.c) \
           $(wildcard $(BASE_DIR)/drivers/block/*.c) \
           $(wildcard $(BASE_DIR)/drivers/char/*.c) \
-          $(wildcard src/*.c) \
-          $(wildcard src/harness/*.c) \
-          $(wildcard src/unit/*.c)
+          $(wildcard test/src/*.c) \
+          $(wildcard test/src/harness/*.c) \
+          $(wildcard test/src/unit/*.c)
 
 # Default target
 all: $(TARGET)
 
 # Build the test binary
-$(TARGET): $(SOURCES) | bin
+$(TARGET): $(SOURCES) | test/bin
 	@$(CC) $(CFLAGS) $(INCLUDES) $(DEFINES) -o $@ $(SOURCES)
 
 # Create bin directory if it doesn't exist
-bin:
-	@mkdir -p bin
+test/bin:
+	@mkdir -p test/bin
 
 # Build Nomic semantic analyzer
 nomic:
@@ -109,16 +109,16 @@ clean:
 	@rm -f $(TARGET)
 	@rm -f $(TEST_REPORT) $(ANALYSIS_REPORT)
 	@rm -f $(BASE_DIR)/compile_commands.json
-	@rm -rf bin
+	@rm -rf test/bin
 	@rm -rf $(NOMIC_BUILD_DIR)
 
 # Sync version from VERSION file to all project files
 version:
-	@if [ ! -f ../VERSION ]; then \
-		echo "ERROR: VERSION file not found at ../VERSION"; \
+	@if [ ! -f VERSION ]; then \
+		echo "ERROR: VERSION file not found at VERSION"; \
 		exit 1; \
 	fi
-	@VERSION=$$(cat ../VERSION | tr -d '[:space:]'); \
+	@VERSION=$$(cat VERSION | tr -d '[:space:]'); \
 	if ! echo "$$VERSION" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$$'; then \
 		echo "ERROR: Invalid version format in VERSION file: $$VERSION"; \
 		echo "Expected format: X.Y.Z (e.g., 0.5.0)"; \
@@ -136,12 +136,12 @@ version:
 	echo ""; \
 	echo "Updating files..."; \
 	echo ""; \
-	sed -i "s/#define OS_MAJOR_VERSION_NO 0x[0-9a-fA-F]*u \/\* [0-9]* \*\//#define OS_MAJOR_VERSION_NO $$MAJOR_HEX \/\* $$MAJOR \*\//" ../src/defines.h && echo "✓ ../src/defines.h (MAJOR)"; \
-	sed -i "s/#define OS_MINOR_VERSION_NO 0x[0-9a-fA-F]*u \/\* [0-9]* \*\//#define OS_MINOR_VERSION_NO $$MINOR_HEX \/\* $$MINOR \*\//" ../src/defines.h && echo "✓ ../src/defines.h (MINOR)"; \
-	sed -i "s/#define OS_PATCH_VERSION_NO 0x[0-9a-fA-F]*u \/\* [0-9]* \*\//#define OS_PATCH_VERSION_NO $$PATCH_HEX \/\* $$PATCH \*\//" ../src/defines.h && echo "✓ ../src/defines.h (PATCH)"; \
-	sed -i "s/\"version\":\"[^\"]*\"/\"version\":\"$$VERSION\"/" ../library.json && echo "✓ ../library.json"; \
-	sed -i "s/^version=.*/version=$$VERSION/" ../library.properties && echo "✓ ../library.properties"; \
-	sed -i "s/PROJECT_NUMBER = Kernel [0-9.]*'/PROJECT_NUMBER = Kernel $$VERSION'/" ../.github/workflows/HeliOS_CI_Workflow.yml && echo "✓ ../.github/workflows/HeliOS_CI_Workflow.yml"; \
+	sed -i "s/#define OS_MAJOR_VERSION_NO 0x[0-9a-fA-F]*u \/\* [0-9]* \*\//#define OS_MAJOR_VERSION_NO $$MAJOR_HEX \/\* $$MAJOR \*\//" src/defines.h && echo "✓ src/defines.h (MAJOR)"; \
+	sed -i "s/#define OS_MINOR_VERSION_NO 0x[0-9a-fA-F]*u \/\* [0-9]* \*\//#define OS_MINOR_VERSION_NO $$MINOR_HEX \/\* $$MINOR \*\//" src/defines.h && echo "✓ src/defines.h (MINOR)"; \
+	sed -i "s/#define OS_PATCH_VERSION_NO 0x[0-9a-fA-F]*u \/\* [0-9]* \*\//#define OS_PATCH_VERSION_NO $$PATCH_HEX \/\* $$PATCH \*\//" src/defines.h && echo "✓ src/defines.h (PATCH)"; \
+	sed -i "s/\"version\":\"[^\"]*\"/\"version\":\"$$VERSION\"/" library.json && echo "✓ library.json"; \
+	sed -i "s/^version=.*/version=$$VERSION/" library.properties && echo "✓ library.properties"; \
+	sed -i "s/PROJECT_NUMBER = Kernel [0-9.]*'/PROJECT_NUMBER = Kernel $$VERSION'/" .github/workflows/HeliOS_CI_Workflow.yml && echo "✓ .github/workflows/HeliOS_CI_Workflow.yml"; \
 
 # Uncrustify configuration target
 config:
