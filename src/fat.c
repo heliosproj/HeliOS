@@ -368,9 +368,9 @@
 
     FUNCTION_ENTER;
 
-    Byte_t name83[11];
+    Byte_t name83[11] = {0x0u};
 
-    Byte_t component[256];
+    Byte_t component[256] = {0x0u};
 
     Word_t pathIdx = 0x0u;
 
@@ -378,7 +378,7 @@
 
     Word_t currentCluster = 0x0u;
 
-    FAT32DirEntry_t dirEntry;
+    FAT32DirEntry_t dirEntry = {0x0u};
 
     Base_t continueProcessing = true;
 

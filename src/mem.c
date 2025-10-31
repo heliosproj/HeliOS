@@ -88,7 +88,7 @@ static Word_t __checksum__(const BlockHeader_t *header_) {
 
   Word_t sum2 = 0xFFFFu;
 
-  Word_t temp;
+  Word_t temp = 0x0u;
 
 #if UINTPTR_MAX == 0xFF
 
@@ -239,7 +239,7 @@ Return_t __MemoryInit__(void) {
 
   FUNCTION_ENTER;
 
-  ByteOrder_t order;
+  ByteOrder_t order = ByteOrderLittleEndian;
 
   if((CONFIG_MEMORY_ALIGNMENT != 0) && ((CONFIG_MEMORY_ALIGNMENT & (CONFIG_MEMORY_ALIGNMENT - 1)) == 0)) {
 

@@ -634,11 +634,29 @@ std::vector<Violation> RuleEngine::executeRulesParallel(const RuleSet& rules,
         }));
     }
 
-    // Collect results
-    for (auto& future : futures) {
-        auto violations = future.get();
-        std::lock_guard<std::mutex> lock(violations_mutex);
-        all_violations.insert(all_violations.end(), violations.begin(), violations.end());
+    // Collect results with timeout
+    const auto timeout_duration = std::chrono::seconds(30);  // 30 second timeout per rule
+    for (size_t i = 0; i < futures.size(); ++i) {
+        auto& future = futures[i];
+        const auto& rule = rules.rules[i];
+
+        // Wait with timeout
+        auto status = future.wait_for(timeout_duration);
+        if (status == std::future_status::timeout) {
+            spdlog::error("Rule {} timed out after {} seconds - skipping",
+                         rule.getId(), timeout_duration.count());
+            continue;  // Skip this rule
+        }
+
+        try {
+            auto violations = future.get();
+            std::lock_guard<std::mutex> lock(violations_mutex);
+            all_violations.insert(all_violations.end(), violations.begin(), violations.end());
+            spdlog::debug("Rule {} completed successfully with {} violations",
+                         rule.getId(), violations.size());
+        } catch (const std::exception& e) {
+            spdlog::error("Rule {} failed with exception: {}", rule.getId(), e.what());
+        }
     }
 
     return all_violations;

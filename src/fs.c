@@ -319,7 +319,7 @@
 
     FUNCTION_ENTER;
 
-    Volume_t tempVol;
+    Volume_t tempVol = {0x0u};
 
     Byte_t *bootSector = null;
 
@@ -578,11 +578,11 @@
 
           const Byte_t *lastSlash = null;
 
-          Byte_t parentPath[256];
+          Byte_t parentPath[256] = {0x0u};
 
           Word_t parentPathLen = 0x0u;
 
-          FAT32DirEntry_t parentEntry;
+          FAT32DirEntry_t parentEntry = {0x0u};
 
           for(i = 0x0u; path_[i] != '\0'; i++) {
 
@@ -778,7 +778,7 @@
 
     const Byte_t *fileName = null;
 
-    Byte_t name83[11];
+    Byte_t name83[11] = {0x0u};
 
     if(__ObjectIsValid__(file_)) {
 
@@ -1448,7 +1448,7 @@
 
     const Byte_t *fileName = null;
 
-    Byte_t name83[11];
+    Byte_t name83[11] = {0x0u};
 
     Base_t writeSuccess = true;
 
@@ -2068,7 +2068,7 @@
 
     Word_t newDirCluster = 0x0u;
 
-    Byte_t dirName83[11];
+    Byte_t dirName83[11] = {0x0u};
 
     Byte_t *clusterData = null;
 
@@ -2636,7 +2636,7 @@
 
     FUNCTION_ENTER;
 
-    FAT32DirEntry_t oldEntry;
+    FAT32DirEntry_t oldEntry = {0x0u};
 
     Word_t oldEntryCluster = 0x0u;
 
@@ -2644,7 +2644,7 @@
 
     Word_t newParentCluster = 0x0u;
 
-    Byte_t newName83[11];
+    Byte_t newName83[11] = {0x0u};
 
     Byte_t *clusterData = null;
 
@@ -2790,7 +2790,7 @@
 
     FUNCTION_ENTER;
 
-    FAT32DirEntry_t fatEntry;
+    FAT32DirEntry_t fatEntry = {0x0u};
 
     DirEntry_t *dirEntry = null;
 
