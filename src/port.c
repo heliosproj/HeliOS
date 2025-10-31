@@ -63,6 +63,16 @@ Ticks_t __PortGetSysTicks__(void) {
 }
 
 
+/**
+* @brief Initializes platform-specific hardware
+* @details Sets up timers, interrupts, and other hardware required for HeliOS
+* operation.
+*
+* @return ReturnOK if initialization was successful
+* @return ReturnError if initialization failed
+*
+* @note This is an internal function called during system startup
+*/
 Return_t __PortInit__(void) {
 
   FUNCTION_ENTER;

@@ -215,92 +215,12 @@
      * @param[in]  value_ 32-bit value to write
      */
     void __WriteLE32__(Byte_t *data_, Word_t value_);
-    /**
-     * @brief Reads a sector from block device
-     * @details Internal function to read one sector from the volume's block
-     * device.
-     *
-     * @param[in]  vol_    Pointer to volume structure
-     * @param[in]  sector_ Sector number to read
-     * @param[out] data_   Pointer to store allocated sector data
-     *
-     * @return             ReturnOK if read was successful
-     * @return             ReturnError if read failed or allocation failed
-     */
     Return_t __ReadSector__(const Volume_t *vol_, Word_t sector_, Byte_t **data_);
-    /**
-     * @brief Writes a sector to block device
-     * @details Internal function to write one sector to the volume's block
-     * device.
-     *
-     * @param[in] vol_    Pointer to volume structure
-     * @param[in] sector_ Sector number to write
-     * @param[in] data_   Pointer to sector data
-     *
-     * @return            ReturnOK if write was successful
-     * @return            ReturnError if write failed
-     */
     Return_t __WriteSector__(const Volume_t *vol_, Word_t sector_, const Byte_t *data_);
-    /**
-     * @brief Reads a cluster from filesystem
-     * @details Internal function to read all sectors of a cluster.
-     *
-     * @param[in]  vol_     Pointer to volume structure
-     * @param[in]  cluster_ Cluster number to read
-     * @param[out] data_    Pointer to store allocated cluster data
-     *
-     * @return              ReturnOK if read was successful
-     * @return              ReturnError if read failed or allocation failed
-     */
     Return_t __ReadCluster__(const Volume_t *vol_, Word_t cluster_, Byte_t **data_);
-    /**
-     * @brief Gets FAT entry for a cluster
-     * @details Internal function to read the FAT table entry for a given
-     * cluster.
-     *
-     * @param[in]  vol_         Pointer to volume structure
-     * @param[in]  cluster_     Cluster number to look up
-     * @param[out] nextCluster_ Pointer to store next cluster number
-     *
-     * @return                  ReturnOK if entry was read successfully
-     * @return                  ReturnError if read failed
-     */
     Return_t __GetFATEntry__(const Volume_t *vol_, Word_t cluster_, Word_t *nextCluster_);
-    /**
-     * @brief Sets FAT entry for a cluster
-     * @details Internal function to write a FAT table entry for a given
-     * cluster.
-     *
-     * @param[in] vol_     Pointer to volume structure
-     * @param[in] cluster_ Cluster number to update
-     * @param[in] value_   Value to write (next cluster or special marker)
-     *
-     * @return             ReturnOK if entry was written successfully
-     * @return             ReturnError if write failed
-     */
     Return_t __SetFATEntry__(const Volume_t *vol_, Word_t cluster_, Word_t value_);
-    /**
-     * @brief Finds a free cluster in FAT
-     * @details Internal function to search FAT for an available cluster.
-     *
-     * @param[in]  vol_         Pointer to volume structure
-     * @param[in]  startHint_   Cluster number to start searching from
-     * @param[out] freeCluster_ Pointer to store found free cluster number
-     *
-     * @return                  ReturnOK if free cluster was found
-     * @return                  ReturnError if no free clusters available
-     */
     Return_t __FindFreeCluster__(const Volume_t *vol_, Word_t startHint_, Word_t *freeCluster_);
-    /**
-     * @brief Frees a cluster chain
-     * @details Internal function to mark clusters as free in the FAT.
-     *
-     * @param[in] vol_          Pointer to volume structure
-     * @param[in] startCluster_ First cluster in chain to free
-     *
-     * @return                  ReturnOK if clusters were freed successfully
-     * @return                  ReturnError if operation failed
-     */
     Return_t __FreeClusters__(const Volume_t *vol_, Word_t startCluster_);
     /**
      * @brief Converts cluster number to sector number
@@ -321,25 +241,7 @@
      * @return                    Non-zero if device is mounted, 0 otherwise
      */
     Base_t __IsDeviceMounted__(const HalfWord_t blockDeviceUID_);
-    /**
-     * @brief Adds device to mounted list
-     * @details Internal function to track mounted devices.
-     *
-     * @param[in] blockDeviceUID_ Block device UID to add
-     *
-     * @return                    ReturnOK if device was added successfully
-     * @return                    ReturnError if operation failed
-     */
     Return_t __AddMountedDevice__(const HalfWord_t blockDeviceUID_);
-    /**
-     * @brief Removes device from mounted list
-     * @details Internal function to untrack mounted devices.
-     *
-     * @param[in] blockDeviceUID_ Block device UID to remove
-     *
-     * @return                    ReturnOK if device was removed successfully
-     * @return                    ReturnError if operation failed
-     */
     Return_t __RemoveMountedDevice__(const HalfWord_t blockDeviceUID_);
     /**
      * @brief Compares two byte sequences
@@ -352,17 +254,6 @@
      * @return         Non-zero if sequences are equal, 0 otherwise
      */
     Base_t __ByteCompare__(const Byte_t *s1_, const Byte_t *s2_, Word_t len_);
-    /**
-     * @brief Converts filename to FAT 8.3 format
-     * @details Internal function to convert a filename to FAT 8.3 format
-     * (space-padded).
-     *
-     * @param[in]  path_  Input filename
-     * @param[out] fat83_ Output buffer for 11-byte FAT 8.3 name
-     *
-     * @return            ReturnOK if conversion was successful
-     * @return            ReturnError if filename is invalid
-     */
     Return_t __ConvertToFAT83__(const Byte_t *path_, Byte_t *fat83_);
     /**
      * @brief Finds directory entry in a directory
@@ -399,21 +290,6 @@
     Return_t __FindFileByPath__(const Volume_t *vol_, const Byte_t *path_, FAT32DirEntry_t *entry_, Word_t *parentCluster_, Word_t *entryCluster_, Word_t *
 
       entryOffset_);
-    /**
-     * @brief Creates a directory entry
-     * @details Internal function to add a new file/directory entry to a
-     * directory.
-     *
-     * @param[in] vol_           Pointer to volume structure
-     * @param[in] parentCluster_ Parent directory cluster
-     * @param[in] name83_        FAT 8.3 name for new entry
-     * @param[in] attr_          File attributes
-     * @param[in] firstCluster_  First cluster of file/directory
-     * @param[in] size_          File size in bytes
-     *
-     * @return                   ReturnOK if entry was created successfully
-     * @return                   ReturnError if creation failed
-     */
     Return_t __CreateDirEntry__(const Volume_t *vol_, Word_t parentCluster_, const Byte_t *name83_, Byte_t attr_, Word_t firstCluster_, Word_t size_);
 
     #if defined(POSIX_ARCH_OTHER)

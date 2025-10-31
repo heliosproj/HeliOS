@@ -128,150 +128,16 @@
       Return_t (*write_)(Device_t *device_, Size_t *size_, Addr_t *data_), Return_t (*simple_read_)(Device_t *device_, Byte_t *data_), Return_t (*simple_write_)
 
       (Device_t *device_, Byte_t data_));
-    /**
-     * @brief Checks if a device is available for I/O
-     * @details Returns true if the device is registered and ready for
-     * operations.
-     *
-     * @param[in]  uid_ Device unique identifier
-     * @param[out] res_ Pointer to store the result (true if available, false
-     *                  otherwise)
-     *
-     * @return          ReturnOK if check was successful
-     * @return          ReturnError if device not found or invalid parameter
-     */
     Return_t xDeviceIsAvailable(const HalfWord_t uid_, Base_t *res_);
-    /**
-     * @brief Writes a single byte to a device
-     * @details Simple write operation for byte-oriented devices.
-     *
-     * @param[in] uid_  Device unique identifier
-     * @param[in] data_ Byte value to write
-     *
-     * @return          ReturnOK if write was successful
-     * @return          ReturnError if device not found, unavailable, or write
-     *                  failed
-     */
     Return_t xDeviceSimpleWrite(const HalfWord_t uid_, Byte_t data_);
-    /**
-     * @brief Writes data to a device
-     * @details Block write operation for transferring multiple bytes.
-     *
-     * @param[in]     uid_  Device unique identifier
-     * @param[in,out] size_ Pointer to size of data to write (may be updated by
-     *                      driver)
-     * @param[in]     data_ Pointer to data buffer
-     *
-     * @return              ReturnOK if write was successful
-     * @return              ReturnError if device not found, unavailable, or
-     *                      write failed
-     */
     Return_t xDeviceWrite(const HalfWord_t uid_, Size_t *size_, Addr_t *data_);
-    /**
-     * @brief Reads a single byte from a device
-     * @details Simple read operation for byte-oriented devices.
-     *
-     * @param[in]  uid_  Device unique identifier
-     * @param[out] data_ Pointer to store the read byte
-     *
-     * @return           ReturnOK if read was successful
-     * @return           ReturnError if device not found, unavailable, or read
-     *                   failed
-     */
     Return_t xDeviceSimpleRead(const HalfWord_t uid_, Byte_t *data_);
-    /**
-     * @brief Reads data from a device
-     * @details Block read operation for receiving multiple bytes.
-     *
-     * @param[in]     uid_  Device unique identifier
-     * @param[in,out] size_ Pointer to size of data to read (may be updated by
-     *                      driver)
-     * @param[out]    data_ Pointer to store data buffer pointer
-     *
-     * @return              ReturnOK if read was successful
-     * @return              ReturnError if device not found, unavailable, or
-     *                      read failed
-     */
     Return_t xDeviceRead(const HalfWord_t uid_, Size_t *size_, Addr_t **data_);
-    /**
-     * @brief Initializes a device
-     * @details Calls the device's initialization function to prepare it for
-     * operation.
-     *
-     * @param[in] uid_ Device unique identifier
-     *
-     * @return         ReturnOK if initialization was successful
-     * @return         ReturnError if device not found or initialization failed
-     */
     Return_t xDeviceInitDevice(const HalfWord_t uid_);
-    /**
-     * @brief Configures a device
-     * @details Sends configuration data to the device.
-     *
-     * @param[in]     uid_    Device unique identifier
-     * @param[in,out] size_   Pointer to size of configuration data
-     * @param[in]     config_ Pointer to configuration data
-     *
-     * @return                ReturnOK if configuration was successful
-     * @return                ReturnError if device not found or configuration
-     *                        failed
-     */
     Return_t xDeviceConfigDevice(const HalfWord_t uid_, Size_t *size_, Addr_t *config_);
-    /**
-     * @brief Finds a device in the device list
-     * @details Internal function to locate a device structure by UID.
-     *
-     * @param[in]  uid_    Device unique identifier
-     * @param[out] device_ Pointer to store the found device structure pointer
-     *
-     * @return             ReturnOK if device was found
-     * @return             ReturnError if device not found or invalid parameter
-     *
-     * @note This is an internal function for device subsystem use
-     */
     Return_t __DeviceListFind__(const HalfWord_t uid_, Device_t **device_);
-    /**
-     * @brief Internal device write function
-     * @details Lower-level write operation called by xDeviceWrite.
-     *
-     * @param[in]     uid_  Device unique identifier
-     * @param[in,out] size_ Pointer to size of data to write
-     * @param[in]     data_ Pointer to data buffer
-     *
-     * @return              ReturnOK if write was successful
-     * @return              ReturnError if write failed
-     *
-     * @note This is an internal function for device subsystem use
-     */
     Return_t __DeviceWrite__(const HalfWord_t uid_, Size_t *size_, Addr_t *data_);
-    /**
-     * @brief Internal device read function
-     * @details Lower-level read operation called by xDeviceRead.
-     *
-     * @param[in]     uid_  Device unique identifier
-     * @param[in,out] size_ Pointer to size of data to read
-     * @param[out]    data_ Pointer to store data buffer pointer
-     *
-     * @return              ReturnOK if read was successful
-     * @return              ReturnError if read failed
-     *
-     * @note This is an internal function for device subsystem use
-     */
     Return_t __DeviceRead__(const HalfWord_t uid_, Size_t *size_, Addr_t **data_);
-    /**
-     * @brief Internal device configuration function
-     * @details Lower-level configuration operation called by
-     * xDeviceConfigDevice.
-     *
-     * @param[in]     uid_    Device unique identifier
-     * @param[in,out] size_   Pointer to size of configuration data
-     * @param[in]     config_ Pointer to configuration data
-     *
-     * @return                ReturnOK if configuration was successful
-     * @return                ReturnError if configuration failed
-     *
-     * @note This is an internal function for device subsystem use
-     */
     Return_t __DeviceConfigDevice__(const HalfWord_t uid_, Size_t *size_, Addr_t *config_);
 
     #if defined(POSIX_ARCH_OTHER)

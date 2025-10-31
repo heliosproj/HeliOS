@@ -164,6 +164,20 @@
   }
 
 
+  /**
+  * @brief Copies a string with bounds checking
+  * @details Internal string copy with destination size limit.
+  *
+  * @param[out] dest_     Destination buffer
+  * @param[in]  src_      Source string
+  * @param[in]  destSize_ Size of destination buffer
+  *
+  * @return               ReturnOK if copy was successful
+  * @return               ReturnError if destination too small or invalid
+  *                       parameters
+  *
+  * @note This is an internal function similar to strncpy with safety checks
+  */
   Return_t __strcpy__(Byte_t *dest_, const Byte_t *src_, const Size_t destSize_) {
 
     FUNCTION_ENTER;
@@ -195,6 +209,19 @@
   }
 
 
+  /**
+  * @brief Copies at most n characters from a string
+  * @details Internal bounded string copy implementation.
+  *
+  * @param[out] dest_ Destination buffer
+  * @param[in]  src_  Source string
+  * @param[in]  n_    Maximum number of characters to copy
+  *
+  * @return           ReturnOK if copy was successful
+  * @return           ReturnError if invalid parameters
+  *
+  * @note This is an internal function similar to standard strncpy
+  */
   Return_t __strncpy__(Byte_t *dest_, const Byte_t *src_, const Size_t n_) {
 
     FUNCTION_ENTER;
@@ -286,6 +313,20 @@
   }
 
 
+  /**
+  * @brief Concatenates two strings with bounds checking
+  * @details Internal string concatenation with destination size limit.
+  *
+  * @param[in,out] dest_     Destination buffer
+  * @param[in]     src_      Source string to append
+  * @param[in]     destSize_ Size of destination buffer
+  *
+  * @return                  ReturnOK if concatenation was successful
+  * @return                  ReturnError if destination too small or invalid
+  *                          parameters
+  *
+  * @note This is an internal function similar to strncat with safety checks
+  */
   Return_t __strcat__(Byte_t *dest_, const Byte_t *src_, const Size_t destSize_) {
 
     FUNCTION_ENTER;
@@ -397,6 +438,21 @@
   }
 
 
+  /**
+  * @brief Joins two path components
+  * @details Internal path joining with proper separator handling.
+  *
+  * @param[out] dest_     Destination buffer for joined path
+  * @param[in]  base_     Base path component
+  * @param[in]  path_     Path component to append
+  * @param[in]  destSize_ Size of destination buffer
+  *
+  * @return               ReturnOK if join was successful
+  * @return               ReturnError if destination too small or invalid
+  *                       parameters
+  *
+  * @note This is an internal function for filesystem path manipulation
+  */
   Return_t __path_join__(Byte_t *dest_, const Byte_t *base_, const Byte_t *path_, const Size_t destSize_) {
 
     FUNCTION_ENTER;
@@ -492,6 +548,18 @@
   }
 
 
+  /**
+  * @brief Normalizes a filesystem path
+  * @details Internal path normalization removing "." and ".." components.
+  *
+  * @param[in,out] path_     Path to normalize
+  * @param[in]     pathSize_ Size of path buffer
+  *
+  * @return                  ReturnOK if normalization was successful
+  * @return                  ReturnError if invalid parameters
+  *
+  * @note This is an internal function for filesystem path manipulation
+  */
   Return_t __path_normalize__(Byte_t *path_, const Size_t pathSize_) {
 
     FUNCTION_ENTER;
@@ -640,6 +708,20 @@
   }
 
 
+  /**
+  * @brief Extracts directory portion of path
+  * @details Internal path parsing to get parent directory.
+  *
+  * @param[out] dest_     Destination buffer for directory path
+  * @param[in]  path_     Source path
+  * @param[in]  destSize_ Size of destination buffer
+  *
+  * @return               ReturnOK if extraction was successful
+  * @return               ReturnError if destination too small or invalid
+  *                       parameters
+  *
+  * @note This is an internal function similar to dirname
+  */
   Return_t __path_dirname__(Byte_t *dest_, const Byte_t *path_, const Size_t destSize_) {
 
     FUNCTION_ENTER;
@@ -725,6 +807,20 @@
   }
 
 
+  /**
+  * @brief Extracts filename portion of path
+  * @details Internal path parsing to get final component.
+  *
+  * @param[out] dest_     Destination buffer for filename
+  * @param[in]  path_     Source path
+  * @param[in]  destSize_ Size of destination buffer
+  *
+  * @return               ReturnOK if extraction was successful
+  * @return               ReturnError if destination too small or invalid
+  *                       parameters
+  *
+  * @note This is an internal function similar to basename
+  */
   Return_t __path_basename__(Byte_t *dest_, const Byte_t *path_, const Size_t destSize_) {
 
     FUNCTION_ENTER;
@@ -796,6 +892,14 @@
   }
 
 
+  /**
+  * @brief Initializes the console subsystem
+  * @details Sets up console device and internal state for command
+  * processing.
+  *
+  * @return ReturnOK if initialization was successful
+  * @return ReturnError if initialization failed or device unavailable
+  */
   Return_t xConsoleInit(void) {
 
     FUNCTION_ENTER;

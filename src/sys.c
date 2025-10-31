@@ -28,6 +28,19 @@ Flags_t flag = {
   0
 
 };
+/**
+* @brief Triggers a system assertion failure
+* @details Records the file and line number of an assertion failure and halts
+* the system.
+*
+* @param[in] file_ Source file name where assertion failed
+* @param[in] line_ Line number where assertion failed
+*
+* @return          ReturnError always (system will halt)
+*
+* @warning This function should only be called when a critical error is
+* detected
+*/
 Return_t xSystemAssert(const char *file_, const int line_) {
 
   FUNCTION_ENTER;
@@ -45,6 +58,15 @@ Return_t xSystemAssert(const char *file_, const int line_) {
 }
 
 
+/**
+* @brief Initializes the HeliOS kernel
+* @details Sets up memory management, scheduler, and other kernel subsystems.
+*
+* @return ReturnOK if initialization was successful
+* @return ReturnError if initialization failed
+*
+* @note This function must be called before any other HeliOS functions
+*/
 Return_t xSystemInit(void) {
 
   FUNCTION_ENTER;
@@ -76,6 +98,15 @@ Return_t xSystemInit(void) {
 }
 
 
+/**
+* @brief Halts the system
+* @details Stops the scheduler and enters an infinite loop, effectively
+* halting execution.
+*
+* @return ReturnError always (function does not return normally)
+*
+* @warning This function does not return; use only for fatal errors
+*/
 Return_t xSystemHalt(void) {
 
   FUNCTION_ENTER;
@@ -91,6 +122,18 @@ Return_t xSystemHalt(void) {
 }
 
 
+/**
+* @brief Gets system information
+* @details Allocates and returns a structure containing OS version,
+* configuration, and status.
+*
+* @param[out] info_ Pointer to store allocated system information structure
+*
+* @return           ReturnOK if information was retrieved successfully
+* @return           ReturnError if allocation failed or invalid parameter
+*
+* @warning Caller is responsible for freeing the allocated structure
+*/
 Return_t xSystemGetSystemInfo(SystemInfo_t **info_) {
 
   FUNCTION_ENTER;
