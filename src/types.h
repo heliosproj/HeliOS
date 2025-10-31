@@ -27,15 +27,19 @@
 
     /**
      * @brief Task execution state enumeration
-     * @details Defines the possible states a task can be in during its lifecycle in the scheduler.
+     * @details Defines the possible states a task can be in during its
+     * lifecycle in the scheduler.
      */
     typedef enum TaskState_e {
 
-      TaskStateSuspended,   /**< Task is suspended and will not be scheduled for execution */
+      TaskStateSuspended, /**< Task is suspended and will not be scheduled for
+                           * execution */
 
-      TaskStateRunning,     /**< Task is active and will be scheduled for execution */
+      TaskStateRunning, /**< Task is active and will be scheduled for execution
+                         */
 
-      TaskStateWaiting      /**< Task is waiting for a condition or event before execution */
+      TaskStateWaiting /**< Task is waiting for a condition or event before
+                        * execution */
 
     } TaskState_t;
 
@@ -51,9 +55,10 @@
      */
     typedef enum SchedulerState_e {
 
-      SchedulerStateSuspended,  /**< Scheduler is suspended and not processing tasks */
+      SchedulerStateSuspended, /**< Scheduler is suspended and not processing
+                                * tasks */
 
-      SchedulerStateRunning     /**< Scheduler is active and processing tasks */
+      SchedulerStateRunning /**< Scheduler is active and processing tasks */
 
     } SchedulerState_t;
 
@@ -65,13 +70,14 @@
 
     /**
      * @brief Function return status enumeration
-     * @details Standard return codes used throughout HeliOS to indicate success or failure of operations.
+     * @details Standard return codes used throughout HeliOS to indicate success
+     * or failure of operations.
      */
     typedef enum Return_e {
 
-      ReturnOK,     /**< Operation completed successfully */
+      ReturnOK, /**< Operation completed successfully */
 
-      ReturnError   /**< Operation failed due to an error */
+      ReturnError /**< Operation failed due to an error */
 
     } Return_t;
 
@@ -87,9 +93,9 @@
      */
     typedef enum TimerState_e {
 
-      TimerStateSuspended,  /**< Timer is stopped and not counting */
+      TimerStateSuspended, /**< Timer is stopped and not counting */
 
-      TimerStateRunning     /**< Timer is active and counting system ticks */
+      TimerStateRunning /**< Timer is active and counting system ticks */
 
     } TimerState_t;
 
@@ -105,9 +111,11 @@
      */
     typedef enum DeviceState_e {
 
-      DeviceStateSuspended,  /**< Device is suspended and not available for I/O operations */
+      DeviceStateSuspended, /**< Device is suspended and not available for I/O
+                             * operations */
 
-      DeviceStateRunning     /**< Device is active and available for I/O operations */
+      DeviceStateRunning /**< Device is active and available for I/O operations
+                          */
 
     } DeviceState_t;
 
@@ -123,11 +131,11 @@
      */
     typedef enum DeviceMode_e {
 
-      DeviceModeReadOnly,   /**< Device supports read operations only */
+      DeviceModeReadOnly, /**< Device supports read operations only */
 
-      DeviceModeWriteOnly,  /**< Device supports write operations only */
+      DeviceModeWriteOnly, /**< Device supports write operations only */
 
-      DeviceModeReadWrite   /**< Device supports both read and write operations */
+      DeviceModeReadWrite /**< Device supports both read and write operations */
 
     } DeviceMode_t;
 
@@ -139,13 +147,16 @@
 
     /**
      * @brief Byte order enumeration
-     * @details Defines the endianness of multi-byte data storage and transmission.
+     * @details Defines the endianness of multi-byte data storage and
+     * transmission.
      */
     typedef enum ByteOrder_e {
 
-      ByteOrderLittleEndian,  /**< Least significant byte stored at lowest memory address */
+      ByteOrderLittleEndian, /**< Least significant byte stored at lowest memory
+                              * address */
 
-      ByteOrderBigEndian      /**< Most significant byte stored at lowest memory address */
+      ByteOrderBigEndian /**< Most significant byte stored at lowest memory
+                          * address */
 
     } ByteOrder_t;
 
@@ -157,7 +168,8 @@
 
     /**
      * @brief Task parameter type
-     * @details Type alias for task callback function parameters, allowing any data type to be passed.
+     * @details Type alias for task callback function parameters, allowing any
+     * data type to be passed.
      */
     typedef VOID_TYPE TaskParm_t;
 
@@ -169,7 +181,8 @@
 
     /**
      * @brief Base integer type
-     * @details 8-bit unsigned integer type used for flags, booleans, and small counters.
+     * @details 8-bit unsigned integer type used for flags, booleans, and small
+     * counters.
      */
     typedef UINT8_TYPE Base_t;
 
@@ -205,7 +218,8 @@
 
     /**
      * @brief Size type
-     * @details Platform-specific unsigned integer type for representing sizes and lengths.
+     * @details Platform-specific unsigned integer type for representing sizes
+     * and lengths.
      */
     typedef SIZE_TYPE Size_t;
 
@@ -217,7 +231,8 @@
 
     /**
      * @brief Half-word type
-     * @details 16-bit unsigned integer type for medium-range values and hardware registers.
+     * @details 16-bit unsigned integer type for medium-range values and
+     * hardware registers.
      */
     typedef UINT16_TYPE HalfWord_t;
 
@@ -229,7 +244,8 @@
 
     /**
      * @brief Word type
-     * @details 32-bit unsigned integer type for large values, addresses, and counters.
+     * @details 32-bit unsigned integer type for large values, addresses, and
+     * counters.
      */
     typedef UINT32_TYPE Word_t;
 
@@ -241,7 +257,8 @@
 
     /**
      * @brief System ticks type
-     * @details 32-bit unsigned integer type for system tick counts and timing values.
+     * @details 32-bit unsigned integer type for system tick counts and timing
+     * values.
      */
     typedef UINT32_TYPE Ticks_t;
 
@@ -253,40 +270,66 @@
 
     /**
      * @brief Device driver structure
-     * @details Represents a device driver with function pointers for device operations and metadata.
-     *          Devices are managed in a linked list by the device manager.
+     * @details Represents a device driver with function pointers for device
+     * operations and metadata. Devices are managed in a linked list by the
+     * device manager.
      */
     typedef struct Device_s {
 
-      Base_t valid;                     /**< Validity flag indicating if structure is initialized */
+      Base_t valid; /**< Validity flag indicating if structure is initialized */
 
-      HalfWord_t uid;                   /**< Unique identifier for the device */
+      HalfWord_t uid; /**< Unique identifier for the device */
 
-      Byte_t name[CONFIG_DEVICE_NAME_BYTES];  /**< Human-readable device name */
+      Byte_t name[CONFIG_DEVICE_NAME_BYTES]; /**< Human-readable device name */
 
-      DeviceState_t state;              /**< Current operational state of the device */
+      DeviceState_t state; /**< Current operational state of the device */
 
-      DeviceMode_t mode;                /**< Access mode (read-only, write-only, read-write) */
+      DeviceMode_t mode; /**< Access mode (read-only, write-only, read-write) */
 
-      Word_t bytesWritten;              /**< Total bytes written to the device */
+      Word_t bytesWritten; /**< Total bytes written to the device */
 
-      Word_t bytesRead;                 /**< Total bytes read from the device */
+      Word_t bytesRead; /**< Total bytes read from the device */
 
-      Base_t available;                 /**< Flag indicating if device is ready for I/O */
+      Base_t available; /**< Flag indicating if device is ready for I/O */
 
-      Return_t (*init)(struct Device_s *device_);  /**< Initialization function pointer */
+      Return_t (*init)(struct Device_s *device_); /**< Initialization function
+                                                   * pointer */
 
-      Return_t (*config)(struct Device_s *device_, Size_t *size_, Addr_t *config_);  /**< Configuration function pointer */
+      Return_t (*config)(struct Device_s *device_, Size_t *size_, Addr_t *config_); /**<
+                                                                                     * Configuration
+                                                                                     * function
+                                                                                     * pointer
+                                                                                     */
 
-      Return_t (*read)(struct Device_s *device_, Size_t *size_, Addr_t **data_);  /**< Read function pointer */
+      Return_t (*read)(struct Device_s *device_, Size_t *size_, Addr_t **data_); /**<
+                                                                                  * Read
+                                                                                  * function
+                                                                                  * pointer
+                                                                                  */
 
-      Return_t (*write)(struct Device_s *device_, Size_t *size_, Addr_t *data_);  /**< Write function pointer */
+      Return_t (*write)(struct Device_s *device_, Size_t *size_, Addr_t *data_); /**<
+                                                                                  * Write
+                                                                                  * function
+                                                                                  * pointer
+                                                                                  */
 
-      Return_t (*simple_read)(struct Device_s *device_, Byte_t *data_);  /**< Simple single-byte read function pointer */
+      Return_t (*simple_read)(struct Device_s *device_, Byte_t *data_); /**<
+                                                                         * Simple
+                                                                         * single-byte
+                                                                         * read
+                                                                         * function
+                                                                         * pointer
+                                                                         */
 
-      Return_t (*simple_write)(struct Device_s *device_, Byte_t data_);  /**< Simple single-byte write function pointer */
+      Return_t (*simple_write)(struct Device_s *device_, Byte_t data_); /**<
+                                                                         * Simple
+                                                                         * single-byte
+                                                                         * write
+                                                                         * function
+                                                                         * pointer
+                                                                         */
 
-      struct Device_s *next;            /**< Pointer to next device in linked list */
+      struct Device_s *next; /**< Pointer to next device in linked list */
 
     } Device_t;
 
@@ -298,15 +341,20 @@
 
     /**
      * @brief Task notification structure
-     * @details Contains notification data passed between tasks for inter-task communication.
+     * @details Contains notification data passed between tasks for inter-task
+     * communication.
      */
     typedef struct TaskNotification_s {
 
-      Base_t valid;                     /**< Validity flag indicating if notification is valid */
+      Base_t valid; /**< Validity flag indicating if notification is valid */
 
-      Base_t notificationBytes;         /**< Number of bytes in the notification value */
+      Base_t notificationBytes; /**< Number of bytes in the notification value
+                                 */
 
-      Byte_t notificationValue[CONFIG_NOTIFICATION_VALUE_BYTES];  /**< Notification data buffer */
+      Byte_t notificationValue[CONFIG_NOTIFICATION_VALUE_BYTES]; /**<
+                                                                  * Notification
+                                                                  * data buffer
+                                                                  */
 
     } TaskNotification_t;
 
@@ -318,17 +366,18 @@
 
     /**
      * @brief Task runtime statistics structure
-     * @details Contains timing information for task execution profiling and performance analysis.
+     * @details Contains timing information for task execution profiling and
+     * performance analysis.
      */
     typedef struct TaskRunTimeStats_s {
 
-      Base_t valid;                     /**< Validity flag indicating if statistics are valid */
+      Base_t valid; /**< Validity flag indicating if statistics are valid */
 
-      Base_t id;                        /**< Task identifier */
+      Base_t id; /**< Task identifier */
 
-      Ticks_t lastRunTime;              /**< System ticks at last execution */
+      Ticks_t lastRunTime; /**< System ticks at last execution */
 
-      Ticks_t totalRunTime;             /**< Total accumulated execution time in ticks */
+      Ticks_t totalRunTime; /**< Total accumulated execution time in ticks */
 
     } TaskRunTimeStats_t;
 
@@ -340,25 +389,30 @@
 
     /**
      * @brief Memory region statistics structure
-     * @details Contains detailed statistics about heap memory usage for debugging and monitoring.
+     * @details Contains detailed statistics about heap memory usage for
+     * debugging and monitoring.
      */
     typedef struct MemoryRegionStats_s {
 
-      Base_t valid;                     /**< Validity flag indicating if statistics are valid */
+      Base_t valid; /**< Validity flag indicating if statistics are valid */
 
-      Word_t largestFreeEntryInBytes;   /**< Size of largest contiguous free block in bytes */
+      Word_t largestFreeEntryInBytes; /**< Size of largest contiguous free block
+                                       * in bytes */
 
-      Word_t smallestFreeEntryInBytes;  /**< Size of smallest free block in bytes */
+      Word_t smallestFreeEntryInBytes; /**< Size of smallest free block in bytes
+                                        */
 
-      Word_t numberOfFreeBlocks;        /**< Total number of free memory blocks */
+      Word_t numberOfFreeBlocks; /**< Total number of free memory blocks */
 
-      Word_t availableSpaceInBytes;     /**< Total free memory available in bytes */
+      Word_t availableSpaceInBytes; /**< Total free memory available in bytes */
 
-      Word_t successfulAllocations;     /**< Count of successful memory allocations */
+      Word_t successfulAllocations; /**< Count of successful memory allocations
+                                     */
 
-      Word_t successfulFrees;           /**< Count of successful memory deallocations */
+      Word_t successfulFrees; /**< Count of successful memory deallocations */
 
-      Word_t minimumEverFreeBytesRemaining;  /**< Low water mark of free memory */
+      Word_t minimumEverFreeBytesRemaining; /**< Low water mark of free memory
+                                             */
 
     } MemoryRegionStats_t;
 
@@ -370,21 +424,22 @@
 
     /**
      * @brief Task information structure
-     * @details Contains metadata and runtime statistics for a task, used for task querying and monitoring.
+     * @details Contains metadata and runtime statistics for a task, used for
+     * task querying and monitoring.
      */
     typedef struct TaskInfo_s {
 
-      Base_t valid;                     /**< Validity flag indicating if information is valid */
+      Base_t valid; /**< Validity flag indicating if information is valid */
 
-      Base_t id;                        /**< Task identifier */
+      Base_t id; /**< Task identifier */
 
-      Byte_t name[CONFIG_TASK_NAME_BYTES];  /**< Human-readable task name */
+      Byte_t name[CONFIG_TASK_NAME_BYTES]; /**< Human-readable task name */
 
-      TaskState_t state;                /**< Current execution state of the task */
+      TaskState_t state; /**< Current execution state of the task */
 
-      Ticks_t lastRunTime;              /**< System ticks at last execution */
+      Ticks_t lastRunTime; /**< System ticks at last execution */
 
-      Ticks_t totalRunTime;             /**< Total accumulated execution time in ticks */
+      Ticks_t totalRunTime; /**< Total accumulated execution time in ticks */
 
     } TaskInfo_t;
 
@@ -396,15 +451,17 @@
 
     /**
      * @brief Queue message structure
-     * @details Contains message data for inter-task communication through queues.
+     * @details Contains message data for inter-task communication through
+     * queues.
      */
     typedef struct QueueMessage_s {
 
-      Base_t valid;                     /**< Validity flag indicating if message is valid */
+      Base_t valid; /**< Validity flag indicating if message is valid */
 
-      Base_t messageBytes;              /**< Number of bytes in the message value */
+      Base_t messageBytes; /**< Number of bytes in the message value */
 
-      Byte_t messageValue[CONFIG_MESSAGE_VALUE_BYTES];  /**< Message data buffer */
+      Byte_t messageValue[CONFIG_MESSAGE_VALUE_BYTES]; /**< Message data buffer
+                                                        */
 
     } QueueMessage_t;
 
@@ -416,23 +473,25 @@
 
     /**
      * @brief System information structure
-     * @details Contains operating system metadata including version and configuration details.
+     * @details Contains operating system metadata including version and
+     * configuration details.
      */
     typedef struct SystemInfo_s {
 
-      Base_t valid;                     /**< Validity flag indicating if information is valid */
+      Base_t valid; /**< Validity flag indicating if information is valid */
 
-      Byte_t productName[OS_PRODUCT_NAME_SIZE];  /**< Operating system product name string */
+      Byte_t productName[OS_PRODUCT_NAME_SIZE]; /**< Operating system product
+                                                 * name string */
 
-      Base_t majorVersion;              /**< Major version number */
+      Base_t majorVersion; /**< Major version number */
 
-      Base_t minorVersion;              /**< Minor version number */
+      Base_t minorVersion; /**< Minor version number */
 
-      Base_t patchVersion;              /**< Patch version number */
+      Base_t patchVersion; /**< Patch version number */
 
-      Base_t numberOfTasks;             /**< Current number of registered tasks */
+      Base_t numberOfTasks; /**< Current number of registered tasks */
 
-      Base_t littleEndian;              /**< Endianness flag (true if little-endian) */
+      Base_t littleEndian; /**< Endianness flag (true if little-endian) */
 
     } SystemInfo_t;
 
@@ -444,42 +503,49 @@
 
     /**
      * @brief Task control block structure
-     * @details Main task structure containing all metadata, state, and timing information for a scheduled task.
-     *          Tasks are managed in a linked list by the scheduler.
+     * @details Main task structure containing all metadata, state, and timing
+     * information for a scheduled task. Tasks are managed in a linked list by
+     * the scheduler.
      */
     typedef struct Task_s {
 
-      Base_t valid;                     /**< Validity flag indicating if task structure is initialized */
+      Base_t valid; /**< Validity flag indicating if task structure is
+                     * initialized */
 
-      Base_t id;                        /**< Unique task identifier */
+      Base_t id; /**< Unique task identifier */
 
-      Byte_t name[CONFIG_TASK_NAME_BYTES];  /**< Human-readable task name */
+      Byte_t name[CONFIG_TASK_NAME_BYTES]; /**< Human-readable task name */
 
-      TaskState_t state;                /**< Current execution state */
+      TaskState_t state; /**< Current execution state */
 
-      TaskParm_t *taskParameter;        /**< Pointer to task-specific parameters */
+      TaskParm_t *taskParameter; /**< Pointer to task-specific parameters */
 
-      void (*callback)(struct Task_s *task_, TaskParm_t *parm_);  /**< Task callback function pointer */
+      void (*callback)(struct Task_s *task_, TaskParm_t *parm_); /**< Task
+                                                                  * callback
+                                                                  * function
+                                                                  * pointer */
 
-      Base_t notificationBytes;         /**< Number of bytes in pending notification */
+      Base_t notificationBytes; /**< Number of bytes in pending notification */
 
-      Byte_t notificationValue[CONFIG_NOTIFICATION_VALUE_BYTES];  /**< Pending notification data */
+      Byte_t notificationValue[CONFIG_NOTIFICATION_VALUE_BYTES]; /**< Pending
+                                                                  * notification
+                                                                  * data */
 
-      Ticks_t lastRunTime;              /**< System ticks at last execution */
+      Ticks_t lastRunTime; /**< System ticks at last execution */
 
-      Ticks_t totalRunTime;             /**< Total accumulated execution time in ticks */
+      Ticks_t totalRunTime; /**< Total accumulated execution time in ticks */
 
-      Ticks_t timerPeriod;              /**< Task timer period for periodic execution */
+      Ticks_t timerPeriod; /**< Task timer period for periodic execution */
 
-      Ticks_t timerStartTime;           /**< System ticks when timer was started */
+      Ticks_t timerStartTime; /**< System ticks when timer was started */
 
     #if defined(CONFIG_TASK_WD_TIMER_ENABLE)
 
-        Ticks_t wdTimerPeriod;          /**< Watchdog timer period for task monitoring */
+        Ticks_t wdTimerPeriod; /**< Watchdog timer period for task monitoring */
 
     #endif /* if defined(CONFIG_TASK_WD_TIMER_ENABLE) */
 
-      struct Task_s *next;              /**< Pointer to next task in linked list */
+      struct Task_s *next; /**< Pointer to next task in linked list */
 
     } Task_t;
 
@@ -491,17 +557,18 @@
 
     /**
      * @brief Task list structure
-     * @details Manages the linked list of all tasks in the system with metadata for task ID allocation.
+     * @details Manages the linked list of all tasks in the system with metadata
+     * for task ID allocation.
      */
     typedef struct TaskList_s {
 
-      Base_t valid;                     /**< Validity flag indicating if list is initialized */
+      Base_t valid; /**< Validity flag indicating if list is initialized */
 
-      Base_t nextId;                    /**< Next available task identifier */
+      Base_t nextId; /**< Next available task identifier */
 
-      Base_t length;                    /**< Number of tasks in the list */
+      Base_t length; /**< Number of tasks in the list */
 
-      Task_t *head;                     /**< Pointer to first task in linked list */
+      Task_t *head; /**< Pointer to first task in linked list */
 
     } TaskList_t;
 
@@ -513,15 +580,16 @@
 
     /**
      * @brief Device list structure
-     * @details Manages the linked list of all registered device drivers in the system.
+     * @details Manages the linked list of all registered device drivers in the
+     * system.
      */
     typedef struct DeviceList_s {
 
-      Base_t valid;                     /**< Validity flag indicating if list is initialized */
+      Base_t valid; /**< Validity flag indicating if list is initialized */
 
-      Base_t length;                    /**< Number of devices in the list */
+      Base_t length; /**< Number of devices in the list */
 
-      Device_t *head;                   /**< Pointer to first device in linked list */
+      Device_t *head; /**< Pointer to first device in linked list */
 
     } DeviceList_t;
 
@@ -533,17 +601,18 @@
 
     /**
      * @brief Software timer structure
-     * @details Contains state and timing information for a software timer used for periodic events.
+     * @details Contains state and timing information for a software timer used
+     * for periodic events.
      */
     typedef struct Timer_s {
 
-      Base_t valid;                     /**< Validity flag indicating if timer is initialized */
+      Base_t valid; /**< Validity flag indicating if timer is initialized */
 
-      TimerState_t state;               /**< Current operational state */
+      TimerState_t state; /**< Current operational state */
 
-      Ticks_t timerPeriod;              /**< Timer period in system ticks */
+      Ticks_t timerPeriod; /**< Timer period in system ticks */
 
-      Ticks_t timerStartTime;           /**< System ticks when timer was started */
+      Ticks_t timerStartTime; /**< System ticks when timer was started */
 
     } Timer_t;
 
@@ -559,11 +628,11 @@
      */
     typedef struct TimerList_s {
 
-      Base_t valid;                     /**< Validity flag indicating if list is initialized */
+      Base_t valid; /**< Validity flag indicating if list is initialized */
 
-      Base_t length;                    /**< Number of timers in the list */
+      Base_t length; /**< Number of timers in the list */
 
-      Timer_t *head;                    /**< Pointer to first timer in linked list */
+      Timer_t *head; /**< Pointer to first timer in linked list */
 
     } TimerList_t;
 
@@ -579,15 +648,16 @@
      */
     typedef struct Flags_s {
 
-      Base_t valid;                     /**< Validity flag indicating if structure is initialized */
+      Base_t valid; /**< Validity flag indicating if structure is initialized */
 
-      Base_t running;                   /**< Flag indicating if scheduler is running */
+      Base_t running; /**< Flag indicating if scheduler is running */
 
-      Base_t overflow;                  /**< Flag indicating if system tick overflow occurred */
+      Base_t overflow; /**< Flag indicating if system tick overflow occurred */
 
-      Base_t memfault;                  /**< Flag indicating if memory fault was detected */
+      Base_t memfault; /**< Flag indicating if memory fault was detected */
 
-      Base_t littleend;                 /**< Flag indicating if system uses little-endian byte order */
+      Base_t littleend; /**< Flag indicating if system uses little-endian byte
+                         * order */
 
     } Flags_t;
 
@@ -599,17 +669,19 @@
 
     /**
      * @brief Message structure
-     * @details Internal message node used in queue implementation for inter-task communication.
+     * @details Internal message node used in queue implementation for
+     * inter-task communication.
      */
     typedef struct Message_s {
 
-      Base_t valid;                     /**< Validity flag indicating if message is valid */
+      Base_t valid; /**< Validity flag indicating if message is valid */
 
-      Base_t messageBytes;              /**< Number of bytes in the message value */
+      Base_t messageBytes; /**< Number of bytes in the message value */
 
-      Byte_t messageValue[CONFIG_MESSAGE_VALUE_BYTES];  /**< Message data buffer */
+      Byte_t messageValue[CONFIG_MESSAGE_VALUE_BYTES]; /**< Message data buffer
+                                                        */
 
-      struct Message_s *next;           /**< Pointer to next message in queue */
+      struct Message_s *next; /**< Pointer to next message in queue */
 
     } Message_t;
 
@@ -621,21 +693,22 @@
 
     /**
      * @brief Queue structure
-     * @details Manages a FIFO message queue for inter-task communication with capacity limiting and locking.
+     * @details Manages a FIFO message queue for inter-task communication with
+     * capacity limiting and locking.
      */
     typedef struct Queue_s {
 
-      Base_t valid;                     /**< Validity flag indicating if queue is initialized */
+      Base_t valid; /**< Validity flag indicating if queue is initialized */
 
-      Base_t length;                    /**< Current number of messages in queue */
+      Base_t length; /**< Current number of messages in queue */
 
-      Base_t limit;                     /**< Maximum allowed messages in queue */
+      Base_t limit; /**< Maximum allowed messages in queue */
 
-      Base_t locked;                    /**< Lock flag to prevent concurrent access */
+      Base_t locked; /**< Lock flag to prevent concurrent access */
 
-      Message_t *head;                  /**< Pointer to first message in queue */
+      Message_t *head; /**< Pointer to first message in queue */
 
-      Message_t *tail;                  /**< Pointer to last message in queue */
+      Message_t *tail; /**< Pointer to last message in queue */
 
     } Queue_t;
 
@@ -647,15 +720,16 @@
 
     /**
      * @brief Stream buffer structure
-     * @details Fixed-size buffer for streaming data operations with length tracking.
+     * @details Fixed-size buffer for streaming data operations with length
+     * tracking.
      */
     typedef struct StreamBuffer_s {
 
-      Base_t valid;                     /**< Validity flag indicating if buffer is initialized */
+      Base_t valid; /**< Validity flag indicating if buffer is initialized */
 
-      Byte_t buffer[CONFIG_STREAM_BUFFER_BYTES];  /**< Data buffer array */
+      Byte_t buffer[CONFIG_STREAM_BUFFER_BYTES]; /**< Data buffer array */
 
-      HalfWord_t length;                /**< Current number of bytes in buffer */
+      HalfWord_t length; /**< Current number of bytes in buffer */
 
     } StreamBuffer_t;
 
@@ -667,31 +741,34 @@
 
     /**
      * @brief FAT filesystem volume structure
-     * @details Contains FAT32 filesystem metadata for a mounted volume including layout and configuration.
+     * @details Contains FAT32 filesystem metadata for a mounted volume
+     * including layout and configuration.
      */
     typedef struct Volume_s {
 
-      Base_t valid;                     /**< Validity flag indicating if volume structure is initialized */
+      Base_t valid; /**< Validity flag indicating if volume structure is
+                     * initialized */
 
-      HalfWord_t blockDeviceUID;        /**< Unique identifier of underlying block device */
+      HalfWord_t blockDeviceUID; /**< Unique identifier of underlying block
+                                  * device */
 
-      Word_t fatStartSector;            /**< Sector number where FAT begins */
+      Word_t fatStartSector; /**< Sector number where FAT begins */
 
-      Word_t dataStartSector;           /**< Sector number where data area begins */
+      Word_t dataStartSector; /**< Sector number where data area begins */
 
-      Word_t rootDirCluster;            /**< Cluster number of root directory */
+      Word_t rootDirCluster; /**< Cluster number of root directory */
 
-      Byte_t sectorsPerCluster;         /**< Number of sectors in each cluster */
+      Byte_t sectorsPerCluster; /**< Number of sectors in each cluster */
 
-      HalfWord_t bytesPerSector;        /**< Size of each sector in bytes */
+      HalfWord_t bytesPerSector; /**< Size of each sector in bytes */
 
-      HalfWord_t reservedSectors;       /**< Number of reserved sectors before FAT */
+      HalfWord_t reservedSectors; /**< Number of reserved sectors before FAT */
 
-      Byte_t numFATs;                   /**< Number of FAT copies (typically 2) */
+      Byte_t numFATs; /**< Number of FAT copies (typically 2) */
 
-      Word_t sectorsPerFAT;             /**< Number of sectors per FAT table */
+      Word_t sectorsPerFAT; /**< Number of sectors per FAT table */
 
-      Base_t mounted;                   /**< Flag indicating if volume is currently mounted */
+      Base_t mounted; /**< Flag indicating if volume is currently mounted */
 
     } Volume_t;
 
@@ -703,31 +780,34 @@
 
     /**
      * @brief File handle structure
-     * @details Represents an open file with position tracking and metadata for FAT filesystem operations.
+     * @details Represents an open file with position tracking and metadata for
+     * FAT filesystem operations.
      */
     typedef struct File_s {
 
-      Base_t valid;                     /**< Validity flag indicating if file handle is initialized */
+      Base_t valid; /**< Validity flag indicating if file handle is initialized
+                     */
 
-      struct Volume_s *volume;          /**< Pointer to the volume containing this file */
+      struct Volume_s *volume; /**< Pointer to the volume containing this file
+                                */
 
-      Word_t firstCluster;              /**< Starting cluster number of file data */
+      Word_t firstCluster; /**< Starting cluster number of file data */
 
-      Word_t currentCluster;            /**< Current cluster being accessed */
+      Word_t currentCluster; /**< Current cluster being accessed */
 
-      Word_t fileSize;                  /**< Total size of file in bytes */
+      Word_t fileSize; /**< Total size of file in bytes */
 
-      Word_t position;                  /**< Current read/write position in file */
+      Word_t position; /**< Current read/write position in file */
 
-      Byte_t mode;                      /**< File access mode (read, write, append, etc.) */
+      Byte_t mode; /**< File access mode (read, write, append, etc.) */
 
-      Base_t isOpen;                    /**< Flag indicating if file is currently open */
+      Base_t isOpen; /**< Flag indicating if file is currently open */
 
-      Base_t isDirty;                   /**< Flag indicating if file has been modified */
+      Base_t isDirty; /**< Flag indicating if file has been modified */
 
-      Byte_t path[0x100];               /**< Full path of the file */
+      Byte_t path[0x100]; /**< Full path of the file */
 
-      Word_t parentDirCluster;          /**< Cluster number of parent directory */
+      Word_t parentDirCluster; /**< Cluster number of parent directory */
 
     } File_t;
 
@@ -739,25 +819,26 @@
 
     /**
      * @brief Directory entry structure
-     * @details Contains metadata for a single directory entry including attributes and location.
+     * @details Contains metadata for a single directory entry including
+     * attributes and location.
      */
     typedef struct DirEntry_s {
 
-      Base_t valid;                     /**< Validity flag indicating if entry is valid */
+      Base_t valid; /**< Validity flag indicating if entry is valid */
 
-      Byte_t name[0x100];               /**< Entry name (file or directory) */
+      Byte_t name[0x100]; /**< Entry name (file or directory) */
 
-      Word_t size;                      /**< Size in bytes (0 for directories) */
+      Word_t size; /**< Size in bytes (0 for directories) */
 
-      Word_t firstCluster;              /**< Starting cluster number */
+      Word_t firstCluster; /**< Starting cluster number */
 
-      Base_t isDirectory;               /**< Flag indicating if entry is a directory */
+      Base_t isDirectory; /**< Flag indicating if entry is a directory */
 
-      Base_t isReadOnly;                /**< Read-only attribute flag */
+      Base_t isReadOnly; /**< Read-only attribute flag */
 
-      Base_t isHidden;                  /**< Hidden attribute flag */
+      Base_t isHidden; /**< Hidden attribute flag */
 
-      Base_t isSystem;                  /**< System attribute flag */
+      Base_t isSystem; /**< System attribute flag */
 
     } DirEntry_t;
 
@@ -769,19 +850,22 @@
 
     /**
      * @brief Directory handle structure
-     * @details Represents an open directory for iteration over directory entries in the FAT filesystem.
+     * @details Represents an open directory for iteration over directory
+     * entries in the FAT filesystem.
      */
     typedef struct Dir_s {
 
-      Base_t valid;                     /**< Validity flag indicating if directory handle is initialized */
+      Base_t valid; /**< Validity flag indicating if directory handle is
+                     * initialized */
 
-      struct Volume_s *volume;          /**< Pointer to the volume containing this directory */
+      struct Volume_s *volume; /**< Pointer to the volume containing this
+                                * directory */
 
-      Word_t currentCluster;            /**< Current cluster being read */
+      Word_t currentCluster; /**< Current cluster being read */
 
-      HalfWord_t entryIndex;            /**< Current entry index within cluster */
+      HalfWord_t entryIndex; /**< Current entry index within cluster */
 
-      Base_t isOpen;                    /**< Flag indicating if directory is currently open */
+      Base_t isOpen; /**< Flag indicating if directory is currently open */
 
     } Dir_t;
 
@@ -793,25 +877,26 @@
 
     /**
      * @brief Volume information structure
-     * @details Contains statistics and configuration information about a FAT filesystem volume.
+     * @details Contains statistics and configuration information about a FAT
+     * filesystem volume.
      */
     typedef struct VolumeInfo_s {
 
-      Base_t valid;                     /**< Validity flag indicating if information is valid */
+      Base_t valid; /**< Validity flag indicating if information is valid */
 
-      Word_t totalClusters;             /**< Total number of clusters on volume */
+      Word_t totalClusters; /**< Total number of clusters on volume */
 
-      Word_t freeClusters;              /**< Number of free clusters available */
+      Word_t freeClusters; /**< Number of free clusters available */
 
-      Word_t totalBytes;                /**< Total storage capacity in bytes */
+      Word_t totalBytes; /**< Total storage capacity in bytes */
 
-      Word_t freeBytes;                 /**< Free storage space in bytes */
+      Word_t freeBytes; /**< Free storage space in bytes */
 
-      HalfWord_t bytesPerSector;        /**< Size of each sector in bytes */
+      HalfWord_t bytesPerSector; /**< Size of each sector in bytes */
 
-      Byte_t sectorsPerCluster;         /**< Number of sectors per cluster */
+      Byte_t sectorsPerCluster; /**< Number of sectors per cluster */
 
-      Word_t bytesPerCluster;           /**< Calculated size of each cluster in bytes */
+      Word_t bytesPerCluster; /**< Calculated size of each cluster in bytes */
 
     } VolumeInfo_t;
 
@@ -825,17 +910,19 @@
 
       /**
        * @brief Block device command structure
-       * @details Command structure for block device I/O operations specifying block range and transfer mode.
+       * @details Command structure for block device I/O operations specifying
+       * block range and transfer mode.
        */
       typedef struct BlockDeviceCommand_s {
 
-        Byte_t command;                 /**< Command type identifier */
+        Byte_t command; /**< Command type identifier */
 
-        Word_t blockNumber;             /**< Starting block number for the operation */
+        Word_t blockNumber; /**< Starting block number for the operation */
 
-        HalfWord_t blockCount;          /**< Number of blocks to transfer */
+        HalfWord_t blockCount; /**< Number of blocks to transfer */
 
-        Byte_t transferMode;            /**< Transfer mode (blocking, DMA, interrupt, etc.) */
+        Byte_t transferMode; /**< Transfer mode (blocking, DMA, interrupt, etc.)
+                              */
 
       } BlockDeviceCommand_t;
 

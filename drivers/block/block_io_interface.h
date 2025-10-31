@@ -85,41 +85,45 @@
 
   /**
    * @brief Block I/O request structure
-   * @details Command structure for block device I/O operations specifying the operation, blocks, and transfer mode.
+   * @details Command structure for block device I/O operations specifying the
+   * operation, blocks, and transfer mode.
    */
   typedef struct BlockIORequest_s {
 
-    Byte_t command;             /**< Command type identifier */
+    Byte_t command; /**< Command type identifier */
 
-    Byte_t operation;           /**< Operation (read or write) */
+    Byte_t operation; /**< Operation (read or write) */
 
-    Word_t blockNumber;         /**< Starting block number */
+    Word_t blockNumber; /**< Starting block number */
 
-    HalfWord_t blockCount;      /**< Number of blocks to transfer */
+    HalfWord_t blockCount; /**< Number of blocks to transfer */
 
-    HalfWord_t blockSize;       /**< Size of each block in bytes */
+    HalfWord_t blockSize; /**< Size of each block in bytes */
 
-    Byte_t transferMode;        /**< Transfer mode (blocking, DMA, interrupt, etc.) */
+    Byte_t transferMode; /**< Transfer mode (blocking, DMA, interrupt, etc.) */
 
-    Byte_t reserved;            /**< Reserved for future use */
+    Byte_t reserved; /**< Reserved for future use */
 
   } BlockIORequest_t;
 
   /**
    * @brief Block I/O device information structure
-   * @details Contains device capabilities and characteristics for block I/O devices.
+   * @details Contains device capabilities and characteristics for block I/O
+   * devices.
    */
   typedef struct BlockIOInfo_s {
 
-    Byte_t command;             /**< Command type identifier */
+    Byte_t command; /**< Command type identifier */
 
-    Word_t totalSizeBytes;      /**< Total device capacity in bytes */
+    Word_t totalSizeBytes; /**< Total device capacity in bytes */
 
     HalfWord_t nativeBlockSize; /**< Native block size in bytes */
 
-    Base_t supportsRandomAccess;  /**< Flag indicating if device supports random access */
+    Base_t supportsRandomAccess; /**< Flag indicating if device supports random
+                                  * access */
 
-    Base_t requiresErase;       /**< Flag indicating if device requires erase before write */
+    Base_t requiresErase; /**< Flag indicating if device requires erase before
+                           * write */
 
   } BlockIOInfo_t;
 

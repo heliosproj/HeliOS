@@ -112,17 +112,19 @@
   #endif /* ifdef __cplusplus */
   /**
    * @brief Gets the current system tick count
-   * @details Platform-specific function to retrieve the system tick counter for timing operations.
+   * @details Platform-specific function to retrieve the system tick counter for
+   * timing operations.
    *
    * @return Current system tick count
    *
-   * @note This is an internal function used by the scheduler and timer subsystem
+   * @note This is an internal function used by the scheduler and timer
+   * subsystem
    */
   Ticks_t __PortGetSysTicks__(void);
-
   /**
    * @brief Initializes platform-specific hardware
-   * @details Sets up timers, interrupts, and other hardware required for HeliOS operation.
+   * @details Sets up timers, interrupts, and other hardware required for HeliOS
+   * operation.
    *
    * @return ReturnOK if initialization was successful
    * @return ReturnError if initialization failed

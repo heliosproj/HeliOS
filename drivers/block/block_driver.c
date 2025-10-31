@@ -17,25 +17,27 @@
 
 /**
  * @brief Block device internal state structure
- * @details Maintains runtime state for block device operations including I/O driver binding, protocol settings, and current operation parameters.
+ * @details Maintains runtime state for block device operations including I/O
+ * driver binding, protocol settings, and current operation parameters.
  */
 typedef struct BlockDeviceState_s {
 
-  HalfWord_t ioDriverUID;         /**< UID of underlying I/O driver device */
+  HalfWord_t ioDriverUID; /**< UID of underlying I/O driver device */
 
-  Byte_t protocol;                /**< Storage protocol in use (SD card, MMC, eMMC, or raw) */
+  Byte_t protocol; /**< Storage protocol in use (SD card, MMC, eMMC, or raw) */
 
-  HalfWord_t blockSize;           /**< Block size in bytes */
+  HalfWord_t blockSize; /**< Block size in bytes */
 
-  Word_t totalBlocks;             /**< Total number of blocks on device */
+  Word_t totalBlocks; /**< Total number of blocks on device */
 
-  Base_t initialized;             /**< Initialization flag */
+  Base_t initialized; /**< Initialization flag */
 
-  Word_t currentBlockNumber;      /**< Current block number for I/O operations */
+  Word_t currentBlockNumber; /**< Current block number for I/O operations */
 
-  HalfWord_t currentBlockCount;   /**< Current block count for I/O operations */
+  HalfWord_t currentBlockCount; /**< Current block count for I/O operations */
 
-  Byte_t currentTransferMode;     /**< Current transfer mode (blocking, DMA, etc.) */
+  Byte_t currentTransferMode; /**< Current transfer mode (blocking, DMA, etc.)
+                               */
 
 } BlockDeviceState_t;
 
@@ -44,43 +46,43 @@ static BlockDeviceState_t state = {
   0
 
 };
-
 /**
  * @brief Prepares block I/O request structure
- * @details Internal helper to create and populate a BlockIORequest_t structure for I/O operations.
+ * @details Internal helper to create and populate a BlockIORequest_t structure
+ * for I/O operations.
  *
- * @param[in] operation_ Operation type (read or write)
- * @param[out] request_ Pointer to store allocated request structure
+ * @param[in]  operation_  Operation type (read or write)
+ * @param[out] request_    Pointer to store allocated request structure
  * @param[out] configSize_ Pointer to store size of request structure
  *
- * @return ReturnOK if request was prepared successfully
- * @return ReturnError if allocation failed
+ * @return                 ReturnOK if request was prepared successfully
+ * @return                 ReturnError if allocation failed
  *
  * @warning Caller is responsible for freeing the allocated request structure
  */
 static Return_t __PrepareBlockIORequest__(const Byte_t operation_, BlockIORequest_t **request_, Size_t *configSize_);
-
 /**
  * @brief Reads blocks using RAW protocol
- * @details Internal function to read blocks from the underlying I/O driver using raw protocol.
+ * @details Internal function to read blocks from the underlying I/O driver
+ * using raw protocol.
  *
  * @param[out] data_ Pointer to store allocated data buffer
  *
- * @return ReturnOK if read was successful
- * @return ReturnError if read failed
+ * @return           ReturnOK if read was successful
+ * @return           ReturnError if read failed
  *
  * @warning Caller is responsible for freeing the allocated data buffer
  */
 static Return_t __BlockDeviceReadBlockRAW__(Byte_t **data_);
-
 /**
  * @brief Writes blocks using RAW protocol
- * @details Internal function to write blocks to the underlying I/O driver using raw protocol.
+ * @details Internal function to write blocks to the underlying I/O driver using
+ * raw protocol.
  *
  * @param[in] data_ Pointer to data buffer to write
  *
- * @return ReturnOK if write was successful
- * @return ReturnError if write failed
+ * @return          ReturnOK if write was successful
+ * @return          ReturnError if write failed
  */
 static Return_t __BlockDeviceWriteBlockRAW__(const Byte_t *data_);
 Return_t TO_FUNCTION(DEVICE_NAME, _self_register)(void) {

@@ -87,41 +87,44 @@
 
   /**
    * @brief Block device configuration structure
-   * @details Configuration command structure for initializing block device parameters including protocol and geometry.
+   * @details Configuration command structure for initializing block device
+   * parameters including protocol and geometry.
    */
   typedef struct BlockDeviceConfig_s {
 
-    Byte_t command;             /**< Command type identifier (BLOCK_CMD_CONFIG) */
+    Byte_t command; /**< Command type identifier (BLOCK_CMD_CONFIG) */
 
-    HalfWord_t ioDriverUID;     /**< UID of underlying I/O driver */
+    HalfWord_t ioDriverUID; /**< UID of underlying I/O driver */
 
-    Byte_t protocol;            /**< Storage protocol (SD card, MMC, eMMC, or raw) */
+    Byte_t protocol; /**< Storage protocol (SD card, MMC, eMMC, or raw) */
 
-    HalfWord_t blockSize;       /**< Block size in bytes */
+    HalfWord_t blockSize; /**< Block size in bytes */
 
-    Word_t totalBlocks;         /**< Total number of blocks on device */
+    Word_t totalBlocks; /**< Total number of blocks on device */
 
   } BlockDeviceConfig_t;
 
   /**
    * @brief Block device information structure
-   * @details Returned information about block device capabilities, geometry, and current state.
+   * @details Returned information about block device capabilities, geometry,
+   * and current state.
    */
   typedef struct BlockDeviceInfo_s {
 
-    Byte_t command;             /**< Command type identifier (BLOCK_CMD_GET_INFO) */
+    Byte_t command; /**< Command type identifier (BLOCK_CMD_GET_INFO) */
 
-    HalfWord_t blockSize;       /**< Block size in bytes */
+    HalfWord_t blockSize; /**< Block size in bytes */
 
-    Word_t totalBlocks;         /**< Total number of blocks on device */
+    Word_t totalBlocks; /**< Total number of blocks on device */
 
-    Word_t totalBytes;          /**< Total device capacity in bytes */
+    Word_t totalBytes; /**< Total device capacity in bytes */
 
-    Byte_t protocol;            /**< Storage protocol in use */
+    Byte_t protocol; /**< Storage protocol in use */
 
-    Base_t isWriteProtected;    /**< Flag indicating if device is write-protected */
+    Base_t isWriteProtected; /**< Flag indicating if device is write-protected
+                              */
 
-    Base_t isInitialized;       /**< Flag indicating if device is initialized */
+    Base_t isInitialized; /**< Flag indicating if device is initialized */
 
   } BlockDeviceInfo_t;
 
@@ -132,7 +135,8 @@
   #endif /* ifdef __cplusplus */
   /**
    * @brief Self-registers block device driver
-   * @details Registers the block device driver with the device manager during system initialization.
+   * @details Registers the block device driver with the device manager during
+   * system initialization.
    *
    * @return ReturnOK if registration was successful
    * @return ReturnError if registration failed
@@ -141,38 +145,44 @@
 
   /**
    * @brief Initializes block device driver
-   * @details Initializes internal state and prepares the block device for operation.
+   * @details Initializes internal state and prepares the block device for
+   * operation.
    *
    * @param[in,out] device_ Pointer to device structure
    *
-   * @return ReturnOK if initialization was successful
-   * @return ReturnError if initialization failed
+   * @return                ReturnOK if initialization was successful
+   * @return                ReturnError if initialization failed
    */
   Return_t TO_FUNCTION(DEVICE_NAME, _init)(Device_t *device_);
 
   /**
    * @brief Configures block device
-   * @details Configures block device parameters, sets address for I/O operations, or retrieves device information.
+   * @details Configures block device parameters, sets address for I/O
+   * operations, or retrieves device information.
    *
    * @param[in,out] device_ Pointer to device structure
-   * @param[in,out] size_ Pointer to configuration data size
-   * @param[in] config_ Pointer to configuration data (BlockDeviceConfig_t, BlockIORequest_t, or BlockDeviceInfo_t)
+   * @param[in,out] size_   Pointer to configuration data size
+   * @param[in]     config_ Pointer to configuration data (BlockDeviceConfig_t,
+   *                        BlockIORequest_t, or BlockDeviceInfo_t)
    *
-   * @return ReturnOK if configuration was successful
-   * @return ReturnError if configuration failed or invalid parameters
+   * @return                ReturnOK if configuration was successful
+   * @return                ReturnError if configuration failed or invalid
+   *                        parameters
    */
   Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Addr_t *config_);
 
   /**
    * @brief Reads data from block device
-   * @details Reads data from the current address position, allocates memory for the data.
+   * @details Reads data from the current address position, allocates memory for
+   * the data.
    *
    * @param[in,out] device_ Pointer to device structure
-   * @param[in,out] size_ Pointer to size of data to read (updated with actual bytes read)
-   * @param[out] data_ Pointer to store allocated data buffer
+   * @param[in,out] size_   Pointer to size of data to read (updated with actual
+   *                        bytes read)
+   * @param[out]    data_   Pointer to store allocated data buffer
    *
-   * @return ReturnOK if read was successful
-   * @return ReturnError if read failed or allocation failed
+   * @return                ReturnOK if read was successful
+   * @return                ReturnError if read failed or allocation failed
    *
    * @warning Caller is responsible for freeing the allocated data buffer
    */
@@ -183,11 +193,12 @@
    * @details Writes data to the current address position.
    *
    * @param[in,out] device_ Pointer to device structure
-   * @param[in,out] size_ Pointer to size of data to write (updated with actual bytes written)
-   * @param[in] data_ Pointer to data buffer to write
+   * @param[in,out] size_   Pointer to size of data to write (updated with
+   *                        actual bytes written)
+   * @param[in]     data_   Pointer to data buffer to write
    *
-   * @return ReturnOK if write was successful
-   * @return ReturnError if write failed or invalid parameters
+   * @return                ReturnOK if write was successful
+   * @return                ReturnError if write failed or invalid parameters
    */
   Return_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t *device_, Size_t *size_, Addr_t *data_);
 
@@ -196,10 +207,10 @@
    * @details Simple interface for reading one byte from the current position.
    *
    * @param[in,out] device_ Pointer to device structure
-   * @param[out] data_ Pointer to store the read byte
+   * @param[out]    data_   Pointer to store the read byte
    *
-   * @return ReturnOK if read was successful
-   * @return ReturnError if read failed or invalid parameters
+   * @return                ReturnOK if read was successful
+   * @return                ReturnError if read failed or invalid parameters
    */
   Return_t TO_FUNCTION(DEVICE_NAME, _simple_read)(Device_t *device_, Byte_t *data_);
 
@@ -208,17 +219,18 @@
    * @details Simple interface for writing one byte to the current position.
    *
    * @param[in,out] device_ Pointer to device structure
-   * @param[in] data_ Byte to write
+   * @param[in]     data_   Byte to write
    *
-   * @return ReturnOK if write was successful
-   * @return ReturnError if write failed
+   * @return                ReturnOK if write was successful
+   * @return                ReturnError if write failed
    */
   Return_t TO_FUNCTION(DEVICE_NAME, _simple_write)(Device_t *device_, Byte_t data_);
 
   #if defined(POSIX_ARCH_OTHER)
     /**
      * @brief Clears block device driver state
-     * @details Internal function for POSIX platforms to reset driver state for testing.
+     * @details Internal function for POSIX platforms to reset driver state for
+     * testing.
      */
     void __BlockDeviceStateClear__(void);
 
