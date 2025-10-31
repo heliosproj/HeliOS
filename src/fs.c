@@ -5,7 +5,6 @@
   #include "fs.h"
 
   #include "fat.h"
-
   Return_t xFSMount(Volume_t **volume_) {
 
     FUNCTION_ENTER;
@@ -22,47 +21,59 @@
 
         if(OK(__KernelAllocateMemory__((volatile Addr_t **) &vol, sizeof(Volume_t)))) {
 
-        vol->blockDeviceUID = CONFIG_FS_BLOCK_DEVICE_UID;
+          vol->blockDeviceUID = CONFIG_FS_BLOCK_DEVICE_UID;
 
-        vol->mounted = false;
+          vol->mounted = false;
 
-        vol->bytesPerSector = 0x200u; 
+          vol->bytesPerSector = 0x200u;
 
-        vol->valid = VALID; 
+          vol->valid = VALID;
 
-        if(OK(__ReadSector__(vol, 0x0u, &bootSectorData))) {
+          if(OK(__ReadSector__(vol, 0x0u, &bootSectorData))) {
 
-          bs = (FAT32BootSector_t *) bootSectorData;
+            bs = (FAT32BootSector_t *) bootSectorData;
 
-          vol->bytesPerSector = __ReadLE16__(bs->bytesPerSector);
+            vol->bytesPerSector = __ReadLE16__(bs->bytesPerSector);
 
-          vol->sectorsPerCluster = bs->sectorsPerCluster;
+            vol->sectorsPerCluster = bs->sectorsPerCluster;
 
-          vol->reservedSectors = __ReadLE16__(bs->reservedSectors);
+            vol->reservedSectors = __ReadLE16__(bs->reservedSectors);
 
-          vol->numFATs = bs->numFATs;
+            vol->numFATs = bs->numFATs;
 
-          vol->sectorsPerFAT = __ReadLE32__(bs->FATSize32);
+            vol->sectorsPerFAT = __ReadLE32__(bs->FATSize32);
 
-          vol->rootDirCluster = __ReadLE32__(bs->rootCluster);
+            vol->rootDirCluster = __ReadLE32__(bs->rootCluster);
 
-          vol->fatStartSector = vol->reservedSectors;
+            vol->fatStartSector = vol->reservedSectors;
 
-          vol->dataStartSector = vol->reservedSectors + (vol->numFATs * vol->sectorsPerFAT);
+            vol->dataStartSector = vol->reservedSectors + (vol->numFATs * vol->sectorsPerFAT);
 
-          if((vol->bytesPerSector >= 0x200u) && (vol->sectorsPerCluster > 0x0u) && (vol->rootDirCluster >= 0x2u)) {
+            if((vol->bytesPerSector >= 0x200u) && (vol->sectorsPerCluster > 0x0u) && (vol->rootDirCluster >= 0x2u)) {
 
-            vol->mounted = true;
+              vol->mounted = true;
 
-            if(OK(__AddMountedDevice__(CONFIG_FS_BLOCK_DEVICE_UID))) {
+              if(OK(__AddMountedDevice__(CONFIG_FS_BLOCK_DEVICE_UID))) {
 
-              if(OK(__KernelFreeMemory__(bootSectorData))) {
+                if(OK(__KernelFreeMemory__(bootSectorData))) {
 
-                *volume_ = vol;
+                  *volume_ = vol;
 
-                __ReturnOk__();
+                  __ReturnOk__();
+
+                } else {
+
+                  __AssertOnElse__();
+
+                }
 
               } else {
+
+                vol->valid = INVALID;
+
+                __KernelFreeMemory__(bootSectorData);
+
+                __KernelFreeMemory__(vol);
 
                 __AssertOnElse__();
 
@@ -84,8 +95,6 @@
 
             vol->valid = INVALID;
 
-            __KernelFreeMemory__(bootSectorData);
-
             __KernelFreeMemory__(vol);
 
             __AssertOnElse__();
@@ -94,19 +103,9 @@
 
         } else {
 
-          vol->valid = INVALID;
-
-          __KernelFreeMemory__(vol);
-
           __AssertOnElse__();
 
         }
-
-      } else {
-
-        __AssertOnElse__();
-
-      }
 
       } else {
 
@@ -123,7 +122,6 @@
     FUNCTION_EXIT;
 
   }
-
   Return_t xFSUnmount(Volume_t *volume_) {
 
     FUNCTION_ENTER;
@@ -155,7 +153,6 @@
     FUNCTION_EXIT;
 
   }
-
   Return_t xFSGetVolumeInfo(const Volume_t *volume_, VolumeInfo_t **info_) {
 
     FUNCTION_ENTER;
@@ -178,59 +175,59 @@
 
         if(OK(xMemAlloc((volatile Addr_t **) &info, sizeof(VolumeInfo_t)))) {
 
-        info->valid = VALID;
+          info->valid = VALID;
 
-        info->bytesPerSector = volume_->bytesPerSector;
+          info->bytesPerSector = volume_->bytesPerSector;
 
-        info->sectorsPerCluster = volume_->sectorsPerCluster;
+          info->sectorsPerCluster = volume_->sectorsPerCluster;
 
-        info->bytesPerCluster = (Word_t) volume_->bytesPerSector * volume_->sectorsPerCluster;
+          info->bytesPerCluster = (Word_t) volume_->bytesPerSector * volume_->sectorsPerCluster;
 
-        maxCluster = (volume_->sectorsPerFAT * volume_->bytesPerSector) / 4u;
+          maxCluster = (volume_->sectorsPerFAT * volume_->bytesPerSector) / 4u;
 
-        if(maxCluster > 0x1000u) {
+          if(maxCluster > 0x1000u) {
 
-          maxCluster = 0x1000u; 
-
-        }
-
-        for(cluster = 2u; cluster < maxCluster; cluster++) {
-
-          if(OK(__GetFATEntry__(volume_, cluster, &fatEntry))) {
-
-            totalClusters++;
-
-            if(fatEntry == FAT32_FREE_CLUSTER) {
-
-              freeClusters++;
-
-            }
-
-          } else {
-
-            break;
+            maxCluster = 0x1000u;
 
           }
 
+          for(cluster = 2u; cluster < maxCluster; cluster++) {
+
+            if(OK(__GetFATEntry__(volume_, cluster, &fatEntry))) {
+
+              totalClusters++;
+
+              if(fatEntry == FAT32_FREE_CLUSTER) {
+
+                freeClusters++;
+
+              }
+
+            } else {
+
+              break;
+
+            }
+
+          }
+
+          info->totalClusters = totalClusters;
+
+          info->freeClusters = freeClusters;
+
+          info->totalBytes = totalClusters * info->bytesPerCluster;
+
+          info->freeBytes = freeClusters * info->bytesPerCluster;
+
+          *info_ = info;
+
+          __ReturnOk__();
+
+        } else {
+
+          __AssertOnElse__();
+
         }
-
-        info->totalClusters = totalClusters;
-
-        info->freeClusters = freeClusters;
-
-        info->totalBytes = totalClusters * info->bytesPerCluster;
-
-        info->freeBytes = freeClusters * info->bytesPerCluster;
-
-        *info_ = info;
-
-        __ReturnOk__();
-
-      } else {
-
-        __AssertOnElse__();
-
-      }
 
       } else {
 
@@ -247,7 +244,6 @@
     FUNCTION_EXIT;
 
   }
-
   Return_t xFSFormat(const Byte_t *volumeLabel_) {
 
     FUNCTION_ENTER;
@@ -266,7 +262,7 @@
 
     Byte_t numFATs = 0x2u;
 
-    Word_t sectorsPerFAT = 0x100u; 
+    Word_t sectorsPerFAT = 0x100u;
 
     Word_t rootDirCluster = 0x2u;
 
@@ -278,133 +274,113 @@
 
       tempVol.valid = VALID;
 
-    tempVol.blockDeviceUID = CONFIG_FS_BLOCK_DEVICE_UID;
+      tempVol.blockDeviceUID = CONFIG_FS_BLOCK_DEVICE_UID;
 
-    tempVol.bytesPerSector = bytesPerSector;
+      tempVol.bytesPerSector = bytesPerSector;
 
-    tempVol.sectorsPerCluster = sectorsPerCluster;
+      tempVol.sectorsPerCluster = sectorsPerCluster;
 
-    tempVol.reservedSectors = reservedSectors;
+      tempVol.reservedSectors = reservedSectors;
 
-    tempVol.numFATs = numFATs;
+      tempVol.numFATs = numFATs;
 
-    tempVol.sectorsPerFAT = sectorsPerFAT;
+      tempVol.sectorsPerFAT = sectorsPerFAT;
 
-    tempVol.rootDirCluster = rootDirCluster;
+      tempVol.rootDirCluster = rootDirCluster;
 
-    tempVol.fatStartSector = fatStart;
+      tempVol.fatStartSector = fatStart;
 
-    tempVol.dataStartSector = dataStart;
+      tempVol.dataStartSector = dataStart;
 
-    tempVol.mounted = false;
+      tempVol.mounted = false;
 
-    if(OK(xMemAlloc((volatile Addr_t **) &bootSector, bytesPerSector))) {
+      if(OK(xMemAlloc((volatile Addr_t **) &bootSector, bytesPerSector))) {
 
-      __memset__(bootSector, 0x00u, bytesPerSector);
+        __memset__(bootSector, 0x00u, bytesPerSector);
 
-      bs = (FAT32BootSector_t *) bootSector;
+        bs = (FAT32BootSector_t *) bootSector;
 
-      bs->jumpBoot[0] = 0xEBu; 
+        bs->jumpBoot[0] = 0xEBu;
 
-      bs->jumpBoot[1] = 0x58u;
+        bs->jumpBoot[1] = 0x58u;
 
-      bs->jumpBoot[2] = 0x90u;
+        bs->jumpBoot[2] = 0x90u;
 
-      __memcpy__(bs->oemName, "HELIOS  ", 0x8u);
+        __memcpy__(bs->oemName, "HELIOS  ", 0x8u);
 
-      __WriteLE16__(bs->bytesPerSector, bytesPerSector);
+        __WriteLE16__(bs->bytesPerSector, bytesPerSector);
 
-      bs->sectorsPerCluster = sectorsPerCluster;
+        bs->sectorsPerCluster = sectorsPerCluster;
 
-      __WriteLE16__(bs->reservedSectors, reservedSectors);
+        __WriteLE16__(bs->reservedSectors, reservedSectors);
 
-      bs->numFATs = numFATs;
+        bs->numFATs = numFATs;
 
-      __WriteLE16__(bs->rootEntryCount, 0x0u); 
+        __WriteLE16__(bs->rootEntryCount, 0x0u);
 
-      __WriteLE16__(bs->totalSectors16, 0x0u); 
+        __WriteLE16__(bs->totalSectors16, 0x0u);
 
-      bs->mediaType = 0xF8u; 
+        bs->mediaType = 0xF8u;
 
-      __WriteLE16__(bs->FATSize16, 0x0u); 
+        __WriteLE16__(bs->FATSize16, 0x0u);
 
-      __WriteLE16__(bs->sectorsPerTrack, 0x3Fu);
+        __WriteLE16__(bs->sectorsPerTrack, 0x3Fu);
 
-      __WriteLE16__(bs->numHeads, 0x10u);
+        __WriteLE16__(bs->numHeads, 0x10u);
 
-      __WriteLE32__(bs->hiddenSectors, 0x0u);
+        __WriteLE32__(bs->hiddenSectors, 0x0u);
 
-      __WriteLE32__(bs->totalSectors32, 0x800u); 
+        __WriteLE32__(bs->totalSectors32, 0x800u);
 
-      __WriteLE32__(bs->FATSize32, sectorsPerFAT);
+        __WriteLE32__(bs->FATSize32, sectorsPerFAT);
 
-      __WriteLE16__(bs->extFlags, 0x0u);
+        __WriteLE16__(bs->extFlags, 0x0u);
 
-      __WriteLE16__(bs->fsVersion, 0x0u);
+        __WriteLE16__(bs->fsVersion, 0x0u);
 
-      __WriteLE32__(bs->rootCluster, rootDirCluster);
+        __WriteLE32__(bs->rootCluster, rootDirCluster);
 
-      __WriteLE16__(bs->fsInfo, 0x1u);
+        __WriteLE16__(bs->fsInfo, 0x1u);
 
-      __WriteLE16__(bs->backupBootSector, 0x6u);
+        __WriteLE16__(bs->backupBootSector, 0x6u);
 
-      bs->driveNumber = 0x80u;
+        bs->driveNumber = 0x80u;
 
-      bs->bootSignature = 0x29u;
+        bs->bootSignature = 0x29u;
 
-      __WriteLE32__(bs->volumeID, 0x12345678u);
+        __WriteLE32__(bs->volumeID, 0x12345678u);
 
-      __memcpy__(bs->volumeLabel, volumeLabel_, 0xBu);
+        __memcpy__(bs->volumeLabel, volumeLabel_, 0xBu);
 
-      __memcpy__(bs->fsType, "FAT32   ", 0x8u);
+        __memcpy__(bs->fsType, "FAT32   ", 0x8u);
 
-      bootSector[0x1FEu] = 0x55u;
+        bootSector[0x1FEu] = 0x55u;
 
-      bootSector[0x1FFu] = 0xAAu;
+        bootSector[0x1FFu] = 0xAAu;
 
-      if(OK(__WriteSector__(&tempVol, 0x0u, bootSector))) {
+        if(OK(__WriteSector__(&tempVol, 0x0u, bootSector))) {
 
-        Byte_t *fatSector = null;
+          Byte_t *fatSector = null;
 
-        Word_t sector = 0x0u;
+          Word_t sector = 0x0u;
 
-        Word_t fat = 0x0u;
+          Word_t fat = 0x0u;
 
-        Base_t fatInitSuccess = true;
+          Base_t fatInitSuccess = true;
 
-        xMemFree((Addr_t *) bootSector);
+          xMemFree((Addr_t *) bootSector);
 
-        if(OK(xMemAlloc((volatile Addr_t **) &fatSector, bytesPerSector))) {
+          if(OK(xMemAlloc((volatile Addr_t **) &fatSector, bytesPerSector))) {
 
-          __memset__(fatSector, 0x00u, bytesPerSector);
+            __memset__(fatSector, 0x00u, bytesPerSector);
 
-          for(fat = 0x0u; fat < numFATs && fatInitSuccess; fat++) {
+            for(fat = 0x0u; fat < numFATs && fatInitSuccess; fat++) {
 
-            Word_t fatStartSector = fatStart + (fat * sectorsPerFAT);
+              Word_t fatStartSector = fatStart + (fat * sectorsPerFAT);
 
-            for(sector = 0x0u; sector < sectorsPerFAT && fatInitSuccess; sector++) {
+              for(sector = 0x0u; sector < sectorsPerFAT && fatInitSuccess; sector++) {
 
-              if(ERROR(__WriteSector__(&tempVol, fatStartSector + sector, fatSector))) {
-
-                fatInitSuccess = false;
-
-              }
-
-            }
-
-          }
-
-          if(fatInitSuccess) {
-
-            if(OK(__SetFATEntry__(&tempVol, 0x0u, 0x0FFFFFF8u)) && OK(__SetFATEntry__(&tempVol, 0x1u, 0x0FFFFFFFu)) && OK(__SetFATEntry__(&tempVol, 0x2u,
-
-              FAT32_EOC_MAX))) {
-
-              Word_t rootFirstSector = __ClusterToSector__(&tempVol, rootDirCluster);
-
-              for(sector = 0x0u; sector < sectorsPerCluster && fatInitSuccess; sector++) {
-
-                if(ERROR(__WriteSector__(&tempVol, rootFirstSector + sector, fatSector))) {
+                if(ERROR(__WriteSector__(&tempVol, fatStartSector + sector, fatSector))) {
 
                   fatInitSuccess = false;
 
@@ -412,13 +388,41 @@
 
               }
 
-              xMemFree((Addr_t *) fatSector);
+            }
 
-              if(fatInitSuccess) {
+            if(fatInitSuccess) {
 
-                __ReturnOk__();
+              if(OK(__SetFATEntry__(&tempVol, 0x0u, 0x0FFFFFF8u)) && OK(__SetFATEntry__(&tempVol, 0x1u, 0x0FFFFFFFu)) && OK(__SetFATEntry__(&tempVol, 0x2u,
+
+                FAT32_EOC_MAX))) {
+
+                Word_t rootFirstSector = __ClusterToSector__(&tempVol, rootDirCluster);
+
+                for(sector = 0x0u; sector < sectorsPerCluster && fatInitSuccess; sector++) {
+
+                  if(ERROR(__WriteSector__(&tempVol, rootFirstSector + sector, fatSector))) {
+
+                    fatInitSuccess = false;
+
+                  }
+
+                }
+
+                xMemFree((Addr_t *) fatSector);
+
+                if(fatInitSuccess) {
+
+                  __ReturnOk__();
+
+                } else {
+
+                  __AssertOnElse__();
+
+                }
 
               } else {
+
+                xMemFree((Addr_t *) fatSector);
 
                 __AssertOnElse__();
 
@@ -434,21 +438,19 @@
 
           } else {
 
-            xMemFree((Addr_t *) fatSector);
-
             __AssertOnElse__();
 
           }
 
         } else {
 
+          xMemFree((Addr_t *) bootSector);
+
           __AssertOnElse__();
 
         }
 
       } else {
-
-        xMemFree((Addr_t *) bootSector);
 
         __AssertOnElse__();
 
@@ -460,16 +462,9 @@
 
     }
 
-    } else {
-
-      __AssertOnElse__();
-
-    }
-
     FUNCTION_EXIT;
 
   }
-
   Return_t xFileOpen(File_t **file_, Volume_t *volume_, const Byte_t *path_, const Byte_t mode_) {
 
     FUNCTION_ENTER;
@@ -490,123 +485,125 @@
 
         if(OK(__FindFileByPath__(volume_, path_, &entry, &parentCluster, null, null))) {
 
-        fileExists = true;
+          fileExists = true;
 
-      } else {
+        } else {
 
-        const Byte_t *lastSlash = null;
+          const Byte_t *lastSlash = null;
 
-        Byte_t parentPath[256];
+          Byte_t parentPath[256];
 
-        Word_t parentPathLen = 0x0u;
+          Word_t parentPathLen = 0x0u;
 
-        FAT32DirEntry_t parentEntry;
+          FAT32DirEntry_t parentEntry;
 
-        for(i = 0x0u; path_[i] != '\0'; i++) {
+          for(i = 0x0u; path_[i] != '\0'; i++) {
 
-          if(path_[i] == '/') {
+            if(path_[i] == '/') {
 
-            lastSlash = &path_[i];
-
-          }
-
-        }
-
-        if(__PointerIsNotNull__(lastSlash)) {
-
-          parentPathLen = lastSlash - path_;
-
-          if(parentPathLen == 0x0u) {
-
-            parentCluster = volume_->rootDirCluster;
-
-          } else {
-
-            __memcpy__(parentPath, path_, parentPathLen);
-
-            parentPath[parentPathLen] = '\0';
-
-            if(OK(__FindFileByPath__(volume_, parentPath, &parentEntry, null, null, null))) {
-
-              parentCluster = ((Word_t) __ReadLE16__(parentEntry.firstClusterHigh) << 0x10) | __ReadLE16__(parentEntry.firstClusterLow);
-
-            } else {
-
-              parentCluster = volume_->rootDirCluster;
+              lastSlash = &path_[i];
 
             }
 
           }
 
-        } else {
+          if(__PointerIsNotNull__(lastSlash)) {
 
-          parentCluster = volume_->rootDirCluster;
+            parentPathLen = lastSlash - path_;
+
+            if(parentPathLen == 0x0u) {
+
+              parentCluster = volume_->rootDirCluster;
+
+            } else {
+
+              __memcpy__(parentPath, path_, parentPathLen);
+
+              parentPath[parentPathLen] = '\0';
+
+              if(OK(__FindFileByPath__(volume_, parentPath, &parentEntry, null, null, null))) {
+
+                parentCluster = ((Word_t) __ReadLE16__(parentEntry.firstClusterHigh) << 0x10) | __ReadLE16__(parentEntry.firstClusterLow);
+
+              } else {
+
+                parentCluster = volume_->rootDirCluster;
+
+              }
+
+            }
+
+          } else {
+
+            parentCluster = volume_->rootDirCluster;
+
+          }
 
         }
 
-      }
+        if(OK(__KernelAllocateMemory__((volatile Addr_t **) &file, sizeof(File_t)))) {
 
-      if(OK(__KernelAllocateMemory__((volatile Addr_t **) &file, sizeof(File_t)))) {
+          file->valid = VALID;
 
-        file->valid = VALID;
+          file->volume = volume_;
 
-        file->volume = volume_;
+          file->mode = mode_;
 
-        file->mode = mode_;
+          file->position = 0x0u;
 
-        file->position = 0x0u;
+          file->isOpen = true;
 
-        file->isOpen = true;
+          file->isDirty = false;
 
-        file->isDirty = false;
+          file->parentDirCluster = parentCluster;
 
-        file->parentDirCluster = parentCluster;
+          for(i = 0x0u; path_[i] != '\0' && i < 255; i++) {
 
-        for(i = 0x0u; path_[i] != '\0' && i < 255; i++) {
+            file->path[i] = path_[i];
 
-          file->path[i] = path_[i];
+          }
 
-        }
+          file->path[i] = '\0';
 
-        file->path[i] = '\0';
+          if(fileExists) {
 
-        if(fileExists) {
+            file->firstCluster = ((Word_t) __ReadLE16__(entry.firstClusterHigh) << 0x10) | __ReadLE16__(entry.firstClusterLow);
 
-          file->firstCluster = ((Word_t) __ReadLE16__(entry.firstClusterHigh) << 0x10) | __ReadLE16__(entry.firstClusterLow);
+            file->currentCluster = file->firstCluster;
 
-          file->currentCluster = file->firstCluster;
+            file->fileSize = __ReadLE32__(entry.fileSize);
 
-          file->fileSize = __ReadLE32__(entry.fileSize);
+            if((mode_ & FS_MODE_APPEND) != 0x0u) {
 
-          if((mode_ & FS_MODE_APPEND) != 0x0u) {
+              file->position = file->fileSize;
 
-            file->position = file->fileSize;
+              if((file->firstCluster >= 0x2u) && (file->firstCluster < FAT32_EOC_MIN)) {
 
-            if((file->firstCluster >= 0x2u) && (file->firstCluster < FAT32_EOC_MIN)) {
+                Word_t nextCluster = 0x0u;
 
-              Word_t nextCluster = 0x0u;
+                Word_t clusterSize = (Word_t) volume_->bytesPerSector * volume_->sectorsPerCluster;
 
-              Word_t clusterSize = (Word_t) volume_->bytesPerSector * volume_->sectorsPerCluster;
+                Word_t clustersToSkip = file->fileSize / clusterSize;
 
-              Word_t clustersToSkip = file->fileSize / clusterSize;
+                file->currentCluster = file->firstCluster;
 
-              file->currentCluster = file->firstCluster;
+                for(i = 0x0u; i < clustersToSkip; i++) {
 
-              for(i = 0x0u; i < clustersToSkip; i++) {
+                  if(OK(__GetFATEntry__(volume_, file->currentCluster, &nextCluster))) {
 
-                if(OK(__GetFATEntry__(volume_, file->currentCluster, &nextCluster))) {
+                    if(nextCluster >= FAT32_EOC_MIN) {
 
-                  if(nextCluster >= FAT32_EOC_MIN) {
+                      break;
+
+                    }
+
+                    file->currentCluster = nextCluster;
+
+                  } else {
 
                     break;
 
                   }
-
-                  file->currentCluster = nextCluster;
-
-                } else {
-
-                  break;
 
                 }
 
@@ -614,41 +611,39 @@
 
             }
 
-          }
-
-          *file_ = file;
-
-          __ReturnOk__();
-
-        } else {
-
-          if((mode_ & FS_MODE_CREATE) != 0x0u) {
-
-            file->firstCluster = 0x0u;
-
-            file->currentCluster = 0x0u;
-
-            file->fileSize = 0x0u;
-
             *file_ = file;
 
             __ReturnOk__();
 
           } else {
 
-            __KernelFreeMemory__(file);
+            if((mode_ & FS_MODE_CREATE) != 0x0u) {
 
-            __AssertOnElse__();
+              file->firstCluster = 0x0u;
+
+              file->currentCluster = 0x0u;
+
+              file->fileSize = 0x0u;
+
+              *file_ = file;
+
+              __ReturnOk__();
+
+            } else {
+
+              __KernelFreeMemory__(file);
+
+              __AssertOnElse__();
+
+            }
 
           }
 
+        } else {
+
+          __AssertOnElse__();
+
         }
-
-      } else {
-
-        __AssertOnElse__();
-
-      }
 
       } else {
 
@@ -665,7 +660,6 @@
     FUNCTION_EXIT;
 
   }
-
   Return_t xFileClose(File_t *file_) {
 
     FUNCTION_ENTER;
@@ -767,7 +761,6 @@
     FUNCTION_EXIT;
 
   }
-
   Return_t xFileRead(File_t *file_, const Size_t size_, Byte_t **data_) {
 
     FUNCTION_ENTER;
@@ -806,89 +799,89 @@
 
         if(OK(xMemAlloc((volatile Addr_t **) &buffer, bytesToRead))) {
 
-        if(file_->currentCluster == 0x0u) {
+          if(file_->currentCluster == 0x0u) {
 
-          file_->currentCluster = file_->firstCluster;
+            file_->currentCluster = file_->firstCluster;
 
-        }
+          }
 
-        success = true;
+          success = true;
 
-        while(bytesRead < bytesToRead && success) {
+          while(bytesRead < bytesToRead && success) {
 
-          if(OK(__ReadCluster__(file_->volume, file_->currentCluster, &clusterData))) {
+            if(OK(__ReadCluster__(file_->volume, file_->currentCluster, &clusterData))) {
 
-            offsetInCluster = file_->position % clusterSize;
+              offsetInCluster = file_->position % clusterSize;
 
-            bytesFromCluster = clusterSize - offsetInCluster;
+              bytesFromCluster = clusterSize - offsetInCluster;
 
-            if(bytesFromCluster > (bytesToRead - bytesRead)) {
+              if(bytesFromCluster > (bytesToRead - bytesRead)) {
 
-              bytesFromCluster = bytesToRead - bytesRead;
-
-            }
-
-            __memcpy__(buffer + bytesRead, clusterData + offsetInCluster, bytesFromCluster);
-
-            bytesRead += bytesFromCluster;
-
-            file_->position += bytesFromCluster;
-
-            __KernelFreeMemory__(clusterData);
-
-            if(bytesRead < bytesToRead) {
-
-              if(OK(__GetFATEntry__(file_->volume, file_->currentCluster, &nextCluster))) {
-
-                if(nextCluster >= FAT32_EOC_MIN) {
-
-                  break;
-
-                }
-
-                file_->currentCluster = nextCluster;
-
-              } else {
-
-                xMemFree(buffer);
-
-                success = false;
-
-                __AssertOnElse__();
+                bytesFromCluster = bytesToRead - bytesRead;
 
               }
 
+              __memcpy__(buffer + bytesRead, clusterData + offsetInCluster, bytesFromCluster);
+
+              bytesRead += bytesFromCluster;
+
+              file_->position += bytesFromCluster;
+
+              __KernelFreeMemory__(clusterData);
+
+              if(bytesRead < bytesToRead) {
+
+                if(OK(__GetFATEntry__(file_->volume, file_->currentCluster, &nextCluster))) {
+
+                  if(nextCluster >= FAT32_EOC_MIN) {
+
+                    break;
+
+                  }
+
+                  file_->currentCluster = nextCluster;
+
+                } else {
+
+                  xMemFree(buffer);
+
+                  success = false;
+
+                  __AssertOnElse__();
+
+                }
+
+              }
+
+            } else {
+
+              xMemFree(buffer);
+
+              success = false;
+
+              __AssertOnElse__();
+
             }
 
+          }
+
+          if(success) {
+
+            *data_ = buffer;
+
+            __ReturnOk__();
+
           } else {
-
-            xMemFree(buffer);
-
-            success = false;
 
             __AssertOnElse__();
 
           }
-
-        }
-
-        if(success) {
-
-          *data_ = buffer;
-
-          __ReturnOk__();
 
         } else {
 
           __AssertOnElse__();
 
         }
-
-      } else {
-
-        __AssertOnElse__();
-
-      }
 
       } else {
 
@@ -905,7 +898,6 @@
     FUNCTION_EXIT;
 
   }
-
   Return_t xFileWrite(File_t *file_, const Size_t size_, const Byte_t *data_) {
 
     FUNCTION_ENTER;
@@ -936,171 +928,171 @@
 
       if(((file_->mode & FS_MODE_WRITE) != 0x0u) || ((file_->mode & FS_MODE_APPEND) != 0x0u)) {
 
-      if((file_->mode & FS_MODE_APPEND) != 0x0u) {
+        if((file_->mode & FS_MODE_APPEND) != 0x0u) {
 
-        file_->position = file_->fileSize;
-
-      }
-
-      success = true;
-
-      if(file_->firstCluster == 0x0u) {
-
-        Word_t freeCluster = 0x0u;
-
-        if(OK(__FindFreeCluster__(file_->volume, 3u, &freeCluster))) {
-
-          file_->firstCluster = freeCluster;
-
-          file_->currentCluster = freeCluster;
-
-          __SetFATEntry__(file_->volume, freeCluster, FAT32_EOC_MAX);
-
-          file_->isDirty = true;
-
-        } else {
-
-          success = false;
-
-          __AssertOnElse__();
+          file_->position = file_->fileSize;
 
         }
 
-      }
+        success = true;
 
-      if(success && file_->currentCluster == 0x0u) {
+        if(file_->firstCluster == 0x0u) {
 
-        file_->currentCluster = file_->firstCluster;
+          Word_t freeCluster = 0x0u;
 
-        if(file_->position > 0) {
+          if(OK(__FindFreeCluster__(file_->volume, 3u, &freeCluster))) {
 
-          Word_t targetCluster = file_->position / clusterSize;
+            file_->firstCluster = freeCluster;
 
-          Word_t currentClusterIdx = 0x0u;
+            file_->currentCluster = freeCluster;
 
-          while(currentClusterIdx < targetCluster && success) {
-
-            if(OK(__GetFATEntry__(file_->volume, file_->currentCluster, &nextCluster))) {
-
-              if(nextCluster >= FAT32_EOC_MIN) {
-
-                break;
-
-              }
-
-              file_->currentCluster = nextCluster;
-
-              currentClusterIdx++;
-
-            } else {
-
-              success = false;
-
-              __AssertOnElse__();
-
-            }
-
-          }
-
-        }
-
-      }
-
-      while(bytesWritten < bytesToWrite && success) {
-
-        if(OK(__ReadCluster__(file_->volume, file_->currentCluster, &clusterData))) {
-
-          offsetInCluster = file_->position % clusterSize;
-
-          bytesToCluster = clusterSize - offsetInCluster;
-
-          if(bytesToCluster > (bytesToWrite - bytesWritten)) {
-
-            bytesToCluster = bytesToWrite - bytesWritten;
-
-          }
-
-          __memcpy__(clusterData + offsetInCluster, data_ + bytesWritten, bytesToCluster);
-
-          firstSector = __ClusterToSector__(file_->volume, file_->currentCluster);
-
-          for(i = 0x0u; i < file_->volume->sectorsPerCluster; i++) {
-
-            __WriteSector__(file_->volume, firstSector + i, clusterData + (i * file_->volume->bytesPerSector));
-
-          }
-
-          bytesWritten += bytesToCluster;
-
-          file_->position += bytesToCluster;
-
-          if(file_->position > file_->fileSize) {
-
-            file_->fileSize = file_->position;
+            __SetFATEntry__(file_->volume, freeCluster, FAT32_EOC_MAX);
 
             file_->isDirty = true;
 
+          } else {
+
+            success = false;
+
+            __AssertOnElse__();
+
           }
 
-          __KernelFreeMemory__(clusterData);
+        }
 
-          if(bytesWritten < bytesToWrite) {
+        if(success && (file_->currentCluster == 0x0u)) {
 
-            if(OK(__GetFATEntry__(file_->volume, file_->currentCluster, &nextCluster))) {
+          file_->currentCluster = file_->firstCluster;
 
-              if(nextCluster >= FAT32_EOC_MIN) {
+          if(file_->position > 0) {
 
-                Word_t newCluster = 0x0u;
+            Word_t targetCluster = file_->position / clusterSize;
 
-                if(OK(__FindFreeCluster__(file_->volume, file_->currentCluster + 1u, &newCluster))) {
+            Word_t currentClusterIdx = 0x0u;
 
-                  __SetFATEntry__(file_->volume, file_->currentCluster, newCluster);
+            while(currentClusterIdx < targetCluster && success) {
 
-                  __SetFATEntry__(file_->volume, newCluster, FAT32_EOC_MAX);
+              if(OK(__GetFATEntry__(file_->volume, file_->currentCluster, &nextCluster))) {
 
-                  nextCluster = newCluster;
+                if(nextCluster >= FAT32_EOC_MIN) {
 
-                } else {
-
-                  success = false;
-
-                  __AssertOnElse__();
+                  break;
 
                 }
 
+                file_->currentCluster = nextCluster;
+
+                currentClusterIdx++;
+
+              } else {
+
+                success = false;
+
+                __AssertOnElse__();
+
               }
-
-              file_->currentCluster = nextCluster;
-
-            } else {
-
-              success = false;
-
-              __AssertOnElse__();
 
             }
 
           }
 
-        } else {
+        }
 
-          success = false;
+        while(bytesWritten < bytesToWrite && success) {
+
+          if(OK(__ReadCluster__(file_->volume, file_->currentCluster, &clusterData))) {
+
+            offsetInCluster = file_->position % clusterSize;
+
+            bytesToCluster = clusterSize - offsetInCluster;
+
+            if(bytesToCluster > (bytesToWrite - bytesWritten)) {
+
+              bytesToCluster = bytesToWrite - bytesWritten;
+
+            }
+
+            __memcpy__(clusterData + offsetInCluster, data_ + bytesWritten, bytesToCluster);
+
+            firstSector = __ClusterToSector__(file_->volume, file_->currentCluster);
+
+            for(i = 0x0u; i < file_->volume->sectorsPerCluster; i++) {
+
+              __WriteSector__(file_->volume, firstSector + i, clusterData + (i * file_->volume->bytesPerSector));
+
+            }
+
+            bytesWritten += bytesToCluster;
+
+            file_->position += bytesToCluster;
+
+            if(file_->position > file_->fileSize) {
+
+              file_->fileSize = file_->position;
+
+              file_->isDirty = true;
+
+            }
+
+            __KernelFreeMemory__(clusterData);
+
+            if(bytesWritten < bytesToWrite) {
+
+              if(OK(__GetFATEntry__(file_->volume, file_->currentCluster, &nextCluster))) {
+
+                if(nextCluster >= FAT32_EOC_MIN) {
+
+                  Word_t newCluster = 0x0u;
+
+                  if(OK(__FindFreeCluster__(file_->volume, file_->currentCluster + 1u, &newCluster))) {
+
+                    __SetFATEntry__(file_->volume, file_->currentCluster, newCluster);
+
+                    __SetFATEntry__(file_->volume, newCluster, FAT32_EOC_MAX);
+
+                    nextCluster = newCluster;
+
+                  } else {
+
+                    success = false;
+
+                    __AssertOnElse__();
+
+                  }
+
+                }
+
+                file_->currentCluster = nextCluster;
+
+              } else {
+
+                success = false;
+
+                __AssertOnElse__();
+
+              }
+
+            }
+
+          } else {
+
+            success = false;
+
+            __AssertOnElse__();
+
+          }
+
+        }
+
+        if(success) {
+
+          __ReturnOk__();
+
+        } else {
 
           __AssertOnElse__();
 
         }
-
-      }
-
-      if(success) {
-
-        __ReturnOk__();
-
-      } else {
-
-        __AssertOnElse__();
-
-      }
 
       } else {
 
@@ -1117,7 +1109,6 @@
     FUNCTION_EXIT;
 
   }
-
   Return_t xFileSeek(File_t *file_, const Word_t offset_, const Byte_t origin_) {
 
     FUNCTION_ENTER;
@@ -1225,7 +1216,6 @@
     FUNCTION_EXIT;
 
   }
-
   Return_t xFileTell(const File_t *file_, Word_t *position_) {
 
     FUNCTION_ENTER;
@@ -1245,7 +1235,6 @@
     FUNCTION_EXIT;
 
   }
-
   Return_t xFileGetSize(const File_t *file_, Word_t *size_) {
 
     FUNCTION_ENTER;
@@ -1265,7 +1254,6 @@
     FUNCTION_EXIT;
 
   }
-
   Return_t xFileSync(File_t *file_) {
 
     FUNCTION_ENTER;
@@ -1387,7 +1375,6 @@
     FUNCTION_EXIT;
 
   }
-
   Return_t xFileTruncate(File_t *file_, const Word_t size_) {
 
     FUNCTION_ENTER;
@@ -1485,7 +1472,6 @@
     FUNCTION_EXIT;
 
   }
-
   Return_t xFileEOF(const File_t *file_, Base_t *eof_) {
 
     FUNCTION_ENTER;
@@ -1505,7 +1491,6 @@
     FUNCTION_EXIT;
 
   }
-
   Return_t xDirOpen(Dir_t **dir_, Volume_t *volume_, const Byte_t *path_) {
 
     FUNCTION_ENTER;
@@ -1597,7 +1582,6 @@
     FUNCTION_EXIT;
 
   }
-
   Return_t xDirClose(Dir_t *dir_) {
 
     FUNCTION_ENTER;
@@ -1625,7 +1609,6 @@
     FUNCTION_EXIT;
 
   }
-
   Return_t xDirRead(Dir_t *dir_, DirEntry_t **entry_) {
 
     FUNCTION_ENTER;
@@ -1797,7 +1780,6 @@
     FUNCTION_EXIT;
 
   }
-
   Return_t xDirRewind(Dir_t *dir_) {
 
     FUNCTION_ENTER;
@@ -1817,7 +1799,6 @@
     FUNCTION_EXIT;
 
   }
-
   Return_t xDirMake(Volume_t *volume_, const Byte_t *path_) {
 
     FUNCTION_ENTER;
@@ -2013,7 +1994,6 @@
     FUNCTION_EXIT;
 
   }
-
   Return_t xDirRemove(Volume_t *volume_, const Byte_t *path_) {
 
     FUNCTION_ENTER;
@@ -2076,7 +2056,8 @@
 
                   }
 
-                  if((fatEntry->name[0x0u] == 0xE5u) || __ByteCompare__(fatEntry->name, (const Byte_t *) ".          ", 0xB) || __ByteCompare__(fatEntry->name, (
+                  if((fatEntry->name[0x0u] == 0xE5u) || __ByteCompare__(fatEntry->name, (const Byte_t *) ".          ", 0xB) || __ByteCompare__(fatEntry->name,
+                    (
 
                     const Byte_t *) "..         ", 0xB)) {
 
@@ -2195,7 +2176,6 @@
     FUNCTION_EXIT;
 
   }
-
   Return_t xFileExists(Volume_t *volume_, const Byte_t *path_, Base_t *exists_) {
 
     FUNCTION_ENTER;
@@ -2237,7 +2217,6 @@
     FUNCTION_EXIT;
 
   }
-
   Return_t xFileUnlink(Volume_t *volume_, const Byte_t *path_) {
 
     FUNCTION_ENTER;
@@ -2341,7 +2320,6 @@
     FUNCTION_EXIT;
 
   }
-
   Return_t xFileRename(Volume_t *volume_, const Byte_t *oldPath_, const Byte_t *newPath_) {
 
     FUNCTION_ENTER;
@@ -2481,7 +2459,6 @@
     FUNCTION_EXIT;
 
   }
-
   Return_t xFileGetInfo(Volume_t *volume_, const Byte_t *path_, DirEntry_t **entry_) {
 
     FUNCTION_ENTER;
@@ -2566,5 +2543,5 @@
 
   }
 
-#endif 
 
+#endif /* if defined(CONFIG_ENABLE_IO_SUBSYSTEM) */

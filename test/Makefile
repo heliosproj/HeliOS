@@ -87,7 +87,6 @@ nomic:
 # Run the tests
 test: $(TARGET)
 	@./$(TARGET) --json $(TEST_REPORT)
-	@echo "Test report saved to: $(TEST_REPORT)"
 
 # Run Nomic semantic source code analyzer
 analyze: nomic compile_commands
@@ -96,7 +95,6 @@ analyze: nomic compile_commands
 		--rules $(BASE_DIR)/extras/code_standard/code_standard.yaml \
 		--format json \
 		--output $(ANALYSIS_REPORT)
-	@echo "Analysis report saved to: $(ANALYSIS_REPORT)"
 
 # Generate compilation database for nomic
 compile_commands:
@@ -144,21 +142,33 @@ version:
 	sed -i "s/\"version\":\"[^\"]*\"/\"version\":\"$$VERSION\"/" ../library.json && echo "✓ ../library.json"; \
 	sed -i "s/^version=.*/version=$$VERSION/" ../library.properties && echo "✓ ../library.properties"; \
 	sed -i "s/PROJECT_NUMBER = Kernel [0-9.]*'/PROJECT_NUMBER = Kernel $$VERSION'/" ../.github/workflows/HeliOS_CI_Workflow.yml && echo "✓ ../.github/workflows/HeliOS_CI_Workflow.yml"; \
-	echo "All files updated to version $$VERSION"
+
+# Uncrustify configuration target
+config:
+	@cd $(BASE_DIR)/extras/uncrustify && bash config.sh
+
+# Uncrustify format target
+uncrustify: config
+	@find $(BASE_DIR)/src -name "*.c" ! -name "HeliOS.h" ! -name "config.h" -exec uncrustify -c $(BASE_DIR)/extras/uncrustify/helios.cfg --no-backup {} \;
+	@find $(BASE_DIR)/src -name "*.h" ! -name "HeliOS.h" ! -name "config.h" -exec uncrustify -c $(BASE_DIR)/extras/uncrustify/helios.cfg --no-backup {} \;
+	@find $(BASE_DIR)/drivers -name "*.c" -exec uncrustify -c $(BASE_DIR)/extras/uncrustify/helios.cfg --no-backup {} \;
+	@find $(BASE_DIR)/drivers -name "*.h" -exec uncrustify -c $(BASE_DIR)/extras/uncrustify/helios.cfg --no-backup {} \;
 
 # Phony targets
-.PHONY: all test analyze debug clean help nomic compile_commands version
+.PHONY: all test analyze debug clean help nomic compile_commands version config uncrustify
 
 # Help target
 help:
-	@echo "  all      - Build the unit test binary (default)"
-	@echo "  test     - Run unit tests and generate test-report.json"
-	@echo "  analyze  - Run Nomic semantic analyzer and generate analysis-report.json"
-	@echo "  nomic    - Build the Nomic C semantic analyzer"
-	@echo "  version  - Sync version from VERSION file to all project files"
-	@echo "  debug    - Run tests in gdb debugger"
-	@echo "  clean    - Remove all build artifacts and Nomic build directory"
-	@echo "  help     - Show this help message"
+	@echo "  all        - Build the unit test binary (default)"
+	@echo "  test       - Run unit tests and generate test-report.json"
+	@echo "  analyze    - Run Nomic semantic analyzer and generate analysis-report.json"
+	@echo "  nomic      - Build the Nomic C semantic analyzer"
+	@echo "  version    - Sync version from VERSION file to all project files"
+	@echo "  config     - Generate uncrustify helios.cfg from defaults.cfg"
+	@echo "  uncrustify - Format all source and driver files with uncrustify"
+	@echo "  debug      - Run tests in gdb debugger"
+	@echo "  clean      - Remove all build artifacts and Nomic build directory"
+	@echo "  help       - Show this help message"
 	@echo ""
 	@echo "Usage examples:"
 	@echo "  make              # Build tests"
@@ -166,4 +176,6 @@ help:
 	@echo "  make nomic        # Build Nomic analyzer"
 	@echo "  make analyze      # Build Nomic and analyze source code"
 	@echo "  make version      # Update all files with version from VERSION file"
+	@echo "  make config       # Generate uncrustify configuration"
+	@echo "  make uncrustify   # Format all code with uncrustify"
 	@echo "  make clean all    # Clean rebuild"

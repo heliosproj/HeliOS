@@ -2,35 +2,35 @@
 
 typedef struct CharDeviceState_s {
 
-  HalfWord_t ioDriverUID;           
+  HalfWord_t ioDriverUID;
 
-  Byte_t protocol; 
+  Byte_t protocol;
 
-  Byte_t lineMode; 
+  Byte_t lineMode;
 
-  Word_t baudRate; 
+  Word_t baudRate;
 
-  Base_t initialized; 
+  Base_t initialized;
 
-  HalfWord_t rxBufferSize; 
+  HalfWord_t rxBufferSize;
 
-  HalfWord_t txBufferSize; 
+  HalfWord_t txBufferSize;
 
-  Byte_t *rxBuffer; 
+  Byte_t *rxBuffer;
 
-  Byte_t *txBuffer; 
+  Byte_t *txBuffer;
 
-  HalfWord_t rxHead; 
+  HalfWord_t rxHead;
 
-  HalfWord_t rxTail; 
+  HalfWord_t rxTail;
 
-  HalfWord_t txHead; 
+  HalfWord_t txHead;
 
-  HalfWord_t txTail; 
+  HalfWord_t txTail;
 
-  HalfWord_t currentByteCount; 
+  HalfWord_t currentByteCount;
 
-  Byte_t currentTransferMode; 
+  Byte_t currentTransferMode;
 
 } CharDeviceState_t;
 
@@ -39,40 +39,34 @@ static CharDeviceState_t state = {
   0
 
 };
-
 static Return_t __PrepareCharIORequest__(const Byte_t operation_, CharIORequest_t **request_, Size_t *configSize_);
-
 static Return_t __CharDeviceReadRAW__(Byte_t **data_, Size_t *bytesRead_);
-
 static Return_t __CharDeviceWriteRAW__(const Byte_t *data_);
-
 static HalfWord_t __CircularBufferSpace__(const HalfWord_t head_, const HalfWord_t tail_, const HalfWord_t size_);
-
 static HalfWord_t __CircularBufferAvailable__(const HalfWord_t head_, const HalfWord_t tail_, const HalfWord_t size_);
-
 Return_t TO_FUNCTION(DEVICE_NAME, _self_register)(void) {
 
   FUNCTION_ENTER;
 
   if(OK(__RegisterDevice__(DEVICE_UID,
 
-                          (Byte_t *)TO_LITERAL(DEVICE_NAME),
+    (Byte_t *) TO_LITERAL(DEVICE_NAME),
 
-                          DEVICE_STATE,
+    DEVICE_STATE,
 
-                          DEVICE_MODE,
+    DEVICE_MODE,
 
-                          TO_FUNCTION(DEVICE_NAME, _init),
+    TO_FUNCTION(DEVICE_NAME, _init),
 
-                          TO_FUNCTION(DEVICE_NAME, _config),
+    TO_FUNCTION(DEVICE_NAME, _config),
 
-                          TO_FUNCTION(DEVICE_NAME, _read),
+    TO_FUNCTION(DEVICE_NAME, _read),
 
-                          TO_FUNCTION(DEVICE_NAME, _write),
+    TO_FUNCTION(DEVICE_NAME, _write),
 
-                          TO_FUNCTION(DEVICE_NAME, _simple_read),
+    TO_FUNCTION(DEVICE_NAME, _simple_read),
 
-                          TO_FUNCTION(DEVICE_NAME, _simple_write)))) {
+    TO_FUNCTION(DEVICE_NAME, _simple_write)))) {
 
     __ReturnOk__();
 
@@ -85,7 +79,6 @@ Return_t TO_FUNCTION(DEVICE_NAME, _self_register)(void) {
   FUNCTION_EXIT;
 
 }
-
 Return_t TO_FUNCTION(DEVICE_NAME, _init)(Device_t *device_) {
 
   FUNCTION_ENTER;
@@ -125,88 +118,77 @@ Return_t TO_FUNCTION(DEVICE_NAME, _init)(Device_t *device_) {
   FUNCTION_EXIT;
 
 }
-
 Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Addr_t *config_) {
 
   FUNCTION_ENTER;
 
   if(__PointerIsNotNull__(config_) && __PointerIsNotNull__(size_)) {
 
-    Byte_t command = *(Byte_t *)config_; 
+    Byte_t command = *(Byte_t *) config_;
 
     switch(command) {
 
-      case CHAR_CMD_CONFIG:
+    case CHAR_CMD_CONFIG:
 
-        if(*size_ >= sizeof(CharDeviceConfig_t)) {
+      if(*size_ >= sizeof(CharDeviceConfig_t)) {
 
-          CharDeviceConfig_t *cfg = (CharDeviceConfig_t *)config_;
+        CharDeviceConfig_t *cfg = (CharDeviceConfig_t *) config_;
 
-          state.ioDriverUID = cfg->ioDriverUID;
+        state.ioDriverUID = cfg->ioDriverUID;
 
-          state.protocol = cfg->protocol;
+        state.protocol = cfg->protocol;
 
-          state.lineMode = cfg->lineMode;
+        state.lineMode = cfg->lineMode;
 
-          state.baudRate = cfg->baudRate;
+        state.baudRate = cfg->baudRate;
 
-          state.rxBufferSize = (0 == cfg->rxBufferSize) ? CHAR_DEFAULT_RX_BUFFER_SIZE : cfg->rxBufferSize;
+        state.rxBufferSize = (0 == cfg->rxBufferSize) ? CHAR_DEFAULT_RX_BUFFER_SIZE : cfg->rxBufferSize;
 
-          state.txBufferSize = (0 == cfg->txBufferSize) ? CHAR_DEFAULT_TX_BUFFER_SIZE : cfg->txBufferSize;
+        state.txBufferSize = (0 == cfg->txBufferSize) ? CHAR_DEFAULT_TX_BUFFER_SIZE : cfg->txBufferSize;
 
-          if((CHAR_PROTOCOL_RAW == state.protocol) && (CHAR_LINE_RAW == state.lineMode)) {
+        if((CHAR_PROTOCOL_RAW == state.protocol) && (CHAR_LINE_RAW == state.lineMode)) {
 
-            state.initialized = true;
+          state.initialized = true;
 
-            cfg->rxBufferSize = state.rxBufferSize;
+          cfg->rxBufferSize = state.rxBufferSize;
 
-            cfg->txBufferSize = state.txBufferSize;
+          cfg->txBufferSize = state.txBufferSize;
 
-            __ReturnOk__();
+          __ReturnOk__();
 
-          }
+        } else if(CHAR_LINE_COOKED == state.lineMode) {
 
-          else if(CHAR_LINE_COOKED == state.lineMode) {
+          if(OK(__KernelAllocateMemory__((volatile Addr_t **) &state.rxBuffer, state.rxBufferSize))) {
 
-            if(OK(__KernelAllocateMemory__((volatile Addr_t **)&state.rxBuffer, state.rxBufferSize))) {
+            if(OK(__KernelAllocateMemory__((volatile Addr_t **) &state.txBuffer, state.txBufferSize))) {
 
-              if(OK(__KernelAllocateMemory__((volatile Addr_t **)&state.txBuffer, state.txBufferSize))) {
+              state.rxHead = 0x0u;
 
-                state.rxHead = 0x0u;
+              state.rxTail = 0x0u;
 
-                state.rxTail = 0x0u;
+              state.txHead = 0x0u;
 
-                state.txHead = 0x0u;
+              state.txTail = 0x0u;
 
-                state.txTail = 0x0u;
+              state.initialized = true;
 
-                state.initialized = true;
+              cfg->rxBufferSize = state.rxBufferSize;
 
-                cfg->rxBufferSize = state.rxBufferSize;
+              cfg->txBufferSize = state.txBufferSize;
 
-                cfg->txBufferSize = state.txBufferSize;
-
-                __ReturnOk__();
-
-              } else {
-
-                __KernelFreeMemory__(state.rxBuffer);
-
-                state.rxBuffer = null;
-
-                __AssertOnElse__();
-
-              }
+              __ReturnOk__();
 
             } else {
+
+              __KernelFreeMemory__(state.rxBuffer);
+
+              state.rxBuffer = null;
 
               __AssertOnElse__();
 
             }
 
-          }
-
-          else {
+          } else {
 
             __AssertOnElse__();
 
@@ -218,87 +200,93 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Add
 
         }
 
-        break;
+      } else {
 
-      case CHAR_CMD_SET_PARAMS:
+        __AssertOnElse__();
 
-        if(*size_ >= sizeof(CharDeviceCommand_t)) {
+      }
 
-          CharDeviceCommand_t *cmd = (CharDeviceCommand_t *)config_;
+      break;
 
-          state.currentByteCount = cmd->byteCount;
+    case CHAR_CMD_SET_PARAMS:
 
-          state.currentTransferMode = cmd->transferMode;
+      if(*size_ >= sizeof(CharDeviceCommand_t)) {
 
-          __ReturnOk__();
+        CharDeviceCommand_t *cmd = (CharDeviceCommand_t *) config_;
+
+        state.currentByteCount = cmd->byteCount;
+
+        state.currentTransferMode = cmd->transferMode;
+
+        __ReturnOk__();
+
+      } else {
+
+        __AssertOnElse__();
+
+      }
+
+      break;
+
+    case CHAR_CMD_GET_INFO:
+
+      if(*size_ >= sizeof(CharDeviceInfo_t)) {
+
+        CharDeviceInfo_t *info = (CharDeviceInfo_t *) config_;
+
+        info->protocol = state.protocol;
+
+        info->lineMode = state.lineMode;
+
+        info->baudRate = state.baudRate;
+
+        if(CHAR_LINE_COOKED == state.lineMode) {
+
+          info->rxBytesAvailable = __CircularBufferAvailable__(state.rxHead, state.rxTail, state.rxBufferSize);
+
+          info->txBytesFree = __CircularBufferSpace__(state.txHead, state.txTail, state.txBufferSize);
 
         } else {
 
-          __AssertOnElse__();
+          CharIOStatus_t ioStatus;
 
-        }
+          Size_t statusSize = sizeof(CharIOStatus_t);
 
-        break;
+          ioStatus.command = CHAR_IO_CMD_GET_STATUS;
 
-      case CHAR_CMD_GET_INFO:
+          if(OK(__DeviceConfigDevice__(state.ioDriverUID, &statusSize, (Addr_t *) &ioStatus))) {
 
-        if(*size_ >= sizeof(CharDeviceInfo_t)) {
+            info->rxBytesAvailable = ioStatus.rxBytesAvailable;
 
-          CharDeviceInfo_t *info = (CharDeviceInfo_t *)config_;
-
-          info->protocol = state.protocol;
-
-          info->lineMode = state.lineMode;
-
-          info->baudRate = state.baudRate;
-
-          if(CHAR_LINE_COOKED == state.lineMode) {
-
-            info->rxBytesAvailable = __CircularBufferAvailable__(state.rxHead, state.rxTail, state.rxBufferSize);
-
-            info->txBytesFree = __CircularBufferSpace__(state.txHead, state.txTail, state.txBufferSize);
+            info->txBytesFree = ioStatus.txBytesFree;
 
           } else {
 
-            CharIOStatus_t ioStatus;
+            info->rxBytesAvailable = 0x0u;
 
-            Size_t statusSize = sizeof(CharIOStatus_t);
-
-            ioStatus.command = CHAR_IO_CMD_GET_STATUS;
-
-            if(OK(__DeviceConfigDevice__(state.ioDriverUID, &statusSize, (Addr_t *)&ioStatus))) {
-
-              info->rxBytesAvailable = ioStatus.rxBytesAvailable;
-
-              info->txBytesFree = ioStatus.txBytesFree;
-
-            } else {
-
-              info->rxBytesAvailable = 0x0u;
-
-              info->txBytesFree = 0x0u;
-
-            }
+            info->txBytesFree = 0x0u;
 
           }
 
-          info->isInitialized = state.initialized;
-
-          info->isConnected = true; 
-
-          __ReturnOk__();
-
-        } else {
-
-          __AssertOnElse__();
-
         }
 
-        break;
+        info->isInitialized = state.initialized;
 
-      default:
+        info->isConnected = true;
+
+        __ReturnOk__();
+
+      } else {
 
         __AssertOnElse__();
+
+      }
+
+      break;
+
+    default:
+
+      __AssertOnElse__();
 
     }
 
@@ -311,7 +299,6 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Add
   FUNCTION_EXIT;
 
 }
-
 Return_t TO_FUNCTION(DEVICE_NAME, _read)(Device_t *device_, Size_t *size_, Addr_t **data_) {
 
   FUNCTION_ENTER;
@@ -351,7 +338,6 @@ Return_t TO_FUNCTION(DEVICE_NAME, _read)(Device_t *device_, Size_t *size_, Addr_
   FUNCTION_EXIT;
 
 }
-
 Return_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t *device_, Size_t *size_, Addr_t *data_) {
 
   FUNCTION_ENTER;
@@ -360,7 +346,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t *device_, Size_t *size_, Addr
 
     if(CHAR_PROTOCOL_RAW == state.protocol) {
 
-      if(OK(__CharDeviceWriteRAW__((Byte_t *)data_))) {
+      if(OK(__CharDeviceWriteRAW__((Byte_t *) data_))) {
 
         __ReturnOk__();
 
@@ -383,7 +369,6 @@ Return_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t *device_, Size_t *size_, Addr
   FUNCTION_EXIT;
 
 }
-
 Return_t TO_FUNCTION(DEVICE_NAME, _simple_read)(Device_t *device_, Byte_t *data_) {
 
   FUNCTION_ENTER;
@@ -429,7 +414,6 @@ Return_t TO_FUNCTION(DEVICE_NAME, _simple_read)(Device_t *device_, Byte_t *data_
   FUNCTION_EXIT;
 
 }
-
 Return_t TO_FUNCTION(DEVICE_NAME, _simple_write)(Device_t *device_, Byte_t data_) {
 
   FUNCTION_ENTER;
@@ -457,20 +441,19 @@ Return_t TO_FUNCTION(DEVICE_NAME, _simple_write)(Device_t *device_, Byte_t data_
   FUNCTION_EXIT;
 
 }
-
 static Return_t __PrepareCharIORequest__(const Byte_t operation_,
 
-                                        CharIORequest_t **request_,
+  CharIORequest_t **request_,
 
-                                        Size_t *configSize_) {
+  Size_t *configSize_) {
 
   FUNCTION_ENTER;
 
   Byte_t *ioConfig = null;
 
-  if(OK(__KernelAllocateMemory__((volatile Addr_t **)&ioConfig, sizeof(CharIORequest_t)))) {
+  if(OK(__KernelAllocateMemory__((volatile Addr_t **) &ioConfig, sizeof(CharIORequest_t)))) {
 
-    CharIORequest_t *request = (CharIORequest_t *)ioConfig;
+    CharIORequest_t *request = (CharIORequest_t *) ioConfig;
 
     request->command = CHAR_IO_CMD_SET_REQUEST;
 
@@ -480,7 +463,7 @@ static Return_t __PrepareCharIORequest__(const Byte_t operation_,
 
     request->transferMode = state.currentTransferMode;
 
-    request->timeoutMs = 1000; 
+    request->timeoutMs = 1000;
 
     *request_ = request;
 
@@ -498,13 +481,14 @@ static Return_t __PrepareCharIORequest__(const Byte_t operation_,
 
 }
 
+
 static Return_t __CharDeviceReadRAW__(Byte_t **data_,
 
-                                     Size_t *bytesRead_) {
+  Size_t *bytesRead_) {
 
   FUNCTION_ENTER;
 
-  Size_t requestSize = (Size_t)state.currentByteCount;
+  Size_t requestSize = (Size_t) state.currentByteCount;
 
   Byte_t *buffer = null;
 
@@ -514,9 +498,9 @@ static Return_t __CharDeviceReadRAW__(Byte_t **data_,
 
   if(OK(__PrepareCharIORequest__(CHAR_IO_OP_READ, &request, &configSize))) {
 
-    if(OK(__DeviceConfigDevice__(state.ioDriverUID, &configSize, (Addr_t *)request))) {
+    if(OK(__DeviceConfigDevice__(state.ioDriverUID, &configSize, (Addr_t *) request))) {
 
-      if(OK(__DeviceRead__(state.ioDriverUID, &requestSize, (Addr_t **)&buffer))) {
+      if(OK(__DeviceRead__(state.ioDriverUID, &requestSize, (Addr_t **) &buffer))) {
 
         *data_ = buffer;
 
@@ -546,11 +530,12 @@ static Return_t __CharDeviceReadRAW__(Byte_t **data_,
 
 }
 
+
 static Return_t __CharDeviceWriteRAW__(const Byte_t *data_) {
 
   FUNCTION_ENTER;
 
-  Size_t writeSize = (Size_t)state.currentByteCount;
+  Size_t writeSize = (Size_t) state.currentByteCount;
 
   CharIORequest_t *request = null;
 
@@ -558,9 +543,9 @@ static Return_t __CharDeviceWriteRAW__(const Byte_t *data_) {
 
   if(OK(__PrepareCharIORequest__(CHAR_IO_OP_WRITE, &request, &configSize))) {
 
-    if(OK(__DeviceConfigDevice__(state.ioDriverUID, &configSize, (Addr_t *)request))) {
+    if(OK(__DeviceConfigDevice__(state.ioDriverUID, &configSize, (Addr_t *) request))) {
 
-      if(OK(__DeviceWrite__(state.ioDriverUID, &writeSize, (Addr_t *)data_))) {
+      if(OK(__DeviceWrite__(state.ioDriverUID, &writeSize, (Addr_t *) data_))) {
 
         __KernelFreeMemory__(request);
 
@@ -586,11 +571,12 @@ static Return_t __CharDeviceWriteRAW__(const Byte_t *data_) {
 
 }
 
+
 static HalfWord_t __CircularBufferSpace__(const HalfWord_t head_,
 
-                                         const HalfWord_t tail_,
+  const HalfWord_t tail_,
 
-                                         const HalfWord_t size_) {
+  const HalfWord_t size_) {
 
   if(head_ >= tail_) {
 
@@ -604,11 +590,12 @@ static HalfWord_t __CircularBufferSpace__(const HalfWord_t head_,
 
 }
 
+
 static HalfWord_t __CircularBufferAvailable__(const HalfWord_t head_,
 
-                                             const HalfWord_t tail_,
+  const HalfWord_t tail_,
 
-                                             const HalfWord_t size_) {
+  const HalfWord_t size_) {
 
   if(head_ >= tail_) {
 
@@ -622,55 +609,55 @@ static HalfWord_t __CircularBufferAvailable__(const HalfWord_t head_,
 
 }
 
+
 #if defined(POSIX_ARCH_OTHER)
+  void __CharDeviceStateClear__(void) {
 
-void __CharDeviceStateClear__(void) {
+    if(null != state.rxBuffer) {
 
-  if(null != state.rxBuffer) {
+      __KernelFreeMemory__(state.rxBuffer);
 
-    __KernelFreeMemory__(state.rxBuffer);
+    }
+
+    if(null != state.txBuffer) {
+
+      __KernelFreeMemory__(state.txBuffer);
+
+    }
+
+    state.ioDriverUID = 0x0u;
+
+    state.protocol = 0x0u;
+
+    state.lineMode = CHAR_LINE_RAW;
+
+    state.baudRate = 0x0u;
+
+    state.initialized = false;
+
+    state.rxBufferSize = 0x0u;
+
+    state.txBufferSize = 0x0u;
+
+    state.rxBuffer = null;
+
+    state.txBuffer = null;
+
+    state.rxHead = 0x0u;
+
+    state.rxTail = 0x0u;
+
+    state.txHead = 0x0u;
+
+    state.txTail = 0x0u;
+
+    state.currentByteCount = 0x0u;
+
+    state.currentTransferMode = CHAR_IO_MODE_BLOCKING;
+
+    return;
 
   }
 
-  if(null != state.txBuffer) {
 
-    __KernelFreeMemory__(state.txBuffer);
-
-  }
-
-  state.ioDriverUID = 0x0u;
-
-  state.protocol = 0x0u;
-
-  state.lineMode = CHAR_LINE_RAW;
-
-  state.baudRate = 0x0u;
-
-  state.initialized = false;
-
-  state.rxBufferSize = 0x0u;
-
-  state.txBufferSize = 0x0u;
-
-  state.rxBuffer = null;
-
-  state.txBuffer = null;
-
-  state.rxHead = 0x0u;
-
-  state.rxTail = 0x0u;
-
-  state.txHead = 0x0u;
-
-  state.txTail = 0x0u;
-
-  state.currentByteCount = 0x0u;
-
-  state.currentTransferMode = CHAR_IO_MODE_BLOCKING;
-
-  return;
-
-}
-
-#endif 
-
+#endif /* if defined(POSIX_ARCH_OTHER) */

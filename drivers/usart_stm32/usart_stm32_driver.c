@@ -2,45 +2,45 @@
 
 #if !defined(POSIX_ARCH_OTHER)
 
-  #include <unistd.h> 
+  #include <unistd.h>
 
-#endif 
+#endif /* if !defined(POSIX_ARCH_OTHER) */
 
 typedef struct USARTDriverState_s {
 
 #if !defined(POSIX_ARCH_OTHER)
 
-    UART_HandleTypeDef huart; 
+    UART_HandleTypeDef huart;
 
-#else  
+#else  /* if !defined(POSIX_ARCH_OTHER) */
 
-    void *huart; 
+    void *huart;
 
-#endif 
+#endif /* if !defined(POSIX_ARCH_OTHER) */
 
-  Byte_t rxBuffer[USART_RX_BUFFER_SIZE]; 
+  Byte_t rxBuffer[USART_RX_BUFFER_SIZE];
 
-  Byte_t txBuffer[USART_TX_BUFFER_SIZE]; 
+  Byte_t txBuffer[USART_TX_BUFFER_SIZE];
 
-  volatile HalfWord_t rxHead; 
+  volatile HalfWord_t rxHead;
 
-  volatile HalfWord_t rxTail; 
+  volatile HalfWord_t rxTail;
 
-  volatile HalfWord_t txHead; 
+  volatile HalfWord_t txHead;
 
-  volatile HalfWord_t txTail; 
+  volatile HalfWord_t txTail;
 
-  volatile Base_t txBusy; 
+  volatile Base_t txBusy;
 
-  volatile Base_t rxBusy; 
+  volatile Base_t rxBusy;
 
-  volatile Byte_t errorFlags; 
+  volatile Byte_t errorFlags;
 
-  CharIORequest_t currentRequest; 
+  CharIORequest_t currentRequest;
 
-  Base_t initialized; 
+  Base_t initialized;
 
-  Byte_t rxSingleByte; 
+  Byte_t rxSingleByte;
 
 } USARTDriverState_t;
 
@@ -49,48 +49,40 @@ static USARTDriverState_t state = {
   0
 
 };
-
 static HalfWord_t __CircularBufferSpace__(const HalfWord_t head_, const HalfWord_t tail_, const HalfWord_t size_);
-
 static HalfWord_t __CircularBufferAvailable__(const HalfWord_t head_, const HalfWord_t tail_, const HalfWord_t size_);
-
 static void __CircularBufferPut__(Byte_t *buffer_, HalfWord_t *head_, const HalfWord_t size_, const Byte_t data_);
-
 static Byte_t __CircularBufferGet__(const Byte_t *buffer_, HalfWord_t *tail_, const HalfWord_t size_);
 
 #if !defined(POSIX_ARCH_OTHER)
-
   static Return_t __TranslateHALToParity__(const Byte_t parity_, Word_t *halParity_);
-
   static Return_t __TranslateHALToStopBits__(const Byte_t stopBits_, Word_t *halStopBits_);
-
   static Return_t __TranslateHALToWordLength__(const Byte_t dataBits_, Word_t *halWordLength_);
 
-#endif 
-
+#endif /* if !defined(POSIX_ARCH_OTHER) */
 Return_t TO_FUNCTION(DEVICE_NAME, _self_register)(void) {
 
   FUNCTION_ENTER;
 
   if(OK(__RegisterDevice__(DEVICE_UID,
 
-                          (Byte_t *)TO_LITERAL(DEVICE_NAME),
+    (Byte_t *) TO_LITERAL(DEVICE_NAME),
 
-                          DEVICE_STATE,
+    DEVICE_STATE,
 
-                          DEVICE_MODE,
+    DEVICE_MODE,
 
-                          TO_FUNCTION(DEVICE_NAME, _init),
+    TO_FUNCTION(DEVICE_NAME, _init),
 
-                          TO_FUNCTION(DEVICE_NAME, _config),
+    TO_FUNCTION(DEVICE_NAME, _config),
 
-                          TO_FUNCTION(DEVICE_NAME, _read),
+    TO_FUNCTION(DEVICE_NAME, _read),
 
-                          TO_FUNCTION(DEVICE_NAME, _write),
+    TO_FUNCTION(DEVICE_NAME, _write),
 
-                          TO_FUNCTION(DEVICE_NAME, _simple_read),
+    TO_FUNCTION(DEVICE_NAME, _simple_read),
 
-                          TO_FUNCTION(DEVICE_NAME, _simple_write)))) {
+    TO_FUNCTION(DEVICE_NAME, _simple_write)))) {
 
     __ReturnOk__();
 
@@ -103,7 +95,6 @@ Return_t TO_FUNCTION(DEVICE_NAME, _self_register)(void) {
   FUNCTION_EXIT;
 
 }
-
 Return_t TO_FUNCTION(DEVICE_NAME, _init)(Device_t *device_) {
 
   FUNCTION_ENTER;
@@ -143,7 +134,6 @@ Return_t TO_FUNCTION(DEVICE_NAME, _init)(Device_t *device_) {
   FUNCTION_EXIT;
 
 }
-
 Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Addr_t *config_) {
 
   FUNCTION_ENTER;
@@ -152,7 +142,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Add
 
     if(*size_ >= sizeof(CharIORequest_t)) {
 
-      CharIORequest_t *req = (CharIORequest_t *)config_;
+      CharIORequest_t *req = (CharIORequest_t *) config_;
 
       if(CHAR_IO_CMD_SET_REQUEST == req->command) {
 
@@ -174,11 +164,9 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Add
 
       }
 
-    }
+    } else if(*size_ >= sizeof(CharIOInfo_t)) {
 
-    else if(*size_ >= sizeof(CharIOInfo_t)) {
-
-      CharIOInfo_t *info = (CharIOInfo_t *)config_;
+      CharIOInfo_t *info = (CharIOInfo_t *) config_;
 
       if(CHAR_IO_CMD_GET_INFO == info->command) {
 
@@ -192,7 +180,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Add
 
         info->isFullDuplex = true;
 
-        info->maxBaudRate = 115200; 
+        info->maxBaudRate = 115200;
 
         __ReturnOk__();
 
@@ -202,15 +190,13 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Add
 
       }
 
-    }
+    } else if(*size_ >= sizeof(CharIOUARTParams_t)) {
 
-    else if(*size_ >= sizeof(CharIOUARTParams_t)) {
-
-      CharIOUARTParams_t *params = (CharIOUARTParams_t *)config_;
+      CharIOUARTParams_t *params = (CharIOUARTParams_t *) config_;
 
       if(CHAR_IO_CMD_SET_PARAMS == params->command) {
 
-        #if !defined(POSIX_ARCH_OTHER)
+#if !defined(POSIX_ARCH_OTHER)
 
           Word_t halParity = 0x0u;
 
@@ -220,9 +206,9 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Add
 
           if(OK(__TranslateHALToParity__(params->parity, &halParity)) &&
 
-             OK(__TranslateHALToStopBits__(params->stopBits, &halStopBits)) &&
+            OK(__TranslateHALToStopBits__(params->stopBits, &halStopBits)) &&
 
-             OK(__TranslateHALToWordLength__(params->dataBits, &halWordLength))) {
+            OK(__TranslateHALToWordLength__(params->dataBits, &halWordLength))) {
 
             state.huart.Init.BaudRate = params->baudRate;
 
@@ -254,11 +240,11 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Add
 
           }
 
-        #else
+#else  /* if !defined(POSIX_ARCH_OTHER) */
 
           __ReturnOk__();
 
-        #endif 
+#endif /* if !defined(POSIX_ARCH_OTHER) */
 
       } else {
 
@@ -266,11 +252,9 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Add
 
       }
 
-    }
+    } else if(*size_ >= sizeof(CharIOStatus_t)) {
 
-    else if(*size_ >= sizeof(CharIOStatus_t)) {
-
-      CharIOStatus_t *status = (CharIOStatus_t *)config_;
+      CharIOStatus_t *status = (CharIOStatus_t *) config_;
 
       if(CHAR_IO_CMD_GET_STATUS == status->command) {
 
@@ -292,13 +276,11 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Add
 
       }
 
-    }
+    } else if(*size_ >= sizeof(USARTSTMInitConfig_t)) {
 
-    else if(*size_ >= sizeof(USARTSTMInitConfig_t)) {
+      USARTSTMInitConfig_t *initCfg = (USARTSTMInitConfig_t *) config_;
 
-      USARTSTMInitConfig_t *initCfg = (USARTSTMInitConfig_t *)config_;
-
-      #if !defined(POSIX_ARCH_OTHER)
+#if !defined(POSIX_ARCH_OTHER)
 
         Word_t halParity = 0x0u;
 
@@ -310,9 +292,9 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Add
 
         if(OK(__TranslateHALToParity__(initCfg->parity, &halParity)) &&
 
-           OK(__TranslateHALToStopBits__(initCfg->stopBits, &halStopBits)) &&
+          OK(__TranslateHALToStopBits__(initCfg->stopBits, &halStopBits)) &&
 
-           OK(__TranslateHALToWordLength__(initCfg->dataBits, &halWordLength))) {
+          OK(__TranslateHALToWordLength__(initCfg->dataBits, &halWordLength))) {
 
           state.huart.Init.BaudRate = initCfg->baudRate;
 
@@ -352,13 +334,13 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Add
 
         }
 
-      #else
+#else  /* if !defined(POSIX_ARCH_OTHER) */
 
         state.initialized = true;
 
         __ReturnOk__();
 
-      #endif 
+#endif /* if !defined(POSIX_ARCH_OTHER) */
 
     } else {
 
@@ -375,7 +357,6 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Add
   FUNCTION_EXIT;
 
 }
-
 Return_t TO_FUNCTION(DEVICE_NAME, _read)(Device_t *device_, Size_t *size_, Addr_t **data_) {
 
   FUNCTION_ENTER;
@@ -388,7 +369,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _read)(Device_t *device_, Size_t *size_, Addr_
 
   if(__PointerIsNotNull__(size_) && __PointerIsNotNull__(data_) && state.initialized) {
 
-    bytesToRead = (HalfWord_t)*size_;
+    bytesToRead = (HalfWord_t) *size_;
 
     if(CHAR_IO_MODE_INTERRUPT == state.currentRequest.transferMode) {
 
@@ -400,7 +381,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _read)(Device_t *device_, Size_t *size_, Addr_
 
       }
 
-      if(OK(__KernelAllocateMemory__((volatile Addr_t **)&buffer, bytesToRead))) {
+      if(OK(__KernelAllocateMemory__((volatile Addr_t **) &buffer, bytesToRead))) {
 
         for(bytesRead = 0x0u; bytesRead < bytesToRead; bytesRead++) {
 
@@ -420,13 +401,11 @@ Return_t TO_FUNCTION(DEVICE_NAME, _read)(Device_t *device_, Size_t *size_, Addr_
 
       }
 
-    }
+    } else if(CHAR_IO_MODE_BLOCKING == state.currentRequest.transferMode) {
 
-    else if(CHAR_IO_MODE_BLOCKING == state.currentRequest.transferMode) {
+#if !defined(POSIX_ARCH_OTHER)
 
-      #if !defined(POSIX_ARCH_OTHER)
-
-        if(OK(__KernelAllocateMemory__((volatile Addr_t **)&buffer, bytesToRead))) {
+        if(OK(__KernelAllocateMemory__((volatile Addr_t **) &buffer, bytesToRead))) {
 
           if(HAL_OK == HAL_UART_Receive(&state.huart, buffer, bytesToRead, state.currentRequest.timeoutMs)) {
 
@@ -450,13 +429,13 @@ Return_t TO_FUNCTION(DEVICE_NAME, _read)(Device_t *device_, Size_t *size_, Addr_
 
         }
 
-      #else
+#else  /* if !defined(POSIX_ARCH_OTHER) */
 
-        if(OK(__KernelAllocateMemory__((volatile Addr_t **)&buffer, bytesToRead))) {
+        if(OK(__KernelAllocateMemory__((volatile Addr_t **) &buffer, bytesToRead))) {
 
           *data_ = buffer;
 
-          *size_ = 0x0u; 
+          *size_ = 0x0u;
 
           __ReturnOk__();
 
@@ -466,7 +445,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _read)(Device_t *device_, Size_t *size_, Addr_
 
         }
 
-      #endif 
+#endif /* if !defined(POSIX_ARCH_OTHER) */
 
     } else {
 
@@ -483,7 +462,6 @@ Return_t TO_FUNCTION(DEVICE_NAME, _read)(Device_t *device_, Size_t *size_, Addr_
   FUNCTION_EXIT;
 
 }
-
 Return_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t *device_, Size_t *size_, Addr_t *data_) {
 
   FUNCTION_ENTER;
@@ -492,15 +470,15 @@ Return_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t *device_, Size_t *size_, Addr
 
   if(__PointerIsNotNull__(size_) && __PointerIsNotNull__(data_) && state.initialized) {
 
-    bytesToWrite = (HalfWord_t)*size_;
+    bytesToWrite = (HalfWord_t) *size_;
 
-    #if !defined(POSIX_ARCH_OTHER)
+#if !defined(POSIX_ARCH_OTHER)
 
       if(CHAR_IO_MODE_DMA == state.currentRequest.transferMode) {
 
         state.txBusy = true;
 
-        if(HAL_OK == HAL_UART_Transmit_DMA(&state.huart, (Byte_t *)data_, bytesToWrite)) {
+        if(HAL_OK == HAL_UART_Transmit_DMA(&state.huart, (Byte_t *) data_, bytesToWrite)) {
 
           __ReturnOk__();
 
@@ -516,7 +494,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t *device_, Size_t *size_, Addr
 
         state.txBusy = true;
 
-        if(HAL_OK == HAL_UART_Transmit_IT(&state.huart, (Byte_t *)data_, bytesToWrite)) {
+        if(HAL_OK == HAL_UART_Transmit_IT(&state.huart, (Byte_t *) data_, bytesToWrite)) {
 
           __ReturnOk__();
 
@@ -530,7 +508,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t *device_, Size_t *size_, Addr
 
       } else {
 
-        if(HAL_OK == HAL_UART_Transmit(&state.huart, (Byte_t *)data_, bytesToWrite, state.currentRequest.timeoutMs)) {
+        if(HAL_OK == HAL_UART_Transmit(&state.huart, (Byte_t *) data_, bytesToWrite, state.currentRequest.timeoutMs)) {
 
           __ReturnOk__();
 
@@ -542,13 +520,13 @@ Return_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t *device_, Size_t *size_, Addr
 
       }
 
-    #else
+#else  /* if !defined(POSIX_ARCH_OTHER) */
 
       write(STDOUT_FILENO, data_, bytesToWrite);
 
       __ReturnOk__();
 
-    #endif 
+#endif /* if !defined(POSIX_ARCH_OTHER) */
 
   } else {
 
@@ -559,7 +537,6 @@ Return_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t *device_, Size_t *size_, Addr
   FUNCTION_EXIT;
 
 }
-
 Return_t TO_FUNCTION(DEVICE_NAME, _simple_read)(Device_t *device_, Byte_t *data_) {
 
   FUNCTION_ENTER;
@@ -574,7 +551,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _simple_read)(Device_t *device_, Byte_t *data_
 
     } else {
 
-      #if !defined(POSIX_ARCH_OTHER)
+#if !defined(POSIX_ARCH_OTHER)
 
         if(HAL_OK == HAL_UART_Receive(&state.huart, data_, 1, 1000)) {
 
@@ -586,11 +563,11 @@ Return_t TO_FUNCTION(DEVICE_NAME, _simple_read)(Device_t *device_, Byte_t *data_
 
         }
 
-      #else
+#else  /* if !defined(POSIX_ARCH_OTHER) */
 
         __AssertOnElse__();
 
-      #endif 
+#endif /* if !defined(POSIX_ARCH_OTHER) */
 
     }
 
@@ -603,14 +580,13 @@ Return_t TO_FUNCTION(DEVICE_NAME, _simple_read)(Device_t *device_, Byte_t *data_
   FUNCTION_EXIT;
 
 }
-
 Return_t TO_FUNCTION(DEVICE_NAME, _simple_write)(Device_t *device_, Byte_t data_) {
 
   FUNCTION_ENTER;
 
   if(state.initialized) {
 
-    #if !defined(POSIX_ARCH_OTHER)
+#if !defined(POSIX_ARCH_OTHER)
 
       if(HAL_OK == HAL_UART_Transmit(&state.huart, &data_, 1, 1000)) {
 
@@ -622,13 +598,13 @@ Return_t TO_FUNCTION(DEVICE_NAME, _simple_write)(Device_t *device_, Byte_t data_
 
       }
 
-    #else
+#else  /* if !defined(POSIX_ARCH_OTHER) */
 
       write(STDOUT_FILENO, &data_, 1);
 
       __ReturnOk__();
 
-    #endif 
+#endif /* if !defined(POSIX_ARCH_OTHER) */
 
   } else {
 
@@ -639,88 +615,89 @@ Return_t TO_FUNCTION(DEVICE_NAME, _simple_write)(Device_t *device_, Byte_t data_
   FUNCTION_EXIT;
 
 }
-
 void USART_TX_IRQHandler(void) {
-
-  #if !defined(POSIX_ARCH_OTHER)
-
-    HAL_UART_IRQHandler(&state.huart);
-
-  #endif 
-
-}
 
 #if !defined(POSIX_ARCH_OTHER)
 
-void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart) {
+    HAL_UART_IRQHandler(&state.huart);
 
-  if(huart == &state.huart) {
-
-    state.txBusy = false;
-
-  }
+#endif /* if !defined(POSIX_ARCH_OTHER) */
 
 }
 
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 
-  if(huart == &state.huart) {
+#if !defined(POSIX_ARCH_OTHER)
+  void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart) {
 
-    __CircularBufferPut__(state.rxBuffer, &state.rxHead, USART_RX_BUFFER_SIZE, state.rxSingleByte);
+    if(huart == &state.huart) {
 
-    HAL_UART_Receive_IT(&state.huart, &state.rxSingleByte, 1);
+      state.txBusy = false;
+
+    }
 
   }
 
-}
 
-void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) {
+  void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 
-  if(huart == &state.huart) {
+    if(huart == &state.huart) {
 
-    Word_t halError = HAL_UART_GetError(huart);
+      __CircularBufferPut__(state.rxBuffer, &state.rxHead, USART_RX_BUFFER_SIZE, state.rxSingleByte);
 
-    if(halError & HAL_UART_ERROR_PE) {
-
-      state.errorFlags |= USART_ERROR_PARITY;
+      HAL_UART_Receive_IT(&state.huart, &state.rxSingleByte, 1);
 
     }
-
-    if(halError & HAL_UART_ERROR_NE) {
-
-      state.errorFlags |= USART_ERROR_NOISE;
-
-    }
-
-    if(halError & HAL_UART_ERROR_FE) {
-
-      state.errorFlags |= USART_ERROR_FRAME;
-
-    }
-
-    if(halError & HAL_UART_ERROR_ORE) {
-
-      state.errorFlags |= USART_ERROR_OVERRUN;
-
-    }
-
-    state.txBusy = false;
-
-    state.rxBusy = false;
-
-    HAL_UART_Receive_IT(&state.huart, &state.rxSingleByte, 1);
 
   }
 
-}
 
-#endif 
+  void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) {
 
+    if(huart == &state.huart) {
+
+      Word_t halError = HAL_UART_GetError(huart);
+
+      if(halError & HAL_UART_ERROR_PE) {
+
+        state.errorFlags |= USART_ERROR_PARITY;
+
+      }
+
+      if(halError & HAL_UART_ERROR_NE) {
+
+        state.errorFlags |= USART_ERROR_NOISE;
+
+      }
+
+      if(halError & HAL_UART_ERROR_FE) {
+
+        state.errorFlags |= USART_ERROR_FRAME;
+
+      }
+
+      if(halError & HAL_UART_ERROR_ORE) {
+
+        state.errorFlags |= USART_ERROR_OVERRUN;
+
+      }
+
+      state.txBusy = false;
+
+      state.rxBusy = false;
+
+      HAL_UART_Receive_IT(&state.huart, &state.rxSingleByte, 1);
+
+    }
+
+  }
+
+
+#endif /* if !defined(POSIX_ARCH_OTHER) */
 static HalfWord_t __CircularBufferSpace__(const HalfWord_t head_,
 
-                                         const HalfWord_t tail_,
+  const HalfWord_t tail_,
 
-                                         const HalfWord_t size_) {
+  const HalfWord_t size_) {
 
   if(head_ >= tail_) {
 
@@ -734,11 +711,12 @@ static HalfWord_t __CircularBufferSpace__(const HalfWord_t head_,
 
 }
 
+
 static HalfWord_t __CircularBufferAvailable__(const HalfWord_t head_,
 
-                                             const HalfWord_t tail_,
+  const HalfWord_t tail_,
 
-                                             const HalfWord_t size_) {
+  const HalfWord_t size_) {
 
   if(head_ >= tail_) {
 
@@ -752,13 +730,14 @@ static HalfWord_t __CircularBufferAvailable__(const HalfWord_t head_,
 
 }
 
+
 static void __CircularBufferPut__(Byte_t *buffer_,
 
-                                 HalfWord_t *head_,
+  HalfWord_t *head_,
 
-                                 const HalfWord_t size_,
+  const HalfWord_t size_,
 
-                                 const Byte_t data_) {
+  const Byte_t data_) {
 
   buffer_[*head_] = data_;
 
@@ -766,27 +745,28 @@ static void __CircularBufferPut__(Byte_t *buffer_,
 
 }
 
+
 static Byte_t __CircularBufferGet__(const Byte_t *buffer_,
 
-                                   HalfWord_t *tail_,
+  HalfWord_t *tail_,
 
-                                   const HalfWord_t size_) {
+  const HalfWord_t size_) {
 
   Byte_t data = buffer_[*tail_];
 
   *tail_ = (*tail_ + 1) % size_;
 
-  return data;
+  return(data);
 
 }
 
+
 #if !defined(POSIX_ARCH_OTHER)
+  static Return_t __TranslateHALToParity__(const Byte_t parity_, Word_t *halParity_) {
 
-static Return_t __TranslateHALToParity__(const Byte_t parity_, Word_t *halParity_) {
+    FUNCTION_ENTER;
 
-  FUNCTION_ENTER;
-
-  switch(parity_) {
+    switch(parity_) {
 
     case CHAR_IO_PARITY_NONE:
 
@@ -810,19 +790,20 @@ static Return_t __TranslateHALToParity__(const Byte_t parity_, Word_t *halParity
 
       __AssertOnElse__();
 
+    }
+
+    __ReturnOk__();
+
+    FUNCTION_EXIT;
+
   }
 
-  __ReturnOk__();
 
-  FUNCTION_EXIT;
+  static Return_t __TranslateHALToStopBits__(const Byte_t stopBits_, Word_t *halStopBits_) {
 
-}
+    FUNCTION_ENTER;
 
-static Return_t __TranslateHALToStopBits__(const Byte_t stopBits_, Word_t *halStopBits_) {
-
-  FUNCTION_ENTER;
-
-  switch(stopBits_) {
+    switch(stopBits_) {
 
     case CHAR_IO_STOP_BITS_1:
 
@@ -840,19 +821,20 @@ static Return_t __TranslateHALToStopBits__(const Byte_t stopBits_, Word_t *halSt
 
       __AssertOnElse__();
 
+    }
+
+    __ReturnOk__();
+
+    FUNCTION_EXIT;
+
   }
 
-  __ReturnOk__();
 
-  FUNCTION_EXIT;
+  static Return_t __TranslateHALToWordLength__(const Byte_t dataBits_, Word_t *halWordLength_) {
 
-}
+    FUNCTION_ENTER;
 
-static Return_t __TranslateHALToWordLength__(const Byte_t dataBits_, Word_t *halWordLength_) {
-
-  FUNCTION_ENTER;
-
-  switch(dataBits_) {
+    switch(dataBits_) {
 
     case CHAR_IO_DATA_BITS_8:
 
@@ -870,41 +852,41 @@ static Return_t __TranslateHALToWordLength__(const Byte_t dataBits_, Word_t *hal
 
       __AssertOnElse__();
 
+    }
+
+    __ReturnOk__();
+
+    FUNCTION_EXIT;
+
   }
 
-  __ReturnOk__();
 
-  FUNCTION_EXIT;
-
-}
-
-#endif 
+#endif /* if !defined(POSIX_ARCH_OTHER) */
 
 #if defined(POSIX_ARCH_OTHER)
+  void __USARTSTMStateClear__(void) {
 
-void __USARTSTMStateClear__(void) {
+    state.rxHead = 0x0u;
 
-  state.rxHead = 0x0u;
+    state.rxTail = 0x0u;
 
-  state.rxTail = 0x0u;
+    state.txHead = 0x0u;
 
-  state.txHead = 0x0u;
+    state.txTail = 0x0u;
 
-  state.txTail = 0x0u;
+    state.txBusy = false;
 
-  state.txBusy = false;
+    state.rxBusy = false;
 
-  state.rxBusy = false;
+    state.errorFlags = USART_ERROR_NONE;
 
-  state.errorFlags = USART_ERROR_NONE;
+    state.initialized = false;
 
-  state.initialized = false;
+    state.rxSingleByte = 0x0u;
 
-  state.rxSingleByte = 0x0u;
+    return;
 
-  return;
+  }
 
-}
 
-#endif 
-
+#endif /* if defined(POSIX_ARCH_OTHER) */

@@ -1,5 +1,4 @@
 #include "timer.h"
-
 Return_t xTimerCreate(Timer_t **timer_, const Ticks_t period_) {
 
   FUNCTION_ENTER;
@@ -42,6 +41,7 @@ Return_t xTimerCreate(Timer_t **timer_, const Ticks_t period_) {
 
 }
 
+
 Return_t xTimerDelete(const Timer_t *timer_) {
 
   FUNCTION_ENTER;
@@ -70,6 +70,7 @@ Return_t xTimerDelete(const Timer_t *timer_) {
 
 }
 
+
 Return_t xTimerChangePeriod(Timer_t *timer_, const Ticks_t period_) {
 
   FUNCTION_ENTER;
@@ -90,6 +91,7 @@ Return_t xTimerChangePeriod(Timer_t *timer_, const Ticks_t period_) {
 
 }
 
+
 Return_t xTimerGetPeriod(const Timer_t *timer_, Ticks_t *period_) {
 
   FUNCTION_ENTER;
@@ -109,6 +111,7 @@ Return_t xTimerGetPeriod(const Timer_t *timer_, Ticks_t *period_) {
   FUNCTION_EXIT;
 
 }
+
 
 Return_t xTimerIsTimerActive(const Timer_t *timer_, Base_t *res_) {
 
@@ -139,6 +142,7 @@ Return_t xTimerIsTimerActive(const Timer_t *timer_, Base_t *res_) {
   FUNCTION_EXIT;
 
 }
+
 
 Return_t xTimerHasTimerExpired(const Timer_t *timer_, Base_t *res_) {
 
@@ -178,6 +182,7 @@ Return_t xTimerHasTimerExpired(const Timer_t *timer_, Base_t *res_) {
 
 }
 
+
 Return_t xTimerReset(Timer_t *timer_) {
 
   FUNCTION_ENTER;
@@ -197,6 +202,7 @@ Return_t xTimerReset(Timer_t *timer_) {
   FUNCTION_EXIT;
 
 }
+
 
 Return_t xTimerStart(Timer_t *timer_) {
 
@@ -228,6 +234,7 @@ Return_t xTimerStart(Timer_t *timer_) {
 
 }
 
+
 Return_t xTimerStop(Timer_t *timer_) {
 
   FUNCTION_ENTER;
@@ -257,4 +264,3 @@ Return_t xTimerStop(Timer_t *timer_) {
   FUNCTION_EXIT;
 
 }
-

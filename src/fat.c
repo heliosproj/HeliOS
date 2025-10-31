@@ -9,18 +9,19 @@
   static HalfWord_t mountedDevices[MAX_MOUNTED_VOLUMES];
 
   static Byte_t mountedDeviceCount = 0x0u;
-
   HalfWord_t __ReadLE16__(const Byte_t *data_) {
 
     return((HalfWord_t) data_[0x0u] | ((HalfWord_t) data_[0x1] << 0x8));
 
   }
 
+
   Word_t __ReadLE32__(const Byte_t *data_) {
 
     return((Word_t) data_[0x0u] | ((Word_t) data_[0x1] << 0x8) | ((Word_t) data_[0x2] << 0x10) | ((Word_t) data_[0x3] << 0x18));
 
   }
+
 
   void __WriteLE16__(Byte_t *data_, HalfWord_t value_) {
 
@@ -29,6 +30,7 @@
     data_[0x1] = (Byte_t) ((value_ >> 0x8) & 0xFFu);
 
   }
+
 
   void __WriteLE32__(Byte_t *data_, Word_t value_) {
 
@@ -41,6 +43,7 @@
     data_[0x3] = (Byte_t) ((value_ >> 0x18) & 0xFFu);
 
   }
+
 
   Base_t __ByteCompare__(const Byte_t *s1_, const Byte_t *s2_, Word_t len_) {
 
@@ -59,6 +62,7 @@
     return(true);
 
   }
+
 
   Return_t __ConvertToFAT83__(const Byte_t *path_, Byte_t *fat83_) {
 
@@ -140,6 +144,7 @@
 
   }
 
+
   Return_t __FindDirEntry__(const Volume_t *vol_, Word_t dirCluster_, const Byte_t *name83_, FAT32DirEntry_t *entry_, Word_t *entryCluster_, Word_t *
 
     entryOffset_) {
@@ -176,9 +181,9 @@
 
               __KernelFreeMemory__(clusterData);
 
-              found = true; 
+              found = true;
 
-              break; 
+              break;
 
             } else {
 
@@ -230,7 +235,7 @@
 
             } else {
 
-              found = true; 
+              found = true;
 
             }
 
@@ -238,7 +243,7 @@
 
         } else {
 
-          found = true; 
+          found = true;
 
         }
 
@@ -250,9 +255,10 @@
 
     }
 
-    FUNCTION_EXIT; 
+    FUNCTION_EXIT;
 
   }
+
 
   Return_t __FindFileByPath__(const Volume_t *vol_, const Byte_t *path_, FAT32DirEntry_t *entry_, Word_t *parentCluster_, Word_t *entryCluster_, Word_t *
 
@@ -364,7 +370,7 @@
 
                 } else {
 
-                  continueProcessing = false; 
+                  continueProcessing = false;
 
                   __AssertOnElse__();
 
@@ -374,7 +380,7 @@
 
             } else {
 
-              continueProcessing = false; 
+              continueProcessing = false;
 
               __AssertOnElse__();
 
@@ -382,7 +388,7 @@
 
           } else {
 
-            continueProcessing = false; 
+            continueProcessing = false;
 
             __AssertOnElse__();
 
@@ -401,6 +407,7 @@
     FUNCTION_EXIT;
 
   }
+
 
   Return_t __FreeClusters__(const Volume_t *vol_, Word_t startCluster_) {
 
@@ -435,6 +442,7 @@
     return(ReturnOK);
 
   }
+
 
   Return_t __CreateDirEntry__(const Volume_t *vol_, Word_t parentCluster_, const Byte_t *name83_, Byte_t attr_, Word_t firstCluster_, Word_t size_) {
 
@@ -560,7 +568,7 @@
 
           } else {
 
-            return(ReturnError); 
+            return(ReturnError);
 
           }
 
@@ -576,9 +584,10 @@
 
     }
 
-    return(ReturnError); 
+    return(ReturnError);
 
   }
+
 
   Return_t __ReadSector__(const Volume_t *vol_, Word_t sector_, Byte_t **data_) {
 
@@ -644,6 +653,7 @@
 
   }
 
+
   Return_t __WriteSector__(const Volume_t *vol_, Word_t sector_, const Byte_t *data_) {
 
     FUNCTION_ENTER;
@@ -708,11 +718,13 @@
 
   }
 
+
   Word_t __ClusterToSector__(const Volume_t *vol_, Word_t cluster_) {
 
     return(vol_->dataStartSector + ((cluster_ - 2u) * vol_->sectorsPerCluster));
 
   }
+
 
   Return_t __ReadCluster__(const Volume_t *vol_, Word_t cluster_, Byte_t **data_) {
 
@@ -782,6 +794,7 @@
 
   }
 
+
   Return_t __GetFATEntry__(const Volume_t *vol_, Word_t cluster_, Word_t *nextCluster_) {
 
     FUNCTION_ENTER;
@@ -829,6 +842,7 @@
     FUNCTION_EXIT;
 
   }
+
 
   Return_t __SetFATEntry__(const Volume_t *vol_, Word_t cluster_, Word_t value_) {
 
@@ -892,6 +906,7 @@
 
   }
 
+
   Return_t __FindFreeCluster__(const Volume_t *vol_, Word_t startHint_, Word_t *freeCluster_) {
 
     FUNCTION_ENTER;
@@ -914,7 +929,7 @@
 
       if(maxCluster > 0x10000u) {
 
-        maxCluster = 0x10000u; 
+        maxCluster = 0x10000u;
 
       }
 
@@ -944,7 +959,7 @@
 
       }
 
-      if(!found && continueSearch && searchStart > 3u) {
+      if(!found && continueSearch && (searchStart > 3u)) {
 
         for(cluster = 3u; cluster < searchStart && continueSearch && !found; cluster++) {
 
@@ -988,6 +1003,7 @@
 
   }
 
+
   Base_t __IsDeviceMounted__(const HalfWord_t blockDeviceUID_) {
 
     Byte_t i = 0x0u;
@@ -1006,6 +1022,7 @@
 
   }
 
+
   Return_t __AddMountedDevice__(const HalfWord_t blockDeviceUID_) {
 
     if(mountedDeviceCount < MAX_MOUNTED_VOLUMES) {
@@ -1021,6 +1038,7 @@
     return(ReturnError);
 
   }
+
 
   Return_t __RemoveMountedDevice__(const HalfWord_t blockDeviceUID_) {
 
@@ -1050,8 +1068,8 @@
 
   }
 
-  #if defined(POSIX_ARCH_OTHER)
 
+  #if defined(POSIX_ARCH_OTHER)
     void __FSStateClear__(void) {
 
       mountedDeviceCount = 0x0u;
@@ -1060,7 +1078,7 @@
 
     }
 
-  #endif 
 
-#endif 
+  #endif /* if defined(POSIX_ARCH_OTHER) */
 
+#endif /* if defined(CONFIG_ENABLE_IO_SUBSYSTEM) */

@@ -4,18 +4,15 @@
 
   #include "console.h"
 
-#endif 
+#endif /* if defined(CONFIG_ENABLE_CONSOLE) */
 
 #if defined(CONFIG_ENABLE_IDLE_HOOK)
-
   extern void vApplicationIdleHook(void);
 
-#endif 
+#endif /* if defined(CONFIG_ENABLE_IDLE_HOOK) */
 
 static TaskList_t *tlist = null;
-
 static void __RunTimeReset__(void);
-
 static Return_t __TaskListFindTask__(const Task_t *task_);
 
 static SchedulerState_t scheduler = SchedulerStateRunning;
@@ -24,50 +21,49 @@ static SchedulerState_t scheduler = SchedulerStateRunning;
 
   #define __TaskRun__(task_) \
 
-          prev = task_->totalRunTime; \
+  prev = task_->totalRunTime; \
 
-          start = __PortGetSysTicks__(); \
+  start = __PortGetSysTicks__(); \
 
-          (*task_->callback)(task_, task_->taskParameter); \
+  (*task_->callback)(task_, task_->taskParameter); \
 
-          task_->lastRunTime = __PortGetSysTicks__() - start; \
+  task_->lastRunTime = __PortGetSysTicks__() - start; \
 
-          task_->totalRunTime += task_->lastRunTime; \
+  task_->totalRunTime += task_->lastRunTime; \
 
-          if((0x0u < task_->wdTimerPeriod) && (task_->lastRunTime > task_->wdTimerPeriod)) { \
+  if((0x0u < task_->wdTimerPeriod) && (task_->lastRunTime > task_->wdTimerPeriod)) { \
 
-            task_->state = TaskStateSuspended; \
+    task_->state = TaskStateSuspended; \
 
-          } \
+  } \
 
-          if(task_->totalRunTime < prev) { \
+  if(task_->totalRunTime < prev) { \
 
-            __SetFlag__(OVERFLOW); \
+    __SetFlag__(OVERFLOW); \
 
-          }
+  }
 
-#else  
+#else  /* if defined(CONFIG_TASK_WD_TIMER_ENABLE) */
 
   #define __TaskRun__(task_) \
 
-          prev = task_->totalRunTime; \
+  prev = task_->totalRunTime; \
 
-          start = __PortGetSysTicks__(); \
+  start = __PortGetSysTicks__(); \
 
-          (*task_->callback)(task_, task_->taskParameter); \
+  (*task_->callback)(task_, task_->taskParameter); \
 
-          task_->lastRunTime = __PortGetSysTicks__() - start; \
+  task_->lastRunTime = __PortGetSysTicks__() - start; \
 
-          task_->totalRunTime += task_->lastRunTime; \
+  task_->totalRunTime += task_->lastRunTime; \
 
-          if(task_->totalRunTime < prev) { \
+  if(task_->totalRunTime < prev) { \
 
-            __SetFlag__(OVERFLOW); \
+    __SetFlag__(OVERFLOW); \
 
-          }
+  }
 
-#endif 
-
+#endif /* if defined(CONFIG_TASK_WD_TIMER_ENABLE) */
 Return_t xTaskCreate(Task_t **task_, const Byte_t *name_, void (*callback_)(Task_t *task_, TaskParm_t *parm_), TaskParm_t *taskParameter_) {
 
   FUNCTION_ENTER;
@@ -167,7 +163,6 @@ Return_t xTaskCreate(Task_t **task_, const Byte_t *name_, void (*callback_)(Task
   FUNCTION_EXIT;
 
 }
-
 Return_t xTaskDelete(const Task_t *task_) {
 
   FUNCTION_ENTER;
@@ -253,7 +248,6 @@ Return_t xTaskDelete(const Task_t *task_) {
   FUNCTION_EXIT;
 
 }
-
 Return_t xTaskGetHandleByName(Task_t **task_, const Byte_t *name_) {
 
   FUNCTION_ENTER;
@@ -301,7 +295,6 @@ Return_t xTaskGetHandleByName(Task_t **task_, const Byte_t *name_) {
   FUNCTION_EXIT;
 
 }
-
 Return_t xTaskGetHandleById(Task_t **task_, const Base_t id_) {
 
   FUNCTION_ENTER;
@@ -337,7 +330,6 @@ Return_t xTaskGetHandleById(Task_t **task_, const Base_t id_) {
   FUNCTION_EXIT;
 
 }
-
 Return_t xTaskGetAllRunTimeStats(TaskRunTimeStats_t **stats_, Base_t *tasks_) {
 
   FUNCTION_ENTER;
@@ -415,7 +407,6 @@ Return_t xTaskGetAllRunTimeStats(TaskRunTimeStats_t **stats_, Base_t *tasks_) {
   FUNCTION_EXIT;
 
 }
-
 Return_t xTaskGetTaskRunTimeStats(const Task_t *task_, TaskRunTimeStats_t **stats_) {
 
   FUNCTION_ENTER;
@@ -465,7 +456,6 @@ Return_t xTaskGetTaskRunTimeStats(const Task_t *task_, TaskRunTimeStats_t **stat
   FUNCTION_EXIT;
 
 }
-
 Return_t xTaskGetNumberOfTasks(Base_t *tasks_) {
 
   FUNCTION_ENTER;
@@ -517,7 +507,6 @@ Return_t xTaskGetNumberOfTasks(Base_t *tasks_) {
   FUNCTION_EXIT;
 
 }
-
 Return_t xTaskGetTaskInfo(const Task_t *task_, TaskInfo_t **info_) {
 
   FUNCTION_ENTER;
@@ -581,7 +570,6 @@ Return_t xTaskGetTaskInfo(const Task_t *task_, TaskInfo_t **info_) {
   FUNCTION_EXIT;
 
 }
-
 Return_t xTaskGetAllTaskInfo(TaskInfo_t **info_, Base_t *tasks_) {
 
   FUNCTION_ENTER;
@@ -675,7 +663,6 @@ Return_t xTaskGetAllTaskInfo(TaskInfo_t **info_, Base_t *tasks_) {
   FUNCTION_EXIT;
 
 }
-
 Return_t xTaskGetTaskState(const Task_t *task_, TaskState_t *state_) {
 
   FUNCTION_ENTER;
@@ -703,7 +690,6 @@ Return_t xTaskGetTaskState(const Task_t *task_, TaskState_t *state_) {
   FUNCTION_EXIT;
 
 }
-
 Return_t xTaskGetName(const Task_t *task_, Byte_t **name_) {
 
   FUNCTION_ENTER;
@@ -755,7 +741,6 @@ Return_t xTaskGetName(const Task_t *task_, Byte_t **name_) {
   FUNCTION_EXIT;
 
 }
-
 Return_t xTaskGetId(const Task_t *task_, Base_t *id_) {
 
   FUNCTION_ENTER;
@@ -783,7 +768,6 @@ Return_t xTaskGetId(const Task_t *task_, Base_t *id_) {
   FUNCTION_EXIT;
 
 }
-
 Return_t xTaskNotifyStateClear(Task_t *task_) {
 
   FUNCTION_ENTER;
@@ -827,7 +811,6 @@ Return_t xTaskNotifyStateClear(Task_t *task_) {
   FUNCTION_EXIT;
 
 }
-
 Return_t xTaskNotificationIsWaiting(const Task_t *task_, Base_t *res_) {
 
   FUNCTION_ENTER;
@@ -865,13 +848,11 @@ Return_t xTaskNotificationIsWaiting(const Task_t *task_, Base_t *res_) {
   FUNCTION_EXIT;
 
 }
-
 Return_t xTaskNotifyGive(Task_t *task_, const Base_t bytes_, const Byte_t *value_) {
 
   FUNCTION_ENTER;
 
   if(__ObjectIsValid__(task_) && (0x0u < bytes_) && (CONFIG_NOTIFICATION_VALUE_BYTES >= bytes_) && __PointerIsNotNull__(value_) && __PointerIsNotNull__(tlist))
-
       {
 
     if(OK(__TaskListFindTask__(task_))) {
@@ -911,7 +892,6 @@ Return_t xTaskNotifyGive(Task_t *task_, const Base_t bytes_, const Byte_t *value
   FUNCTION_EXIT;
 
 }
-
 Return_t xTaskNotifyTake(Task_t *task_, TaskNotification_t **notification_) {
 
   FUNCTION_ENTER;
@@ -991,7 +971,6 @@ Return_t xTaskNotifyTake(Task_t *task_, TaskNotification_t **notification_) {
   FUNCTION_EXIT;
 
 }
-
 Return_t xTaskResume(Task_t *task_) {
 
   FUNCTION_ENTER;
@@ -1019,7 +998,6 @@ Return_t xTaskResume(Task_t *task_) {
   FUNCTION_EXIT;
 
 }
-
 Return_t xTaskSuspend(Task_t *task_) {
 
   FUNCTION_ENTER;
@@ -1047,7 +1025,6 @@ Return_t xTaskSuspend(Task_t *task_) {
   FUNCTION_EXIT;
 
 }
-
 Return_t xTaskWait(Task_t *task_) {
 
   FUNCTION_ENTER;
@@ -1075,7 +1052,6 @@ Return_t xTaskWait(Task_t *task_) {
   FUNCTION_EXIT;
 
 }
-
 Return_t xTaskChangePeriod(Task_t *task_, const Ticks_t period_) {
 
   FUNCTION_ENTER;
@@ -1103,7 +1079,6 @@ Return_t xTaskChangePeriod(Task_t *task_, const Ticks_t period_) {
   FUNCTION_EXIT;
 
 }
-
 Return_t xTaskChangeWDPeriod(Task_t *task_, const Ticks_t period_) {
 
   FUNCTION_ENTER;
@@ -1130,12 +1105,11 @@ Return_t xTaskChangeWDPeriod(Task_t *task_, const Ticks_t period_) {
 
     }
 
-#endif 
+#endif /* if defined(CONFIG_TASK_WD_TIMER_ENABLE) */
 
   FUNCTION_EXIT;
 
 }
-
 Return_t xTaskGetPeriod(const Task_t *task_, Ticks_t *period_) {
 
   FUNCTION_ENTER;
@@ -1163,7 +1137,6 @@ Return_t xTaskGetPeriod(const Task_t *task_, Ticks_t *period_) {
   FUNCTION_EXIT;
 
 }
-
 static Return_t __TaskListFindTask__(const Task_t *task_) {
 
   FUNCTION_ENTER;
@@ -1199,7 +1172,6 @@ static Return_t __TaskListFindTask__(const Task_t *task_) {
   FUNCTION_EXIT;
 
 }
-
 Return_t xTaskResetTimer(Task_t *task_) {
 
   FUNCTION_ENTER;
@@ -1227,7 +1199,6 @@ Return_t xTaskResetTimer(Task_t *task_) {
   FUNCTION_EXIT;
 
 }
-
 Return_t xTaskStartScheduler(void) {
 
   FUNCTION_ENTER;
@@ -1258,7 +1229,7 @@ Return_t xTaskStartScheduler(void) {
 
               xTaskResume(consoleTask);
 
-  #else 
+  #else  /* if (0x0u == CONFIG_CONSOLE_TASK_MODE) */
 
               xTaskWait(consoleTask);
 
@@ -1266,7 +1237,7 @@ Return_t xTaskStartScheduler(void) {
 
               xTaskResetTimer(consoleTask);
 
-  #endif 
+  #endif /* if (0x0u == CONFIG_CONSOLE_TASK_MODE) */
 
           }
 
@@ -1274,7 +1245,7 @@ Return_t xTaskStartScheduler(void) {
 
       }
 
-#endif 
+#endif /* if defined(CONFIG_ENABLE_CONSOLE) */
 
     __SetFlag__(RUNNING);
 
@@ -1334,7 +1305,7 @@ Return_t xTaskStartScheduler(void) {
 
         }
 
-#endif 
+#endif /* if defined(CONFIG_ENABLE_IDLE_HOOK) */
 
       least = -0x1;
 
@@ -1353,7 +1324,6 @@ Return_t xTaskStartScheduler(void) {
   FUNCTION_EXIT;
 
 }
-
 static void __RunTimeReset__(void) {
 
   Task_t *cursor = null;
@@ -1379,7 +1349,6 @@ static void __RunTimeReset__(void) {
   return;
 
 }
-
 Return_t xTaskResumeAll(void) {
 
   FUNCTION_ENTER;
@@ -1399,7 +1368,6 @@ Return_t xTaskResumeAll(void) {
   FUNCTION_EXIT;
 
 }
-
 Return_t xTaskSuspendAll(void) {
 
   FUNCTION_ENTER;
@@ -1419,7 +1387,6 @@ Return_t xTaskSuspendAll(void) {
   FUNCTION_EXIT;
 
 }
-
 Return_t xTaskGetSchedulerState(SchedulerState_t *state_) {
 
   FUNCTION_ENTER;
@@ -1439,7 +1406,6 @@ Return_t xTaskGetSchedulerState(SchedulerState_t *state_) {
   FUNCTION_EXIT;
 
 }
-
 Return_t xTaskGetWDPeriod(const Task_t *task_, Ticks_t *period_) {
 
   FUNCTION_ENTER;
@@ -1466,14 +1432,14 @@ Return_t xTaskGetWDPeriod(const Task_t *task_, Ticks_t *period_) {
 
     }
 
-#endif 
+#endif /* if defined(CONFIG_TASK_WD_TIMER_ENABLE) */
 
   FUNCTION_EXIT;
 
 }
 
-#if defined(POSIX_ARCH_OTHER)
 
+#if defined(POSIX_ARCH_OTHER)
   void __TaskStateClear__(void) {
 
     tlist = null;
@@ -1482,5 +1448,5 @@ Return_t xTaskGetWDPeriod(const Task_t *task_, Ticks_t *period_) {
 
   }
 
-#endif 
 
+#endif /* if defined(POSIX_ARCH_OTHER) */

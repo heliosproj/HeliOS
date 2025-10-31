@@ -2,18 +2,17 @@
 
 Flags_t flag = {
 
-  VALID,  
+  VALID,
 
-  0,      
+  0,
 
-  0,      
+  0,
 
-  0,      
+  0,
 
-  0       
+  0
 
 };
-
 Return_t xSystemAssert(const char *file_, const int line_) {
 
   FUNCTION_ENTER;
@@ -24,11 +23,12 @@ Return_t xSystemAssert(const char *file_, const int line_) {
 
     __ReturnOk__();
 
-#endif 
+#endif /* if defined(CONFIG_SYSTEM_ASSERT_BEHAVIOR) */
 
   FUNCTION_EXIT;
 
 }
+
 
 Return_t xSystemInit(void) {
 
@@ -60,6 +60,7 @@ Return_t xSystemInit(void) {
 
 }
 
+
 Return_t xSystemHalt(void) {
 
   FUNCTION_ENTER;
@@ -73,6 +74,7 @@ Return_t xSystemHalt(void) {
   FUNCTION_EXIT;
 
 }
+
 
 Return_t xSystemGetSystemInfo(SystemInfo_t **info_) {
 
@@ -150,8 +152,8 @@ Return_t xSystemGetSystemInfo(SystemInfo_t **info_) {
 
 }
 
-#if defined(POSIX_ARCH_OTHER)
 
+#if defined(POSIX_ARCH_OTHER)
   void __SysStateClear__(void) {
 
     __memset__(&flag, 0x0u, sizeof(Flags_t));
@@ -160,5 +162,5 @@ Return_t xSystemGetSystemInfo(SystemInfo_t **info_) {
 
   }
 
-#endif 
 
+#endif /* if defined(POSIX_ARCH_OTHER) */

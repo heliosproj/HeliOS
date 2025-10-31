@@ -1,228 +1,227 @@
 #ifndef DEFINES_H_
 
-  #define DEFINES_H_
+#define DEFINES_H_
 
-  #include "posix.h"
+#include "posix.h"
 
-  #include <limits.h>
+#include <limits.h>
 
-  #include <stdint.h>
+#include <stdint.h>
 
-  #include <stddef.h>
+#include <stddef.h>
 
-  #if defined(CHAR_BIT)
+#if defined(CHAR_BIT)
 
-    #if CHAR_BIT != 8
+  #if CHAR_BIT != 8
 
-      #pragma message("WARNING: System may not have an 8-bit wide byte!")
+    #pragma message("WARNING: System may not have an 8-bit wide byte!")
 
-    #endif 
+  #endif // if CHAR_BIT != 8
 
-  #else  
+#else // if defined(CHAR_BIT)
 
-    #pragma message("WARNING: Unable to determine if system has an 8-bit wide byte. CHAR_BIT not defined?")
+  #pragma message("WARNING: Unable to determine if system has an 8-bit wide byte. CHAR_BIT not defined?")
 
-  #endif 
+#endif // if defined(CHAR_BIT)
 
-  #if !defined(true)
+#if !defined(true)
 
-    #define true 0xFFu 
+  #define true 0xFFu
 
-  #endif 
+#endif // if !defined(true)
 
-  #if !defined(false)
+#if !defined(false)
 
-    #define false 0x00u 
+  #define false 0x00u
 
-  #endif 
+#endif // if !defined(false)
 
-  #if !defined(null)
+#if !defined(null)
 
-    #if defined(__cplusplus)
+  #if defined(__cplusplus)
 
-      #define null 0x0u 
+    #define null 0x0u
 
-    #else  
+  #else // if defined(__cplusplus)
 
-      #define null ((void *) 0x0) 
+    #define null ((void *) 0x0)
 
-    #endif 
+  #endif // if defined(__cplusplus)
 
-  #endif 
+#endif // if !defined(null)
 
-  #if !defined(UINT8_TYPE)
+#if !defined(UINT8_TYPE)
 
-    #define UINT8_TYPE uint8_t
+  #define UINT8_TYPE uint8_t
 
-  #endif 
+#endif // if !defined(UINT8_TYPE)
 
-  #if !defined(UINT16_TYPE)
+#if !defined(UINT16_TYPE)
 
-    #define UINT16_TYPE uint16_t
+  #define UINT16_TYPE uint16_t
 
-  #endif 
+#endif // if !defined(UINT16_TYPE)
 
-  #if !defined(UINT32_TYPE)
+#if !defined(UINT32_TYPE)
 
-    #define UINT32_TYPE uint32_t
+  #define UINT32_TYPE uint32_t
 
-  #endif 
+#endif // if !defined(UINT32_TYPE)
 
-  #if !defined(SIZE_TYPE)
+#if !defined(SIZE_TYPE)
 
-    #define SIZE_TYPE size_t
+  #define SIZE_TYPE size_t
 
-  #endif 
+#endif // if !defined(SIZE_TYPE)
 
-  #if !defined(VOID_TYPE)
+#if !defined(VOID_TYPE)
 
-    #define VOID_TYPE void
+  #define VOID_TYPE void
 
-  #endif 
+#endif // if !defined(VOID_TYPE)
 
-  #if !defined(OS_PRODUCT_NAME_SIZE)
+#if !defined(OS_PRODUCT_NAME_SIZE)
 
-    #define OS_PRODUCT_NAME_SIZE 0x6u 
+  #define OS_PRODUCT_NAME_SIZE 0x6u
 
-  #endif 
+#endif // if !defined(OS_PRODUCT_NAME_SIZE)
 
-  #if defined(OS_MAJOR_VERSION_NO)
+#if defined(OS_MAJOR_VERSION_NO)
 
-    #undef OS_MAJOR_VERSION_NO
+  #undef OS_MAJOR_VERSION_NO
 
-  #endif 
+#endif // if defined(OS_MAJOR_VERSION_NO)
 
-  #define OS_MAJOR_VERSION_NO 0x0u 
+#define OS_MAJOR_VERSION_NO 0x0u
 
-  #if defined(OS_MINOR_VERSION_NO)
+#if defined(OS_MINOR_VERSION_NO)
 
-    #undef OS_MINOR_VERSION_NO
+  #undef OS_MINOR_VERSION_NO
 
-  #endif 
+#endif // if defined(OS_MINOR_VERSION_NO)
 
-  #define OS_MINOR_VERSION_NO 0x5u 
+#define OS_MINOR_VERSION_NO 0x5u
 
-  #if defined(OS_PATCH_VERSION_NO)
+#if defined(OS_PATCH_VERSION_NO)
 
-    #undef OS_PATCH_VERSION_NO
+  #undef OS_PATCH_VERSION_NO
 
-  #endif 
+#endif // if defined(OS_PATCH_VERSION_NO)
 
-  #define OS_PATCH_VERSION_NO 0x0u 
+#define OS_PATCH_VERSION_NO 0x0u
 
-  #if defined(__STRINGIFY__)
+#if defined(__STRINGIFY__)
 
-    #undef __STRINGIFY__
+  #undef __STRINGIFY__
 
-  #endif 
+#endif // if defined(__STRINGIFY__)
 
-  #define __STRINGIFY__(x) #x
+#define __STRINGIFY__(x) #x
 
-  #if defined(__TOSTRING__)
+#if defined(__TOSTRING__)
 
-    #undef __TOSTRING__
+  #undef __TOSTRING__
 
-  #endif 
+#endif // if defined(__TOSTRING__)
 
-  #define __TOSTRING__(x) __STRINGIFY__(x)
+#define __TOSTRING__(x) __STRINGIFY__(x)
 
-  #if defined(OS_VERSION_STRING)
+#if defined(OS_VERSION_STRING)
 
-    #undef OS_VERSION_STRING
+  #undef OS_VERSION_STRING
 
-  #endif 
+#endif // if defined(OS_VERSION_STRING)
 
-  #define OS_VERSION_STRING __TOSTRING__(OS_MAJOR_VERSION_NO) "." __TOSTRING__(OS_MINOR_VERSION_NO) "." __TOSTRING__(OS_PATCH_VERSION_NO)
+#define OS_VERSION_STRING __TOSTRING__(OS_MAJOR_VERSION_NO) "." __TOSTRING__(OS_MINOR_VERSION_NO) "." __TOSTRING__(OS_PATCH_VERSION_NO)
 
-  #if !defined(MEMORY_REGION_SIZE)
+#if !defined(MEMORY_REGION_SIZE)
 
-    #define MEMORY_REGION_SIZE CONFIG_MEMORY_REGION_SIZE
+  #define MEMORY_REGION_SIZE CONFIG_MEMORY_REGION_SIZE
 
-  #endif 
+#endif // if !defined(MEMORY_REGION_SIZE)
 
-  #if !defined(OK)
+#if !defined(OK)
 
-    #define OK(expr_) (ReturnOK == (expr_))
+  #define OK(expr_) (ReturnOK == (expr_))
 
-  #endif 
+#endif // if !defined(OK)
 
-  #if !defined(ERROR)
+#if !defined(ERROR)
 
-    #define ERROR(expr_) (ReturnError == (expr_))
+  #define ERROR(expr_) (ReturnError == (expr_))
 
-  #endif 
+#endif // if !defined(ERROR)
 
-  #if !defined(FUNCTION_ENTER)
+#if !defined(FUNCTION_ENTER)
 
-    #define FUNCTION_ENTER Return_t ret = ReturnError
+  #define FUNCTION_ENTER Return_t ret = ReturnError
 
-  #endif 
+#endif // if !defined(FUNCTION_ENTER)
 
-  #if !defined(FUNCTION_EXIT)
+#if !defined(FUNCTION_EXIT)
 
-    #define FUNCTION_EXIT return(ret)
+  #define FUNCTION_EXIT return(ret)
 
-  #endif 
+#endif // if !defined(FUNCTION_EXIT)
 
-  #if !defined(__PointerIsNotNull__)
+#if !defined(__PointerIsNotNull__)
 
-    #define __PointerIsNotNull__(addr_) (null != (addr_))
+  #define __PointerIsNotNull__(addr_) (null != (addr_))
 
-  #endif 
+#endif // if !defined(__PointerIsNotNull__)
 
-  #if !defined(__PointerIsNull__)
+#if !defined(__PointerIsNull__)
 
-    #define __PointerIsNull__(addr_) (null == (addr_))
+  #define __PointerIsNull__(addr_) (null == (addr_))
 
-  #endif 
+#endif // if !defined(__PointerIsNull__)
 
-  #if !defined(__ReturnOk__)
+#if !defined(__ReturnOk__)
 
-    #define __ReturnOk__() ret = ReturnOK
+  #define __ReturnOk__() ret = ReturnOK
 
-  #endif 
+#endif // if !defined(__ReturnOk__)
 
-  #if defined(VALID)
+#if defined(VALID)
 
-    #undef VALID
+  #undef VALID
 
-  #endif 
+#endif // if defined(VALID)
 
-  #define VALID 0xAAu 
+#define VALID 0xAAu
 
-  #if defined(INVALID)
+#if defined(INVALID)
 
-    #undef INVALID
+  #undef INVALID
 
-  #endif 
+#endif // if defined(INVALID)
 
-  #define INVALID 0x55u 
+#define INVALID 0x55u
 
-  #if !defined(__ObjectIsValid__)
+#if !defined(__ObjectIsValid__)
 
-    #define __ObjectIsValid__(obj_) (__PointerIsNotNull__(obj_) && (VALID == (obj_)->valid))
+  #define __ObjectIsValid__(obj_) (__PointerIsNotNull__(obj_) && (VALID == (obj_)->valid))
 
-  #endif 
+#endif // if !defined(__ObjectIsValid__)
 
-  #if !defined(__ObjectIsNotValid__)
+#if !defined(__ObjectIsNotValid__)
 
-    #define __ObjectIsNotValid__(obj_) (!__ObjectIsValid__(obj_))
+  #define __ObjectIsNotValid__(obj_) (!__ObjectIsValid__(obj_))
 
-  #endif 
+#endif // if !defined(__ObjectIsNotValid__)
 
-  #if !defined(__AssertOnElse__)
+#if !defined(__AssertOnElse__)
 
-    #if defined(CONFIG_ENABLE_SYSTEM_ASSERT)
+  #if defined(CONFIG_ENABLE_SYSTEM_ASSERT)
 
-      #define __AssertOnElse__() xSystemAssert(__FILE__, __LINE__)
+    #define __AssertOnElse__() xSystemAssert(__FILE__, __LINE__)
 
-    #else  
+  #else // if defined(CONFIG_ENABLE_SYSTEM_ASSERT)
 
-      #define __AssertOnElse__()
+    #define __AssertOnElse__()
 
-    #endif 
+  #endif // if defined(CONFIG_ENABLE_SYSTEM_ASSERT)
 
-  #endif 
+#endif // if !defined(__AssertOnElse__)
 
-#endif 
-
+#endif // ifndef DEFINES_H_

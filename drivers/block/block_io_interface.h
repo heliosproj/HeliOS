@@ -1,104 +1,103 @@
 #ifndef BLOCK_IO_INTERFACE_H_
 
-  #define BLOCK_IO_INTERFACE_H_
+#define BLOCK_IO_INTERFACE_H_
 
-  #include "types.h"
+#include "types.h"
 
-  #if defined(BLOCK_IO_OP_READ)
+#if defined(BLOCK_IO_OP_READ)
 
-    #undef BLOCK_IO_OP_READ
+  #undef BLOCK_IO_OP_READ
 
-  #endif 
+#endif // if defined(BLOCK_IO_OP_READ)
 
-  #define BLOCK_IO_OP_READ 0x01u 
+#define BLOCK_IO_OP_READ 0x01u
 
-  #if defined(BLOCK_IO_OP_WRITE)
+#if defined(BLOCK_IO_OP_WRITE)
 
-    #undef BLOCK_IO_OP_WRITE
+  #undef BLOCK_IO_OP_WRITE
 
-  #endif 
+#endif // if defined(BLOCK_IO_OP_WRITE)
 
-  #define BLOCK_IO_OP_WRITE 0x02u 
+#define BLOCK_IO_OP_WRITE 0x02u
 
-  #if defined(BLOCK_IO_MODE_BLOCKING)
+#if defined(BLOCK_IO_MODE_BLOCKING)
 
-    #undef BLOCK_IO_MODE_BLOCKING
+  #undef BLOCK_IO_MODE_BLOCKING
 
-  #endif 
+#endif // if defined(BLOCK_IO_MODE_BLOCKING)
 
-  #define BLOCK_IO_MODE_BLOCKING 0x00u 
+#define BLOCK_IO_MODE_BLOCKING 0x00u
 
-  #if defined(BLOCK_IO_MODE_NONBLOCKING)
+#if defined(BLOCK_IO_MODE_NONBLOCKING)
 
-    #undef BLOCK_IO_MODE_NONBLOCKING
+  #undef BLOCK_IO_MODE_NONBLOCKING
 
-  #endif 
+#endif // if defined(BLOCK_IO_MODE_NONBLOCKING)
 
-  #define BLOCK_IO_MODE_NONBLOCKING 0x01u 
+#define BLOCK_IO_MODE_NONBLOCKING 0x01u
 
-  #if defined(BLOCK_IO_MODE_DMA)
+#if defined(BLOCK_IO_MODE_DMA)
 
-    #undef BLOCK_IO_MODE_DMA
+  #undef BLOCK_IO_MODE_DMA
 
-  #endif 
+#endif // if defined(BLOCK_IO_MODE_DMA)
 
-  #define BLOCK_IO_MODE_DMA 0x02u 
+#define BLOCK_IO_MODE_DMA 0x02u
 
-  #if defined(BLOCK_IO_MODE_INTERRUPT)
+#if defined(BLOCK_IO_MODE_INTERRUPT)
 
-    #undef BLOCK_IO_MODE_INTERRUPT
+  #undef BLOCK_IO_MODE_INTERRUPT
 
-  #endif 
+#endif // if defined(BLOCK_IO_MODE_INTERRUPT)
 
-  #define BLOCK_IO_MODE_INTERRUPT 0x03u 
+#define BLOCK_IO_MODE_INTERRUPT 0x03u
 
-  #if defined(BLOCK_IO_CMD_SET_REQUEST)
+#if defined(BLOCK_IO_CMD_SET_REQUEST)
 
-    #undef BLOCK_IO_CMD_SET_REQUEST
+  #undef BLOCK_IO_CMD_SET_REQUEST
 
-  #endif 
+#endif // if defined(BLOCK_IO_CMD_SET_REQUEST)
 
-  #define BLOCK_IO_CMD_SET_REQUEST 0x10u 
+#define BLOCK_IO_CMD_SET_REQUEST 0x10u
 
-  #if defined(BLOCK_IO_CMD_GET_INFO)
+#if defined(BLOCK_IO_CMD_GET_INFO)
 
-    #undef BLOCK_IO_CMD_GET_INFO
+  #undef BLOCK_IO_CMD_GET_INFO
 
-  #endif 
+#endif // if defined(BLOCK_IO_CMD_GET_INFO)
 
-  #define BLOCK_IO_CMD_GET_INFO 0x11u 
+#define BLOCK_IO_CMD_GET_INFO 0x11u
 
-  typedef struct BlockIORequest_s {
+typedef struct BlockIORequest_s {
 
-    Byte_t command;         
+  Byte_t command;
 
-    Byte_t operation; 
+  Byte_t operation;
 
-    Word_t blockNumber; 
+  Word_t blockNumber;
 
-    HalfWord_t blockCount; 
+  HalfWord_t blockCount;
 
-    HalfWord_t blockSize; 
+  HalfWord_t blockSize;
 
-    Byte_t transferMode; 
+  Byte_t transferMode;
 
-    Byte_t reserved; 
+  Byte_t reserved;
 
-  } BlockIORequest_t;
+} BlockIORequest_t;
 
-  typedef struct BlockIOInfo_s {
+typedef struct BlockIOInfo_s {
 
-    Byte_t command;              
+  Byte_t command;
 
-    Word_t totalSizeBytes; 
+  Word_t totalSizeBytes;
 
-    HalfWord_t nativeBlockSize; 
+  HalfWord_t nativeBlockSize;
 
-    Base_t supportsRandomAccess; 
+  Base_t supportsRandomAccess;
 
-    Base_t requiresErase; 
+  Base_t requiresErase;
 
-  } BlockIOInfo_t;
+} BlockIOInfo_t;
 
-#endif 
-
+#endif // ifndef BLOCK_IO_INTERFACE_H_

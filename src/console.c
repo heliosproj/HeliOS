@@ -41,47 +41,26 @@
   static Device_t *cachedDevice = null;
 
   static HalfWord_t cachedDeviceUID = 0x0u;
-
   static Return_t __ConsoleCmdHelp__(const Byte_t *args_);
-
   static Return_t __ConsoleCmdVersion__(const Byte_t *args_);
-
   static Return_t __ConsoleCmdTasks__(const Byte_t *args_);
-
   static Return_t __ConsoleCmdMem__(const Byte_t *args_);
-
   static Return_t __ConsoleCmdClear__(const Byte_t *args_);
-
   static Return_t __ConsoleCmdEcho__(const Byte_t *args_);
-
   static Return_t __ConsoleCmdLs__(const Byte_t *args_);
-
   static Return_t __ConsoleCmdCd__(const Byte_t *args_);
-
   static Return_t __ConsoleCmdPwd__(const Byte_t *args_);
-
   static Return_t __ConsoleCmdCat__(const Byte_t *args_);
-
   static Return_t __ConsoleCmdMv__(const Byte_t *args_);
-
   static Return_t __ConsoleCmdRm__(const Byte_t *args_);
-
   static Return_t __ConsoleCmdMkdir__(const Byte_t *args_);
-
   static Return_t __ConsoleWriteString__(const Byte_t *str_);
-
   static Return_t __ConsoleReadChar__(Byte_t *ch_);
-
   static Return_t __ConsoleCheckDevice__(void);
-
   static Return_t __ConsoleProcessCommand__(void);
-
   static void __ConsolePrintPrompt__(void);
-
   static Return_t __ConsoleHandleBackspace__(void);
-
   static void __SkipWhitespace__(const Byte_t **str_);
-
   static void __uitoah__(Word_t value_, Byte_t *buffer_, Word_t bufferSize_);
 
   typedef struct ConsoleCommand_s {
@@ -151,7 +130,6 @@
                                                     null, null, null
 
                                                   }};
-
   Size_t __strlen__(const Byte_t *str_) {
 
     Size_t len = 0x0u;
@@ -169,6 +147,7 @@
     return (len);
 
   }
+
 
   Return_t __strcpy__(Byte_t *dest_, const Byte_t *src_, const Size_t destSize_) {
 
@@ -199,6 +178,7 @@
     FUNCTION_EXIT;
 
   }
+
 
   Return_t __strncpy__(Byte_t *dest_, const Byte_t *src_, const Size_t n_) {
 
@@ -232,6 +212,7 @@
 
   }
 
+
   Base_t __strcmp__(const Byte_t *s1_, const Byte_t *s2_) {
 
     Size_t i = 0x0u;
@@ -264,6 +245,7 @@
 
   }
 
+
   Base_t __strncmp__(const Byte_t *s1_, const Byte_t *s2_, const Size_t n_) {
 
     Size_t i = 0x0u;
@@ -287,6 +269,7 @@
     return (0x0u);
 
   }
+
 
   Return_t __strcat__(Byte_t *dest_, const Byte_t *src_, const Size_t destSize_) {
 
@@ -330,6 +313,7 @@
 
   }
 
+
   Byte_t * __strchr__(const Byte_t *str_, const Byte_t ch_) {
 
     Size_t i = 0x0u;
@@ -361,6 +345,7 @@
     return (null);
 
   }
+
 
   Byte_t * __strrchr__(const Byte_t *str_, const Byte_t ch_) {
 
@@ -395,6 +380,7 @@
     return (null);
 
   }
+
 
   Return_t __path_join__(Byte_t *dest_, const Byte_t *base_, const Byte_t *path_, const Size_t destSize_) {
 
@@ -489,6 +475,7 @@
     FUNCTION_EXIT;
 
   }
+
 
   Return_t __path_normalize__(Byte_t *path_, const Size_t pathSize_) {
 
@@ -624,6 +611,7 @@
 
   }
 
+
   Base_t __path_is_absolute__(const Byte_t *path_) {
 
     if(__PointerIsNull__(path_)) {
@@ -635,6 +623,7 @@
     return ((CHAR_SLASH == path_[0x0u]) ? true : false);
 
   }
+
 
   Return_t __path_dirname__(Byte_t *dest_, const Byte_t *path_, const Size_t destSize_) {
 
@@ -720,6 +709,7 @@
 
   }
 
+
   Return_t __path_basename__(Byte_t *dest_, const Byte_t *path_, const Size_t destSize_) {
 
     FUNCTION_ENTER;
@@ -790,6 +780,7 @@
 
   }
 
+
   Return_t xConsoleInit(void) {
 
     FUNCTION_ENTER;
@@ -800,11 +791,11 @@
 
       consoleState.echoEnabled = true;
 
-  #else 
+  #else  /* if defined(CONFIG_CONSOLE_ECHO_ENABLED) */
 
       consoleState.echoEnabled = false;
 
-  #endif 
+  #endif /* if defined(CONFIG_CONSOLE_ECHO_ENABLED) */
 
     consoleState.bufferPosition = 0x0u;
 
@@ -820,13 +811,14 @@
 
   }
 
+
   void vConsoleTask(Task_t *task_, TaskParm_t *parm_) {
 
     Byte_t ch = 0x00u;
 
-    (void) task_; 
+    (void) task_;
 
-    (void) parm_; 
+    (void) parm_;
 
     if(OK(__ConsoleCheckDevice__())) {
 
@@ -920,6 +912,7 @@
 
   }
 
+
   static Return_t __ConsoleCheckDevice__(void) {
 
     FUNCTION_ENTER;
@@ -985,6 +978,7 @@
     FUNCTION_EXIT;
 
   }
+
 
   static Return_t __ConsoleWriteString__(const Byte_t *str_) {
 
@@ -1110,6 +1104,7 @@
 
   }
 
+
   static Return_t __ConsoleReadChar__(Byte_t *ch_) {
 
     FUNCTION_ENTER;
@@ -1216,11 +1211,13 @@
 
   }
 
+
   static void __ConsolePrintPrompt__(void) {
 
     __ConsoleWriteString__((const Byte_t *) CONFIG_CONSOLE_PROMPT);
 
   }
+
 
   static Return_t __ConsoleHandleBackspace__(void) {
 
@@ -1247,6 +1244,7 @@
     FUNCTION_EXIT;
 
   }
+
 
   static Return_t __ConsoleProcessCommand__(void) {
 
@@ -1338,6 +1336,7 @@
 
   }
 
+
   static Return_t __ConsoleCmdHelp__(const Byte_t *args_) {
 
     FUNCTION_ENTER;
@@ -1368,6 +1367,7 @@
 
   }
 
+
   static Return_t __ConsoleCmdVersion__(const Byte_t *args_) {
 
     FUNCTION_ENTER;
@@ -1387,6 +1387,7 @@
     FUNCTION_EXIT;
 
   }
+
 
   static Return_t __ConsoleCmdTasks__(const Byte_t *args_) {
 
@@ -1470,6 +1471,7 @@
 
   }
 
+
   static Return_t __ConsoleCmdMem__(const Byte_t *args_) {
 
     FUNCTION_ENTER;
@@ -1540,6 +1542,7 @@
 
   }
 
+
   static Return_t __ConsoleCmdClear__(const Byte_t *args_) {
 
     FUNCTION_ENTER;
@@ -1553,6 +1556,7 @@
     FUNCTION_EXIT;
 
   }
+
 
   static Return_t __ConsoleCmdEcho__(const Byte_t *args_) {
 
@@ -1585,6 +1589,7 @@
     FUNCTION_EXIT;
 
   }
+
 
   static Return_t __ConsoleCmdLs__(const Byte_t *args_) {
 
@@ -1698,6 +1703,7 @@
 
   }
 
+
   static Return_t __ConsoleCmdCd__(const Byte_t *args_) {
 
     FUNCTION_ENTER;
@@ -1804,6 +1810,7 @@
 
   }
 
+
   static Return_t __ConsoleCmdPwd__(const Byte_t *args_) {
 
     FUNCTION_ENTER;
@@ -1820,8 +1827,8 @@
 
   }
 
-  #define CAT_BUFFER_SIZE 0x100u 
 
+  #define CAT_BUFFER_SIZE 0x100u
   static Return_t __ConsoleCmdCat__(const Byte_t *args_) {
 
     FUNCTION_ENTER;
@@ -2010,6 +2017,7 @@
 
   }
 
+
   static Return_t __ConsoleCmdMv__(const Byte_t *args_) {
 
     FUNCTION_ENTER;
@@ -2100,6 +2108,7 @@
 
   }
 
+
   static Return_t __ConsoleCmdRm__(const Byte_t *args_) {
 
     FUNCTION_ENTER;
@@ -2179,6 +2188,7 @@
     FUNCTION_EXIT;
 
   }
+
 
   static Return_t __ConsoleCmdMkdir__(const Byte_t *args_) {
 
@@ -2260,6 +2270,7 @@
 
   }
 
+
   static void __SkipWhitespace__(const Byte_t **str_) {
 
     if(__PointerIsNotNull__(str_) && __PointerIsNotNull__(*str_)) {
@@ -2273,6 +2284,7 @@
     }
 
   }
+
 
   static void __uitoah__(Word_t value_, Byte_t *buffer_, Word_t bufferSize_) {
 
@@ -2288,15 +2300,15 @@
 
     }
 
-    buffer_[i++] = CHAR_ZERO; 
+    buffer_[i++] = CHAR_ZERO;
 
-    buffer_[i++] = CHAR_LOWERCASE_X; 
+    buffer_[i++] = CHAR_LOWERCASE_X;
 
     if(0x0u == value_) {
 
       if(i < bufferSize_ - 0x1u) {
 
-        buffer_[i++] = CHAR_ZERO; 
+        buffer_[i++] = CHAR_ZERO;
 
       }
 
@@ -2338,12 +2350,13 @@
 
       }
 
-    } buffer_[i] = CHAR_NULL;
+    }
+    buffer_[i] = CHAR_NULL;
 
   }
 
-  #if defined(POSIX_ARCH_OTHER)
 
+  #if defined(POSIX_ARCH_OTHER)
     void __ConsoleStateClear__(void) {
 
       consoleState.deviceReady = false;
@@ -2352,11 +2365,11 @@
 
         consoleState.echoEnabled = true;
 
-    #else 
+    #else  /* if defined(CONFIG_CONSOLE_ECHO_ENABLED) */
 
         consoleState.echoEnabled = false;
 
-    #endif 
+    #endif /* if defined(CONFIG_CONSOLE_ECHO_ENABLED) */
 
       consoleState.bufferPosition = 0x0u;
 
@@ -2368,7 +2381,7 @@
 
     }
 
-  #endif 
 
-#endif 
+  #endif /* if defined(POSIX_ARCH_OTHER) */
 
+#endif /* if defined(CONFIG_ENABLE_IO_SUBSYSTEM) */

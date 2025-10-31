@@ -7,7 +7,6 @@
   static DeviceList_t *dlist = null;
 
   #define __DeviceUidNonZero__() (0x0u < uid_)
-
   Return_t xDeviceRegisterDevice(Return_t (*device_self_register_)()) {
 
     FUNCTION_ENTER;
@@ -33,6 +32,7 @@
     FUNCTION_EXIT;
 
   }
+
 
   Return_t __RegisterDevice__(const HalfWord_t uid_, const Byte_t *name_, const DeviceState_t state_, const DeviceMode_t mode_, Return_t (*init_)(Device_t *
 
@@ -176,6 +176,7 @@
 
   }
 
+
   Return_t xDeviceIsAvailable(const HalfWord_t uid_, Base_t *res_) {
 
     FUNCTION_ENTER;
@@ -213,6 +214,7 @@
     FUNCTION_EXIT;
 
   }
+
 
   Return_t xDeviceSimpleWrite(const HalfWord_t uid_, Byte_t data_) {
 
@@ -267,6 +269,7 @@
     FUNCTION_EXIT;
 
   }
+
 
   Return_t xDeviceWrite(const HalfWord_t uid_, Size_t *size_, Addr_t *data_) {
 
@@ -360,6 +363,7 @@
 
   }
 
+
   Return_t __DeviceWrite__(const HalfWord_t uid_, Size_t *size_, Addr_t *data_) {
 
     FUNCTION_ENTER;
@@ -413,6 +417,7 @@
     FUNCTION_EXIT;
 
   }
+
 
   Return_t xDeviceSimpleRead(const HalfWord_t uid_, Byte_t *data_) {
 
@@ -471,6 +476,7 @@
     FUNCTION_EXIT;
 
   }
+
 
   Return_t xDeviceRead(const HalfWord_t uid_, Size_t *size_, Addr_t **data_) {
 
@@ -572,6 +578,7 @@
 
   }
 
+
   Return_t __DeviceRead__(const HalfWord_t uid_, Size_t *size_, Addr_t **data_) {
 
     FUNCTION_ENTER;
@@ -632,6 +639,7 @@
 
   }
 
+
   Return_t __DeviceListFind__(const HalfWord_t uid_, Device_t **device_) {
 
     FUNCTION_ENTER;
@@ -669,6 +677,7 @@
     FUNCTION_EXIT;
 
   }
+
 
   Return_t xDeviceInitDevice(const HalfWord_t uid_) {
 
@@ -713,6 +722,7 @@
     FUNCTION_EXIT;
 
   }
+
 
   Return_t xDeviceConfigDevice(const HalfWord_t uid_, Size_t *size_, Addr_t *config_) {
 
@@ -806,6 +816,7 @@
 
   }
 
+
   Return_t __DeviceConfigDevice__(const HalfWord_t uid_, Size_t *size_, Addr_t *config_) {
 
     FUNCTION_ENTER;
@@ -850,8 +861,8 @@
 
   }
 
-  #if defined(POSIX_ARCH_OTHER)
 
+  #if defined(POSIX_ARCH_OTHER)
     void __DeviceStateClear__(void) {
 
       dlist = null;
@@ -860,7 +871,7 @@
 
     }
 
-  #endif 
 
-#endif 
+  #endif /* if defined(POSIX_ARCH_OTHER) */
 
+#endif /* if defined(CONFIG_ENABLE_IO_SUBSYSTEM) */

@@ -1,20 +1,18 @@
 #include "queue.h"
-
 static Return_t __QueueDropmessage__(Queue_t *queue_);
-
 static Return_t __QueuePeek__(const Queue_t *queue_, QueueMessage_t **message_);
 
 #define __GetQueueLength__() \
 
-        cursor = queue_->head; \
+cursor = queue_->head; \
 
-        while(__PointerIsNotNull__(cursor)) { \
+while(__PointerIsNotNull__(cursor)) { \
 
-          messages++; \
+  messages++; \
 
-          cursor = cursor->next; \
+  cursor = cursor->next; \
 
-        }
+}
 
 #define __QueueLengthCorrect__() (queue_->length == messages)
 
@@ -25,7 +23,6 @@ static Return_t __QueuePeek__(const Queue_t *queue_, QueueMessage_t **message_);
 #define __QueueLengthAtLimit__() (queue_->limit <= messages)
 
 #define __QueueLengthNotAtLimit__() (queue_->limit > messages)
-
 Return_t xQueueCreate(Queue_t **queue_, const Base_t limit_) {
 
   FUNCTION_ENTER;
@@ -72,6 +69,7 @@ Return_t xQueueCreate(Queue_t **queue_, const Base_t limit_) {
 
 }
 
+
 Return_t xQueueDelete(Queue_t *queue_) {
 
   FUNCTION_ENTER;
@@ -114,6 +112,7 @@ Return_t xQueueDelete(Queue_t *queue_) {
 
 }
 
+
 Return_t xQueueGetLength(const Queue_t *queue_, Base_t *res_) {
 
   FUNCTION_ENTER;
@@ -147,6 +146,7 @@ Return_t xQueueGetLength(const Queue_t *queue_, Base_t *res_) {
   FUNCTION_EXIT;
 
 }
+
 
 Return_t xQueueIsQueueEmpty(const Queue_t *queue_, Base_t *res_) {
 
@@ -188,6 +188,7 @@ Return_t xQueueIsQueueEmpty(const Queue_t *queue_, Base_t *res_) {
 
 }
 
+
 Return_t xQueueIsQueueFull(const Queue_t *queue_, Base_t *res_) {
 
   FUNCTION_ENTER;
@@ -228,6 +229,7 @@ Return_t xQueueIsQueueFull(const Queue_t *queue_, Base_t *res_) {
 
 }
 
+
 Return_t xQueueMessagesWaiting(const Queue_t *queue_, Base_t *res_) {
 
   FUNCTION_ENTER;
@@ -267,6 +269,7 @@ Return_t xQueueMessagesWaiting(const Queue_t *queue_, Base_t *res_) {
   FUNCTION_EXIT;
 
 }
+
 
 Return_t xQueueSend(Queue_t *queue_, const Base_t bytes_, const Byte_t *value_) {
 
@@ -358,6 +361,7 @@ Return_t xQueueSend(Queue_t *queue_, const Base_t bytes_, const Byte_t *value_) 
 
 }
 
+
 Return_t xQueuePeek(const Queue_t *queue_, QueueMessage_t **message_) {
 
   FUNCTION_ENTER;
@@ -383,6 +387,7 @@ Return_t xQueuePeek(const Queue_t *queue_, QueueMessage_t **message_) {
   FUNCTION_EXIT;
 
 }
+
 
 static Return_t __QueuePeek__(const Queue_t *queue_, QueueMessage_t **message_) {
 
@@ -442,6 +447,7 @@ static Return_t __QueuePeek__(const Queue_t *queue_, QueueMessage_t **message_) 
 
 }
 
+
 Return_t xQueueDropMessage(Queue_t *queue_) {
 
   FUNCTION_ENTER;
@@ -467,6 +473,7 @@ Return_t xQueueDropMessage(Queue_t *queue_) {
   FUNCTION_EXIT;
 
 }
+
 
 static Return_t __QueueDropmessage__(Queue_t *queue_) {
 
@@ -518,6 +525,7 @@ static Return_t __QueueDropmessage__(Queue_t *queue_) {
 
 }
 
+
 Return_t xQueueReceive(Queue_t *queue_, QueueMessage_t **message_) {
 
   FUNCTION_ENTER;
@@ -560,6 +568,7 @@ Return_t xQueueReceive(Queue_t *queue_, QueueMessage_t **message_) {
 
 }
 
+
 Return_t xQueueLockQueue(Queue_t *queue_) {
 
   FUNCTION_ENTER;
@@ -588,6 +597,7 @@ Return_t xQueueLockQueue(Queue_t *queue_) {
 
 }
 
+
 Return_t xQueueUnLockQueue(Queue_t *queue_) {
 
   FUNCTION_ENTER;
@@ -615,4 +625,3 @@ Return_t xQueueUnLockQueue(Queue_t *queue_) {
   FUNCTION_EXIT;
 
 }
-

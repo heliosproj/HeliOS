@@ -14,48 +14,39 @@ static volatile MemoryRegion_t kernel = {
 
 #define __AlignUp__(value_, alignment_) \
 
-        (((value_) + ((alignment_) - 1)) & ~((alignment_) - 1))
+(((value_) + ((alignment_) - 1)) & ~((alignment_) - 1))
 
 #define __AlignDown__(value_, alignment_) \
 
-        ((value_) & ~((alignment_) - 1))
+((value_) & ~((alignment_) - 1))
 
 #define __IsAligned__(value_, alignment_) \
 
-        (((value_) & ((alignment_) - 1)) == 0x0u)
+(((value_) & ((alignment_) - 1)) == 0x0u)
 
 #define ALIGNED_HEADER_SIZE \
 
-        (((sizeof(BlockHeader_t)) + (CONFIG_MEMORY_ALIGNMENT - 1)) & ~(CONFIG_MEMORY_ALIGNMENT - 1))
+(((sizeof(BlockHeader_t)) + (CONFIG_MEMORY_ALIGNMENT - 1)) & ~(CONFIG_MEMORY_ALIGNMENT - 1))
 
 #define __OffsetPointerToBlockHeader__(ptr_) \
 
-        ((BlockHeader_t *) (((Byte_t *) (ptr_)) - ALIGNED_HEADER_SIZE))
+((BlockHeader_t *) (((Byte_t *) (ptr_)) - ALIGNED_HEADER_SIZE))
 
 #define __OffsetBlockHeaderToPointer__(header_) \
 
-        ((Addr_t *) (((Byte_t *) (header_)) + ALIGNED_HEADER_SIZE))
+((Addr_t *) (((Byte_t *) (header_)) + ALIGNED_HEADER_SIZE))
 
 #define __BlockHeaderIsInUse__(header_) (INUSE == (header_)->free)
 
 #define __BlockHeaderIsFree__(header_) (FREE == (header_)->free)
-
 static Return_t __ValidateBlockHeader__(const BlockHeader_t *header_, const volatile MemoryRegion_t *region_);
-
 static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **addr_, const Size_t size_);
-
 static Return_t __free__(volatile MemoryRegion_t *region_, const volatile Addr_t *addr_);
-
 static Return_t __MemGetRegionStats__(const volatile MemoryRegion_t *region_, MemoryRegionStats_t **stats_);
-
 static Return_t __DefragMemoryRegion__(volatile MemoryRegion_t *region_);
-
 static Return_t __MemoryRegionInit__(volatile MemoryRegion_t *region_);
-
 static Return_t __DetectByteOrder__(ByteOrder_t *order_);
-
 static Word_t __checksum__(const BlockHeader_t *header_);
-
 static Word_t __checksum__(const BlockHeader_t *header_) {
 
   Word_t sum1 = 0xFFFFu;
@@ -112,7 +103,7 @@ static Word_t __checksum__(const BlockHeader_t *header_) {
 
     sum2 = (sum2 + sum1) & 0xFFFFu;
 
-#endif 
+#endif /* if UINTPTR_MAX == 0xFF */
 
   sum1 = (sum1 + (header_->size & 0xFFFFu)) & 0xFFFFu;
 
@@ -129,6 +120,7 @@ static Word_t __checksum__(const BlockHeader_t *header_) {
   return (((sum2 << 16) | sum1) ^ 0xB16B00B5u);
 
 }
+
 
 static Return_t __ValidateBlockHeader__(const BlockHeader_t *header_, const volatile MemoryRegion_t *region_) {
 
@@ -154,7 +146,7 @@ static Return_t __ValidateBlockHeader__(const BlockHeader_t *header_, const vola
 
           __SetFlag__(MEMFAULT);
 
-#endif 
+#endif /* if !defined(POSIX_ARCH_OTHER) */
 
         __AssertOnElse__();
 
@@ -166,7 +158,7 @@ static Return_t __ValidateBlockHeader__(const BlockHeader_t *header_, const vola
 
         __SetFlag__(MEMFAULT);
 
-#endif 
+#endif /* if !defined(POSIX_ARCH_OTHER) */
 
       __AssertOnElse__();
 
@@ -178,7 +170,7 @@ static Return_t __ValidateBlockHeader__(const BlockHeader_t *header_, const vola
 
       __SetFlag__(MEMFAULT);
 
-#endif 
+#endif /* if !defined(POSIX_ARCH_OTHER) */
 
     __AssertOnElse__();
 
@@ -187,6 +179,7 @@ static Return_t __ValidateBlockHeader__(const BlockHeader_t *header_, const vola
   FUNCTION_EXIT;
 
 }
+
 
 Return_t __MemoryInit__(void) {
 
@@ -244,6 +237,7 @@ Return_t __MemoryInit__(void) {
 
 }
 
+
 static Return_t __MemoryRegionInit__(volatile MemoryRegion_t *region_) {
 
   FUNCTION_ENTER;
@@ -289,6 +283,7 @@ static Return_t __MemoryRegionInit__(volatile MemoryRegion_t *region_) {
   FUNCTION_EXIT;
 
 }
+
 
 static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **addr_, const Size_t size_) {
 
@@ -448,6 +443,7 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
 
 }
 
+
 static Return_t __free__(volatile MemoryRegion_t *region_, const volatile Addr_t *addr_) {
 
   FUNCTION_ENTER;
@@ -513,6 +509,7 @@ static Return_t __free__(volatile MemoryRegion_t *region_, const volatile Addr_t
   FUNCTION_EXIT;
 
 }
+
 
 static Return_t __DefragMemoryRegion__(volatile MemoryRegion_t *region_) {
 
@@ -630,6 +627,7 @@ static Return_t __DefragMemoryRegion__(volatile MemoryRegion_t *region_) {
 
 }
 
+
 Return_t xMemAlloc(volatile Addr_t **addr_, const Size_t size_) {
 
   FUNCTION_ENTER;
@@ -647,6 +645,7 @@ Return_t xMemAlloc(volatile Addr_t **addr_, const Size_t size_) {
   FUNCTION_EXIT;
 
 }
+
 
 Return_t xMemFree(const volatile Addr_t *addr_) {
 
@@ -666,6 +665,7 @@ Return_t xMemFree(const volatile Addr_t *addr_) {
 
 }
 
+
 Return_t xMemFreeAll(void) {
 
   FUNCTION_ENTER;
@@ -683,6 +683,7 @@ Return_t xMemFreeAll(void) {
   FUNCTION_EXIT;
 
 }
+
 
 Return_t xMemGetUsed(Size_t *size_) {
 
@@ -738,6 +739,7 @@ Return_t xMemGetUsed(Size_t *size_) {
 
 }
 
+
 Return_t xMemGetSize(const volatile Addr_t *addr_, Size_t *size_) {
 
   FUNCTION_ENTER;
@@ -778,6 +780,7 @@ Return_t xMemGetSize(const volatile Addr_t *addr_, Size_t *size_) {
 
 }
 
+
 Return_t __KernelAllocateMemory__(volatile Addr_t **addr_, const Size_t size_) {
 
   FUNCTION_ENTER;
@@ -804,6 +807,7 @@ Return_t __KernelAllocateMemory__(volatile Addr_t **addr_, const Size_t size_) {
 
 }
 
+
 Return_t __KernelFreeMemory__(const volatile Addr_t *addr_) {
 
   FUNCTION_ENTER;
@@ -821,6 +825,7 @@ Return_t __KernelFreeMemory__(const volatile Addr_t *addr_) {
   FUNCTION_EXIT;
 
 }
+
 
 Return_t __HeapAllocateMemory__(volatile Addr_t **addr_, const Size_t size_) {
 
@@ -848,6 +853,7 @@ Return_t __HeapAllocateMemory__(volatile Addr_t **addr_, const Size_t size_) {
 
 }
 
+
 Return_t __HeapFreeMemory__(const volatile Addr_t *addr_) {
 
   FUNCTION_ENTER;
@@ -865,6 +871,7 @@ Return_t __HeapFreeMemory__(const volatile Addr_t *addr_) {
   FUNCTION_EXIT;
 
 }
+
 
 static Return_t __MemGetRegionStats__(const volatile MemoryRegion_t *region_, MemoryRegionStats_t **stats_) {
 
@@ -976,6 +983,7 @@ static Return_t __MemGetRegionStats__(const volatile MemoryRegion_t *region_, Me
 
 }
 
+
 Return_t xMemGetHeapStats(MemoryRegionStats_t **stats_) {
 
   FUNCTION_ENTER;
@@ -994,6 +1002,7 @@ Return_t xMemGetHeapStats(MemoryRegionStats_t **stats_) {
 
 }
 
+
 Return_t xMemGetKernelStats(MemoryRegionStats_t **stats_) {
 
   FUNCTION_ENTER;
@@ -1011,6 +1020,7 @@ Return_t xMemGetKernelStats(MemoryRegionStats_t **stats_) {
   FUNCTION_EXIT;
 
 }
+
 
 Return_t __memcpy__(const volatile Addr_t *dest_, const volatile Addr_t *src_, const Size_t size_) {
 
@@ -1046,6 +1056,7 @@ Return_t __memcpy__(const volatile Addr_t *dest_, const volatile Addr_t *src_, c
 
 }
 
+
 Return_t __memset__(const volatile Addr_t *dest_, const Byte_t val_, const Size_t size_) {
 
   FUNCTION_ENTER;
@@ -1075,6 +1086,7 @@ Return_t __memset__(const volatile Addr_t *dest_, const Byte_t val_, const Size_
   FUNCTION_EXIT;
 
 }
+
 
 Return_t __memcmp__(const volatile Addr_t *s1_, const volatile Addr_t *s2_, const Size_t size_, Base_t *res_) {
 
@@ -1122,6 +1134,7 @@ Return_t __memcmp__(const volatile Addr_t *s1_, const volatile Addr_t *s2_, cons
 
 }
 
+
 static Return_t __DetectByteOrder__(ByteOrder_t *order_) {
 
   FUNCTION_ENTER;
@@ -1152,8 +1165,8 @@ static Return_t __DetectByteOrder__(ByteOrder_t *order_) {
 
 }
 
-#if defined(POSIX_ARCH_OTHER)
 
+#if defined(POSIX_ARCH_OTHER)
   void __MemoryClear__(void) {
 
     __MemoryRegionInit__(&heap);
@@ -1162,5 +1175,5 @@ static Return_t __DetectByteOrder__(ByteOrder_t *order_) {
 
   }
 
-#endif 
 
+#endif /* if defined(POSIX_ARCH_OTHER) */
