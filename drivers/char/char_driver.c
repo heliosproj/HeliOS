@@ -15,37 +15,41 @@
 /*UNCRUSTIFY-ON*/
 #include "char_driver.h"
 
+/**
+ * @brief Character device internal state structure
+ * @details Maintains the runtime state of a character device including buffers and communication parameters.
+ */
 typedef struct CharDeviceState_s {
 
-  HalfWord_t ioDriverUID;
+  HalfWord_t ioDriverUID;           /**< UID of underlying I/O driver device */
 
-  Byte_t protocol;
+  Byte_t protocol;                  /**< Communication protocol (UART, USART, USB CDC) */
 
-  Byte_t lineMode;
+  Byte_t lineMode;                  /**< Line mode (raw or cooked) */
 
-  Word_t baudRate;
+  Word_t baudRate;                  /**< Baud rate for serial communication */
 
-  Base_t initialized;
+  Base_t initialized;               /**< Initialization flag */
 
-  HalfWord_t rxBufferSize;
+  HalfWord_t rxBufferSize;          /**< Size of receive buffer in bytes */
 
-  HalfWord_t txBufferSize;
+  HalfWord_t txBufferSize;          /**< Size of transmit buffer in bytes */
 
-  Byte_t *rxBuffer;
+  Byte_t *rxBuffer;                 /**< Pointer to receive circular buffer */
 
-  Byte_t *txBuffer;
+  Byte_t *txBuffer;                 /**< Pointer to transmit circular buffer */
 
-  HalfWord_t rxHead;
+  HalfWord_t rxHead;                /**< Receive buffer head pointer */
 
-  HalfWord_t rxTail;
+  HalfWord_t rxTail;                /**< Receive buffer tail pointer */
 
-  HalfWord_t txHead;
+  HalfWord_t txHead;                /**< Transmit buffer head pointer */
 
-  HalfWord_t txTail;
+  HalfWord_t txTail;                /**< Transmit buffer tail pointer */
 
-  HalfWord_t currentByteCount;
+  HalfWord_t currentByteCount;      /**< Current transfer byte count */
 
-  Byte_t currentTransferMode;
+  Byte_t currentTransferMode;       /**< Current transfer mode setting */
 
 } CharDeviceState_t;
 
@@ -54,10 +58,65 @@ static CharDeviceState_t state = {
   0
 
 };
+
+/**
+ * @brief Prepares a character I/O request structure
+ * @details Internal helper to allocate and initialize a CharIORequest_t for I/O operations.
+ *
+ * @param[in] operation_ I/O operation type
+ * @param[out] request_ Pointer to store allocated request structure
+ * @param[out] configSize_ Pointer to store config size
+ *
+ * @return ReturnOK if request was prepared successfully
+ * @return ReturnError if allocation failed or invalid parameters
+ */
 static Return_t __PrepareCharIORequest__(const Byte_t operation_, CharIORequest_t **request_, Size_t *configSize_);
+
+/**
+ * @brief Reads raw data from character device
+ * @details Internal function to read bytes from the receive buffer without line processing.
+ *
+ * @param[out] data_ Pointer to store allocated data buffer
+ * @param[out] bytesRead_ Pointer to store number of bytes read
+ *
+ * @return ReturnOK if read was successful
+ * @return ReturnError if read failed or allocation failed
+ */
 static Return_t __CharDeviceReadRAW__(Byte_t **data_, Size_t *bytesRead_);
+
+/**
+ * @brief Writes raw data to character device
+ * @details Internal function to write a single byte to the transmit buffer.
+ *
+ * @param[in] data_ Pointer to byte data
+ *
+ * @return ReturnOK if write was successful
+ * @return ReturnError if buffer full or write failed
+ */
 static Return_t __CharDeviceWriteRAW__(const Byte_t *data_);
+
+/**
+ * @brief Calculates free space in circular buffer
+ * @details Internal helper to determine available space for writing.
+ *
+ * @param[in] head_ Buffer head position
+ * @param[in] tail_ Buffer tail position
+ * @param[in] size_ Total buffer size
+ *
+ * @return Number of free bytes in the buffer
+ */
 static HalfWord_t __CircularBufferSpace__(const HalfWord_t head_, const HalfWord_t tail_, const HalfWord_t size_);
+
+/**
+ * @brief Calculates available data in circular buffer
+ * @details Internal helper to determine bytes available for reading.
+ *
+ * @param[in] head_ Buffer head position
+ * @param[in] tail_ Buffer tail position
+ * @param[in] size_ Total buffer size
+ *
+ * @return Number of bytes available to read
+ */
 static HalfWord_t __CircularBufferAvailable__(const HalfWord_t head_, const HalfWord_t tail_, const HalfWord_t size_);
 Return_t TO_FUNCTION(DEVICE_NAME, _self_register)(void) {
 

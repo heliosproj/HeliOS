@@ -83,35 +83,43 @@
 
   #define BLOCK_IO_CMD_GET_INFO 0x11u
 
+  /**
+   * @brief Block I/O request structure
+   * @details Command structure for block device I/O operations specifying the operation, blocks, and transfer mode.
+   */
   typedef struct BlockIORequest_s {
 
-    Byte_t command;
+    Byte_t command;             /**< Command type identifier */
 
-    Byte_t operation;
+    Byte_t operation;           /**< Operation (read or write) */
 
-    Word_t blockNumber;
+    Word_t blockNumber;         /**< Starting block number */
 
-    HalfWord_t blockCount;
+    HalfWord_t blockCount;      /**< Number of blocks to transfer */
 
-    HalfWord_t blockSize;
+    HalfWord_t blockSize;       /**< Size of each block in bytes */
 
-    Byte_t transferMode;
+    Byte_t transferMode;        /**< Transfer mode (blocking, DMA, interrupt, etc.) */
 
-    Byte_t reserved;
+    Byte_t reserved;            /**< Reserved for future use */
 
   } BlockIORequest_t;
 
+  /**
+   * @brief Block I/O device information structure
+   * @details Contains device capabilities and characteristics for block I/O devices.
+   */
   typedef struct BlockIOInfo_s {
 
-    Byte_t command;
+    Byte_t command;             /**< Command type identifier */
 
-    Word_t totalSizeBytes;
+    Word_t totalSizeBytes;      /**< Total device capacity in bytes */
 
-    HalfWord_t nativeBlockSize;
+    HalfWord_t nativeBlockSize; /**< Native block size in bytes */
 
-    Base_t supportsRandomAccess;
+    Base_t supportsRandomAccess;  /**< Flag indicating if device supports random access */
 
-    Base_t requiresErase;
+    Base_t requiresErase;       /**< Flag indicating if device requires erase before write */
 
   } BlockIOInfo_t;
 

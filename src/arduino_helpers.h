@@ -26,6 +26,18 @@
       #include <Arduino.h>
 
       #include "HeliOS.h"
+
+      /**
+       * @brief Converts byte array to Arduino String
+       * @details Helper function to convert a byte array to an Arduino String object for easy display and manipulation.
+       *
+       * @param[in] size_ Size of byte array
+       * @param[in] bytes_ Pointer to byte array
+       *
+       * @return Arduino String object containing the byte data
+       *
+       * @note This function is only available on Arduino platforms with C++ support
+       */
       String xByte2String(Size_t size_, Byte_t *bytes_);
 
     #endif /* if defined(ARDUINO_ARCH_AVR) || defined(ARDUINO_ARCH_SAM) || */

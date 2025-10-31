@@ -86,17 +86,21 @@
 
     #define CONSOLE_NOT_READY 0x02u
 
+    /**
+     * @brief Console state structure
+     * @details Maintains the state of the console subsystem including buffer and settings.
+     */
     typedef struct ConsoleState_s {
 
-      Base_t deviceReady;
+      Base_t deviceReady;           /**< Flag indicating if console device is ready for I/O */
 
-      Base_t echoEnabled;
+      Base_t echoEnabled;           /**< Flag indicating if character echo is enabled */
 
-      Byte_t commandBuffer[CONFIG_CONSOLE_MAX_COMMAND_LENGTH];
+      Byte_t commandBuffer[CONFIG_CONSOLE_MAX_COMMAND_LENGTH];  /**< Command input buffer */
 
-      HalfWord_t bufferPosition;
+      HalfWord_t bufferPosition;    /**< Current position in command buffer */
 
-      Byte_t currentWorkingDirectory[CONFIG_FS_MAX_PATH_LENGTH];
+      Byte_t currentWorkingDirectory[CONFIG_FS_MAX_PATH_LENGTH];  /**< Current working directory path */
 
     } ConsoleState_t;
 
@@ -105,25 +109,210 @@
       extern "C" {
 
     #endif /* ifdef __cplusplus */
+    /**
+     * @brief Initializes the console subsystem
+     * @details Sets up console device and internal state for command processing.
+     *
+     * @return ReturnOK if initialization was successful
+     * @return ReturnError if initialization failed or device unavailable
+     */
     Return_t xConsoleInit(void);
+
+    /**
+     * @brief Console task callback function
+     * @details Processes console input/output and command handling.
+     *
+     * @param[in,out] task_ Pointer to the task structure
+     * @param[in] parm_ Task parameter (unused)
+     *
+     * @note This function is designed to be used as a task callback
+     */
     void vConsoleTask(Task_t *task_, TaskParm_t *parm_);
 
     #if defined(POSIX_ARCH_OTHER)
       void __ConsoleStateClear__(void);
 
     #endif /* if defined(POSIX_ARCH_OTHER) */
+    /**
+     * @brief Gets the length of a string
+     * @details Internal string length implementation.
+     *
+     * @param[in] str_ Null-terminated string
+     *
+     * @return Length of the string in bytes (excluding null terminator)
+     *
+     * @note This is an internal function similar to standard strlen
+     */
     Size_t __strlen__(const Byte_t *str_);
+
+    /**
+     * @brief Copies a string with bounds checking
+     * @details Internal string copy with destination size limit.
+     *
+     * @param[out] dest_ Destination buffer
+     * @param[in] src_ Source string
+     * @param[in] destSize_ Size of destination buffer
+     *
+     * @return ReturnOK if copy was successful
+     * @return ReturnError if destination too small or invalid parameters
+     *
+     * @note This is an internal function similar to strncpy with safety checks
+     */
     Return_t __strcpy__(Byte_t *dest_, const Byte_t *src_, const Size_t destSize_);
+
+    /**
+     * @brief Copies at most n characters from a string
+     * @details Internal bounded string copy implementation.
+     *
+     * @param[out] dest_ Destination buffer
+     * @param[in] src_ Source string
+     * @param[in] n_ Maximum number of characters to copy
+     *
+     * @return ReturnOK if copy was successful
+     * @return ReturnError if invalid parameters
+     *
+     * @note This is an internal function similar to standard strncpy
+     */
     Return_t __strncpy__(Byte_t *dest_, const Byte_t *src_, const Size_t n_);
+
+    /**
+     * @brief Compares two strings
+     * @details Internal string comparison implementation.
+     *
+     * @param[in] s1_ First string
+     * @param[in] s2_ Second string
+     *
+     * @return 0 if strings are equal, non-zero otherwise
+     *
+     * @note This is an internal function similar to standard strcmp
+     */
     Base_t __strcmp__(const Byte_t *s1_, const Byte_t *s2_);
+
+    /**
+     * @brief Compares at most n characters of two strings
+     * @details Internal bounded string comparison implementation.
+     *
+     * @param[in] s1_ First string
+     * @param[in] s2_ Second string
+     * @param[in] n_ Maximum number of characters to compare
+     *
+     * @return 0 if strings are equal, non-zero otherwise
+     *
+     * @note This is an internal function similar to standard strncmp
+     */
     Base_t __strncmp__(const Byte_t *s1_, const Byte_t *s2_, const Size_t n_);
+
+    /**
+     * @brief Concatenates two strings with bounds checking
+     * @details Internal string concatenation with destination size limit.
+     *
+     * @param[in,out] dest_ Destination buffer
+     * @param[in] src_ Source string to append
+     * @param[in] destSize_ Size of destination buffer
+     *
+     * @return ReturnOK if concatenation was successful
+     * @return ReturnError if destination too small or invalid parameters
+     *
+     * @note This is an internal function similar to strncat with safety checks
+     */
     Return_t __strcat__(Byte_t *dest_, const Byte_t *src_, const Size_t destSize_);
+
+    /**
+     * @brief Finds first occurrence of character in string
+     * @details Internal character search from the beginning.
+     *
+     * @param[in] str_ String to search
+     * @param[in] ch_ Character to find
+     *
+     * @return Pointer to first occurrence, or NULL if not found
+     *
+     * @note This is an internal function similar to standard strchr
+     */
     Byte_t * __strchr__(const Byte_t *str_, const Byte_t ch_);
+
+    /**
+     * @brief Finds last occurrence of character in string
+     * @details Internal character search from the end.
+     *
+     * @param[in] str_ String to search
+     * @param[in] ch_ Character to find
+     *
+     * @return Pointer to last occurrence, or NULL if not found
+     *
+     * @note This is an internal function similar to standard strrchr
+     */
     Byte_t * __strrchr__(const Byte_t *str_, const Byte_t ch_);
+
+    /**
+     * @brief Joins two path components
+     * @details Internal path joining with proper separator handling.
+     *
+     * @param[out] dest_ Destination buffer for joined path
+     * @param[in] base_ Base path component
+     * @param[in] path_ Path component to append
+     * @param[in] destSize_ Size of destination buffer
+     *
+     * @return ReturnOK if join was successful
+     * @return ReturnError if destination too small or invalid parameters
+     *
+     * @note This is an internal function for filesystem path manipulation
+     */
     Return_t __path_join__(Byte_t *dest_, const Byte_t *base_, const Byte_t *path_, const Size_t destSize_);
+
+    /**
+     * @brief Normalizes a filesystem path
+     * @details Internal path normalization removing "." and ".." components.
+     *
+     * @param[in,out] path_ Path to normalize
+     * @param[in] pathSize_ Size of path buffer
+     *
+     * @return ReturnOK if normalization was successful
+     * @return ReturnError if invalid parameters
+     *
+     * @note This is an internal function for filesystem path manipulation
+     */
     Return_t __path_normalize__(Byte_t *path_, const Size_t pathSize_);
+
+    /**
+     * @brief Checks if path is absolute
+     * @details Internal check for absolute vs relative path.
+     *
+     * @param[in] path_ Path to check
+     *
+     * @return Non-zero if path is absolute, 0 if relative
+     *
+     * @note This is an internal function for filesystem path manipulation
+     */
     Base_t __path_is_absolute__(const Byte_t *path_);
+
+    /**
+     * @brief Extracts directory portion of path
+     * @details Internal path parsing to get parent directory.
+     *
+     * @param[out] dest_ Destination buffer for directory path
+     * @param[in] path_ Source path
+     * @param[in] destSize_ Size of destination buffer
+     *
+     * @return ReturnOK if extraction was successful
+     * @return ReturnError if destination too small or invalid parameters
+     *
+     * @note This is an internal function similar to dirname
+     */
     Return_t __path_dirname__(Byte_t *dest_, const Byte_t *path_, const Size_t destSize_);
+
+    /**
+     * @brief Extracts filename portion of path
+     * @details Internal path parsing to get final component.
+     *
+     * @param[out] dest_ Destination buffer for filename
+     * @param[in] path_ Source path
+     * @param[in] destSize_ Size of destination buffer
+     *
+     * @return ReturnOK if extraction was successful
+     * @return ReturnError if destination too small or invalid parameters
+     *
+     * @note This is an internal function similar to basename
+     */
     Return_t __path_basename__(Byte_t *dest_, const Byte_t *path_, const Size_t destSize_);
 
     #ifdef __cplusplus

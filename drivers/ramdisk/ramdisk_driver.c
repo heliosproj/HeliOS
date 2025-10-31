@@ -21,19 +21,23 @@ static Byte_t ramdisk[RAMDISK_SIZE_BYTES] = {
 
 };
 
+/**
+ * @brief RAM disk internal state structure
+ * @details Maintains runtime statistics and position tracking for the RAM disk device.
+ */
 typedef struct RAMDiskState_s {
 
-  Word_t currentPosition;
+  Word_t currentPosition;       /**< Current read/write position in the disk */
 
-  Word_t bytesRead;
+  Word_t bytesRead;             /**< Total bytes read from the disk */
 
-  Word_t bytesWritten;
+  Word_t bytesWritten;          /**< Total bytes written to the disk */
 
-  Word_t readOperations;
+  Word_t readOperations;        /**< Count of read operations performed */
 
-  Word_t writeOperations;
+  Word_t writeOperations;       /**< Count of write operations performed */
 
-  Base_t initialized;
+  Base_t initialized;           /**< Initialization flag */
 
 } RAMDiskState_t;
 
@@ -59,6 +63,17 @@ static RAMDiskState_t state = {
 
 #define __ValidateBufferParams__(size_, data_) \
         (__PointerIsNotNull__(size_) && __PointerIsNotNull__(data_) && (0x0u < *(size_)))
+
+/**
+ * @brief Validates and truncates requested I/O size
+ * @details Internal helper to ensure I/O operations don't exceed disk boundaries.
+ *
+ * @param[in] requested_ Requested size in bytes
+ * @param[out] actual_ Pointer to store actual size that can be transferred
+ *
+ * @return ReturnOK if validation was successful
+ * @return ReturnError if invalid parameters
+ */
 static Return_t __ValidateAndTruncateSize__(Size_t requested_, Size_t *actual_);
 Return_t TO_FUNCTION(DEVICE_NAME, _self_register)(void) {
 
