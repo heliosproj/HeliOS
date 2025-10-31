@@ -20,7 +20,7 @@
 
   } TaskState_t;
 
-#endif // ifndef TASKSTATE_T_
+#endif /* ifndef TASKSTATE_T_ */
 
 #ifndef SCHEDULERSTATE_T_
 
@@ -34,7 +34,7 @@
 
   } SchedulerState_t;
 
-#endif // ifndef SCHEDULERSTATE_T_
+#endif /* ifndef SCHEDULERSTATE_T_ */
 
 #ifndef RETURN_T_
 
@@ -48,7 +48,7 @@
 
   } Return_t;
 
-#endif // ifndef RETURN_T_
+#endif /* ifndef RETURN_T_ */
 
 #ifndef TIMERSTATE_T_
 
@@ -62,7 +62,7 @@
 
   } TimerState_t;
 
-#endif // ifndef TIMERSTATE_T_
+#endif /* ifndef TIMERSTATE_T_ */
 
 #ifndef DEVICESTATE_T_
 
@@ -76,7 +76,7 @@
 
   } DeviceState_t;
 
-#endif // ifndef DEVICESTATE_T_
+#endif /* ifndef DEVICESTATE_T_ */
 
 #ifndef DEVICEMODE_T_
 
@@ -92,7 +92,7 @@
 
   } DeviceMode_t;
 
-#endif // ifndef DEVICEMODE_T_
+#endif /* ifndef DEVICEMODE_T_ */
 
 #ifndef BYTEORDER_T_
 
@@ -106,7 +106,7 @@
 
   } ByteOrder_t;
 
-#endif // ifndef BYTEORDER_T_
+#endif /* ifndef BYTEORDER_T_ */
 
 #ifndef TASKPARM_T_
 
@@ -114,7 +114,7 @@
 
   typedef VOID_TYPE TaskParm_t;
 
-#endif // ifndef TASKPARM_T_
+#endif /* ifndef TASKPARM_T_ */
 
 #ifndef BASE_T_
 
@@ -122,7 +122,7 @@
 
   typedef UINT8_TYPE Base_t;
 
-#endif // ifndef BASE_T_
+#endif /* ifndef BASE_T_ */
 
 #ifndef BYTE_T_
 
@@ -130,7 +130,7 @@
 
   typedef UINT8_TYPE Byte_t;
 
-#endif // ifndef BYTE_T_
+#endif /* ifndef BYTE_T_ */
 
 #ifndef ADDR_T_
 
@@ -138,7 +138,7 @@
 
   typedef VOID_TYPE Addr_t;
 
-#endif // ifndef ADDR_T_
+#endif /* ifndef ADDR_T_ */
 
 #ifndef SIZE_T_
 
@@ -146,7 +146,7 @@
 
   typedef SIZE_TYPE Size_t;
 
-#endif // ifndef SIZE_T_
+#endif /* ifndef SIZE_T_ */
 
 #ifndef HALFWORD_T_
 
@@ -154,7 +154,7 @@
 
   typedef UINT16_TYPE HalfWord_t;
 
-#endif // ifndef HALFWORD_T_
+#endif /* ifndef HALFWORD_T_ */
 
 #ifndef WORD_T_
 
@@ -162,7 +162,7 @@
 
   typedef UINT32_TYPE Word_t;
 
-#endif // ifndef WORD_T_
+#endif /* ifndef WORD_T_ */
 
 #ifndef TICKS_T_
 
@@ -170,7 +170,7 @@
 
   typedef UINT32_TYPE Ticks_t;
 
-#endif // ifndef TICKS_T_
+#endif /* ifndef TICKS_T_ */
 
 #ifndef DEVICE_T_
 
@@ -210,7 +210,7 @@
 
   } Device_t;
 
-#endif // ifndef DEVICE_T_
+#endif /* ifndef DEVICE_T_ */
 
 #ifndef TASKNOTIFICATION_T_
 
@@ -226,7 +226,7 @@
 
   } TaskNotification_t;
 
-#endif // ifndef TASKNOTIFICATION_T_
+#endif /* ifndef TASKNOTIFICATION_T_ */
 
 #ifndef TASKRUNTIMESTATS_T_
 
@@ -244,7 +244,7 @@
 
   } TaskRunTimeStats_t;
 
-#endif // ifndef TASKRUNTIMESTATS_T_
+#endif /* ifndef TASKRUNTIMESTATS_T_ */
 
 #ifndef MEMORYREGIONSTATS_T_
 
@@ -270,7 +270,7 @@
 
   } MemoryRegionStats_t;
 
-#endif // ifndef MEMORYREGIONSTATS_T_
+#endif /* ifndef MEMORYREGIONSTATS_T_ */
 
 #ifndef TASKINFO_T_
 
@@ -292,7 +292,7 @@
 
   } TaskInfo_t;
 
-#endif // ifndef TASKINFO_T_
+#endif /* ifndef TASKINFO_T_ */
 
 #ifndef QUEUEMESSAGE_T_
 
@@ -308,7 +308,7 @@
 
   } QueueMessage_t;
 
-#endif // ifndef QUEUEMESSAGE_T_
+#endif /* ifndef QUEUEMESSAGE_T_ */
 
 #ifndef SYSTEMINFO_T_
 
@@ -332,7 +332,7 @@
 
   } SystemInfo_t;
 
-#endif // ifndef SYSTEMINFO_T_
+#endif /* ifndef SYSTEMINFO_T_ */
 
 #ifndef TASK_T_
 
@@ -368,13 +368,13 @@
 
       Ticks_t wdTimerPeriod;
 
-  #endif // if defined(CONFIG_TASK_WD_TIMER_ENABLE)
+  #endif /* if defined(CONFIG_TASK_WD_TIMER_ENABLE) */
 
     struct Task_s *next;
 
   } Task_t;
 
-#endif // ifndef TASK_T_
+#endif /* ifndef TASK_T_ */
 
 #ifndef TASKLIST_T_
 
@@ -392,7 +392,7 @@
 
   } TaskList_t;
 
-#endif // ifndef TASKLIST_T_
+#endif /* ifndef TASKLIST_T_ */
 
 #ifndef DEVICELIST_T_
 
@@ -408,7 +408,7 @@
 
   } DeviceList_t;
 
-#endif // ifndef DEVICELIST_T_
+#endif /* ifndef DEVICELIST_T_ */
 
 #ifndef TIMER_T_
 
@@ -426,7 +426,7 @@
 
   } Timer_t;
 
-#endif // ifndef TIMER_T_
+#endif /* ifndef TIMER_T_ */
 
 #ifndef TIMERLIST_T_
 
@@ -442,7 +442,7 @@
 
   } TimerList_t;
 
-#endif // ifndef TIMERLIST_T_
+#endif /* ifndef TIMERLIST_T_ */
 
 #ifndef FLAGS_T_
 
@@ -462,7 +462,7 @@
 
   } Flags_t;
 
-#endif // ifndef FLAGS_T_
+#endif /* ifndef FLAGS_T_ */
 
 #ifndef MESSAGE_T_
 
@@ -480,7 +480,7 @@
 
   } Message_t;
 
-#endif // ifndef MESSAGE_T_
+#endif /* ifndef MESSAGE_T_ */
 
 #ifndef QUEUE_T_
 
@@ -502,7 +502,7 @@
 
   } Queue_t;
 
-#endif // ifndef QUEUE_T_
+#endif /* ifndef QUEUE_T_ */
 
 #ifndef STREAMBUFFER_T_
 
@@ -518,7 +518,7 @@
 
   } StreamBuffer_t;
 
-#endif // ifndef STREAMBUFFER_T_
+#endif /* ifndef STREAMBUFFER_T_ */
 
 #ifndef VOLUME_T_
 
@@ -550,7 +550,7 @@
 
   } Volume_t;
 
-#endif // ifndef VOLUME_T_
+#endif /* ifndef VOLUME_T_ */
 
 #ifndef FILE_T_
 
@@ -582,7 +582,7 @@
 
   } File_t;
 
-#endif // ifndef FILE_T_
+#endif /* ifndef FILE_T_ */
 
 #ifndef DIRENTRY_T_
 
@@ -608,7 +608,7 @@
 
   } DirEntry_t;
 
-#endif // ifndef DIRENTRY_T_
+#endif /* ifndef DIRENTRY_T_ */
 
 #ifndef DIR_T_
 
@@ -628,7 +628,7 @@
 
   } Dir_t;
 
-#endif // ifndef DIR_T_
+#endif /* ifndef DIR_T_ */
 
 #ifndef VOLUMEINFO_T_
 
@@ -654,7 +654,7 @@
 
   } VolumeInfo_t;
 
-#endif // ifndef VOLUMEINFO_T_
+#endif /* ifndef VOLUMEINFO_T_ */
 
 #if defined(CONFIG_ENABLE_IO_SUBSYSTEM)
 
@@ -674,8 +674,8 @@
 
     } BlockDeviceCommand_t;
 
-  #endif // ifndef BLOCKDEVICECOMMAND_T_
+  #endif /* ifndef BLOCKDEVICECOMMAND_T_ */
 
-#endif // if defined(CONFIG_ENABLE_IO_SUBSYSTEM)
+#endif /* if defined(CONFIG_ENABLE_IO_SUBSYSTEM) */
 
-#endif // ifndef TYPES_H_
+#endif /* ifndef TYPES_H_ */

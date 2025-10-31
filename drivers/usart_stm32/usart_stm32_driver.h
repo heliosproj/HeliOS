@@ -18,7 +18,7 @@
 
   #include "fs.h"
 
-#endif // if defined(CONFIG_ENABLE_IO_SUBSYSTEM)
+#endif /* if defined(CONFIG_ENABLE_IO_SUBSYSTEM) */
 
 #include "mem.h"
 
@@ -40,7 +40,7 @@
 
 #if !defined(POSIX_ARCH_OTHER)
 
-#endif // if !defined(POSIX_ARCH_OTHER)
+#endif /* if !defined(POSIX_ARCH_OTHER) */
 
 #define DEVICE_NAME USART_TX
 
@@ -54,7 +54,7 @@
 
   #undef USART_RX_BUFFER_SIZE
 
-#endif // if defined(USART_RX_BUFFER_SIZE)
+#endif /* if defined(USART_RX_BUFFER_SIZE) */
 
 #define USART_RX_BUFFER_SIZE 512u
 
@@ -62,7 +62,7 @@
 
   #undef USART_TX_BUFFER_SIZE
 
-#endif // if defined(USART_TX_BUFFER_SIZE)
+#endif /* if defined(USART_TX_BUFFER_SIZE) */
 
 #define USART_TX_BUFFER_SIZE 512u
 
@@ -70,7 +70,7 @@
 
   #undef USART_ERROR_NONE
 
-#endif // if defined(USART_ERROR_NONE)
+#endif /* if defined(USART_ERROR_NONE) */
 
 #define USART_ERROR_NONE 0x00u
 
@@ -78,7 +78,7 @@
 
   #undef USART_ERROR_PARITY
 
-#endif // if defined(USART_ERROR_PARITY)
+#endif /* if defined(USART_ERROR_PARITY) */
 
 #define USART_ERROR_PARITY 0x01u
 
@@ -86,7 +86,7 @@
 
   #undef USART_ERROR_NOISE
 
-#endif // if defined(USART_ERROR_NOISE)
+#endif /* if defined(USART_ERROR_NOISE) */
 
 #define USART_ERROR_NOISE 0x02u
 
@@ -94,7 +94,7 @@
 
   #undef USART_ERROR_FRAME
 
-#endif // if defined(USART_ERROR_FRAME)
+#endif /* if defined(USART_ERROR_FRAME) */
 
 #define USART_ERROR_FRAME 0x04u
 
@@ -102,7 +102,7 @@
 
   #undef USART_ERROR_OVERRUN
 
-#endif // if defined(USART_ERROR_OVERRUN)
+#endif /* if defined(USART_ERROR_OVERRUN) */
 
 #define USART_ERROR_OVERRUN 0x08u
 
@@ -114,13 +114,13 @@ typedef struct USARTSTMInitConfig_s {
 
     IRQn_Type irqNumber;
 
-#else // if !defined(POSIX_ARCH_OTHER)
+#else /* if !defined(POSIX_ARCH_OTHER) */
 
     void *usartInstance;
 
     int irqNumber;
 
-#endif // if !defined(POSIX_ARCH_OTHER)
+#endif /* if !defined(POSIX_ARCH_OTHER) */
 
   Word_t baudRate;
 
@@ -136,7 +136,7 @@ typedef struct USARTSTMInitConfig_s {
 
   extern "C" {
 
-#endif // ifdef __cplusplus
+#endif /* ifdef __cplusplus */
 
 Return_t TO_FUNCTION(DEVICE_NAME, _self_register)(void);
 
@@ -156,12 +156,12 @@ void USART_TX_IRQHandler(void);
 #if defined(POSIX_ARCH_OTHER)
   void __USARTSTMStateClear__(void);
 
-#endif // if defined(POSIX_ARCH_OTHER)
+#endif /* if defined(POSIX_ARCH_OTHER) */
 
 #ifdef __cplusplus
 
   }
 
-#endif // ifdef __cplusplus
+#endif /* ifdef __cplusplus */
 
-#endif // ifndef USART_STM32_DRIVER_H_
+#endif /* ifndef USART_STM32_DRIVER_H_ */

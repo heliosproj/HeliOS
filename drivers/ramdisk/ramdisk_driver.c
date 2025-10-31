@@ -29,31 +29,20 @@ static RAMDiskState_t state = {
 };
 
 #define __UpdateReadStats__(bytes_) \
-
         do { \
-
           state.currentPosition += (bytes_); \
-
           state.bytesRead += (bytes_); \
-
           state.readOperations++; \
-
         } while (0)
 
 #define __UpdateWriteStats__(bytes_) \
-
         do { \
-
           state.currentPosition += (bytes_); \
-
           state.bytesWritten += (bytes_); \
-
           state.writeOperations++; \
-
         } while (0)
 
 #define __ValidateBufferParams__(size_, data_) \
-
         (__PointerIsNotNull__(size_) && __PointerIsNotNull__(data_) && (0x0u < *(size_)))
 
 static Return_t __ValidateAndTruncateSize__(Size_t requested_, Size_t *actual_);

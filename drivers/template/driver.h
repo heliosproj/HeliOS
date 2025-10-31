@@ -18,7 +18,7 @@
 
   #include "fs.h"
 
-#endif // if defined(CONFIG_ENABLE_IO_SUBSYSTEM)
+#endif /* if defined(CONFIG_ENABLE_IO_SUBSYSTEM) */
 
 #include "mem.h"
 
@@ -48,7 +48,7 @@
 
   extern "C" {
 
-#endif // ifdef __cplusplus
+#endif /* ifdef __cplusplus */
 
 Return_t TO_FUNCTION(DEVICE_NAME, _self_register)(void);
 
@@ -68,6 +68,6 @@ Return_t TO_FUNCTION(DEVICE_NAME, _simple_write)(Device_t *device_, Byte_t data_
 
   }
 
-#endif // ifdef __cplusplus
+#endif /* ifdef __cplusplus */
 
-#endif // ifndef DRIVER_H_
+#endif /* ifndef DRIVER_H_ */

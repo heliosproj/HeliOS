@@ -20,47 +20,28 @@ static SchedulerState_t scheduler = SchedulerStateRunning;
 #if defined(CONFIG_TASK_WD_TIMER_ENABLE)
 
   #define __TaskRun__(task_) \
-
   prev = task_->totalRunTime; \
-
   start = __PortGetSysTicks__(); \
-
   (*task_->callback)(task_, task_->taskParameter); \
-
   task_->lastRunTime = __PortGetSysTicks__() - start; \
-
   task_->totalRunTime += task_->lastRunTime; \
-
   if((0x0u < task_->wdTimerPeriod) && (task_->lastRunTime > task_->wdTimerPeriod)) { \
-
     task_->state = TaskStateSuspended; \
-
   } \
-
   if(task_->totalRunTime < prev) { \
-
     __SetFlag__(OVERFLOW); \
-
   }
 
 #else  /* if defined(CONFIG_TASK_WD_TIMER_ENABLE) */
 
   #define __TaskRun__(task_) \
-
   prev = task_->totalRunTime; \
-
   start = __PortGetSysTicks__(); \
-
   (*task_->callback)(task_, task_->taskParameter); \
-
   task_->lastRunTime = __PortGetSysTicks__() - start; \
-
   task_->totalRunTime += task_->lastRunTime; \
-
   if(task_->totalRunTime < prev) { \
-
     __SetFlag__(OVERFLOW); \
-
   }
 
 #endif /* if defined(CONFIG_TASK_WD_TIMER_ENABLE) */

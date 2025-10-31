@@ -18,7 +18,7 @@
 
   #include "fs.h"
 
-#endif // if defined(CONFIG_ENABLE_IO_SUBSYSTEM)
+#endif /* if defined(CONFIG_ENABLE_IO_SUBSYSTEM) */
 
 #include "mem.h"
 
@@ -38,7 +38,7 @@
 
   extern "C" {
 
-#endif // ifdef __cplusplus
+#endif /* ifdef __cplusplus */
 Return_t xQueueCreate(Queue_t **queue_, const Base_t limit_);
 Return_t xQueueDelete(Queue_t *queue_);
 Return_t xQueueGetLength(const Queue_t *queue_, Base_t *res_);
@@ -56,6 +56,6 @@ Return_t xQueueUnLockQueue(Queue_t *queue_);
 
   }
 
-#endif // ifdef __cplusplus
+#endif /* ifdef __cplusplus */
 
-#endif // ifndef QUEUE_H_
+#endif /* ifndef QUEUE_H_ */

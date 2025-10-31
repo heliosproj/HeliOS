@@ -18,7 +18,7 @@
 
   #include "fs.h"
 
-#endif // if defined(CONFIG_ENABLE_IO_SUBSYSTEM)
+#endif /* if defined(CONFIG_ENABLE_IO_SUBSYSTEM) */
 
 #include "mem.h"
 
@@ -38,7 +38,7 @@
 
   #undef OS_PRODUCT_NAME
 
-#endif // if defined(OS_PRODUCT_NAME)
+#endif /* if defined(OS_PRODUCT_NAME) */
 
 #define OS_PRODUCT_NAME "HeliOS"
 
@@ -46,7 +46,7 @@
 
   #undef RUNNING
 
-#endif // if defined(RUNNING)
+#endif /* if defined(RUNNING) */
 
 #define RUNNING flag.running
 
@@ -54,7 +54,7 @@
 
   #undef OVERFLOW
 
-#endif // if defined(OVERFLOW)
+#endif /* if defined(OVERFLOW) */
 
 #define OVERFLOW flag.overflow
 
@@ -62,7 +62,7 @@
 
   #undef MEMFAULT
 
-#endif // if defined(MEMFAULT)
+#endif /* if defined(MEMFAULT) */
 
 #define MEMFAULT flag.memfault
 
@@ -70,7 +70,7 @@
 
   #undef LITTLEEND
 
-#endif // if defined(LITTLEEND)
+#endif /* if defined(LITTLEEND) */
 
 #define LITTLEEND flag.littleend
 
@@ -78,7 +78,7 @@
 
   #undef __SetFlag__
 
-#endif // if defined(__SetFlag__)
+#endif /* if defined(__SetFlag__) */
 
 #define __SetFlag__(flag_) flag_ = 0xFFu
 
@@ -86,7 +86,7 @@
 
   #undef __UnsetFlag__
 
-#endif // if defined(__UnsetFlag__)
+#endif /* if defined(__UnsetFlag__) */
 
 #define __UnsetFlag__(flag_) flag_ = 0x00u
 
@@ -94,7 +94,7 @@
 
   #undef __FlagIsSet__
 
-#endif // if defined(__FlagIsSet__)
+#endif /* if defined(__FlagIsSet__) */
 
 #define __FlagIsSet__(flag_) (0xFFu == (flag_))
 
@@ -102,7 +102,7 @@
 
   #undef __FlagIsNotSet__
 
-#endif // if defined(__FlagIsNotSet__)
+#endif /* if defined(__FlagIsNotSet__) */
 
 #define __FlagIsNotSet__(flag_) (0x0u == (flag_))
 
@@ -110,7 +110,7 @@
 
   extern "C" {
 
-#endif // ifdef __cplusplus
+#endif /* ifdef __cplusplus */
 
 extern Flags_t flag;
 Return_t xSystemAssert(const char *file_, const int line_);
@@ -121,17 +121,17 @@ Return_t xSystemGetSystemInfo(SystemInfo_t **info_);
 #if defined(CONFIG_ENABLE_ARDUINO_CPP_INTERFACE)
   void __ArduinoAssert__(const char *file_, int line_);
 
-#endif // if defined(CONFIG_ENABLE_ARDUINO_CPP_INTERFACE)
+#endif /* if defined(CONFIG_ENABLE_ARDUINO_CPP_INTERFACE) */
 
 #if defined(POSIX_ARCH_OTHER)
   void __SysStateClear__(void);
 
-#endif // if defined(POSIX_ARCH_OTHER)
+#endif /* if defined(POSIX_ARCH_OTHER) */
 
 #ifdef __cplusplus
 
   }
 
-#endif // ifdef __cplusplus
+#endif /* ifdef __cplusplus */
 
-#endif // ifndef SYS_H_
+#endif /* ifndef SYS_H_ */

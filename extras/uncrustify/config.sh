@@ -142,6 +142,7 @@ cmt_convert_tab_to_spaces:true
 cmt_align_doxygen_javadoc_tags:true
 cmt_star_cont:true
 cmt_sp_after_star_cont:1
+cmt_cpp_to_c:true
 mod_full_brace_do:force
 mod_full_brace_for:force
 mod_full_brace_function:force
@@ -151,8 +152,8 @@ mod_full_brace_using:force
 mod_paren_on_return:force
 mod_full_paren_if_bool:true
 mod_remove_extra_semicolon:true
-mod_add_long_ifdef_endif_comment:1
-mod_add_long_ifdef_else_comment:1
+mod_add_long_ifdef_endif_comment:10
+mod_add_long_ifdef_else_comment:10
 pp_indent:force
 pp_indent_count:2
 pp_if_indent_code:true

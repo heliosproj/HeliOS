@@ -13,27 +13,21 @@ static volatile MemoryRegion_t kernel = {
 };
 
 #define __AlignUp__(value_, alignment_) \
-
 (((value_) + ((alignment_) - 1)) & ~((alignment_) - 1))
 
 #define __AlignDown__(value_, alignment_) \
-
 ((value_) & ~((alignment_) - 1))
 
 #define __IsAligned__(value_, alignment_) \
-
 (((value_) & ((alignment_) - 1)) == 0x0u)
 
 #define ALIGNED_HEADER_SIZE \
-
 (((sizeof(BlockHeader_t)) + (CONFIG_MEMORY_ALIGNMENT - 1)) & ~(CONFIG_MEMORY_ALIGNMENT - 1))
 
 #define __OffsetPointerToBlockHeader__(ptr_) \
-
 ((BlockHeader_t *) (((Byte_t *) (ptr_)) - ALIGNED_HEADER_SIZE))
 
 #define __OffsetBlockHeaderToPointer__(header_) \
-
 ((Addr_t *) (((Byte_t *) (header_)) + ALIGNED_HEADER_SIZE))
 
 #define __BlockHeaderIsInUse__(header_) (INUSE == (header_)->free)

@@ -148,7 +148,7 @@
 
     extern "C" {
 
-  #endif // ifdef __cplusplus
+  #endif /* ifdef __cplusplus */
   HalfWord_t __ReadLE16__(const Byte_t *data_);
   Word_t __ReadLE32__(const Byte_t *data_);
   void __WriteLE16__(Byte_t *data_, HalfWord_t value_);
@@ -177,14 +177,14 @@
   #if defined(POSIX_ARCH_OTHER)
     void __FSStateClear__(void);
 
-  #endif // if defined(POSIX_ARCH_OTHER)
+  #endif /* if defined(POSIX_ARCH_OTHER) */
 
   #ifdef __cplusplus
 
     }
 
-  #endif // ifdef __cplusplus
+  #endif /* ifdef __cplusplus */
 
-#endif // if defined(CONFIG_ENABLE_IO_SUBSYSTEM)
+#endif /* if defined(CONFIG_ENABLE_IO_SUBSYSTEM) */
 
-#endif // ifndef FAT_H_
+#endif /* ifndef FAT_H_ */

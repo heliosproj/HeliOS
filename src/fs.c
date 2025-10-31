@@ -122,6 +122,8 @@
     FUNCTION_EXIT;
 
   }
+
+
   Return_t xFSUnmount(Volume_t *volume_) {
 
     FUNCTION_ENTER;
@@ -153,6 +155,8 @@
     FUNCTION_EXIT;
 
   }
+
+
   Return_t xFSGetVolumeInfo(const Volume_t *volume_, VolumeInfo_t **info_) {
 
     FUNCTION_ENTER;
@@ -244,6 +248,8 @@
     FUNCTION_EXIT;
 
   }
+
+
   Return_t xFSFormat(const Byte_t *volumeLabel_) {
 
     FUNCTION_ENTER;
@@ -465,6 +471,8 @@
     FUNCTION_EXIT;
 
   }
+
+
   Return_t xFileOpen(File_t **file_, Volume_t *volume_, const Byte_t *path_, const Byte_t mode_) {
 
     FUNCTION_ENTER;
@@ -660,6 +668,8 @@
     FUNCTION_EXIT;
 
   }
+
+
   Return_t xFileClose(File_t *file_) {
 
     FUNCTION_ENTER;
@@ -761,6 +771,8 @@
     FUNCTION_EXIT;
 
   }
+
+
   Return_t xFileRead(File_t *file_, const Size_t size_, Byte_t **data_) {
 
     FUNCTION_ENTER;
@@ -898,6 +910,8 @@
     FUNCTION_EXIT;
 
   }
+
+
   Return_t xFileWrite(File_t *file_, const Size_t size_, const Byte_t *data_) {
 
     FUNCTION_ENTER;
@@ -1109,6 +1123,8 @@
     FUNCTION_EXIT;
 
   }
+
+
   Return_t xFileSeek(File_t *file_, const Word_t offset_, const Byte_t origin_) {
 
     FUNCTION_ENTER;
@@ -1216,6 +1232,8 @@
     FUNCTION_EXIT;
 
   }
+
+
   Return_t xFileTell(const File_t *file_, Word_t *position_) {
 
     FUNCTION_ENTER;
@@ -1235,6 +1253,8 @@
     FUNCTION_EXIT;
 
   }
+
+
   Return_t xFileGetSize(const File_t *file_, Word_t *size_) {
 
     FUNCTION_ENTER;
@@ -1254,6 +1274,8 @@
     FUNCTION_EXIT;
 
   }
+
+
   Return_t xFileSync(File_t *file_) {
 
     FUNCTION_ENTER;
@@ -1375,6 +1397,8 @@
     FUNCTION_EXIT;
 
   }
+
+
   Return_t xFileTruncate(File_t *file_, const Word_t size_) {
 
     FUNCTION_ENTER;
@@ -1472,6 +1496,8 @@
     FUNCTION_EXIT;
 
   }
+
+
   Return_t xFileEOF(const File_t *file_, Base_t *eof_) {
 
     FUNCTION_ENTER;
@@ -1491,6 +1517,8 @@
     FUNCTION_EXIT;
 
   }
+
+
   Return_t xDirOpen(Dir_t **dir_, Volume_t *volume_, const Byte_t *path_) {
 
     FUNCTION_ENTER;
@@ -1582,6 +1610,8 @@
     FUNCTION_EXIT;
 
   }
+
+
   Return_t xDirClose(Dir_t *dir_) {
 
     FUNCTION_ENTER;
@@ -1609,6 +1639,8 @@
     FUNCTION_EXIT;
 
   }
+
+
   Return_t xDirRead(Dir_t *dir_, DirEntry_t **entry_) {
 
     FUNCTION_ENTER;
@@ -1780,6 +1812,8 @@
     FUNCTION_EXIT;
 
   }
+
+
   Return_t xDirRewind(Dir_t *dir_) {
 
     FUNCTION_ENTER;
@@ -1799,6 +1833,8 @@
     FUNCTION_EXIT;
 
   }
+
+
   Return_t xDirMake(Volume_t *volume_, const Byte_t *path_) {
 
     FUNCTION_ENTER;
@@ -1994,6 +2030,8 @@
     FUNCTION_EXIT;
 
   }
+
+
   Return_t xDirRemove(Volume_t *volume_, const Byte_t *path_) {
 
     FUNCTION_ENTER;
@@ -2176,6 +2214,8 @@
     FUNCTION_EXIT;
 
   }
+
+
   Return_t xFileExists(Volume_t *volume_, const Byte_t *path_, Base_t *exists_) {
 
     FUNCTION_ENTER;
@@ -2217,6 +2257,8 @@
     FUNCTION_EXIT;
 
   }
+
+
   Return_t xFileUnlink(Volume_t *volume_, const Byte_t *path_) {
 
     FUNCTION_ENTER;
@@ -2320,6 +2362,8 @@
     FUNCTION_EXIT;
 
   }
+
+
   Return_t xFileRename(Volume_t *volume_, const Byte_t *oldPath_, const Byte_t *newPath_) {
 
     FUNCTION_ENTER;
@@ -2459,6 +2503,8 @@
     FUNCTION_EXIT;
 
   }
+
+
   Return_t xFileGetInfo(Volume_t *volume_, const Byte_t *path_, DirEntry_t **entry_) {
 
     FUNCTION_ENTER;

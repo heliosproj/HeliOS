@@ -18,7 +18,7 @@
 
   #include "fs.h"
 
-#endif // if defined(CONFIG_ENABLE_IO_SUBSYSTEM)
+#endif /* if defined(CONFIG_ENABLE_IO_SUBSYSTEM) */
 
 #include "mem.h"
 
@@ -38,7 +38,7 @@
 
   extern "C" {
 
-#endif // ifdef __cplusplus
+#endif /* ifdef __cplusplus */
 Return_t xStreamCreate(StreamBuffer_t **stream_);
 Return_t xStreamDelete(const StreamBuffer_t *stream_);
 Return_t xStreamSend(StreamBuffer_t *stream_, const Byte_t byte_);
@@ -52,6 +52,6 @@ Return_t xStreamIsFull(const StreamBuffer_t *stream_, Base_t *res_);
 
   }
 
-#endif // ifdef __cplusplus
+#endif /* ifdef __cplusplus */
 
-#endif // ifndef STREAM_H_
+#endif /* ifndef STREAM_H_ */

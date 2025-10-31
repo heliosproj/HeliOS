@@ -33,38 +33,25 @@
   #include "timer.h"
 
   #define CONSOLE_BANNER \
-
-  "\r\n" \
-
-  "   _    _      _ _  ____   _____ \r\n" \
-
-  "  | |  | |    | (_)/ __ \\ / ____|\r\n" \
-
-  "  | |__| | ___| |_| |  | | (___  \r\n" \
-
-  "  |  __  |/ _ \\ | | |  | |\\___ \\ \r\n" \
-
-  "  | |  | |  __/ | | |__| |____) |\r\n" \
-
-  "  |_|  |_|\\___|_|_|\\____/|_____/ \r\n" \
-
-  "\r\n" \
-
-  "  HeliOS Embedded Operating System\r\n" \
-
-  "  Version " OS_VERSION_STRING "\r\n" \
-
-  "  (C) 2020-2026 Manny Peterson <manny@heliosproj.org>\r\n" \
-
-  "  Licensed under GPL-2.0-or-later\r\n" \
-
-  "\r\n"
+          "\r\n" \
+          "   _    _      _ _  ____   _____ \r\n" \
+          "  | |  | |    | (_)/ __ \\ / ____|\r\n" \
+          "  | |__| | ___| |_| |  | | (___  \r\n" \
+          "  |  __  |/ _ \\ | | |  | |\\___ \\ \r\n" \
+          "  | |  | |  __/ | | |__| |____) |\r\n" \
+          "  |_|  |_|\\___|_|_|\\____/|_____/ \r\n" \
+          "\r\n" \
+          "  HeliOS Embedded Operating System\r\n" \
+          "  Version " OS_VERSION_STRING "\r\n" \
+          "  (C) 2020-2026 Manny Peterson <manny@heliosproj.org>\r\n" \
+          "  Licensed under GPL-2.0-or-later\r\n" \
+          "\r\n"
 
   #if defined(CONSOLE_OK)
 
     #undef CONSOLE_OK
 
-  #endif // if defined(CONSOLE_OK)
+  #endif /* if defined(CONSOLE_OK) */
 
   #define CONSOLE_OK 0x00u
 
@@ -72,7 +59,7 @@
 
     #undef CONSOLE_ERROR
 
-  #endif // if defined(CONSOLE_ERROR)
+  #endif /* if defined(CONSOLE_ERROR) */
 
   #define CONSOLE_ERROR 0x01u
 
@@ -80,7 +67,7 @@
 
     #undef CONSOLE_NOT_READY
 
-  #endif // if defined(CONSOLE_NOT_READY)
+  #endif /* if defined(CONSOLE_NOT_READY) */
 
   #define CONSOLE_NOT_READY 0x02u
 
@@ -102,14 +89,14 @@
 
     extern "C" {
 
-  #endif // ifdef __cplusplus
+  #endif /* ifdef __cplusplus */
   Return_t xConsoleInit(void);
   void vConsoleTask(Task_t *task_, TaskParm_t *parm_);
 
   #if defined(POSIX_ARCH_OTHER)
     void __ConsoleStateClear__(void);
 
-  #endif // if defined(POSIX_ARCH_OTHER)
+  #endif /* if defined(POSIX_ARCH_OTHER) */
   Size_t __strlen__(const Byte_t *str_);
   Return_t __strcpy__(Byte_t *dest_, const Byte_t *src_, const Size_t destSize_);
   Return_t __strncpy__(Byte_t *dest_, const Byte_t *src_, const Size_t n_);
@@ -128,8 +115,8 @@
 
     }
 
-  #endif // ifdef __cplusplus
+  #endif /* ifdef __cplusplus */
 
-#endif // if defined(CONFIG_ENABLE_IO_SUBSYSTEM)
+#endif /* if defined(CONFIG_ENABLE_IO_SUBSYSTEM) */
 
-#endif // ifndef CONSOLE_H_
+#endif /* ifndef CONSOLE_H_ */

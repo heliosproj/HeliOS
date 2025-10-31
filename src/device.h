@@ -36,7 +36,7 @@
 
     #undef CONCAT
 
-  #endif // if defined(CONCAT)
+  #endif /* if defined(CONCAT) */
 
   #define CONCAT(a_, b_) a_ ## b_
 
@@ -44,7 +44,7 @@
 
     #undef QUOTE
 
-  #endif // if defined(QUOTE)
+  #endif /* if defined(QUOTE) */
 
   #define QUOTE(a_) #a_
 
@@ -52,7 +52,7 @@
 
     #undef TO_FUNCTION
 
-  #endif // if defined(TO_FUNCTION)
+  #endif /* if defined(TO_FUNCTION) */
 
   #define TO_FUNCTION(a_, b_) CONCAT(a_, b_)
 
@@ -60,7 +60,7 @@
 
     #undef TO_LITERAL
 
-  #endif // if defined(TO_LITERAL)
+  #endif /* if defined(TO_LITERAL) */
 
   #define TO_LITERAL(a_) QUOTE(a_)
 
@@ -68,7 +68,7 @@
 
     extern "C" {
 
-  #endif // ifdef __cplusplus
+  #endif /* ifdef __cplusplus */
   Return_t xDeviceRegisterDevice(Return_t (*device_self_register_)());
   Return_t __RegisterDevice__(const HalfWord_t uid_, const Byte_t *name_, const DeviceState_t state_, const DeviceMode_t mode_, Return_t (*init_)(Device_t *
 
@@ -92,14 +92,14 @@
   #if defined(POSIX_ARCH_OTHER)
     void __DeviceStateClear__(void);
 
-  #endif // if defined(POSIX_ARCH_OTHER)
+  #endif /* if defined(POSIX_ARCH_OTHER) */
 
   #ifdef __cplusplus
 
     }
 
-  #endif // ifdef __cplusplus
+  #endif /* ifdef __cplusplus */
 
-#endif // if defined(CONFIG_ENABLE_IO_SUBSYSTEM)
+#endif /* if defined(CONFIG_ENABLE_IO_SUBSYSTEM) */
 
-#endif // ifndef DEVICE_H_
+#endif /* ifndef DEVICE_H_ */

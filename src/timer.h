@@ -18,7 +18,7 @@
 
   #include "fs.h"
 
-#endif // if defined(CONFIG_ENABLE_IO_SUBSYSTEM)
+#endif /* if defined(CONFIG_ENABLE_IO_SUBSYSTEM) */
 
 #include "mem.h"
 
@@ -38,7 +38,7 @@
 
   extern "C" {
 
-#endif // ifdef __cplusplus
+#endif /* ifdef __cplusplus */
 Return_t xTimerCreate(Timer_t **timer_, const Ticks_t period_);
 Return_t xTimerDelete(const Timer_t *timer_);
 Return_t xTimerChangePeriod(Timer_t *timer_, const Ticks_t period_);
@@ -53,6 +53,6 @@ Return_t xTimerStop(Timer_t *timer_);
 
   }
 
-#endif // ifdef __cplusplus
+#endif /* ifdef __cplusplus */
 
-#endif // ifndef TIMER_H_
+#endif /* ifndef TIMER_H_ */

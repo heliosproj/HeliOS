@@ -18,7 +18,7 @@
 
   #include "fs.h"
 
-#endif // if defined(CONFIG_ENABLE_IO_SUBSYSTEM)
+#endif /* if defined(CONFIG_ENABLE_IO_SUBSYSTEM) */
 
 #include "port.h"
 
@@ -42,7 +42,7 @@
 
   #undef INUSE
 
-#endif // if defined(INUSE)
+#endif /* if defined(INUSE) */
 
 #define INUSE 0xAAu
 
@@ -50,7 +50,7 @@
 
   #undef FREE
 
-#endif // if defined(FREE)
+#endif /* if defined(FREE) */
 
 #define FREE 0x55u
 
@@ -70,7 +70,7 @@
 
   } BlockHeader_t;
 
-#endif // ifndef BLOCKHEADER_T_
+#endif /* ifndef BLOCKHEADER_T_ */
 
 #ifndef MEMORYREGION_T_
 
@@ -90,13 +90,13 @@
 
   } MemoryRegion_t;
 
-#endif // ifndef MEMORYREGION_T_
+#endif /* ifndef MEMORYREGION_T_ */
 
 #ifdef __cplusplus
 
   extern "C" {
 
-#endif // ifdef __cplusplus
+#endif /* ifdef __cplusplus */
 Return_t xMemAlloc(volatile Addr_t **addr_, const Size_t size_);
 Return_t xMemFree(const volatile Addr_t *addr_);
 Return_t xMemFreeAll(void);
@@ -117,12 +117,12 @@ Return_t __MemoryInit__(void);
 #if defined(POSIX_ARCH_OTHER)
   void __MemoryClear__(void);
 
-#endif // if defined(POSIX_ARCH_OTHER)
+#endif /* if defined(POSIX_ARCH_OTHER) */
 
 #ifdef __cplusplus
 
   }
 
-#endif // ifdef __cplusplus
+#endif /* ifdef __cplusplus */
 
-#endif // ifndef MEM_H_
+#endif /* ifndef MEM_H_ */

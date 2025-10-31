@@ -18,7 +18,7 @@
 
   #include "fs.h"
 
-#endif // if defined(CONFIG_ENABLE_IO_SUBSYSTEM)
+#endif /* if defined(CONFIG_ENABLE_IO_SUBSYSTEM) */
 
 #include "mem.h"
 
@@ -38,7 +38,7 @@
 
   extern "C" {
 
-#endif // ifdef __cplusplus
+#endif /* ifdef __cplusplus */
 Return_t xTaskCreate(Task_t **task_, const Byte_t *name_, void (*callback_)(Task_t *task_, TaskParm_t *parm_), TaskParm_t *taskParameter_);
 Return_t xTaskDelete(const Task_t *task_);
 Return_t xTaskGetHandleByName(Task_t **task_, const Byte_t *name_);
@@ -71,12 +71,12 @@ Return_t xTaskGetWDPeriod(const Task_t *task_, Ticks_t *period_);
 #if defined(POSIX_ARCH_OTHER)
   void __TaskStateClear__(void);
 
-#endif // if defined(POSIX_ARCH_OTHER)
+#endif /* if defined(POSIX_ARCH_OTHER) */
 
 #ifdef __cplusplus
 
   }
 
-#endif // ifdef __cplusplus
+#endif /* ifdef __cplusplus */
 
-#endif // ifndef TASK_H_
+#endif /* ifndef TASK_H_ */

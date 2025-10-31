@@ -36,7 +36,7 @@
 
     #undef FS_MODE_READ
 
-  #endif // if defined(FS_MODE_READ)
+  #endif /* if defined(FS_MODE_READ) */
 
   #define FS_MODE_READ 0x01u
 
@@ -44,7 +44,7 @@
 
     #undef FS_MODE_WRITE
 
-  #endif // if defined(FS_MODE_WRITE)
+  #endif /* if defined(FS_MODE_WRITE) */
 
   #define FS_MODE_WRITE 0x02u
 
@@ -52,7 +52,7 @@
 
     #undef FS_MODE_APPEND
 
-  #endif // if defined(FS_MODE_APPEND)
+  #endif /* if defined(FS_MODE_APPEND) */
 
   #define FS_MODE_APPEND 0x04u
 
@@ -60,7 +60,7 @@
 
     #undef FS_MODE_CREATE
 
-  #endif // if defined(FS_MODE_CREATE)
+  #endif /* if defined(FS_MODE_CREATE) */
 
   #define FS_MODE_CREATE 0x08u
 
@@ -68,7 +68,7 @@
 
     #undef FS_SEEK_SET
 
-  #endif // if defined(FS_SEEK_SET)
+  #endif /* if defined(FS_SEEK_SET) */
 
   #define FS_SEEK_SET 0x00u
 
@@ -76,7 +76,7 @@
 
     #undef FS_SEEK_CUR
 
-  #endif // if defined(FS_SEEK_CUR)
+  #endif /* if defined(FS_SEEK_CUR) */
 
   #define FS_SEEK_CUR 0x01u
 
@@ -84,7 +84,7 @@
 
     #undef FS_SEEK_END
 
-  #endif // if defined(FS_SEEK_END)
+  #endif /* if defined(FS_SEEK_END) */
 
   #define FS_SEEK_END 0x02u
 
@@ -92,13 +92,13 @@
 
     #define CONFIG_FS_MAX_PATH_LENGTH 256u
 
-  #endif // if !defined(CONFIG_FS_MAX_PATH_LENGTH)
+  #endif /* if !defined(CONFIG_FS_MAX_PATH_LENGTH) */
 
   #ifdef __cplusplus
 
     extern "C" {
 
-  #endif // ifdef __cplusplus
+  #endif /* ifdef __cplusplus */
   Return_t xFSMount(Volume_t **volume_);
   Return_t xFSUnmount(Volume_t *volume_);
   Return_t xFSGetVolumeInfo(const Volume_t *volume_, VolumeInfo_t **info_);
@@ -128,8 +128,8 @@
 
     }
 
-  #endif // ifdef __cplusplus
+  #endif /* ifdef __cplusplus */
 
-#endif // if defined(CONFIG_ENABLE_IO_SUBSYSTEM)
+#endif /* if defined(CONFIG_ENABLE_IO_SUBSYSTEM) */
 
-#endif // ifndef FS_H_
+#endif /* ifndef FS_H_ */

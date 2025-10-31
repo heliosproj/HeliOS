@@ -8,7 +8,7 @@
 
   #undef BLOCK_IO_OP_READ
 
-#endif // if defined(BLOCK_IO_OP_READ)
+#endif /* if defined(BLOCK_IO_OP_READ) */
 
 #define BLOCK_IO_OP_READ 0x01u
 
@@ -16,7 +16,7 @@
 
   #undef BLOCK_IO_OP_WRITE
 
-#endif // if defined(BLOCK_IO_OP_WRITE)
+#endif /* if defined(BLOCK_IO_OP_WRITE) */
 
 #define BLOCK_IO_OP_WRITE 0x02u
 
@@ -24,7 +24,7 @@
 
   #undef BLOCK_IO_MODE_BLOCKING
 
-#endif // if defined(BLOCK_IO_MODE_BLOCKING)
+#endif /* if defined(BLOCK_IO_MODE_BLOCKING) */
 
 #define BLOCK_IO_MODE_BLOCKING 0x00u
 
@@ -32,7 +32,7 @@
 
   #undef BLOCK_IO_MODE_NONBLOCKING
 
-#endif // if defined(BLOCK_IO_MODE_NONBLOCKING)
+#endif /* if defined(BLOCK_IO_MODE_NONBLOCKING) */
 
 #define BLOCK_IO_MODE_NONBLOCKING 0x01u
 
@@ -40,7 +40,7 @@
 
   #undef BLOCK_IO_MODE_DMA
 
-#endif // if defined(BLOCK_IO_MODE_DMA)
+#endif /* if defined(BLOCK_IO_MODE_DMA) */
 
 #define BLOCK_IO_MODE_DMA 0x02u
 
@@ -48,7 +48,7 @@
 
   #undef BLOCK_IO_MODE_INTERRUPT
 
-#endif // if defined(BLOCK_IO_MODE_INTERRUPT)
+#endif /* if defined(BLOCK_IO_MODE_INTERRUPT) */
 
 #define BLOCK_IO_MODE_INTERRUPT 0x03u
 
@@ -56,7 +56,7 @@
 
   #undef BLOCK_IO_CMD_SET_REQUEST
 
-#endif // if defined(BLOCK_IO_CMD_SET_REQUEST)
+#endif /* if defined(BLOCK_IO_CMD_SET_REQUEST) */
 
 #define BLOCK_IO_CMD_SET_REQUEST 0x10u
 
@@ -64,7 +64,7 @@
 
   #undef BLOCK_IO_CMD_GET_INFO
 
-#endif // if defined(BLOCK_IO_CMD_GET_INFO)
+#endif /* if defined(BLOCK_IO_CMD_GET_INFO) */
 
 #define BLOCK_IO_CMD_GET_INFO 0x11u
 
@@ -100,4 +100,4 @@ typedef struct BlockIOInfo_s {
 
 } BlockIOInfo_t;
 
-#endif // ifndef BLOCK_IO_INTERFACE_H_
+#endif /* ifndef BLOCK_IO_INTERFACE_H_ */

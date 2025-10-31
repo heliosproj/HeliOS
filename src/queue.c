@@ -3,15 +3,10 @@ static Return_t __QueueDropmessage__(Queue_t *queue_);
 static Return_t __QueuePeek__(const Queue_t *queue_, QueueMessage_t **message_);
 
 #define __GetQueueLength__() \
-
 cursor = queue_->head; \
-
 while(__PointerIsNotNull__(cursor)) { \
-
   messages++; \
-
   cursor = cursor->next; \
-
 }
 
 #define __QueueLengthCorrect__() (queue_->length == messages)
