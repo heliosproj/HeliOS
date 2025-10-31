@@ -1,7 +1,6 @@
 /*UNCRUSTIFY-OFF*/
 
 
-
 /**
  * @file arduino_helpers.h
  * @author Manny Peterson <manny@heliosproj.org>
@@ -21,17 +20,13 @@
 /*UNCRUSTIFY-ON*/
 
 
-
 #ifndef ARDUINO_HELPERS_H_
-
 
 
   #define ARDUINO_HELPERS_H_
 
 
-
   #ifdef __cplusplus
-
 
 
     #if defined(ARDUINO_ARCH_AVR) || defined(ARDUINO_ARCH_SAM) || defined(ARDUINO_ARCH_SAMD) || defined(ARDUINO_ARCH_ESP8266) || defined(ARDUINO_ARCH_STM32) || \
@@ -39,15 +34,10 @@
     defined(ARDUINO_TEENSY31) || defined(ARDUINO_TEENSY32) || defined(ARDUINO_TEENSY30) || defined(ARDUINO_TEENSYLC)
 
 
-
       #include <Arduino.h>
 
 
-
       #include "HeliOS.h"
-
-
-
       /**
        * @brief Converts byte array to Arduino String
        * @details Helper function to convert a byte array to an Arduino String
@@ -64,21 +54,16 @@
       String xByte2String(Size_t size_, Byte_t *bytes_);
 
 
-
     #endif /* if defined(ARDUINO_ARCH_AVR) || defined(ARDUINO_ARCH_SAM) || */
-
 
 
     /* defined(ARDUINO_ARCH_SAMD) || defined(ARDUINO_ARCH_ESP8266) || */
 
 
-
     /* defined(ARDUINO_ARCH_STM32) || */
 
 
-
   #endif /* ifdef __cplusplus */
-
 
 
 #endif /* ifndef ARDUINO_HELPERS_H_ */

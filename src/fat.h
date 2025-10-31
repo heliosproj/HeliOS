@@ -1,7 +1,6 @@
 /*UNCRUSTIFY-OFF*/
 
 
-
 /**
  * @file fat.h
  * @author Manny Peterson <manny@heliosproj.org>
@@ -21,81 +20,61 @@
 /*UNCRUSTIFY-ON*/
 
 
-
 #ifndef FAT_H_
-
 
 
   #define FAT_H_
 
 
-
   #include "config.h"
-
 
 
   #if defined(CONFIG_ENABLE_IO_SUBSYSTEM)
 
 
-
     #include "defines.h"
-
 
 
     #include "types.h"
 
 
-
     #include "console.h"
-
 
 
     #include "device.h"
 
 
-
     #include "fs.h"
-
 
 
     #include "mem.h"
 
 
-
     #include "port.h"
-
 
 
     #include "posix.h"
 
 
-
     #include "queue.h"
-
 
 
     #include "streams.h"
 
 
-
     #include "sys.h"
-
 
 
     #include "task.h"
 
 
-
     #include "timer.h"
-
 
 
     #define BLOCK_CMD_SET_ADDRESS 0x02u
 
 
-
     #define BLOCK_IO_MODE_BLOCKING 0x00u
-
 
 
     /**
@@ -104,7 +83,6 @@
      * with all metadata fields.
      */
     typedef struct __attribute__ ((packed)) FAT32BootSector_s {
-
 
 
       Byte_t jumpBoot[0x3]; /**< Jump instruction to boot code */
@@ -142,14 +120,12 @@
     } FAT32BootSector_t;
 
 
-
     /**
      * @brief FAT32 directory entry structure
      * @details Packed structure representing a 32-byte directory entry in FAT32
      * filesystem.
      */
     typedef struct __attribute__ ((packed)) FAT32DirEntry_s {
-
 
 
       Byte_t name[0xB]; /**< 8.3 filename (space-padded) */
@@ -169,63 +145,46 @@
     } FAT32DirEntry_t;
 
 
-
     #define FAT_ATTR_READ_ONLY 0x01u
-
 
 
     #define FAT_ATTR_HIDDEN 0x02u
 
 
-
     #define FAT_ATTR_SYSTEM 0x04u
-
 
 
     #define FAT_ATTR_VOLUME_ID 0x08u
 
 
-
     #define FAT_ATTR_DIRECTORY 0x10u
-
 
 
     #define FAT_ATTR_ARCHIVE 0x20u
 
 
-
     #define FAT_ATTR_LONG_NAME 0x0Fu
-
 
 
     #define FAT32_EOC_MIN 0x0FFFFFF8u
 
 
-
     #define FAT32_EOC_MAX 0x0FFFFFFFu
-
 
 
     #define FAT32_BAD_CLUSTER 0x0FFFFFF7u
 
 
-
     #define FAT32_FREE_CLUSTER 0x00000000u
-
 
 
     #ifdef __cplusplus
 
 
-
       extern "C" {
 
 
-
     #endif /* ifdef __cplusplus */
-
-
-
     /**
      * @brief Reads a 16-bit little-endian value
      * @details Internal helper to convert little-endian bytes to 16-bit value.
@@ -235,9 +194,6 @@
      * @return          16-bit value in host byte order
      */
     HalfWord_t __ReadLE16__(const Byte_t *data_);
-
-
-
     /**
      * @brief Reads a 32-bit little-endian value
      * @details Internal helper to convert little-endian bytes to 32-bit value.
@@ -247,9 +203,6 @@
      * @return          32-bit value in host byte order
      */
     Word_t __ReadLE32__(const Byte_t *data_);
-
-
-
     /**
      * @brief Writes a 16-bit value as little-endian
      * @details Internal helper to convert 16-bit value to little-endian bytes.
@@ -258,9 +211,6 @@
      * @param[in]  value_ 16-bit value to write
      */
     void __WriteLE16__(Byte_t *data_, HalfWord_t value_);
-
-
-
     /**
      * @brief Writes a 32-bit value as little-endian
      * @details Internal helper to convert 32-bit value to little-endian bytes.
@@ -269,37 +219,13 @@
      * @param[in]  value_ 32-bit value to write
      */
     void __WriteLE32__(Byte_t *data_, Word_t value_);
-
-
-
     Return_t __ReadSector__(const Volume_t *vol_, Word_t sector_, Byte_t **data_);
-
-
-
     Return_t __WriteSector__(const Volume_t *vol_, Word_t sector_, const Byte_t *data_);
-
-
-
     Return_t __ReadCluster__(const Volume_t *vol_, Word_t cluster_, Byte_t **data_);
-
-
-
     Return_t __GetFATEntry__(const Volume_t *vol_, Word_t cluster_, Word_t *nextCluster_);
-
-
-
     Return_t __SetFATEntry__(const Volume_t *vol_, Word_t cluster_, Word_t value_);
-
-
-
     Return_t __FindFreeCluster__(const Volume_t *vol_, Word_t startHint_, Word_t *freeCluster_);
-
-
-
     Return_t __FreeClusters__(const Volume_t *vol_, Word_t startCluster_);
-
-
-
     /**
      * @brief Converts cluster number to sector number
      * @details Internal helper to calculate the first sector of a cluster.
@@ -310,9 +236,6 @@
      * @return             Sector number of the first sector in the cluster
      */
     Word_t __ClusterToSector__(const Volume_t *vol_, Word_t cluster_);
-
-
-
     /**
      * @brief Checks if a device is mounted
      * @details Internal function to check mount status of a block device.
@@ -322,17 +245,8 @@
      * @return                    Non-zero if device is mounted, 0 otherwise
      */
     Base_t __IsDeviceMounted__(const HalfWord_t blockDeviceUID_);
-
-
-
     Return_t __AddMountedDevice__(const HalfWord_t blockDeviceUID_);
-
-
-
     Return_t __RemoveMountedDevice__(const HalfWord_t blockDeviceUID_);
-
-
-
     /**
      * @brief Compares two byte sequences
      * @details Internal byte-wise comparison function.
@@ -344,13 +258,7 @@
      * @return         Non-zero if sequences are equal, 0 otherwise
      */
     Base_t __ByteCompare__(const Byte_t *s1_, const Byte_t *s2_, Word_t len_);
-
-
-
     Return_t __ConvertToFAT83__(const Byte_t *path_, Byte_t *fat83_);
-
-
-
     /**
      * @brief Finds directory entry in a directory
      * @details Internal function to search for a file/directory entry by name.
@@ -368,11 +276,7 @@
     Return_t __FindDirEntry__(const Volume_t *vol_, Word_t dirCluster_, const Byte_t *name83_, FAT32DirEntry_t *entry_, Word_t *entryCluster_, Word_t *
 
 
-
       entryOffset_);
-
-
-
     /**
      * @brief Finds file by full path
      * @details Internal function to locate a file by traversing directory path.
@@ -391,41 +295,27 @@
     Return_t __FindFileByPath__(const Volume_t *vol_, const Byte_t *path_, FAT32DirEntry_t *entry_, Word_t *parentCluster_, Word_t *entryCluster_, Word_t *
 
 
-
       entryOffset_);
-
-
-
     Return_t __CreateDirEntry__(const Volume_t *vol_, Word_t parentCluster_, const Byte_t *name83_, Byte_t attr_, Word_t firstCluster_, Word_t size_);
 
 
-
     #if defined(POSIX_ARCH_OTHER)
-
-
-
       void __FSStateClear__(void);
-
 
 
     #endif /* if defined(POSIX_ARCH_OTHER) */
 
 
-
     #ifdef __cplusplus
-
 
 
       }
 
 
-
     #endif /* ifdef __cplusplus */
 
 
-
   #endif /* if defined(CONFIG_ENABLE_IO_SUBSYSTEM) */
-
 
 
 #endif /* ifndef FAT_H_ */

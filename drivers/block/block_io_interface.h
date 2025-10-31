@@ -1,7 +1,6 @@
 /*UNCRUSTIFY-OFF*/
 
 
-
 /**
  * @file block_io_interface.h
  * @author Manny Peterson <manny@heliosproj.org>
@@ -21,145 +20,109 @@
 /*UNCRUSTIFY-ON*/
 
 
-
 #ifndef BLOCK_IO_INTERFACE_H_
-
 
 
   #define BLOCK_IO_INTERFACE_H_
 
 
-
   #include "types.h"
-
 
 
   #if defined(BLOCK_IO_OP_READ)
 
 
-
     #undef BLOCK_IO_OP_READ
-
 
 
   #endif /* if defined(BLOCK_IO_OP_READ) */
 
 
-
   #define BLOCK_IO_OP_READ 0x01u
-
 
 
   #if defined(BLOCK_IO_OP_WRITE)
 
 
-
     #undef BLOCK_IO_OP_WRITE
-
 
 
   #endif /* if defined(BLOCK_IO_OP_WRITE) */
 
 
-
   #define BLOCK_IO_OP_WRITE 0x02u
-
 
 
   #if defined(BLOCK_IO_MODE_BLOCKING)
 
 
-
     #undef BLOCK_IO_MODE_BLOCKING
-
 
 
   #endif /* if defined(BLOCK_IO_MODE_BLOCKING) */
 
 
-
   #define BLOCK_IO_MODE_BLOCKING 0x00u
-
 
 
   #if defined(BLOCK_IO_MODE_NONBLOCKING)
 
 
-
     #undef BLOCK_IO_MODE_NONBLOCKING
-
 
 
   #endif /* if defined(BLOCK_IO_MODE_NONBLOCKING) */
 
 
-
   #define BLOCK_IO_MODE_NONBLOCKING 0x01u
-
 
 
   #if defined(BLOCK_IO_MODE_DMA)
 
 
-
     #undef BLOCK_IO_MODE_DMA
-
 
 
   #endif /* if defined(BLOCK_IO_MODE_DMA) */
 
 
-
   #define BLOCK_IO_MODE_DMA 0x02u
-
 
 
   #if defined(BLOCK_IO_MODE_INTERRUPT)
 
 
-
     #undef BLOCK_IO_MODE_INTERRUPT
-
 
 
   #endif /* if defined(BLOCK_IO_MODE_INTERRUPT) */
 
 
-
   #define BLOCK_IO_MODE_INTERRUPT 0x03u
-
 
 
   #if defined(BLOCK_IO_CMD_SET_REQUEST)
 
 
-
     #undef BLOCK_IO_CMD_SET_REQUEST
-
 
 
   #endif /* if defined(BLOCK_IO_CMD_SET_REQUEST) */
 
 
-
   #define BLOCK_IO_CMD_SET_REQUEST 0x10u
-
 
 
   #if defined(BLOCK_IO_CMD_GET_INFO)
 
 
-
     #undef BLOCK_IO_CMD_GET_INFO
-
 
 
   #endif /* if defined(BLOCK_IO_CMD_GET_INFO) */
 
 
-
   #define BLOCK_IO_CMD_GET_INFO 0x11u
-
 
 
   /**
@@ -168,7 +131,6 @@
    * operation, blocks, and transfer mode.
    */
   typedef struct BlockIORequest_s {
-
 
 
     Byte_t command; /**< Command type identifier */
@@ -181,14 +143,12 @@
   } BlockIORequest_t;
 
 
-
   /**
    * @brief Block I/O device information structure
    * @details Contains device capabilities and characteristics for block I/O
    * devices.
    */
   typedef struct BlockIOInfo_s {
-
 
 
     Byte_t command; /**< Command type identifier */
@@ -199,7 +159,6 @@
     Base_t requiresErase; /**< Flag indicating if device requires erase before
                            * write */
   } BlockIOInfo_t;
-
 
 
 #endif /* ifndef BLOCK_IO_INTERFACE_H_ */
