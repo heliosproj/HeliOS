@@ -1,6 +1,4 @@
 /*UNCRUSTIFY-OFF*/
-
-
 /**
  * @file mem.c
  * @author Manny Peterson <manny@heliosproj.org>
@@ -14,9 +12,6 @@
  *  SPDX-License-Identifier: GPL-2.0-or-later
  *
  */
-
-
-
 /*UNCRUSTIFY-ON*/
 
 
@@ -74,8 +69,7 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
 static Return_t __free__(volatile MemoryRegion_t *region_, const volatile Addr_t *addr_);
 /**
  * @brief Gets statistics for a memory region
- * @details Internal helper that calculates usage statistics for a specific
- * memory region.
+ * @details Internal helper that calculates usage statistics for a specific memory region.
  *
  * @param[in] region_ Pointer to memory region
  * @param[in] stats_  Pointer to store statistics
@@ -165,8 +159,7 @@ static Word_t __checksum__(const BlockHeader_t *header_) {
 
 /**
  * @brief Validates memory block header integrity
- * @details Internal helper that checks if a memory block header has valid magic
- * numbers and structure.
+ * @details Internal helper that checks if a memory block header has valid magic numbers and structure.
  *
  * @param[in] header_ Pointer to block header to validate
  * @param[in] region_ Pointer to memory region containing the block
@@ -301,8 +294,7 @@ Return_t __MemoryInit__(void) {
 
 /**
  * @brief Initializes a memory region
- * @details Internal helper that sets up a memory region with initial free block
- * and metadata.
+ * @details Internal helper that sets up a memory region with initial free block and metadata.
  *
  * @param[in,out] region_ Pointer to memory region to initialize
  *
@@ -605,8 +597,7 @@ static Return_t __free__(volatile MemoryRegion_t *region_, const volatile Addr_t
 
 /**
  * @brief Defragments a memory region
- * @details Internal helper that coalesces adjacent free blocks to reduce
- * fragmentation.
+ * @details Internal helper that coalesces adjacent free blocks to reduce fragmentation.
  *
  * @param[in] region_ Pointer to memory region to defragment
  *
@@ -732,8 +723,7 @@ static Return_t __DefragMemoryRegion__(volatile MemoryRegion_t *region_) {
 
 /**
  * @brief Allocates memory from the heap
- * @details Allocates a block of memory of the requested size and returns a
- * pointer to it.
+ * @details Allocates a block of memory of the requested size and returns a pointer to it.
  *
  * @param[out] addr_ Pointer to store the allocated memory address
  * @param[in]  size_ Size of memory to allocate in bytes
@@ -795,8 +785,7 @@ Return_t xMemFree(const volatile Addr_t *addr_) {
 
 /**
  * @brief Frees all allocated heap memory
- * @details Resets the entire heap to its initial state, freeing all
- * allocations.
+ * @details Resets the entire heap to its initial state, freeing all allocations.
  *
  * @return ReturnOK if heap was reset successfully
  * @return ReturnError if operation failed
@@ -939,8 +928,7 @@ Return_t xMemGetSize(const volatile Addr_t *addr_, Size_t *size_) {
 
 /**
  * @brief Allocates memory from kernel region
- * @details Internal function to allocate memory from the kernel's dedicated
- * memory region.
+ * @details Internal function to allocate memory from the kernel's dedicated memory region.
  *
  * @param[out] addr_ Pointer to store the allocated memory address
  * @param[in]  size_ Size of memory to allocate in bytes
@@ -1078,8 +1066,7 @@ Return_t __HeapFreeMemory__(const volatile Addr_t *addr_) {
 
 /**
  * @brief Gets statistics for a memory region
- * @details Internal helper that calculates usage statistics for a specific
- * memory region.
+ * @details Internal helper that calculates usage statistics for a specific memory region.
  *
  * @param[in]  region_ Pointer to memory region
  * @param[out] stats_  Pointer to store statistics
@@ -1352,14 +1339,12 @@ Return_t __memset__(const volatile Addr_t *dest_, const Byte_t val_, const Size_
 
 /**
  * @brief Compares two memory regions
- * @details Internal memory comparison implementation that handles volatile
- * pointers.
+ * @details Internal memory comparison implementation that handles volatile pointers.
  *
  * @param[in]  s1_   First memory address
  * @param[in]  s2_   Second memory address
  * @param[in]  size_ Number of bytes to compare
- * @param[out] res_  Pointer to store comparison result (0 if equal, non-zero
- *                   otherwise)
+ * @param[out] res_  Pointer to store comparison result (0 if equal, non-zero otherwise)
  *
  * @return           ReturnOK if comparison was successful
  * @return           ReturnError if invalid parameters
@@ -1415,8 +1400,7 @@ Return_t __memcmp__(const volatile Addr_t *s1_, const volatile Addr_t *s2_, cons
 
 /**
  * @brief Detects system byte order
- * @details Internal helper that determines if the system is little-endian or
- * big-endian.
+ * @details Internal helper that determines if the system is little-endian or big-endian.
  *
  * @param[out] order_ Pointer to store detected byte order
  *

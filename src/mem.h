@@ -1,6 +1,4 @@
 /*UNCRUSTIFY-OFF*/
-
-
 /**
  * @file mem.h
  * @author Manny Peterson <manny@heliosproj.org>
@@ -14,9 +12,6 @@
  *  SPDX-License-Identifier: GPL-2.0-or-later
  *
  */
-
-
-
 /*UNCRUSTIFY-ON*/
 
 
@@ -112,8 +107,7 @@
 
     /**
      * @brief Memory block header structure
-     * @details Internal structure prepended to each memory block for allocation
-     * tracking and integrity checking.
+     * @details Internal structure prepended to each memory block for allocation tracking and integrity checking.
      */
     typedef struct BlockHeader_s {
 
@@ -121,8 +115,7 @@
       struct BlockHeader_s *next; /**< Pointer to next block in free list */
       Word_t checksum; /**< Integrity checksum for block validation */
       Word_t size; /**< Size of the data portion in bytes */
-      Byte_t free; /**< Flag indicating if block is free (FREE) or in use
-                    * (INUSE) */
+      Byte_t free; /**< Flag indicating if block is free (FREE) or in use (INUSE) */
     } BlockHeader_t;
 
 
@@ -137,14 +130,12 @@
 
     /**
      * @brief Memory region structure
-     * @details Manages a contiguous region of memory with block allocation and
-     * usage statistics.
+     * @details Manages a contiguous region of memory with block allocation and usage statistics.
      */
     typedef struct MemoryRegion_s {
 
 
-      volatile Byte_t mem[MEMORY_REGION_SIZE]; /**< Raw memory buffer for
-                                                * allocations */
+      volatile Byte_t mem[MEMORY_REGION_SIZE]; /**< Raw memory buffer for allocations */
       BlockHeader_t *first; /**< Pointer to first block in the region */
       HalfWord_t allocations; /**< Count of successful allocations */
       HalfWord_t frees; /**< Count of successful frees */

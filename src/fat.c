@@ -1,6 +1,4 @@
 /*UNCRUSTIFY-OFF*/
-
-
 /**
  * @file fat.c
  * @author Manny Peterson <manny@heliosproj.org>
@@ -14,9 +12,6 @@
  *  SPDX-License-Identifier: GPL-2.0-or-later
  *
  */
-
-
-
 /*UNCRUSTIFY-ON*/
 
 
@@ -36,6 +31,14 @@
 
 
   static Byte_t mountedDeviceCount = 0x0u;
+/**
+ * @brief Reads a 16-bit little-endian value
+ * @details Internal helper to convert little-endian bytes to 16-bit value.
+ *
+ * @param[in] data_ Pointer to 2-byte little-endian data
+ *
+ * @return          16-bit value in host byte order
+ */
   HalfWord_t __ReadLE16__(const Byte_t *data_) {
 
     return((HalfWord_t) data_[0x0u] | ((HalfWord_t) data_[0x1] << 0x8));
@@ -43,6 +46,14 @@
   }
 
 
+/**
+ * @brief Reads a 32-bit little-endian value
+ * @details Internal helper to convert little-endian bytes to 32-bit value.
+ *
+ * @param[in] data_ Pointer to 4-byte little-endian data
+ *
+ * @return          32-bit value in host byte order
+ */
   Word_t __ReadLE32__(const Byte_t *data_) {
 
     return((Word_t) data_[0x0u] | ((Word_t) data_[0x1] << 0x8) | ((Word_t) data_[0x2] << 0x10) | ((Word_t) data_[0x3] << 0x18));
@@ -50,6 +61,13 @@
   }
 
 
+/**
+ * @brief Writes a 16-bit value as little-endian
+ * @details Internal helper to convert 16-bit value to little-endian bytes.
+ *
+ * @param[out] data_  Pointer to 2-byte buffer
+ * @param[in]  value_ 16-bit value to write
+ */
   void __WriteLE16__(Byte_t *data_, HalfWord_t value_) {
 
     data_[0x0u] = (Byte_t) (value_ & 0xFFu);
@@ -59,6 +77,13 @@
   }
 
 
+/**
+ * @brief Writes a 32-bit value as little-endian
+ * @details Internal helper to convert 32-bit value to little-endian bytes.
+ *
+ * @param[out] data_  Pointer to 4-byte buffer
+ * @param[in]  value_ 32-bit value to write
+ */
   void __WriteLE32__(Byte_t *data_, Word_t value_) {
 
     data_[0x0u] = (Byte_t) (value_ & 0xFFu);
@@ -72,6 +97,16 @@
   }
 
 
+/**
+ * @brief Compares two byte sequences
+ * @details Internal byte-wise comparison function.
+ *
+ * @param[in] s1_  First byte sequence
+ * @param[in] s2_  Second byte sequence
+ * @param[in] len_ Number of bytes to compare
+ *
+ * @return         Non-zero if sequences are equal, 0 otherwise
+ */
   Base_t __ByteCompare__(const Byte_t *s1_, const Byte_t *s2_, Word_t len_) {
 
     Word_t i = 0x0u;
@@ -93,8 +128,7 @@
 
   /**
    * @brief Converts filename to FAT 8.3 format
-   * @details Internal function to convert a filename to FAT 8.3 format
-   * (space-padded).
+   * @details Internal function to convert a filename to FAT 8.3 format (space-padded).
    *
    * @param[in]  path_  Input filename
    * @param[out] fat83_ Output buffer for 11-byte FAT 8.3 name
@@ -183,6 +217,20 @@
   }
 
 
+/**
+ * @brief Finds directory entry in a directory
+ * @details Internal function to search for a file/directory entry by name.
+ *
+ * @param[in]  vol_          Pointer to volume structure
+ * @param[in]  dirCluster_   Directory cluster to search
+ * @param[in]  name83_       FAT 8.3 name to find
+ * @param[out] entry_        Pointer to store found directory entry
+ * @param[out] entryCluster_ Pointer to store cluster containing entry
+ * @param[out] entryOffset_  Pointer to store offset of entry within cluster
+ *
+ * @return                   ReturnOK if entry was found
+ * @return                   ReturnError if entry not found
+ */
   Return_t __FindDirEntry__(const Volume_t *vol_, Word_t dirCluster_, const Byte_t *name83_, FAT32DirEntry_t *entry_, Word_t *entryCluster_, Word_t *
 
 
@@ -299,6 +347,20 @@
   }
 
 
+/**
+ * @brief Finds file by full path
+ * @details Internal function to locate a file by traversing directory path.
+ *
+ * @param[in]  vol_           Pointer to volume structure
+ * @param[in]  path_          Full file path
+ * @param[out] entry_         Pointer to store found directory entry
+ * @param[out] parentCluster_ Pointer to store parent directory cluster
+ * @param[out] entryCluster_  Pointer to store cluster containing entry
+ * @param[out] entryOffset_   Pointer to store offset of entry within cluster
+ *
+ * @return                    ReturnOK if file was found
+ * @return                    ReturnError if file not found or path invalid
+ */
   Return_t __FindFileByPath__(const Volume_t *vol_, const Byte_t *path_, FAT32DirEntry_t *entry_, Word_t *parentCluster_, Word_t *entryCluster_, Word_t *
 
 
@@ -496,8 +558,7 @@
 
   /**
    * @brief Creates a directory entry
-   * @details Internal function to add a new file/directory entry to a
-   * directory.
+   * @details Internal function to add a new file/directory entry to a directory.
    *
    * @param[in] vol_           Pointer to volume structure
    * @param[in] parentCluster_ Parent directory cluster
@@ -656,8 +717,7 @@
 
   /**
    * @brief Reads a sector from block device
-   * @details Internal function to read one sector from the volume's block
-   * device.
+   * @details Internal function to read one sector from the volume's block device.
    *
    * @param[in]  vol_    Pointer to volume structure
    * @param[in]  sector_ Sector number to read
@@ -733,8 +793,7 @@
 
   /**
    * @brief Writes a sector to block device
-   * @details Internal function to write one sector to the volume's block
-   * device.
+   * @details Internal function to write one sector to the volume's block device.
    *
    * @param[in] vol_    Pointer to volume structure
    * @param[in] sector_ Sector number to write
@@ -808,6 +867,15 @@
   }
 
 
+/**
+ * @brief Converts cluster number to sector number
+ * @details Internal helper to calculate the first sector of a cluster.
+ *
+ * @param[in] vol_     Pointer to volume structure
+ * @param[in] cluster_ Cluster number
+ *
+ * @return             Sector number of the first sector in the cluster
+ */
   Word_t __ClusterToSector__(const Volume_t *vol_, Word_t cluster_) {
 
     return(vol_->dataStartSector + ((cluster_ - 2u) * vol_->sectorsPerCluster));
@@ -1137,6 +1205,14 @@
   }
 
 
+/**
+ * @brief Checks if a device is mounted
+ * @details Internal function to check mount status of a block device.
+ *
+ * @param[in] blockDeviceUID_ Block device UID to check
+ *
+ * @return                    Non-zero if device is mounted, 0 otherwise
+ */
   Base_t __IsDeviceMounted__(const HalfWord_t blockDeviceUID_) {
 
     Byte_t i = 0x0u;

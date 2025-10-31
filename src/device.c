@@ -1,6 +1,4 @@
 /*UNCRUSTIFY-OFF*/
-
-
 /**
  * @file device.c
  * @author Manny Peterson <manny@heliosproj.org>
@@ -14,9 +12,6 @@
  *  SPDX-License-Identifier: GPL-2.0-or-later
  *
  */
-
-
-
 /*UNCRUSTIFY-ON*/
 
 
@@ -33,6 +28,15 @@
 
 
   #define __DeviceUidNonZero__() (0x0u < uid_)
+/**
+ * @brief Registers a device driver with the system
+ * @details Calls the device's self-registration function to add it to the device list.
+ *
+ * @param[in] device_self_register_ Function pointer to device's self-registration function
+ *
+ * @return                          ReturnOK if device was registered successfully
+ * @return                          ReturnError if registration failed or invalid parameter
+ */
   Return_t xDeviceRegisterDevice(Return_t (*device_self_register_)()) {
 
     FUNCTION_ENTER;
@@ -60,6 +64,26 @@
   }
 
 
+/**
+ * @brief Internal device registration function
+ * @details Allocates and initializes a device structure with all required function pointers.
+ *
+ * @param[in] uid_          Unique device identifier
+ * @param[in] name_         Device name string
+ * @param[in] state_        Initial device state
+ * @param[in] mode_         Device access mode
+ * @param[in] init_         Device initialization function pointer
+ * @param[in] config_       Device configuration function pointer
+ * @param[in] read_         Device read function pointer
+ * @param[in] write_        Device write function pointer
+ * @param[in] simple_read_  Device simple read function pointer
+ * @param[in] simple_write_ Device simple write function pointer
+ *
+ * @return                  ReturnOK if device was registered successfully
+ * @return                  ReturnError if allocation failed or invalid parameters
+ *
+ * @note This is an internal function called by device self-registration routines
+ */
   Return_t __RegisterDevice__(const HalfWord_t uid_, const Byte_t *name_, const DeviceState_t state_, const DeviceMode_t mode_, Return_t (*init_)(Device_t *
 
 
@@ -211,8 +235,7 @@
    * @details Returns true if the device is registered and ready for operations.
    *
    * @param[in]  uid_ Device unique identifier
-   * @param[out] res_ Pointer to store the result (true if available, false
-   *                  otherwise)
+   * @param[out] res_ Pointer to store the result (true if available, false otherwise)
    *
    * @return          ReturnOK if check was successful
    * @return          ReturnError if device not found or invalid parameter
@@ -264,8 +287,7 @@
    * @param[in] data_ Byte value to write
    *
    * @return          ReturnOK if write was successful
-   * @return          ReturnError if device not found, unavailable, or write
-   *                  failed
+   * @return          ReturnError if device not found, unavailable, or write failed
    */
   Return_t xDeviceSimpleWrite(const HalfWord_t uid_, Byte_t data_) {
 
@@ -327,13 +349,11 @@
    * @details Block write operation for transferring multiple bytes.
    *
    * @param[in]     uid_  Device unique identifier
-   * @param[in,out] size_ Pointer to size of data to write (may be updated by
-   *                      driver)
+   * @param[in,out] size_ Pointer to size of data to write (may be updated by driver)
    * @param[in]     data_ Pointer to data buffer
    *
    * @return              ReturnOK if write was successful
-   * @return              ReturnError if device not found, unavailable, or write
-   *                      failed
+   * @return              ReturnError if device not found, unavailable, or write failed
    */
   Return_t xDeviceWrite(const HalfWord_t uid_, Size_t *size_, Addr_t *data_) {
 
@@ -504,8 +524,7 @@
    * @param[out] data_ Pointer to store the read byte
    *
    * @return           ReturnOK if read was successful
-   * @return           ReturnError if device not found, unavailable, or read
-   *                   failed
+   * @return           ReturnError if device not found, unavailable, or read failed
    */
   Return_t xDeviceSimpleRead(const HalfWord_t uid_, Byte_t *data_) {
 
@@ -571,13 +590,11 @@
    * @details Block read operation for receiving multiple bytes.
    *
    * @param[in]     uid_  Device unique identifier
-   * @param[in,out] size_ Pointer to size of data to read (may be updated by
-   *                      driver)
+   * @param[in,out] size_ Pointer to size of data to read (may be updated by driver)
    * @param[out]    data_ Pointer to store data buffer pointer
    *
    * @return              ReturnOK if read was successful
-   * @return              ReturnError if device not found, unavailable, or read
-   *                      failed
+   * @return              ReturnError if device not found, unavailable, or read failed
    */
   Return_t xDeviceRead(const HalfWord_t uid_, Size_t *size_, Addr_t **data_) {
 
@@ -807,8 +824,7 @@
 
   /**
    * @brief Initializes a device
-   * @details Calls the device's initialization function to prepare it for
-   * operation.
+   * @details Calls the device's initialization function to prepare it for operation.
    *
    * @param[in] uid_ Device unique identifier
    *
@@ -869,8 +885,7 @@
    * @param[in]     config_ Pointer to configuration data
    *
    * @return                ReturnOK if configuration was successful
-   * @return                ReturnError if device not found or configuration
-   *                        failed
+   * @return                ReturnError if device not found or configuration failed
    */
   Return_t xDeviceConfigDevice(const HalfWord_t uid_, Size_t *size_, Addr_t *config_) {
 

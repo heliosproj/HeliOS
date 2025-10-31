@@ -1,6 +1,4 @@
 /*UNCRUSTIFY-OFF*/
-
-
 /**
  * @file driver.c
  * @author Manny Peterson <manny@heliosproj.org>
@@ -14,13 +12,19 @@
  *  SPDX-License-Identifier: GPL-2.0-or-later
  *
  */
-
-
-
 /*UNCRUSTIFY-ON*/
 
 
 #include "driver.h"
+/**
+ * @brief Self-registers device driver
+ * @details Template function for registering the device driver with the device manager during system initialization.
+ *
+ * @return ReturnOK if registration was successful
+ * @return ReturnError if registration failed
+ *
+ * @note Implement this function to call __RegisterDevice__ with appropriate parameters
+ */
 Return_t TO_FUNCTION(DEVICE_NAME, _self_register)(void) {
 
 
@@ -52,6 +56,15 @@ Return_t TO_FUNCTION(DEVICE_NAME, _self_register)(void) {
 
 
 }
+/**
+ * @brief Self-registers device driver
+ * @details Template function for registering the device driver with the device manager during system initialization.
+ *
+ * @return ReturnOK if registration was successful
+ * @return ReturnError if registration failed
+ *
+ * @note Implement this function to call __RegisterDevice__ with appropriate parameters
+ */
 Return_t TO_FUNCTION(DEVICE_NAME, _init)(Device_t *device_) {
 
 
@@ -62,6 +75,15 @@ Return_t TO_FUNCTION(DEVICE_NAME, _init)(Device_t *device_) {
 
 
 }
+/**
+ * @brief Self-registers device driver
+ * @details Template function for registering the device driver with the device manager during system initialization.
+ *
+ * @return ReturnOK if registration was successful
+ * @return ReturnError if registration failed
+ *
+ * @note Implement this function to call __RegisterDevice__ with appropriate parameters
+ */
 Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Addr_t *config_) {
 
 
@@ -72,6 +94,15 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Add
 
 
 }
+/**
+ * @brief Self-registers device driver
+ * @details Template function for registering the device driver with the device manager during system initialization.
+ *
+ * @return ReturnOK if registration was successful
+ * @return ReturnError if registration failed
+ *
+ * @note Implement this function to call __RegisterDevice__ with appropriate parameters
+ */
 Return_t TO_FUNCTION(DEVICE_NAME, _read)(Device_t *device_, Size_t *size_, Addr_t **data_) {
 
 
@@ -82,6 +113,15 @@ Return_t TO_FUNCTION(DEVICE_NAME, _read)(Device_t *device_, Size_t *size_, Addr_
 
 
 }
+/**
+ * @brief Self-registers device driver
+ * @details Template function for registering the device driver with the device manager during system initialization.
+ *
+ * @return ReturnOK if registration was successful
+ * @return ReturnError if registration failed
+ *
+ * @note Implement this function to call __RegisterDevice__ with appropriate parameters
+ */
 Return_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t *device_, Size_t *size_, Addr_t *data_) {
 
 
@@ -92,6 +132,15 @@ Return_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t *device_, Size_t *size_, Addr
 
 
 }
+/**
+ * @brief Self-registers device driver
+ * @details Template function for registering the device driver with the device manager during system initialization.
+ *
+ * @return ReturnOK if registration was successful
+ * @return ReturnError if registration failed
+ *
+ * @note Implement this function to call __RegisterDevice__ with appropriate parameters
+ */
 Return_t TO_FUNCTION(DEVICE_NAME, _simple_read)(Device_t *device_, Byte_t *data_) {
 
 
@@ -102,6 +151,15 @@ Return_t TO_FUNCTION(DEVICE_NAME, _simple_read)(Device_t *device_, Byte_t *data_
 
 
 }
+/**
+ * @brief Self-registers device driver
+ * @details Template function for registering the device driver with the device manager during system initialization.
+ *
+ * @return ReturnOK if registration was successful
+ * @return ReturnError if registration failed
+ *
+ * @note Implement this function to call __RegisterDevice__ with appropriate parameters
+ */
 Return_t TO_FUNCTION(DEVICE_NAME, _simple_write)(Device_t *device_, Byte_t data_) {
 
 

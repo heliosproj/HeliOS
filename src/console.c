@@ -1,6 +1,4 @@
 /*UNCRUSTIFY-OFF*/
-
-
 /**
  * @file console.c
  * @author Manny Peterson <manny@heliosproj.org>
@@ -14,9 +12,6 @@
  *  SPDX-License-Identifier: GPL-2.0-or-later
  *
  */
-
-
-
 /*UNCRUSTIFY-ON*/
 
 
@@ -86,8 +81,7 @@
   static HalfWord_t cachedDeviceUID = 0x0u;
   /**
    * @brief Implements the help command
-   * @details Internal command handler that displays available console commands
-   * and their descriptions.
+   * @details Internal command handler that displays available console commands and their descriptions.
    *
    * @param[in] args_ Command arguments (unused)
    *
@@ -245,8 +239,7 @@
    * @param[in]  destSize_ Size of destination buffer
    *
    * @return               ReturnOK if copy was successful
-   * @return               ReturnError if destination too small or invalid
-   *                       parameters
+   * @return               ReturnError if destination too small or invalid parameters
    *
    * @note This is an internal function similar to strncpy with safety checks
    */
@@ -394,8 +387,7 @@
    * @param[in]     destSize_ Size of destination buffer
    *
    * @return                  ReturnOK if concatenation was successful
-   * @return                  ReturnError if destination too small or invalid
-   *                          parameters
+   * @return                  ReturnError if destination too small or invalid parameters
    *
    * @note This is an internal function similar to strncat with safety checks
    */
@@ -520,8 +512,7 @@
    * @param[in]  destSize_ Size of destination buffer
    *
    * @return               ReturnOK if join was successful
-   * @return               ReturnError if destination too small or invalid
-   *                       parameters
+   * @return               ReturnError if destination too small or invalid parameters
    *
    * @note This is an internal function for filesystem path manipulation
    */
@@ -789,8 +780,7 @@
    * @param[in]  destSize_ Size of destination buffer
    *
    * @return               ReturnOK if extraction was successful
-   * @return               ReturnError if destination too small or invalid
-   *                       parameters
+   * @return               ReturnError if destination too small or invalid parameters
    *
    * @note This is an internal function similar to dirname
    */
@@ -888,8 +878,7 @@
    * @param[in]  destSize_ Size of destination buffer
    *
    * @return               ReturnOK if extraction was successful
-   * @return               ReturnError if destination too small or invalid
-   *                       parameters
+   * @return               ReturnError if destination too small or invalid parameters
    *
    * @note This is an internal function similar to basename
    */
@@ -1105,8 +1094,7 @@
 
   /**
    * @brief Checks and initializes the console device
-   * @details Internal helper that verifies the console device is available and
-   * initializes it if needed.
+   * @details Internal helper that verifies the console device is available and initializes it if needed.
    *
    * @return ReturnOK if device is ready
    * @return ReturnError if device is not available
@@ -1180,8 +1168,7 @@
 
   /**
    * @brief Writes a string to the console device
-   * @details Internal helper that writes a null-terminated string to the
-   * console output device.
+   * @details Internal helper that writes a null-terminated string to the console output device.
    *
    * @param[in] str_ Null-terminated string to write
    *
@@ -1315,8 +1302,7 @@
 
   /**
    * @brief Reads a single character from the console device
-   * @details Internal helper that reads one character from the console input
-   * device with buffering support.
+   * @details Internal helper that reads one character from the console input device with buffering support.
    *
    * @param[in] ch_ Pointer to store the read character
    *
@@ -1439,8 +1425,7 @@
 
   /**
    * @brief Handles backspace character in console input
-   * @details Internal helper that processes backspace input by removing the
-   * last character from the input buffer and updating the display.
+   * @details Internal helper that processes backspace input by removing the last character from the input buffer and updating the display.
    *
    * @return ReturnOK if backspace was handled successfully
    * @return ReturnError if operation failed
@@ -1474,8 +1459,7 @@
 
   /**
    * @brief Processes and executes a console command
-   * @details Internal helper that parses the input buffer and dispatches to the
-   * appropriate command handler.
+   * @details Internal helper that parses the input buffer and dispatches to the appropriate command handler.
    *
    * @return ReturnOK if command was processed successfully
    * @return ReturnError if command processing failed
@@ -1573,8 +1557,7 @@
 
   /**
    * @brief Implements the help command
-   * @details Internal command handler that displays available console commands
-   * and their descriptions.
+   * @details Internal command handler that displays available console commands and their descriptions.
    *
    * @param[in] args_ Command arguments (unused)
    *
@@ -1614,8 +1597,7 @@
 
   /**
    * @brief Implements the version command
-   * @details Internal command handler that displays the HeliOS version
-   * information.
+   * @details Internal command handler that displays the HeliOS version information.
    *
    * @param[in] args_ Command arguments (unused)
    *
@@ -1645,8 +1627,7 @@
 
   /**
    * @brief Implements the tasks command
-   * @details Internal command handler that displays information about all
-   * registered tasks including their states and runtime statistics.
+   * @details Internal command handler that displays information about all registered tasks including their states and runtime statistics.
    *
    * @param[in] args_ Command arguments (unused)
    *
@@ -1738,8 +1719,7 @@
 
   /**
    * @brief Implements the mem command
-   * @details Internal command handler that displays memory usage statistics and
-   * available memory regions.
+   * @details Internal command handler that displays memory usage statistics and available memory regions.
    *
    * @param[in] args_ Command arguments (unused)
    *
@@ -1843,8 +1823,7 @@
 
   /**
    * @brief Implements the echo command
-   * @details Internal command handler that echoes text back to the console
-   * output or toggles echo mode.
+   * @details Internal command handler that echoes text back to the console output or toggles echo mode.
    *
    * @param[in] args_ Text to echo or "on"/"off" to toggle echo mode
    *
@@ -1886,8 +1865,7 @@
 
   /**
    * @brief Implements the ls command
-   * @details Internal command handler that lists directory contents in the
-   * filesystem.
+   * @details Internal command handler that lists directory contents in the filesystem.
    *
    * @param[in] args_ Optional directory path
    *
@@ -2009,8 +1987,7 @@
 
   /**
    * @brief Implements the cd command
-   * @details Internal command handler that changes the current working
-   * directory.
+   * @details Internal command handler that changes the current working directory.
    *
    * @param[in] args_ Directory path to change to
    *
@@ -2126,8 +2103,7 @@
 
   /**
    * @brief Implements the pwd command
-   * @details Internal command handler that displays the current working
-   * directory path.
+   * @details Internal command handler that displays the current working directory path.
    *
    * @param[in] args_ Command arguments (unused)
    *
@@ -2352,8 +2328,7 @@
 
   /**
    * @brief Implements the mv command
-   * @details Internal command handler that moves or renames files and
-   * directories.
+   * @details Internal command handler that moves or renames files and directories.
    *
    * @param[in] args_ Source and destination paths separated by space
    *

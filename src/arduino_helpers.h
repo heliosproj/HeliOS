@@ -1,6 +1,4 @@
 /*UNCRUSTIFY-OFF*/
-
-
 /**
  * @file arduino_helpers.h
  * @author Manny Peterson <manny@heliosproj.org>
@@ -14,9 +12,6 @@
  *  SPDX-License-Identifier: GPL-2.0-or-later
  *
  */
-
-
-
 /*UNCRUSTIFY-ON*/
 
 
@@ -40,8 +35,7 @@
       #include "HeliOS.h"
       /**
        * @brief Converts byte array to Arduino String
-       * @details Helper function to convert a byte array to an Arduino String
-       * object for easy display and manipulation.
+       * @details Helper function to convert a byte array to an Arduino String object for easy display and manipulation.
        *
        * @param[in] size_  Size of byte array
        * @param[in] bytes_ Pointer to byte array

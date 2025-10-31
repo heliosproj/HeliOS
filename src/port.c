@@ -1,6 +1,4 @@
 /*UNCRUSTIFY-OFF*/
-
-
 /**
  * @file port.c
  * @author Manny Peterson <manny@heliosproj.org>
@@ -14,9 +12,6 @@
  *  SPDX-License-Identifier: GPL-2.0-or-later
  *
  */
-
-
-
 /*UNCRUSTIFY-ON*/
 
 
@@ -74,8 +69,7 @@ Ticks_t __PortGetSysTicks__(void) {
 
 /**
  * @brief Initializes platform-specific hardware
- * @details Sets up timers, interrupts, and other hardware required for HeliOS
- * operation.
+ * @details Sets up timers, interrupts, and other hardware required for HeliOS operation.
  *
  * @return ReturnOK if initialization was successful
  * @return ReturnError if initialization failed

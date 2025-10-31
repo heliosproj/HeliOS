@@ -1,6 +1,4 @@
 /*UNCRUSTIFY-OFF*/
-
-
 /**
  * @file queue.c
  * @author Manny Peterson <manny@heliosproj.org>
@@ -14,9 +12,6 @@
  *  SPDX-License-Identifier: GPL-2.0-or-later
  *
  */
-
-
-
 /*UNCRUSTIFY-ON*/
 
 
@@ -48,8 +43,7 @@ static Return_t __QueuePeek__(const Queue_t *queue_, QueueMessage_t **message_);
 #define __QueueLengthNotAtLimit__() (queue_->limit > messages)
 /**
  * @brief Creates a new message queue
- * @details Allocates memory for a queue structure and initializes it with the
- * specified message limit.
+ * @details Allocates memory for a queue structure and initializes it with the specified message limit.
  *
  * @param[out] queue_ Pointer to store the created queue handle
  * @param[in]  limit_ Maximum number of messages allowed in the queue
@@ -210,8 +204,7 @@ Return_t xQueueGetLength(const Queue_t *queue_, Base_t *res_) {
  * @details Returns true if the queue contains no messages.
  *
  * @param[in]  queue_ Pointer to the queue to check
- * @param[out] res_   Pointer to store the result (true if empty, false
- *                    otherwise)
+ * @param[out] res_   Pointer to store the result (true if empty, false otherwise)
  *
  * @return            ReturnOK if check was successful
  * @return            ReturnError if queue is invalid or invalid parameter
@@ -262,8 +255,7 @@ Return_t xQueueIsQueueEmpty(const Queue_t *queue_, Base_t *res_) {
  * @details Returns true if the queue has reached its message limit.
  *
  * @param[in]  queue_ Pointer to the queue to check
- * @param[out] res_   Pointer to store the result (true if full, false
- *                    otherwise)
+ * @param[out] res_   Pointer to store the result (true if full, false otherwise)
  *
  * @return            ReturnOK if check was successful
  * @return            ReturnError if queue is invalid or invalid parameter
@@ -369,8 +361,7 @@ Return_t xQueueMessagesWaiting(const Queue_t *queue_, Base_t *res_) {
  * @param[in]     value_ Pointer to message data (can be NULL if bytes_ is 0)
  *
  * @return               ReturnOK if message was sent successfully
- * @return               ReturnError if queue is full, invalid, or allocation
- *                       failed
+ * @return               ReturnError if queue is full, invalid, or allocation failed
  */
 Return_t xQueueSend(Queue_t *queue_, const Base_t bytes_, const Byte_t *value_) {
 
@@ -465,15 +456,13 @@ Return_t xQueueSend(Queue_t *queue_, const Base_t bytes_, const Byte_t *value_) 
 
 /**
  * @brief Peeks at the first message without removing it
- * @details Allocates and returns a copy of the first message in the queue
- * without dequeuing it.
+ * @details Allocates and returns a copy of the first message in the queue without dequeuing it.
  *
  * @param[in]  queue_   Pointer to the queue to peek
  * @param[out] message_ Pointer to store allocated message structure
  *
  * @return              ReturnOK if message was peeked successfully
- * @return              ReturnError if queue is empty, invalid, or allocation
- *                      failed
+ * @return              ReturnError if queue is empty, invalid, or allocation failed
  *
  * @warning Caller is responsible for freeing the allocated message structure
  */
@@ -506,8 +495,7 @@ Return_t xQueuePeek(const Queue_t *queue_, QueueMessage_t **message_) {
 
 /**
  * @brief Peeks at the next message without removing it
- * @details Internal helper that retrieves the next message from the queue
- * without dequeuing it.
+ * @details Internal helper that retrieves the next message from the queue without dequeuing it.
  *
  * @param[in] queue_   Pointer to queue
  * @param[in] message_ Pointer to store message
@@ -576,8 +564,7 @@ static Return_t __QueuePeek__(const Queue_t *queue_, QueueMessage_t **message_) 
 
 /**
  * @brief Drops the first message from the queue
- * @details Removes and frees the first message in the queue without returning
- * it.
+ * @details Removes and frees the first message in the queue without returning it.
  *
  * @param[in,out] queue_ Pointer to the queue
  *
@@ -679,8 +666,7 @@ static Return_t __QueueDropmessage__(Queue_t *queue_) {
  * @param[out]    message_ Pointer to store allocated message structure
  *
  * @return                 ReturnOK if message was received successfully
- * @return                 ReturnError if queue is empty, invalid, or allocation
- *                         failed
+ * @return                 ReturnError if queue is empty, invalid, or allocation failed
  *
  * @warning Caller is responsible for freeing the allocated message structure
  */

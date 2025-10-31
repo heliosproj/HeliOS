@@ -1,6 +1,4 @@
 /*UNCRUSTIFY-OFF*/
-
-
 /**
  * @file task.h
  * @author Manny Peterson <manny@heliosproj.org>
@@ -14,9 +12,6 @@
  *  SPDX-License-Identifier: GPL-2.0-or-later
  *
  */
-
-
-
 /*UNCRUSTIFY-ON*/
 
 
@@ -81,26 +76,6 @@
 
 
   #endif /* ifdef __cplusplus */
-  /**
-   * @brief Creates a new task
-   * @details Allocates memory for a task control block and registers it with
-   * the scheduler. The task starts in suspended state and must be resumed
-   * explicitly.
-   *
-   * @param[out] task_          Pointer to store the created task handle
-   * @param[in]  name_          Human-readable task name (null-terminated
-   *                            string)
-   * @param[in]  callback_      Function pointer to task callback
-   * @param[in]  taskParameter_ Optional parameter passed to task callback (can
-   *                            be NULL)
-   *
-   * @return                    ReturnOK if task was created successfully
-   * @return                    ReturnError if allocation failed or invalid
-   *                            parameters
-   *
-   * @note The task must be resumed with xTaskResume() before it will execute
-   * @warning Caller is responsible for deleting the task with xTaskDelete()
-   */
   Return_t xTaskCreate(Task_t **task_, const Byte_t *name_, void (*callback_)(Task_t *task_, TaskParm_t *parm_), TaskParm_t *taskParameter_);
   Return_t xTaskDelete(const Task_t *task_);
   Return_t xTaskGetHandleByName(Task_t **task_, const Byte_t *name_);

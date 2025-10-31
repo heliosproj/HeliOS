@@ -1,6 +1,4 @@
 /*UNCRUSTIFY-OFF*/
-
-
 /**
  * @file task.c
  * @author Manny Peterson <manny@heliosproj.org>
@@ -14,9 +12,6 @@
  *  SPDX-License-Identifier: GPL-2.0-or-later
  *
  */
-
-
-
 /*UNCRUSTIFY-ON*/
 
 
@@ -79,6 +74,21 @@ static SchedulerState_t scheduler = SchedulerStateRunning;
 
 
 #endif /* if defined(CONFIG_TASK_WD_TIMER_ENABLE) */
+/**
+ * @brief Creates a new task
+ * @details Allocates memory for a task control block and registers it with the scheduler. The task starts in suspended state and must be resumed explicitly.
+ *
+ * @param[out] task_          Pointer to store the created task handle
+ * @param[in]  name_          Human-readable task name (null-terminated string)
+ * @param[in]  callback_      Function pointer to task callback
+ * @param[in]  taskParameter_ Optional parameter passed to task callback (can be NULL)
+ *
+ * @return                    ReturnOK if task was created successfully
+ * @return                    ReturnError if allocation failed or invalid parameters
+ *
+ * @note The task must be resumed with xTaskResume() before it will execute
+ * @warning Caller is responsible for deleting the task with xTaskDelete()
+ */
 Return_t xTaskCreate(Task_t **task_, const Byte_t *name_, void (*callback_)(Task_t *task_, TaskParm_t *parm_), TaskParm_t *taskParameter_) {
 
   FUNCTION_ENTER;
@@ -333,8 +343,7 @@ Return_t xTaskGetHandleByName(Task_t **task_, const Byte_t *name_) {
 }
 /**
  * @brief Gets task handle by ID
- * @details Searches for a task by its unique identifier and returns the task
- * handle.
+ * @details Searches for a task by its unique identifier and returns the task handle.
  *
  * @param[out] task_ Pointer to store the found task handle
  * @param[in]  id_   Task identifier to search for
@@ -379,8 +388,7 @@ Return_t xTaskGetHandleById(Task_t **task_, const Base_t id_) {
 }
 /**
  * @brief Gets runtime statistics for all tasks
- * @details Allocates and returns an array of runtime statistics for all
- * registered tasks.
+ * @details Allocates and returns an array of runtime statistics for all registered tasks.
  *
  * @param[out] stats_ Pointer to store allocated statistics array
  * @param[out] tasks_ Pointer to store the number of tasks
@@ -665,8 +673,7 @@ Return_t xTaskGetTaskInfo(const Task_t *task_, TaskInfo_t **info_) {
 }
 /**
  * @brief Gets information about all tasks
- * @details Allocates and returns an array of information structures for all
- * registered tasks.
+ * @details Allocates and returns an array of information structures for all registered tasks.
  *
  * @param[out] info_  Pointer to store allocated information array
  * @param[out] tasks_ Pointer to store the number of tasks
@@ -771,8 +778,7 @@ Return_t xTaskGetAllTaskInfo(TaskInfo_t **info_, Base_t *tasks_) {
 }
 /**
  * @brief Gets the current state of a task
- * @details Returns the execution state (running, suspended, or waiting) of the
- * specified task.
+ * @details Returns the execution state (running, suspended, or waiting) of the specified task.
  *
  * @param[in]  task_  Pointer to the task to query
  * @param[out] state_ Pointer to store the task state
@@ -817,8 +823,7 @@ Return_t xTaskGetTaskState(const Task_t *task_, TaskState_t *state_) {
  * @return           ReturnOK if name was retrieved successfully
  * @return           ReturnError if task is invalid or invalid parameter
  *
- * @note The returned pointer points to the internal task structure; do not
- * modify or free
+ * @note The returned pointer points to the internal task structure; do not modify or free
  */
 Return_t xTaskGetName(const Task_t *task_, Byte_t **name_) {
 
@@ -965,8 +970,7 @@ Return_t xTaskNotifyStateClear(Task_t *task_) {
  * @details Returns true if the task has a notification waiting to be consumed.
  *
  * @param[in]  task_ Pointer to the task to check
- * @param[out] res_  Pointer to store the result (true if notification pending,
- *                   false otherwise)
+ * @param[out] res_  Pointer to store the result (true if notification pending, false otherwise)
  *
  * @return           ReturnOK if check was successful
  * @return           ReturnError if task is invalid or invalid parameter
@@ -1014,12 +1018,10 @@ Return_t xTaskNotificationIsWaiting(const Task_t *task_, Base_t *res_) {
  *
  * @param[in,out] task_  Pointer to the task to notify
  * @param[in]     bytes_ Number of bytes in the notification value
- * @param[in]     value_ Pointer to notification data (can be NULL if bytes_ is
- *                       0)
+ * @param[in]     value_ Pointer to notification data (can be NULL if bytes_ is 0)
  *
  * @return               ReturnOK if notification was sent successfully
- * @return               ReturnError if task is invalid, buffer full, or invalid
- *                       parameters
+ * @return               ReturnError if task is invalid, buffer full, or invalid parameters
  */
 Return_t xTaskNotifyGive(Task_t *task_, const Base_t bytes_, const Byte_t *value_) {
 
@@ -1067,20 +1069,15 @@ Return_t xTaskNotifyGive(Task_t *task_, const Base_t bytes_, const Byte_t *value
 }
 /**
  * @brief Receives a notification from a task
- * @details Allocates and returns the pending notification for the specified
- * task.
+ * @details Allocates and returns the pending notification for the specified task.
  *
  * @param[in,out] task_         Pointer to the task to receive from
- * @param[out]    notification_ Pointer to store allocated notification
- *                              structure
+ * @param[out]    notification_ Pointer to store allocated notification structure
  *
- * @return                      ReturnOK if notification was received
- *                              successfully
- * @return                      ReturnError if no notification pending, task is
- *                              invalid, or allocation failed
+ * @return                      ReturnOK if notification was received successfully
+ * @return                      ReturnError if no notification pending, task is invalid, or allocation failed
  *
- * @warning Caller is responsible for freeing the allocated notification
- * structure
+ * @warning Caller is responsible for freeing the allocated notification structure
  */
 Return_t xTaskNotifyTake(Task_t *task_, TaskNotification_t **notification_) {
 
@@ -1163,8 +1160,7 @@ Return_t xTaskNotifyTake(Task_t *task_, TaskNotification_t **notification_) {
 }
 /**
  * @brief Resumes a suspended task
- * @details Changes the task state to running, allowing it to be scheduled for
- * execution.
+ * @details Changes the task state to running, allowing it to be scheduled for execution.
  *
  * @param[in,out] task_ Pointer to the task to resume
  *
@@ -1200,8 +1196,7 @@ Return_t xTaskResume(Task_t *task_) {
 }
 /**
  * @brief Suspends a task
- * @details Changes the task state to suspended, preventing it from being
- * scheduled.
+ * @details Changes the task state to suspended, preventing it from being scheduled.
  *
  * @param[in,out] task_ Pointer to the task to suspend
  *
@@ -1273,8 +1268,7 @@ Return_t xTaskWait(Task_t *task_) {
 }
 /**
  * @brief Changes the period of a task's timer
- * @details Updates the task's periodic timer period without affecting its
- * running state.
+ * @details Updates the task's periodic timer period without affecting its running state.
  *
  * @param[in,out] task_   Pointer to the task to modify
  * @param[in]     period_ New timer period in system ticks
@@ -1389,8 +1383,7 @@ Return_t xTaskGetPeriod(const Task_t *task_, Ticks_t *period_) {
 }
 /**
  * @brief Finds a task in the task list
- * @details Internal helper that searches for a specific task in the global task
- * list.
+ * @details Internal helper that searches for a specific task in the global task list.
  *
  * @param[in] task_ Pointer to task to find
  *
@@ -1709,15 +1702,13 @@ Return_t xTaskGetSchedulerState(SchedulerState_t *state_) {
 }
 /**
  * @brief Gets the watchdog timer period for a task
- * @details Retrieves the configured watchdog timer period for the specified
- * task.
+ * @details Retrieves the configured watchdog timer period for the specified task.
  *
  * @param[in]  task_   Pointer to the task to query
  * @param[out] period_ Pointer to store the watchdog period in system ticks
  *
  * @return             ReturnOK if period was retrieved successfully
- * @return             ReturnError if task is invalid, watchdog not enabled, or
- *                     invalid parameter
+ * @return             ReturnError if task is invalid, watchdog not enabled, or invalid parameter
  */
 Return_t xTaskGetWDPeriod(const Task_t *task_, Ticks_t *period_) {
 

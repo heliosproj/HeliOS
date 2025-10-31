@@ -1,6 +1,4 @@
 /*UNCRUSTIFY-OFF*/
-
-
 /**
  * @file block_io_interface.h
  * @author Manny Peterson <manny@heliosproj.org>
@@ -14,9 +12,6 @@
  *  SPDX-License-Identifier: GPL-2.0-or-later
  *
  */
-
-
-
 /*UNCRUSTIFY-ON*/
 
 
@@ -127,8 +122,7 @@
 
   /**
    * @brief Block I/O request structure
-   * @details Command structure for block device I/O operations specifying the
-   * operation, blocks, and transfer mode.
+   * @details Command structure for block device I/O operations specifying the operation, blocks, and transfer mode.
    */
   typedef struct BlockIORequest_s {
 
@@ -145,8 +139,7 @@
 
   /**
    * @brief Block I/O device information structure
-   * @details Contains device capabilities and characteristics for block I/O
-   * devices.
+   * @details Contains device capabilities and characteristics for block I/O devices.
    */
   typedef struct BlockIOInfo_s {
 
@@ -154,10 +147,8 @@
     Byte_t command; /**< Command type identifier */
     Word_t totalSizeBytes; /**< Total device capacity in bytes */
     HalfWord_t nativeBlockSize; /**< Native block size in bytes */
-    Base_t supportsRandomAccess; /**< Flag indicating if device supports random
-                                  * access */
-    Base_t requiresErase; /**< Flag indicating if device requires erase before
-                           * write */
+    Base_t supportsRandomAccess; /**< Flag indicating if device supports random access */
+    Base_t requiresErase; /**< Flag indicating if device requires erase before write */
   } BlockIOInfo_t;
 
 

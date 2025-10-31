@@ -1,6 +1,4 @@
 /*UNCRUSTIFY-OFF*/
-
-
 /**
  * @file console.h
  * @author Manny Peterson <manny@heliosproj.org>
@@ -14,9 +12,6 @@
  *  SPDX-License-Identifier: GPL-2.0-or-later
  *
  */
-
-
-
 /*UNCRUSTIFY-ON*/
 
 
@@ -125,23 +120,17 @@
 
     /**
      * @brief Console state structure
-     * @details Maintains the state of the console subsystem including buffer
-     * and settings.
+     * @details Maintains the state of the console subsystem including buffer and settings.
      */
     typedef struct ConsoleState_s {
 
 
-      Base_t deviceReady; /**< Flag indicating if console device is ready for
-                           * I/O */
+      Base_t deviceReady; /**< Flag indicating if console device is ready for I/O */
       Base_t echoEnabled; /**< Flag indicating if character echo is enabled */
-      Byte_t commandBuffer[CONFIG_CONSOLE_MAX_COMMAND_LENGTH]; /**< Command
-                                                                * input buffer
+      Byte_t commandBuffer[CONFIG_CONSOLE_MAX_COMMAND_LENGTH]; /**< Command input buffer
                                                                 */
       HalfWord_t bufferPosition; /**< Current position in command buffer */
-      Byte_t currentWorkingDirectory[CONFIG_FS_MAX_PATH_LENGTH]; /**< Current
-                                                                  * working
-                                                                  * directory
-                                                                  * path */
+      Byte_t currentWorkingDirectory[CONFIG_FS_MAX_PATH_LENGTH]; /**< Current working directory path */
     } ConsoleState_t;
 
 

@@ -1,6 +1,4 @@
 /*UNCRUSTIFY-OFF*/
-
-
 /**
  * @file ramdisk_driver.c
  * @author Manny Peterson <manny@heliosproj.org>
@@ -14,9 +12,6 @@
  *  SPDX-License-Identifier: GPL-2.0-or-later
  *
  */
-
-
-
 /*UNCRUSTIFY-ON*/
 
 
@@ -34,8 +29,7 @@ static Byte_t ramdisk[RAMDISK_SIZE_BYTES] = {
 
 /**
  * @brief RAM disk internal state structure
- * @details Maintains runtime statistics and position tracking for the RAM disk
- * device.
+ * @details Maintains runtime statistics and position tracking for the RAM disk device.
  */
 typedef struct RAMDiskState_s {
 
@@ -78,8 +72,7 @@ static RAMDiskState_t state = {
         (__PointerIsNotNull__(size_) && __PointerIsNotNull__(data_) && (0x0u < *(size_)))
 /**
  * @brief Validates and truncates requested I/O size
- * @details Internal helper to ensure I/O operations don't exceed disk
- * boundaries.
+ * @details Internal helper to ensure I/O operations don't exceed disk boundaries.
  *
  * @param[in]  requested_ Requested size in bytes
  * @param[out] actual_    Pointer to store actual size that can be transferred
@@ -559,8 +552,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _simple_write)(Device_t *device_, Byte_t data_
 }
 /**
  * @brief Validates and truncates request size
- * @details Internal helper that ensures request size is within device limits
- * and truncates if necessary.
+ * @details Internal helper that ensures request size is within device limits and truncates if necessary.
  *
  * @param[in]  requested_ Requested size in bytes
  * @param[out] actual_    Pointer to store actual size that can be transferred

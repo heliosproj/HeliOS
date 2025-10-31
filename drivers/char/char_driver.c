@@ -1,6 +1,4 @@
 /*UNCRUSTIFY-OFF*/
-
-
 /**
  * @file char_driver.c
  * @author Manny Peterson <manny@heliosproj.org>
@@ -14,9 +12,6 @@
  *  SPDX-License-Identifier: GPL-2.0-or-later
  *
  */
-
-
-
 /*UNCRUSTIFY-ON*/
 
 
@@ -25,8 +20,7 @@
 
 /**
  * @brief Character device internal state structure
- * @details Maintains the runtime state of a character device including buffers
- * and communication parameters.
+ * @details Maintains the runtime state of a character device including buffers and communication parameters.
  */
 typedef struct CharDeviceState_s {
 
@@ -58,22 +52,19 @@ static CharDeviceState_t state = {
 };
 /**
  * @brief Prepares a character I/O request structure
- * @details Internal helper to allocate and initialize a CharIORequest_t for I/O
- * operations.
+ * @details Internal helper to allocate and initialize a CharIORequest_t for I/O operations.
  *
  * @param[in]  operation_  I/O operation type
  * @param[out] request_    Pointer to store allocated request structure
  * @param[out] configSize_ Pointer to store config size
  *
  * @return                 ReturnOK if request was prepared successfully
- * @return                 ReturnError if allocation failed or invalid
- *                         parameters
+ * @return                 ReturnError if allocation failed or invalid parameters
  */
 static Return_t __PrepareCharIORequest__(const Byte_t operation_, CharIORequest_t **request_, Size_t *configSize_);
 /**
  * @brief Reads raw data from character device
- * @details Internal function to read bytes from the receive buffer without line
- * processing.
+ * @details Internal function to read bytes from the receive buffer without line processing.
  *
  * @param[out] data_      Pointer to store allocated data buffer
  * @param[out] bytesRead_ Pointer to store number of bytes read
@@ -801,8 +792,7 @@ static Return_t __CharDeviceReadRAW__(Byte_t **data_,
 
 /**
  * @brief Raw character write operation
- * @details Internal helper that performs a raw character write to device
- * without buffering.
+ * @details Internal helper that performs a raw character write to device without buffering.
  *
  * @param[in] data_ Pointer to data to write
  *

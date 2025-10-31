@@ -1,6 +1,4 @@
 /*UNCRUSTIFY-OFF*/
-
-
 /**
  * @file char_io_interface.h
  * @author Manny Peterson <manny@heliosproj.org>
@@ -14,9 +12,6 @@
  *  SPDX-License-Identifier: GPL-2.0-or-later
  *
  */
-
-
-
 /*UNCRUSTIFY-ON*/
 
 
@@ -295,8 +290,7 @@
 
   /**
    * @brief Character I/O request structure
-   * @details Command structure for character device I/O operations specifying
-   * the operation type, transfer mode, and timeout.
+   * @details Command structure for character device I/O operations specifying the operation type, transfer mode, and timeout.
    */
   typedef struct CharIORequest_s {
 
@@ -304,16 +298,14 @@
     Byte_t command; /**< Command type identifier */
     Byte_t operation; /**< Operation (read, write, flush) */
     HalfWord_t byteCount; /**< Number of bytes to transfer */
-    Byte_t transferMode; /**< Transfer mode (blocking, non-blocking, DMA,
-                          * interrupt) */
+    Byte_t transferMode; /**< Transfer mode (blocking, non-blocking, DMA, interrupt) */
     Word_t timeoutMs; /**< Timeout in milliseconds */
   } CharIORequest_t;
 
 
   /**
    * @brief Character I/O device information structure
-   * @details Contains device capabilities and characteristics for character I/O
-   * devices.
+   * @details Contains device capabilities and characteristics for character I/O devices.
    */
   typedef struct CharIOInfo_s {
 
@@ -322,10 +314,8 @@
     HalfWord_t rxBufferSize; /**< Receive buffer size in bytes */
     HalfWord_t txBufferSize; /**< Transmit buffer size in bytes */
     Base_t supportsDMA; /**< Flag indicating if device supports DMA */
-    Base_t supportsInterrupt; /**< Flag indicating if device supports
-                               * interrupt-driven I/O */
-    Base_t isFullDuplex; /**< Flag indicating if device supports full-duplex
-                          * communication */
+    Base_t supportsInterrupt; /**< Flag indicating if device supports interrupt-driven I/O */
+    Base_t isFullDuplex; /**< Flag indicating if device supports full-duplex communication */
     Word_t maxBaudRate; /**< Maximum supported baud rate */
   } CharIOInfo_t;
 
@@ -342,25 +332,21 @@
     Byte_t dataBits; /**< Number of data bits (7, 8, or 9) */
     Byte_t parity; /**< Parity setting (none, even, odd) */
     Byte_t stopBits; /**< Number of stop bits (1, 1.5, or 2) */
-    Base_t hardwareFlowCtrl; /**< Flag indicating if hardware flow control is
-                              * enabled */
+    Base_t hardwareFlowCtrl; /**< Flag indicating if hardware flow control is enabled */
   } CharIOUARTParams_t;
 
 
   /**
    * @brief Character I/O status structure
-   * @details Runtime status information for character device including buffer
-   * levels and error flags.
+   * @details Runtime status information for character device including buffer levels and error flags.
    */
   typedef struct CharIOStatus_s {
 
 
     Byte_t command; /**< Command type identifier */
-    HalfWord_t rxBytesAvailable; /**< Number of bytes available in receive
-                                  * buffer */
+    HalfWord_t rxBytesAvailable; /**< Number of bytes available in receive buffer */
     HalfWord_t txBytesFree; /**< Number of free bytes in transmit buffer */
-    Base_t isTransmitting; /**< Flag indicating if device is currently
-                            * transmitting */
+    Base_t isTransmitting; /**< Flag indicating if device is currently transmitting */
     Base_t isReceiving; /**< Flag indicating if device is currently receiving */
     Byte_t errorFlags; /**< Error flags (parity, noise, frame, overrun) */
   } CharIOStatus_t;

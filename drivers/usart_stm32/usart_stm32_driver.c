@@ -1,6 +1,4 @@
 /*UNCRUSTIFY-OFF*/
-
-
 /**
  * @file usart_stm32_driver.c
  * @author Manny Peterson <manny@heliosproj.org>
@@ -14,9 +12,6 @@
  *  SPDX-License-Identifier: GPL-2.0-or-later
  *
  */
-
-
-
 /*UNCRUSTIFY-ON*/
 
 
@@ -109,6 +104,13 @@ static Byte_t __CircularBufferGet__(const Byte_t *buffer_, HalfWord_t *tail_, co
 
 
 #endif /* if !defined(POSIX_ARCH_OTHER) */
+/**
+ * @brief Self-registers STM32 USART driver
+ * @details Registers the STM32 USART driver with the device manager during system initialization.
+ *
+ * @return ReturnOK if registration was successful
+ * @return ReturnError if registration failed
+ */
 Return_t TO_FUNCTION(DEVICE_NAME, _self_register)(void) {
 
 
@@ -161,6 +163,13 @@ Return_t TO_FUNCTION(DEVICE_NAME, _self_register)(void) {
 
 
 }
+/**
+ * @brief Self-registers STM32 USART driver
+ * @details Registers the STM32 USART driver with the device manager during system initialization.
+ *
+ * @return ReturnOK if registration was successful
+ * @return ReturnError if registration failed
+ */
 Return_t TO_FUNCTION(DEVICE_NAME, _init)(Device_t *device_) {
 
 
@@ -219,6 +228,13 @@ Return_t TO_FUNCTION(DEVICE_NAME, _init)(Device_t *device_) {
 
 
 }
+/**
+ * @brief Self-registers STM32 USART driver
+ * @details Registers the STM32 USART driver with the device manager during system initialization.
+ *
+ * @return ReturnOK if registration was successful
+ * @return ReturnError if registration failed
+ */
 Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Addr_t *config_) {
 
 
@@ -553,6 +569,13 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Add
 
 
 }
+/**
+ * @brief Self-registers STM32 USART driver
+ * @details Registers the STM32 USART driver with the device manager during system initialization.
+ *
+ * @return ReturnOK if registration was successful
+ * @return ReturnError if registration failed
+ */
 Return_t TO_FUNCTION(DEVICE_NAME, _read)(Device_t *device_, Size_t *size_, Addr_t **data_) {
 
 
@@ -710,6 +733,13 @@ Return_t TO_FUNCTION(DEVICE_NAME, _read)(Device_t *device_, Size_t *size_, Addr_
 
 
 }
+/**
+ * @brief Self-registers STM32 USART driver
+ * @details Registers the STM32 USART driver with the device manager during system initialization.
+ *
+ * @return ReturnOK if registration was successful
+ * @return ReturnError if registration failed
+ */
 Return_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t *device_, Size_t *size_, Addr_t *data_) {
 
 
@@ -822,6 +852,13 @@ Return_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t *device_, Size_t *size_, Addr
 
 
 }
+/**
+ * @brief Self-registers STM32 USART driver
+ * @details Registers the STM32 USART driver with the device manager during system initialization.
+ *
+ * @return ReturnOK if registration was successful
+ * @return ReturnError if registration failed
+ */
 Return_t TO_FUNCTION(DEVICE_NAME, _simple_read)(Device_t *device_, Byte_t *data_) {
 
 
@@ -886,6 +923,13 @@ Return_t TO_FUNCTION(DEVICE_NAME, _simple_read)(Device_t *device_, Byte_t *data_
 
 
 }
+/**
+ * @brief Self-registers STM32 USART driver
+ * @details Registers the STM32 USART driver with the device manager during system initialization.
+ *
+ * @return ReturnOK if registration was successful
+ * @return ReturnError if registration failed
+ */
 Return_t TO_FUNCTION(DEVICE_NAME, _simple_write)(Device_t *device_, Byte_t data_) {
 
 
@@ -938,6 +982,12 @@ Return_t TO_FUNCTION(DEVICE_NAME, _simple_write)(Device_t *device_, Byte_t data_
 
 
 }
+/**
+ * @brief STM32 USART interrupt handler
+ * @details Handles USART transmit and receive interrupts, manages circular buffers.
+ *
+ * @note This function should be called from the appropriate USART IRQ handler
+ */
 void USART_TX_IRQHandler(void) {
 
 #if !defined(POSIX_ARCH_OTHER)
@@ -1096,8 +1146,7 @@ static Byte_t __CircularBufferGet__(const Byte_t *buffer_,
 #if !defined(POSIX_ARCH_OTHER)
   /**
    * @brief Translates HAL parity setting
-   * @details Internal helper that converts STM32 HAL parity constants to driver
-   * parity constants.
+   * @details Internal helper that converts STM32 HAL parity constants to driver parity constants.
    *
    * @param[in] halParity_ HAL parity value
    * @param[in] parity_    Pointer to store translated parity
@@ -1144,8 +1193,7 @@ static Byte_t __CircularBufferGet__(const Byte_t *buffer_,
 
   /**
    * @brief Translates HAL stop bits setting
-   * @details Internal helper that converts STM32 HAL stop bits constants to
-   * driver stop bits constants.
+   * @details Internal helper that converts STM32 HAL stop bits constants to driver stop bits constants.
    *
    * @param[in] halStopBits_ HAL stop bits value
    * @param[in] stopBits_    Pointer to store translated stop bits
@@ -1186,8 +1234,7 @@ static Byte_t __CircularBufferGet__(const Byte_t *buffer_,
 
   /**
    * @brief Translates data bits to HAL word length setting
-   * @details Internal helper that converts driver data bits setting to STM32
-   * HAL word length constants.
+   * @details Internal helper that converts driver data bits setting to STM32 HAL word length constants.
    *
    * @param[in]  dataBits_      Data bits setting (8 or 9)
    * @param[out] halWordLength_ Pointer to store HAL word length constant
@@ -1230,6 +1277,10 @@ static Byte_t __CircularBufferGet__(const Byte_t *buffer_,
 
 
 #if defined(POSIX_ARCH_OTHER)
+/**
+ * @brief Clears STM32 USART driver state
+ * @details Internal function for POSIX platforms to reset driver state for testing.
+ */
   void __USARTSTMStateClear__(void) {
 
     state.rxHead = 0x0u;

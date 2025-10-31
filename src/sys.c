@@ -1,6 +1,4 @@
 /*UNCRUSTIFY-OFF*/
-
-
 /**
  * @file sys.c
  * @author Manny Peterson <manny@heliosproj.org>
@@ -14,9 +12,6 @@
  *  SPDX-License-Identifier: GPL-2.0-or-later
  *
  */
-
-
-
 /*UNCRUSTIFY-ON*/
 
 
@@ -44,16 +39,14 @@ Flags_t flag = {
 };
 /**
  * @brief Triggers a system assertion failure
- * @details Records the file and line number of an assertion failure and halts
- * the system.
+ * @details Records the file and line number of an assertion failure and halts the system.
  *
  * @param[in] file_ Source file name where assertion failed
  * @param[in] line_ Line number where assertion failed
  *
  * @return          ReturnError always (system will halt)
  *
- * @warning This function should only be called when a critical error is
- * detected
+ * @warning This function should only be called when a critical error is detected
  */
 Return_t xSystemAssert(const char *file_, const int line_) {
 
@@ -114,8 +107,7 @@ Return_t xSystemInit(void) {
 
 /**
  * @brief Halts the system
- * @details Stops the scheduler and enters an infinite loop, effectively halting
- * execution.
+ * @details Stops the scheduler and enters an infinite loop, effectively halting execution.
  *
  * @return ReturnError always (function does not return normally)
  *
@@ -138,8 +130,7 @@ Return_t xSystemHalt(void) {
 
 /**
  * @brief Gets system information
- * @details Allocates and returns a structure containing OS version,
- * configuration, and status.
+ * @details Allocates and returns a structure containing OS version, configuration, and status.
  *
  * @param[out] info_ Pointer to store allocated system information structure
  *

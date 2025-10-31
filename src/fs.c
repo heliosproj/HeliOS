@@ -1,6 +1,4 @@
 /*UNCRUSTIFY-OFF*/
-
-
 /**
  * @file fs.c
  * @author Manny Peterson <manny@heliosproj.org>
@@ -14,9 +12,6 @@
  *  SPDX-License-Identifier: GPL-2.0-or-later
  *
  */
-
-
-
 /*UNCRUSTIFY-ON*/
 
 
@@ -32,14 +27,12 @@
   #include "fat.h"
   /**
    * @brief Mounts a FAT32 filesystem volume
-   * @details Allocates and initializes a volume structure by reading the boot
-   * sector and FAT.
+   * @details Allocates and initializes a volume structure by reading the boot sector and FAT.
    *
    * @param[out] volume_ Pointer to store the created volume handle
    *
    * @return             ReturnOK if volume was mounted successfully
-   * @return             ReturnError if mount failed, allocation failed, or
-   *                     invalid filesystem
+   * @return             ReturnError if mount failed, allocation failed, or invalid filesystem
    *
    * @warning Caller is responsible for unmounting with xFSUnmount()
    */
@@ -169,8 +162,7 @@
    * @param[in,out] volume_ Pointer to the volume to unmount
    *
    * @return                ReturnOK if volume was unmounted successfully
-   * @return                ReturnError if volume is invalid or deallocation
-   *                        failed
+   * @return                ReturnError if volume is invalid or deallocation failed
    *
    * @warning All open files and directories must be closed before unmounting
    */
@@ -209,15 +201,13 @@
 
   /**
    * @brief Gets volume information and statistics
-   * @details Allocates and returns detailed information about the volume
-   * including capacity and free space.
+   * @details Allocates and returns detailed information about the volume including capacity and free space.
    *
    * @param[in]  volume_ Pointer to the volume to query
    * @param[out] info_   Pointer to store allocated volume information structure
    *
    * @return             ReturnOK if information was retrieved successfully
-   * @return             ReturnError if volume is invalid, allocation failed, or
-   *                     invalid parameter
+   * @return             ReturnError if volume is invalid, allocation failed, or invalid parameter
    *
    * @warning Caller is responsible for freeing the allocated structure
    */
@@ -550,18 +540,15 @@
 
   /**
    * @brief Opens a file
-   * @details Allocates and initializes a file handle for the specified path
-   * with the given mode.
+   * @details Allocates and initializes a file handle for the specified path with the given mode.
    *
    * @param[out] file_   Pointer to store the created file handle
    * @param[in]  volume_ Pointer to the mounted volume
    * @param[in]  path_   File path (null-terminated string)
-   * @param[in]  mode_   Access mode flags (FS_MODE_READ, FS_MODE_WRITE,
-   *                     FS_MODE_APPEND, FS_MODE_CREATE)
+   * @param[in]  mode_   Access mode flags (FS_MODE_READ, FS_MODE_WRITE, FS_MODE_APPEND, FS_MODE_CREATE)
    *
    * @return             ReturnOK if file was opened successfully
-   * @return             ReturnError if file not found, allocation failed, or
-   *                     invalid parameters
+   * @return             ReturnError if file not found, allocation failed, or invalid parameters
    *
    * @warning Caller is responsible for closing the file with xFileClose()
    */
@@ -883,8 +870,7 @@
    * @param[out]    data_ Pointer to store allocated data buffer
    *
    * @return              ReturnOK if read was successful
-   * @return              ReturnError if read failed, allocation failed, or
-   *                      invalid parameters
+   * @return              ReturnError if read failed, allocation failed, or invalid parameters
    *
    * @warning Caller is responsible for freeing the allocated buffer
    */
@@ -1036,8 +1022,7 @@
    * @param[in]     data_ Pointer to data buffer
    *
    * @return              ReturnOK if write was successful
-   * @return              ReturnError if write failed, disk full, or invalid
-   *                      parameters
+   * @return              ReturnError if write failed, disk full, or invalid parameters
    */
   Return_t xFileWrite(File_t *file_, const Size_t size_, const Byte_t *data_) {
 
@@ -1436,8 +1421,7 @@
 
   /**
    * @brief Synchronizes file data to disk
-   * @details Flushes all pending writes to ensure data is written to the
-   * storage device.
+   * @details Flushes all pending writes to ensure data is written to the storage device.
    *
    * @param[in,out] file_ Pointer to the file to sync
    *
@@ -1678,12 +1662,10 @@
 
   /**
    * @brief Checks if file position is at end-of-file
-   * @details Returns true if the current position is at or beyond the end of
-   * the file.
+   * @details Returns true if the current position is at or beyond the end of the file.
    *
    * @param[in]  file_ Pointer to the file to check
-   * @param[out] eof_  Pointer to store the result (true if at EOF, false
-   *                   otherwise)
+   * @param[out] eof_  Pointer to store the result (true if at EOF, false otherwise)
    *
    * @return           ReturnOK if check was successful
    * @return           ReturnError if file is invalid or invalid parameter
@@ -1718,8 +1700,7 @@
    * @param[in]  path_   Directory path (null-terminated string)
    *
    * @return             ReturnOK if directory was opened successfully
-   * @return             ReturnError if directory not found, allocation failed,
-   *                     or invalid parameters
+   * @return             ReturnError if directory not found, allocation failed, or invalid parameters
    *
    * @warning Caller is responsible for closing with xDirClose()
    */
@@ -1823,8 +1804,7 @@
    * @param[in,out] dir_ Pointer to the directory to close
    *
    * @return             ReturnOK if directory was closed successfully
-   * @return             ReturnError if directory is invalid or deallocation
-   *                     failed
+   * @return             ReturnError if directory is invalid or deallocation failed
    */
   Return_t xDirClose(Dir_t *dir_) {
 
@@ -1863,8 +1843,7 @@
    * @param[out]    entry_ Pointer to store allocated directory entry
    *
    * @return               ReturnOK if entry was read successfully
-   * @return               ReturnError if end of directory, allocation failed,
-   *                       or invalid parameters
+   * @return               ReturnError if end of directory, allocation failed, or invalid parameters
    *
    * @warning Caller is responsible for freeing the allocated entry
    */
@@ -2079,8 +2058,7 @@
    * @param[in] path_   Directory path to create (null-terminated string)
    *
    * @return            ReturnOK if directory was created successfully
-   * @return            ReturnError if creation failed, path exists, or invalid
-   *                    parameters
+   * @return            ReturnError if creation failed, path exists, or invalid parameters
    */
   Return_t xDirMake(Volume_t *volume_, const Byte_t *path_) {
 
@@ -2287,8 +2265,7 @@
    * @param[in] path_   Directory path to remove (null-terminated string)
    *
    * @return            ReturnOK if directory was removed successfully
-   * @return            ReturnError if removal failed, directory not empty, or
-   *                    invalid parameters
+   * @return            ReturnError if removal failed, directory not empty, or invalid parameters
    */
   Return_t xDirRemove(Volume_t *volume_, const Byte_t *path_) {
 
@@ -2481,8 +2458,7 @@
    *
    * @param[in]  volume_ Pointer to the mounted volume
    * @param[in]  path_   File path to check (null-terminated string)
-   * @param[out] exists_ Pointer to store the result (true if exists, false
-   *                     otherwise)
+   * @param[out] exists_ Pointer to store the result (true if exists, false otherwise)
    *
    * @return             ReturnOK if check was successful
    * @return             ReturnError if volume is invalid or invalid parameters
@@ -2538,8 +2514,7 @@
    * @param[in] path_   File path to delete (null-terminated string)
    *
    * @return            ReturnOK if file was deleted successfully
-   * @return            ReturnError if deletion failed, file not found, or
-   *                    invalid parameters
+   * @return            ReturnError if deletion failed, file not found, or invalid parameters
    */
   Return_t xFileUnlink(Volume_t *volume_, const Byte_t *path_) {
 
@@ -2655,8 +2630,7 @@
    * @param[in] newPath_ New file path (null-terminated string)
    *
    * @return             ReturnOK if rename was successful
-   * @return             ReturnError if rename failed, file not found, or
-   *                     invalid parameters
+   * @return             ReturnError if rename failed, file not found, or invalid parameters
    */
   Return_t xFileRename(Volume_t *volume_, const Byte_t *oldPath_, const Byte_t *newPath_) {
 
@@ -2808,8 +2782,7 @@
    * @param[out] entry_  Pointer to store allocated directory entry
    *
    * @return             ReturnOK if information was retrieved successfully
-   * @return             ReturnError if file not found, allocation failed, or
-   *                     invalid parameters
+   * @return             ReturnError if file not found, allocation failed, or invalid parameters
    *
    * @warning Caller is responsible for freeing the allocated entry
    */

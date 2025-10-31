@@ -1,6 +1,4 @@
 /*UNCRUSTIFY-OFF*/
-
-
 /**
  * @file port.h
  * @author Manny Peterson <manny@heliosproj.org>
@@ -14,9 +12,6 @@
  *  SPDX-License-Identifier: GPL-2.0-or-later
  *
  */
-
-
-
 /*UNCRUSTIFY-ON*/
 
 
@@ -169,13 +164,11 @@
   #endif /* ifdef __cplusplus */
   /**
    * @brief Gets the current system tick count
-   * @details Platform-specific function to retrieve the system tick counter for
-   * timing operations.
+   * @details Platform-specific function to retrieve the system tick counter for timing operations.
    *
    * @return Current system tick count
    *
-   * @note This is an internal function used by the scheduler and timer
-   * subsystem
+   * @note This is an internal function used by the scheduler and timer subsystem
    */
   Ticks_t __PortGetSysTicks__(void);
   Return_t __PortInit__(void);

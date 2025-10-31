@@ -1,6 +1,4 @@
 /*UNCRUSTIFY-OFF*/
-
-
 /**
  * @file streams.c
  * @author Manny Peterson <manny@heliosproj.org>
@@ -14,9 +12,6 @@
  *  SPDX-License-Identifier: GPL-2.0-or-later
  *
  */
-
-
-
 /*UNCRUSTIFY-ON*/
 
 
@@ -36,8 +31,7 @@
  * @return             ReturnOK if stream buffer was created successfully
  * @return             ReturnError if allocation failed or invalid parameter
  *
- * @warning Caller is responsible for deleting the stream buffer with
- * xStreamDelete()
+ * @warning Caller is responsible for deleting the stream buffer with xStreamDelete()
  */
 Return_t xStreamCreate(StreamBuffer_t **stream_) {
 
@@ -85,11 +79,9 @@ Return_t xStreamCreate(StreamBuffer_t **stream_) {
  * @param[in] stream_ Pointer to the stream buffer to delete
  *
  * @return            ReturnOK if stream buffer was deleted successfully
- * @return            ReturnError if stream buffer is invalid or deallocation
- *                    failed
+ * @return            ReturnError if stream buffer is invalid or deallocation failed
  *
- * @warning Using the stream buffer handle after deletion results in undefined
- * behavior
+ * @warning Using the stream buffer handle after deletion results in undefined behavior
  */
 Return_t xStreamDelete(const StreamBuffer_t *stream_) {
 
@@ -163,19 +155,16 @@ Return_t xStreamSend(StreamBuffer_t *stream_, const Byte_t byte_) {
 
 /**
  * @brief Receives all available bytes from the stream buffer
- * @details Returns a pointer to the stream buffer data and the number of
- * available bytes.
+ * @details Returns a pointer to the stream buffer data and the number of available bytes.
  *
  * @param[in]  stream_ Pointer to the stream buffer
  * @param[out] bytes_  Pointer to store the number of bytes available
  * @param[out] data_   Pointer to store the data buffer pointer
  *
  * @return             ReturnOK if data was retrieved successfully
- * @return             ReturnError if stream buffer is empty, invalid, or
- *                     invalid parameters
+ * @return             ReturnError if stream buffer is empty, invalid, or invalid parameters
  *
- * @note The returned pointer points to the internal buffer; do not modify or
- * free
+ * @note The returned pointer points to the internal buffer; do not modify or free
  */
 Return_t xStreamReceive(const StreamBuffer_t *stream_, HalfWord_t *bytes_, Byte_t **data_) {
 
@@ -252,8 +241,7 @@ Return_t xStreamReceive(const StreamBuffer_t *stream_, HalfWord_t *bytes_, Byte_
  * @param[out] bytes_  Pointer to store the byte count
  *
  * @return             ReturnOK if count was retrieved successfully
- * @return             ReturnError if stream buffer is invalid or invalid
- *                     parameter
+ * @return             ReturnError if stream buffer is invalid or invalid parameter
  */
 Return_t xStreamBytesAvailable(const StreamBuffer_t *stream_, HalfWord_t *bytes_) {
 
@@ -286,8 +274,7 @@ Return_t xStreamBytesAvailable(const StreamBuffer_t *stream_, HalfWord_t *bytes_
 
 /**
  * @brief Resets the stream buffer to empty state
- * @details Clears all data from the stream buffer and resets the length to
- * zero.
+ * @details Clears all data from the stream buffer and resets the length to zero.
  *
  * @param[in] stream_ Pointer to the stream buffer to reset
  *
@@ -336,12 +323,10 @@ Return_t xStreamReset(const StreamBuffer_t *stream_) {
  * @details Returns true if the stream buffer contains no data.
  *
  * @param[in]  stream_ Pointer to the stream buffer to check
- * @param[out] res_    Pointer to store the result (true if empty, false
- *                     otherwise)
+ * @param[out] res_    Pointer to store the result (true if empty, false otherwise)
  *
  * @return             ReturnOK if check was successful
- * @return             ReturnError if stream buffer is invalid or invalid
- *                     parameter
+ * @return             ReturnError if stream buffer is invalid or invalid parameter
  */
 Return_t xStreamIsEmpty(const StreamBuffer_t *stream_, Base_t *res_) {
 
@@ -379,12 +364,10 @@ Return_t xStreamIsEmpty(const StreamBuffer_t *stream_, Base_t *res_) {
  * @details Returns true if the stream buffer has reached its capacity.
  *
  * @param[in]  stream_ Pointer to the stream buffer to check
- * @param[out] res_    Pointer to store the result (true if full, false
- *                     otherwise)
+ * @param[out] res_    Pointer to store the result (true if full, false otherwise)
  *
  * @return             ReturnOK if check was successful
- * @return             ReturnError if stream buffer is invalid or invalid
- *                     parameter
+ * @return             ReturnError if stream buffer is invalid or invalid parameter
  */
 Return_t xStreamIsFull(const StreamBuffer_t *stream_, Base_t *res_) {
 

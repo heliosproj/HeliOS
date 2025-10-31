@@ -1,6 +1,4 @@
 /*UNCRUSTIFY-OFF*/
-
-
 /**
  * @file block_driver.c
  * @author Manny Peterson <manny@heliosproj.org>
@@ -14,9 +12,6 @@
  *  SPDX-License-Identifier: GPL-2.0-or-later
  *
  */
-
-
-
 /*UNCRUSTIFY-ON*/
 
 
@@ -25,8 +20,7 @@
 
 /**
  * @brief Block device internal state structure
- * @details Maintains runtime state for block device operations including I/O
- * driver binding, protocol settings, and current operation parameters.
+ * @details Maintains runtime state for block device operations including I/O driver binding, protocol settings, and current operation parameters.
  */
 typedef struct BlockDeviceState_s {
 
@@ -52,8 +46,7 @@ static BlockDeviceState_t state = {
 };
 /**
  * @brief Prepares block I/O request structure
- * @details Internal helper to create and populate a BlockIORequest_t structure
- * for I/O operations.
+ * @details Internal helper to create and populate a BlockIORequest_t structure for I/O operations.
  *
  * @param[in]  operation_  Operation type (read or write)
  * @param[out] request_    Pointer to store allocated request structure
@@ -67,8 +60,7 @@ static BlockDeviceState_t state = {
 static Return_t __PrepareBlockIORequest__(const Byte_t operation_, BlockIORequest_t **request_, Size_t *configSize_);
 /**
  * @brief Reads blocks using RAW protocol
- * @details Internal function to read blocks from the underlying I/O driver
- * using raw protocol.
+ * @details Internal function to read blocks from the underlying I/O driver using raw protocol.
  *
  * @param[out] data_ Pointer to store allocated data buffer
  *
@@ -80,8 +72,7 @@ static Return_t __PrepareBlockIORequest__(const Byte_t operation_, BlockIOReques
 static Return_t __BlockDeviceReadBlockRAW__(Byte_t **data_);
 /**
  * @brief Writes blocks using RAW protocol
- * @details Internal function to write blocks to the underlying I/O driver using
- * raw protocol.
+ * @details Internal function to write blocks to the underlying I/O driver using raw protocol.
  *
  * @param[in] data_ Pointer to data buffer to write
  *
@@ -89,6 +80,13 @@ static Return_t __BlockDeviceReadBlockRAW__(Byte_t **data_);
  * @return          ReturnError if write failed
  */
 static Return_t __BlockDeviceWriteBlockRAW__(const Byte_t *data_);
+/**
+ * @brief Self-registers block device driver
+ * @details Registers the block device driver with the device manager during system initialization.
+ *
+ * @return ReturnOK if registration was successful
+ * @return ReturnError if registration failed
+ */
 Return_t TO_FUNCTION(DEVICE_NAME, _self_register)(void) {
 
 
@@ -141,6 +139,13 @@ Return_t TO_FUNCTION(DEVICE_NAME, _self_register)(void) {
 
 
 }
+/**
+ * @brief Self-registers block device driver
+ * @details Registers the block device driver with the device manager during system initialization.
+ *
+ * @return ReturnOK if registration was successful
+ * @return ReturnError if registration failed
+ */
 Return_t TO_FUNCTION(DEVICE_NAME, _init)(Device_t *device_) {
 
 
@@ -178,6 +183,13 @@ Return_t TO_FUNCTION(DEVICE_NAME, _init)(Device_t *device_) {
 
 
 }
+/**
+ * @brief Self-registers block device driver
+ * @details Registers the block device driver with the device manager during system initialization.
+ *
+ * @return ReturnOK if registration was successful
+ * @return ReturnError if registration failed
+ */
 Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Addr_t *config_) {
 
 
@@ -347,6 +359,13 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Add
 
 
 }
+/**
+ * @brief Self-registers block device driver
+ * @details Registers the block device driver with the device manager during system initialization.
+ *
+ * @return ReturnOK if registration was successful
+ * @return ReturnError if registration failed
+ */
 Return_t TO_FUNCTION(DEVICE_NAME, _read)(Device_t *device_, Size_t *size_, Addr_t **data_) {
 
 
@@ -405,6 +424,13 @@ Return_t TO_FUNCTION(DEVICE_NAME, _read)(Device_t *device_, Size_t *size_, Addr_
 
 
 }
+/**
+ * @brief Self-registers block device driver
+ * @details Registers the block device driver with the device manager during system initialization.
+ *
+ * @return ReturnOK if registration was successful
+ * @return ReturnError if registration failed
+ */
 Return_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t *device_, Size_t *size_, Addr_t *data_) {
 
 
@@ -454,6 +480,13 @@ Return_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t *device_, Size_t *size_, Addr
 
 
 }
+/**
+ * @brief Self-registers block device driver
+ * @details Registers the block device driver with the device manager during system initialization.
+ *
+ * @return ReturnOK if registration was successful
+ * @return ReturnError if registration failed
+ */
 Return_t TO_FUNCTION(DEVICE_NAME, _simple_read)(Device_t *device_, Byte_t *data_) {
 
 
@@ -467,6 +500,13 @@ Return_t TO_FUNCTION(DEVICE_NAME, _simple_read)(Device_t *device_, Byte_t *data_
 
 
 }
+/**
+ * @brief Self-registers block device driver
+ * @details Registers the block device driver with the device manager during system initialization.
+ *
+ * @return ReturnOK if registration was successful
+ * @return ReturnError if registration failed
+ */
 Return_t TO_FUNCTION(DEVICE_NAME, _simple_write)(Device_t *device_, Byte_t data_) {
 
 
@@ -529,8 +569,7 @@ static Return_t __PrepareBlockIORequest__(const Byte_t operation_,
 
 /**
  * @brief Raw block read operation
- * @details Internal helper that performs a raw block read from the current
- * block position.
+ * @details Internal helper that performs a raw block read from the current block position.
  *
  * @param[out] data_ Pointer to store read data
  *
@@ -590,8 +629,7 @@ static Return_t __BlockDeviceReadBlockRAW__(Byte_t **data_) {
 
 /**
  * @brief Raw block write operation
- * @details Internal helper that performs a raw block write to the current block
- * position.
+ * @details Internal helper that performs a raw block write to the current block position.
  *
  * @param[in] data_ Pointer to data to write
  *
@@ -646,6 +684,10 @@ static Return_t __BlockDeviceWriteBlockRAW__(const Byte_t *data_) {
 
 
 #if defined(POSIX_ARCH_OTHER)
+/**
+ * @brief Clears block device driver state
+ * @details Internal function for POSIX platforms to reset driver state for testing.
+ */
   void __BlockDeviceStateClear__(void) {
 
     state.ioDriverUID = 0x0u;

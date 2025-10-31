@@ -1,6 +1,4 @@
 /*UNCRUSTIFY-OFF*/
-
-
 /**
  * @file device.h
  * @author Manny Peterson <manny@heliosproj.org>
@@ -14,9 +12,6 @@
  *  SPDX-License-Identifier: GPL-2.0-or-later
  *
  */
-
-
-
 /*UNCRUSTIFY-ON*/
 
 
@@ -126,43 +121,7 @@
 
 
     #endif /* ifdef __cplusplus */
-    /**
-     * @brief Registers a device driver with the system
-     * @details Calls the device's self-registration function to add it to the
-     * device list.
-     *
-     * @param[in] device_self_register_ Function pointer to device's
-     *                                  self-registration function
-     *
-     * @return                          ReturnOK if device was registered
-     *                                  successfully
-     * @return                          ReturnError if registration failed or
-     *                                  invalid parameter
-     */
     Return_t xDeviceRegisterDevice(Return_t (*device_self_register_)());
-    /**
-     * @brief Internal device registration function
-     * @details Allocates and initializes a device structure with all required
-     * function pointers.
-     *
-     * @param[in] uid_          Unique device identifier
-     * @param[in] name_         Device name string
-     * @param[in] state_        Initial device state
-     * @param[in] mode_         Device access mode
-     * @param[in] init_         Device initialization function pointer
-     * @param[in] config_       Device configuration function pointer
-     * @param[in] read_         Device read function pointer
-     * @param[in] write_        Device write function pointer
-     * @param[in] simple_read_  Device simple read function pointer
-     * @param[in] simple_write_ Device simple write function pointer
-     *
-     * @return                  ReturnOK if device was registered successfully
-     * @return                  ReturnError if allocation failed or invalid
-     *                          parameters
-     *
-     * @note This is an internal function called by device self-registration
-     * routines
-     */
     Return_t __RegisterDevice__(const HalfWord_t uid_, const Byte_t *name_, const DeviceState_t state_, const DeviceMode_t mode_, Return_t (*init_)(Device_t *
 
 

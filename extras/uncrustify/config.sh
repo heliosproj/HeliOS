@@ -136,7 +136,7 @@ nl_comment_func_def:1
 nl_func_var_def_blk:1
 code_width:160
 ls_code_width:true
-cmt_width:80
+cmt_width:160
 cmt_reflow_mode:2
 cmt_convert_tab_to_spaces:true
 cmt_align_doxygen_javadoc_tags:true
