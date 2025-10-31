@@ -553,7 +553,7 @@ static void test_file_management(void) {
 
 
 /* ============================================================================
- * SECTION 5: NULL POINTER AND EDGE CASES
+ * SECTION 5: null POINTER AND EDGE CASES
  * ============================================================================
  */
 static void test_null_pointer_and_edge_cases(void) {
@@ -563,7 +563,7 @@ static void test_null_pointer_and_edge_cases(void) {
   Base_t exists = 0x0u;
 
 
-  unit_print("--- Section 5: NULL Pointer and Edge Cases ---");
+  unit_print("--- Section 5: null Pointer and Edge Cases ---");
 
   /* Mount filesystem first */
   if(!OK(xFSMount(&vol)) || (null == vol)) {
@@ -572,95 +572,95 @@ static void test_null_pointer_and_edge_cases(void) {
     return;
   }
 
-  /* Test 5.1: NULL pointer handling */
-  unit_begin("Edge Case - NULL Pointers");
+  /* Test 5.1: null pointer handling */
+  unit_begin("Edge Case - null Pointers");
 
 
-  /* xFileOpen with NULL file pointer */
+  /* xFileOpen with null file pointer */
   unit_assert_not_ok(xFileOpen(null, vol, (const Byte_t *) "/test.txt", FS_MODE_READ));
 
 
-  /* xFileOpen with NULL volume */
+  /* xFileOpen with null volume */
   unit_assert_not_ok(xFileOpen(&file, null, (const Byte_t *) "/test.txt", FS_MODE_READ));
 
 
-  /* xFileOpen with NULL path */
+  /* xFileOpen with null path */
   unit_assert_not_ok(xFileOpen(&file, vol, null, FS_MODE_READ));
 
 
-  /* xFileClose with NULL file */
+  /* xFileClose with null file */
   unit_assert_not_ok(xFileClose(null));
 
 
-  /* xDirOpen with NULL directory pointer */
+  /* xDirOpen with null directory pointer */
   unit_assert_not_ok(xDirOpen(null, vol, (const Byte_t *) "/"));
 
 
-  /* xDirOpen with NULL volume */
+  /* xDirOpen with null volume */
   unit_assert_not_ok(xDirOpen(&dir, null, (const Byte_t *) "/"));
 
 
-  /* xDirOpen with NULL path */
+  /* xDirOpen with null path */
   unit_assert_not_ok(xDirOpen(&dir, vol, null));
 
 
-  /* xDirClose with NULL directory */
+  /* xDirClose with null directory */
   unit_assert_not_ok(xDirClose(null));
 
 
-  /* xDirMake with NULL volume */
+  /* xDirMake with null volume */
   unit_assert_not_ok(xDirMake(null, (const Byte_t *) "/testdir"));
 
 
-  /* xDirMake with NULL path */
+  /* xDirMake with null path */
   unit_assert_not_ok(xDirMake(vol, null));
 
 
-  /* xDirRead with NULL directory */
+  /* xDirRead with null directory */
   unit_assert_not_ok(xDirRead(null, (DirEntry_t **) &dir));
 
 
-  /* xDirRewind with NULL directory */
+  /* xDirRewind with null directory */
   unit_assert_not_ok(xDirRewind(null));
 
 
-  /* xFileEOF with NULL file */
+  /* xFileEOF with null file */
   unit_assert_not_ok(xFileEOF(null, &exists));
 
 
-  /* xFileGetInfo with NULL volume */
+  /* xFileGetInfo with null volume */
   unit_assert_not_ok(xFileGetInfo(null, (const Byte_t *) "/test.txt", (DirEntry_t **) &dir));
 
 
-  /* xFileGetInfo with NULL path */
+  /* xFileGetInfo with null path */
   unit_assert_not_ok(xFileGetInfo(vol, null, (DirEntry_t **) &dir));
 
 
-  /* xFileGetSize with NULL file */
+  /* xFileGetSize with null file */
   unit_assert_not_ok(xFileGetSize(null, (Word_t *) &exists));
 
 
-  /* xFileSeek with NULL file */
+  /* xFileSeek with null file */
   unit_assert_not_ok(xFileSeek(null, 0, FS_SEEK_SET));
 
 
-  /* xFileSync with NULL file */
+  /* xFileSync with null file */
   unit_assert_not_ok(xFileSync(null));
 
 
-  /* xFileTell with NULL file */
+  /* xFileTell with null file */
   unit_assert_not_ok(xFileTell(null, (Word_t *) &exists));
 
 
-  /* xFileTruncate with NULL file */
+  /* xFileTruncate with null file */
   unit_assert_not_ok(xFileTruncate(null, 0));
 
 
-  /* xFSFormat with NULL label */
+  /* xFSFormat with null label */
   unit_assert_not_ok(xFSFormat(null));
 
 
-  /* xFSUnmount with NULL volume */
+  /* xFSUnmount with null volume */
   unit_assert_not_ok(xFSUnmount(null));
   unit_end();
 
@@ -1021,15 +1021,15 @@ static void test_volume_info_validation(void) {
   unit_end();
 
 
-  /* Test 9.2: NULL pointer handling */
-  unit_begin("Volume Info - NULL Pointer Handling");
+  /* Test 9.2: null pointer handling */
+  unit_begin("Volume Info - null Pointer Handling");
 
 
-  /* Test NULL pointer for volume */
+  /* Test null pointer for volume */
   unit_assert_not_ok(xFSGetVolumeInfo(null, &volInfo));
 
 
-  /* Test NULL pointer for info output */
+  /* Test null pointer for info output */
   unit_assert_not_ok(xFSGetVolumeInfo(vol, null));
   unit_end();
 

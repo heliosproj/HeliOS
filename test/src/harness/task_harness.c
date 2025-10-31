@@ -64,7 +64,7 @@ void task_harness(void) {
 
 
 /* ============================================================================
- * SECTION 1: ERROR HANDLING AND NULL POINTER VALIDATION
+ * SECTION 1: ERROR HANDLING AND null POINTER VALIDATION
  * ============================================================================
  */
 static void test_error_handling_and_null_pointers(void) {
@@ -79,24 +79,24 @@ static void test_error_handling_and_null_pointers(void) {
   Ticks_t period;
 
 
-  unit_print("--- Section 1: Error Handling and NULL Pointer Tests ---");
+  unit_print("--- Section 1: Error Handling and null Pointer Tests ---");
 
 
-  /* Test 1.1: NULL pointer in xTaskCreate */
-  unit_begin("xTaskCreate with NULL task pointer returns error");
+  /* Test 1.1: null pointer in xTaskCreate */
+  unit_begin("xTaskCreate with null task pointer returns error");
   unit_assert_not_ok(xTaskCreate(null, (Byte_t *) "NULLTEST", task_harness_task, null));
   unit_end();
 
 
-  /* Test 1.2: NULL name in xTaskCreate */
-  unit_begin("xTaskCreate with NULL name returns error");
+  /* Test 1.2: null name in xTaskCreate */
+  unit_begin("xTaskCreate with null name returns error");
   task = null;
   unit_assert_not_ok(xTaskCreate(&task, null, task_harness_task, null));
   unit_end();
 
 
-  /* Test 1.3: NULL callback in xTaskCreate */
-  unit_begin("xTaskCreate with NULL callback returns error");
+  /* Test 1.3: null callback in xTaskCreate */
+  unit_begin("xTaskCreate with null callback returns error");
   task = null;
   unit_assert_not_ok(xTaskCreate(&task, (Byte_t *) "NULLCB", null, null));
   unit_end();
@@ -110,26 +110,26 @@ static void test_error_handling_and_null_pointers(void) {
   unit_end();
 
 
-  /* Test 1.5: NULL pointer in xTaskDelete */
-  unit_begin("xTaskDelete with NULL pointer returns error");
+  /* Test 1.5: null pointer in xTaskDelete */
+  unit_begin("xTaskDelete with null pointer returns error");
   unit_assert_not_ok(xTaskDelete(nullTask));
   unit_end();
 
 
-  /* Test 1.6: NULL pointer in xTaskGetHandleByName */
-  unit_begin("xTaskGetHandleByName with NULL task pointer returns error");
+  /* Test 1.6: null pointer in xTaskGetHandleByName */
+  unit_begin("xTaskGetHandleByName with null task pointer returns error");
   unit_assert_not_ok(xTaskGetHandleByName(null, (Byte_t *) "ERRTEST"));
   unit_end();
 
 
-  /* Test 1.7: NULL name in xTaskGetHandleByName */
-  unit_begin("xTaskGetHandleByName with NULL name returns error");
+  /* Test 1.7: null name in xTaskGetHandleByName */
+  unit_begin("xTaskGetHandleByName with null name returns error");
   unit_assert_not_ok(xTaskGetHandleByName(&task, null));
   unit_end();
 
 
-  /* Test 1.8: NULL pointer in xTaskGetHandleById */
-  unit_begin("xTaskGetHandleById with NULL pointer returns error");
+  /* Test 1.8: null pointer in xTaskGetHandleById */
+  unit_begin("xTaskGetHandleById with null pointer returns error");
   unit_assert_not_ok(xTaskGetHandleById(null, 0x1));
   unit_end();
 
@@ -140,44 +140,44 @@ static void test_error_handling_and_null_pointers(void) {
   unit_end();
 
 
-  /* Test 1.10: NULL pointer in xTaskGetTaskInfo */
-  unit_begin("xTaskGetTaskInfo with NULL task returns error");
+  /* Test 1.10: null pointer in xTaskGetTaskInfo */
+  unit_begin("xTaskGetTaskInfo with null task returns error");
   unit_assert_not_ok(xTaskGetTaskInfo(nullTask, &info));
   unit_end();
 
 
-  /* Test 1.11: NULL output pointer in xTaskGetTaskInfo */
-  unit_begin("xTaskGetTaskInfo with NULL output returns error");
+  /* Test 1.11: null output pointer in xTaskGetTaskInfo */
+  unit_begin("xTaskGetTaskInfo with null output returns error");
   unit_assert_not_ok(xTaskGetTaskInfo(task, null));
   unit_end();
 
 
-  /* Test 1.12: NULL pointer in xTaskGetTaskState */
-  unit_begin("xTaskGetTaskState with NULL task returns error");
+  /* Test 1.12: null pointer in xTaskGetTaskState */
+  unit_begin("xTaskGetTaskState with null task returns error");
   unit_assert_not_ok(xTaskGetTaskState(nullTask, &state));
   unit_end();
 
 
-  /* Test 1.13: NULL output in xTaskGetTaskState */
-  unit_begin("xTaskGetTaskState with NULL output returns error");
+  /* Test 1.13: null output in xTaskGetTaskState */
+  unit_begin("xTaskGetTaskState with null output returns error");
   unit_assert_not_ok(xTaskGetTaskState(task, null));
   unit_end();
 
 
-  /* Test 1.14: NULL pointer in xTaskGetName */
-  unit_begin("xTaskGetName with NULL task returns error");
+  /* Test 1.14: null pointer in xTaskGetName */
+  unit_begin("xTaskGetName with null task returns error");
   unit_assert_not_ok(xTaskGetName(nullTask, &name));
   unit_end();
 
 
-  /* Test 1.15: NULL pointer in xTaskGetId */
-  unit_begin("xTaskGetId with NULL task returns error");
+  /* Test 1.15: null pointer in xTaskGetId */
+  unit_begin("xTaskGetId with null task returns error");
   unit_assert_not_ok(xTaskGetId(nullTask, &result));
   unit_end();
 
 
-  /* Test 1.16: NULL notification value in xTaskNotifyGive */
-  unit_begin("xTaskNotifyGive with NULL value returns error");
+  /* Test 1.16: null notification value in xTaskNotifyGive */
+  unit_begin("xTaskNotifyGive with null value returns error");
   unit_assert_not_ok(xTaskNotifyGive(task, MESSAGE_LENGTH, null));
   unit_end();
 
@@ -194,56 +194,56 @@ static void test_error_handling_and_null_pointers(void) {
   unit_end();
 
 
-  /* Test 1.19: NULL task in xTaskNotifyTake */
-  unit_begin("xTaskNotifyTake with NULL task returns error");
+  /* Test 1.19: null task in xTaskNotifyTake */
+  unit_begin("xTaskNotifyTake with null task returns error");
   unit_assert_not_ok(xTaskNotifyTake(nullTask, &notification));
   unit_end();
 
 
-  /* Test 1.20: NULL task in xTaskResume */
-  unit_begin("xTaskResume with NULL task returns error");
+  /* Test 1.20: null task in xTaskResume */
+  unit_begin("xTaskResume with null task returns error");
   unit_assert_not_ok(xTaskResume(nullTask));
   unit_end();
 
 
-  /* Test 1.21: NULL task in xTaskSuspend */
-  unit_begin("xTaskSuspend with NULL task returns error");
+  /* Test 1.21: null task in xTaskSuspend */
+  unit_begin("xTaskSuspend with null task returns error");
   unit_assert_not_ok(xTaskSuspend(nullTask));
   unit_end();
 
 
-  /* Test 1.22: NULL task in xTaskWait */
-  unit_begin("xTaskWait with NULL task returns error");
+  /* Test 1.22: null task in xTaskWait */
+  unit_begin("xTaskWait with null task returns error");
   unit_assert_not_ok(xTaskWait(nullTask));
   unit_end();
 
 
-  /* Test 1.23: NULL task in xTaskChangePeriod */
-  unit_begin("xTaskChangePeriod with NULL task returns error");
+  /* Test 1.23: null task in xTaskChangePeriod */
+  unit_begin("xTaskChangePeriod with null task returns error");
   unit_assert_not_ok(xTaskChangePeriod(nullTask, TASK_PERIOD_1000_MS));
   unit_end();
 
 
-  /* Test 1.24: NULL task in xTaskGetPeriod */
-  unit_begin("xTaskGetPeriod with NULL task returns error");
+  /* Test 1.24: null task in xTaskGetPeriod */
+  unit_begin("xTaskGetPeriod with null task returns error");
   unit_assert_not_ok(xTaskGetPeriod(nullTask, &period));
   unit_end();
 
 
-  /* Test 1.25: NULL task in xTaskResetTimer */
-  unit_begin("xTaskResetTimer with NULL task returns error");
+  /* Test 1.25: null task in xTaskResetTimer */
+  unit_begin("xTaskResetTimer with null task returns error");
   unit_assert_not_ok(xTaskResetTimer(nullTask));
   unit_end();
 
 
-  /* Test 1.26: NULL task in xTaskNotificationIsWaiting */
-  unit_begin("xTaskNotificationIsWaiting with NULL task returns error");
+  /* Test 1.26: null task in xTaskNotificationIsWaiting */
+  unit_begin("xTaskNotificationIsWaiting with null task returns error");
   unit_assert_not_ok(xTaskNotificationIsWaiting(nullTask, &result));
   unit_end();
 
 
-  /* Test 1.27: NULL task in xTaskNotifyStateClear */
-  unit_begin("xTaskNotifyStateClear with NULL task returns error");
+  /* Test 1.27: null task in xTaskNotifyStateClear */
+  unit_begin("xTaskNotifyStateClear with null task returns error");
   unit_assert_not_ok(xTaskNotifyStateClear(nullTask));
   unit_end();
 
@@ -268,53 +268,53 @@ static void test_error_handling_and_null_pointers(void) {
   unit_end();
 
 
-  /* Test 1.31: NULL pointers in xTaskGetAllRunTimeStats */
-  unit_begin("xTaskGetAllRunTimeStats with NULL stats pointer returns error");
+  /* Test 1.31: null pointers in xTaskGetAllRunTimeStats */
+  unit_begin("xTaskGetAllRunTimeStats with null stats pointer returns error");
   unit_assert_not_ok(xTaskGetAllRunTimeStats(null, &result));
   unit_end();
 
 
-  /* Test 1.32: NULL output count in xTaskGetAllRunTimeStats */
-  unit_begin("xTaskGetAllRunTimeStats with NULL count returns error");
+  /* Test 1.32: null output count in xTaskGetAllRunTimeStats */
+  unit_begin("xTaskGetAllRunTimeStats with null count returns error");
   unit_assert_not_ok(xTaskGetAllRunTimeStats(&stats, null));
   unit_end();
 
 
-  /* Test 1.33: NULL pointer in xTaskGetTaskRunTimeStats */
-  unit_begin("xTaskGetTaskRunTimeStats with NULL task returns error");
+  /* Test 1.33: null pointer in xTaskGetTaskRunTimeStats */
+  unit_begin("xTaskGetTaskRunTimeStats with null task returns error");
   unit_assert_not_ok(xTaskGetTaskRunTimeStats(nullTask, &stats));
   unit_end();
 
 
-  /* Test 1.34: NULL pointer in xTaskGetNumberOfTasks */
-  unit_begin("xTaskGetNumberOfTasks with NULL output returns error");
+  /* Test 1.34: null pointer in xTaskGetNumberOfTasks */
+  unit_begin("xTaskGetNumberOfTasks with null output returns error");
   unit_assert_not_ok(xTaskGetNumberOfTasks(null));
   unit_end();
 
 
-  /* Test 1.35: NULL pointer in xTaskGetAllTaskInfo */
-  unit_begin("xTaskGetAllTaskInfo with NULL info pointer returns error");
+  /* Test 1.35: null pointer in xTaskGetAllTaskInfo */
+  unit_begin("xTaskGetAllTaskInfo with null info pointer returns error");
   unit_assert_not_ok(xTaskGetAllTaskInfo(null, &result));
   unit_end();
 
 
-  /* Test 1.36: NULL pointer in xTaskGetSchedulerState */
-  /* Test 1.36: xTaskGetSchedulerState with NULL output returns error */
-  unit_begin("xTaskGetSchedulerState with NULL output returns error");
+  /* Test 1.36: null pointer in xTaskGetSchedulerState */
+  /* Test 1.36: xTaskGetSchedulerState with null output returns error */
+  unit_begin("xTaskGetSchedulerState with null output returns error");
   unit_assert_not_ok(xTaskGetSchedulerState(null));
   unit_end();
 
 #if defined(CONFIG_TASK_WD_TIMER_ENABLE)
 
 
-    /* Test 1.37: NULL task in xTaskChangeWDPeriod */
-    unit_begin("xTaskChangeWDPeriod with NULL task returns error");
+    /* Test 1.37: null task in xTaskChangeWDPeriod */
+    unit_begin("xTaskChangeWDPeriod with null task returns error");
     unit_assert_not_ok(xTaskChangeWDPeriod(nullTask, TASK_WD_PERIOD_2000_MS));
     unit_end();
 
 
-    /* Test 1.38: NULL task in xTaskGetWDPeriod */
-    unit_begin("xTaskGetWDPeriod with NULL task returns error");
+    /* Test 1.38: null task in xTaskGetWDPeriod */
+    unit_begin("xTaskGetWDPeriod with null task returns error");
     unit_assert_not_ok(xTaskGetWDPeriod(nullTask, &period));
     unit_end();
 #endif /* if defined(CONFIG_TASK_WD_TIMER_ENABLE) */

@@ -555,7 +555,7 @@
         __AssertOnElse__();
       }
     } else {
-      /* NULL pointer passed - return error instead of asserting */
+      /* null pointer passed - return error instead of asserting */
       /* Return error by default */
     }
 
@@ -1169,7 +1169,7 @@
         __AssertOnElse__();
       }
     } else {
-      /* NULL pointer passed - return error instead of asserting */
+      /* null pointer passed - return error instead of asserting */
       /* Return error by default */
     }
 
@@ -1446,7 +1446,7 @@
         __AssertOnElse__();
       }
     } else {
-      /* NULL pointer passed - return error instead of asserting */
+      /* null pointer passed - return error instead of asserting */
       /* Return error by default */
     }
 
@@ -1578,7 +1578,7 @@
         __AssertOnElse__();
       }
     } else {
-      /* NULL pointer passed - return error instead of asserting */
+      /* null pointer passed - return error instead of asserting */
       /* Return error by default */
     }
 
@@ -1609,7 +1609,7 @@
         __AssertOnElse__();
       }
     } else {
-      /* NULL pointer passed - return error instead of asserting */
+      /* null pointer passed - return error instead of asserting */
       __AssertOnElse__();
     }
 
@@ -1687,7 +1687,7 @@
         __AssertOnElse__();
       }
     } else {
-      /* NULL pointer passed - return error instead of asserting */
+      /* null pointer passed - return error instead of asserting */
       /* Return error by default */
     }
 
@@ -1787,7 +1787,7 @@
         __AssertOnElse__();
       }
     } else {
-      /* NULL pointer passed - return error instead of asserting */
+      /* null pointer passed - return error instead of asserting */
       /* Return error by default */
     }
 
@@ -1855,7 +1855,7 @@
         __AssertOnElse__();
       }
     } else {
-      /* NULL pointer passed - return error instead of asserting */
+      /* null pointer passed - return error instead of asserting */
       /* Return error by default */
     }
 

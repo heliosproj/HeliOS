@@ -68,7 +68,7 @@ void stream_harness(void) {
 
 
 /* ============================================================================
- * SECTION 1: ERROR HANDLING AND NULL POINTER VALIDATION
+ * SECTION 1: ERROR HANDLING AND null POINTER VALIDATION
  * ============================================================================
  */
 static void test_error_handling_and_null_pointers(void) {
@@ -79,11 +79,11 @@ static void test_error_handling_and_null_pointers(void) {
   Byte_t *data;
 
 
-  unit_print("--- Section 1: Error Handling and NULL Pointer Tests ---");
+  unit_print("--- Section 1: Error Handling and null Pointer Tests ---");
 
 
-  /* Test 1.1: NULL pointer in xStreamCreate */
-  unit_begin("xStreamCreate with NULL pointer returns error");
+  /* Test 1.1: null pointer in xStreamCreate */
+  unit_begin("xStreamCreate with null pointer returns error");
   unit_assert_not_ok(xStreamCreate(null));
   unit_end();
 
@@ -95,74 +95,74 @@ static void test_error_handling_and_null_pointers(void) {
   unit_end();
 
 
-  /* Test 1.3: NULL pointer in xStreamDelete */
-  unit_begin("xStreamDelete with NULL pointer returns error");
+  /* Test 1.3: null pointer in xStreamDelete */
+  unit_begin("xStreamDelete with null pointer returns error");
   unit_assert_not_ok(xStreamDelete(nullStream));
   unit_end();
 
 
-  /* Test 1.4: NULL pointer in xStreamSend */
-  unit_begin("xStreamSend with NULL stream returns error");
+  /* Test 1.4: null pointer in xStreamSend */
+  unit_begin("xStreamSend with null stream returns error");
   unit_assert_not_ok(xStreamSend(nullStream, TEST_BYTE_VALUE));
   unit_end();
 
 
-  /* Test 1.5: NULL pointer in xStreamReceive */
-  unit_begin("xStreamReceive with NULL stream returns error");
+  /* Test 1.5: null pointer in xStreamReceive */
+  unit_begin("xStreamReceive with null stream returns error");
   unit_assert_not_ok(xStreamReceive(nullStream, &bytes, &data));
   unit_end();
 
 
-  /* Test 1.6: xStreamReceive with NULL bytes pointer */
-  unit_begin("xStreamReceive with NULL bytes pointer returns error");
+  /* Test 1.6: xStreamReceive with null bytes pointer */
+  unit_begin("xStreamReceive with null bytes pointer returns error");
   unit_assert_not_ok(xStreamReceive(stream, null, &data));
   unit_end();
 
 
-  /* Test 1.7: xStreamReceive with NULL data pointer */
-  unit_begin("xStreamReceive with NULL data pointer returns error");
+  /* Test 1.7: xStreamReceive with null data pointer */
+  unit_begin("xStreamReceive with null data pointer returns error");
   unit_assert_not_ok(xStreamReceive(stream, &bytes, null));
   unit_end();
 
 
-  /* Test 1.8: NULL pointer in xStreamBytesAvailable */
-  unit_begin("xStreamBytesAvailable with NULL stream returns error");
+  /* Test 1.8: null pointer in xStreamBytesAvailable */
+  unit_begin("xStreamBytesAvailable with null stream returns error");
   unit_assert_not_ok(xStreamBytesAvailable(nullStream, &bytes));
   unit_end();
 
 
-  /* Test 1.9: xStreamBytesAvailable with NULL bytes pointer */
-  unit_begin("xStreamBytesAvailable with NULL bytes pointer returns error");
+  /* Test 1.9: xStreamBytesAvailable with null bytes pointer */
+  unit_begin("xStreamBytesAvailable with null bytes pointer returns error");
   unit_assert_not_ok(xStreamBytesAvailable(stream, null));
   unit_end();
 
 
-  /* Test 1.10: NULL pointer in xStreamReset */
-  unit_begin("xStreamReset with NULL stream returns error");
+  /* Test 1.10: null pointer in xStreamReset */
+  unit_begin("xStreamReset with null stream returns error");
   unit_assert_not_ok(xStreamReset(nullStream));
   unit_end();
 
 
-  /* Test 1.11: NULL pointer in xStreamIsEmpty */
-  unit_begin("xStreamIsEmpty with NULL stream returns error");
+  /* Test 1.11: null pointer in xStreamIsEmpty */
+  unit_begin("xStreamIsEmpty with null stream returns error");
   unit_assert_not_ok(xStreamIsEmpty(nullStream, &result));
   unit_end();
 
 
-  /* Test 1.12: xStreamIsEmpty with NULL result pointer */
-  unit_begin("xStreamIsEmpty with NULL result pointer returns error");
+  /* Test 1.12: xStreamIsEmpty with null result pointer */
+  unit_begin("xStreamIsEmpty with null result pointer returns error");
   unit_assert_not_ok(xStreamIsEmpty(stream, null));
   unit_end();
 
 
-  /* Test 1.13: NULL pointer in xStreamIsFull */
-  unit_begin("xStreamIsFull with NULL stream returns error");
+  /* Test 1.13: null pointer in xStreamIsFull */
+  unit_begin("xStreamIsFull with null stream returns error");
   unit_assert_not_ok(xStreamIsFull(nullStream, &result));
   unit_end();
 
 
-  /* Test 1.14: xStreamIsFull with NULL result pointer */
-  unit_begin("xStreamIsFull with NULL result pointer returns error");
+  /* Test 1.14: xStreamIsFull with null result pointer */
+  unit_begin("xStreamIsFull with null result pointer returns error");
   unit_assert_not_ok(xStreamIsFull(stream, null));
   unit_end();
 

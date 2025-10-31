@@ -65,7 +65,7 @@ void timer_harness(void) {
 
 
 /* ============================================================================
- * SECTION 1: ERROR HANDLING AND NULL POINTER VALIDATION
+ * SECTION 1: ERROR HANDLING AND null POINTER VALIDATION
  * ============================================================================
  */
 static void test_error_handling_and_null_pointers(void) {
@@ -75,11 +75,11 @@ static void test_error_handling_and_null_pointers(void) {
   Ticks_t period;
 
 
-  unit_print("--- Section 1: Error Handling and NULL Pointer Tests ---");
+  unit_print("--- Section 1: Error Handling and null Pointer Tests ---");
 
 
-  /* Test 1.1: NULL pointer in xTimerCreate */
-  unit_begin("xTimerCreate with NULL pointer returns error");
+  /* Test 1.1: null pointer in xTimerCreate */
+  unit_begin("xTimerCreate with null pointer returns error");
   unit_assert_not_ok(xTimerCreate(null, TIMER_PERIOD_1_SECOND));
   unit_end();
 
@@ -91,68 +91,68 @@ static void test_error_handling_and_null_pointers(void) {
   unit_end();
 
 
-  /* Test 1.3: NULL pointer in xTimerDelete */
-  unit_begin("xTimerDelete with NULL pointer returns error");
+  /* Test 1.3: null pointer in xTimerDelete */
+  unit_begin("xTimerDelete with null pointer returns error");
   unit_assert_not_ok(xTimerDelete(nullTimer));
   unit_end();
 
 
-  /* Test 1.4: NULL pointer in xTimerChangePeriod */
-  unit_begin("xTimerChangePeriod with NULL timer returns error");
+  /* Test 1.4: null pointer in xTimerChangePeriod */
+  unit_begin("xTimerChangePeriod with null timer returns error");
   unit_assert_not_ok(xTimerChangePeriod(nullTimer, TIMER_PERIOD_2_SECONDS));
   unit_end();
 
 
-  /* Test 1.5: NULL pointer in xTimerGetPeriod */
-  unit_begin("xTimerGetPeriod with NULL timer returns error");
+  /* Test 1.5: null pointer in xTimerGetPeriod */
+  unit_begin("xTimerGetPeriod with null timer returns error");
   unit_assert_not_ok(xTimerGetPeriod(nullTimer, &period));
   unit_end();
 
 
-  /* Test 1.6: xTimerGetPeriod with NULL period pointer */
-  unit_begin("xTimerGetPeriod with NULL period pointer returns error");
+  /* Test 1.6: xTimerGetPeriod with null period pointer */
+  unit_begin("xTimerGetPeriod with null period pointer returns error");
   unit_assert_not_ok(xTimerGetPeriod(timer, null));
   unit_end();
 
 
-  /* Test 1.7: NULL pointer in xTimerIsTimerActive */
-  unit_begin("xTimerIsTimerActive with NULL timer returns error");
+  /* Test 1.7: null pointer in xTimerIsTimerActive */
+  unit_begin("xTimerIsTimerActive with null timer returns error");
   unit_assert_not_ok(xTimerIsTimerActive(nullTimer, &result));
   unit_end();
 
 
-  /* Test 1.8: xTimerIsTimerActive with NULL result pointer */
-  unit_begin("xTimerIsTimerActive with NULL result pointer returns error");
+  /* Test 1.8: xTimerIsTimerActive with null result pointer */
+  unit_begin("xTimerIsTimerActive with null result pointer returns error");
   unit_assert_not_ok(xTimerIsTimerActive(timer, null));
   unit_end();
 
 
-  /* Test 1.9: NULL pointer in xTimerReset */
-  unit_begin("xTimerReset with NULL timer returns error");
+  /* Test 1.9: null pointer in xTimerReset */
+  unit_begin("xTimerReset with null timer returns error");
   unit_assert_not_ok(xTimerReset(nullTimer));
   unit_end();
 
 
-  /* Test 1.10: NULL pointer in xTimerStart */
-  unit_begin("xTimerStart with NULL timer returns error");
+  /* Test 1.10: null pointer in xTimerStart */
+  unit_begin("xTimerStart with null timer returns error");
   unit_assert_not_ok(xTimerStart(nullTimer));
   unit_end();
 
 
-  /* Test 1.11: NULL pointer in xTimerStop */
-  unit_begin("xTimerStop with NULL timer returns error");
+  /* Test 1.11: null pointer in xTimerStop */
+  unit_begin("xTimerStop with null timer returns error");
   unit_assert_not_ok(xTimerStop(nullTimer));
   unit_end();
 
 
-  /* Test 1.12: NULL pointer in xTimerHasTimerExpired */
-  unit_begin("xTimerHasTimerExpired with NULL timer returns error");
+  /* Test 1.12: null pointer in xTimerHasTimerExpired */
+  unit_begin("xTimerHasTimerExpired with null timer returns error");
   unit_assert_not_ok(xTimerHasTimerExpired(nullTimer, &result));
   unit_end();
 
 
-  /* Test 1.13: xTimerHasTimerExpired with NULL result pointer */
-  unit_begin("xTimerHasTimerExpired with NULL result pointer returns error");
+  /* Test 1.13: xTimerHasTimerExpired with null result pointer */
+  unit_begin("xTimerHasTimerExpired with null result pointer returns error");
   unit_assert_not_ok(xTimerHasTimerExpired(timer, null));
   unit_end();
 

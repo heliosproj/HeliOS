@@ -50,7 +50,7 @@
     int32_t passed;
 
 
-    /* For value comparison assertions (EQUAL, NOT_EQUAL, NULL, NOT_NULL) */
+    /* For value comparison assertions (EQUAL, NOT_EQUAL, null, NOT_NULL) */
     char actual_expr[MAX_EXPRESSION_LENGTH];
     char expected_expr[MAX_EXPRESSION_LENGTH];
     unsigned long actual_value;

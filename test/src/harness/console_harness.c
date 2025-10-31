@@ -515,41 +515,41 @@ static void test_path_utilities(void) {
 
 
 /* ============================================================================
- * SECTION 8: NULL POINTER VALIDATION
+ * SECTION 8: null POINTER VALIDATION
  * ============================================================================
  */
 static void test_null_pointer_validation(void) {
   Byte_t result[CONFIG_FS_MAX_PATH_LENGTH];
 
 
-  unit_print("--- Section 8: NULL Pointer Validation ---");
+  unit_print("--- Section 8: null Pointer Validation ---");
 
 
-  /* Test 8.1: Path utilities with NULL pointers */
-  unit_begin("Path utilities handle NULL pointers gracefully");
+  /* Test 8.1: Path utilities with null pointers */
+  unit_begin("Path utilities handle null pointers gracefully");
 
 
-  /* Test NULL in path_join */
+  /* Test null in path_join */
   __path_join__(result, null, (const Byte_t *) "test", CONFIG_FS_MAX_PATH_LENGTH);
   __path_join__(result, (const Byte_t *) "test", null, CONFIG_FS_MAX_PATH_LENGTH);
 
 
-  /* Test NULL in path_dirname */
+  /* Test null in path_dirname */
   __path_dirname__(result, null, CONFIG_FS_MAX_PATH_LENGTH);
 
 
-  /* Test NULL in path_basename */
+  /* Test null in path_basename */
   __path_basename__(result, null, CONFIG_FS_MAX_PATH_LENGTH);
   unit_end();
 
 
-  /* Test 8.2: Path is absolute with NULL */
-  unit_begin("Path is absolute handles NULL pointer");
+  /* Test 8.2: Path is absolute with null */
+  unit_begin("Path is absolute handles null pointer");
   {
     Base_t result = __path_is_absolute__(null);
 
 
-    /* Function should handle NULL gracefully (likely returns false) */
+    /* Function should handle null gracefully (likely returns false) */
     unit_assert_false(result);
   } unit_end();
 }

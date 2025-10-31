@@ -260,17 +260,17 @@ void unit_assert_null_impl(const char *file_, int line_, const void *ptr_, const
     if(!unit->json_enabled) {
 #if defined(UNIT_TEST_COLORIZE)
         printf("\033[95munit:\033[91m assert failed at %s:%d\n", file_, line_);
-        printf("\033[95munit:\033[91m   Expected %s to be NULL\n\033[39m", ptr_expr_);
+        printf("\033[95munit:\033[91m   Expected %s to be null\n\033[39m", ptr_expr_);
 #else  /* if defined(UNIT_TEST_COLORIZE) */
         printf("unit: assert failed at %s:%d\n", file_, line_);
-        printf("unit:    Expected %s to be NULL\n", ptr_expr_);
+        printf("unit:    Expected %s to be null\n", ptr_expr_);
 #endif /* if defined(UNIT_TEST_COLORIZE) */
     }
 
     unit->failed = true;
   }
 
-  record_assertion_structured(file_, line_, ASSERT_NULL, passed, ptr_expr_, (unsigned long) ptr_, "NULL", 0, null, 0);
+  record_assertion_structured(file_, line_, ASSERT_NULL, passed, ptr_expr_, (unsigned long) ptr_, "null", 0, null, 0);
 }
 
 
@@ -282,10 +282,10 @@ void unit_assert_not_null_impl(const char *file_, int line_, const void *ptr_, c
     if(!unit->json_enabled) {
 #if defined(UNIT_TEST_COLORIZE)
         printf("\033[95munit:\033[91m assert failed at %s:%d\n", file_, line_);
-        printf("\033[95munit:\033[91m   Expected %s to not be NULL\n\033[39m", ptr_expr_);
+        printf("\033[95munit:\033[91m   Expected %s to not be null\n\033[39m", ptr_expr_);
 #else  /* if defined(UNIT_TEST_COLORIZE) */
         printf("unit: assert failed at %s:%d\n", file_, line_);
-        printf("unit:    Expected %s to not be NULL\n", ptr_expr_);
+        printf("unit:    Expected %s to not be null\n", ptr_expr_);
 #endif /* if defined(UNIT_TEST_COLORIZE) */
     }
 
@@ -503,7 +503,7 @@ static void output_json(void) {
           break;
         case ASSERT_NOT_EQUAL: type_str = "NOT_EQUAL";
           break;
-        case ASSERT_NULL: type_str = "NULL";
+        case ASSERT_NULL: type_str = "null";
           break;
         case ASSERT_NOT_NULL: type_str = "NOT_NULL";
           break;

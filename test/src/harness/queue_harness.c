@@ -55,14 +55,14 @@ void queue_harness(void) {
 
   /*
    * ============================================================================
-   * SECTION 1: ERROR HANDLING AND NULL POINTER VALIDATION
+   * SECTION 1: ERROR HANDLING AND null POINTER VALIDATION
    * ============================================================================
    */
-  unit_print("--- Section 1: Error Handling and NULL Pointer Tests ---");
+  unit_print("--- Section 1: Error Handling and null Pointer Tests ---");
 
 
-  /* Test 1.1: NULL pointer in xQueueCreate */
-  unit_begin("xQueueCreate with NULL pointer returns error");
+  /* Test 1.1: null pointer in xQueueCreate */
+  unit_begin("xQueueCreate with null pointer returns error");
   unit_assert_not_ok(xQueueCreate(null, QUEUE_MIN_CAPACITY));
   unit_end();
 
@@ -74,68 +74,68 @@ void queue_harness(void) {
   unit_end();
 
 
-  /* Test 1.3: NULL pointer in xQueueDelete */
-  unit_begin("xQueueDelete with NULL pointer returns error");
+  /* Test 1.3: null pointer in xQueueDelete */
+  unit_begin("xQueueDelete with null pointer returns error");
   unit_assert_not_ok(xQueueDelete(null));
   unit_end();
 
 
-  /* Test 1.4: NULL pointer in xQueueGetLength */
-  unit_begin("xQueueGetLength with NULL queue returns error");
+  /* Test 1.4: null pointer in xQueueGetLength */
+  unit_begin("xQueueGetLength with null queue returns error");
   unit_assert_not_ok(xQueueGetLength(null, &result));
   unit_end();
 
 
-  /* Test 1.5: NULL pointer in xQueueGetLength result */
-  unit_begin("xQueueGetLength with NULL result returns error");
+  /* Test 1.5: null pointer in xQueueGetLength result */
+  unit_begin("xQueueGetLength with null result returns error");
   unit_assert_not_ok(xQueueGetLength(queue, null));
   unit_end();
 
 
-  /* Test 1.6: NULL pointer in xQueueIsQueueEmpty */
-  unit_begin("xQueueIsQueueEmpty with NULL queue returns error");
+  /* Test 1.6: null pointer in xQueueIsQueueEmpty */
+  unit_begin("xQueueIsQueueEmpty with null queue returns error");
   unit_assert_not_ok(xQueueIsQueueEmpty(null, &result));
   unit_end();
 
 
-  /* Test 1.7: NULL pointer in xQueueIsQueueEmpty result */
-  unit_begin("xQueueIsQueueEmpty with NULL result returns error");
+  /* Test 1.7: null pointer in xQueueIsQueueEmpty result */
+  unit_begin("xQueueIsQueueEmpty with null result returns error");
   unit_assert_not_ok(xQueueIsQueueEmpty(queue, null));
   unit_end();
 
 
-  /* Test 1.8: NULL pointer in xQueueIsQueueFull */
-  unit_begin("xQueueIsQueueFull with NULL queue returns error");
+  /* Test 1.8: null pointer in xQueueIsQueueFull */
+  unit_begin("xQueueIsQueueFull with null queue returns error");
   unit_assert_not_ok(xQueueIsQueueFull(null, &result));
   unit_end();
 
 
-  /* Test 1.9: NULL pointer in xQueueIsQueueFull result */
-  unit_begin("xQueueIsQueueFull with NULL result returns error");
+  /* Test 1.9: null pointer in xQueueIsQueueFull result */
+  unit_begin("xQueueIsQueueFull with null result returns error");
   unit_assert_not_ok(xQueueIsQueueFull(queue, null));
   unit_end();
 
 
-  /* Test 1.10: NULL pointer in xQueueMessagesWaiting */
-  unit_begin("xQueueMessagesWaiting with NULL queue returns error");
+  /* Test 1.10: null pointer in xQueueMessagesWaiting */
+  unit_begin("xQueueMessagesWaiting with null queue returns error");
   unit_assert_not_ok(xQueueMessagesWaiting(null, &result));
   unit_end();
 
 
-  /* Test 1.11: NULL pointer in xQueueMessagesWaiting result */
-  unit_begin("xQueueMessagesWaiting with NULL result returns error");
+  /* Test 1.11: null pointer in xQueueMessagesWaiting result */
+  unit_begin("xQueueMessagesWaiting with null result returns error");
   unit_assert_not_ok(xQueueMessagesWaiting(queue, null));
   unit_end();
 
 
-  /* Test 1.12: NULL pointer in xQueueSend */
-  unit_begin("xQueueSend with NULL queue returns error");
+  /* Test 1.12: null pointer in xQueueSend */
+  unit_begin("xQueueSend with null queue returns error");
   unit_assert_not_ok(xQueueSend(null, MESSAGE_SIZE, (Byte_t *) TEST_MESSAGE_1));
   unit_end();
 
 
-  /* Test 1.13: NULL pointer in xQueueSend data */
-  unit_begin("xQueueSend with NULL data returns error");
+  /* Test 1.13: null pointer in xQueueSend data */
+  unit_begin("xQueueSend with null data returns error");
   unit_assert_not_ok(xQueueSend(queue, MESSAGE_SIZE, null));
   unit_end();
 
@@ -146,44 +146,44 @@ void queue_harness(void) {
   unit_end();
 
 
-  /* Test 1.15: NULL pointer in xQueuePeek */
-  unit_begin("xQueuePeek with NULL queue returns error");
+  /* Test 1.15: null pointer in xQueuePeek */
+  unit_begin("xQueuePeek with null queue returns error");
   unit_assert_not_ok(xQueuePeek(null, &message));
   unit_end();
 
 
-  /* Test 1.16: NULL pointer in xQueuePeek message */
-  unit_begin("xQueuePeek with NULL message pointer returns error");
+  /* Test 1.16: null pointer in xQueuePeek message */
+  unit_begin("xQueuePeek with null message pointer returns error");
   unit_assert_not_ok(xQueuePeek(queue, null));
   unit_end();
 
 
-  /* Test 1.17: NULL pointer in xQueueReceive */
-  unit_begin("xQueueReceive with NULL queue returns error");
+  /* Test 1.17: null pointer in xQueueReceive */
+  unit_begin("xQueueReceive with null queue returns error");
   unit_assert_not_ok(xQueueReceive(null, &message));
   unit_end();
 
 
-  /* Test 1.18: NULL pointer in xQueueReceive message */
-  unit_begin("xQueueReceive with NULL message pointer returns error");
+  /* Test 1.18: null pointer in xQueueReceive message */
+  unit_begin("xQueueReceive with null message pointer returns error");
   unit_assert_not_ok(xQueueReceive(queue, null));
   unit_end();
 
 
-  /* Test 1.19: NULL pointer in xQueueDropMessage */
-  unit_begin("xQueueDropMessage with NULL queue returns error");
+  /* Test 1.19: null pointer in xQueueDropMessage */
+  unit_begin("xQueueDropMessage with null queue returns error");
   unit_assert_not_ok(xQueueDropMessage(null));
   unit_end();
 
 
-  /* Test 1.20: NULL pointer in xQueueLockQueue */
-  unit_begin("xQueueLockQueue with NULL queue returns error");
+  /* Test 1.20: null pointer in xQueueLockQueue */
+  unit_begin("xQueueLockQueue with null queue returns error");
   unit_assert_not_ok(xQueueLockQueue(null));
   unit_end();
 
 
-  /* Test 1.21: NULL pointer in xQueueUnLockQueue */
-  unit_begin("xQueueUnLockQueue with NULL queue returns error");
+  /* Test 1.21: null pointer in xQueueUnLockQueue */
+  unit_begin("xQueueUnLockQueue with null queue returns error");
   unit_assert_not_ok(xQueueUnLockQueue(null));
   unit_end();
 

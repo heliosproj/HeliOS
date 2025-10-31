@@ -194,29 +194,29 @@ static void test_system_information(void) {
 
 
 /* ============================================================================
- * SECTION 3: NULL POINTER VALIDATION
+ * SECTION 3: null POINTER VALIDATION
  * ============================================================================
  */
 static void test_null_pointer_validation(void) {
-  unit_print("--- Section 3: NULL Pointer Validation ---");
+  unit_print("--- Section 3: null Pointer Validation ---");
 
 
-  /* Test 3.1: NULL pointer in xSystemGetSystemInfo */
-  unit_begin("xSystemGetSystemInfo rejects NULL pointer");
+  /* Test 3.1: null pointer in xSystemGetSystemInfo */
+  unit_begin("xSystemGetSystemInfo rejects null pointer");
   unit_assert_not_ok(xSystemGetSystemInfo(null));
   unit_end();
 
 
-  /* Test 3.2: Multiple NULL pointer calls */
-  unit_begin("Multiple NULL pointer calls handled consistently");
+  /* Test 3.2: Multiple null pointer calls */
+  unit_begin("Multiple null pointer calls handled consistently");
   unit_assert_not_ok(xSystemGetSystemInfo(null));
   unit_assert_not_ok(xSystemGetSystemInfo(null));
   unit_assert_not_ok(xSystemGetSystemInfo(null));
   unit_end();
 
 
-  /* Test 3.3: NULL pointer alternating with valid calls */
-  unit_begin("NULL pointer validation doesn't affect valid calls");
+  /* Test 3.3: null pointer alternating with valid calls */
+  unit_begin("null pointer validation doesn't affect valid calls");
   {
     SystemInfo_t *info = null;
 
@@ -558,8 +558,8 @@ static void test_assertion_boundary_conditions(void) {
   unit_end();
 
 
-  /* Test 8.3: NULL pointer edge cases */
-  unit_begin("Assertions handle NULL pointer edge cases");
+  /* Test 8.3: null pointer edge cases */
+  unit_begin("Assertions handle null pointer edge cases");
   unit_assert_null(nullPtr);
   unit_assert_null(null);
   unit_assert_true(nullPtr == null);

@@ -574,41 +574,41 @@ static void test_error_conditions(void) {
   unit_print("--- Section 8: Error Conditions ---");
 
 
-  /* Test 8.1: Write with NULL data pointer */
-  unit_begin("Write rejects NULL data pointer");
+  /* Test 8.1: Write with null data pointer */
+  unit_begin("Write rejects null data pointer");
   bytesToWrite = TEST_DATA_SMALL;
   unit_assert_not_ok(xDeviceWrite(LOOPBACK_DEVICE_ID, &bytesToWrite, null));
   unit_end();
 
 
-  /* Test 8.2: Read with NULL data pointer */
-  unit_begin("Read rejects NULL data pointer");
+  /* Test 8.2: Read with null data pointer */
+  unit_begin("Read rejects null data pointer");
   bytesRead = TEST_DATA_SMALL;
   unit_assert_not_ok(xDeviceRead(LOOPBACK_DEVICE_ID, &bytesRead, null));
   unit_end();
 
 
-  /* Test 8.3: Simple read with NULL pointer */
-  unit_begin("Simple read rejects NULL pointer");
+  /* Test 8.3: Simple read with null pointer */
+  unit_begin("Simple read rejects null pointer");
   unit_assert_not_ok(xDeviceSimpleRead(LOOPBACK_DEVICE_ID, null));
   unit_end();
 
 
-  /* Test 8.3.1: xDeviceConfigDevice with NULL config */
-  unit_begin("xDeviceConfigDevice rejects NULL config");
+  /* Test 8.3.1: xDeviceConfigDevice with null config */
+  unit_begin("xDeviceConfigDevice rejects null config");
   configSize = sizeof(LoopbackClearConfig_t);
   unit_assert_not_ok(xDeviceConfigDevice(LOOPBACK_DEVICE_ID, &configSize, null));
   unit_end();
 
 
-  /* Test 8.3.2: xDeviceIsAvailable with NULL result */
-  unit_begin("xDeviceIsAvailable rejects NULL result pointer");
+  /* Test 8.3.2: xDeviceIsAvailable with null result */
+  unit_begin("xDeviceIsAvailable rejects null result pointer");
   unit_assert_not_ok(xDeviceIsAvailable(LOOPBACK_DEVICE_ID, null));
   unit_end();
 
 
-  /* Test 8.3.3: xDeviceRegisterDevice with NULL function */
-  unit_begin("xDeviceRegisterDevice rejects NULL function");
+  /* Test 8.3.3: xDeviceRegisterDevice with null function */
+  unit_begin("xDeviceRegisterDevice rejects null function");
   unit_assert_not_ok(xDeviceRegisterDevice(null));
   unit_end();
 

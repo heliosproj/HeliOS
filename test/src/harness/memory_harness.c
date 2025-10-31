@@ -348,8 +348,8 @@ void memory_harness(void) {
   unit_end();
 
 
-  /* Test 4.2: NULL pointer allocation */
-  unit_begin("NULL pointer allocation");
+  /* Test 4.2: null pointer allocation */
+  unit_begin("null pointer allocation");
   unit_assert_equal(xMemAlloc(null, 100), ReturnError);
   unit_end();
 
@@ -360,8 +360,8 @@ void memory_harness(void) {
   unit_end();
 
 
-  /* Test 4.4: Free NULL pointer */
-  unit_begin("Free NULL pointer");
+  /* Test 4.4: Free null pointer */
+  unit_begin("Free null pointer");
   unit_assert_equal(xMemFree(null), ReturnOK);
   unit_end();
 
@@ -375,14 +375,14 @@ void memory_harness(void) {
   unit_end();
 
 
-  /* Test 4.6: Get size of NULL pointer */
-  unit_begin("Get size of NULL pointer");
+  /* Test 4.6: Get size of null pointer */
+  unit_begin("Get size of null pointer");
   unit_assert_equal(xMemGetSize(null, &size), ReturnError);
   unit_end();
 
 
-  /* Test 4.7: Get size with NULL size pointer */
-  unit_begin("Get size with NULL size pointer");
+  /* Test 4.7: Get size with null size pointer */
+  unit_begin("Get size with null size pointer");
   unit_assert_equal(xMemAlloc(&ptr, 100), ReturnOK);
   unit_assert_equal(xMemGetSize(ptr, null), ReturnError);
   unit_assert_equal(xMemFree(ptr), ReturnOK);
@@ -488,8 +488,8 @@ void memory_harness(void) {
   unit_end();
 
 
-  /* Test 5.8: NULL pointer checks */
-  unit_begin("Memory utility NULL pointer checks");
+  /* Test 5.8: null pointer checks */
+  unit_begin("Memory utility null pointer checks");
   unit_assert_equal(__memset__(null, 0, 100), ReturnError);
   unit_assert_equal(__memcpy__(null, (volatile Addr_t *) src, 100), ReturnError);
   unit_assert_equal(__memcpy__((volatile Addr_t *) dest, null, 100), ReturnError);
@@ -507,20 +507,20 @@ void memory_harness(void) {
   unit_print("--- Section 6: Memory Statistics ---");
 
 
-  /* Test 6.1: NULL pointer in xMemGetUsed */
+  /* Test 6.1: null pointer in xMemGetUsed */
   unit_begin("Memory statistics");
   unit_assert_equal(xMemGetUsed(null), ReturnError);
   unit_end();
 
 
-  /* Test 6.2: NULL pointer in xMemGetHeapStats */
-  unit_begin("NULL pointer in heap stats");
+  /* Test 6.2: null pointer in xMemGetHeapStats */
+  unit_begin("null pointer in heap stats");
   unit_assert_equal(xMemGetHeapStats(null), ReturnError);
   unit_end();
 
 
-  /* Test 6.3: NULL pointer in xMemGetKernelStats */
-  unit_begin("NULL pointer in kernel stats");
+  /* Test 6.3: null pointer in xMemGetKernelStats */
+  unit_begin("null pointer in kernel stats");
   unit_assert_equal(xMemGetKernelStats(null), ReturnError);
   unit_end();
 

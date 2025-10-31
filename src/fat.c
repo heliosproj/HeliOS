@@ -149,11 +149,11 @@
  * @param  dirCluster_   Starting cluster of directory to search
  * @param  name83_       8.3 FAT format name to search for (11 bytes)
  * @param  entry_        Pointer to receive directory entry if found (can be
- *                       NULL)
+ *                       null)
  * @param  entryCluster_ Pointer to receive cluster containing the entry (can be
- *                       NULL)
+ *                       null)
  * @param  entryOffset_  Pointer to receive byte offset within cluster (can be
- *                       NULL)
+ *                       null)
  * @return               ReturnOK if found, ReturnError if not found
  */
   Return_t __FindDirEntry__(const Volume_t *vol_, Word_t dirCluster_, const Byte_t *name83_, FAT32DirEntry_t *entry_, Word_t *entryCluster_, Word_t *
@@ -240,13 +240,13 @@
  * @param  vol_           Pointer to mounted volume
  * @param  path_          Path to find (e.g., "/dir/file.txt" or "file.txt")
  * @param  entry_         Pointer to receive directory entry if found (can be
- *                        NULL)
+ *                        null)
  * @param  parentCluster_ Pointer to receive parent directory cluster (can be
- *                        NULL)
+ *                        null)
  * @param  entryCluster_  Pointer to receive cluster containing the entry (can
- *                        be NULL)
+ *                        be null)
  * @param  entryOffset_   Pointer to receive byte offset within cluster (can be
- *                        NULL)
+ *                        null)
  * @return                ReturnOK if found, ReturnError if not found
  */
   Return_t __FindFileByPath__(const Volume_t *vol_, const Byte_t *path_, FAT32DirEntry_t *entry_, Word_t *parentCluster_, Word_t *entryCluster_, Word_t *
@@ -260,7 +260,6 @@
     Word_t componentIdx = 0x0u;
     Word_t currentCluster = 0x0u;
     FAT32DirEntry_t dirEntry;
-    Return_t result = ReturnError;
     Base_t continueProcessing = true;
 
 
@@ -313,9 +312,7 @@
           /* Convert component to 8.3 format */
           if(OK(__ConvertToFAT83__(component, name83))) {
             /* Search for this component in current directory */
-            result = __FindDirEntry__(vol_, currentCluster, name83, &dirEntry, entryCluster_, entryOffset_);
-
-            if(OK(result)) {
+            if(OK(__FindDirEntry__(vol_, currentCluster, name83, &dirEntry, entryCluster_, entryOffset_))) {
               /* If this is the last component, we're done */
               if(path_[pathIdx] == '\0') {
                 if(__PointerIsNotNull__(entry_)) {
