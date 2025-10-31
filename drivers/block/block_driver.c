@@ -1,3 +1,18 @@
+/*UNCRUSTIFY-OFF*/
+/**
+ * @file block_driver.c
+ * @author Manny Peterson <manny@heliosproj.org>
+ * @brief Block device driver implementation
+ * @details
+ * Implements block device operations for sector-based storage including read, write, address management, and protocol abstraction for SD/MMC devices.
+ *
+ * @copyright
+ * HeliOS Embedded Operating System Copyright (C) 2020-2026 Manny Peterson <manny@heliosproj.org>
+ *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *
+ */
+/*UNCRUSTIFY-ON*/
 #include "block_driver.h"
 
 typedef struct BlockDeviceState_s {

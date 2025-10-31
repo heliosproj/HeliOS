@@ -1,3 +1,18 @@
+/*UNCRUSTIFY-OFF*/
+/**
+ * @file char_driver.c
+ * @author Manny Peterson <manny@heliosproj.org>
+ * @brief Character device driver implementation
+ * @details
+ * Implements character device operations including buffered read/write, line modes (raw/cooked), and protocol abstraction for serial communications.
+ *
+ * @copyright
+ * HeliOS Embedded Operating System Copyright (C) 2020-2026 Manny Peterson <manny@heliosproj.org>
+ *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *
+ */
+/*UNCRUSTIFY-ON*/
 #include "char_driver.h"
 
 typedef struct CharDeviceState_s {

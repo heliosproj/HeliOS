@@ -1,13 +1,28 @@
+/*UNCRUSTIFY-OFF*/
+/**
+ * @file queue.c
+ * @author Manny Peterson <manny@heliosproj.org>
+ * @brief Message queue implementation
+ * @details
+ * Implements FIFO message queues for inter-task communication with configurable limits, message prioritization, and queue management operations.
+ *
+ * @copyright
+ * HeliOS Embedded Operating System Copyright (C) 2020-2026 Manny Peterson <manny@heliosproj.org>
+ *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *
+ */
+/*UNCRUSTIFY-ON*/
 #include "queue.h"
 static Return_t __QueueDropmessage__(Queue_t *queue_);
 static Return_t __QueuePeek__(const Queue_t *queue_, QueueMessage_t **message_);
 
 #define __GetQueueLength__() \
-cursor = queue_->head; \
-while(__PointerIsNotNull__(cursor)) { \
-  messages++; \
-  cursor = cursor->next; \
-}
+        cursor = queue_->head; \
+        while(__PointerIsNotNull__(cursor)) { \
+          messages++; \
+          cursor = cursor->next; \
+        }
 
 #define __QueueLengthCorrect__() (queue_->length == messages)
 

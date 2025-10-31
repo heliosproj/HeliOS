@@ -1,57 +1,72 @@
+/*UNCRUSTIFY-OFF*/
+/**
+ * @file streams.h
+ * @author Manny Peterson <manny@heliosproj.org>
+ * @brief Stream buffer API header
+ * @details
+ * Defines stream buffer structures and function prototypes for fixed-size byte streaming operations between tasks.
+ *
+ * @copyright
+ * HeliOS Embedded Operating System Copyright (C) 2020-2026 Manny Peterson <manny@heliosproj.org>
+ *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *
+ */
+/*UNCRUSTIFY-ON*/
 #ifndef STREAM_H_
 
-#define STREAM_H_
+  #define STREAM_H_
 
-#include "config.h"
+  #include "config.h"
 
-#include "defines.h"
+  #include "defines.h"
 
-#include "types.h"
+  #include "types.h"
 
-#if defined(CONFIG_ENABLE_IO_SUBSYSTEM)
+  #if defined(CONFIG_ENABLE_IO_SUBSYSTEM)
 
-  #include "console.h"
+    #include "console.h"
 
-  #include "device.h"
+    #include "device.h"
 
-  #include "fat.h"
+    #include "fat.h"
 
-  #include "fs.h"
+    #include "fs.h"
 
-#endif /* if defined(CONFIG_ENABLE_IO_SUBSYSTEM) */
+  #endif /* if defined(CONFIG_ENABLE_IO_SUBSYSTEM) */
 
-#include "mem.h"
+  #include "mem.h"
 
-#include "port.h"
+  #include "port.h"
 
-#include "posix.h"
+  #include "posix.h"
 
-#include "queue.h"
+  #include "queue.h"
 
-#include "sys.h"
+  #include "sys.h"
 
-#include "task.h"
+  #include "task.h"
 
-#include "timer.h"
+  #include "timer.h"
 
-#ifdef __cplusplus
+  #ifdef __cplusplus
 
-  extern "C" {
+    extern "C" {
 
-#endif /* ifdef __cplusplus */
-Return_t xStreamCreate(StreamBuffer_t **stream_);
-Return_t xStreamDelete(const StreamBuffer_t *stream_);
-Return_t xStreamSend(StreamBuffer_t *stream_, const Byte_t byte_);
-Return_t xStreamReceive(const StreamBuffer_t *stream_, HalfWord_t *bytes_, Byte_t **data_);
-Return_t xStreamBytesAvailable(const StreamBuffer_t *stream_, HalfWord_t *bytes_);
-Return_t xStreamReset(const StreamBuffer_t *stream_);
-Return_t xStreamIsEmpty(const StreamBuffer_t *stream_, Base_t *res_);
-Return_t xStreamIsFull(const StreamBuffer_t *stream_, Base_t *res_);
+  #endif /* ifdef __cplusplus */
+  Return_t xStreamCreate(StreamBuffer_t **stream_);
+  Return_t xStreamDelete(const StreamBuffer_t *stream_);
+  Return_t xStreamSend(StreamBuffer_t *stream_, const Byte_t byte_);
+  Return_t xStreamReceive(const StreamBuffer_t *stream_, HalfWord_t *bytes_, Byte_t **data_);
+  Return_t xStreamBytesAvailable(const StreamBuffer_t *stream_, HalfWord_t *bytes_);
+  Return_t xStreamReset(const StreamBuffer_t *stream_);
+  Return_t xStreamIsEmpty(const StreamBuffer_t *stream_, Base_t *res_);
+  Return_t xStreamIsFull(const StreamBuffer_t *stream_, Base_t *res_);
 
-#ifdef __cplusplus
+  #ifdef __cplusplus
 
-  }
+    }
 
-#endif /* ifdef __cplusplus */
+  #endif /* ifdef __cplusplus */
 
 #endif /* ifndef STREAM_H_ */

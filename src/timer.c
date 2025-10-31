@@ -1,3 +1,18 @@
+/*UNCRUSTIFY-OFF*/
+/**
+ * @file timer.c
+ * @author Manny Peterson <manny@heliosproj.org>
+ * @brief Timer management implementation
+ * @details
+ * Implements software timers for task scheduling and timing operations. Provides timer creation, deletion, period management, and expiration checking.
+ *
+ * @copyright
+ * HeliOS Embedded Operating System Copyright (C) 2020-2026 Manny Peterson <manny@heliosproj.org>
+ *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *
+ */
+/*UNCRUSTIFY-ON*/
 #include "timer.h"
 Return_t xTimerCreate(Timer_t **timer_, const Ticks_t period_) {
 

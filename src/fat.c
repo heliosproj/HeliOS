@@ -1,3 +1,18 @@
+/*UNCRUSTIFY-OFF*/
+/**
+ * @file fat.c
+ * @author Manny Peterson <manny@heliosproj.org>
+ * @brief FAT32 filesystem utilities implementation
+ * @details
+ * Implements low-level FAT32 filesystem helper functions for cluster chain traversal, directory entry parsing, and filename handling.
+ *
+ * @copyright
+ * HeliOS Embedded Operating System Copyright (C) 2020-2026 Manny Peterson <manny@heliosproj.org>
+ *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *
+ */
+/*UNCRUSTIFY-ON*/
 #include "config.h"
 
 #if defined(CONFIG_ENABLE_IO_SUBSYSTEM)

@@ -1,3 +1,18 @@
+/*UNCRUSTIFY-OFF*/
+/**
+ * @file sys.c
+ * @author Manny Peterson <manny@heliosproj.org>
+ * @brief System initialization and configuration
+ * @details
+ * Implements kernel initialization, system configuration management, and core system utility functions including version information and feature flags.
+ *
+ * @copyright
+ * HeliOS Embedded Operating System Copyright (C) 2020-2026 Manny Peterson <manny@heliosproj.org>
+ *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *
+ */
+/*UNCRUSTIFY-ON*/
 #include "sys.h"
 
 Flags_t flag = {

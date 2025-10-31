@@ -1,3 +1,18 @@
+/*UNCRUSTIFY-OFF*/
+/**
+ * @file mem.c
+ * @author Manny Peterson <manny@heliosproj.org>
+ * @brief Memory allocator implementation
+ * @details
+ * Implements heap and kernel memory allocation using a first-fit algorithm with block headers, checksums, and memory region management for embedded systems.
+ *
+ * @copyright
+ * HeliOS Embedded Operating System Copyright (C) 2020-2026 Manny Peterson <manny@heliosproj.org>
+ *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *
+ */
+/*UNCRUSTIFY-ON*/
 #include "mem.h"
 
 static volatile MemoryRegion_t heap = {
@@ -13,22 +28,22 @@ static volatile MemoryRegion_t kernel = {
 };
 
 #define __AlignUp__(value_, alignment_) \
-(((value_) + ((alignment_) - 1)) & ~((alignment_) - 1))
+        (((value_) + ((alignment_) - 1)) & ~((alignment_) - 1))
 
 #define __AlignDown__(value_, alignment_) \
-((value_) & ~((alignment_) - 1))
+        ((value_) & ~((alignment_) - 1))
 
 #define __IsAligned__(value_, alignment_) \
-(((value_) & ((alignment_) - 1)) == 0x0u)
+        (((value_) & ((alignment_) - 1)) == 0x0u)
 
 #define ALIGNED_HEADER_SIZE \
-(((sizeof(BlockHeader_t)) + (CONFIG_MEMORY_ALIGNMENT - 1)) & ~(CONFIG_MEMORY_ALIGNMENT - 1))
+        (((sizeof(BlockHeader_t)) + (CONFIG_MEMORY_ALIGNMENT - 1)) & ~(CONFIG_MEMORY_ALIGNMENT - 1))
 
 #define __OffsetPointerToBlockHeader__(ptr_) \
-((BlockHeader_t *) (((Byte_t *) (ptr_)) - ALIGNED_HEADER_SIZE))
+        ((BlockHeader_t *) (((Byte_t *) (ptr_)) - ALIGNED_HEADER_SIZE))
 
 #define __OffsetBlockHeaderToPointer__(header_) \
-((Addr_t *) (((Byte_t *) (header_)) + ALIGNED_HEADER_SIZE))
+        ((Addr_t *) (((Byte_t *) (header_)) + ALIGNED_HEADER_SIZE))
 
 #define __BlockHeaderIsInUse__(header_) (INUSE == (header_)->free)
 

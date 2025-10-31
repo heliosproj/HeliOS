@@ -1,3 +1,18 @@
+/*UNCRUSTIFY-OFF*/
+/**
+ * @file ramdisk_driver.c
+ * @author Manny Peterson <manny@heliosproj.org>
+ * @brief RAM disk driver implementation
+ * @details
+ * Implements an in-memory block device with configurable size, position control, and usage statistics for filesystem testing and volatile caching.
+ *
+ * @copyright
+ * HeliOS Embedded Operating System Copyright (C) 2020-2026 Manny Peterson <manny@heliosproj.org>
+ *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *
+ */
+/*UNCRUSTIFY-ON*/
 #include "ramdisk_driver.h"
 
 static Byte_t ramdisk[RAMDISK_SIZE_BYTES] = {
@@ -8,17 +23,17 @@ static Byte_t ramdisk[RAMDISK_SIZE_BYTES] = {
 
 typedef struct RAMDiskState_s {
 
-  Word_t currentPosition;      
+  Word_t currentPosition;
 
-  Word_t bytesRead; 
+  Word_t bytesRead;
 
-  Word_t bytesWritten; 
+  Word_t bytesWritten;
 
-  Word_t readOperations; 
+  Word_t readOperations;
 
-  Word_t writeOperations; 
+  Word_t writeOperations;
 
-  Base_t initialized; 
+  Base_t initialized;
 
 } RAMDiskState_t;
 
@@ -44,32 +59,30 @@ static RAMDiskState_t state = {
 
 #define __ValidateBufferParams__(size_, data_) \
         (__PointerIsNotNull__(size_) && __PointerIsNotNull__(data_) && (0x0u < *(size_)))
-
 static Return_t __ValidateAndTruncateSize__(Size_t requested_, Size_t *actual_);
-
 Return_t TO_FUNCTION(DEVICE_NAME, _self_register)(void) {
 
   FUNCTION_ENTER;
 
   if(OK(__RegisterDevice__(DEVICE_UID,
 
-                          (Byte_t *)TO_LITERAL(DEVICE_NAME),
+    (Byte_t *) TO_LITERAL(DEVICE_NAME),
 
-                          DEVICE_STATE,
+    DEVICE_STATE,
 
-                          DEVICE_MODE,
+    DEVICE_MODE,
 
-                          TO_FUNCTION(DEVICE_NAME, _init),
+    TO_FUNCTION(DEVICE_NAME, _init),
 
-                          TO_FUNCTION(DEVICE_NAME, _config),
+    TO_FUNCTION(DEVICE_NAME, _config),
 
-                          TO_FUNCTION(DEVICE_NAME, _read),
+    TO_FUNCTION(DEVICE_NAME, _read),
 
-                          TO_FUNCTION(DEVICE_NAME, _write),
+    TO_FUNCTION(DEVICE_NAME, _write),
 
-                          TO_FUNCTION(DEVICE_NAME, _simple_read),
+    TO_FUNCTION(DEVICE_NAME, _simple_read),
 
-                          TO_FUNCTION(DEVICE_NAME, _simple_write)))) {
+    TO_FUNCTION(DEVICE_NAME, _simple_write)))) {
 
     __ReturnOk__();
 
@@ -82,7 +95,6 @@ Return_t TO_FUNCTION(DEVICE_NAME, _self_register)(void) {
   FUNCTION_EXIT;
 
 }
-
 Return_t TO_FUNCTION(DEVICE_NAME, _init)(Device_t *device_) {
 
   FUNCTION_ENTER;
@@ -106,24 +118,23 @@ Return_t TO_FUNCTION(DEVICE_NAME, _init)(Device_t *device_) {
   FUNCTION_EXIT;
 
 }
-
 Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Addr_t *config_) {
 
   FUNCTION_ENTER;
 
   if(__PointerIsNotNull__(config_) && __PointerIsNotNull__(size_)) {
 
-    Byte_t command = *(Byte_t *)config_;
+    Byte_t command = *(Byte_t *) config_;
 
     if(BLOCK_IO_CMD_SET_REQUEST == command) {
 
       if(*size_ >= sizeof(BlockIORequest_t)) {
 
-        BlockIORequest_t *request = (BlockIORequest_t *)config_;
+        BlockIORequest_t *request = (BlockIORequest_t *) config_;
 
         Word_t byteOffset = request->blockNumber * request->blockSize;
 
-        Word_t totalBytes = (Word_t)request->blockCount * request->blockSize;
+        Word_t totalBytes = (Word_t) request->blockCount * request->blockSize;
 
         if((byteOffset + totalBytes) <= RAMDISK_SIZE_BYTES) {
 
@@ -139,19 +150,17 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Add
 
       }
 
-    }
-
-    else if(BLOCK_IO_CMD_GET_INFO == command) {
+    } else if(BLOCK_IO_CMD_GET_INFO == command) {
 
       if(*size_ >= sizeof(BlockIOInfo_t)) {
 
-        BlockIOInfo_t *info = (BlockIOInfo_t *)config_;
+        BlockIOInfo_t *info = (BlockIOInfo_t *) config_;
 
         info->command = BLOCK_IO_CMD_GET_INFO;
 
         info->totalSizeBytes = RAMDISK_SIZE_BYTES;
 
-        info->nativeBlockSize = 1; 
+        info->nativeBlockSize = 1;
 
         info->supportsRandomAccess = true;
 
@@ -161,13 +170,11 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Add
 
       }
 
-    }
-
-    else if(RAMDISK_CMD_SET_POSITION == command) {
+    } else if(RAMDISK_CMD_SET_POSITION == command) {
 
       if(*size_ >= sizeof(RAMDiskPositionConfig_t)) {
 
-        RAMDiskPositionConfig_t *cfg = (RAMDiskPositionConfig_t *)config_;
+        RAMDiskPositionConfig_t *cfg = (RAMDiskPositionConfig_t *) config_;
 
         if(cfg->position < RAMDISK_SIZE_BYTES) {
 
@@ -183,13 +190,11 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Add
 
       }
 
-    }
-
-    else if(RAMDISK_CMD_CLEAR_DISK == command) {
+    } else if(RAMDISK_CMD_CLEAR_DISK == command) {
 
       if(*size_ >= sizeof(RAMDiskClearConfig_t)) {
 
-        RAMDiskClearConfig_t *cfg = (RAMDiskClearConfig_t *)config_;
+        RAMDiskClearConfig_t *cfg = (RAMDiskClearConfig_t *) config_;
 
         __memset__(ramdisk, cfg->fillPattern, RAMDISK_SIZE_BYTES);
 
@@ -207,13 +212,11 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Add
 
       }
 
-    }
-
-    else if(RAMDISK_CMD_GET_STATS == command) {
+    } else if(RAMDISK_CMD_GET_STATS == command) {
 
       if(*size_ >= sizeof(RAMDiskStats_t)) {
 
-        RAMDiskStats_t *stats = (RAMDiskStats_t *)config_;
+        RAMDiskStats_t *stats = (RAMDiskStats_t *) config_;
 
         stats->command = RAMDISK_CMD_GET_STATS;
 
@@ -244,7 +247,6 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Add
   FUNCTION_EXIT;
 
 }
-
 Return_t TO_FUNCTION(DEVICE_NAME, _read)(Device_t *device_, Size_t *size_, Addr_t **data_) {
 
   FUNCTION_ENTER;
@@ -257,7 +259,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _read)(Device_t *device_, Size_t *size_, Addr_
 
     if(OK(__ValidateAndTruncateSize__(*size_, &bytesToRead))) {
 
-      if(OK(__KernelAllocateMemory__((volatile Addr_t **)&buffer, bytesToRead))) {
+      if(OK(__KernelAllocateMemory__((volatile Addr_t **) &buffer, bytesToRead))) {
 
         __memcpy__(buffer, &ramdisk[state.currentPosition], bytesToRead);
 
@@ -290,7 +292,6 @@ Return_t TO_FUNCTION(DEVICE_NAME, _read)(Device_t *device_, Size_t *size_, Addr_
   FUNCTION_EXIT;
 
 }
-
 Return_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t *device_, Size_t *size_, Addr_t *data_) {
 
   FUNCTION_ENTER;
@@ -324,7 +325,6 @@ Return_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t *device_, Size_t *size_, Addr
   FUNCTION_EXIT;
 
 }
-
 Return_t TO_FUNCTION(DEVICE_NAME, _simple_read)(Device_t *device_, Byte_t *data_) {
 
   FUNCTION_ENTER;
@@ -354,7 +354,6 @@ Return_t TO_FUNCTION(DEVICE_NAME, _simple_read)(Device_t *device_, Byte_t *data_
   FUNCTION_EXIT;
 
 }
-
 Return_t TO_FUNCTION(DEVICE_NAME, _simple_write)(Device_t *device_, Byte_t data_) {
 
   FUNCTION_ENTER;
@@ -376,7 +375,6 @@ Return_t TO_FUNCTION(DEVICE_NAME, _simple_write)(Device_t *device_, Byte_t data_
   FUNCTION_EXIT;
 
 }
-
 static Return_t __ValidateAndTruncateSize__(Size_t requested_, Size_t *actual_) {
 
   FUNCTION_ENTER;
@@ -403,27 +401,27 @@ static Return_t __ValidateAndTruncateSize__(Size_t requested_, Size_t *actual_) 
 
 }
 
+
 #if defined(POSIX_ARCH_OTHER)
+  void __RAMDiskStateClear__(void) {
 
-void __RAMDiskStateClear__(void) {
+    state.currentPosition = 0x0u;
 
-  state.currentPosition = 0x0u;
+    state.bytesRead = 0x0u;
 
-  state.bytesRead = 0x0u;
+    state.bytesWritten = 0x0u;
 
-  state.bytesWritten = 0x0u;
+    state.readOperations = 0x0u;
 
-  state.readOperations = 0x0u;
+    state.writeOperations = 0x0u;
 
-  state.writeOperations = 0x0u;
+    state.initialized = false;
 
-  state.initialized = false;
+    __memset__(ramdisk, 0x00u, RAMDISK_SIZE_BYTES);
 
-  __memset__(ramdisk, 0x00u, RAMDISK_SIZE_BYTES);
+    return;
 
-  return;
+  }
 
-}
 
-#endif 
-
+#endif /* if defined(POSIX_ARCH_OTHER) */

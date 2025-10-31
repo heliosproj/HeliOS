@@ -1,3 +1,18 @@
+/*UNCRUSTIFY-OFF*/
+/**
+ * @file driver.c
+ * @author Manny Peterson <manny@heliosproj.org>
+ * @brief Device driver template implementation
+ * @details
+ * Template implementation providing stub functions for creating new device drivers compatible with the HeliOS device subsystem.
+ *
+ * @copyright
+ * HeliOS Embedded Operating System Copyright (C) 2020-2026 Manny Peterson <manny@heliosproj.org>
+ *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *
+ */
+/*UNCRUSTIFY-ON*/
 #include "driver.h"
 Return_t TO_FUNCTION(DEVICE_NAME, _self_register)(void) {
 

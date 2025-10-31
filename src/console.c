@@ -1,3 +1,18 @@
+/*UNCRUSTIFY-OFF*/
+/**
+ * @file console.c
+ * @author Manny Peterson <manny@heliosproj.org>
+ * @brief Console I/O implementation
+ * @details
+ * Implements character-based console input/output operations using device drivers for formatted printing, line input, and terminal control.
+ *
+ * @copyright
+ * HeliOS Embedded Operating System Copyright (C) 2020-2026 Manny Peterson <manny@heliosproj.org>
+ *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *
+ */
+/*UNCRUSTIFY-ON*/
 #include "config.h"
 
 #if defined(CONFIG_ENABLE_IO_SUBSYSTEM)

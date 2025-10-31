@@ -1,3 +1,18 @@
+/*UNCRUSTIFY-OFF*/
+/**
+ * @file task.c
+ * @author Manny Peterson <manny@heliosproj.org>
+ * @brief Task scheduler and management implementation
+ * @details
+ * Implements the cooperative task scheduler and task management functions including task creation, deletion, suspension, resumption, and runtime statistics.
+ *
+ * @copyright
+ * HeliOS Embedded Operating System Copyright (C) 2020-2026 Manny Peterson <manny@heliosproj.org>
+ *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *
+ */
+/*UNCRUSTIFY-ON*/
 #include "task.h"
 
 #if defined(CONFIG_ENABLE_CONSOLE)
@@ -20,29 +35,29 @@ static SchedulerState_t scheduler = SchedulerStateRunning;
 #if defined(CONFIG_TASK_WD_TIMER_ENABLE)
 
   #define __TaskRun__(task_) \
-  prev = task_->totalRunTime; \
-  start = __PortGetSysTicks__(); \
-  (*task_->callback)(task_, task_->taskParameter); \
-  task_->lastRunTime = __PortGetSysTicks__() - start; \
-  task_->totalRunTime += task_->lastRunTime; \
-  if((0x0u < task_->wdTimerPeriod) && (task_->lastRunTime > task_->wdTimerPeriod)) { \
-    task_->state = TaskStateSuspended; \
-  } \
-  if(task_->totalRunTime < prev) { \
-    __SetFlag__(OVERFLOW); \
-  }
+          prev = task_->totalRunTime; \
+          start = __PortGetSysTicks__(); \
+          (*task_->callback)(task_, task_->taskParameter); \
+          task_->lastRunTime = __PortGetSysTicks__() - start; \
+          task_->totalRunTime += task_->lastRunTime; \
+          if((0x0u < task_->wdTimerPeriod) && (task_->lastRunTime > task_->wdTimerPeriod)) { \
+            task_->state = TaskStateSuspended; \
+          } \
+          if(task_->totalRunTime < prev) { \
+            __SetFlag__(OVERFLOW); \
+          }
 
 #else  /* if defined(CONFIG_TASK_WD_TIMER_ENABLE) */
 
   #define __TaskRun__(task_) \
-  prev = task_->totalRunTime; \
-  start = __PortGetSysTicks__(); \
-  (*task_->callback)(task_, task_->taskParameter); \
-  task_->lastRunTime = __PortGetSysTicks__() - start; \
-  task_->totalRunTime += task_->lastRunTime; \
-  if(task_->totalRunTime < prev) { \
-    __SetFlag__(OVERFLOW); \
-  }
+          prev = task_->totalRunTime; \
+          start = __PortGetSysTicks__(); \
+          (*task_->callback)(task_, task_->taskParameter); \
+          task_->lastRunTime = __PortGetSysTicks__() - start; \
+          task_->totalRunTime += task_->lastRunTime; \
+          if(task_->totalRunTime < prev) { \
+            __SetFlag__(OVERFLOW); \
+          }
 
 #endif /* if defined(CONFIG_TASK_WD_TIMER_ENABLE) */
 Return_t xTaskCreate(Task_t **task_, const Byte_t *name_, void (*callback_)(Task_t *task_, TaskParm_t *parm_), TaskParm_t *taskParameter_) {

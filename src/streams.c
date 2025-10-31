@@ -1,3 +1,18 @@
+/*UNCRUSTIFY-OFF*/
+/**
+ * @file streams.c
+ * @author Manny Peterson <manny@heliosproj.org>
+ * @brief Stream buffer implementation
+ * @details
+ * Implements fixed-size byte stream buffers for efficient data streaming operations including send, receive, peek, and buffer management.
+ *
+ * @copyright
+ * HeliOS Embedded Operating System Copyright (C) 2020-2026 Manny Peterson <manny@heliosproj.org>
+ *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *
+ */
+/*UNCRUSTIFY-ON*/
 #include "streams.h"
 
 #define __StreamLengthNonZero__() (0x0u < stream_->length)

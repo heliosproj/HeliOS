@@ -1,3 +1,18 @@
+/*UNCRUSTIFY-OFF*/
+/**
+ * @file device.c
+ * @author Manny Peterson <manny@heliosproj.org>
+ * @brief Device driver subsystem implementation
+ * @details
+ * Implements the I/O device registration and management system providing unified interfaces for character, block, and other device drivers.
+ *
+ * @copyright
+ * HeliOS Embedded Operating System Copyright (C) 2020-2026 Manny Peterson <manny@heliosproj.org>
+ *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *
+ */
+/*UNCRUSTIFY-ON*/
 #include "config.h"
 
 #if defined(CONFIG_ENABLE_IO_SUBSYSTEM)

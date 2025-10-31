@@ -1,3 +1,18 @@
+/*UNCRUSTIFY-OFF*/
+/**
+ * @file usart_stm32_driver.c
+ * @author Manny Peterson <manny@heliosproj.org>
+ * @brief STM32 USART driver implementation
+ * @details
+ * Implements STM32 USART hardware driver with interrupt-based TX/RX, circular buffering, and error handling for serial communication on ARM Cortex-M devices.
+ *
+ * @copyright
+ * HeliOS Embedded Operating System Copyright (C) 2020-2026 Manny Peterson <manny@heliosproj.org>
+ *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *
+ */
+/*UNCRUSTIFY-ON*/
 #include "usart_stm32_driver.h"
 
 #if !defined(POSIX_ARCH_OTHER)

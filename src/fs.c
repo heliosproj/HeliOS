@@ -1,3 +1,18 @@
+/*UNCRUSTIFY-OFF*/
+/**
+ * @file fs.c
+ * @author Manny Peterson <manny@heliosproj.org>
+ * @brief Filesystem abstraction layer implementation
+ * @details
+ * Implements FAT32 filesystem operations including volume mounting, file and directory management, and sector-level block device access.
+ *
+ * @copyright
+ * HeliOS Embedded Operating System Copyright (C) 2020-2026 Manny Peterson <manny@heliosproj.org>
+ *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *
+ */
+/*UNCRUSTIFY-ON*/
 #include "config.h"
 
 #if defined(CONFIG_ENABLE_IO_SUBSYSTEM)

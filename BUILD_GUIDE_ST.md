@@ -263,7 +263,8 @@ Before starting, ensure you have:
  * @file           : main.c
  * @brief          : HeliOS LED Blink Example for NUCLEO-H723ZG
  ******************************************************************************
- * @description
+ * @details
+ *
  *
  * This example demonstrates HeliOS (a lightweight RTOS) on the STM32H723ZG
  * microcontroller. A periodic task blinks the LED every 1 second.
