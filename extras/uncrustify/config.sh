@@ -175,4 +175,3 @@ do
   sed -i "s|^${KEY}[[:space:]]*=.*|${KEY} = ${VALUE}|" $OUTFILE
 done
 
-echo "Generated $OUTFILE from $DEFFILE with HeliOS-specific modifications"
