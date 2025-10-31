@@ -21,6 +21,7 @@ Ticks_t __PortGetSysTicks__(void) {
     struct timeval t;
     gettimeofday(&t, null);
     return((t.tv_sec) * 0x3E8 + (t.tv_usec) / 0x3E8);
+#endif 
 }
 Return_t __PortInit__(void) {
   FUNCTION_ENTER;
@@ -35,5 +36,6 @@ Return_t __PortInit__(void) {
     __ReturnOk__();
 #elif defined(POSIX_ARCH_OTHER)
     __ReturnOk__();
+#endif 
   FUNCTION_EXIT;
 }

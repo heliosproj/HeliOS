@@ -43,6 +43,7 @@
     #else  
       #define CONFIG_SYSTEM_ASSERT_BEHAVIOR(f, l) printf("kernel: assert at %s:%d\n", f, l)
     #endif 
+  #endif 
   #ifdef __cplusplus
     extern "C" {
   #endif 

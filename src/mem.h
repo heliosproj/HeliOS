@@ -29,6 +29,7 @@
   #ifndef BLOCKHEADER_T_
     #define BLOCKHEADER_T_
     typedef struct BlockHeader_s {
+      struct BlockHeader_s *next;  
       Word_t checksum; 
       Word_t size; 
       Byte_t free; 

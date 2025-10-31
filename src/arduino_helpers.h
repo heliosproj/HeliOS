@@ -7,5 +7,6 @@
       #include <Arduino.h>
       #include "HeliOS.h"
       String xByte2String(Size_t size_, Byte_t *bytes_);
+    #endif 
   #endif 
 #endif 

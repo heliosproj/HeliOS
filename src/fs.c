@@ -12,6 +12,7 @@
         if(OK(__KernelAllocateMemory__((volatile Addr_t **) &vol, sizeof(Volume_t)))) {
         vol->blockDeviceUID = CONFIG_FS_BLOCK_DEVICE_UID;
         vol->mounted = false;
+        vol->bytesPerSector = 0x200u; 
         vol->valid = VALID; 
         if(OK(__ReadSector__(vol, 0x0u, &bootSectorData))) {
           bs = (FAT32BootSector_t *) bootSectorData;
