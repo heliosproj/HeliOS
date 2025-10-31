@@ -1,4 +1,7 @@
 /*UNCRUSTIFY-OFF*/
+
+
+
 /**
  * @file timer.c
  * @author Manny Peterson <manny@heliosproj.org>
@@ -12,8 +15,17 @@
  *  SPDX-License-Identifier: GPL-2.0-or-later
  *
  */
+
+
+
 /*UNCRUSTIFY-ON*/
+
+
+
 #include "timer.h"
+
+
+
 /**
 * @brief Creates a new software timer
 * @details Allocates memory for a timer structure and initializes it with the
@@ -30,26 +42,89 @@
 * @warning Caller is responsible for deleting the timer with xTimerDelete()
 */
 Return_t xTimerCreate(Timer_t **timer_, const Ticks_t period_) {
+
+
+
   FUNCTION_ENTER;
+
+
+
   if(__PointerIsNotNull__(timer_)) {
+
+
+
     if(OK(__KernelAllocateMemory__((volatile Addr_t **) timer_, sizeof(Timer_t)))) {
+
+
+
       if(__PointerIsNotNull__(*timer_)) {
+
+
+
         (*timer_)->valid = VALID;
+
+
+
         (*timer_)->state = TimerStateSuspended;
+
+
+
         (*timer_)->timerPeriod = period_;
+
+
+
         (*timer_)->timerStartTime = __PortGetSysTicks__();
+
+
+
         __ReturnOk__();
+
+
+
       } else {
+
+
+
         __AssertOnElse__();
+
+
+
       }
+
+
+
     } else {
+
+
+
       __AssertOnElse__();
+
+
+
     }
+
+
+
   } else {
+
+
+
     __AssertOnElse__();
+
+
+
   }
+
+
+
   FUNCTION_EXIT;
+
+
+
 }
+
+
+
 /**
 * @brief Deletes a software timer
 * @details Frees the memory allocated for the timer structure. The timer must
@@ -64,19 +139,61 @@ Return_t xTimerCreate(Timer_t **timer_, const Ticks_t period_) {
 * behavior
 */
 Return_t xTimerDelete(const Timer_t *timer_) {
+
+
+
   FUNCTION_ENTER;
+
+
+
   if(__ObjectIsValid__(timer_)) {
+
+
+
     ((Timer_t *) timer_)->valid = INVALID;
+
+
+
     if(OK(__KernelFreeMemory__(timer_))) {
+
+
+
       __ReturnOk__();
+
+
+
     } else {
+
+
+
       __AssertOnElse__();
+
+
+
     }
+
+
+
   } else {
+
+
+
     __AssertOnElse__();
+
+
+
   }
+
+
+
   FUNCTION_EXIT;
+
+
+
 }
+
+
+
 /**
 * @brief Changes the period of an existing timer
 * @details Updates the timer period without affecting its running state or
@@ -89,15 +206,45 @@ Return_t xTimerDelete(const Timer_t *timer_) {
 * @return                ReturnError if timer is invalid
 */
 Return_t xTimerChangePeriod(Timer_t *timer_, const Ticks_t period_) {
+
+
+
   FUNCTION_ENTER;
+
+
+
   if(__ObjectIsValid__(timer_)) {
+
+
+
     timer_->timerPeriod = period_;
+
+
+
     __ReturnOk__();
+
+
+
   } else {
+
+
+
     __AssertOnElse__();
+
+
+
   }
+
+
+
   FUNCTION_EXIT;
+
+
+
 }
+
+
+
 /**
 * @brief Gets the current period of a timer
 * @details Retrieves the configured period without affecting the timer state.
@@ -110,15 +257,45 @@ Return_t xTimerChangePeriod(Timer_t *timer_, const Ticks_t period_) {
 *                     NULL
 */
 Return_t xTimerGetPeriod(const Timer_t *timer_, Ticks_t *period_) {
+
+
+
   FUNCTION_ENTER;
+
+
+
   if(__ObjectIsValid__(timer_) && __PointerIsNotNull__(period_)) {
+
+
+
     *period_ = timer_->timerPeriod;
+
+
+
     __ReturnOk__();
+
+
+
   } else {
+
+
+
     __AssertOnElse__();
+
+
+
   }
+
+
+
   FUNCTION_EXIT;
+
+
+
 }
+
+
+
 /**
 * @brief Checks if a timer is currently active
 * @details Returns true if the timer is in running state, false if suspended
@@ -133,20 +310,65 @@ Return_t xTimerGetPeriod(const Timer_t *timer_, Ticks_t *period_) {
 *                    NULL
 */
 Return_t xTimerIsTimerActive(const Timer_t *timer_, Base_t *res_) {
+
+
+
   FUNCTION_ENTER;
+
+
+
   if(__ObjectIsValid__(timer_) && __PointerIsNotNull__(res_)) {
+
+
+
     if(TimerStateRunning == timer_->state) {
+
+
+
       *res_ = true;
+
+
+
       __ReturnOk__();
+
+
+
     } else {
+
+
+
       *res_ = false;
+
+
+
       __ReturnOk__();
+
+
+
     }
+
+
+
   } else {
+
+
+
     __AssertOnElse__();
+
+
+
   }
+
+
+
   FUNCTION_EXIT;
+
+
+
 }
+
+
+
 /**
 * @brief Checks if a timer has expired
 * @details Returns true if the elapsed time since timer start exceeds the
@@ -161,24 +383,81 @@ Return_t xTimerIsTimerActive(const Timer_t *timer_, Base_t *res_) {
 *                    NULL
 */
 Return_t xTimerHasTimerExpired(const Timer_t *timer_, Base_t *res_) {
+
+
+
   FUNCTION_ENTER;
+
+
+
   if(__ObjectIsValid__(timer_) && __PointerIsNotNull__(res_)) {
+
+
+
     if(TimerStateRunning == timer_->state) {
+
+
+
       if((0x0u < timer_->timerPeriod) && ((__PortGetSysTicks__() - timer_->timerStartTime) > timer_->timerPeriod)) {
+
+
+
         *res_ = true;
+
+
+
         __ReturnOk__();
+
+
+
       } else {
+
+
+
         *res_ = false;
+
+
+
         __ReturnOk__();
+
+
+
       }
+
+
+
     } else {
+
+
+
       __AssertOnElse__();
+
+
+
     }
+
+
+
   } else {
+
+
+
     __AssertOnElse__();
+
+
+
   }
+
+
+
   FUNCTION_EXIT;
+
+
+
 }
+
+
+
 /**
 * @brief Resets a timer to its starting state
 * @details Resets the timer start time to the current system ticks without
@@ -190,15 +469,45 @@ Return_t xTimerHasTimerExpired(const Timer_t *timer_, Base_t *res_) {
 * @return               ReturnError if timer is invalid
 */
 Return_t xTimerReset(Timer_t *timer_) {
+
+
+
   FUNCTION_ENTER;
+
+
+
   if(__ObjectIsValid__(timer_)) {
+
+
+
     timer_->timerStartTime = __PortGetSysTicks__();
+
+
+
     __ReturnOk__();
+
+
+
   } else {
+
+
+
     __AssertOnElse__();
+
+
+
   }
+
+
+
   FUNCTION_EXIT;
+
+
+
 }
+
+
+
 /**
 * @brief Starts a timer
 * @details Changes the timer state to running and sets the start time to
@@ -210,20 +519,65 @@ Return_t xTimerReset(Timer_t *timer_) {
 * @return               ReturnError if timer is invalid
 */
 Return_t xTimerStart(Timer_t *timer_) {
+
+
+
   FUNCTION_ENTER;
+
+
+
   if(__ObjectIsValid__(timer_)) {
+
+
+
     if(TimerStateSuspended == timer_->state) {
+
+
+
       timer_->state = TimerStateRunning;
+
+
+
       timer_->timerStartTime = __PortGetSysTicks__();
+
+
+
       __ReturnOk__();
+
+
+
     } else {
+
+
+
       __AssertOnElse__();
+
+
+
     }
+
+
+
   } else {
+
+
+
     __AssertOnElse__();
+
+
+
   }
+
+
+
   FUNCTION_EXIT;
+
+
+
 }
+
+
+
 /**
 * @brief Stops a timer
 * @details Changes the timer state to suspended, stopping expiration checks.
@@ -234,17 +588,59 @@ Return_t xTimerStart(Timer_t *timer_) {
 * @return               ReturnError if timer is invalid
 */
 Return_t xTimerStop(Timer_t *timer_) {
+
+
+
   FUNCTION_ENTER;
+
+
+
   if(__ObjectIsValid__(timer_)) {
+
+
+
     if(TimerStateRunning == timer_->state) {
+
+
+
       timer_->state = TimerStateSuspended;
+
+
+
       timer_->timerStartTime = __PortGetSysTicks__();
+
+
+
       __ReturnOk__();
+
+
+
     } else {
+
+
+
       __AssertOnElse__();
+
+
+
     }
+
+
+
   } else {
+
+
+
     __AssertOnElse__();
+
+
+
   }
+
+
+
   FUNCTION_EXIT;
+
+
+
 }
