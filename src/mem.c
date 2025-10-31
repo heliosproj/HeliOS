@@ -51,6 +51,16 @@ static volatile MemoryRegion_t kernel = {
 static Return_t __ValidateBlockHeader__(const BlockHeader_t *header_, const volatile MemoryRegion_t *region_);
 static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **addr_, const Size_t size_);
 static Return_t __free__(volatile MemoryRegion_t *region_, const volatile Addr_t *addr_);
+/**
+ * @brief Gets statistics for a memory region
+ * @details Internal helper that calculates usage statistics for a specific memory region.
+ *
+ * @param[in] region_ Pointer to memory region
+ * @param[in] stats_ Pointer to store statistics
+ *
+ * @return ReturnOK if statistics were retrieved successfully
+ * @return ReturnError if operation failed
+ */
 static Return_t __MemGetRegionStats__(const volatile MemoryRegion_t *region_, MemoryRegionStats_t **stats_);
 static Return_t __DefragMemoryRegion__(volatile MemoryRegion_t *region_);
 static Return_t __MemoryRegionInit__(volatile MemoryRegion_t *region_);
@@ -131,6 +141,16 @@ static Word_t __checksum__(const BlockHeader_t *header_) {
 }
 
 
+/**
+ * @brief Validates memory block header integrity
+ * @details Internal helper that checks if a memory block header has valid magic numbers and structure.
+ *
+ * @param[in] header_ Pointer to block header to validate
+ * @param[in] region_ Pointer to memory region containing the block
+ *
+ * @return ReturnOK if header is valid
+ * @return ReturnError if header is corrupted or invalid
+ */
 static Return_t __ValidateBlockHeader__(const BlockHeader_t *header_, const volatile MemoryRegion_t *region_) {
 
   FUNCTION_ENTER;
@@ -256,6 +276,15 @@ Return_t __MemoryInit__(void) {
 }
 
 
+/**
+ * @brief Initializes a memory region
+ * @details Internal helper that sets up a memory region with initial free block and metadata.
+ *
+ * @param[in,out] region_ Pointer to memory region to initialize
+ *
+ * @return ReturnOK if region was initialized successfully
+ * @return ReturnError if initialization failed
+ */
 static Return_t __MemoryRegionInit__(volatile MemoryRegion_t *region_) {
 
   FUNCTION_ENTER;
@@ -303,6 +332,17 @@ static Return_t __MemoryRegionInit__(volatile MemoryRegion_t *region_) {
 }
 
 
+/**
+ * @brief Internal calloc implementation
+ * @details Allocates zeroed memory from a specific region.
+ *
+ * @param[in,out] region_ Pointer to memory region to allocate from
+ * @param[out]    addr_   Pointer to store allocated memory address
+ * @param[in]     size_   Size of memory to allocate in bytes
+ *
+ * @return ReturnOK if allocation was successful
+ * @return ReturnError if allocation failed
+ */
 static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **addr_, const Size_t size_) {
 
   FUNCTION_ENTER;
@@ -462,6 +502,16 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
 }
 
 
+/**
+ * @brief Internal free implementation
+ * @details Frees previously allocated memory and marks the block as available.
+ *
+ * @param[in,out] region_ Pointer to memory region containing the allocation
+ * @param[in]     addr_   Pointer to memory to free
+ *
+ * @return ReturnOK if memory was freed successfully
+ * @return ReturnError if pointer is invalid or already freed
+ */
 static Return_t __free__(volatile MemoryRegion_t *region_, const volatile Addr_t *addr_) {
 
   FUNCTION_ENTER;
@@ -529,6 +579,15 @@ static Return_t __free__(volatile MemoryRegion_t *region_, const volatile Addr_t
 }
 
 
+/**
+ * @brief Defragments a memory region
+ * @details Internal helper that coalesces adjacent free blocks to reduce fragmentation.
+ *
+ * @param[in] region_ Pointer to memory region to defragment
+ *
+ * @return ReturnOK if defragmentation was successful
+ * @return ReturnError if operation failed
+ */
 static Return_t __DefragMemoryRegion__(volatile MemoryRegion_t *region_) {
 
   FUNCTION_ENTER;
@@ -993,6 +1052,16 @@ Return_t __HeapFreeMemory__(const volatile Addr_t *addr_) {
 }
 
 
+/**
+ * @brief Gets statistics for a memory region
+ * @details Internal helper that calculates usage statistics for a specific memory region.
+ *
+ * @param[in]  region_ Pointer to memory region
+ * @param[out] stats_  Pointer to store statistics
+ *
+ * @return ReturnOK if statistics were retrieved successfully
+ * @return ReturnError if operation failed
+ */
 static Return_t __MemGetRegionStats__(const volatile MemoryRegion_t *region_, MemoryRegionStats_t **stats_) {
 
   FUNCTION_ENTER;
@@ -1323,6 +1392,14 @@ Return_t __memcmp__(const volatile Addr_t *s1_, const volatile Addr_t *s2_, cons
 }
 
 
+/**
+ * @brief Detects system byte order
+ * @details Internal helper that determines if the system is little-endian or big-endian.
+ *
+ * @param[out] order_ Pointer to store detected byte order
+ *
+ * @return ReturnOK always returns OK after detection
+ */
 static Return_t __DetectByteOrder__(ByteOrder_t *order_) {
 
   FUNCTION_ENTER;

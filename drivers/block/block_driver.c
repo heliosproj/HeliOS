@@ -393,6 +393,15 @@ static Return_t __PrepareBlockIORequest__(const Byte_t operation_,
 }
 
 
+/**
+ * @brief Raw block read operation
+ * @details Internal helper that performs a raw block read from the current block position.
+ *
+ * @param[out] data_ Pointer to store read data
+ *
+ * @return ReturnOK if block was read successfully
+ * @return ReturnError if read operation failed
+ */
 static Return_t __BlockDeviceReadBlockRAW__(Byte_t **data_) {
 
   FUNCTION_ENTER;
@@ -444,6 +453,15 @@ static Return_t __BlockDeviceReadBlockRAW__(Byte_t **data_) {
 }
 
 
+/**
+ * @brief Raw block write operation
+ * @details Internal helper that performs a raw block write to the current block position.
+ *
+ * @param[in] data_ Pointer to data to write
+ *
+ * @return ReturnOK if block was written successfully
+ * @return ReturnError if write operation failed
+ */
 static Return_t __BlockDeviceWriteBlockRAW__(const Byte_t *data_) {
 
   FUNCTION_ENTER;

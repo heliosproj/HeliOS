@@ -777,6 +777,16 @@ static Byte_t __CircularBufferGet__(const Byte_t *buffer_,
 
 
 #if !defined(POSIX_ARCH_OTHER)
+  /**
+   * @brief Translates HAL parity setting
+   * @details Internal helper that converts STM32 HAL parity constants to driver parity constants.
+   *
+   * @param[in] halParity_ HAL parity value
+   * @param[in] parity_ Pointer to store translated parity
+   *
+   * @return ReturnOK if translation was successful
+   * @return ReturnError if invalid parity value
+   */
   static Return_t __TranslateHALToParity__(const Byte_t parity_, Word_t *halParity_) {
 
     FUNCTION_ENTER;
@@ -814,6 +824,16 @@ static Byte_t __CircularBufferGet__(const Byte_t *buffer_,
   }
 
 
+  /**
+   * @brief Translates HAL stop bits setting
+   * @details Internal helper that converts STM32 HAL stop bits constants to driver stop bits constants.
+   *
+   * @param[in] halStopBits_ HAL stop bits value
+   * @param[in] stopBits_ Pointer to store translated stop bits
+   *
+   * @return ReturnOK if translation was successful
+   * @return ReturnError if invalid stop bits value
+   */
   static Return_t __TranslateHALToStopBits__(const Byte_t stopBits_, Word_t *halStopBits_) {
 
     FUNCTION_ENTER;
@@ -845,6 +865,16 @@ static Byte_t __CircularBufferGet__(const Byte_t *buffer_,
   }
 
 
+  /**
+   * @brief Translates data bits to HAL word length setting
+   * @details Internal helper that converts driver data bits setting to STM32 HAL word length constants.
+   *
+   * @param[in]  dataBits_      Data bits setting (8 or 9)
+   * @param[out] halWordLength_ Pointer to store HAL word length constant
+   *
+   * @return                    ReturnOK if translation was successful
+   * @return                    ReturnError if invalid data bits value
+   */
   static Return_t __TranslateHALToWordLength__(const Byte_t dataBits_, Word_t *halWordLength_) {
 
     FUNCTION_ENTER;

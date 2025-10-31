@@ -391,6 +391,16 @@ Return_t TO_FUNCTION(DEVICE_NAME, _simple_write)(Device_t *device_, Byte_t data_
   FUNCTION_EXIT;
 
 }
+/**
+ * @brief Validates and truncates request size
+ * @details Internal helper that ensures request size is within device limits and truncates if necessary.
+ *
+ * @param[in]  requested_ Requested size in bytes
+ * @param[out] actual_    Pointer to store actual size that can be transferred
+ *
+ * @return                ReturnOK if size is valid or was truncated
+ * @return                ReturnError if operation failed
+ */
 static Return_t __ValidateAndTruncateSize__(Size_t requested_, Size_t *actual_) {
 
   FUNCTION_ENTER;

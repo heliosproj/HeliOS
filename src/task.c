@@ -1372,6 +1372,15 @@ Return_t xTaskGetPeriod(const Task_t *task_, Ticks_t *period_) {
   FUNCTION_EXIT;
 
 }
+/**
+ * @brief Finds a task in the task list
+ * @details Internal helper that searches for a specific task in the global task list.
+ *
+ * @param[in] task_ Pointer to task to find
+ *
+ * @return ReturnOK if task was found
+ * @return ReturnError if task was not found or invalid
+ */
 static Return_t __TaskListFindTask__(const Task_t *task_) {
 
   FUNCTION_ENTER;

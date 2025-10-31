@@ -493,6 +493,16 @@ Return_t xQueuePeek(const Queue_t *queue_, QueueMessage_t **message_) {
 }
 
 
+/**
+ * @brief Peeks at the next message without removing it
+ * @details Internal helper that retrieves the next message from the queue without dequeuing it.
+ *
+ * @param[in] queue_ Pointer to queue
+ * @param[in] message_ Pointer to store message
+ *
+ * @return ReturnOK if message was retrieved successfully
+ * @return ReturnError if queue is empty or invalid parameter
+ */
 static Return_t __QueuePeek__(const Queue_t *queue_, QueueMessage_t **message_) {
 
   FUNCTION_ENTER;
@@ -589,6 +599,15 @@ Return_t xQueueDropMessage(Queue_t *queue_) {
 }
 
 
+/**
+ * @brief Drops a message from the queue
+ * @details Internal helper that removes the first message from the queue.
+ *
+ * @param[in,out] queue_ Pointer to queue
+ *
+ * @return ReturnOK if message was dropped successfully
+ * @return ReturnError if operation failed
+ */
 static Return_t __QueueDropmessage__(Queue_t *queue_) {
 
   FUNCTION_ENTER;

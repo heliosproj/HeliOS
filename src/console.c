@@ -56,6 +56,15 @@
   static Device_t *cachedDevice = null;
 
   static HalfWord_t cachedDeviceUID = 0x0u;
+  /**
+   * @brief Implements the help command
+   * @details Internal command handler that displays available console commands and their descriptions.
+   *
+   * @param[in] args_ Command arguments (unused)
+   *
+   * @return ReturnOK if help was displayed successfully
+   * @return ReturnError if operation failed
+   */
   static Return_t __ConsoleCmdHelp__(const Byte_t *args_);
   static Return_t __ConsoleCmdVersion__(const Byte_t *args_);
   static Return_t __ConsoleCmdTasks__(const Byte_t *args_);
@@ -1032,6 +1041,13 @@
   }
 
 
+  /**
+   * @brief Checks and initializes the console device
+   * @details Internal helper that verifies the console device is available and initializes it if needed.
+   *
+   * @return ReturnOK if device is ready
+   * @return ReturnError if device is not available
+   */
   static Return_t __ConsoleCheckDevice__(void) {
 
     FUNCTION_ENTER;
@@ -1099,6 +1115,15 @@
   }
 
 
+  /**
+   * @brief Writes a string to the console device
+   * @details Internal helper that writes a null-terminated string to the console output device.
+   *
+   * @param[in] str_ Null-terminated string to write
+   *
+   * @return ReturnOK if write was successful
+   * @return ReturnError if write failed or invalid parameter
+   */
   static Return_t __ConsoleWriteString__(const Byte_t *str_) {
 
     FUNCTION_ENTER;
@@ -1224,6 +1249,15 @@
   }
 
 
+  /**
+   * @brief Reads a single character from the console device
+   * @details Internal helper that reads one character from the console input device with buffering support.
+   *
+   * @param[in] ch_ Pointer to store the read character
+   *
+   * @return ReturnOK if character was read successfully
+   * @return ReturnError if read failed or invalid parameter
+   */
   static Return_t __ConsoleReadChar__(Byte_t *ch_) {
 
     FUNCTION_ENTER;
@@ -1338,6 +1372,13 @@
   }
 
 
+  /**
+   * @brief Handles backspace character in console input
+   * @details Internal helper that processes backspace input by removing the last character from the input buffer and updating the display.
+   *
+   * @return ReturnOK if backspace was handled successfully
+   * @return ReturnError if operation failed
+   */
   static Return_t __ConsoleHandleBackspace__(void) {
 
     FUNCTION_ENTER;
@@ -1365,6 +1406,13 @@
   }
 
 
+  /**
+   * @brief Processes and executes a console command
+   * @details Internal helper that parses the input buffer and dispatches to the appropriate command handler.
+   *
+   * @return ReturnOK if command was processed successfully
+   * @return ReturnError if command processing failed
+   */
   static Return_t __ConsoleProcessCommand__(void) {
 
     FUNCTION_ENTER;
@@ -1456,6 +1504,15 @@
   }
 
 
+  /**
+   * @brief Implements the help command
+   * @details Internal command handler that displays available console commands and their descriptions.
+   *
+   * @param[in] args_ Command arguments (unused)
+   *
+   * @return ReturnOK if help was displayed successfully
+   * @return ReturnError if operation failed
+   */
   static Return_t __ConsoleCmdHelp__(const Byte_t *args_) {
 
     FUNCTION_ENTER;
@@ -1487,6 +1544,15 @@
   }
 
 
+  /**
+   * @brief Implements the version command
+   * @details Internal command handler that displays the HeliOS version information.
+   *
+   * @param[in] args_ Command arguments (unused)
+   *
+   * @return ReturnOK if version was displayed successfully
+   * @return ReturnError if operation failed
+   */
   static Return_t __ConsoleCmdVersion__(const Byte_t *args_) {
 
     FUNCTION_ENTER;
@@ -1508,6 +1574,15 @@
   }
 
 
+  /**
+   * @brief Implements the tasks command
+   * @details Internal command handler that displays information about all registered tasks including their states and runtime statistics.
+   *
+   * @param[in] args_ Command arguments (unused)
+   *
+   * @return ReturnOK if task list was displayed successfully
+   * @return ReturnError if operation failed
+   */
   static Return_t __ConsoleCmdTasks__(const Byte_t *args_) {
 
     FUNCTION_ENTER;
@@ -1591,6 +1666,15 @@
   }
 
 
+  /**
+   * @brief Implements the mem command
+   * @details Internal command handler that displays memory usage statistics and available memory regions.
+   *
+   * @param[in] args_ Command arguments (unused)
+   *
+   * @return ReturnOK if memory info was displayed successfully
+   * @return ReturnError if operation failed
+   */
   static Return_t __ConsoleCmdMem__(const Byte_t *args_) {
 
     FUNCTION_ENTER;
@@ -1662,6 +1746,15 @@
   }
 
 
+  /**
+   * @brief Implements the clear command
+   * @details Internal command handler that clears the console screen.
+   *
+   * @param[in] args_ Command arguments (unused)
+   *
+   * @return ReturnOK if screen was cleared successfully
+   * @return ReturnError if operation failed
+   */
   static Return_t __ConsoleCmdClear__(const Byte_t *args_) {
 
     FUNCTION_ENTER;
@@ -1677,6 +1770,15 @@
   }
 
 
+  /**
+   * @brief Implements the echo command
+   * @details Internal command handler that echoes text back to the console output or toggles echo mode.
+   *
+   * @param[in] args_ Text to echo or "on"/"off" to toggle echo mode
+   *
+   * @return ReturnOK if echo was successful
+   * @return ReturnError if operation failed
+   */
   static Return_t __ConsoleCmdEcho__(const Byte_t *args_) {
 
     FUNCTION_ENTER;
@@ -1710,6 +1812,15 @@
   }
 
 
+  /**
+   * @brief Implements the ls command
+   * @details Internal command handler that lists directory contents in the filesystem.
+   *
+   * @param[in] args_ Optional directory path
+   *
+   * @return ReturnOK if directory listing was successful
+   * @return ReturnError if operation failed
+   */
   static Return_t __ConsoleCmdLs__(const Byte_t *args_) {
 
     FUNCTION_ENTER;
@@ -1823,6 +1934,15 @@
   }
 
 
+  /**
+   * @brief Implements the cd command
+   * @details Internal command handler that changes the current working directory.
+   *
+   * @param[in] args_ Directory path to change to
+   *
+   * @return ReturnOK if directory change was successful
+   * @return ReturnError if operation failed or directory not found
+   */
   static Return_t __ConsoleCmdCd__(const Byte_t *args_) {
 
     FUNCTION_ENTER;
@@ -1930,6 +2050,15 @@
   }
 
 
+  /**
+   * @brief Implements the pwd command
+   * @details Internal command handler that displays the current working directory path.
+   *
+   * @param[in] args_ Command arguments (unused)
+   *
+   * @return ReturnOK if path was displayed successfully
+   * @return ReturnError if operation failed
+   */
   static Return_t __ConsoleCmdPwd__(const Byte_t *args_) {
 
     FUNCTION_ENTER;
@@ -1948,6 +2077,15 @@
 
 
   #define CAT_BUFFER_SIZE 0x100u
+  /**
+   * @brief Implements the cat command
+   * @details Internal command handler that displays the contents of a file.
+   *
+   * @param[in] args_ File path to display
+   *
+   * @return ReturnOK if file was displayed successfully
+   * @return ReturnError if operation failed or file not found
+   */
   static Return_t __ConsoleCmdCat__(const Byte_t *args_) {
 
     FUNCTION_ENTER;
@@ -2137,6 +2275,15 @@
   }
 
 
+  /**
+   * @brief Implements the mv command
+   * @details Internal command handler that moves or renames files and directories.
+   *
+   * @param[in] args_ Source and destination paths separated by space
+   *
+   * @return ReturnOK if move was successful
+   * @return ReturnError if operation failed
+   */
   static Return_t __ConsoleCmdMv__(const Byte_t *args_) {
 
     FUNCTION_ENTER;
@@ -2228,6 +2375,15 @@
   }
 
 
+  /**
+   * @brief Implements the rm command
+   * @details Internal command handler that removes files from the filesystem.
+   *
+   * @param[in] args_ File path to remove
+   *
+   * @return ReturnOK if file was removed successfully
+   * @return ReturnError if operation failed or file not found
+   */
   static Return_t __ConsoleCmdRm__(const Byte_t *args_) {
 
     FUNCTION_ENTER;
@@ -2309,6 +2465,15 @@
   }
 
 
+  /**
+   * @brief Implements the mkdir command
+   * @details Internal command handler that creates a new directory.
+   *
+   * @param[in] args_ Directory path to create
+   *
+   * @return ReturnOK if directory was created successfully
+   * @return ReturnError if operation failed or directory exists
+   */
   static Return_t __ConsoleCmdMkdir__(const Byte_t *args_) {
 
     FUNCTION_ENTER;

@@ -604,6 +604,15 @@ static Return_t __CharDeviceReadRAW__(Byte_t **data_,
 }
 
 
+/**
+ * @brief Raw character write operation
+ * @details Internal helper that performs a raw character write to device without buffering.
+ *
+ * @param[in] data_ Pointer to data to write
+ *
+ * @return ReturnOK if write was successful
+ * @return ReturnError if write operation failed
+ */
 static Return_t __CharDeviceWriteRAW__(const Byte_t *data_) {
 
   FUNCTION_ENTER;
