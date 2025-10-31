@@ -460,7 +460,7 @@ nl_multi_line_cond:false
 nl_multi_line_sparen_open:ignore
 nl_multi_line_sparen_close:ignore
 nl_multi_line_define:false
-nl_before_case:false
+nl_before_case:true							# modified
 nl_after_case:false
 nl_case_colon_brace:ignore
 nl_before_throw:ignore
@@ -546,23 +546,23 @@ nl_define_macro:false
 nl_squeeze_paren_close:false
 nl_squeeze_ifdef:false
 nl_squeeze_ifdef_top_level:false
-nl_before_if:force							# modified
-nl_after_if:force							# modified
-nl_before_for:force							# modified
-nl_after_for:force							# modified
-nl_before_while:force						# modified
-nl_after_while:force						# modified
-nl_before_switch:force						# modified
-nl_after_switch:force						# modified
+nl_before_if:ignore							# modified
+nl_after_if:ignore							# modified
+nl_before_for:ignore						# modified
+nl_after_for:ignore							# modified
+nl_before_while:ignore						# modified
+nl_after_while:ignore						# modified
+nl_before_switch:ignore						# modified
+nl_after_switch:ignore						# modified
 nl_before_synchronized:ignore
 nl_after_synchronized:ignore
-nl_before_do:force							# modified
-nl_after_do:force							# modified
+nl_before_do:ignore							# modified
+nl_after_do:ignore							# modified
 nl_before_ignore_after_case:false
-nl_before_return:true						# modified
-nl_after_return:true						# modified
-nl_before_member:true						# modified
-nl_after_member:true						# modified
+nl_before_return:false						# modified
+nl_after_return:false						# modified
+nl_before_member:false						# modified
+nl_after_member:false						# modified
 nl_ds_struct_enum_cmt:false
 nl_ds_struct_enum_close_brace:false
 nl_class_colon:ignore
@@ -577,11 +577,11 @@ nl_split_if_one_liner:false
 nl_split_for_one_liner:false
 nl_split_while_one_liner:false
 donot_add_nl_before_cpp_comment:false
-nl_max:4									# modified
-nl_max_blank_in_func:3						# modified
-nl_inside_empty_func:3						# modified
+nl_max:2									# modified
+nl_max_blank_in_func:1						# modified
+nl_inside_empty_func:0						# modified
 nl_before_func_body_proto:1					# modified
-nl_before_func_body_def:3					# modified
+nl_before_func_body_def:1					# modified
 nl_before_func_class_proto:0
 nl_before_func_class_def:0
 nl_after_func_proto:1						# modified
@@ -589,18 +589,18 @@ nl_after_func_proto_group:0
 nl_after_func_class_proto:0
 nl_after_func_class_proto_group:0
 nl_class_leave_one_liner_groups:false
-nl_after_func_body:3						# modified
+nl_after_func_body:2						# modified
 nl_after_func_body_class:0
 nl_after_func_body_one_liner:0
 nl_typedef_blk_start:0
 nl_typedef_blk_end:0
 nl_typedef_blk_in:0
-nl_var_def_blk_end_func_top:3				# modified
-nl_var_def_blk_start:3						# modified
-nl_var_def_blk_end:3						# modified
+nl_var_def_blk_end_func_top:1				# modified
+nl_var_def_blk_start:1						# modified
+nl_var_def_blk_end:1						# modified
 nl_var_def_blk_in:0
-nl_before_block_comment:3					# modified
-nl_before_c_comment:3						# modified
+nl_before_block_comment:1					# modified
+nl_before_c_comment:1						# modified
 nl_before_cpp_comment:0
 nl_after_multiline_comment:false
 nl_after_label_colon:false

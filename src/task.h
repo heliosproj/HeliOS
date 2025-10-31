@@ -1,20 +1,5 @@
-/*UNCRUSTIFY-OFF*/
-/**
- * @file task.h
- * @author Manny Peterson <manny@heliosproj.org>
- * @brief Kernel source for tasks and task management
- * 
- * @copyright
- * (C) 2020-2026 Manny Peterson <manny@heliosproj.org>
- *  
- *  SPDX-License-Identifier: GPL-2.0-or-later
- *  
- * 
- */
-/*UNCRUSTIFY-ON*/
 #ifndef TASK_H_
   #define TASK_H_
-
   #include "config.h"
   #include "defines.h"
   #include "types.h"
@@ -23,7 +8,7 @@
     #include "device.h"
     #include "fat.h"
     #include "fs.h"
-  #endif /* if defined(CONFIG_ENABLE_IO_SUBSYSTEM) */
+  #endif 
   #include "mem.h"
   #include "port.h"
   #include "posix.h"
@@ -31,10 +16,9 @@
   #include "streams.h"
   #include "sys.h"
   #include "timer.h"
-
   #ifdef __cplusplus
     extern "C" {
-  #endif /* ifdef __cplusplus */
+  #endif 
   Return_t xTaskCreate(Task_t **task_, const Byte_t *name_, void (*callback_)(Task_t *task_, TaskParm_t *parm_), TaskParm_t *taskParameter_);
   Return_t xTaskDelete(const Task_t *task_);
   Return_t xTaskGetHandleByName(Task_t **task_, const Byte_t *name_);
@@ -63,13 +47,10 @@
   Return_t xTaskSuspendAll(void);
   Return_t xTaskGetSchedulerState(SchedulerState_t *state_);
   Return_t xTaskGetWDPeriod(const Task_t *task_, Ticks_t *period_);
-
-
   #if defined(POSIX_ARCH_OTHER)
     void __TaskStateClear__(void);
-  #endif /* if defined(POSIX_ARCH_OTHER) */
-
+  #endif 
   #ifdef __cplusplus
     }
-  #endif /* ifdef __cplusplus */
-#endif /* ifndef TASK_H_ */
+  #endif 
+#endif 

@@ -1,39 +1,14 @@
-/*UNCRUSTIFY-OFF*/
-/**
- * @file task.c
- * @author Manny Peterson <manny@heliosproj.org>
- * @brief Kernel source for tasks and task management
- * 
- * @copyright
- * (C) 2020-2026 Manny Peterson <manny@heliosproj.org>
- *  
- *  SPDX-License-Identifier: GPL-2.0-or-later
- *  
- * 
- */
-/*UNCRUSTIFY-ON*/
 #include "task.h"
-
 #if defined(CONFIG_ENABLE_CONSOLE)
   #include "console.h"
-#endif /* if defined(CONFIG_ENABLE_CONSOLE) */
-
+#endif 
 #if defined(CONFIG_ENABLE_IDLE_HOOK)
-  /* User-provided idle hook function when no tasks are ready to run */
   extern void vApplicationIdleHook(void);
-
-
-
-#endif /* if defined(CONFIG_ENABLE_IDLE_HOOK) */
+#endif 
 static TaskList_t *tlist = null;
 static void __RunTimeReset__(void);
 static Return_t __TaskListFindTask__(const Task_t *task_);
-
-
-
 static SchedulerState_t scheduler = SchedulerStateRunning;
-
-
 #if defined(CONFIG_TASK_WD_TIMER_ENABLE)
   #define __TaskRun__(task_) \
           prev = task_->totalRunTime; \
@@ -47,7 +22,7 @@ static SchedulerState_t scheduler = SchedulerStateRunning;
           if(task_->totalRunTime < prev) { \
             __SetFlag__(OVERFLOW); \
           }
-#else  /* if defined(CONFIG_TASK_WD_TIMER_ENABLE) */
+#else  
   #define __TaskRun__(task_) \
           prev = task_->totalRunTime; \
           start = __PortGetSysTicks__(); \
@@ -57,28 +32,18 @@ static SchedulerState_t scheduler = SchedulerStateRunning;
           if(task_->totalRunTime < prev) { \
             __SetFlag__(OVERFLOW); \
           }
-#endif /* if defined(CONFIG_TASK_WD_TIMER_ENABLE) */
-
-
+#endif 
 Return_t xTaskCreate(Task_t **task_, const Byte_t *name_, void (*callback_)(Task_t *task_, TaskParm_t *parm_), TaskParm_t *taskParameter_) {
   FUNCTION_ENTER;
-
-
   Task_t *cursor = null;
-
-
   if(__PointerIsNotNull__(task_) && __PointerIsNotNull__(name_) && __PointerIsNotNull__(callback_) && __FlagIsNotSet__(RUNNING)) {
-    /* NOTE: There is a __KernelAllocateMemory__() syscall buried in this if()
-     * statement. */
     if(__PointerIsNotNull__(tlist) || (__PointerIsNull__(tlist) && OK(__KernelAllocateMemory__((volatile Addr_t **) &tlist, sizeof(TaskList_t))))) {
-      /* If tlist was just allocated (second condition in if), initialize it */
       if(__PointerIsNotNull__(tlist) && !__ObjectIsValid__(tlist)) {
         tlist->valid = VALID;
         tlist->nextId = 0x0u;
         tlist->length = 0x0u;
         tlist->head = null;
       }
-
       if(OK(__KernelAllocateMemory__((volatile Addr_t **) task_, sizeof(Task_t)))) {
         if(__PointerIsNotNull__(*task_)) {
           if(OK(__memcpy__((*task_)->name, name_, CONFIG_TASK_NAME_BYTES))) {
@@ -90,24 +55,18 @@ Return_t xTaskCreate(Task_t **task_, const Byte_t *name_, void (*callback_)(Task
             (*task_)->taskParameter = taskParameter_;
             (*task_)->next = null;
             cursor = tlist->head;
-
             if(__PointerIsNotNull__(tlist->head)) {
               while(__PointerIsNotNull__(cursor->next)) {
                 cursor = cursor->next;
               }
-
               cursor->next = *task_;
             } else {
               tlist->head = *task_;
             }
-
             tlist->length++;
             __ReturnOk__();
           } else {
             __AssertOnElse__();
-
-
-            /* Free kernel memory because __memcpy__() failed.*/
             __KernelFreeMemory__(*task_);
           }
         } else {
@@ -122,27 +81,18 @@ Return_t xTaskCreate(Task_t **task_, const Byte_t *name_, void (*callback_)(Task
   } else {
     __AssertOnElse__();
   }
-
   FUNCTION_EXIT;
 }
-
-
 Return_t xTaskDelete(const Task_t *task_) {
   FUNCTION_ENTER;
-
-
   Task_t *cursor = null;
   Task_t *previous = null;
-
-
   if(__ObjectIsValid__(task_) && __PointerIsNotNull__(tlist) && __FlagIsNotSet__(RUNNING)) {
     if(OK(__TaskListFindTask__(task_))) {
       ((Task_t *) task_)->valid = INVALID;
       cursor = tlist->head;
-
       if(__PointerIsNotNull__(cursor) && (task_ == cursor)) {
         tlist->head = cursor->next;
-
         if(OK(__KernelFreeMemory__(cursor))) {
           tlist->length--;
           __ReturnOk__();
@@ -154,10 +104,8 @@ Return_t xTaskDelete(const Task_t *task_) {
           previous = cursor;
           cursor = cursor->next;
         }
-
         if(__PointerIsNotNull__(cursor)) {
           previous->next = cursor->next;
-
           if(OK(__KernelFreeMemory__(cursor))) {
             tlist->length--;
             __ReturnOk__();
@@ -176,22 +124,14 @@ Return_t xTaskDelete(const Task_t *task_) {
   } else {
     __AssertOnElse__();
   }
-
   FUNCTION_EXIT;
 }
-
-
 Return_t xTaskGetHandleByName(Task_t **task_, const Byte_t *name_) {
   FUNCTION_ENTER;
-
-
   Task_t *cursor = null;
   Base_t res = false;
-
-
   if(__PointerIsNotNull__(task_) && __PointerIsNotNull__(name_) && __PointerIsNotNull__(tlist)) {
     cursor = tlist->head;
-
     while(__PointerIsNotNull__(cursor)) {
       if(OK(__memcmp__(cursor->name, name_, CONFIG_TASK_NAME_BYTES, &res))) {
         if(true == res) {
@@ -203,66 +143,46 @@ Return_t xTaskGetHandleByName(Task_t **task_, const Byte_t *name_) {
         __AssertOnElse__();
         break;
       }
-
       cursor = cursor->next;
     }
   } else {
     __AssertOnElse__();
   }
-
   FUNCTION_EXIT;
 }
-
-
 Return_t xTaskGetHandleById(Task_t **task_, const Base_t id_) {
   FUNCTION_ENTER;
-
-
   Task_t *cursor = null;
-
-
   if(__PointerIsNotNull__(task_) && (0x0u < id_) && __PointerIsNotNull__(tlist)) {
     cursor = tlist->head;
-
     while(__PointerIsNotNull__(cursor)) {
       if(cursor->id == id_) {
         *task_ = cursor;
         __ReturnOk__();
         break;
       }
-
       cursor = cursor->next;
     }
   } else {
     __AssertOnElse__();
   }
-
   FUNCTION_EXIT;
 }
-
-
 Return_t xTaskGetAllRunTimeStats(TaskRunTimeStats_t **stats_, Base_t *tasks_) {
   FUNCTION_ENTER;
-
-
   Base_t task = 0x0u;
   Base_t tasks = 0x0u;
   Task_t *cursor = null;
-
-
   if(__PointerIsNotNull__(stats_) && __PointerIsNotNull__(tasks_) && __PointerIsNotNull__(tlist)) {
     cursor = tlist->head;
-
     while(__PointerIsNotNull__(cursor)) {
       tasks++;
       cursor = cursor->next;
     }
-
     if((0x0u < tasks) && (tlist->length == tasks)) {
       if(OK(__HeapAllocateMemory__((volatile Addr_t **) stats_, tasks * sizeof(TaskRunTimeStats_t)))) {
         if(__PointerIsNotNull__(*stats_)) {
           cursor = tlist->head;
-
           while(__PointerIsNotNull__(cursor)) {
             (*stats_)[task].valid = VALID;
             (*stats_)[task].id = cursor->id;
@@ -271,7 +191,6 @@ Return_t xTaskGetAllRunTimeStats(TaskRunTimeStats_t **stats_, Base_t *tasks_) {
             cursor = cursor->next;
             task++;
           }
-
           *tasks_ = tasks;
           __ReturnOk__();
         } else {
@@ -286,14 +205,10 @@ Return_t xTaskGetAllRunTimeStats(TaskRunTimeStats_t **stats_, Base_t *tasks_) {
   } else {
     __AssertOnElse__();
   }
-
   FUNCTION_EXIT;
 }
-
-
 Return_t xTaskGetTaskRunTimeStats(const Task_t *task_, TaskRunTimeStats_t **stats_) {
   FUNCTION_ENTER;
-
   if(__ObjectIsValid__(task_) && __PointerIsNotNull__(stats_) && __PointerIsNotNull__(tlist)) {
     if(OK(__TaskListFindTask__(task_))) {
       if(OK(__HeapAllocateMemory__((volatile Addr_t **) stats_, sizeof(TaskRunTimeStats_t)))) {
@@ -315,32 +230,22 @@ Return_t xTaskGetTaskRunTimeStats(const Task_t *task_, TaskRunTimeStats_t **stat
   } else {
     __AssertOnElse__();
   }
-
   FUNCTION_EXIT;
 }
-
-
 Return_t xTaskGetNumberOfTasks(Base_t *tasks_) {
   FUNCTION_ENTER;
-
-
   Base_t tasks = 0x0u;
   Task_t *cursor = null;
-
-
   if(__PointerIsNotNull__(tasks_)) {
-    /* If tlist is null, no tasks have been created yet - return 0x0u */
     if(__PointerIsNull__(tlist)) {
       *tasks_ = 0x0u;
       __ReturnOk__();
     } else {
       cursor = tlist->head;
-
       while(__PointerIsNotNull__(cursor)) {
         tasks++;
         cursor = cursor->next;
       }
-
       if(tlist->length == tasks) {
         *tasks_ = tasks;
         __ReturnOk__();
@@ -351,14 +256,10 @@ Return_t xTaskGetNumberOfTasks(Base_t *tasks_) {
   } else {
     __AssertOnElse__();
   }
-
   FUNCTION_EXIT;
 }
-
-
 Return_t xTaskGetTaskInfo(const Task_t *task_, TaskInfo_t **info_) {
   FUNCTION_ENTER;
-
   if(__ObjectIsValid__(task_) && __PointerIsNotNull__(info_) && __PointerIsNotNull__(tlist)) {
     if(OK(__TaskListFindTask__(task_))) {
       if(OK(__HeapAllocateMemory__((volatile Addr_t **) info_, sizeof(TaskInfo_t)))) {
@@ -372,9 +273,6 @@ Return_t xTaskGetTaskInfo(const Task_t *task_, TaskInfo_t **info_) {
             __ReturnOk__();
           } else {
             __AssertOnElse__();
-
-
-            /* Free heap memory because __memcpy__() failed. */
             (*info_)->valid = INVALID;
             __HeapFreeMemory__(*info_);
           }
@@ -390,33 +288,23 @@ Return_t xTaskGetTaskInfo(const Task_t *task_, TaskInfo_t **info_) {
   } else {
     __AssertOnElse__();
   }
-
   FUNCTION_EXIT;
 }
-
-
 Return_t xTaskGetAllTaskInfo(TaskInfo_t **info_, Base_t *tasks_) {
   FUNCTION_ENTER;
-
-
   Base_t task = 0x0u;
   Base_t tasks = 0x0u;
   Task_t *cursor = null;
-
-
   if(__PointerIsNotNull__(info_) && __PointerIsNotNull__(tasks_) && __PointerIsNotNull__(tlist)) {
     cursor = tlist->head;
-
     while(__PointerIsNotNull__(cursor)) {
       tasks++;
       cursor = cursor->next;
     }
-
     if((0x0u < tasks) && (tlist->length == tasks)) {
       if(OK(__HeapAllocateMemory__((volatile Addr_t **) info_, tasks * sizeof(TaskInfo_t)))) {
         if(__PointerIsNotNull__(*info_)) {
           cursor = tlist->head;
-
           while(__PointerIsNotNull__(cursor)) {
             if(OK(__memcpy__((*info_)[task].name, cursor->name, CONFIG_TASK_NAME_BYTES))) {
               (*info_)[task].valid = VALID;
@@ -428,15 +316,11 @@ Return_t xTaskGetAllTaskInfo(TaskInfo_t **info_, Base_t *tasks_) {
               task++;
             } else {
               __AssertOnElse__();
-
-
-              /* Free heap memory because __memcpy__() failed. */
               (*info_)->valid = INVALID;
               __HeapFreeMemory__(*info_);
               FUNCTION_EXIT;
             }
           }
-
           *tasks_ = tasks;
           __ReturnOk__();
         } else {
@@ -451,14 +335,10 @@ Return_t xTaskGetAllTaskInfo(TaskInfo_t **info_, Base_t *tasks_) {
   } else {
     __AssertOnElse__();
   }
-
   FUNCTION_EXIT;
 }
-
-
 Return_t xTaskGetTaskState(const Task_t *task_, TaskState_t *state_) {
   FUNCTION_ENTER;
-
   if(__ObjectIsValid__(task_) && __PointerIsNotNull__(state_) && __PointerIsNotNull__(tlist)) {
     if(OK(__TaskListFindTask__(task_))) {
       *state_ = task_->state;
@@ -469,14 +349,10 @@ Return_t xTaskGetTaskState(const Task_t *task_, TaskState_t *state_) {
   } else {
     __AssertOnElse__();
   }
-
   FUNCTION_EXIT;
 }
-
-
 Return_t xTaskGetName(const Task_t *task_, Byte_t **name_) {
   FUNCTION_ENTER;
-
   if(__ObjectIsValid__(task_) && __PointerIsNotNull__(name_) && __PointerIsNotNull__(tlist)) {
     if(OK(__TaskListFindTask__(task_))) {
       if(OK(__HeapAllocateMemory__((volatile Addr_t **) name_, CONFIG_TASK_NAME_BYTES))) {
@@ -485,9 +361,6 @@ Return_t xTaskGetName(const Task_t *task_, Byte_t **name_) {
             __ReturnOk__();
           } else {
             __AssertOnElse__();
-
-
-            /* Free heap memory because __memcpy__() failed. */
             __HeapFreeMemory__(*name_);
           }
         } else {
@@ -502,14 +375,10 @@ Return_t xTaskGetName(const Task_t *task_, Byte_t **name_) {
   } else {
     __AssertOnElse__();
   }
-
   FUNCTION_EXIT;
 }
-
-
 Return_t xTaskGetId(const Task_t *task_, Base_t *id_) {
   FUNCTION_ENTER;
-
   if(__ObjectIsValid__(task_) && __PointerIsNotNull__(id_) && __PointerIsNotNull__(tlist)) {
     if(OK(__TaskListFindTask__(task_))) {
       *id_ = task_->id;
@@ -520,14 +389,10 @@ Return_t xTaskGetId(const Task_t *task_, Base_t *id_) {
   } else {
     __AssertOnElse__();
   }
-
   FUNCTION_EXIT;
 }
-
-
 Return_t xTaskNotifyStateClear(Task_t *task_) {
   FUNCTION_ENTER;
-
   if(__ObjectIsValid__(task_) && __PointerIsNotNull__(tlist)) {
     if(OK(__TaskListFindTask__(task_))) {
       if(0x0u < task_->notificationBytes) {
@@ -546,14 +411,10 @@ Return_t xTaskNotifyStateClear(Task_t *task_) {
   } else {
     __AssertOnElse__();
   }
-
   FUNCTION_EXIT;
 }
-
-
 Return_t xTaskNotificationIsWaiting(const Task_t *task_, Base_t *res_) {
   FUNCTION_ENTER;
-
   if(__ObjectIsValid__(task_) && __PointerIsNotNull__(res_) && __PointerIsNotNull__(tlist)) {
     if(OK(__TaskListFindTask__(task_))) {
       if(0x0u < task_->notificationBytes) {
@@ -569,14 +430,10 @@ Return_t xTaskNotificationIsWaiting(const Task_t *task_, Base_t *res_) {
   } else {
     __AssertOnElse__();
   }
-
   FUNCTION_EXIT;
 }
-
-
 Return_t xTaskNotifyGive(Task_t *task_, const Base_t bytes_, const Byte_t *value_) {
   FUNCTION_ENTER;
-
   if(__ObjectIsValid__(task_) && (0x0u < bytes_) && (CONFIG_NOTIFICATION_VALUE_BYTES >= bytes_) && __PointerIsNotNull__(value_) && __PointerIsNotNull__(tlist))
       {
     if(OK(__TaskListFindTask__(task_))) {
@@ -596,14 +453,10 @@ Return_t xTaskNotifyGive(Task_t *task_, const Base_t bytes_, const Byte_t *value
   } else {
     __AssertOnElse__();
   }
-
   FUNCTION_EXIT;
 }
-
-
 Return_t xTaskNotifyTake(Task_t *task_, TaskNotification_t **notification_) {
   FUNCTION_ENTER;
-
   if(__ObjectIsValid__(task_) && __PointerIsNotNull__(notification_) && __PointerIsNotNull__(tlist)) {
     if(OK(__TaskListFindTask__(task_))) {
       if(0x0u < task_->notificationBytes) {
@@ -617,17 +470,11 @@ Return_t xTaskNotifyTake(Task_t *task_, TaskNotification_t **notification_) {
                 __ReturnOk__();
               } else {
                 __AssertOnElse__();
-
-
-                /* Free heap memory because __memset__() failed. */
                 (*notification_)->valid = INVALID;
                 __HeapFreeMemory__(*notification_);
               }
             } else {
               __AssertOnElse__();
-
-
-              /* Free heap memory because __memcpy__() failed. */
               (*notification_)->valid = INVALID;
               __HeapFreeMemory__(*notification_);
             }
@@ -646,14 +493,10 @@ Return_t xTaskNotifyTake(Task_t *task_, TaskNotification_t **notification_) {
   } else {
     __AssertOnElse__();
   }
-
   FUNCTION_EXIT;
 }
-
-
 Return_t xTaskResume(Task_t *task_) {
   FUNCTION_ENTER;
-
   if(__ObjectIsValid__(task_) && __PointerIsNotNull__(tlist)) {
     if(OK(__TaskListFindTask__(task_))) {
       task_->state = TaskStateRunning;
@@ -664,14 +507,10 @@ Return_t xTaskResume(Task_t *task_) {
   } else {
     __AssertOnElse__();
   }
-
   FUNCTION_EXIT;
 }
-
-
 Return_t xTaskSuspend(Task_t *task_) {
   FUNCTION_ENTER;
-
   if(__ObjectIsValid__(task_) && __PointerIsNotNull__(tlist)) {
     if(OK(__TaskListFindTask__(task_))) {
       task_->state = TaskStateSuspended;
@@ -682,14 +521,10 @@ Return_t xTaskSuspend(Task_t *task_) {
   } else {
     __AssertOnElse__();
   }
-
   FUNCTION_EXIT;
 }
-
-
 Return_t xTaskWait(Task_t *task_) {
   FUNCTION_ENTER;
-
   if(__ObjectIsValid__(task_) && __PointerIsNotNull__(tlist)) {
     if(OK(__TaskListFindTask__(task_))) {
       task_->state = TaskStateWaiting;
@@ -700,14 +535,10 @@ Return_t xTaskWait(Task_t *task_) {
   } else {
     __AssertOnElse__();
   }
-
   FUNCTION_EXIT;
 }
-
-
 Return_t xTaskChangePeriod(Task_t *task_, const Ticks_t period_) {
   FUNCTION_ENTER;
-
   if(__ObjectIsValid__(task_) && __PointerIsNotNull__(tlist)) {
     if(OK(__TaskListFindTask__(task_))) {
       task_->timerPeriod = period_;
@@ -718,15 +549,11 @@ Return_t xTaskChangePeriod(Task_t *task_, const Ticks_t period_) {
   } else {
     __AssertOnElse__();
   }
-
   FUNCTION_EXIT;
 }
-
-
 Return_t xTaskChangeWDPeriod(Task_t *task_, const Ticks_t period_) {
   FUNCTION_ENTER;
 #if defined(CONFIG_TASK_WD_TIMER_ENABLE)
-
     if(__ObjectIsValid__(task_) && __PointerIsNotNull__(tlist)) {
       if(OK(__TaskListFindTask__(task_))) {
         task_->wdTimerPeriod = period_;
@@ -737,15 +564,11 @@ Return_t xTaskChangeWDPeriod(Task_t *task_, const Ticks_t period_) {
     } else {
       __AssertOnElse__();
     }
-
-#endif /* if defined(CONFIG_TASK_WD_TIMER_ENABLE) */
+#endif 
   FUNCTION_EXIT;
 }
-
-
 Return_t xTaskGetPeriod(const Task_t *task_, Ticks_t *period_) {
   FUNCTION_ENTER;
-
   if(__ObjectIsValid__(task_) && __PointerIsNotNull__(period_) && __PointerIsNotNull__(tlist)) {
     if(OK(__TaskListFindTask__(task_))) {
       *period_ = task_->timerPeriod;
@@ -756,25 +579,16 @@ Return_t xTaskGetPeriod(const Task_t *task_, Ticks_t *period_) {
   } else {
     __AssertOnElse__();
   }
-
   FUNCTION_EXIT;
 }
-
-
 static Return_t __TaskListFindTask__(const Task_t *task_) {
   FUNCTION_ENTER;
-
-
   Task_t *cursor = null;
-
-
   if(__ObjectIsValid__(task_) && __PointerIsNotNull__(tlist)) {
     cursor = tlist->head;
-
     while(__PointerIsNotNull__(cursor) && (task_ != cursor)) {
       cursor = cursor->next;
     }
-
     if(__PointerIsNotNull__(cursor)) {
       __ReturnOk__();
     } else {
@@ -783,14 +597,10 @@ static Return_t __TaskListFindTask__(const Task_t *task_) {
   } else {
     __AssertOnElse__();
   }
-
   FUNCTION_EXIT;
 }
-
-
 Return_t xTaskResetTimer(Task_t *task_) {
   FUNCTION_ENTER;
-
   if(__ObjectIsValid__(task_) && __PointerIsNotNull__(tlist)) {
     if(OK(__TaskListFindTask__(task_))) {
       task_->timerStartTime = __PortGetSysTicks__();
@@ -801,202 +611,117 @@ Return_t xTaskResetTimer(Task_t *task_) {
   } else {
     __AssertOnElse__();
   }
-
   FUNCTION_EXIT;
 }
-
-
 Return_t xTaskStartScheduler(void) {
   FUNCTION_ENTER;
-
-
   Task_t *task = null;
   Task_t *cursor = null;
   Ticks_t start = 0x0u;
   Ticks_t prev = 0x0u;
-
-
-  /* Intentionally underflow to get the maximum value of Ticks_t. */
   Ticks_t least = -0x1;
-
-
   if(__FlagIsNotSet__(RUNNING) && __PointerIsNotNull__(tlist)) {
 #if defined(CONFIG_ENABLE_CONSOLE)
-
-
-      /* Initialize and start console task if enabled (must happen before
-       * RUNNING flag set) */
       {
         Task_t *consoleTask = null;
-
-
         if(OK(xConsoleInit())) {
           if(OK(xTaskCreate(&consoleTask, "Console", vConsoleTask, null))) {
-            /* Note: Task priority not currently implemented in HeliOS */
-
   #if (0x0u == CONFIG_CONSOLE_TASK_MODE)
-
-
-              /* Continuous mode - task runs every clock tick */
               xTaskResume(consoleTask);
-  #else /* if (0x0u == CONFIG_CONSOLE_TASK_MODE) */
-              /* Event-driven mode - task runs on timer */
+  #else 
               xTaskWait(consoleTask);
               xTaskChangePeriod(consoleTask, CONFIG_CONSOLE_TIMER_PERIOD_MS);
               xTaskResetTimer(consoleTask);
-  #endif /* if (0x0u == CONFIG_CONSOLE_TASK_MODE) */
+  #endif 
           }
         }
       }
-#endif /* if defined(CONFIG_ENABLE_CONSOLE) */
-    /* Set RUNNING flag to prevent task creation/deletion during scheduling */
+#endif 
     __SetFlag__(RUNNING);
-
     while(SchedulerStateRunning == scheduler) {
-      /* If the total runtime on a task has overflowed, reset the total runtime
-       * for all tasks to their last runtime. */
       if(__FlagIsSet__(OVERFLOW)) {
         __RunTimeReset__();
       }
-
       cursor = tlist->head;
-
       while(__PointerIsNotNull__(cursor)) {
-        /* If the task is in a waiting state *AND* has a waiting notification,
-         * then run the task. Note: Task callback is responsible for clearing
-         * the notification via xTaskNotifyTake() to prevent repeated execution.
-         */
         if((TaskStateWaiting == cursor->state) && (0x0u < cursor->notificationBytes)) {
           __TaskRun__(cursor);
-
-
-          /* If the task is in a waiting state *AND* the task timer has elapsed,
-           * then run the task. Uses safe arithmetic for timer overflow
-           * handling. */
         } else if((TaskStateWaiting == cursor->state) && (0x0u < cursor->timerPeriod)) {
           Ticks_t elapsed = __PortGetSysTicks__() - cursor->timerStartTime;
-
-
           if(elapsed > cursor->timerPeriod) {
             __TaskRun__(cursor);
-
-
-            /* Note: Timer reset after task execution causes period to include
-             * task execution time (drift accumulation by design). */
             cursor->timerStartTime = __PortGetSysTicks__();
           }
-
-          /* If the task is in the running state *AND* its total runtime is less
-           * than the least runtime of the tasks thus far, then update least
-           * runtime and remember the task because it will get ran later if it
-           * is in fact the task with the least runtime. This implements fair
-           * scheduling by selecting the task that has executed the least. */
         } else if((TaskStateRunning == cursor->state) && (least > cursor->totalRunTime)) {
           least = cursor->totalRunTime;
           task = cursor;
         }
-
         cursor = cursor->next;
       }
-
-      /* If a running task was found with the least runtime of all of the
-       * running tasks then we run it here, otherwise we ignore this step. */
       if(__PointerIsNotNull__(task)) {
         __TaskRun__(task);
         task = null;
       }
-
 #if defined(CONFIG_ENABLE_IDLE_HOOK)
         else {
-          /* No tasks were ready to run - call idle hook if configured. This
-           * allows for power management, watchdog feeding, etc. */
           vApplicationIdleHook();
         }
-#endif /* if defined(CONFIG_ENABLE_IDLE_HOOK) */
-      /* Intentionally underflow to get the maximum value of Ticks_t. */
+#endif 
       least = -0x1;
     }
-
     __UnsetFlag__(RUNNING);
     __ReturnOk__();
   } else {
     __AssertOnElse__();
   }
-
   FUNCTION_EXIT;
 }
-
-
 static void __RunTimeReset__(void) {
   Task_t *cursor = null;
-
-
-  /* Defensive check: ensure task list exists before accessing */
   if(__PointerIsNull__(tlist)) {
     return;
   }
-
   cursor = tlist->head;
-
-  /* Go through all of the tasks and set their total runtime to their last
-   * runtime. */
   while(__PointerIsNotNull__(cursor)) {
     cursor->totalRunTime = cursor->lastRunTime;
     cursor = cursor->next;
   }
-
   __UnsetFlag__(OVERFLOW);
-
   return;
 }
-
-
 Return_t xTaskResumeAll(void) {
   FUNCTION_ENTER;
-
   if(__PointerIsNotNull__(tlist)) {
     scheduler = SchedulerStateRunning;
     __ReturnOk__();
   } else {
     __AssertOnElse__();
   }
-
   FUNCTION_EXIT;
 }
-
-
 Return_t xTaskSuspendAll(void) {
   FUNCTION_ENTER;
-
   if(__PointerIsNotNull__(tlist)) {
     scheduler = SchedulerStateSuspended;
     __ReturnOk__();
   } else {
     __AssertOnElse__();
   }
-
   FUNCTION_EXIT;
 }
-
-
 Return_t xTaskGetSchedulerState(SchedulerState_t *state_) {
   FUNCTION_ENTER;
-
   if(__PointerIsNotNull__(state_) && __PointerIsNotNull__(tlist)) {
     *state_ = scheduler;
     __ReturnOk__();
   } else {
     __AssertOnElse__();
   }
-
   FUNCTION_EXIT;
 }
-
-
 Return_t xTaskGetWDPeriod(const Task_t *task_, Ticks_t *period_) {
   FUNCTION_ENTER;
 #if defined(CONFIG_TASK_WD_TIMER_ENABLE)
-
     if(__ObjectIsValid__(task_) && __PointerIsNotNull__(period_) && __PointerIsNotNull__(tlist)) {
       if(OK(__TaskListFindTask__(task_))) {
         *period_ = task_->wdTimerPeriod;
@@ -1007,21 +732,12 @@ Return_t xTaskGetWDPeriod(const Task_t *task_, Ticks_t *period_) {
     } else {
       __AssertOnElse__();
     }
-
-#endif /* if defined(CONFIG_TASK_WD_TIMER_ENABLE) */
+#endif 
   FUNCTION_EXIT;
 }
-
-
 #if defined(POSIX_ARCH_OTHER)
-
-
-  /* For unit testing only! */
   void __TaskStateClear__(void) {
     tlist = null;
-
     return;
   }
-
-
-#endif /* if defined(POSIX_ARCH_OTHER) */
+#endif 

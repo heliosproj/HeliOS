@@ -1,20 +1,5 @@
-/*UNCRUSTIFY-OFF*/
-/**
- * @file queue.h
- * @author Manny Peterson <manny@heliosproj.org>
- * @brief Kernel source for message queue inter-task communication
- * 
- * @copyright
- * (C) 2020-2026 Manny Peterson <manny@heliosproj.org>
- *  
- *  SPDX-License-Identifier: GPL-2.0-or-later
- *  
- * 
- */
-/*UNCRUSTIFY-ON*/
 #ifndef QUEUE_H_
   #define QUEUE_H_
-
   #include "config.h"
   #include "defines.h"
   #include "types.h"
@@ -23,7 +8,7 @@
     #include "device.h"
     #include "fat.h"
     #include "fs.h"
-  #endif /* if defined(CONFIG_ENABLE_IO_SUBSYSTEM) */
+  #endif 
   #include "mem.h"
   #include "port.h"
   #include "posix.h"
@@ -31,10 +16,9 @@
   #include "sys.h"
   #include "task.h"
   #include "timer.h"
-
   #ifdef __cplusplus
     extern "C" {
-  #endif /* ifdef __cplusplus */
+  #endif 
   Return_t xQueueCreate(Queue_t **queue_, const Base_t limit_);
   Return_t xQueueDelete(Queue_t *queue_);
   Return_t xQueueGetLength(const Queue_t *queue_, Base_t *res_);
@@ -47,8 +31,7 @@
   Return_t xQueueReceive(Queue_t *queue_, QueueMessage_t **message_);
   Return_t xQueueLockQueue(Queue_t *queue_);
   Return_t xQueueUnLockQueue(Queue_t *queue_);
-
   #ifdef __cplusplus
     }
-  #endif /* ifdef __cplusplus */
-#endif /* ifndef QUEUE_H_ */
+  #endif 
+#endif 
