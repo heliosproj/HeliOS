@@ -14,45 +14,25 @@
  */
 /*UNCRUSTIFY-ON*/
 #ifndef QUEUE_H_
-
   #define QUEUE_H_
-
   #include "config.h"
-
   #include "defines.h"
-
   #include "types.h"
-
   #if defined(CONFIG_ENABLE_IO_SUBSYSTEM)
-
     #include "console.h"
-
     #include "device.h"
-
     #include "fat.h"
-
     #include "fs.h"
-
   #endif /* if defined(CONFIG_ENABLE_IO_SUBSYSTEM) */
-
   #include "mem.h"
-
   #include "port.h"
-
   #include "posix.h"
-
   #include "streams.h"
-
   #include "sys.h"
-
   #include "task.h"
-
   #include "timer.h"
-
   #ifdef __cplusplus
-
     extern "C" {
-
   #endif /* ifdef __cplusplus */
   Return_t xQueueCreate(Queue_t **queue_, const Base_t limit_);
   Return_t xQueueDelete(Queue_t *queue_);
@@ -66,11 +46,7 @@
   Return_t xQueueReceive(Queue_t *queue_, QueueMessage_t **message_);
   Return_t xQueueLockQueue(Queue_t *queue_);
   Return_t xQueueUnLockQueue(Queue_t *queue_);
-
   #ifdef __cplusplus
-
     }
-
   #endif /* ifdef __cplusplus */
-
 #endif /* ifndef QUEUE_H_ */

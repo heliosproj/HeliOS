@@ -14,39 +14,22 @@
  */
 /*UNCRUSTIFY-ON*/
 #ifndef CONSOLE_H_
-
   #define CONSOLE_H_
-
   #include "config.h"
-
   #if defined(CONFIG_ENABLE_IO_SUBSYSTEM)
-
     #include "defines.h"
-
     #include "types.h"
-
     #include "device.h"
-
     #include "fat.h"
-
     #include "fs.h"
-
     #include "mem.h"
-
     #include "port.h"
-
     #include "posix.h"
-
     #include "queue.h"
-
     #include "streams.h"
-
     #include "sys.h"
-
     #include "task.h"
-
     #include "timer.h"
-
     #define CONSOLE_BANNER \
             "\r\n" \
             "   _    _      _ _  ____   _____ \r\n" \
@@ -61,60 +44,38 @@
             "  (C) 2020-2026 Manny Peterson <manny@heliosproj.org>\r\n" \
             "  Licensed under GPL-2.0-or-later\r\n" \
             "\r\n"
-
     #if defined(CONSOLE_OK)
-
       #undef CONSOLE_OK
-
     #endif /* if defined(CONSOLE_OK) */
-
     #define CONSOLE_OK 0x00u
-
     #if defined(CONSOLE_ERROR)
-
       #undef CONSOLE_ERROR
-
     #endif /* if defined(CONSOLE_ERROR) */
-
     #define CONSOLE_ERROR 0x01u
-
     #if defined(CONSOLE_NOT_READY)
-
       #undef CONSOLE_NOT_READY
-
     #endif /* if defined(CONSOLE_NOT_READY) */
-
     #define CONSOLE_NOT_READY 0x02u
-
     /**
      * @brief Console state structure
      * @details Maintains the state of the console subsystem including buffer
      * and settings.
      */
     typedef struct ConsoleState_s {
-
       Base_t deviceReady; /**< Flag indicating if console device is ready for
                            * I/O */
-
       Base_t echoEnabled; /**< Flag indicating if character echo is enabled */
-
       Byte_t commandBuffer[CONFIG_CONSOLE_MAX_COMMAND_LENGTH]; /**< Command
                                                                 * input buffer
                                                                 */
-
       HalfWord_t bufferPosition; /**< Current position in command buffer */
-
       Byte_t currentWorkingDirectory[CONFIG_FS_MAX_PATH_LENGTH]; /**< Current
                                                                   * working
                                                                   * directory
                                                                   * path */
-
     } ConsoleState_t;
-
     #ifdef __cplusplus
-
       extern "C" {
-
     #endif /* ifdef __cplusplus */
     Return_t xConsoleInit(void);
     /**
@@ -127,10 +88,8 @@
      * @note This function is designed to be used as a task callback
      */
     void vConsoleTask(Task_t *task_, TaskParm_t *parm_);
-
     #if defined(POSIX_ARCH_OTHER)
       void __ConsoleStateClear__(void);
-
     #endif /* if defined(POSIX_ARCH_OTHER) */
     /**
      * @brief Gets the length of a string
@@ -210,13 +169,8 @@
     Base_t __path_is_absolute__(const Byte_t *path_);
     Return_t __path_dirname__(Byte_t *dest_, const Byte_t *path_, const Size_t destSize_);
     Return_t __path_basename__(Byte_t *dest_, const Byte_t *path_, const Size_t destSize_);
-
     #ifdef __cplusplus
-
       }
-
     #endif /* ifdef __cplusplus */
-
   #endif /* if defined(CONFIG_ENABLE_IO_SUBSYSTEM) */
-
 #endif /* ifndef CONSOLE_H_ */

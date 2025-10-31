@@ -14,45 +14,25 @@
  */
 /*UNCRUSTIFY-ON*/
 #ifndef TASK_H_
-
   #define TASK_H_
-
   #include "config.h"
-
   #include "defines.h"
-
   #include "types.h"
-
   #if defined(CONFIG_ENABLE_IO_SUBSYSTEM)
-
     #include "console.h"
-
     #include "device.h"
-
     #include "fat.h"
-
     #include "fs.h"
-
   #endif /* if defined(CONFIG_ENABLE_IO_SUBSYSTEM) */
-
   #include "mem.h"
-
   #include "port.h"
-
   #include "posix.h"
-
   #include "queue.h"
-
   #include "streams.h"
-
   #include "sys.h"
-
   #include "timer.h"
-
   #ifdef __cplusplus
-
     extern "C" {
-
   #endif /* ifdef __cplusplus */
   /**
    * @brief Creates a new task
@@ -102,16 +82,10 @@
   Return_t xTaskSuspendAll(void);
   Return_t xTaskGetSchedulerState(SchedulerState_t *state_);
   Return_t xTaskGetWDPeriod(const Task_t *task_, Ticks_t *period_);
-
   #if defined(POSIX_ARCH_OTHER)
     void __TaskStateClear__(void);
-
   #endif /* if defined(POSIX_ARCH_OTHER) */
-
   #ifdef __cplusplus
-
     }
-
   #endif /* ifdef __cplusplus */
-
 #endif /* ifndef TASK_H_ */

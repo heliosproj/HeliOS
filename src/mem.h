@@ -14,115 +14,66 @@
  */
 /*UNCRUSTIFY-ON*/
 #ifndef MEM_H_
-
   #define MEM_H_
-
   #include "config.h"
-
   #include "defines.h"
-
   #include "types.h"
-
   #if defined(CONFIG_ENABLE_IO_SUBSYSTEM)
-
     #include "console.h"
-
     #include "device.h"
-
     #include "fat.h"
-
     #include "fs.h"
-
   #endif /* if defined(CONFIG_ENABLE_IO_SUBSYSTEM) */
-
   #include "port.h"
-
   #include "posix.h"
-
   #include "queue.h"
-
   #include "streams.h"
-
   #include "sys.h"
-
   #include "task.h"
-
   #include "timer.h"
-
   #include <stdint.h>
-
   #include <stddef.h>
-
   #if defined(INUSE)
-
     #undef INUSE
-
   #endif /* if defined(INUSE) */
-
   #define INUSE 0xAAu
-
   #if defined(FREE)
-
     #undef FREE
-
   #endif /* if defined(FREE) */
-
   #define FREE 0x55u
-
   #ifndef BLOCKHEADER_T_
-
     #define BLOCKHEADER_T_
-
     /**
      * @brief Memory block header structure
      * @details Internal structure prepended to each memory block for allocation
      * tracking and integrity checking.
      */
     typedef struct BlockHeader_s {
-
       struct BlockHeader_s *next; /**< Pointer to next block in free list */
-
       Word_t checksum; /**< Integrity checksum for block validation */
-
       Word_t size; /**< Size of the data portion in bytes */
-
       Byte_t free; /**< Flag indicating if block is free (FREE) or in use
                     * (INUSE) */
-
     } BlockHeader_t;
-
   #endif /* ifndef BLOCKHEADER_T_ */
-
   #ifndef MEMORYREGION_T_
-
     #define MEMORYREGION_T_
-
     /**
      * @brief Memory region structure
      * @details Manages a contiguous region of memory with block allocation and
      * usage statistics.
      */
     typedef struct MemoryRegion_s {
-
       volatile Byte_t mem[MEMORY_REGION_SIZE]; /**< Raw memory buffer for
                                                 * allocations */
-
       BlockHeader_t *first; /**< Pointer to first block in the region */
-
       HalfWord_t allocations; /**< Count of successful allocations */
-
       HalfWord_t frees; /**< Count of successful frees */
-
       Word_t minAvailableEver; /**< Low water mark of available memory */
-
     } MemoryRegion_t;
-
   #endif /* ifndef MEMORYREGION_T_ */
-
   #ifdef __cplusplus
-
     extern "C" {
-
   #endif /* ifdef __cplusplus */
   Return_t xMemAlloc(volatile Addr_t **addr_, const Size_t size_);
   Return_t xMemFree(const volatile Addr_t *addr_);
@@ -139,16 +90,10 @@
   Return_t __memset__(const volatile Addr_t *dest_, const Byte_t val_, const Size_t size_);
   Return_t __memcmp__(const volatile Addr_t *s1_, const volatile Addr_t *s2_, const Size_t size_, Base_t *res_);
   Return_t __MemoryInit__(void);
-
   #if defined(POSIX_ARCH_OTHER)
     void __MemoryClear__(void);
-
   #endif /* if defined(POSIX_ARCH_OTHER) */
-
   #ifdef __cplusplus
-
     }
-
   #endif /* ifdef __cplusplus */
-
 #endif /* ifndef MEM_H_ */
