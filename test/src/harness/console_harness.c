@@ -457,14 +457,14 @@ static void test_path_utilities(void) {
 
   /* Test 7.1: Path join with absolute path */
   unit_begin("Path join returns absolute path when path is absolute");
-  __path_join__(result, (const Byte_t *) "/home/user", (const Byte_t *) "/etc/config", CONFIG_FS_MAX_PATH_LENGTH);
+  __path_join__(result, (const Byte_t *) "/home/user", (const Byte_t *) "/etc/config", CONFIG_FS_MAX_PATH_LENGTH, 11, 12);
   unit_assert_equal(__strcmp__(result, (const Byte_t *) "/etc/config", CONFIG_FS_MAX_PATH_LENGTH), 0);
   unit_end();
 
 
   /* Test 7.2: Path join with relative path */
   unit_begin("Path join combines base and relative path");
-  __path_join__(result, (const Byte_t *) "/home/user", (const Byte_t *) "documents", CONFIG_FS_MAX_PATH_LENGTH);
+  __path_join__(result, (const Byte_t *) "/home/user", (const Byte_t *) "documents", CONFIG_FS_MAX_PATH_LENGTH, 11, 10);
   unit_assert_equal(__strcmp__(result, (const Byte_t *) "/home/user/documents", CONFIG_FS_MAX_PATH_LENGTH), 0);
   unit_end();
 
@@ -479,28 +479,28 @@ static void test_path_utilities(void) {
 
   /* Test 7.4: Path is absolute check */
   unit_begin("Path is absolute correctly identifies absolute paths");
-  unit_assert_true(__path_is_absolute__((const Byte_t *) "/home/user"));
-  unit_assert_false(__path_is_absolute__((const Byte_t *) "relative/path"));
+  unit_assert_true(__path_is_absolute__((const Byte_t *) "/home/user", 11));
+  unit_assert_false(__path_is_absolute__((const Byte_t *) "relative/path", 14));
   unit_end();
 
 
   /* Test 7.5: Path dirname extraction */
   unit_begin("Path dirname extracts directory portion");
-  __path_dirname__(result, (const Byte_t *) "/home/user/file.txt", CONFIG_FS_MAX_PATH_LENGTH);
+  __path_dirname__(result, (const Byte_t *) "/home/user/file.txt", CONFIG_FS_MAX_PATH_LENGTH, 20);
   unit_assert_equal(__strcmp__(result, (const Byte_t *) "/home/user", CONFIG_FS_MAX_PATH_LENGTH), 0);
   unit_end();
 
 
   /* Test 7.6: Path basename extraction */
   unit_begin("Path basename extracts filename portion");
-  __path_basename__(result, (const Byte_t *) "/home/user/file.txt", CONFIG_FS_MAX_PATH_LENGTH);
+  __path_basename__(result, (const Byte_t *) "/home/user/file.txt", CONFIG_FS_MAX_PATH_LENGTH, 20);
   unit_assert_equal(__strcmp__(result, (const Byte_t *) "file.txt", CONFIG_FS_MAX_PATH_LENGTH), 0);
   unit_end();
 
 
   /* Test 7.7: Path utilities with edge cases */
   unit_begin("Path utilities handle edge cases correctly");
-  __path_join__(result, (const Byte_t *) "/", (const Byte_t *) "file.txt", CONFIG_FS_MAX_PATH_LENGTH);
+  __path_join__(result, (const Byte_t *) "/", (const Byte_t *) "file.txt", CONFIG_FS_MAX_PATH_LENGTH, 2, 9);
   unit_assert_equal(__strcmp__(result, (const Byte_t *) "/file.txt", CONFIG_FS_MAX_PATH_LENGTH), 0);
   unit_end();
 
@@ -530,23 +530,23 @@ static void test_null_pointer_validation(void) {
 
 
   /* Test null in path_join */
-  __path_join__(result, null, (const Byte_t *) "test", CONFIG_FS_MAX_PATH_LENGTH);
-  __path_join__(result, (const Byte_t *) "test", null, CONFIG_FS_MAX_PATH_LENGTH);
+  __path_join__(result, null, (const Byte_t *) "test", CONFIG_FS_MAX_PATH_LENGTH, 0, 5);
+  __path_join__(result, (const Byte_t *) "test", null, CONFIG_FS_MAX_PATH_LENGTH, 5, 0);
 
 
   /* Test null in path_dirname */
-  __path_dirname__(result, null, CONFIG_FS_MAX_PATH_LENGTH);
+  __path_dirname__(result, null, CONFIG_FS_MAX_PATH_LENGTH, 0);
 
 
   /* Test null in path_basename */
-  __path_basename__(result, null, CONFIG_FS_MAX_PATH_LENGTH);
+  __path_basename__(result, null, CONFIG_FS_MAX_PATH_LENGTH, 0);
   unit_end();
 
 
   /* Test 8.2: Path is absolute with null */
   unit_begin("Path is absolute handles null pointer");
   {
-    Base_t result = __path_is_absolute__(null);
+    Base_t result = __path_is_absolute__(null, 0);
 
 
     /* Function should handle null gracefully (likely returns false) */

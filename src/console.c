@@ -410,7 +410,7 @@
  *
  * @note This is an internal function for filesystem path manipulation
  */
-  Return_t __path_join__(Byte_t *dest_, const Byte_t *base_, const Byte_t *path_, const Size_t destSize_) {
+  Return_t __path_join__(Byte_t *dest_, const Byte_t *base_, const Byte_t *path_, const Size_t destSize_, const Size_t baseSize_, const Size_t pathSize_) {
 
     FUNCTION_ENTER;
 
@@ -420,11 +420,11 @@
 
     Base_t needSlash = false;
 
-    if(__PointerIsNotNull__(dest_) && __PointerIsNotNull__(base_) && __PointerIsNotNull__(path_) && (0x0u != destSize_)) {
+    if(__PointerIsNotNull__(dest_) && __PointerIsNotNull__(base_) && __PointerIsNotNull__(path_) && (0x0u != destSize_) && (0x0u != baseSize_) && (0x0u != pathSize_)) {
 
-      baseLen = __strlen__(base_, destSize_);
+      baseLen = __strlen__(base_, baseSize_);
 
-      pathLen = __strlen__(path_, destSize_);
+      pathLen = __strlen__(path_, pathSize_);
 
       if((0x0u != baseLen) && (0x0u != pathLen)) {
 
@@ -631,9 +631,9 @@
   }
 
 
-  Base_t __path_is_absolute__(const Byte_t *path_) {
+  Base_t __path_is_absolute__(const Byte_t *path_, const Size_t pathSize_) {
 
-    if(__PointerIsNull__(path_)) {
+    if(__PointerIsNull__(path_) || (0x0u == pathSize_)) {
 
       return (false);
     }
@@ -655,7 +655,7 @@
  *
  * @note This is an internal function similar to dirname
  */
-  Return_t __path_dirname__(Byte_t *dest_, const Byte_t *path_, const Size_t destSize_) {
+  Return_t __path_dirname__(Byte_t *dest_, const Byte_t *path_, const Size_t destSize_, const Size_t pathSize_) {
 
     FUNCTION_ENTER;
 
@@ -663,9 +663,9 @@
 
     Size_t i = 0x0u;
 
-    if(__PointerIsNotNull__(dest_) && __PointerIsNotNull__(path_) && (0x0u != destSize_)) {
+    if(__PointerIsNotNull__(dest_) && __PointerIsNotNull__(path_) && (0x0u != destSize_) && (0x0u != pathSize_)) {
 
-      len = __strlen__(path_, destSize_);
+      len = __strlen__(path_, pathSize_);
 
       if(0x0u == len) {
 
@@ -743,7 +743,7 @@
  *
  * @note This is an internal function similar to basename
  */
-  Return_t __path_basename__(Byte_t *dest_, const Byte_t *path_, const Size_t destSize_) {
+  Return_t __path_basename__(Byte_t *dest_, const Byte_t *path_, const Size_t destSize_, const Size_t pathSize_) {
 
     FUNCTION_ENTER;
 
@@ -753,9 +753,9 @@
 
     Size_t start = 0x0u;
 
-    if(__PointerIsNotNull__(dest_) && __PointerIsNotNull__(path_) && (0x0u != destSize_)) {
+    if(__PointerIsNotNull__(dest_) && __PointerIsNotNull__(path_) && (0x0u != destSize_) && (0x0u != pathSize_)) {
 
-      len = __strlen__(path_, destSize_);
+      len = __strlen__(path_, pathSize_);
 
       if(0x0u == len) {
 
@@ -1811,7 +1811,7 @@
 
       } else if(0 == __strcmp__(args_, (const Byte_t *) "..", CONFIG_CONSOLE_MAX_COMMAND_LENGTH)) {
 
-        if(OK(__path_dirname__(newPath, consoleState.currentWorkingDirectory, CONFIG_FS_MAX_PATH_LENGTH))) {
+        if(OK(__path_dirname__(newPath, consoleState.currentWorkingDirectory, CONFIG_FS_MAX_PATH_LENGTH, CONFIG_FS_MAX_PATH_LENGTH))) {
 
           pathBuilt = true;
 
@@ -1822,7 +1822,7 @@
           pathBuilt = true;
         }
 
-      } else if(__path_is_absolute__(args_)) {
+      } else if(__path_is_absolute__(args_, CONFIG_CONSOLE_MAX_COMMAND_LENGTH)) {
 
         __strcpy__(newPath, args_, CONFIG_FS_MAX_PATH_LENGTH);
 
@@ -1830,7 +1830,7 @@
 
       } else {
 
-        if(OK(__path_join__(newPath, consoleState.currentWorkingDirectory, args_, CONFIG_FS_MAX_PATH_LENGTH))) {
+        if(OK(__path_join__(newPath, consoleState.currentWorkingDirectory, args_, CONFIG_FS_MAX_PATH_LENGTH, CONFIG_FS_MAX_PATH_LENGTH, CONFIG_CONSOLE_MAX_COMMAND_LENGTH))) {
 
           pathBuilt = true;
 
@@ -1948,7 +1948,7 @@
 
     if(__PointerIsNotNull__(mountedVolume) && __PointerIsNotNull__(args_) && (0x00u != args_[0x0u])) {
 
-      if(__path_is_absolute__(args_)) {
+      if(__path_is_absolute__(args_, CONFIG_CONSOLE_MAX_COMMAND_LENGTH)) {
 
         __strcpy__(path, args_, CONFIG_FS_MAX_PATH_LENGTH);
 
@@ -1956,7 +1956,7 @@
 
       } else {
 
-        if(OK(__path_join__(path, consoleState.currentWorkingDirectory, args_, CONFIG_FS_MAX_PATH_LENGTH))) {
+        if(OK(__path_join__(path, consoleState.currentWorkingDirectory, args_, CONFIG_FS_MAX_PATH_LENGTH, CONFIG_FS_MAX_PATH_LENGTH, CONFIG_CONSOLE_MAX_COMMAND_LENGTH))) {
 
           pathBuilt = true;
 
@@ -2214,7 +2214,7 @@
 
     if(__PointerIsNotNull__(mountedVolume) && __PointerIsNotNull__(args_) && (CHAR_NULL != args_[0x0u])) {
 
-      if(__path_is_absolute__(args_)) {
+      if(__path_is_absolute__(args_, CONFIG_CONSOLE_MAX_COMMAND_LENGTH)) {
 
         __strcpy__(path, args_, CONFIG_FS_MAX_PATH_LENGTH);
 
@@ -2222,7 +2222,7 @@
 
       } else {
 
-        if(OK(__path_join__(path, consoleState.currentWorkingDirectory, args_, CONFIG_FS_MAX_PATH_LENGTH))) {
+        if(OK(__path_join__(path, consoleState.currentWorkingDirectory, args_, CONFIG_FS_MAX_PATH_LENGTH, CONFIG_FS_MAX_PATH_LENGTH, CONFIG_CONSOLE_MAX_COMMAND_LENGTH))) {
 
           pathBuilt = true;
 
@@ -2298,7 +2298,7 @@
 
     if(__PointerIsNotNull__(mountedVolume) && __PointerIsNotNull__(args_) && (CHAR_NULL != args_[0x0u])) {
 
-      if(__path_is_absolute__(args_)) {
+      if(__path_is_absolute__(args_, CONFIG_CONSOLE_MAX_COMMAND_LENGTH)) {
 
         __strcpy__(path, args_, CONFIG_FS_MAX_PATH_LENGTH);
 
@@ -2306,7 +2306,7 @@
 
       } else {
 
-        if(OK(__path_join__(path, consoleState.currentWorkingDirectory, args_, CONFIG_FS_MAX_PATH_LENGTH))) {
+        if(OK(__path_join__(path, consoleState.currentWorkingDirectory, args_, CONFIG_FS_MAX_PATH_LENGTH, CONFIG_FS_MAX_PATH_LENGTH, CONFIG_CONSOLE_MAX_COMMAND_LENGTH))) {
 
           pathBuilt = true;
 

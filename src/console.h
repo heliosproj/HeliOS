@@ -197,11 +197,11 @@
     Return_t __strcat__(Byte_t *dest_, const Byte_t *src_, const Size_t destSize_);
     Byte_t * __strchr__(const Byte_t *str_, const Byte_t ch_, const Size_t maxLen_);
     Byte_t * __strrchr__(const Byte_t *str_, const Byte_t ch_, const Size_t maxLen_);
-    Return_t __path_join__(Byte_t *dest_, const Byte_t *base_, const Byte_t *path_, const Size_t destSize_);
+    Return_t __path_join__(Byte_t *dest_, const Byte_t *base_, const Byte_t *path_, const Size_t destSize_, const Size_t baseSize_, const Size_t pathSize_);
     Return_t __path_normalize__(Byte_t *path_, const Size_t pathSize_);
-    Base_t __path_is_absolute__(const Byte_t *path_);
-    Return_t __path_dirname__(Byte_t *dest_, const Byte_t *path_, const Size_t destSize_);
-    Return_t __path_basename__(Byte_t *dest_, const Byte_t *path_, const Size_t destSize_);
+    Base_t __path_is_absolute__(const Byte_t *path_, const Size_t pathSize_);
+    Return_t __path_dirname__(Byte_t *dest_, const Byte_t *path_, const Size_t destSize_, const Size_t pathSize_);
+    Return_t __path_basename__(Byte_t *dest_, const Byte_t *path_, const Size_t destSize_, const Size_t pathSize_);
     Return_t __ConsoleCmdHelp__(const Byte_t *args_);
     Return_t __ConsoleCmdVersion__(const Byte_t *args_);
     Return_t __ConsoleCmdTasks__(const Byte_t *args_);

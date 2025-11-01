@@ -41,11 +41,11 @@ extern Base_t __strncmp__(const Byte_t *s1_, const Byte_t *s2_, const Size_t n_)
 extern Return_t __strcat__(Byte_t *dest_, const Byte_t *src_, const Size_t destSize_);
 extern Byte_t * __strchr__(const Byte_t *str_, const Byte_t ch_, const Size_t maxLen_);
 extern Byte_t * __strrchr__(const Byte_t *str_, const Byte_t ch_, const Size_t maxLen_);
-extern Return_t __path_join__(Byte_t *dest_, const Byte_t *base_, const Byte_t *path_, const Size_t destSize_);
+extern Return_t __path_join__(Byte_t *dest_, const Byte_t *base_, const Byte_t *path_, const Size_t destSize_, const Size_t baseSize_, const Size_t pathSize_);
 extern Return_t __path_normalize__(Byte_t *path_, const Size_t pathSize_);
-extern Base_t __path_is_absolute__(const Byte_t *path_);
-extern Return_t __path_dirname__(Byte_t *dest_, const Byte_t *path_, const Size_t destSize_);
-extern Return_t __path_basename__(Byte_t *dest_, const Byte_t *path_, const Size_t destSize_);
+extern Base_t __path_is_absolute__(const Byte_t *path_, const Size_t pathSize_);
+extern Return_t __path_dirname__(Byte_t *dest_, const Byte_t *path_, const Size_t destSize_, const Size_t pathSize_);
+extern Return_t __path_basename__(Byte_t *dest_, const Byte_t *path_, const Size_t destSize_, const Size_t pathSize_);
 extern void __ConsoleStateClear__(void);
 /* Helper function prototypes */
 static void test_strlen_basic(void);
@@ -1078,7 +1078,8 @@ static void test_strrchr_edge_cases(void) {
   /* Test 8.2.5: Search for null in empty string */
   unit_begin("__strrchr__ - Search for null in empty string");
   result = __strrchr__((const Byte_t *) "", '\0', 1);
-  unit_assert_null(result); /* Empty string edge case */
+  unit_assert_not_null(result); /* Should find the null terminator at position 0 */
+  unit_assert_equal(*result, '\0');
   unit_end();
 }
 
@@ -1114,28 +1115,28 @@ static void test_path_join_basic(void) {
 
   /* Test 9.1.1: Join simple paths */
   unit_begin("__path_join__ - Join simple paths");
-  result = __path_join__(dest, (const Byte_t *) "/home", (const Byte_t *) "user", TEST_PATH_BUFFER_SIZE);
+  result = __path_join__(dest, (const Byte_t *) "/home", (const Byte_t *) "user", TEST_PATH_BUFFER_SIZE, 6, 5);
   unit_assert_ok(result);
   unit_assert_equal(__strcmp__(dest, (const Byte_t *) "/home/user", TEST_BUFFER_SIZE_LARGE), 0);
   unit_end();
 
   /* Test 9.1.2: Base with trailing slash */
   unit_begin("__path_join__ - Base with trailing slash");
-  result = __path_join__(dest, (const Byte_t *) "/home/", (const Byte_t *) "user", TEST_PATH_BUFFER_SIZE);
+  result = __path_join__(dest, (const Byte_t *) "/home/", (const Byte_t *) "user", TEST_PATH_BUFFER_SIZE, 7, 5);
   unit_assert_ok(result);
   unit_assert_equal(__strcmp__(dest, (const Byte_t *) "/home/user", TEST_BUFFER_SIZE_LARGE), 0);
   unit_end();
 
   /* Test 9.1.3: Path with leading slash (absolute path) */
   unit_begin("__path_join__ - Path with leading slash (absolute)");
-  result = __path_join__(dest, (const Byte_t *) "/home/user", (const Byte_t *) "/etc/config", TEST_PATH_BUFFER_SIZE);
+  result = __path_join__(dest, (const Byte_t *) "/home/user", (const Byte_t *) "/etc/config", TEST_PATH_BUFFER_SIZE, 11, 12);
   unit_assert_ok(result);
   unit_assert_equal(__strcmp__(dest, (const Byte_t *) "/etc/config", TEST_BUFFER_SIZE_LARGE), 0); /* Absolute path replaces base */
   unit_end();
 
   /* Test 9.1.4: Join multiple levels */
   unit_begin("__path_join__ - Join multiple directory levels");
-  result = __path_join__(dest, (const Byte_t *) "/a", (const Byte_t *) "b/c/d", TEST_PATH_BUFFER_SIZE);
+  result = __path_join__(dest, (const Byte_t *) "/a", (const Byte_t *) "b/c/d", TEST_PATH_BUFFER_SIZE, 3, 6);
   unit_assert_ok(result);
   unit_assert_equal(__strcmp__(dest, (const Byte_t *) "/a/b/c/d", TEST_BUFFER_SIZE_LARGE), 0);
   unit_end();
@@ -1150,34 +1151,34 @@ static void test_path_join_edge_cases(void) {
 
   /* Test 9.2.1: Both base and path with slashes */
   unit_begin("__path_join__ - Both with slashes");
-  result = __path_join__(dest, (const Byte_t *) "/home/", (const Byte_t *) "/path", TEST_PATH_BUFFER_SIZE);
+  result = __path_join__(dest, (const Byte_t *) "/home/", (const Byte_t *) "/path", TEST_PATH_BUFFER_SIZE, 7, 6);
   unit_assert_ok(result);
   unit_assert_equal(__strcmp__(dest, (const Byte_t *) "/path", TEST_BUFFER_SIZE_LARGE), 0); /* Absolute path */
   unit_end();
 
   /* Test 9.2.2: Root base path */
   unit_begin("__path_join__ - Root base path");
-  result = __path_join__(dest, (const Byte_t *) "/", (const Byte_t *) "file.txt", TEST_PATH_BUFFER_SIZE);
+  result = __path_join__(dest, (const Byte_t *) "/", (const Byte_t *) "file.txt", TEST_PATH_BUFFER_SIZE, 2, 9);
   unit_assert_ok(result);
   unit_assert_equal(__strcmp__(dest, (const Byte_t *) "/file.txt", TEST_BUFFER_SIZE_LARGE), 0);
   unit_end();
 
   /* Test 9.2.3: Empty base - should fail */
   unit_begin("__path_join__ - Empty base path (should fail)");
-  result = __path_join__(dest, (const Byte_t *) "", (const Byte_t *) "file", TEST_PATH_BUFFER_SIZE);
+  result = __path_join__(dest, (const Byte_t *) "", (const Byte_t *) "file", TEST_PATH_BUFFER_SIZE, 1, 5);
   unit_assert_not_ok(result);
   unit_end();
 
   /* Test 9.2.4: Empty path - should fail */
   unit_begin("__path_join__ - Empty path component (should fail)");
-  result = __path_join__(dest, (const Byte_t *) "/home", (const Byte_t *) "", TEST_PATH_BUFFER_SIZE);
+  result = __path_join__(dest, (const Byte_t *) "/home", (const Byte_t *) "", TEST_PATH_BUFFER_SIZE, 6, 1);
   unit_assert_not_ok(result);
   unit_end();
 
   /* Test 9.2.5: Result too long for buffer */
   unit_begin("__path_join__ - Result too long for buffer");
   Byte_t smallDest[10];
-  result = __path_join__(smallDest, (const Byte_t *) "/very/long/base/path", (const Byte_t *) "and/more/path", 10);
+  result = __path_join__(smallDest, (const Byte_t *) "/very/long/base/path", (const Byte_t *) "and/more/path", 10, 21, 14);
   unit_assert_not_ok(result);
   unit_end();
 }
@@ -1191,37 +1192,37 @@ static void test_path_join_null_pointers(void) {
 
   /* Test 9.3.1: Null destination */
   unit_begin("__path_join__ - Null destination pointer");
-  result = __path_join__(null, (const Byte_t *) "/home", (const Byte_t *) "user", TEST_PATH_BUFFER_SIZE);
+  result = __path_join__(null, (const Byte_t *) "/home", (const Byte_t *) "user", TEST_PATH_BUFFER_SIZE, 6, 5);
   unit_assert_not_ok(result);
   unit_end();
 
   /* Test 9.3.2: Null base */
   unit_begin("__path_join__ - Null base pointer");
-  result = __path_join__(dest, null, (const Byte_t *) "user", TEST_PATH_BUFFER_SIZE);
+  result = __path_join__(dest, null, (const Byte_t *) "user", TEST_PATH_BUFFER_SIZE, 0, 5);
   unit_assert_not_ok(result);
   unit_end();
 
   /* Test 9.3.3: Null path */
   unit_begin("__path_join__ - Null path pointer");
-  result = __path_join__(dest, (const Byte_t *) "/home", null, TEST_PATH_BUFFER_SIZE);
+  result = __path_join__(dest, (const Byte_t *) "/home", null, TEST_PATH_BUFFER_SIZE, 6, 0);
   unit_assert_not_ok(result);
   unit_end();
 
   /* Test 9.3.4: All null */
   unit_begin("__path_join__ - All pointers null");
-  result = __path_join__(null, null, null, TEST_PATH_BUFFER_SIZE);
+  result = __path_join__(null, null, null, TEST_PATH_BUFFER_SIZE, 0, 0);
   unit_assert_not_ok(result);
   unit_end();
 
   /* Test 9.3.5: Zero buffer size */
   unit_begin("__path_join__ - Zero buffer size");
-  result = __path_join__(dest, (const Byte_t *) "/home", (const Byte_t *) "user", 0);
+  result = __path_join__(dest, (const Byte_t *) "/home", (const Byte_t *) "user", 0, 6, 5);
   unit_assert_not_ok(result);
   unit_end();
 
   /* Test 9.3.6: Valid parameters (reference) */
   unit_begin("__path_join__ - Valid parameters (reference test)");
-  result = __path_join__(dest, (const Byte_t *) "/home", (const Byte_t *) "user", TEST_PATH_BUFFER_SIZE);
+  result = __path_join__(dest, (const Byte_t *) "/home", (const Byte_t *) "user", TEST_PATH_BUFFER_SIZE, 6, 5);
   unit_assert_ok(result);
   unit_end();
 }
@@ -1358,31 +1359,31 @@ static void test_path_is_absolute_basic(void) {
 
   /* Test 11.1.1: Absolute path */
   unit_begin("__path_is_absolute__ - Absolute path");
-  isAbs = __path_is_absolute__((const Byte_t *) "/home/user");
+  isAbs = __path_is_absolute__((const Byte_t *) "/home/user", 11);
   unit_assert_true(isAbs);
   unit_end();
 
   /* Test 11.1.2: Relative path */
   unit_begin("__path_is_absolute__ - Relative path");
-  isAbs = __path_is_absolute__((const Byte_t *) "home/user");
+  isAbs = __path_is_absolute__((const Byte_t *) "home/user", 10);
   unit_assert_false(isAbs);
   unit_end();
 
   /* Test 11.1.3: Root path */
   unit_begin("__path_is_absolute__ - Root path");
-  isAbs = __path_is_absolute__((const Byte_t *) "/");
+  isAbs = __path_is_absolute__((const Byte_t *) "/", 2);
   unit_assert_true(isAbs);
   unit_end();
 
   /* Test 11.1.4: Relative with dot */
   unit_begin("__path_is_absolute__ - Relative with dot");
-  isAbs = __path_is_absolute__((const Byte_t *) "./file.txt");
+  isAbs = __path_is_absolute__((const Byte_t *) "./file.txt", 11);
   unit_assert_false(isAbs);
   unit_end();
 
   /* Test 11.1.5: Relative with parent */
   unit_begin("__path_is_absolute__ - Relative with parent");
-  isAbs = __path_is_absolute__((const Byte_t *) "../file.txt");
+  isAbs = __path_is_absolute__((const Byte_t *) "../file.txt", 12);
   unit_assert_false(isAbs);
   unit_end();
 }
@@ -1395,25 +1396,25 @@ static void test_path_is_absolute_edge_cases(void) {
 
   /* Test 11.2.1: Empty string */
   unit_begin("__path_is_absolute__ - Empty string");
-  isAbs = __path_is_absolute__((const Byte_t *) "");
+  isAbs = __path_is_absolute__((const Byte_t *) "", 1);
   unit_assert_false(isAbs);
   unit_end();
 
   /* Test 11.2.2: Single slash only */
   unit_begin("__path_is_absolute__ - Single slash only");
-  isAbs = __path_is_absolute__((const Byte_t *) "/");
+  isAbs = __path_is_absolute__((const Byte_t *) "/", 2);
   unit_assert_true(isAbs);
   unit_end();
 
   /* Test 11.2.3: Just a filename */
   unit_begin("__path_is_absolute__ - Just a filename");
-  isAbs = __path_is_absolute__((const Byte_t *) "file.txt");
+  isAbs = __path_is_absolute__((const Byte_t *) "file.txt", 9);
   unit_assert_false(isAbs);
   unit_end();
 
   /* Test 11.2.4: Path starting with space */
   unit_begin("__path_is_absolute__ - Path starting with space");
-  isAbs = __path_is_absolute__((const Byte_t *) " /home");
+  isAbs = __path_is_absolute__((const Byte_t *) " /home", 7);
   unit_assert_false(isAbs); /* Space before slash */
   unit_end();
 }
@@ -1426,13 +1427,13 @@ static void test_path_is_absolute_null_pointer(void) {
 
   /* Test 11.3.1: Null path pointer */
   unit_begin("__path_is_absolute__ - Null path pointer");
-  isAbs = __path_is_absolute__(null);
+  isAbs = __path_is_absolute__(null, 0);
   unit_assert_false(isAbs); /* Should return false for null */
   unit_end();
 
   /* Test 11.3.2: Valid pointer (reference) */
   unit_begin("__path_is_absolute__ - Valid pointer (reference test)");
-  isAbs = __path_is_absolute__((const Byte_t *) "/home");
+  isAbs = __path_is_absolute__((const Byte_t *) "/home", 6);
   unit_assert_true(isAbs);
   unit_end();
 }
@@ -1450,27 +1451,27 @@ static void test_path_dirname_basic(void) {
 
   /* Test 12.1.1: Simple path */
   unit_begin("__path_dirname__ - Simple path");
-  result = __path_dirname__(dest, (const Byte_t *) "/home/user/file.txt", TEST_PATH_BUFFER_SIZE);
+  result = __path_dirname__(dest, (const Byte_t *) "/home/user/file.txt", TEST_PATH_BUFFER_SIZE, 20);
   unit_assert_ok(result);
   unit_assert_equal(__strcmp__(dest, (const Byte_t *) "/home/user", TEST_BUFFER_SIZE_LARGE), 0);
   unit_end();
 
   /* Test 12.1.2: Root level file */
   unit_begin("__path_dirname__ - Root level file");
-  result = __path_dirname__(dest, (const Byte_t *) "/file.txt", TEST_PATH_BUFFER_SIZE);
+  result = __path_dirname__(dest, (const Byte_t *) "/file.txt", TEST_PATH_BUFFER_SIZE, 10);
   unit_assert_not_ok(result); /* Fails because strncpy with n=0 fails */
   unit_end();
 
   /* Test 12.1.3: Deep nested path */
   unit_begin("__path_dirname__ - Deep nested path");
-  result = __path_dirname__(dest, (const Byte_t *) "/a/b/c/d/e/f.txt", TEST_PATH_BUFFER_SIZE);
+  result = __path_dirname__(dest, (const Byte_t *) "/a/b/c/d/e/f.txt", TEST_PATH_BUFFER_SIZE, 17);
   unit_assert_ok(result);
   unit_assert_equal(__strcmp__(dest, (const Byte_t *) "/a/b/c/d/e", TEST_BUFFER_SIZE_LARGE), 0);
   unit_end();
 
   /* Test 12.1.4: Directory path (with trailing slash) */
   unit_begin("__path_dirname__ - Directory path");
-  result = __path_dirname__(dest, (const Byte_t *) "/home/user/", TEST_PATH_BUFFER_SIZE);
+  result = __path_dirname__(dest, (const Byte_t *) "/home/user/", TEST_PATH_BUFFER_SIZE, 12);
   unit_assert_ok(result);
   /* Behavior depends on implementation */
   unit_end();
@@ -1485,20 +1486,20 @@ static void test_path_dirname_edge_cases(void) {
 
   /* Test 12.2.1: Root path */
   unit_begin("__path_dirname__ - Root path");
-  result = __path_dirname__(dest, (const Byte_t *) "/", TEST_PATH_BUFFER_SIZE);
+  result = __path_dirname__(dest, (const Byte_t *) "/", TEST_PATH_BUFFER_SIZE, 2);
   unit_assert_not_ok(result); /* Fails because strncpy with n=0 fails */
   unit_end();
 
   /* Test 12.2.2: No slashes (relative file) */
   unit_begin("__path_dirname__ - No slashes (relative file)");
-  result = __path_dirname__(dest, (const Byte_t *) "file.txt", TEST_PATH_BUFFER_SIZE);
+  result = __path_dirname__(dest, (const Byte_t *) "file.txt", TEST_PATH_BUFFER_SIZE, 9);
   unit_assert_ok(result);
   unit_assert_equal(__strcmp__(dest, (const Byte_t *) ".", TEST_BUFFER_SIZE_LARGE), 0);
   unit_end();
 
   /* Test 12.2.3: Empty path */
   unit_begin("__path_dirname__ - Empty path");
-  result = __path_dirname__(dest, (const Byte_t *) "", TEST_PATH_BUFFER_SIZE);
+  result = __path_dirname__(dest, (const Byte_t *) "", TEST_PATH_BUFFER_SIZE, 1);
   unit_assert_ok(result);
   unit_assert_equal(__strcmp__(dest, (const Byte_t *) ".", TEST_BUFFER_SIZE_LARGE), 0);
   unit_end();
@@ -1506,7 +1507,7 @@ static void test_path_dirname_edge_cases(void) {
   /* Test 12.2.4: Buffer too small */
   unit_begin("__path_dirname__ - Buffer too small");
   Byte_t smallDest[5];
-  result = __path_dirname__(smallDest, (const Byte_t *) "/home/user/very/long/path", 5);
+  result = __path_dirname__(smallDest, (const Byte_t *) "/home/user/very/long/path", 5, 26);
   unit_assert_not_ok(result); /* Should fail */
   unit_end();
 }
@@ -1520,31 +1521,31 @@ static void test_path_dirname_null_pointers(void) {
 
   /* Test 12.3.1: Null destination */
   unit_begin("__path_dirname__ - Null destination pointer");
-  result = __path_dirname__(null, (const Byte_t *) "/home/user/file.txt", TEST_PATH_BUFFER_SIZE);
+  result = __path_dirname__(null, (const Byte_t *) "/home/user/file.txt", TEST_PATH_BUFFER_SIZE, 20);
   unit_assert_not_ok(result);
   unit_end();
 
   /* Test 12.3.2: Null path */
   unit_begin("__path_dirname__ - Null path pointer");
-  result = __path_dirname__(dest, null, TEST_PATH_BUFFER_SIZE);
+  result = __path_dirname__(dest, null, TEST_PATH_BUFFER_SIZE, 0);
   unit_assert_not_ok(result);
   unit_end();
 
   /* Test 12.3.3: Both null */
   unit_begin("__path_dirname__ - Both pointers null");
-  result = __path_dirname__(null, null, TEST_PATH_BUFFER_SIZE);
+  result = __path_dirname__(null, null, TEST_PATH_BUFFER_SIZE, 0);
   unit_assert_not_ok(result);
   unit_end();
 
   /* Test 12.3.4: Zero buffer size */
   unit_begin("__path_dirname__ - Zero buffer size");
-  result = __path_dirname__(dest, (const Byte_t *) "/home/user", 0);
+  result = __path_dirname__(dest, (const Byte_t *) "/home/user", 0, 11);
   unit_assert_not_ok(result);
   unit_end();
 
   /* Test 12.3.5: Valid parameters (reference) */
   unit_begin("__path_dirname__ - Valid parameters (reference test)");
-  result = __path_dirname__(dest, (const Byte_t *) "/home/user/file.txt", TEST_PATH_BUFFER_SIZE);
+  result = __path_dirname__(dest, (const Byte_t *) "/home/user/file.txt", TEST_PATH_BUFFER_SIZE, 20);
   unit_assert_ok(result);
   unit_end();
 }
@@ -1562,28 +1563,28 @@ static void test_path_basename_basic(void) {
 
   /* Test 13.1.1: Simple path */
   unit_begin("__path_basename__ - Simple path");
-  result = __path_basename__(dest, (const Byte_t *) "/home/user/file.txt", TEST_PATH_BUFFER_SIZE);
+  result = __path_basename__(dest, (const Byte_t *) "/home/user/file.txt", TEST_PATH_BUFFER_SIZE, 20);
   unit_assert_ok(result);
   unit_assert_equal(__strcmp__(dest, (const Byte_t *) "file.txt", TEST_BUFFER_SIZE_LARGE), 0);
   unit_end();
 
   /* Test 13.1.2: Root level file */
   unit_begin("__path_basename__ - Root level file");
-  result = __path_basename__(dest, (const Byte_t *) "/file.txt", TEST_PATH_BUFFER_SIZE);
+  result = __path_basename__(dest, (const Byte_t *) "/file.txt", TEST_PATH_BUFFER_SIZE, 10);
   unit_assert_ok(result);
   unit_assert_equal(__strcmp__(dest, (const Byte_t *) "file.txt", TEST_BUFFER_SIZE_LARGE), 0);
   unit_end();
 
   /* Test 13.1.3: Just filename */
   unit_begin("__path_basename__ - Just filename (no path)");
-  result = __path_basename__(dest, (const Byte_t *) "file.txt", TEST_PATH_BUFFER_SIZE);
+  result = __path_basename__(dest, (const Byte_t *) "file.txt", TEST_PATH_BUFFER_SIZE, 9);
   unit_assert_ok(result);
   unit_assert_equal(__strcmp__(dest, (const Byte_t *) "file.txt", TEST_BUFFER_SIZE_LARGE), 0);
   unit_end();
 
   /* Test 13.1.4: Deep nested path */
   unit_begin("__path_basename__ - Deep nested path");
-  result = __path_basename__(dest, (const Byte_t *) "/a/b/c/d/e/file.txt", TEST_PATH_BUFFER_SIZE);
+  result = __path_basename__(dest, (const Byte_t *) "/a/b/c/d/e/file.txt", TEST_PATH_BUFFER_SIZE, 20);
   unit_assert_ok(result);
   unit_assert_equal(__strcmp__(dest, (const Byte_t *) "file.txt", TEST_BUFFER_SIZE_LARGE), 0);
   unit_end();
@@ -1598,28 +1599,28 @@ static void test_path_basename_edge_cases(void) {
 
   /* Test 13.2.1: Path with trailing slash */
   unit_begin("__path_basename__ - Path with trailing slash");
-  result = __path_basename__(dest, (const Byte_t *) "/home/user/", TEST_PATH_BUFFER_SIZE);
+  result = __path_basename__(dest, (const Byte_t *) "/home/user/", TEST_PATH_BUFFER_SIZE, 12);
   unit_assert_ok(result);
   /* Behavior may vary - could be empty or "user" */
   unit_end();
 
   /* Test 13.2.2: Root path */
   unit_begin("__path_basename__ - Root path");
-  result = __path_basename__(dest, (const Byte_t *) "/", TEST_PATH_BUFFER_SIZE);
+  result = __path_basename__(dest, (const Byte_t *) "/", TEST_PATH_BUFFER_SIZE, 2);
   unit_assert_ok(result);
   /* Should return "." for root */
   unit_end();
 
   /* Test 13.2.3: Empty path */
   unit_begin("__path_basename__ - Empty path");
-  result = __path_basename__(dest, (const Byte_t *) "", TEST_PATH_BUFFER_SIZE);
+  result = __path_basename__(dest, (const Byte_t *) "", TEST_PATH_BUFFER_SIZE, 1);
   unit_assert_ok(result);
   unit_assert_equal(__strcmp__(dest, (const Byte_t *) ".", TEST_BUFFER_SIZE_LARGE), 0);
   unit_end();
 
   /* Test 13.2.4: Filename with no extension */
   unit_begin("__path_basename__ - Filename with no extension");
-  result = __path_basename__(dest, (const Byte_t *) "/home/user/readme", TEST_PATH_BUFFER_SIZE);
+  result = __path_basename__(dest, (const Byte_t *) "/home/user/readme", TEST_PATH_BUFFER_SIZE, 18);
   unit_assert_ok(result);
   unit_assert_equal(__strcmp__(dest, (const Byte_t *) "readme", TEST_BUFFER_SIZE_LARGE), 0);
   unit_end();
@@ -1627,7 +1628,7 @@ static void test_path_basename_edge_cases(void) {
   /* Test 13.2.5: Buffer too small */
   unit_begin("__path_basename__ - Buffer too small");
   Byte_t smallDest[5];
-  result = __path_basename__(smallDest, (const Byte_t *) "/very_long_filename.txt", 5);
+  result = __path_basename__(smallDest, (const Byte_t *) "/very_long_filename.txt", 5, 24);
   unit_assert_not_ok(result); /* Should fail */
   unit_end();
 }
@@ -1641,31 +1642,31 @@ static void test_path_basename_null_pointers(void) {
 
   /* Test 13.3.1: Null destination */
   unit_begin("__path_basename__ - Null destination pointer");
-  result = __path_basename__(null, (const Byte_t *) "/home/user/file.txt", TEST_PATH_BUFFER_SIZE);
+  result = __path_basename__(null, (const Byte_t *) "/home/user/file.txt", TEST_PATH_BUFFER_SIZE, 20);
   unit_assert_not_ok(result);
   unit_end();
 
   /* Test 13.3.2: Null path */
   unit_begin("__path_basename__ - Null path pointer");
-  result = __path_basename__(dest, null, TEST_PATH_BUFFER_SIZE);
+  result = __path_basename__(dest, null, TEST_PATH_BUFFER_SIZE, 0);
   unit_assert_not_ok(result);
   unit_end();
 
   /* Test 13.3.3: Both null */
   unit_begin("__path_basename__ - Both pointers null");
-  result = __path_basename__(null, null, TEST_PATH_BUFFER_SIZE);
+  result = __path_basename__(null, null, TEST_PATH_BUFFER_SIZE, 0);
   unit_assert_not_ok(result);
   unit_end();
 
   /* Test 13.3.4: Zero buffer size */
   unit_begin("__path_basename__ - Zero buffer size");
-  result = __path_basename__(dest, (const Byte_t *) "/home/user/file.txt", 0);
+  result = __path_basename__(dest, (const Byte_t *) "/home/user/file.txt", 0, 20);
   unit_assert_not_ok(result);
   unit_end();
 
   /* Test 13.3.5: Valid parameters (reference) */
   unit_begin("__path_basename__ - Valid parameters (reference test)");
-  result = __path_basename__(dest, (const Byte_t *) "/home/user/file.txt", TEST_PATH_BUFFER_SIZE);
+  result = __path_basename__(dest, (const Byte_t *) "/home/user/file.txt", TEST_PATH_BUFFER_SIZE, 20);
   unit_assert_ok(result);
   unit_end();
 }
@@ -1885,7 +1886,7 @@ static void test_non_null_terminated_strings(void) {
    * ======================================================================== */
   unit_begin("__path_join__() should handle non-null-terminated base");
   for(i = 0; i < 32; i++) dest_buffer[i] = 0xCC;
-  result = __path_join__(dest_buffer, nonterm_buffer, (const Byte_t *)"/file", 32);
+  result = __path_join__(dest_buffer, nonterm_buffer, (const Byte_t *)"/file", 32, 8, 6);
   /* If it succeeded, it likely used strlen on nonterm_buffer */
   unit_assert_ok(result);  /* FAIL if it completed successfully */
   if(result == 0) {
@@ -1899,7 +1900,7 @@ static void test_non_null_terminated_strings(void) {
    * ======================================================================== */
   unit_begin("__path_join__() should handle non-null-terminated path");
   for(i = 0; i < 32; i++) dest_buffer[i] = 0xCC;
-  result = __path_join__(dest_buffer, (const Byte_t *)"/home", nonterm_buffer, 32);
+  result = __path_join__(dest_buffer, (const Byte_t *)"/home", nonterm_buffer, 32, 6, 8);
   /* If it succeeded, it used strlen on nonterm_buffer */
   unit_assert_ok(result);  /* FAIL if it completed */
   if(result == 0) {
@@ -1928,7 +1929,7 @@ static void test_non_null_terminated_strings(void) {
    * Should not read past buffer boundary
    * ======================================================================== */
   unit_begin("__path_is_absolute__() should handle non-null-terminated path");
-  cmp = __path_is_absolute__(nonterm_buffer);
+  cmp = __path_is_absolute__(nonterm_buffer, 8);
   /* 'A' is not '/' so it should return false immediately without reading whole buffer
    * But if implementation uses strlen, it will read to position 8 */
   /* We can't easily detect this without side effects, so check for non-zero return */
@@ -1942,7 +1943,7 @@ static void test_non_null_terminated_strings(void) {
    * ======================================================================== */
   unit_begin("__path_dirname__() should handle non-null-terminated path");
   for(i = 0; i < 32; i++) dest_buffer[i] = 0xCC;
-  result = __path_dirname__(dest_buffer, nonterm_buffer, 32);
+  result = __path_dirname__(dest_buffer, nonterm_buffer, 32, 8);
   /* If dirname succeeded, it used strlen/strchr which read past buffer */
   unit_assert_ok(result);  /* FAIL if it completed */
   if(result == 0) {
@@ -1956,7 +1957,7 @@ static void test_non_null_terminated_strings(void) {
    * ======================================================================== */
   unit_begin("__path_basename__() should handle non-null-terminated path");
   for(i = 0; i < 32; i++) dest_buffer[i] = 0xCC;
-  result = __path_basename__(dest_buffer, nonterm_buffer, 32);
+  result = __path_basename__(dest_buffer, nonterm_buffer, 32, 8);
   /* If basename succeeded, it used strlen/strrchr which read past buffer */
   unit_assert_ok(result);  /* FAIL if it completed */
   if(result == 0) {
