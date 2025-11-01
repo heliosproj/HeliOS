@@ -141,7 +141,7 @@ static void test_system_information(void) {
 
 
   /* Check product name is not empty */
-  unit_assert_true(__strlen__(info->productName) >= PRODUCT_NAME_MIN_LENGTH);
+  unit_assert_true(__strlen__(info->productName, OS_PRODUCT_NAME_SIZE) >= PRODUCT_NAME_MIN_LENGTH);
 
 
   /* Check version components exist */
@@ -169,8 +169,8 @@ static void test_system_information(void) {
 
 
     /* Verify all return same product name */
-    unit_assert_equal(__strcmp__(info1->productName, info2->productName), 0x0u);
-    unit_assert_equal(__strcmp__(info2->productName, info3->productName), 0x0u);
+    unit_assert_equal(__strcmp__(info1->productName, info2->productName, OS_PRODUCT_NAME_SIZE), 0x0u);
+    unit_assert_equal(__strcmp__(info2->productName, info3->productName, OS_PRODUCT_NAME_SIZE), 0x0u);
 
 
     /* Verify version numbers match */
@@ -340,7 +340,7 @@ static void test_system_info_content_validation(void) {
 
 
   /* Check product name is valid and not empty */
-  unit_assert_true(__strlen__(info->productName) > 0x0u);
+  unit_assert_true(__strlen__(info->productName, OS_PRODUCT_NAME_SIZE) > 0x0u);
   unit_assert_ok(xMemFree(info));
   unit_end();
 
@@ -628,7 +628,7 @@ static void test_concurrent_system_operations(void) {
 
     /* Verify all have consistent data */
     for(i = 0x0u; i < 24; i++) {
-      unit_assert_equal(__strcmp__(infoArray[i]->productName, infoArray[i + 1]->productName), 0x0u);
+      unit_assert_equal(__strcmp__(infoArray[i]->productName, infoArray[i + 1]->productName, OS_PRODUCT_NAME_SIZE), 0x0u);
     }
 
 
@@ -722,7 +722,7 @@ static void test_scheduler_state_integration(void) {
 
 
       /* Verify info is consistent */
-      unit_assert_equal(__strcmp__(info1->productName, info2->productName), 0x0u);
+      unit_assert_equal(__strcmp__(info1->productName, info2->productName, OS_PRODUCT_NAME_SIZE), 0x0u);
 
 
       /* Resume scheduler */

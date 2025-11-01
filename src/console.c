@@ -140,13 +140,13 @@
 
 
                                                   }};
-  Size_t __strlen__(const Byte_t *str_) {
+  Size_t __strlen__(const Byte_t *str_, const Size_t maxLen_) {
 
     Size_t len = 0x0u;
 
-    if(__PointerIsNotNull__(str_)) {
+    if(__PointerIsNotNull__(str_) && (maxLen_ > 0x0u)) {
 
-      while(CHAR_NULL != str_[len]) {
+      while((len < maxLen_) && (CHAR_NULL != str_[len])) {
 
         len++;
       }
@@ -177,7 +177,7 @@
 
     if(__PointerIsNotNull__(dest_) && __PointerIsNotNull__(src_) && (0x0u < destSize_)) {
 
-      while((CHAR_NULL != src_[i]) && (i < (destSize_ - 0x1u))) {
+      while((i < (destSize_ - 0x1u)) && (CHAR_NULL != src_[i])) {
 
         dest_[i] = src_[i];
 
@@ -239,16 +239,16 @@
   }
 
 
-  Base_t __strcmp__(const Byte_t *s1_, const Byte_t *s2_) {
+  Base_t __strcmp__(const Byte_t *s1_, const Byte_t *s2_, const Size_t maxLen_) {
 
     Size_t i = 0x0u;
 
-    if(__PointerIsNull__(s1_) || __PointerIsNull__(s2_)) {
+    if(__PointerIsNull__(s1_) || __PointerIsNull__(s2_) || (0x0u == maxLen_)) {
 
       return (0x0u);
     }
 
-    while((CHAR_NULL != s1_[i]) && (CHAR_NULL != s2_[i])) {
+    while((i < maxLen_) && (CHAR_NULL != s1_[i]) && (CHAR_NULL != s2_[i])) {
 
       if(s1_[i] != s2_[i]) {
 
@@ -258,12 +258,12 @@
       i++;
     }
 
-    if(s1_[i] == s2_[i]) {
+    if((i < maxLen_) && (s1_[i] == s2_[i])) {
 
       return (0x0u);
     }
 
-    return ((s1_[i] < s2_[i]) ? -0x1 : 0x1);
+    return ((i < maxLen_) ? ((s1_[i] < s2_[i]) ? -0x1 : 0x1) : 0x0u);
   }
 
 
@@ -311,11 +311,11 @@
 
     if(__PointerIsNotNull__(dest_) && __PointerIsNotNull__(src_) && (0x0u < destSize_)) {
 
-      destLen = __strlen__(dest_);
+      destLen = __strlen__(dest_, destSize_);
 
       if(destLen < destSize_) {
 
-        while((CHAR_NULL != src_[i]) && ((destLen + i) < (destSize_ - 0x1u))) {
+        while(((destLen + i) < (destSize_ - 0x1u)) && (CHAR_NULL != src_[i])) {
 
           dest_[destLen + i] = src_[i];
 
@@ -340,46 +340,44 @@
   }
 
 
-  Byte_t * __strchr__(const Byte_t *str_, const Byte_t ch_) {
+  Byte_t * __strchr__(const Byte_t *str_, const Byte_t ch_, const Size_t maxLen_) {
 
     Size_t i = 0x0u;
 
-    if(__PointerIsNull__(str_)) {
+    if(__PointerIsNull__(str_) || (0x0u == maxLen_)) {
 
       return (null);
     }
 
-    while(CHAR_NULL != str_[i]) {
+    for(i = 0x0u; i < maxLen_; i++) {
 
       if(str_[i] == ch_) {
 
         return ((Byte_t *) &str_[i]);
       }
 
-      i++;
-    }
+      if(CHAR_NULL == str_[i]) {
 
-    if(CHAR_NULL == ch_) {
-
-      return ((Byte_t *) &str_[i]);
+        break;
+      }
     }
 
     return (null);
   }
 
 
-  Byte_t * __strrchr__(const Byte_t *str_, const Byte_t ch_) {
+  Byte_t * __strrchr__(const Byte_t *str_, const Byte_t ch_, const Size_t maxLen_) {
 
     Size_t len = 0x0u;
 
     Size_t i = 0x0u;
 
-    if(__PointerIsNull__(str_)) {
+    if(__PointerIsNull__(str_) || (0x0u == maxLen_)) {
 
       return (null);
     }
 
-    len = __strlen__(str_);
+    len = __strlen__(str_, maxLen_);
 
     for(i = len; i > 0x0u; i--) {
 
@@ -389,7 +387,7 @@
       }
     }
 
-    if((CHAR_NULL == ch_) && (len > 0x0u)) {
+    if((CHAR_NULL == ch_) && (len < maxLen_)) {
 
       return ((Byte_t *) &str_[len]);
     }
@@ -424,9 +422,9 @@
 
     if(__PointerIsNotNull__(dest_) && __PointerIsNotNull__(base_) && __PointerIsNotNull__(path_) && (0x0u != destSize_)) {
 
-      baseLen = __strlen__(base_);
+      baseLen = __strlen__(base_, destSize_);
 
-      pathLen = __strlen__(path_);
+      pathLen = __strlen__(path_, destSize_);
 
       if((0x0u != baseLen) && (0x0u != pathLen)) {
 
@@ -537,7 +535,7 @@
 
     if(__PointerIsNotNull__(path_) && (0x0u != pathSize_)) {
 
-      len = __strlen__(path_);
+      len = __strlen__(path_, pathSize_);
 
       if((0x0u != len) && (len < CONFIG_FS_MAX_PATH_LENGTH)) {
 
@@ -595,7 +593,7 @@
 
           Size_t m = 0x0u;
 
-          segLen = __strlen__(segments[k]);
+          segLen = __strlen__(segments[k], CONFIG_FS_MAX_PATH_LENGTH);
 
           if(k > 0x0u) {
 
@@ -667,7 +665,7 @@
 
     if(__PointerIsNotNull__(dest_) && __PointerIsNotNull__(path_) && (0x0u != destSize_)) {
 
-      len = __strlen__(path_);
+      len = __strlen__(path_, destSize_);
 
       if(0x0u == len) {
 
@@ -757,7 +755,7 @@
 
     if(__PointerIsNotNull__(dest_) && __PointerIsNotNull__(path_) && (0x0u != destSize_)) {
 
-      len = __strlen__(path_);
+      len = __strlen__(path_, destSize_);
 
       if(0x0u == len) {
 
@@ -1031,7 +1029,7 @@
 
     if(__PointerIsNotNull__(str_)) {
 
-      len = __strlen__(str_);
+      len = __strlen__(str_, 0xFFFFu);
 
       if(0x0u < len) {
 
@@ -1319,7 +1317,7 @@
 
       for(i = 0x0u; __PointerIsNotNull__(commandTable[i].name) && !commandFound; i++) {
 
-        if(0 == __strcmp__(cmdName, commandTable[i].name)) {
+        if(0 == __strcmp__(cmdName, commandTable[i].name, CONFIG_CONSOLE_MAX_COMMAND_LENGTH)) {
 
           if(__PointerIsNotNull__(commandTable[i].handler)) {
 
@@ -1811,7 +1809,7 @@
 
         pathBuilt = true;
 
-      } else if(0 == __strcmp__(args_, (const Byte_t *) "..")) {
+      } else if(0 == __strcmp__(args_, (const Byte_t *) "..", CONFIG_CONSOLE_MAX_COMMAND_LENGTH)) {
 
         if(OK(__path_dirname__(newPath, consoleState.currentWorkingDirectory, CONFIG_FS_MAX_PATH_LENGTH))) {
 
