@@ -194,7 +194,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _simple_read)(Device_t *device_, Byte_t *data_
   if(__PointerIsNotNull__(data_) && state.initialized) {
     Byte_t *byteData = null;
     Size_t bytesRead = 0x0u;
-    state.currentByteCount = USART_SINGLE_BYTE_TRANSFER;
+    state.currentByteCount = CHAR_SINGLE_BYTE_COUNT;
     if(OK(__CharDeviceReadRAW__(&byteData, &bytesRead))) {
       if(bytesRead > 0x0u) {
         *data_ = byteData[0x0u];
@@ -215,7 +215,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _simple_read)(Device_t *device_, Byte_t *data_
 Return_t TO_FUNCTION(DEVICE_NAME, _simple_write)(Device_t *device_, Byte_t data_) {
   FUNCTION_ENTER;
   if(state.initialized) {
-    state.currentByteCount = USART_SINGLE_BYTE_TRANSFER;
+    state.currentByteCount = CHAR_SINGLE_BYTE_COUNT;
     if(OK(__CharDeviceWriteRAW__(&data_))) {
       __ReturnOk__();
     } else {
@@ -294,9 +294,9 @@ static HalfWord_t __CircularBufferSpace__(const HalfWord_t head_,
   const HalfWord_t tail_,
   const HalfWord_t size_) {
   if(head_ >= tail_) {
-    return (size_ - (head_ - tail_) - USART_SINGLE_BYTE_TRANSFER);
+    return (size_ - (head_ - tail_) - CHAR_SINGLE_BYTE_COUNT);
   } else {
-    return (tail_ - head_ - USART_SINGLE_BYTE_TRANSFER);
+    return (tail_ - head_ - CHAR_SINGLE_BYTE_COUNT);
   }
 }
 static HalfWord_t __CircularBufferAvailable__(const HalfWord_t head_,
