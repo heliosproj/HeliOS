@@ -25,7 +25,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _init)(Device_t *device_) {
   state.initialized = false;
   state.ioDriverUID = 0x0u;
   state.protocol = 0x0u;
-  state.blockSize = BLOCK_DEFAULT_SECTOR_SIZE;
+  state.blockSize = CONFIG_DEFAULT_SECTOR_SIZE;
   state.totalBlocks = 0x0u;
   state.currentBlockNumber = 0x0u;
   state.currentBlockCount = 0x0u;
@@ -211,7 +211,7 @@ Return_t __BlockDeviceWriteBlockRAW__(const Byte_t *data_) {
   void __BlockDeviceStateClear__(void) {
     state.ioDriverUID = 0x0u;
     state.protocol = 0x0u;
-    state.blockSize = BLOCK_DEFAULT_SECTOR_SIZE;
+    state.blockSize = CONFIG_DEFAULT_SECTOR_SIZE;
     state.totalBlocks = 0x0u;
     state.initialized = false;
     state.currentBlockNumber = 0x0u;

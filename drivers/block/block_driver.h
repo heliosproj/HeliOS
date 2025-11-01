@@ -33,7 +33,6 @@
   #define BLOCK_CMD_READ_MULTIPLE 0x02u
   #define BLOCK_CMD_WRITE_SINGLE 0x03u
   #define BLOCK_CMD_WRITE_MULTIPLE 0x04u
-  #define BLOCK_DEFAULT_SECTOR_SIZE 0x200u
   typedef struct BlockDeviceState_s {
   HalfWord_t ioDriverUID;
   Byte_t protocol;

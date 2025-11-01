@@ -1005,4 +1005,304 @@
     #define CONFIG_CONSOLE_HEX_OUTPUT_MIN_BUFFER 0x3u /* 3 bytes */
   #endif /* if !defined(CONFIG_CONSOLE_HEX_OUTPUT_MIN_BUFFER) */
 
+
+/**
+ * @brief Define the maximum number of mounted volumes
+ *
+ * Setting CONFIG_FAT_MAX_MOUNTED_VOLUMES specifies the maximum number of
+ * FAT volumes that can be mounted simultaneously. The default is 8.
+ *
+ * This value determines the size of static arrays used for volume tracking.
+ * Most embedded systems need only 1-2 mounted volumes. Reducing this value
+ * saves significant RAM in memory-constrained systems.
+ *
+ * @note The value should be set as a hexadecimal constant with the 'u' suffix
+ * (e.g., 0x8u for 8 volumes).
+ *
+ * @note Each volume tracking structure consumes memory, so set this to the
+ * minimum required for your application.
+ *
+ * @sa xFSMount()
+ * @sa xFSUnmount()
+ *
+ */
+  #if !defined(CONFIG_FAT_MAX_MOUNTED_VOLUMES)
+    #define CONFIG_FAT_MAX_MOUNTED_VOLUMES 0x8u /* 8 volumes */
+  #endif /* if !defined(CONFIG_FAT_MAX_MOUNTED_VOLUMES) */
+
+
+/**
+ * @brief Define the maximum number of clusters to search for free space
+ *
+ * Setting CONFIG_FAT_MAX_SEARCHABLE_CLUSTERS limits the number of clusters
+ * searched when looking for free space on a FAT filesystem. The default is
+ * 65536 (0x10000) clusters.
+ *
+ * This limit prevents timeout on large filesystems by capping the search
+ * range. Should be tunable based on filesystem size, performance needs, and
+ * real-time constraints.
+ *
+ * @note The value should be set as a hexadecimal constant with the 'u' suffix
+ * (e.g., 0x10000u for 65536 clusters).
+ *
+ * @note Larger values provide more thorough free space search but may cause
+ * longer allocation times. Smaller values improve responsiveness but may fail
+ * to find free space on fragmented filesystems.
+ *
+ * @sa __FindFreeCluster()
+ *
+ */
+  #if !defined(CONFIG_FAT_MAX_SEARCHABLE_CLUSTERS)
+    #define CONFIG_FAT_MAX_SEARCHABLE_CLUSTERS 0x10000u /* 65536 clusters */
+  #endif /* if !defined(CONFIG_FAT_MAX_SEARCHABLE_CLUSTERS) */
+
+
+/**
+ * @brief Define the default sector size for storage devices
+ *
+ * Setting CONFIG_DEFAULT_SECTOR_SIZE specifies the sector size used by block
+ * devices, FAT filesystem, and filesystem operations. The default is 512 bytes
+ * (0x200u), which is traditional for most storage devices.
+ *
+ * While 512 bytes is the traditional standard, modern storage devices (SD
+ * cards, SSDs, eMMC) often use 4096-byte sectors. This should be configurable
+ * to match physical device characteristics.
+ *
+ * @note The value should be set as a hexadecimal constant with the 'u' suffix
+ * (e.g., 0x200u for 512 bytes, 0x1000u for 4096 bytes).
+ *
+ * @warning This value MUST match the actual hardware block device sector size
+ * for correct operation. Mismatch causes data corruption and filesystem errors.
+ *
+ * @note This consolidates FAT_DEFAULT_SECTOR_SIZE, FS_DEFAULT_SECTOR_SIZE, and
+ * BLOCK_DEFAULT_SECTOR_SIZE into a single configuration value.
+ *
+ * @sa CONFIG_FS_FORMAT_BYTES_PER_SECTOR
+ *
+ */
+  #if !defined(CONFIG_DEFAULT_SECTOR_SIZE)
+    #define CONFIG_DEFAULT_SECTOR_SIZE 0x200u /* 512 bytes */
+  #endif /* if !defined(CONFIG_DEFAULT_SECTOR_SIZE) */
+
+
+/**
+ * @brief Define the bytes per sector for filesystem formatting
+ *
+ * Setting CONFIG_FS_FORMAT_BYTES_PER_SECTOR specifies the sector size to use
+ * when formatting a new FAT filesystem. The default is 512 bytes (0x200u).
+ *
+ * This parameter controls the sector size written to the boot sector during
+ * filesystem format operations. It should typically match
+ * CONFIG_DEFAULT_SECTOR_SIZE.
+ *
+ * @note The value should be set as a hexadecimal constant with the 'u' suffix
+ * (e.g., 0x200u for 512 bytes).
+ *
+ * @note This is a format-time parameter and does not affect mounted
+ * filesystems.
+ *
+ * @sa CONFIG_DEFAULT_SECTOR_SIZE
+ * @sa xFSFormat()
+ *
+ */
+  #if !defined(CONFIG_FS_FORMAT_BYTES_PER_SECTOR)
+    #define CONFIG_FS_FORMAT_BYTES_PER_SECTOR 0x200u /* 512 bytes */
+  #endif /* if !defined(CONFIG_FS_FORMAT_BYTES_PER_SECTOR) */
+
+
+/**
+ * @brief Define the sectors per cluster for filesystem formatting
+ *
+ * Setting CONFIG_FS_FORMAT_SECTORS_PER_CLUSTER specifies how many sectors
+ * make up one cluster when formatting a new FAT filesystem. The default is 8
+ * sectors.
+ *
+ * With 512-byte sectors, 8 sectors per cluster = 4KB clusters. Cluster size
+ * affects storage efficiency and FAT table size. Small clusters reduce wasted
+ * space but increase FAT size; large clusters reduce FAT size but waste more
+ * space on small files.
+ *
+ * @note The value should be set as a hexadecimal constant with the 'u' suffix
+ * (e.g., 0x8u for 8 sectors).
+ *
+ * @note This is a format-time parameter. Adjust based on typical file sizes
+ * and storage device size.
+ *
+ * @sa CONFIG_FS_FORMAT_BYTES_PER_SECTOR
+ * @sa xFSFormat()
+ *
+ */
+  #if !defined(CONFIG_FS_FORMAT_SECTORS_PER_CLUSTER)
+    #define CONFIG_FS_FORMAT_SECTORS_PER_CLUSTER 0x8u /* 8 sectors */
+  #endif /* if !defined(CONFIG_FS_FORMAT_SECTORS_PER_CLUSTER) */
+
+
+/**
+ * @brief Define the number of reserved sectors for filesystem formatting
+ *
+ * Setting CONFIG_FS_FORMAT_RESERVED_SECTORS specifies the number of reserved
+ * sectors (including the boot sector) when formatting a new FAT filesystem.
+ * The default is 32 sectors (0x20u).
+ *
+ * Reserved sectors appear before the FAT tables and include the boot sector,
+ * FSInfo sector, and backup boot sector. FAT32 typically uses 32 reserved
+ * sectors.
+ *
+ * @note The value should be set as a hexadecimal constant with the 'u' suffix
+ * (e.g., 0x20u for 32 sectors).
+ *
+ * @note This is a format-time parameter following FAT32 specifications.
+ *
+ * @sa xFSFormat()
+ *
+ */
+  #if !defined(CONFIG_FS_FORMAT_RESERVED_SECTORS)
+    #define CONFIG_FS_FORMAT_RESERVED_SECTORS 0x20u /* 32 sectors */
+  #endif /* if !defined(CONFIG_FS_FORMAT_RESERVED_SECTORS) */
+
+
+/**
+ * @brief Define the number of FAT copies for filesystem formatting
+ *
+ * Setting CONFIG_FS_FORMAT_NUM_FATS specifies how many copies of the File
+ * Allocation Table to create when formatting. The default is 2.
+ *
+ * Multiple FAT copies provide redundancy for data recovery if one copy becomes
+ * corrupted. Standard practice is 2 copies, though 1 copy saves space at the
+ * cost of reliability.
+ *
+ * @note The value should be set as a hexadecimal constant with the 'u' suffix
+ * (e.g., 0x2u for 2 FAT copies).
+ *
+ * @note This is a format-time parameter. More copies increase reliability but
+ * consume more storage space.
+ *
+ * @sa xFSFormat()
+ *
+ */
+  #if !defined(CONFIG_FS_FORMAT_NUM_FATS)
+    #define CONFIG_FS_FORMAT_NUM_FATS 0x2u /* 2 FAT copies */
+  #endif /* if !defined(CONFIG_FS_FORMAT_NUM_FATS) */
+
+
+/**
+ * @brief Define the sectors per FAT for filesystem formatting
+ *
+ * Setting CONFIG_FS_FORMAT_SECTORS_PER_FAT specifies the size of each File
+ * Allocation Table in sectors when formatting. The default is 256 sectors
+ * (0x100u).
+ *
+ * The FAT size must be large enough to contain entries for all clusters on the
+ * volume. This value should be calculated based on total volume size and
+ * cluster size.
+ *
+ * @note The value should be set as a hexadecimal constant with the 'u' suffix
+ * (e.g., 0x100u for 256 sectors).
+ *
+ * @note This is a format-time parameter. Must be large enough for the number
+ * of clusters on the volume.
+ *
+ * @sa xFSFormat()
+ *
+ */
+  #if !defined(CONFIG_FS_FORMAT_SECTORS_PER_FAT)
+    #define CONFIG_FS_FORMAT_SECTORS_PER_FAT 0x100u /* 256 sectors */
+  #endif /* if !defined(CONFIG_FS_FORMAT_SECTORS_PER_FAT) */
+
+
+/**
+ * @brief Define the root directory cluster for filesystem formatting
+ *
+ * Setting CONFIG_FS_FORMAT_ROOT_CLUSTER specifies the cluster number where the
+ * root directory starts when formatting a new FAT32 filesystem. The default is
+ * cluster 2 (0x2u).
+ *
+ * In FAT32, the root directory is not in a fixed location but is stored in the
+ * data area starting at this cluster. Cluster 2 is the first valid data
+ * cluster and is standard for the root directory.
+ *
+ * @note The value should be set as a hexadecimal constant with the 'u' suffix
+ * (e.g., 0x2u for cluster 2).
+ *
+ * @note This is a format-time parameter following FAT32 specifications.
+ *
+ * @sa xFSFormat()
+ *
+ */
+  #if !defined(CONFIG_FS_FORMAT_ROOT_CLUSTER)
+    #define CONFIG_FS_FORMAT_ROOT_CLUSTER 0x2u /* Cluster 2 */
+  #endif /* if !defined(CONFIG_FS_FORMAT_ROOT_CLUSTER) */
+
+
+/**
+ * @brief Define the total number of sectors for default filesystem
+ *
+ * Setting CONFIG_FAT_DEFAULT_TOTAL_SECTORS specifies the total size of the
+ * filesystem in sectors when formatting with default parameters. The default
+ * is 2048 sectors (0x800u), which equals 1MB with 512-byte sectors.
+ *
+ * This parameter determines the overall size of the formatted filesystem. The
+ * value must not exceed the physical storage device capacity.
+ *
+ * @note The value should be set as a hexadecimal constant with the 'u' suffix
+ * (e.g., 0x800u for 2048 sectors).
+ *
+ * @note With 512-byte sectors, 0x800u = 2048 sectors = 1MB total size.
+ *
+ * @sa xFSFormat()
+ *
+ */
+  #if !defined(CONFIG_FAT_DEFAULT_TOTAL_SECTORS)
+    #define CONFIG_FAT_DEFAULT_TOTAL_SECTORS 0x800u /* 2048 sectors (1MB) */
+  #endif /* if !defined(CONFIG_FAT_DEFAULT_TOTAL_SECTORS) */
+
+
+/**
+ * @brief Define the default volume ID for filesystem formatting
+ *
+ * Setting CONFIG_FAT_DEFAULT_VOLUME_ID specifies the 32-bit volume serial
+ * number assigned when formatting a new filesystem. The default is 0x12345678u.
+ *
+ * The volume ID is a unique identifier for the filesystem volume. It is
+ * typically generated randomly or from a timestamp, but this default value is
+ * used for deterministic formatting.
+ *
+ * @note The value should be set as a hexadecimal constant with the 'u' suffix
+ * (e.g., 0x12345678u).
+ *
+ * @note This is a format-time parameter. Can be any 32-bit value.
+ *
+ * @sa xFSFormat()
+ *
+ */
+  #if !defined(CONFIG_FAT_DEFAULT_VOLUME_ID)
+    #define CONFIG_FAT_DEFAULT_VOLUME_ID 0x12345678u /* Default volume ID */
+  #endif /* if !defined(CONFIG_FAT_DEFAULT_VOLUME_ID) */
+
+
+/**
+ * @brief Define the cluster limit for filesystem volume info operations
+ *
+ * Setting CONFIG_FS_VOL_INFO_CLUSTER_LIMIT specifies the maximum number of
+ * clusters to scan when gathering volume information such as free space. The
+ * default is 4096 clusters (0x1000u).
+ *
+ * This limit prevents volume information operations from blocking for extended
+ * periods on large filesystems. Larger filesystems may need higher limits for
+ * accurate free space reporting; time-constrained systems may want lower
+ * limits.
+ *
+ * @note The value should be set as a hexadecimal constant with the 'u' suffix
+ * (e.g., 0x1000u for 4096 clusters).
+ *
+ * @note This is a trade-off between accuracy and execution time for volume
+ * information queries.
+ *
+ * @sa xFSGetVolumeInfo()
+ *
+ */
+  #if !defined(CONFIG_FS_VOL_INFO_CLUSTER_LIMIT)
+    #define CONFIG_FS_VOL_INFO_CLUSTER_LIMIT 0x1000u /* 4096 clusters */
+  #endif /* if !defined(CONFIG_FS_VOL_INFO_CLUSTER_LIMIT) */
+
 #endif /* ifndef CONFIG_H_ */

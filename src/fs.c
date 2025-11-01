@@ -12,7 +12,7 @@
         if(OK(__KernelAllocateMemory__((volatile Addr_t **) &vol, sizeof(Volume_t)))) {
           vol->blockDeviceUID = CONFIG_FS_BLOCK_DEVICE_UID;
           vol->mounted = false;
-          vol->bytesPerSector = FS_DEFAULT_SECTOR_SIZE;
+          vol->bytesPerSector = CONFIG_DEFAULT_SECTOR_SIZE;
           vol->valid = VALID;
           if(OK(__ReadSector__(vol, 0x0u, &bootSectorData))) {
             bs = (FAT32BootSector_t *) bootSectorData;
@@ -24,7 +24,7 @@
             vol->rootDirCluster = __ReadLE32__(bs->rootCluster);
             vol->fatStartSector = vol->reservedSectors;
             vol->dataStartSector = vol->reservedSectors + (vol->numFATs * vol->sectorsPerFAT);
-            if((vol->bytesPerSector >= FS_DEFAULT_SECTOR_SIZE) && (vol->sectorsPerCluster > 0x0u) && (vol->rootDirCluster >= FAT_MIN_VALID_CLUSTER)) {
+            if((vol->bytesPerSector >= CONFIG_DEFAULT_SECTOR_SIZE) && (vol->sectorsPerCluster > 0x0u) && (vol->rootDirCluster >= FAT_MIN_VALID_CLUSTER)) {
               vol->mounted = true;
               if(OK(__AddMountedDevice__(CONFIG_FS_BLOCK_DEVICE_UID))) {
                 if(OK(__KernelFreeMemory__(bootSectorData))) {
@@ -93,8 +93,8 @@
           info->sectorsPerCluster = volume_->sectorsPerCluster;
           info->bytesPerCluster = (Word_t) volume_->bytesPerSector * volume_->sectorsPerCluster;
           maxCluster = (volume_->sectorsPerFAT * volume_->bytesPerSector) / 0x4u;
-          if(maxCluster > FS_VOL_INFO_CLUSTER_LIMIT) {
-            maxCluster = FS_VOL_INFO_CLUSTER_LIMIT;
+          if(maxCluster > CONFIG_FS_VOL_INFO_CLUSTER_LIMIT) {
+            maxCluster = CONFIG_FS_VOL_INFO_CLUSTER_LIMIT;
           }
           for(cluster = FAT_MIN_VALID_CLUSTER; cluster < maxCluster; cluster++) {
             if(OK(__GetFATEntry__(volume_, cluster, &fatEntry))) {
@@ -130,12 +130,12 @@
     };
     Byte_t *bootSector = null;
     FAT32BootSector_t *bs = null;
-    HalfWord_t bytesPerSector = FS_DEFAULT_SECTOR_SIZE;
-    Byte_t sectorsPerCluster = FAT_83_BASENAME_LENGTH;
-    HalfWord_t reservedSectors = 0x20u;
-    Byte_t numFATs = FAT_MIN_VALID_CLUSTER;
-    Word_t sectorsPerFAT = CONFIG_FS_PATH_BUFFER_SIZE;
-    Word_t rootDirCluster = FAT_MIN_VALID_CLUSTER;
+    HalfWord_t bytesPerSector = CONFIG_FS_FORMAT_BYTES_PER_SECTOR;
+    Byte_t sectorsPerCluster = CONFIG_FS_FORMAT_SECTORS_PER_CLUSTER;
+    HalfWord_t reservedSectors = CONFIG_FS_FORMAT_RESERVED_SECTORS;
+    Byte_t numFATs = CONFIG_FS_FORMAT_NUM_FATS;
+    Word_t sectorsPerFAT = CONFIG_FS_FORMAT_SECTORS_PER_FAT;
+    Word_t rootDirCluster = CONFIG_FS_FORMAT_ROOT_CLUSTER;
     Word_t fatStart = reservedSectors;
     Word_t dataStart = reservedSectors + (numFATs * sectorsPerFAT);
     if(__PointerIsNotNull__(volumeLabel_)) {
@@ -168,7 +168,7 @@
         __WriteLE16__(bs->sectorsPerTrack, FAT_DEFAULT_SECTORS_PER_TRACK);
         __WriteLE16__(bs->numHeads, FAT_DEFAULT_NUM_HEADS);
         __WriteLE32__(bs->hiddenSectors, 0x0u);
-        __WriteLE32__(bs->totalSectors32, FAT_DEFAULT_TOTAL_SECTORS);
+        __WriteLE32__(bs->totalSectors32, CONFIG_FAT_DEFAULT_TOTAL_SECTORS);
         __WriteLE32__(bs->FATSize32, sectorsPerFAT);
         __WriteLE16__(bs->extFlags, 0x0u);
         __WriteLE16__(bs->fsVersion, 0x0u);
@@ -177,7 +177,7 @@
         __WriteLE16__(bs->backupBootSector, 0x6u);
         bs->driveNumber = FAT_DRIVE_NUMBER_HDD;
         bs->bootSignature = FAT_EXTENDED_BOOT_SIG;
-        __WriteLE32__(bs->volumeID, FAT_DEFAULT_VOLUME_ID);
+        __WriteLE32__(bs->volumeID, CONFIG_FAT_DEFAULT_VOLUME_ID);
         __memcpy__(bs->volumeLabel, volumeLabel_, FAT_83_NAME_LENGTH);
         __memcpy__(bs->fsType, "FAT32   ", FAT_83_BASENAME_LENGTH);
         bootSector[0x1FEu] = FAT_BOOT_SIG_55;

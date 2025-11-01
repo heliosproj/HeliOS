@@ -1,7 +1,7 @@
 #include "config.h"
 #if defined(CONFIG_ENABLE_IO_SUBSYSTEM)
   #include "fat.h"
-  static HalfWord_t mountedDevices[MAX_MOUNTED_VOLUMES];
+  static HalfWord_t mountedDevices[CONFIG_FAT_MAX_MOUNTED_VOLUMES];
   static Byte_t mountedDeviceCount = 0x0u;
   HalfWord_t __ReadLE16__(const Byte_t *data_) {
     return ((HalfWord_t) data_[0x0u] | ((HalfWord_t) data_[FAT_LE16_HIGH_BYTE_OFFSET] << FAT_BYTE_SHIFT_8));
@@ -460,8 +460,8 @@
     Base_t continueSearch = true;
     if(__ObjectIsValid__(vol_) && __PointerIsNotNull__(freeCluster_)) {
       maxCluster = (vol_->sectorsPerFAT * vol_->bytesPerSector) / FAT32_ENTRY_SIZE_BYTES;
-      if(maxCluster > FAT_MAX_SEARCHABLE_CLUSTERS) {
-        maxCluster = FAT_MAX_SEARCHABLE_CLUSTERS;
+      if(maxCluster > CONFIG_FAT_MAX_SEARCHABLE_CLUSTERS) {
+        maxCluster = CONFIG_FAT_MAX_SEARCHABLE_CLUSTERS;
       }
       searchStart = (startHint_ >= FAT_83_EXTENSION_LENGTH) ? startHint_ : FAT_83_EXTENSION_LENGTH;
       for(cluster = searchStart; cluster < maxCluster && continueSearch && !found; cluster++) {
@@ -508,7 +508,7 @@
     return (false);
   }
   Return_t __AddMountedDevice__(const HalfWord_t blockDeviceUID_) {
-    if(mountedDeviceCount < MAX_MOUNTED_VOLUMES) {
+    if(mountedDeviceCount < CONFIG_FAT_MAX_MOUNTED_VOLUMES) {
       mountedDevices[mountedDeviceCount] = blockDeviceUID_;
       mountedDeviceCount++;
       return (ReturnOK);

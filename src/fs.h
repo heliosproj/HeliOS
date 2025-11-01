@@ -46,16 +46,6 @@
     #if !defined(CONFIG_FS_MAX_PATH_LENGTH)
       #define CONFIG_FS_MAX_PATH_LENGTH 0x100u
     #endif
-    #define FS_DEFAULT_SECTOR_SIZE 0x200u
-    #define FS_VOL_INFO_CLUSTER_LIMIT 0x1000u
-    #define FS_FORMAT_BYTES_PER_SECTOR 0x200u
-    #define FS_FORMAT_SECTORS_PER_CLUSTER 0x8u
-    #define FS_FORMAT_RESERVED_SECTORS 0x20u
-    #define FS_FORMAT_NUM_FATS 0x2u
-    #define FS_FORMAT_SECTORS_PER_FAT 0x100u
-    #define FS_FORMAT_ROOT_CLUSTER 0x2u
-    #define FAT_DEFAULT_TOTAL_SECTORS 0x800u
-    #define FAT_DEFAULT_VOLUME_ID 0x12345678u
     #ifdef __cplusplus
       extern "C" {
     #endif
