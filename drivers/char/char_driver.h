@@ -49,6 +49,23 @@
     HalfWord_t byteCount;
     Byte_t transferMode;
   } CharDeviceCommand_t;
+typedef struct CharDeviceState_s {
+  HalfWord_t ioDriverUID;
+  Byte_t protocol;
+  Byte_t lineMode;
+  Word_t baudRate;
+  Base_t initialized;
+  HalfWord_t rxBufferSize;
+  HalfWord_t txBufferSize;
+  Byte_t *rxBuffer;
+  Byte_t *txBuffer;
+  HalfWord_t rxHead;
+  HalfWord_t rxTail;
+  HalfWord_t txHead;
+  HalfWord_t txTail;
+  HalfWord_t currentByteCount;
+  Byte_t currentTransferMode;
+} CharDeviceState_t;
   typedef struct CharDeviceInfo_s {
     Byte_t command;
     Byte_t protocol;
@@ -69,6 +86,11 @@
   Return_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t *device_, Size_t *size_, Addr_t *data_);
   Return_t TO_FUNCTION(DEVICE_NAME, _simple_read)(Device_t *device_, Byte_t *data_);
   Return_t TO_FUNCTION(DEVICE_NAME, _simple_write)(Device_t *device_, Byte_t data_);
+  Return_t __PrepareCharIORequest__(const Byte_t operation_, CharIORequest_t **request_, Size_t *configSize_);
+Return_t __CharDeviceReadRAW__(Byte_t **data_, Size_t *bytesRead_);
+Return_t __CharDeviceWriteRAW__(const Byte_t *data_);
+HalfWord_t __CircularBufferSpace__(const HalfWord_t head_, const HalfWord_t tail_, const HalfWord_t size_);
+HalfWord_t __CircularBufferAvailable__(const HalfWord_t head_, const HalfWord_t tail_, const HalfWord_t size_);
   #if defined(POSIX_ARCH_OTHER)
     void __CharDeviceStateClear__(void);
   #endif

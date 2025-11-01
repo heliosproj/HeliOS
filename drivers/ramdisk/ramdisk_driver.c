@@ -2,14 +2,6 @@
 static Byte_t ramdisk[RAMDISK_SIZE_BYTES] = {
   0x0u
 };
-typedef struct RAMDiskState_s {
-  Word_t currentPosition;
-  Word_t bytesRead;
-  Word_t bytesWritten;
-  Word_t readOperations;
-  Word_t writeOperations;
-  Base_t initialized;
-} RAMDiskState_t;
 static RAMDiskState_t state = {
   0x0u
 };
@@ -27,7 +19,6 @@ static RAMDiskState_t state = {
         } while (0x0u)
 #define __ValidateBufferParams__(size_, data_) \
         (__PointerIsNotNull__(size_) && __PointerIsNotNull__(data_) && (0x0u < *(size_)))
-static Return_t __ValidateAndTruncateSize__(Size_t requested_, Size_t *actual_);
 Return_t TO_FUNCTION(DEVICE_NAME, _self_register)(void) {
   FUNCTION_ENTER;
   if(OK(__RegisterDevice__(DEVICE_UID,
@@ -189,7 +180,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _simple_write)(Device_t *device_, Byte_t data_
   }
   FUNCTION_EXIT;
 }
-static Return_t __ValidateAndTruncateSize__(Size_t requested_, Size_t *actual_) {
+Return_t __ValidateAndTruncateSize__(Size_t requested_, Size_t *actual_) {
   FUNCTION_ENTER;
   if((state.currentPosition + requested_) > RAMDISK_SIZE_BYTES) {
     *actual_ = RAMDISK_SIZE_BYTES - state.currentPosition;

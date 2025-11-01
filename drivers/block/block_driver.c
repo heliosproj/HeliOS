@@ -1,20 +1,7 @@
 #include "block_driver.h"
-typedef struct BlockDeviceState_s {
-  HalfWord_t ioDriverUID;
-  Byte_t protocol;
-  HalfWord_t blockSize;
-  Word_t totalBlocks;
-  Base_t initialized;
-  Word_t currentBlockNumber;
-  HalfWord_t currentBlockCount;
-  Byte_t currentTransferMode;
-} BlockDeviceState_t;
 static BlockDeviceState_t state = {
   0x0u
 };
-static Return_t __PrepareBlockIORequest__(const Byte_t operation_, BlockIORequest_t **request_, Size_t *configSize_);
-static Return_t __BlockDeviceReadBlockRAW__(Byte_t **data_);
-static Return_t __BlockDeviceWriteBlockRAW__(const Byte_t *data_);
 Return_t TO_FUNCTION(DEVICE_NAME, _self_register)(void) {
   FUNCTION_ENTER;
   if(OK(__RegisterDevice__(DEVICE_UID,
@@ -150,7 +137,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _simple_write)(Device_t *device_, Byte_t data_
   __AssertOnElse__();
   FUNCTION_EXIT;
 }
-static Return_t __PrepareBlockIORequest__(const Byte_t operation_,
+Return_t __PrepareBlockIORequest__(const Byte_t operation_,
   BlockIORequest_t **request_,
   Size_t *configSize_) {
   FUNCTION_ENTER;
@@ -172,7 +159,7 @@ static Return_t __PrepareBlockIORequest__(const Byte_t operation_,
   }
   FUNCTION_EXIT;
 }
-static Return_t __BlockDeviceReadBlockRAW__(Byte_t **data_) {
+Return_t __BlockDeviceReadBlockRAW__(Byte_t **data_) {
   FUNCTION_ENTER;
   Size_t totalSize = (Size_t) state.blockSize * state.currentBlockCount;
   Byte_t *buffer = null;
@@ -197,7 +184,7 @@ static Return_t __BlockDeviceReadBlockRAW__(Byte_t **data_) {
   }
   FUNCTION_EXIT;
 }
-static Return_t __BlockDeviceWriteBlockRAW__(const Byte_t *data_) {
+Return_t __BlockDeviceWriteBlockRAW__(const Byte_t *data_) {
   FUNCTION_ENTER;
   Size_t totalSize = (Size_t) state.blockSize * state.currentBlockCount;
   BlockIORequest_t *request = null;

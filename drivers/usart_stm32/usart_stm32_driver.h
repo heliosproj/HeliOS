@@ -69,6 +69,25 @@
     Byte_t parity;
     Byte_t stopBits;
   } USARTSTMInitConfig_t;
+typedef struct USARTDriverState_s {
+#if !defined(POSIX_ARCH_OTHER)
+    UART_HandleTypeDef huart;
+#else
+    void *huart;
+#endif
+  Byte_t rxBuffer[USART_RX_BUFFER_SIZE];
+  Byte_t txBuffer[USART_TX_BUFFER_SIZE];
+  volatile HalfWord_t rxHead;
+  volatile HalfWord_t rxTail;
+  volatile HalfWord_t txHead;
+  volatile HalfWord_t txTail;
+  volatile Base_t txBusy;
+  volatile Base_t rxBusy;
+  volatile Byte_t errorFlags;
+  CharIORequest_t currentRequest;
+  Base_t initialized;
+  Byte_t rxSingleByte;
+} USARTDriverState_t;
   #ifdef __cplusplus
     extern "C" {
   #endif
@@ -80,6 +99,15 @@
   Return_t TO_FUNCTION(DEVICE_NAME, _simple_read)(Device_t *device_, Byte_t *data_);
   Return_t TO_FUNCTION(DEVICE_NAME, _simple_write)(Device_t *device_, Byte_t data_);
   void USART_TX_IRQHandler(void);
+  HalfWord_t __CircularBufferSpace__(const HalfWord_t head_, const HalfWord_t tail_, const HalfWord_t size_);
+HalfWord_t __CircularBufferAvailable__(const HalfWord_t head_, const HalfWord_t tail_, const HalfWord_t size_);
+void __CircularBufferPut__(Byte_t *buffer_, HalfWord_t *head_, const HalfWord_t size_, const Byte_t data_);
+Byte_t __CircularBufferGet__(const Byte_t *buffer_, HalfWord_t *tail_, const HalfWord_t size_);
+#if !defined(POSIX_ARCH_OTHER)
+  Return_t __TranslateHALToParity__(const Byte_t parity_, Word_t *halParity_);
+  Return_t __TranslateHALToStopBits__(const Byte_t stopBits_, Word_t *halStopBits_);
+  Return_t __TranslateHALToWordLength__(const Byte_t dataBits_, Word_t *halWordLength_);
+#endif
   #if defined(POSIX_ARCH_OTHER)
     void __USARTSTMStateClear__(void);
   #endif

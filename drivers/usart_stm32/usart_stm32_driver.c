@@ -2,37 +2,9 @@
 #if !defined(POSIX_ARCH_OTHER)
   #include <unistd.h>
 #endif
-typedef struct USARTDriverState_s {
-#if !defined(POSIX_ARCH_OTHER)
-    UART_HandleTypeDef huart;
-#else
-    void *huart;
-#endif
-  Byte_t rxBuffer[USART_RX_BUFFER_SIZE];
-  Byte_t txBuffer[USART_TX_BUFFER_SIZE];
-  volatile HalfWord_t rxHead;
-  volatile HalfWord_t rxTail;
-  volatile HalfWord_t txHead;
-  volatile HalfWord_t txTail;
-  volatile Base_t txBusy;
-  volatile Base_t rxBusy;
-  volatile Byte_t errorFlags;
-  CharIORequest_t currentRequest;
-  Base_t initialized;
-  Byte_t rxSingleByte;
-} USARTDriverState_t;
 static USARTDriverState_t state = {
   0x0u
 };
-static HalfWord_t __CircularBufferSpace__(const HalfWord_t head_, const HalfWord_t tail_, const HalfWord_t size_);
-static HalfWord_t __CircularBufferAvailable__(const HalfWord_t head_, const HalfWord_t tail_, const HalfWord_t size_);
-static void __CircularBufferPut__(Byte_t *buffer_, HalfWord_t *head_, const HalfWord_t size_, const Byte_t data_);
-static Byte_t __CircularBufferGet__(const Byte_t *buffer_, HalfWord_t *tail_, const HalfWord_t size_);
-#if !defined(POSIX_ARCH_OTHER)
-  static Return_t __TranslateHALToParity__(const Byte_t parity_, Word_t *halParity_);
-  static Return_t __TranslateHALToStopBits__(const Byte_t stopBits_, Word_t *halStopBits_);
-  static Return_t __TranslateHALToWordLength__(const Byte_t dataBits_, Word_t *halWordLength_);
-#endif
 Return_t TO_FUNCTION(DEVICE_NAME, _self_register)(void) {
   FUNCTION_ENTER;
   if(OK(__RegisterDevice__(DEVICE_UID,
@@ -352,7 +324,7 @@ void USART_TX_IRQHandler(void) {
     }
   }
 #endif
-static HalfWord_t __CircularBufferSpace__(const HalfWord_t head_,
+HalfWord_t __CircularBufferSpace__(const HalfWord_t head_,
   const HalfWord_t tail_,
   const HalfWord_t size_) {
   if(head_ >= tail_) {
@@ -361,7 +333,7 @@ static HalfWord_t __CircularBufferSpace__(const HalfWord_t head_,
     return (tail_ - head_ - USART_SINGLE_BYTE_TRANSFER);
   }
 }
-static HalfWord_t __CircularBufferAvailable__(const HalfWord_t head_,
+HalfWord_t __CircularBufferAvailable__(const HalfWord_t head_,
   const HalfWord_t tail_,
   const HalfWord_t size_) {
   if(head_ >= tail_) {
@@ -370,14 +342,14 @@ static HalfWord_t __CircularBufferAvailable__(const HalfWord_t head_,
     return (size_ - (tail_ - head_));
   }
 }
-static void __CircularBufferPut__(Byte_t *buffer_,
+void __CircularBufferPut__(Byte_t *buffer_,
   HalfWord_t *head_,
   const HalfWord_t size_,
   const Byte_t data_) {
   buffer_[*head_] = data_;
   *head_ = (*head_ + USART_SINGLE_BYTE_TRANSFER) % size_;
 }
-static Byte_t __CircularBufferGet__(const Byte_t *buffer_,
+Byte_t __CircularBufferGet__(const Byte_t *buffer_,
   HalfWord_t *tail_,
   const HalfWord_t size_) {
   Byte_t data = buffer_[*tail_];
@@ -385,7 +357,7 @@ static Byte_t __CircularBufferGet__(const Byte_t *buffer_,
   return(data);
 }
 #if !defined(POSIX_ARCH_OTHER)
-  static Return_t __TranslateHALToParity__(const Byte_t parity_, Word_t *halParity_) {
+  Return_t __TranslateHALToParity__(const Byte_t parity_, Word_t *halParity_) {
     FUNCTION_ENTER;
     switch(parity_) {
     case CHAR_IO_PARITY_NONE:
@@ -403,7 +375,7 @@ static Byte_t __CircularBufferGet__(const Byte_t *buffer_,
     __ReturnOk__();
     FUNCTION_EXIT;
   }
-  static Return_t __TranslateHALToStopBits__(const Byte_t stopBits_, Word_t *halStopBits_) {
+  Return_t __TranslateHALToStopBits__(const Byte_t stopBits_, Word_t *halStopBits_) {
     FUNCTION_ENTER;
     switch(stopBits_) {
     case CHAR_IO_STOP_BITS_1:
@@ -418,7 +390,7 @@ static Byte_t __CircularBufferGet__(const Byte_t *buffer_,
     __ReturnOk__();
     FUNCTION_EXIT;
   }
-  static Return_t __TranslateHALToWordLength__(const Byte_t dataBits_, Word_t *halWordLength_) {
+  Return_t __TranslateHALToWordLength__(const Byte_t dataBits_, Word_t *halWordLength_) {
     FUNCTION_ENTER;
     switch(dataBits_) {
     case CHAR_IO_DATA_BITS_8:

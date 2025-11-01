@@ -34,6 +34,16 @@
   #define BLOCK_CMD_WRITE_SINGLE 0x03u
   #define BLOCK_CMD_WRITE_MULTIPLE 0x04u
   #define BLOCK_DEFAULT_SECTOR_SIZE 0x200u
+  typedef struct BlockDeviceState_s {
+  HalfWord_t ioDriverUID;
+  Byte_t protocol;
+  HalfWord_t blockSize;
+  Word_t totalBlocks;
+  Base_t initialized;
+  Word_t currentBlockNumber;
+  HalfWord_t currentBlockCount;
+  Byte_t currentTransferMode;
+} BlockDeviceState_t;
   typedef struct BlockDeviceConfig_s {
     Byte_t command;
     HalfWord_t ioDriverUID;
@@ -60,6 +70,9 @@
   Return_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t *device_, Size_t *size_, Addr_t *data_);
   Return_t TO_FUNCTION(DEVICE_NAME, _simple_read)(Device_t *device_, Byte_t *data_);
   Return_t TO_FUNCTION(DEVICE_NAME, _simple_write)(Device_t *device_, Byte_t data_);
+  Return_t __PrepareBlockIORequest__(const Byte_t operation_, BlockIORequest_t **request_, Size_t *configSize_);
+  Return_t __BlockDeviceReadBlockRAW__(Byte_t **data_);
+  Return_t __BlockDeviceWriteBlockRAW__(const Byte_t *data_);
   #if defined(POSIX_ARCH_OTHER)
     void __BlockDeviceStateClear__(void);
   #endif

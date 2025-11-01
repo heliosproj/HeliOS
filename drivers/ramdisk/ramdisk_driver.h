@@ -43,6 +43,14 @@
     Word_t readOperations;
     Word_t writeOperations;
   } RAMDiskStats_t;
+typedef struct RAMDiskState_s {
+  Word_t currentPosition;
+  Word_t bytesRead;
+  Word_t bytesWritten;
+  Word_t readOperations;
+  Word_t writeOperations;
+  Base_t initialized;
+} RAMDiskState_t;
   #ifdef __cplusplus
     extern "C" {
   #endif
@@ -53,6 +61,7 @@
   Return_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t *device_, Size_t *size_, Addr_t *data_);
   Return_t TO_FUNCTION(DEVICE_NAME, _simple_read)(Device_t *device_, Byte_t *data_);
   Return_t TO_FUNCTION(DEVICE_NAME, _simple_write)(Device_t *device_, Byte_t data_);
+Return_t __ValidateAndTruncateSize__(Size_t requested_, Size_t *actual_);
   #if defined(POSIX_ARCH_OTHER)
     void __RAMDiskStateClear__(void);
   #endif

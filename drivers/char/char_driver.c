@@ -1,29 +1,7 @@
 #include "char_driver.h"
-typedef struct CharDeviceState_s {
-  HalfWord_t ioDriverUID;
-  Byte_t protocol;
-  Byte_t lineMode;
-  Word_t baudRate;
-  Base_t initialized;
-  HalfWord_t rxBufferSize;
-  HalfWord_t txBufferSize;
-  Byte_t *rxBuffer;
-  Byte_t *txBuffer;
-  HalfWord_t rxHead;
-  HalfWord_t rxTail;
-  HalfWord_t txHead;
-  HalfWord_t txTail;
-  HalfWord_t currentByteCount;
-  Byte_t currentTransferMode;
-} CharDeviceState_t;
 static CharDeviceState_t state = {
   0x0u
 };
-static Return_t __PrepareCharIORequest__(const Byte_t operation_, CharIORequest_t **request_, Size_t *configSize_);
-static Return_t __CharDeviceReadRAW__(Byte_t **data_, Size_t *bytesRead_);
-static Return_t __CharDeviceWriteRAW__(const Byte_t *data_);
-static HalfWord_t __CircularBufferSpace__(const HalfWord_t head_, const HalfWord_t tail_, const HalfWord_t size_);
-static HalfWord_t __CircularBufferAvailable__(const HalfWord_t head_, const HalfWord_t tail_, const HalfWord_t size_);
 Return_t TO_FUNCTION(DEVICE_NAME, _self_register)(void) {
   FUNCTION_ENTER;
   if(OK(__RegisterDevice__(DEVICE_UID,
@@ -226,7 +204,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _simple_write)(Device_t *device_, Byte_t data_
   }
   FUNCTION_EXIT;
 }
-static Return_t __PrepareCharIORequest__(const Byte_t operation_,
+Return_t __PrepareCharIORequest__(const Byte_t operation_,
   CharIORequest_t **request_,
   Size_t *configSize_) {
   FUNCTION_ENTER;
@@ -246,7 +224,7 @@ static Return_t __PrepareCharIORequest__(const Byte_t operation_,
   }
   FUNCTION_EXIT;
 }
-static Return_t __CharDeviceReadRAW__(Byte_t **data_,
+Return_t __CharDeviceReadRAW__(Byte_t **data_,
   Size_t *bytesRead_) {
   FUNCTION_ENTER;
   Size_t requestSize = (Size_t) state.currentByteCount;
@@ -270,7 +248,7 @@ static Return_t __CharDeviceReadRAW__(Byte_t **data_,
   }
   FUNCTION_EXIT;
 }
-static Return_t __CharDeviceWriteRAW__(const Byte_t *data_) {
+Return_t __CharDeviceWriteRAW__(const Byte_t *data_) {
   FUNCTION_ENTER;
   Size_t writeSize = (Size_t) state.currentByteCount;
   CharIORequest_t *request = null;
@@ -290,7 +268,7 @@ static Return_t __CharDeviceWriteRAW__(const Byte_t *data_) {
   }
   FUNCTION_EXIT;
 }
-static HalfWord_t __CircularBufferSpace__(const HalfWord_t head_,
+HalfWord_t __CircularBufferSpace__(const HalfWord_t head_,
   const HalfWord_t tail_,
   const HalfWord_t size_) {
   if(head_ >= tail_) {
@@ -299,7 +277,7 @@ static HalfWord_t __CircularBufferSpace__(const HalfWord_t head_,
     return (tail_ - head_ - CHAR_SINGLE_BYTE_COUNT);
   }
 }
-static HalfWord_t __CircularBufferAvailable__(const HalfWord_t head_,
+HalfWord_t __CircularBufferAvailable__(const HalfWord_t head_,
   const HalfWord_t tail_,
   const HalfWord_t size_) {
   if(head_ >= tail_) {
