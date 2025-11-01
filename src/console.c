@@ -30,45 +30,6 @@
   #include "../drivers/char/char_driver.h"
 
 
-  #define CHAR_NULL 0x00u
-
-
-  #define CHAR_TAB 0x09u
-
-
-  #define CHAR_LF 0x0Au
-
-
-  #define CHAR_CR 0x0Du
-
-
-  #define CHAR_SPACE 0x20u
-
-
-  #define CHAR_SLASH 0x2Fu
-
-
-  #define CHAR_DOT 0x2Eu
-
-
-  #define CHAR_ZERO 0x30u
-
-
-  #define CHAR_LOWERCASE_X 0x78u
-
-
-  #define CHAR_BACKSPACE 0x08u
-
-
-  #define CHAR_DEL 0x7Fu
-
-
-  #define CHAR_PRINTABLE_MIN 0x20u
-
-
-  #define CHAR_PRINTABLE_MAX 0x7Eu
-
-
   static ConsoleState_t consoleState;
 
 
@@ -79,51 +40,6 @@
 
 
   static HalfWord_t cachedDeviceUID = 0x0u;
-  /**
-   * @brief Implements the help command
-   * @details Internal command handler that displays available console commands and their descriptions.
-   *
-   * @param[in] args_ Command arguments (unused)
-   *
-   * @return          ReturnOK if help was displayed successfully
-   * @return          ReturnError if operation failed
-   */
-  static Return_t __ConsoleCmdHelp__(const Byte_t *args_);
-  static Return_t __ConsoleCmdVersion__(const Byte_t *args_);
-  static Return_t __ConsoleCmdTasks__(const Byte_t *args_);
-  static Return_t __ConsoleCmdMem__(const Byte_t *args_);
-  static Return_t __ConsoleCmdClear__(const Byte_t *args_);
-  static Return_t __ConsoleCmdEcho__(const Byte_t *args_);
-  static Return_t __ConsoleCmdLs__(const Byte_t *args_);
-  static Return_t __ConsoleCmdCd__(const Byte_t *args_);
-  static Return_t __ConsoleCmdPwd__(const Byte_t *args_);
-  static Return_t __ConsoleCmdCat__(const Byte_t *args_);
-  static Return_t __ConsoleCmdMv__(const Byte_t *args_);
-  static Return_t __ConsoleCmdRm__(const Byte_t *args_);
-  static Return_t __ConsoleCmdMkdir__(const Byte_t *args_);
-  static Return_t __ConsoleWriteString__(const Byte_t *str_);
-  static Return_t __ConsoleReadChar__(Byte_t *ch_);
-  static Return_t __ConsoleCheckDevice__(void);
-  static Return_t __ConsoleProcessCommand__(void);
-  static void __ConsolePrintPrompt__(void);
-  static Return_t __ConsoleHandleBackspace__(void);
-  static void __SkipWhitespace__(const Byte_t **str_);
-  static void __uitoah__(Word_t value_, Byte_t *buffer_, Word_t bufferSize_);
-
-
-  typedef struct ConsoleCommand_s {
-
-
-    const Byte_t *name;
-
-
-    Return_t (* handler)(const Byte_t *);
-
-
-    const Byte_t *description;
-
-
-  } ConsoleCommand_t;
 
 
   static const ConsoleCommand_t commandTable[] = {{
@@ -132,79 +48,92 @@
                                                     (const Byte_t *) "help", __ConsoleCmdHelp__, (const Byte_t *) "Display available commands"
 
 
-                                                  }, {
+                                                  },
+                                                  {
 
 
                                                     (const Byte_t *) "version", __ConsoleCmdVersion__, (const Byte_t *) "Display version information"
 
 
-                                                  }, {
+                                                  },
+                                                  {
 
 
                                                     (const Byte_t *) "tasks", __ConsoleCmdTasks__, (const Byte_t *) "List running tasks"
 
 
-                                                  }, {
+                                                  },
+                                                  {
 
 
                                                     (const Byte_t *) "mem", __ConsoleCmdMem__, (const Byte_t *) "Display memory statistics"
 
 
-                                                  }, {
+                                                  },
+                                                  {
 
 
                                                     (const Byte_t *) "clear", __ConsoleCmdClear__, (const Byte_t *) "Clear the screen"
 
 
-                                                  }, {
+                                                  },
+                                                  {
 
 
                                                     (const Byte_t *) "echo", __ConsoleCmdEcho__, (const Byte_t *) "Toggle echo mode or print message"
 
 
-                                                  }, {
+                                                  },
+                                                  {
 
 
                                                     (const Byte_t *) "ls", __ConsoleCmdLs__, (const Byte_t *) "List directory contents"
 
 
-                                                  }, {
+                                                  },
+                                                  {
 
 
                                                     (const Byte_t *) "cd", __ConsoleCmdCd__, (const Byte_t *) "Change directory"
 
 
-                                                  }, {
+                                                  },
+                                                  {
 
 
                                                     (const Byte_t *) "pwd", __ConsoleCmdPwd__, (const Byte_t *) "Print working directory"
 
 
-                                                  }, {
+                                                  },
+                                                  {
 
 
                                                     (const Byte_t *) "cat", __ConsoleCmdCat__, (const Byte_t *) "Display file contents"
 
 
-                                                  }, {
+                                                  },
+                                                  {
 
 
                                                     (const Byte_t *) "mv", __ConsoleCmdMv__, (const Byte_t *) "Move/rename file"
 
 
-                                                  }, {
+                                                  },
+                                                  {
 
 
                                                     (const Byte_t *) "rm", __ConsoleCmdRm__, (const Byte_t *) "Remove file"
 
 
-                                                  }, {
+                                                  },
+                                                  {
 
 
                                                     (const Byte_t *) "mkdir", __ConsoleCmdMkdir__, (const Byte_t *) "Create directory"
 
 
-                                                  }, {
+                                                  },
+                                                  {
 
 
                                                     null, null, null
@@ -220,29 +149,26 @@
       while(CHAR_NULL != str_[len]) {
 
         len++;
-
       }
-
     }
 
     return (len);
-
   }
 
 
-  /**
-   * @brief Copies a string with bounds checking
-   * @details Internal string copy with destination size limit.
-   *
-   * @param[out] dest_     Destination buffer
-   * @param[in]  src_      Source string
-   * @param[in]  destSize_ Size of destination buffer
-   *
-   * @return               ReturnOK if copy was successful
-   * @return               ReturnError if destination too small or invalid parameters
-   *
-   * @note This is an internal function similar to strncpy with safety checks
-   */
+/**
+ * @brief Copies a string with bounds checking
+ * @details Internal string copy with destination size limit.
+ *
+ * @param[out] dest_     Destination buffer
+ * @param[in]  src_      Source string
+ * @param[in]  destSize_ Size of destination buffer
+ *
+ * @return               ReturnOK if copy was successful
+ * @return               ReturnError if destination too small or invalid parameters
+ *
+ * @note This is an internal function similar to strncpy with safety checks
+ */
   Return_t __strcpy__(Byte_t *dest_, const Byte_t *src_, const Size_t destSize_) {
 
     FUNCTION_ENTER;
@@ -256,7 +182,6 @@
         dest_[i] = src_[i];
 
         i++;
-
       }
 
       dest_[i] = CHAR_NULL;
@@ -266,27 +191,25 @@
     } else {
 
       __AssertOnElse__();
-
     }
 
     FUNCTION_EXIT;
-
   }
 
 
-  /**
-   * @brief Copies at most n characters from a string
-   * @details Internal bounded string copy implementation.
-   *
-   * @param[out] dest_ Destination buffer
-   * @param[in]  src_  Source string
-   * @param[in]  n_    Maximum number of characters to copy
-   *
-   * @return           ReturnOK if copy was successful
-   * @return           ReturnError if invalid parameters
-   *
-   * @note This is an internal function similar to standard strncpy
-   */
+/**
+ * @brief Copies at most n characters from a string
+ * @details Internal bounded string copy implementation.
+ *
+ * @param[out] dest_ Destination buffer
+ * @param[in]  src_  Source string
+ * @param[in]  n_    Maximum number of characters to copy
+ *
+ * @return           ReturnOK if copy was successful
+ * @return           ReturnError if invalid parameters
+ *
+ * @note This is an internal function similar to standard strncpy
+ */
   Return_t __strncpy__(Byte_t *dest_, const Byte_t *src_, const Size_t n_) {
 
     FUNCTION_ENTER;
@@ -298,13 +221,11 @@
       for(i = 0x0u; (i < n_) && (CHAR_NULL != src_[i]); i++) {
 
         dest_[i] = src_[i];
-
       }
 
       for(; i < n_; i++) {
 
         dest_[i] = CHAR_NULL;
-
       }
 
       __ReturnOk__();
@@ -312,11 +233,9 @@
     } else {
 
       __AssertOnElse__();
-
     }
 
     FUNCTION_EXIT;
-
   }
 
 
@@ -327,7 +246,6 @@
     if(__PointerIsNull__(s1_) || __PointerIsNull__(s2_)) {
 
       return (0x0u);
-
     }
 
     while((CHAR_NULL != s1_[i]) && (CHAR_NULL != s2_[i])) {
@@ -335,21 +253,17 @@
       if(s1_[i] != s2_[i]) {
 
         return ((s1_[i] < s2_[i]) ? -0x1 : 0x1);
-
       }
 
       i++;
-
     }
 
     if(s1_[i] == s2_[i]) {
 
       return (0x0u);
-
     }
 
     return ((s1_[i] < s2_[i]) ? -0x1 : 0x1);
-
   }
 
 
@@ -360,7 +274,6 @@
     if(__PointerIsNull__(s1_) || __PointerIsNull__(s2_) || (0x0u == n_)) {
 
       return (0x0u);
-
     }
 
     for(i = 0x0u; i < n_; i++) {
@@ -368,29 +281,26 @@
       if((CHAR_NULL == s1_[i]) || (s1_[i] != s2_[i])) {
 
         return ((s1_[i] < s2_[i]) ? (Base_t) -0x1 : ((s1_[i] > s2_[i]) ? (Base_t) 0x1 : (Base_t) 0x0u));
-
       }
-
     }
 
     return (0x0u);
-
   }
 
 
-  /**
-   * @brief Concatenates two strings with bounds checking
-   * @details Internal string concatenation with destination size limit.
-   *
-   * @param[in,out] dest_     Destination buffer
-   * @param[in]     src_      Source string to append
-   * @param[in]     destSize_ Size of destination buffer
-   *
-   * @return                  ReturnOK if concatenation was successful
-   * @return                  ReturnError if destination too small or invalid parameters
-   *
-   * @note This is an internal function similar to strncat with safety checks
-   */
+/**
+ * @brief Concatenates two strings with bounds checking
+ * @details Internal string concatenation with destination size limit.
+ *
+ * @param[in,out] dest_     Destination buffer
+ * @param[in]     src_      Source string to append
+ * @param[in]     destSize_ Size of destination buffer
+ *
+ * @return                  ReturnOK if concatenation was successful
+ * @return                  ReturnError if destination too small or invalid parameters
+ *
+ * @note This is an internal function similar to strncat with safety checks
+ */
   Return_t __strcat__(Byte_t *dest_, const Byte_t *src_, const Size_t destSize_) {
 
     FUNCTION_ENTER;
@@ -410,7 +320,6 @@
           dest_[destLen + i] = src_[i];
 
           i++;
-
         }
 
         dest_[destLen + i] = CHAR_NULL;
@@ -420,17 +329,14 @@
       } else {
 
         __AssertOnElse__();
-
       }
 
     } else {
 
       __AssertOnElse__();
-
     }
 
     FUNCTION_EXIT;
-
   }
 
 
@@ -441,7 +347,6 @@
     if(__PointerIsNull__(str_)) {
 
       return (null);
-
     }
 
     while(CHAR_NULL != str_[i]) {
@@ -449,21 +354,17 @@
       if(str_[i] == ch_) {
 
         return ((Byte_t *) &str_[i]);
-
       }
 
       i++;
-
     }
 
     if(CHAR_NULL == ch_) {
 
       return ((Byte_t *) &str_[i]);
-
     }
 
     return (null);
-
   }
 
 
@@ -476,7 +377,6 @@
     if(__PointerIsNull__(str_)) {
 
       return (null);
-
     }
 
     len = __strlen__(str_);
@@ -486,36 +386,32 @@
       if(str_[i - 0x1u] == ch_) {
 
         return ((Byte_t *) &str_[i - 0x1u]);
-
       }
-
     }
 
     if((CHAR_NULL == ch_) && (len > 0x0u)) {
 
       return ((Byte_t *) &str_[len]);
-
     }
 
     return (null);
-
   }
 
 
-  /**
-   * @brief Joins two path components
-   * @details Internal path joining with proper separator handling.
-   *
-   * @param[out] dest_     Destination buffer for joined path
-   * @param[in]  base_     Base path component
-   * @param[in]  path_     Path component to append
-   * @param[in]  destSize_ Size of destination buffer
-   *
-   * @return               ReturnOK if join was successful
-   * @return               ReturnError if destination too small or invalid parameters
-   *
-   * @note This is an internal function for filesystem path manipulation
-   */
+/**
+ * @brief Joins two path components
+ * @details Internal path joining with proper separator handling.
+ *
+ * @param[out] dest_     Destination buffer for joined path
+ * @param[in]  base_     Base path component
+ * @param[in]  path_     Path component to append
+ * @param[in]  destSize_ Size of destination buffer
+ *
+ * @return               ReturnOK if join was successful
+ * @return               ReturnError if destination too small or invalid parameters
+ *
+ * @note This is an internal function for filesystem path manipulation
+ */
   Return_t __path_join__(Byte_t *dest_, const Byte_t *base_, const Byte_t *path_, const Size_t destSize_) {
 
     FUNCTION_ENTER;
@@ -545,13 +441,11 @@
             } else {
 
               __AssertOnElse__();
-
             }
 
           } else {
 
             __AssertOnElse__();
-
           }
 
         } else {
@@ -567,7 +461,6 @@
                 dest_[baseLen] = CHAR_SLASH;
 
                 dest_[baseLen + 0x1u] = CHAR_NULL;
-
               }
 
               if(OK(__strcat__(dest_, path_, destSize_))) {
@@ -577,52 +470,45 @@
               } else {
 
                 __AssertOnElse__();
-
               }
 
             } else {
 
               __AssertOnElse__();
-
             }
 
           } else {
 
             __AssertOnElse__();
-
           }
-
         }
 
       } else {
 
         __AssertOnElse__();
-
       }
 
     } else {
 
       __AssertOnElse__();
-
     }
 
     FUNCTION_EXIT;
-
   }
 
 
-  /**
-   * @brief Normalizes a filesystem path
-   * @details Internal path normalization removing "." and ".." components.
-   *
-   * @param[in,out] path_     Path to normalize
-   * @param[in]     pathSize_ Size of path buffer
-   *
-   * @return                  ReturnOK if normalization was successful
-   * @return                  ReturnError if invalid parameters
-   *
-   * @note This is an internal function for filesystem path manipulation
-   */
+/**
+ * @brief Normalizes a filesystem path
+ * @details Internal path normalization removing "." and ".." components.
+ *
+ * @param[in,out] path_     Path to normalize
+ * @param[in]     pathSize_ Size of path buffer
+ *
+ * @return                  ReturnOK if normalization was successful
+ * @return                  ReturnError if invalid parameters
+ *
+ * @note This is an internal function for filesystem path manipulation
+ */
   Return_t __path_normalize__(Byte_t *path_, const Size_t pathSize_) {
 
     FUNCTION_ENTER;
@@ -658,7 +544,6 @@
         for(i = 0x0u; i <= len; i++) {
 
           temp[i] = path_[i];
-
         }
 
         i = 0x0u;
@@ -666,7 +551,6 @@
         if(CHAR_SLASH == temp[0x0u]) {
 
           i = 0x1u;
-
         }
 
         segIdx = 0x0u;
@@ -684,25 +568,20 @@
                 if(segmentCount > 0x0u) {
 
                   segmentCount--;
-
                 }
 
               } else if(!((segments[segmentCount][0x0u] == '.') && (segments[segmentCount][0x1u] == CHAR_NULL))) {
 
                 segmentCount++;
-
               }
 
               segIdx = 0x0u;
-
             }
 
           } else {
 
             segments[segmentCount][segIdx++] = temp[i];
-
           }
-
         }
 
         j = 0x0u;
@@ -710,7 +589,6 @@
         if(CHAR_SLASH == path_[0x0u]) {
 
           path_[j++] = CHAR_SLASH;
-
         }
 
         for(k = 0x0u; k < segmentCount; k++) {
@@ -722,15 +600,12 @@
           if(k > 0x0u) {
 
             path_[j++] = CHAR_SLASH;
-
           }
 
           for(m = 0x0u; m < segLen; m++) {
 
             path_[j++] = segments[k][m];
-
           }
-
         }
 
         if((0x0u == j) || ((0x1u == j) && (CHAR_SLASH == path_[0x0u]))) {
@@ -738,7 +613,6 @@
           path_[0x0u] = CHAR_SLASH;
 
           j = 0x1u;
-
         }
 
         path_[j] = CHAR_NULL;
@@ -748,17 +622,14 @@
       } else {
 
         __AssertOnElse__();
-
       }
 
     } else {
 
       __AssertOnElse__();
-
     }
 
     FUNCTION_EXIT;
-
   }
 
 
@@ -767,27 +638,25 @@
     if(__PointerIsNull__(path_)) {
 
       return (false);
-
     }
 
     return ((CHAR_SLASH == path_[0x0u]) ? true : false);
-
   }
 
 
-  /**
-   * @brief Extracts directory portion of path
-   * @details Internal path parsing to get parent directory.
-   *
-   * @param[out] dest_     Destination buffer for directory path
-   * @param[in]  path_     Source path
-   * @param[in]  destSize_ Size of destination buffer
-   *
-   * @return               ReturnOK if extraction was successful
-   * @return               ReturnError if destination too small or invalid parameters
-   *
-   * @note This is an internal function similar to dirname
-   */
+/**
+ * @brief Extracts directory portion of path
+ * @details Internal path parsing to get parent directory.
+ *
+ * @param[out] dest_     Destination buffer for directory path
+ * @param[in]  path_     Source path
+ * @param[in]  destSize_ Size of destination buffer
+ *
+ * @return               ReturnOK if extraction was successful
+ * @return               ReturnError if destination too small or invalid parameters
+ *
+ * @note This is an internal function similar to dirname
+ */
   Return_t __path_dirname__(Byte_t *dest_, const Byte_t *path_, const Size_t destSize_) {
 
     FUNCTION_ENTER;
@@ -809,7 +678,6 @@
         } else {
 
           __AssertOnElse__();
-
         }
 
       } else {
@@ -819,9 +687,7 @@
           if(CHAR_SLASH == path_[i - 0x1u]) {
 
             break;
-
           }
-
         }
 
         if(0x0u == i) {
@@ -833,7 +699,6 @@
           } else {
 
             __AssertOnElse__();
-
           }
 
         } else {
@@ -849,43 +714,37 @@
             } else {
 
               __AssertOnElse__();
-
             }
 
           } else {
 
             __AssertOnElse__();
-
           }
-
         }
-
       }
 
     } else {
 
       __AssertOnElse__();
-
     }
 
     FUNCTION_EXIT;
-
   }
 
 
-  /**
-   * @brief Extracts filename portion of path
-   * @details Internal path parsing to get final component.
-   *
-   * @param[out] dest_     Destination buffer for filename
-   * @param[in]  path_     Source path
-   * @param[in]  destSize_ Size of destination buffer
-   *
-   * @return               ReturnOK if extraction was successful
-   * @return               ReturnError if destination too small or invalid parameters
-   *
-   * @note This is an internal function similar to basename
-   */
+/**
+ * @brief Extracts filename portion of path
+ * @details Internal path parsing to get final component.
+ *
+ * @param[out] dest_     Destination buffer for filename
+ * @param[in]  path_     Source path
+ * @param[in]  destSize_ Size of destination buffer
+ *
+ * @return               ReturnOK if extraction was successful
+ * @return               ReturnError if destination too small or invalid parameters
+ *
+ * @note This is an internal function similar to basename
+ */
   Return_t __path_basename__(Byte_t *dest_, const Byte_t *path_, const Size_t destSize_) {
 
     FUNCTION_ENTER;
@@ -909,7 +768,6 @@
         } else {
 
           __AssertOnElse__();
-
         }
 
       } else {
@@ -921,9 +779,7 @@
             start = i;
 
             break;
-
           }
-
         }
 
         if((len - start) < destSize_) {
@@ -935,35 +791,30 @@
           } else {
 
             __AssertOnElse__();
-
           }
 
         } else {
 
           __AssertOnElse__();
-
         }
-
       }
 
     } else {
 
       __AssertOnElse__();
-
     }
 
     FUNCTION_EXIT;
-
   }
 
 
-  /**
-   * @brief Initializes the console subsystem
-   * @details Sets up console device and internal state for command processing.
-   *
-   * @return ReturnOK if initialization was successful
-   * @return ReturnError if initialization failed or device unavailable
-   */
+/**
+ * @brief Initializes the console subsystem
+ * @details Sets up console device and internal state for command processing.
+ *
+ * @return ReturnOK if initialization was successful
+ * @return ReturnError if initialization failed or device unavailable
+ */
   Return_t xConsoleInit(void) {
 
     FUNCTION_ENTER;
@@ -974,7 +825,7 @@
 
       consoleState.echoEnabled = true;
 
-  #else  /* if defined(CONFIG_CONSOLE_ECHO_ENABLED) */
+  #else /* if defined(CONFIG_CONSOLE_ECHO_ENABLED) */
 
       consoleState.echoEnabled = false;
 
@@ -991,7 +842,6 @@
     __ReturnOk__();
 
     FUNCTION_EXIT;
-
   }
 
 
@@ -1018,11 +868,9 @@
         } else {
 
           __ConsoleWriteString__((const Byte_t *) "Warning: Filesystem not available.\r\n");
-
         }
 
         __ConsolePrintPrompt__();
-
       }
 
     } else {
@@ -1038,13 +886,10 @@
           xFSUnmount(mountedVolume);
 
           mountedVolume = null;
-
         }
-
       }
 
       return;
-
     }
 
     if(OK(__ConsoleReadChar__(&ch))) {
@@ -1064,7 +909,6 @@
           __ConsoleProcessCommand__();
 
           consoleState.bufferPosition = 0x0u;
-
         }
 
         __ConsolePrintPrompt__();
@@ -1086,26 +930,21 @@
             echoChar[0x1] = CHAR_NULL;
 
             __ConsoleWriteString__(echoChar);
-
           }
-
         }
-
       }
-
     }
-
   }
 
 
-  /**
-   * @brief Checks and initializes the console device
-   * @details Internal helper that verifies the console device is available and initializes it if needed.
-   *
-   * @return ReturnOK if device is ready
-   * @return ReturnError if device is not available
-   */
-  static Return_t __ConsoleCheckDevice__(void) {
+/**
+ * @brief Checks and initializes the console device
+ * @details Internal helper that verifies the console device is available and initializes it if needed.
+ *
+ * @return ReturnOK if device is ready
+ * @return ReturnError if device is not available
+ */
+  Return_t __ConsoleCheckDevice__(void) {
 
     FUNCTION_ENTER;
 
@@ -1122,9 +961,7 @@
         cachedDevice = null;
 
         cachedDeviceUID = 0x0u;
-
       }
-
     }
 
     if(needLookup) {
@@ -1142,7 +979,6 @@
           cachedDeviceUID = 0x0u;
 
           __AssertOnElse__();
-
         }
 
       } else {
@@ -1152,9 +988,7 @@
         cachedDeviceUID = 0x0u;
 
         __AssertOnElse__();
-
       }
-
     }
 
     if(!needLookup || (__PointerIsNotNull__(cachedDevice) && (DeviceStateRunning == cachedDevice->state))) {
@@ -1164,24 +998,22 @@
     } else {
 
       __AssertOnElse__();
-
     }
 
     FUNCTION_EXIT;
-
   }
 
 
-  /**
-   * @brief Writes a string to the console device
-   * @details Internal helper that writes a null-terminated string to the console output device.
-   *
-   * @param[in] str_ Null-terminated string to write
-   *
-   * @return         ReturnOK if write was successful
-   * @return         ReturnError if write failed or invalid parameter
-   */
-  static Return_t __ConsoleWriteString__(const Byte_t *str_) {
+/**
+ * @brief Writes a string to the console device
+ * @details Internal helper that writes a null-terminated string to the console output device.
+ *
+ * @param[in] str_ Null-terminated string to write
+ *
+ * @return         ReturnOK if write was successful
+ * @return         ReturnError if write failed or invalid parameter
+ */
+  Return_t __ConsoleWriteString__(const Byte_t *str_) {
 
     FUNCTION_ENTER;
 
@@ -1218,9 +1050,7 @@
           } else {
 
             device = null;
-
           }
-
         }
 
         if(__PointerIsNotNull__(device)) {
@@ -1258,39 +1088,32 @@
                 } else {
 
                   __AssertOnElse__();
-
                 }
 
               } else {
 
                 __AssertOnElse__();
-
               }
-
             }
 
           } else {
 
             __AssertOnElse__();
-
           }
 
         } else {
 
           __AssertOnElse__();
-
         }
 
       } else {
 
         __AssertOnElse__();
-
       }
 
     } else {
 
       __AssertOnElse__();
-
     }
 
     if(success) {
@@ -1300,24 +1123,22 @@
     } else {
 
       __AssertOnElse__();
-
     }
 
     FUNCTION_EXIT;
-
   }
 
 
-  /**
-   * @brief Reads a single character from the console device
-   * @details Internal helper that reads one character from the console input device with buffering support.
-   *
-   * @param[in] ch_ Pointer to store the read character
-   *
-   * @return        ReturnOK if character was read successfully
-   * @return        ReturnError if read failed or invalid parameter
-   */
-  static Return_t __ConsoleReadChar__(Byte_t *ch_) {
+/**
+ * @brief Reads a single character from the console device
+ * @details Internal helper that reads one character from the console input device with buffering support.
+ *
+ * @param[in] ch_ Pointer to store the read character
+ *
+ * @return        ReturnOK if character was read successfully
+ * @return        ReturnError if read failed or invalid parameter
+ */
+  Return_t __ConsoleReadChar__(Byte_t *ch_) {
 
     FUNCTION_ENTER;
 
@@ -1350,9 +1171,7 @@
         } else {
 
           device = null;
-
         }
-
       }
 
       if(__PointerIsNotNull__(device)) {
@@ -1384,31 +1203,25 @@
               if(__PointerIsNotNull__(readData)) {
 
                 __KernelFreeMemory__(readData);
-
               }
-
             }
 
           } else {
-
           }
 
         } else {
 
           __AssertOnElse__();
-
         }
 
       } else {
 
         __AssertOnElse__();
-
       }
 
     } else {
 
       __AssertOnElse__();
-
     }
 
     if(success) {
@@ -1418,29 +1231,26 @@
     } else {
 
       __AssertOnElse__();
-
     }
 
     FUNCTION_EXIT;
-
   }
 
 
-  static void __ConsolePrintPrompt__(void) {
+  void __ConsolePrintPrompt__(void) {
 
     __ConsoleWriteString__((const Byte_t *) CONFIG_CONSOLE_PROMPT);
-
   }
 
 
-  /**
-   * @brief Handles backspace character in console input
-   * @details Internal helper that processes backspace input by removing the last character from the input buffer and updating the display.
-   *
-   * @return ReturnOK if backspace was handled successfully
-   * @return ReturnError if operation failed
-   */
-  static Return_t __ConsoleHandleBackspace__(void) {
+/**
+ * @brief Handles backspace character in console input
+ * @details Internal helper that processes backspace input by removing the last character from the input buffer and updating the display.
+ *
+ * @return ReturnOK if backspace was handled successfully
+ * @return ReturnError if operation failed
+ */
+  Return_t __ConsoleHandleBackspace__(void) {
 
     FUNCTION_ENTER;
 
@@ -1453,28 +1263,25 @@
       if(consoleState.echoEnabled) {
 
         __ConsoleWriteString__((const Byte_t *) "\b \b");
-
       }
 
       __ReturnOk__();
 
     } else {
-
     }
 
     FUNCTION_EXIT;
-
   }
 
 
-  /**
-   * @brief Processes and executes a console command
-   * @details Internal helper that parses the input buffer and dispatches to the appropriate command handler.
-   *
-   * @return ReturnOK if command was processed successfully
-   * @return ReturnError if command processing failed
-   */
-  static Return_t __ConsoleProcessCommand__(void) {
+/**
+ * @brief Processes and executes a console command
+ * @details Internal helper that parses the input buffer and dispatches to the appropriate command handler.
+ *
+ * @return ReturnOK if command was processed successfully
+ * @return ReturnError if command processing failed
+ */
+  Return_t __ConsoleProcessCommand__(void) {
 
     FUNCTION_ENTER;
 
@@ -1501,9 +1308,7 @@
         __SkipWhitespace__((const Byte_t **) &cmdArgs);
 
         break;
-
       }
-
     }
 
     if(CHAR_NULL == cmdName[0x0u]) {
@@ -1525,15 +1330,11 @@
             } else {
 
               __AssertOnElse__();
-
             }
 
             commandFound = true;
-
           }
-
         }
-
       }
 
       if(!commandFound) {
@@ -1545,9 +1346,7 @@
         __ConsoleWriteString__((const Byte_t *) "\r\nType 'help' for available commands.\r\n");
 
         __AssertOnElse__();
-
       }
-
     }
 
     if(success) {
@@ -1557,24 +1356,22 @@
     } else {
 
       __AssertOnElse__();
-
     }
 
     FUNCTION_EXIT;
-
   }
 
 
-  /**
-   * @brief Implements the help command
-   * @details Internal command handler that displays available console commands and their descriptions.
-   *
-   * @param[in] args_ Command arguments (unused)
-   *
-   * @return          ReturnOK if help was displayed successfully
-   * @return          ReturnError if operation failed
-   */
-  static Return_t __ConsoleCmdHelp__(const Byte_t *args_) {
+/**
+ * @brief Implements the help command
+ * @details Internal command handler that displays available console commands and their descriptions.
+ *
+ * @param[in] args_ Command arguments (unused)
+ *
+ * @return          ReturnOK if help was displayed successfully
+ * @return          ReturnError if operation failed
+ */
+  Return_t __ConsoleCmdHelp__(const Byte_t *args_) {
 
     FUNCTION_ENTER;
 
@@ -1595,26 +1392,24 @@
       __ConsoleWriteString__(commandTable[i].description);
 
       __ConsoleWriteString__((const Byte_t *) "\r\n");
-
     }
 
     __ReturnOk__();
 
     FUNCTION_EXIT;
-
   }
 
 
-  /**
-   * @brief Implements the version command
-   * @details Internal command handler that displays the HeliOS version information.
-   *
-   * @param[in] args_ Command arguments (unused)
-   *
-   * @return          ReturnOK if version was displayed successfully
-   * @return          ReturnError if operation failed
-   */
-  static Return_t __ConsoleCmdVersion__(const Byte_t *args_) {
+/**
+ * @brief Implements the version command
+ * @details Internal command handler that displays the HeliOS version information.
+ *
+ * @param[in] args_ Command arguments (unused)
+ *
+ * @return          ReturnOK if version was displayed successfully
+ * @return          ReturnError if operation failed
+ */
+  Return_t __ConsoleCmdVersion__(const Byte_t *args_) {
 
     FUNCTION_ENTER;
 
@@ -1631,20 +1426,19 @@
     __ReturnOk__();
 
     FUNCTION_EXIT;
-
   }
 
 
-  /**
-   * @brief Implements the tasks command
-   * @details Internal command handler that displays information about all registered tasks including their states and runtime statistics.
-   *
-   * @param[in] args_ Command arguments (unused)
-   *
-   * @return          ReturnOK if task list was displayed successfully
-   * @return          ReturnError if operation failed
-   */
-  static Return_t __ConsoleCmdTasks__(const Byte_t *args_) {
+/**
+ * @brief Implements the tasks command
+ * @details Internal command handler that displays information about all registered tasks including their states and runtime statistics.
+ *
+ * @param[in] args_ Command arguments (unused)
+ *
+ * @return          ReturnOK if task list was displayed successfully
+ * @return          ReturnError if operation failed
+ */
+  Return_t __ConsoleCmdTasks__(const Byte_t *args_) {
 
     FUNCTION_ENTER;
 
@@ -1675,7 +1469,6 @@
           __ConsoleWriteString__((const Byte_t *) "  [CORRUPTED TASK ENTRY]\r\n");
 
           continue;
-
         }
 
         __ConsoleWriteString__((const Byte_t *) "  ");
@@ -1688,22 +1481,25 @@
 
         switch(taskList[i].state) {
 
-        case TaskStateSuspended: __ConsoleWriteString__((const Byte_t *) "Suspended  ");
+        case TaskStateSuspended:
+          __ConsoleWriteString__((const Byte_t *) "Suspended  ");
 
           break;
 
-        case TaskStateRunning: __ConsoleWriteString__((const Byte_t *) "Running    ");
+        case TaskStateRunning:
+          __ConsoleWriteString__((const Byte_t *) "Running    ");
 
           break;
 
-        case TaskStateWaiting: __ConsoleWriteString__((const Byte_t *) "Waiting    ");
+        case TaskStateWaiting:
+          __ConsoleWriteString__((const Byte_t *) "Waiting    ");
 
           break;
 
-        default: __ConsoleWriteString__((const Byte_t *) "Unknown    ");
+        default:
+          __ConsoleWriteString__((const Byte_t *) "Unknown    ");
 
           break;
-
         }
 
         __uitoah__((Word_t) taskList[i].totalRunTime, numBuf, sizeof(numBuf));
@@ -1711,7 +1507,6 @@
         __ConsoleWriteString__(numBuf);
 
         __ConsoleWriteString__((const Byte_t *) "\r\n");
-
       }
 
       xMemFree(taskList);
@@ -1721,24 +1516,22 @@
     } else {
 
       __ConsoleWriteString__((const Byte_t *) "Error: Unable to retrieve task information.\r\n");
-
     }
 
     FUNCTION_EXIT;
-
   }
 
 
-  /**
-   * @brief Implements the mem command
-   * @details Internal command handler that displays memory usage statistics and available memory regions.
-   *
-   * @param[in] args_ Command arguments (unused)
-   *
-   * @return          ReturnOK if memory info was displayed successfully
-   * @return          ReturnError if operation failed
-   */
-  static Return_t __ConsoleCmdMem__(const Byte_t *args_) {
+/**
+ * @brief Implements the mem command
+ * @details Internal command handler that displays memory usage statistics and available memory regions.
+ *
+ * @param[in] args_ Command arguments (unused)
+ *
+ * @return          ReturnOK if memory info was displayed successfully
+ * @return          ReturnError if operation failed
+ */
+  Return_t __ConsoleCmdMem__(const Byte_t *args_) {
 
     FUNCTION_ENTER;
 
@@ -1761,7 +1554,6 @@
         xMemFree(memState);
 
         FUNCTION_EXIT;
-
       }
 
       __ConsoleWriteString__((const Byte_t *) "  Available Space:  ");
@@ -1803,24 +1595,22 @@
     } else {
 
       __ConsoleWriteString__((const Byte_t *) "Error: Unable to retrieve memory information.\r\n");
-
     }
 
     FUNCTION_EXIT;
-
   }
 
 
-  /**
-   * @brief Implements the clear command
-   * @details Internal command handler that clears the console screen.
-   *
-   * @param[in] args_ Command arguments (unused)
-   *
-   * @return          ReturnOK if screen was cleared successfully
-   * @return          ReturnError if operation failed
-   */
-  static Return_t __ConsoleCmdClear__(const Byte_t *args_) {
+/**
+ * @brief Implements the clear command
+ * @details Internal command handler that clears the console screen.
+ *
+ * @param[in] args_ Command arguments (unused)
+ *
+ * @return          ReturnOK if screen was cleared successfully
+ * @return          ReturnError if operation failed
+ */
+  Return_t __ConsoleCmdClear__(const Byte_t *args_) {
 
     FUNCTION_ENTER;
 
@@ -1831,20 +1621,19 @@
     __ReturnOk__();
 
     FUNCTION_EXIT;
-
   }
 
 
-  /**
-   * @brief Implements the echo command
-   * @details Internal command handler that echoes text back to the console output or toggles echo mode.
-   *
-   * @param[in] args_ Text to echo or "on"/"off" to toggle echo mode
-   *
-   * @return          ReturnOK if echo was successful
-   * @return          ReturnError if operation failed
-   */
-  static Return_t __ConsoleCmdEcho__(const Byte_t *args_) {
+/**
+ * @brief Implements the echo command
+ * @details Internal command handler that echoes text back to the console output or toggles echo mode.
+ *
+ * @param[in] args_ Text to echo or "on"/"off" to toggle echo mode
+ *
+ * @return          ReturnOK if echo was successful
+ * @return          ReturnError if operation failed
+ */
+  Return_t __ConsoleCmdEcho__(const Byte_t *args_) {
 
     FUNCTION_ENTER;
 
@@ -1865,28 +1654,25 @@
       } else {
 
         __ConsoleWriteString__((const Byte_t *) "Echo disabled.\r\n");
-
       }
-
     }
 
     __ReturnOk__();
 
     FUNCTION_EXIT;
-
   }
 
 
-  /**
-   * @brief Implements the ls command
-   * @details Internal command handler that lists directory contents in the filesystem.
-   *
-   * @param[in] args_ Optional directory path
-   *
-   * @return          ReturnOK if directory listing was successful
-   * @return          ReturnError if operation failed
-   */
-  static Return_t __ConsoleCmdLs__(const Byte_t *args_) {
+/**
+ * @brief Implements the ls command
+ * @details Internal command handler that lists directory contents in the filesystem.
+ *
+ * @param[in] args_ Optional directory path
+ *
+ * @return          ReturnOK if directory listing was successful
+ * @return          ReturnError if operation failed
+ */
+  Return_t __ConsoleCmdLs__(const Byte_t *args_) {
 
     FUNCTION_ENTER;
 
@@ -1913,7 +1699,6 @@
       } else {
 
         __strcpy__(path, consoleState.currentWorkingDirectory, CONFIG_FS_MAX_PATH_LENGTH);
-
       }
 
       if(OK(xDirOpen(&dir, mountedVolume, path))) {
@@ -1933,7 +1718,6 @@
             xMemFree(entry);
 
             continue;
-
           }
 
           __ConsoleWriteString__((const Byte_t *) "  ");
@@ -1945,7 +1729,6 @@
           } else {
 
             __ConsoleWriteString__((const Byte_t *) "[FILE] ");
-
           }
 
           __ConsoleWriteString__(entry->name);
@@ -1959,13 +1742,11 @@
             __ConsoleWriteString__(numBuf);
 
             __ConsoleWriteString__((const Byte_t *) " bytes)");
-
           }
 
           __ConsoleWriteString__((const Byte_t *) "\r\n");
 
           xMemFree(entry);
-
         }
 
         xDirClose(dir);
@@ -1977,7 +1758,6 @@
         __ConsoleWriteString__((const Byte_t *) "Error: Unable to open directory.\r\n");
 
         __AssertOnElse__();
-
       }
 
     } else {
@@ -1985,7 +1765,6 @@
       __ConsoleWriteString__((const Byte_t *) "Error: No filesystem mounted.\r\n");
 
       __AssertOnElse__();
-
     }
 
     if(success) {
@@ -1995,24 +1774,22 @@
     } else {
 
       __AssertOnElse__();
-
     }
 
     FUNCTION_EXIT;
-
   }
 
 
-  /**
-   * @brief Implements the cd command
-   * @details Internal command handler that changes the current working directory.
-   *
-   * @param[in] args_ Directory path to change to
-   *
-   * @return          ReturnOK if directory change was successful
-   * @return          ReturnError if operation failed or directory not found
-   */
-  static Return_t __ConsoleCmdCd__(const Byte_t *args_) {
+/**
+ * @brief Implements the cd command
+ * @details Internal command handler that changes the current working directory.
+ *
+ * @param[in] args_ Directory path to change to
+ *
+ * @return          ReturnOK if directory change was successful
+ * @return          ReturnError if operation failed or directory not found
+ */
+  Return_t __ConsoleCmdCd__(const Byte_t *args_) {
 
     FUNCTION_ENTER;
 
@@ -2045,7 +1822,6 @@
           __strcpy__(newPath, (const Byte_t *) "/", CONFIG_FS_MAX_PATH_LENGTH);
 
           pathBuilt = true;
-
         }
 
       } else if(__path_is_absolute__(args_)) {
@@ -2065,9 +1841,7 @@
           __ConsoleWriteString__((const Byte_t *) "Error: Path too long.\r\n");
 
           __AssertOnElse__();
-
         }
-
       }
 
       if(pathBuilt) {
@@ -2085,7 +1859,6 @@
             __ConsoleWriteString__((const Byte_t *) "Error: Directory not found.\r\n");
 
             __AssertOnElse__();
-
           }
 
         } else {
@@ -2093,9 +1866,7 @@
           __ConsoleWriteString__((const Byte_t *) "Error: Invalid path.\r\n");
 
           __AssertOnElse__();
-
         }
-
       }
 
     } else {
@@ -2103,7 +1874,6 @@
       __ConsoleWriteString__((const Byte_t *) "Error: No filesystem mounted.\r\n");
 
       __AssertOnElse__();
-
     }
 
     if(success) {
@@ -2113,24 +1883,22 @@
     } else {
 
       __AssertOnElse__();
-
     }
 
     FUNCTION_EXIT;
-
   }
 
 
-  /**
-   * @brief Implements the pwd command
-   * @details Internal command handler that displays the current working directory path.
-   *
-   * @param[in] args_ Command arguments (unused)
-   *
-   * @return          ReturnOK if path was displayed successfully
-   * @return          ReturnError if operation failed
-   */
-  static Return_t __ConsoleCmdPwd__(const Byte_t *args_) {
+/**
+ * @brief Implements the pwd command
+ * @details Internal command handler that displays the current working directory path.
+ *
+ * @param[in] args_ Command arguments (unused)
+ *
+ * @return          ReturnOK if path was displayed successfully
+ * @return          ReturnError if operation failed
+ */
+  Return_t __ConsoleCmdPwd__(const Byte_t *args_) {
 
     FUNCTION_ENTER;
 
@@ -2143,21 +1911,20 @@
     __ReturnOk__();
 
     FUNCTION_EXIT;
-
   }
 
 
   #define CAT_BUFFER_SIZE 0x100u
-  /**
-   * @brief Implements the cat command
-   * @details Internal command handler that displays the contents of a file.
-   *
-   * @param[in] args_ File path to display
-   *
-   * @return          ReturnOK if file was displayed successfully
-   * @return          ReturnError if operation failed or file not found
-   */
-  static Return_t __ConsoleCmdCat__(const Byte_t *args_) {
+/**
+ * @brief Implements the cat command
+ * @details Internal command handler that displays the contents of a file.
+ *
+ * @param[in] args_ File path to display
+ *
+ * @return          ReturnOK if file was displayed successfully
+ * @return          ReturnError if operation failed or file not found
+ */
+  Return_t __ConsoleCmdCat__(const Byte_t *args_) {
 
     FUNCTION_ENTER;
 
@@ -2200,9 +1967,7 @@
           __ConsoleWriteString__((const Byte_t *) "Error: Path too long.\r\n");
 
           __AssertOnElse__();
-
         }
-
       }
 
       if(pathBuilt) {
@@ -2244,9 +2009,7 @@
                       } else {
 
                         __ConsoleWriteString__(ch);
-
                       }
-
                     }
 
                     totalRead += bytesToRead;
@@ -2258,9 +2021,7 @@
                     readError = true;
 
                     __AssertOnElse__();
-
                   }
-
                 }
 
                 if(!readError) {
@@ -2268,11 +2029,9 @@
                   if(buffer[bytesToRead - 0x1u] != CHAR_LF) {
 
                     __ConsoleWriteString__((const Byte_t *) "\r\n");
-
                   }
 
                   success = true;
-
                 }
 
                 xMemFree(buffer);
@@ -2282,7 +2041,6 @@
                 __ConsoleWriteString__((const Byte_t *) "Error: Unable to allocate buffer.\r\n");
 
                 __AssertOnElse__();
-
               }
 
             } else {
@@ -2290,7 +2048,6 @@
               __ConsoleWriteString__((const Byte_t *) "(empty file)\r\n");
 
               success = true;
-
             }
 
           } else {
@@ -2298,7 +2055,6 @@
             __ConsoleWriteString__((const Byte_t *) "Error: Unable to get file size.\r\n");
 
             __AssertOnElse__();
-
           }
 
         } else {
@@ -2306,9 +2062,7 @@
           __ConsoleWriteString__((const Byte_t *) "Error: Unable to open file.\r\n");
 
           __AssertOnElse__();
-
         }
-
       }
 
     } else {
@@ -2320,17 +2074,14 @@
       } else {
 
         __ConsoleWriteString__((const Byte_t *) "Error: No file specified.\r\n");
-
       }
 
       __AssertOnElse__();
-
     }
 
     if(fileOpened) {
 
       xFileClose(file);
-
     }
 
     if(success) {
@@ -2340,24 +2091,22 @@
     } else {
 
       __AssertOnElse__();
-
     }
 
     FUNCTION_EXIT;
-
   }
 
 
-  /**
-   * @brief Implements the mv command
-   * @details Internal command handler that moves or renames files and directories.
-   *
-   * @param[in] args_ Source and destination paths separated by space
-   *
-   * @return          ReturnOK if move was successful
-   * @return          ReturnError if operation failed
-   */
-  static Return_t __ConsoleCmdMv__(const Byte_t *args_) {
+/**
+ * @brief Implements the mv command
+ * @details Internal command handler that moves or renames files and directories.
+ *
+ * @param[in] args_ Source and destination paths separated by space
+ *
+ * @return          ReturnOK if move was successful
+ * @return          ReturnError if operation failed
+ */
+  Return_t __ConsoleCmdMv__(const Byte_t *args_) {
 
     FUNCTION_ENTER;
 
@@ -2388,9 +2137,7 @@
           __SkipWhitespace__(&dst);
 
           break;
-
         }
-
       }
 
       if(__PointerIsNotNull__(dst) && (CHAR_NULL != dst[0x0u])) {
@@ -2410,7 +2157,6 @@
           __ConsoleWriteString__((const Byte_t *) "Error: Unable to rename/move file.\r\n");
 
           __AssertOnElse__();
-
         }
 
       } else {
@@ -2418,7 +2164,6 @@
         __ConsoleWriteString__((const Byte_t *) "Error: Usage: mv <source> <destination>\r\n");
 
         __AssertOnElse__();
-
       }
 
     } else {
@@ -2430,11 +2175,9 @@
       } else {
 
         __ConsoleWriteString__((const Byte_t *) "Error: Usage: mv <source> <destination>\r\n");
-
       }
 
       __AssertOnElse__();
-
     }
 
     if(success) {
@@ -2444,24 +2187,22 @@
     } else {
 
       __AssertOnElse__();
-
     }
 
     FUNCTION_EXIT;
-
   }
 
 
-  /**
-   * @brief Implements the rm command
-   * @details Internal command handler that removes files from the filesystem.
-   *
-   * @param[in] args_ File path to remove
-   *
-   * @return          ReturnOK if file was removed successfully
-   * @return          ReturnError if operation failed or file not found
-   */
-  static Return_t __ConsoleCmdRm__(const Byte_t *args_) {
+/**
+ * @brief Implements the rm command
+ * @details Internal command handler that removes files from the filesystem.
+ *
+ * @param[in] args_ File path to remove
+ *
+ * @return          ReturnOK if file was removed successfully
+ * @return          ReturnError if operation failed or file not found
+ */
+  Return_t __ConsoleCmdRm__(const Byte_t *args_) {
 
     FUNCTION_ENTER;
 
@@ -2492,9 +2233,7 @@
           __ConsoleWriteString__((const Byte_t *) "Error: Path too long.\r\n");
 
           __AssertOnElse__();
-
         }
-
       }
 
       if(pathBuilt) {
@@ -2508,9 +2247,7 @@
           __ConsoleWriteString__((const Byte_t *) "Error: Unable to remove file.\r\n");
 
           __AssertOnElse__();
-
         }
-
       }
 
     } else {
@@ -2522,11 +2259,9 @@
       } else {
 
         __ConsoleWriteString__((const Byte_t *) "Error: No file specified.\r\n");
-
       }
 
       __AssertOnElse__();
-
     }
 
     if(success) {
@@ -2536,24 +2271,22 @@
     } else {
 
       __AssertOnElse__();
-
     }
 
     FUNCTION_EXIT;
-
   }
 
 
-  /**
-   * @brief Implements the mkdir command
-   * @details Internal command handler that creates a new directory.
-   *
-   * @param[in] args_ Directory path to create
-   *
-   * @return          ReturnOK if directory was created successfully
-   * @return          ReturnError if operation failed or directory exists
-   */
-  static Return_t __ConsoleCmdMkdir__(const Byte_t *args_) {
+/**
+ * @brief Implements the mkdir command
+ * @details Internal command handler that creates a new directory.
+ *
+ * @param[in] args_ Directory path to create
+ *
+ * @return          ReturnOK if directory was created successfully
+ * @return          ReturnError if operation failed or directory exists
+ */
+  Return_t __ConsoleCmdMkdir__(const Byte_t *args_) {
 
     FUNCTION_ENTER;
 
@@ -2584,9 +2317,7 @@
           __ConsoleWriteString__((const Byte_t *) "Error: Path too long.\r\n");
 
           __AssertOnElse__();
-
         }
-
       }
 
       if(pathBuilt) {
@@ -2600,9 +2331,7 @@
           __ConsoleWriteString__((const Byte_t *) "Error: Unable to create directory.\r\n");
 
           __AssertOnElse__();
-
         }
-
       }
 
     } else {
@@ -2614,11 +2343,9 @@
       } else {
 
         __ConsoleWriteString__((const Byte_t *) "Error: No directory specified.\r\n");
-
       }
 
       __AssertOnElse__();
-
     }
 
     if(success) {
@@ -2628,30 +2355,25 @@
     } else {
 
       __AssertOnElse__();
-
     }
 
     FUNCTION_EXIT;
-
   }
 
 
-  static void __SkipWhitespace__(const Byte_t **str_) {
+  void __SkipWhitespace__(const Byte_t **str_) {
 
     if(__PointerIsNotNull__(str_) && __PointerIsNotNull__(*str_)) {
 
       while(CHAR_SPACE == **str_ || CHAR_TAB == **str_) {
 
         (*str_)++;
-
       }
-
     }
-
   }
 
 
-  static void __uitoah__(Word_t value_, Byte_t *buffer_, Word_t bufferSize_) {
+  void __uitoah__(Word_t value_, Byte_t *buffer_, Word_t bufferSize_) {
 
     const Byte_t *hexDigits = (const Byte_t *) "0123456789ABCDEF";
 
@@ -2662,7 +2384,6 @@
     if(!__PointerIsNotNull__(buffer_) || (bufferSize_ < 0x3u)) {
 
       return;
-
     }
 
     buffer_[i++] = CHAR_ZERO;
@@ -2674,13 +2395,11 @@
       if(i < bufferSize_ - 0x1u) {
 
         buffer_[i++] = CHAR_ZERO;
-
       }
 
       buffer_[i] = CHAR_NULL;
 
       return;
-
     }
 
     {
@@ -2696,7 +2415,6 @@
         buffer_[i++] = hexDigits[temp & 0xFu];
 
         temp >>= 0x4;
-
       }
 
       end = i - 0x1u;
@@ -2712,13 +2430,10 @@
         start++;
 
         end--;
-
       }
-
     }
 
     buffer_[i] = CHAR_NULL;
-
   }
 
 
@@ -2731,7 +2446,7 @@
 
         consoleState.echoEnabled = true;
 
-    #else  /* if defined(CONFIG_CONSOLE_ECHO_ENABLED) */
+    #else /* if defined(CONFIG_CONSOLE_ECHO_ENABLED) */
 
         consoleState.echoEnabled = false;
 
@@ -2744,7 +2459,6 @@
       __strcpy__(consoleState.currentWorkingDirectory, (const Byte_t *) "/", CONFIG_FS_MAX_PATH_LENGTH);
 
       mountedVolume = null;
-
     }
 
 

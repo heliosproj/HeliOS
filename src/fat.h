@@ -77,33 +77,33 @@
  * @details Packed structure representing the FAT32 filesystem boot sector with all metadata fields.
  */
     typedef struct __attribute__ ((packed)) FAT32BootSector_s {
-      Byte_t jumpBoot[0x3];     /**< Jump instruction to boot code */
-      Byte_t oemName[0x8];      /**< OEM name string */
+      Byte_t jumpBoot[0x3]; /**< Jump instruction to boot code */
+      Byte_t oemName[0x8]; /**< OEM name string */
       Byte_t bytesPerSector[0x2]; /**< Bytes per sector (little-endian) */
       Byte_t sectorsPerCluster; /**< Sectors per cluster */
       Byte_t reservedSectors[0x2]; /**< Number of reserved sectors (little-endian) */
-      Byte_t numFATs;           /**< Number of FAT copies */
+      Byte_t numFATs; /**< Number of FAT copies */
       Byte_t rootEntryCount[0x2]; /**< Root directory entry count (little-endian, 0 for FAT32) */
       Byte_t totalSectors16[0x2]; /**< Total sectors if < 65536 (little-endian) */
-      Byte_t mediaType;         /**< Media descriptor */
-      Byte_t FATSize16[0x2];    /**< Sectors per FAT for FAT12/16 (little-endian) */
+      Byte_t mediaType; /**< Media descriptor */
+      Byte_t FATSize16[0x2]; /**< Sectors per FAT for FAT12/16 (little-endian) */
       Byte_t sectorsPerTrack[0x2]; /**< Sectors per track (little-endian) */
-      Byte_t numHeads[0x2];     /**< Number of heads (little-endian) */
+      Byte_t numHeads[0x2]; /**< Number of heads (little-endian) */
       Byte_t hiddenSectors[0x4]; /**< Hidden sectors (little-endian) */
       Byte_t totalSectors32[0x4]; /**< Total sectors (little-endian) */
-      Byte_t FATSize32[0x4];    /**< Sectors per FAT for FAT32 (little-endian) */
-      Byte_t extFlags[0x2];     /**< Extended flags (little-endian) */
-      Byte_t fsVersion[0x2];    /**< Filesystem version (little-endian) */
-      Byte_t rootCluster[0x4];  /**< Root directory cluster (little-endian) */
-      Byte_t fsInfo[0x2];       /**< FSInfo sector number (little-endian) */
+      Byte_t FATSize32[0x4]; /**< Sectors per FAT for FAT32 (little-endian) */
+      Byte_t extFlags[0x2]; /**< Extended flags (little-endian) */
+      Byte_t fsVersion[0x2]; /**< Filesystem version (little-endian) */
+      Byte_t rootCluster[0x4]; /**< Root directory cluster (little-endian) */
+      Byte_t fsInfo[0x2]; /**< FSInfo sector number (little-endian) */
       Byte_t backupBootSector[0x2]; /**< Backup boot sector location (little-endian) */
-      Byte_t reserved[0xC];     /**< Reserved bytes */
-      Byte_t driveNumber;       /**< BIOS drive number */
-      Byte_t reserved1;         /**< Reserved byte */
-      Byte_t bootSignature;     /**< Extended boot signature (0x29) */
-      Byte_t volumeID[0x4];     /**< Volume serial number */
-      Byte_t volumeLabel[0xB];  /**< Volume label string */
-      Byte_t fsType[0x8];       /**< Filesystem type string */
+      Byte_t reserved[0xC]; /**< Reserved bytes */
+      Byte_t driveNumber; /**< BIOS drive number */
+      Byte_t reserved1; /**< Reserved byte */
+      Byte_t bootSignature; /**< Extended boot signature (0x29) */
+      Byte_t volumeID[0x4]; /**< Volume serial number */
+      Byte_t volumeLabel[0xB]; /**< Volume label string */
+      Byte_t fsType[0x8]; /**< Filesystem type string */
     } FAT32BootSector_t;
 
 
@@ -112,18 +112,18 @@
  * @details Packed structure representing a 32-byte directory entry in FAT32 filesystem.
  */
     typedef struct __attribute__ ((packed)) FAT32DirEntry_s {
-      Byte_t name[0xB];         /**< 8.3 filename (space-padded) */
-      Byte_t attr;              /**< File attributes */
-      Byte_t ntReserved;        /**< Reserved for Windows NT */
-      Byte_t createTimeTenth;   /**< Creation time fine resolution (10ms units) */
-      Byte_t createTime[0x2];   /**< Creation time (little-endian) */
-      Byte_t createDate[0x2];   /**< Creation date (little-endian) */
+      Byte_t name[0xB]; /**< 8.3 filename (space-padded) */
+      Byte_t attr; /**< File attributes */
+      Byte_t ntReserved; /**< Reserved for Windows NT */
+      Byte_t createTimeTenth; /**< Creation time fine resolution (10ms units) */
+      Byte_t createTime[0x2]; /**< Creation time (little-endian) */
+      Byte_t createDate[0x2]; /**< Creation date (little-endian) */
       Byte_t lastAccessDate[0x2]; /**< Last access date (little-endian) */
       Byte_t firstClusterHigh[0x2]; /**< High 16 bits of first cluster (little-endian) */
-      Byte_t writeTime[0x2];    /**< Last write time (little-endian) */
-      Byte_t writeDate[0x2];    /**< Last write date (little-endian) */
+      Byte_t writeTime[0x2]; /**< Last write time (little-endian) */
+      Byte_t writeDate[0x2]; /**< Last write date (little-endian) */
       Byte_t firstClusterLow[0x2]; /**< Low 16 bits of first cluster (little-endian) */
-      Byte_t fileSize[0x4];     /**< File size in bytes (little-endian) */
+      Byte_t fileSize[0x4]; /**< File size in bytes (little-endian) */
     } FAT32DirEntry_t;
 
 
@@ -187,8 +187,10 @@
     Return_t __RemoveMountedDevice__(const HalfWord_t blockDeviceUID_);
     Base_t __ByteCompare__(const Byte_t *s1_, const Byte_t *s2_, Word_t len_);
     Return_t __ConvertToFAT83__(const Byte_t *path_, Byte_t *fat83_);
-    Return_t __FindDirEntry__(const Volume_t *vol_, Word_t dirCluster_, const Byte_t *name83_, FAT32DirEntry_t *entry_, Word_t *entryCluster_, Word_t *entryOffset_);
-    Return_t __FindFileByPath__(const Volume_t *vol_, const Byte_t *path_, FAT32DirEntry_t *entry_, Word_t *parentCluster_, Word_t *entryCluster_, Word_t *entryOffset_);
+    Return_t __FindDirEntry__(const Volume_t *vol_, Word_t dirCluster_, const Byte_t *name83_, FAT32DirEntry_t *entry_, Word_t *entryCluster_, Word_t *
+      entryOffset_);
+    Return_t __FindFileByPath__(const Volume_t *vol_, const Byte_t *path_, FAT32DirEntry_t *entry_, Word_t *parentCluster_, Word_t *entryCluster_, Word_t *
+      entryOffset_);
     Return_t __CreateDirEntry__(const Volume_t *vol_, Word_t parentCluster_, const Byte_t *name83_, Byte_t attr_, Word_t firstCluster_, Word_t size_);
 
 
