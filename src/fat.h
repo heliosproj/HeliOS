@@ -187,10 +187,8 @@
     Return_t __RemoveMountedDevice__(const HalfWord_t blockDeviceUID_);
     Base_t __ByteCompare__(const Byte_t *s1_, const Byte_t *s2_, Word_t len_);
     Return_t __ConvertToFAT83__(const Byte_t *path_, Byte_t *fat83_);
-    Return_t __FindDirEntry__(const Volume_t *vol_, Word_t dirCluster_, const Byte_t *name83_, FAT32DirEntry_t *entry_, Word_t *entryCluster_, Word_t *
-      entryOffset_);
-    Return_t __FindFileByPath__(const Volume_t *vol_, const Byte_t *path_, FAT32DirEntry_t *entry_, Word_t *parentCluster_, Word_t *entryCluster_, Word_t *
-      entryOffset_);
+    Return_t __FindDirEntry__(const Volume_t *vol_, Word_t dirCluster_, const Byte_t *name83_, FAT32DirEntry_t *entry_, Word_t *entryCluster_, Word_t *entryOffset_);
+    Return_t __FindFileByPath__(const Volume_t *vol_, const Byte_t *path_, FAT32DirEntry_t *entry_, Word_t *parentCluster_, Word_t *entryCluster_, Word_t *entryOffset_);
     Return_t __CreateDirEntry__(const Volume_t *vol_, Word_t parentCluster_, const Byte_t *name83_, Byte_t attr_, Word_t firstCluster_, Word_t size_);
 
 
