@@ -1,85 +1,26 @@
-/*UNCRUSTIFY-OFF*/
-/**
- * @file streams.h
- * @author Manny Peterson <manny@heliosproj.org>
- * @brief Stream buffer API header
- * @details
- * Defines stream buffer structures and function prototypes for fixed-size byte streaming operations between tasks.
- *
- * @copyright
- * HeliOS Embedded Operating System Copyright (C) 2020-2026 Manny Peterson <manny@heliosproj.org>
- *
- *  SPDX-License-Identifier: GPL-2.0-or-later
- *
- */
-/*UNCRUSTIFY-ON*/
-
-
 #ifndef STREAM_H_
-
-
   #define STREAM_H_
-
-
   #include "config.h"
-
-
   #include "defines.h"
-
-
   #include "types.h"
-
-
   #if defined(CONFIG_ENABLE_IO_SUBSYSTEM)
-
-
     #include "console.h"
-
-
     #include "device.h"
-
-
     #include "fat.h"
-
-
     #include "fs.h"
-
-
-  #endif /* if defined(CONFIG_ENABLE_IO_SUBSYSTEM) */
-
-
+  #endif
   #include "mem.h"
-
-
   #include "port.h"
-
-
   #include "posix.h"
-
-
   #include "queue.h"
-
-
   #include "sys.h"
-
-
   #include "task.h"
-
-
   #include "timer.h"
-
   #define __StreamLengthNonZero__() (0x0u < stream_->length)
-
-
   #define __StreamLengthAtLimit__() (stream_->length == CONFIG_STREAM_BUFFER_BYTES)
-
   #ifdef __cplusplus
-
-
     extern "C" {
-
-
-  #endif /* ifdef __cplusplus */
+  #endif
   Return_t xStreamCreate(StreamBuffer_t **stream_);
   Return_t xStreamDelete(const StreamBuffer_t *stream_);
   Return_t xStreamSend(StreamBuffer_t *stream_, const Byte_t byte_);
@@ -88,15 +29,7 @@
   Return_t xStreamReset(const StreamBuffer_t *stream_);
   Return_t xStreamIsEmpty(const StreamBuffer_t *stream_, Base_t *res_);
   Return_t xStreamIsFull(const StreamBuffer_t *stream_, Base_t *res_);
-
-
   #ifdef __cplusplus
-
-
     }
-
-
-  #endif /* ifdef __cplusplus */
-
-
-#endif /* ifndef STREAM_H_ */
+  #endif
+#endif
