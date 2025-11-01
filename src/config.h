@@ -517,6 +517,31 @@
 
 
 /**
+ * @brief Define the RAM disk size in bytes
+ *
+ * Setting CONFIG_RAMDISK_SIZE_BYTES specifies the size of the RAM disk in
+ * bytes. The RAM disk provides a volatile block storage device useful for
+ * testing filesystem operations without physical storage hardware. The
+ * default is 0x100000u (1 MB).
+ *
+ * @note The RAM disk size directly impacts RAM usage - a 1 MB RAM disk
+ * consumes 1 MB of static memory. Adjust this value based on available RAM.
+ *
+ * @note The value should be set as a hexadecimal constant with the 'u' suffix
+ * (e.g., 0x100000u for 1 MB, 0x200000u for 2 MB).
+ *
+ * @note This setting only affects the RAM disk driver. Physical block devices
+ * have their size determined by the hardware.
+ *
+ * @sa CONFIG_FS_BLOCK_DEVICE_UID
+ *
+ */
+  #if !defined(CONFIG_RAMDISK_SIZE_BYTES)
+    #define CONFIG_RAMDISK_SIZE_BYTES 0x100000u /* 1 MB */
+  #endif /* if !defined(CONFIG_RAMDISK_SIZE_BYTES) */
+
+
+/**
  * @brief Enable the console subsystem
  *
  * Defining CONFIG_ENABLE_CONSOLE will enable the interactive console feature.

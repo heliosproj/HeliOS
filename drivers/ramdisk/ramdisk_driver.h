@@ -22,7 +22,6 @@
   #define DEVICE_UID 0x0100u
   #define DEVICE_MODE DeviceModeReadWrite
   #define DEVICE_STATE DeviceStateRunning
-  #define RAMDISK_SIZE_BYTES 0x100000u
   #define RAMDISK_CMD_SET_POSITION 0x01u
   #define RAMDISK_CMD_CLEAR_DISK 0x02u
   #define RAMDISK_CMD_GET_STATS 0x03u

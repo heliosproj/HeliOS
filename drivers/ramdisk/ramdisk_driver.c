@@ -1,5 +1,5 @@
 #include "ramdisk_driver.h"
-static Byte_t ramdisk[RAMDISK_SIZE_BYTES] = {
+static Byte_t ramdisk[CONFIG_RAMDISK_SIZE_BYTES] = {
   0x0u
 };
 static RAMDiskState_t state = {
@@ -45,7 +45,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _init)(Device_t *device_) {
   state.readOperations = 0x0u;
   state.writeOperations = 0x0u;
   state.initialized = true;
-  __memset__(ramdisk, 0x00u, RAMDISK_SIZE_BYTES);
+  __memset__(ramdisk, 0x00u, CONFIG_RAMDISK_SIZE_BYTES);
   __ReturnOk__();
   FUNCTION_EXIT;
 }
@@ -58,7 +58,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Add
         BlockIORequest_t *request = (BlockIORequest_t *) config_;
         Word_t byteOffset = request->blockNumber * request->blockSize;
         Word_t totalBytes = (Word_t) request->blockCount * request->blockSize;
-        if((byteOffset + totalBytes) <= RAMDISK_SIZE_BYTES) {
+        if((byteOffset + totalBytes) <= CONFIG_RAMDISK_SIZE_BYTES) {
           state.currentPosition = byteOffset;
           __ReturnOk__();
         } else {
@@ -69,7 +69,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Add
       if(*size_ >= sizeof(BlockIOInfo_t)) {
         BlockIOInfo_t *info = (BlockIOInfo_t *) config_;
         info->command = BLOCK_IO_CMD_GET_INFO;
-        info->totalSizeBytes = RAMDISK_SIZE_BYTES;
+        info->totalSizeBytes = CONFIG_RAMDISK_SIZE_BYTES;
         info->nativeBlockSize = 0x1u;
         info->supportsRandomAccess = true;
         info->requiresErase = false;
@@ -78,7 +78,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Add
     } else if(RAMDISK_CMD_SET_POSITION == command) {
       if(*size_ >= sizeof(RAMDiskPositionConfig_t)) {
         RAMDiskPositionConfig_t *cfg = (RAMDiskPositionConfig_t *) config_;
-        if(cfg->position < RAMDISK_SIZE_BYTES) {
+        if(cfg->position < CONFIG_RAMDISK_SIZE_BYTES) {
           state.currentPosition = cfg->position;
           __ReturnOk__();
         } else {
@@ -88,7 +88,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Add
     } else if(RAMDISK_CMD_CLEAR_DISK == command) {
       if(*size_ >= sizeof(RAMDiskClearConfig_t)) {
         RAMDiskClearConfig_t *cfg = (RAMDiskClearConfig_t *) config_;
-        __memset__(ramdisk, cfg->fillPattern, RAMDISK_SIZE_BYTES);
+        __memset__(ramdisk, cfg->fillPattern, CONFIG_RAMDISK_SIZE_BYTES);
         state.currentPosition = 0x0u;
         state.bytesRead = 0x0u;
         state.bytesWritten = 0x0u;
@@ -100,7 +100,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Add
       if(*size_ >= sizeof(RAMDiskStats_t)) {
         RAMDiskStats_t *stats = (RAMDiskStats_t *) config_;
         stats->command = RAMDISK_CMD_GET_STATS;
-        stats->totalSize = RAMDISK_SIZE_BYTES;
+        stats->totalSize = CONFIG_RAMDISK_SIZE_BYTES;
         stats->currentPosition = state.currentPosition;
         stats->bytesRead = state.bytesRead;
         stats->bytesWritten = state.bytesWritten;
@@ -157,7 +157,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t *device_, Size_t *size_, Addr
 Return_t TO_FUNCTION(DEVICE_NAME, _simple_read)(Device_t *device_, Byte_t *data_) {
   FUNCTION_ENTER;
   if(__PointerIsNotNull__(data_)) {
-    if(state.currentPosition < RAMDISK_SIZE_BYTES) {
+    if(state.currentPosition < CONFIG_RAMDISK_SIZE_BYTES) {
       *data_ = ramdisk[state.currentPosition];
       __UpdateReadStats__(0x1u);
       __ReturnOk__();
@@ -171,7 +171,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _simple_read)(Device_t *device_, Byte_t *data_
 }
 Return_t TO_FUNCTION(DEVICE_NAME, _simple_write)(Device_t *device_, Byte_t data_) {
   FUNCTION_ENTER;
-  if(state.currentPosition < RAMDISK_SIZE_BYTES) {
+  if(state.currentPosition < CONFIG_RAMDISK_SIZE_BYTES) {
     ramdisk[state.currentPosition] = data_;
     __UpdateWriteStats__(0x1u);
     __ReturnOk__();
@@ -182,8 +182,8 @@ Return_t TO_FUNCTION(DEVICE_NAME, _simple_write)(Device_t *device_, Byte_t data_
 }
 Return_t __ValidateAndTruncateSize__(Size_t requested_, Size_t *actual_) {
   FUNCTION_ENTER;
-  if((state.currentPosition + requested_) > RAMDISK_SIZE_BYTES) {
-    *actual_ = RAMDISK_SIZE_BYTES - state.currentPosition;
+  if((state.currentPosition + requested_) > CONFIG_RAMDISK_SIZE_BYTES) {
+    *actual_ = CONFIG_RAMDISK_SIZE_BYTES - state.currentPosition;
     if(0x0u == *actual_) {
       __AssertOnElse__();
     }
@@ -201,7 +201,7 @@ Return_t __ValidateAndTruncateSize__(Size_t requested_, Size_t *actual_) {
     state.readOperations = 0x0u;
     state.writeOperations = 0x0u;
     state.initialized = false;
-    __memset__(ramdisk, 0x00u, RAMDISK_SIZE_BYTES);
+    __memset__(ramdisk, 0x00u, CONFIG_RAMDISK_SIZE_BYTES);
     return;
   }
 #endif
