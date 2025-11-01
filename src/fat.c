@@ -24,9 +24,6 @@
   #include "fat.h"
 
 
-  #define MAX_MOUNTED_VOLUMES 0x8u
-
-
   static HalfWord_t mountedDevices[MAX_MOUNTED_VOLUMES];
 
 
@@ -41,8 +38,7 @@
  */
   HalfWord_t __ReadLE16__(const Byte_t *data_) {
 
-    return((HalfWord_t) data_[0x0u] | ((HalfWord_t) data_[0x1] << 0x8));
-
+    return ((HalfWord_t) data_[0x0u] | ((HalfWord_t) data_[0x1] << 0x8));
   }
 
 
@@ -56,8 +52,7 @@
  */
   Word_t __ReadLE32__(const Byte_t *data_) {
 
-    return((Word_t) data_[0x0u] | ((Word_t) data_[0x1] << 0x8) | ((Word_t) data_[0x2] << 0x10) | ((Word_t) data_[0x3] << 0x18));
-
+    return ((Word_t) data_[0x0u] | ((Word_t) data_[0x1] << 0x8) | ((Word_t) data_[0x2] << 0x10) | ((Word_t) data_[0x3] << 0x18));
   }
 
 
@@ -73,7 +68,6 @@
     data_[0x0u] = (Byte_t) (value_ & 0xFFu);
 
     data_[0x1] = (Byte_t) ((value_ >> 0x8) & 0xFFu);
-
   }
 
 
@@ -93,7 +87,6 @@
     data_[0x2] = (Byte_t) ((value_ >> 0x10) & 0xFFu);
 
     data_[0x3] = (Byte_t) ((value_ >> 0x18) & 0xFFu);
-
   }
 
 
@@ -115,27 +108,24 @@
 
       if(s1_[i] != s2_[i]) {
 
-        return(false);
-
+        return (false);
       }
-
     }
 
-    return(true);
-
+    return (true);
   }
 
 
-  /**
-   * @brief Converts filename to FAT 8.3 format
-   * @details Internal function to convert a filename to FAT 8.3 format (space-padded).
-   *
-   * @param[in]  path_  Input filename
-   * @param[out] fat83_ Output buffer for 11-byte FAT 8.3 name
-   *
-   * @return            ReturnOK if conversion was successful
-   * @return            ReturnError if filename is invalid
-   */
+/**
+ * @brief Converts filename to FAT 8.3 format
+ * @details Internal function to convert a filename to FAT 8.3 format (space-padded).
+ *
+ * @param[in]  path_  Input filename
+ * @param[out] fat83_ Output buffer for 11-byte FAT 8.3 name
+ *
+ * @return            ReturnOK if conversion was successful
+ * @return            ReturnError if filename is invalid
+ */
   Return_t __ConvertToFAT83__(const Byte_t *path_, Byte_t *fat83_) {
 
     FUNCTION_ENTER;
@@ -155,7 +145,6 @@
       for(i = 0x0u; i < 11; i++) {
 
         fat83_[i] = ' ';
-
       }
 
       for(i = 0x0u; path_[i] != '\0'; i++) {
@@ -163,9 +152,7 @@
         if(path_[i] == '.') {
 
           dotPos = &path_[i];
-
         }
-
       }
 
       nameLen = 0x0u;
@@ -177,11 +164,9 @@
         if((c >= 'a') && (c <= 'z')) {
 
           c = c - 'a' + 'A';
-
         }
 
         fat83_[nameLen++] = c;
-
       }
 
       if(__PointerIsNotNull__(dotPos)) {
@@ -195,13 +180,10 @@
           if((c >= 'a') && (c <= 'z')) {
 
             c = c - 'a' + 'A';
-
           }
 
           fat83_[8 + extLen++] = c;
-
         }
-
       }
 
       __ReturnOk__();
@@ -209,11 +191,9 @@
     } else {
 
       __AssertOnElse__();
-
     }
 
     FUNCTION_EXIT;
-
   }
 
 
@@ -281,19 +261,16 @@
                   if(__PointerIsNotNull__(entry_)) {
 
                     __memcpy__(entry_, fatEntry, sizeof(FAT32DirEntry_t));
-
                   }
 
                   if(__PointerIsNotNull__(entryCluster_)) {
 
                     *entryCluster_ = currentCluster;
-
                   }
 
                   if(__PointerIsNotNull__(entryOffset_)) {
 
                     *entryOffset_ = entryIdx * sizeof(FAT32DirEntry_t);
-
                   }
 
                   __KernelFreeMemory__(clusterData);
@@ -303,13 +280,9 @@
                   found = true;
 
                   break;
-
                 }
-
               }
-
             }
-
           }
 
           if(!found) {
@@ -323,27 +296,21 @@
             } else {
 
               found = true;
-
             }
-
           }
 
         } else {
 
           found = true;
-
         }
-
       }
 
     } else {
 
       __AssertOnElse__();
-
     }
 
     FUNCTION_EXIT;
-
   }
 
 
@@ -368,9 +335,13 @@
 
     FUNCTION_ENTER;
 
-    Byte_t name83[11] = {0x0u};
+    Byte_t name83[11] = {
+      0x0u
+    };
 
-    Byte_t component[256] = {0x0u};
+    Byte_t component[256] = {
+      0x0u
+    };
 
     Word_t pathIdx = 0x0u;
 
@@ -378,7 +349,9 @@
 
     Word_t currentCluster = 0x0u;
 
-    FAT32DirEntry_t dirEntry = {0x0u};
+    FAT32DirEntry_t dirEntry = {
+      0x0u
+    };
 
     Base_t continueProcessing = true;
 
@@ -389,7 +362,6 @@
       if(path_[0] == '/') {
 
         pathIdx = 1;
-
       }
 
       if(path_[pathIdx] == '\0') {
@@ -399,25 +371,21 @@
           __memset__(entry_, 0x00u, sizeof(FAT32DirEntry_t));
 
           entry_->attr = FAT_ATTR_DIRECTORY;
-
         }
 
         if(__PointerIsNotNull__(parentCluster_)) {
 
           *parentCluster_ = currentCluster;
-
         }
 
         if(__PointerIsNotNull__(entryCluster_)) {
 
           *entryCluster_ = currentCluster;
-
         }
 
         if(__PointerIsNotNull__(entryOffset_)) {
 
           *entryOffset_ = 0x0u;
-
         }
 
         __ReturnOk__();
@@ -431,7 +399,6 @@
           while(path_[pathIdx] != '\0' && path_[pathIdx] != '/' && componentIdx < 255) {
 
             component[componentIdx++] = path_[pathIdx++];
-
           }
 
           component[componentIdx] = '\0';
@@ -439,7 +406,6 @@
           if(path_[pathIdx] == '/') {
 
             pathIdx++;
-
           }
 
           if(OK(__ConvertToFAT83__(component, name83))) {
@@ -451,13 +417,11 @@
                 if(__PointerIsNotNull__(entry_)) {
 
                   __memcpy__(entry_, &dirEntry, sizeof(FAT32DirEntry_t));
-
                 }
 
                 if(__PointerIsNotNull__(parentCluster_)) {
 
                   *parentCluster_ = currentCluster;
-
                 }
 
                 __ReturnOk__();
@@ -475,9 +439,7 @@
                   continueProcessing = false;
 
                   __AssertOnElse__();
-
                 }
-
               }
 
             } else {
@@ -485,7 +447,6 @@
               continueProcessing = false;
 
               __AssertOnElse__();
-
             }
 
           } else {
@@ -493,34 +454,29 @@
             continueProcessing = false;
 
             __AssertOnElse__();
-
           }
-
         }
-
       }
 
     } else {
 
       __AssertOnElse__();
-
     }
 
     FUNCTION_EXIT;
-
   }
 
 
-  /**
-   * @brief Frees a cluster chain
-   * @details Internal function to mark clusters as free in the FAT.
-   *
-   * @param[in] vol_          Pointer to volume structure
-   * @param[in] startCluster_ First cluster in chain to free
-   *
-   * @return                  ReturnOK if clusters were freed successfully
-   * @return                  ReturnError if operation failed
-   */
+/**
+ * @brief Frees a cluster chain
+ * @details Internal function to mark clusters as free in the FAT.
+ *
+ * @param[in] vol_          Pointer to volume structure
+ * @param[in] startCluster_ First cluster in chain to free
+ *
+ * @return                  ReturnOK if clusters were freed successfully
+ * @return                  ReturnError if operation failed
+ */
   Return_t __FreeClusters__(const Volume_t *vol_, Word_t startCluster_) {
 
     Word_t currentCluster = startCluster_;
@@ -529,47 +485,42 @@
 
     if(__PointerIsNull__(vol_)) {
 
-      return(ReturnError);
-
+      return (ReturnError);
     }
 
     while(currentCluster >= 2 && currentCluster < FAT32_EOC_MIN) {
 
       if(ERROR(__GetFATEntry__(vol_, currentCluster, &nextCluster))) {
 
-        return(ReturnError);
-
+        return (ReturnError);
       }
 
       if(ERROR(__SetFATEntry__(vol_, currentCluster, FAT32_FREE_CLUSTER))) {
 
-        return(ReturnError);
-
+        return (ReturnError);
       }
 
       currentCluster = nextCluster;
-
     }
 
-    return(ReturnOK);
-
+    return (ReturnOK);
   }
 
 
-  /**
-   * @brief Creates a directory entry
-   * @details Internal function to add a new file/directory entry to a directory.
-   *
-   * @param[in] vol_           Pointer to volume structure
-   * @param[in] parentCluster_ Parent directory cluster
-   * @param[in] name83_        FAT 8.3 name for new entry
-   * @param[in] attr_          File attributes
-   * @param[in] firstCluster_  First cluster of file/directory
-   * @param[in] size_          File size in bytes
-   *
-   * @return                   ReturnOK if entry was created successfully
-   * @return                   ReturnError if creation failed
-   */
+/**
+ * @brief Creates a directory entry
+ * @details Internal function to add a new file/directory entry to a directory.
+ *
+ * @param[in] vol_           Pointer to volume structure
+ * @param[in] parentCluster_ Parent directory cluster
+ * @param[in] name83_        FAT 8.3 name for new entry
+ * @param[in] attr_          File attributes
+ * @param[in] firstCluster_  First cluster of file/directory
+ * @param[in] size_          File size in bytes
+ *
+ * @return                   ReturnOK if entry was created successfully
+ * @return                   ReturnError if creation failed
+ */
   Return_t __CreateDirEntry__(const Volume_t *vol_, Word_t parentCluster_, const Byte_t *name83_, Byte_t attr_, Word_t firstCluster_, Word_t size_) {
 
     Byte_t *clusterData = null;
@@ -592,8 +543,7 @@
 
     if(__PointerIsNull__(vol_) || __PointerIsNull__(name83_)) {
 
-      return(ReturnError);
-
+      return (ReturnError);
     }
 
     entriesPerCluster = ((Word_t) vol_->bytesPerSector * vol_->sectorsPerCluster) / sizeof(FAT32DirEntry_t);
@@ -602,8 +552,7 @@
 
       if(ERROR(__ReadCluster__(vol_, currentCluster, &clusterData))) {
 
-        return(ReturnError);
-
+        return (ReturnError);
       }
 
       for(entryIdx = 0x0u; entryIdx < entriesPerCluster; entryIdx++) {
@@ -644,18 +593,14 @@
 
               __KernelFreeMemory__(clusterData);
 
-              return(ReturnError);
-
+              return (ReturnError);
             }
-
           }
 
           __KernelFreeMemory__(clusterData);
 
-          return(ReturnOK);
-
+          return (ReturnOK);
         }
-
       }
 
       __KernelFreeMemory__(clusterData);
@@ -681,11 +626,9 @@
               for(i = 0x0u; i < vol_->sectorsPerCluster; i++) {
 
                 __WriteSector__(vol_, firstSector + i, clusterData + (i * vol_->bytesPerSector));
-
               }
 
               __KernelFreeMemory__(clusterData);
-
             }
 
             currentCluster = newCluster;
@@ -694,38 +637,33 @@
 
           } else {
 
-            return(ReturnError);
-
+            return (ReturnError);
           }
-
         }
 
         currentCluster = nextCluster;
 
       } else {
 
-        return(ReturnError);
-
+        return (ReturnError);
       }
-
     }
 
-    return(ReturnError);
-
+    return (ReturnError);
   }
 
 
-  /**
-   * @brief Reads a sector from block device
-   * @details Internal function to read one sector from the volume's block device.
-   *
-   * @param[in]  vol_    Pointer to volume structure
-   * @param[in]  sector_ Sector number to read
-   * @param[out] data_   Pointer to store allocated sector data
-   *
-   * @return             ReturnOK if read was successful
-   * @return             ReturnError if read failed or allocation failed
-   */
+/**
+ * @brief Reads a sector from block device
+ * @details Internal function to read one sector from the volume's block device.
+ *
+ * @param[in]  vol_    Pointer to volume structure
+ * @param[in]  sector_ Sector number to read
+ * @param[out] data_   Pointer to store allocated sector data
+ *
+ * @return             ReturnOK if read was successful
+ * @return             ReturnError if read failed or allocation failed
+ */
   Return_t __ReadSector__(const Volume_t *vol_, Word_t sector_, Byte_t **data_) {
 
     FUNCTION_ENTER;
@@ -763,7 +701,6 @@
             __KernelFreeMemory__(cmd);
 
             __AssertOnElse__();
-
           }
 
         } else {
@@ -771,37 +708,33 @@
           __KernelFreeMemory__(cmd);
 
           __AssertOnElse__();
-
         }
 
       } else {
 
         __AssertOnElse__();
-
       }
 
     } else {
 
       __AssertOnElse__();
-
     }
 
     FUNCTION_EXIT;
-
   }
 
 
-  /**
-   * @brief Writes a sector to block device
-   * @details Internal function to write one sector to the volume's block device.
-   *
-   * @param[in] vol_    Pointer to volume structure
-   * @param[in] sector_ Sector number to write
-   * @param[in] data_   Pointer to sector data
-   *
-   * @return            ReturnOK if write was successful
-   * @return            ReturnError if write failed
-   */
+/**
+ * @brief Writes a sector to block device
+ * @details Internal function to write one sector to the volume's block device.
+ *
+ * @param[in] vol_    Pointer to volume structure
+ * @param[in] sector_ Sector number to write
+ * @param[in] data_   Pointer to sector data
+ *
+ * @return            ReturnOK if write was successful
+ * @return            ReturnError if write failed
+ */
   Return_t __WriteSector__(const Volume_t *vol_, Word_t sector_, const Byte_t *data_) {
 
     FUNCTION_ENTER;
@@ -839,7 +772,6 @@
             __KernelFreeMemory__(cmd);
 
             __AssertOnElse__();
-
           }
 
         } else {
@@ -847,23 +779,19 @@
           __KernelFreeMemory__(cmd);
 
           __AssertOnElse__();
-
         }
 
       } else {
 
         __AssertOnElse__();
-
       }
 
     } else {
 
       __AssertOnElse__();
-
     }
 
     FUNCTION_EXIT;
-
   }
 
 
@@ -878,22 +806,21 @@
  */
   Word_t __ClusterToSector__(const Volume_t *vol_, Word_t cluster_) {
 
-    return(vol_->dataStartSector + ((cluster_ - 2u) * vol_->sectorsPerCluster));
-
+    return (vol_->dataStartSector + ((cluster_ - 2u) * vol_->sectorsPerCluster));
   }
 
 
-  /**
-   * @brief Reads a cluster from filesystem
-   * @details Internal function to read all sectors of a cluster.
-   *
-   * @param[in]  vol_     Pointer to volume structure
-   * @param[in]  cluster_ Cluster number to read
-   * @param[out] data_    Pointer to store allocated cluster data
-   *
-   * @return              ReturnOK if read was successful
-   * @return              ReturnError if read failed or allocation failed
-   */
+/**
+ * @brief Reads a cluster from filesystem
+ * @details Internal function to read all sectors of a cluster.
+ *
+ * @param[in]  vol_     Pointer to volume structure
+ * @param[in]  cluster_ Cluster number to read
+ * @param[out] data_    Pointer to store allocated cluster data
+ *
+ * @return              ReturnOK if read was successful
+ * @return              ReturnError if read failed or allocation failed
+ */
   Return_t __ReadCluster__(const Volume_t *vol_, Word_t cluster_, Byte_t **data_) {
 
     FUNCTION_ENTER;
@@ -933,9 +860,7 @@
             __AssertOnElse__();
 
             allSectorsRead = false;
-
           }
-
         }
 
         if(allSectorsRead) {
@@ -943,37 +868,33 @@
           *data_ = buffer;
 
           __ReturnOk__();
-
         }
 
       } else {
 
         __AssertOnElse__();
-
       }
 
     } else {
 
       __AssertOnElse__();
-
     }
 
     FUNCTION_EXIT;
-
   }
 
 
-  /**
-   * @brief Gets FAT entry for a cluster
-   * @details Internal function to read the FAT table entry for a given cluster.
-   *
-   * @param[in]  vol_         Pointer to volume structure
-   * @param[in]  cluster_     Cluster number to look up
-   * @param[out] nextCluster_ Pointer to store next cluster number
-   *
-   * @return                  ReturnOK if entry was read successfully
-   * @return                  ReturnError if read failed
-   */
+/**
+ * @brief Gets FAT entry for a cluster
+ * @details Internal function to read the FAT table entry for a given cluster.
+ *
+ * @param[in]  vol_         Pointer to volume structure
+ * @param[in]  cluster_     Cluster number to look up
+ * @param[out] nextCluster_ Pointer to store next cluster number
+ *
+ * @return                  ReturnOK if entry was read successfully
+ * @return                  ReturnError if read failed
+ */
   Return_t __GetFATEntry__(const Volume_t *vol_, Word_t cluster_, Word_t *nextCluster_) {
 
     FUNCTION_ENTER;
@@ -1009,31 +930,28 @@
       } else {
 
         __AssertOnElse__();
-
       }
 
     } else {
 
       __AssertOnElse__();
-
     }
 
     FUNCTION_EXIT;
-
   }
 
 
-  /**
-   * @brief Sets FAT entry for a cluster
-   * @details Internal function to write a FAT table entry for a given cluster.
-   *
-   * @param[in] vol_     Pointer to volume structure
-   * @param[in] cluster_ Cluster number to update
-   * @param[in] value_   Value to write (next cluster or special marker)
-   *
-   * @return             ReturnOK if entry was written successfully
-   * @return             ReturnError if write failed
-   */
+/**
+ * @brief Sets FAT entry for a cluster
+ * @details Internal function to write a FAT table entry for a given cluster.
+ *
+ * @param[in] vol_     Pointer to volume structure
+ * @param[in] cluster_ Cluster number to update
+ * @param[in] value_   Value to write (next cluster or special marker)
+ *
+ * @return             ReturnOK if entry was written successfully
+ * @return             ReturnError if write failed
+ */
   Return_t __SetFATEntry__(const Volume_t *vol_, Word_t cluster_, Word_t value_) {
 
     FUNCTION_ENTER;
@@ -1065,7 +983,6 @@
           for(i = 1; i < vol_->numFATs; i++) {
 
             __WriteSector__(vol_, fatSector + (i * vol_->sectorsPerFAT), sectorData);
-
           }
 
           __KernelFreeMemory__(sectorData);
@@ -1077,37 +994,33 @@
           __KernelFreeMemory__(sectorData);
 
           __AssertOnElse__();
-
         }
 
       } else {
 
         __AssertOnElse__();
-
       }
 
     } else {
 
       __AssertOnElse__();
-
     }
 
     FUNCTION_EXIT;
-
   }
 
 
-  /**
-   * @brief Finds a free cluster in FAT
-   * @details Internal function to search FAT for an available cluster.
-   *
-   * @param[in]  vol_         Pointer to volume structure
-   * @param[in]  startHint_   Cluster number to start searching from
-   * @param[out] freeCluster_ Pointer to store found free cluster number
-   *
-   * @return                  ReturnOK if free cluster was found
-   * @return                  ReturnError if no free clusters available
-   */
+/**
+ * @brief Finds a free cluster in FAT
+ * @details Internal function to search FAT for an available cluster.
+ *
+ * @param[in]  vol_         Pointer to volume structure
+ * @param[in]  startHint_   Cluster number to start searching from
+ * @param[out] freeCluster_ Pointer to store found free cluster number
+ *
+ * @return                  ReturnOK if free cluster was found
+ * @return                  ReturnError if no free clusters available
+ */
   Return_t __FindFreeCluster__(const Volume_t *vol_, Word_t startHint_, Word_t *freeCluster_) {
 
     FUNCTION_ENTER;
@@ -1131,7 +1044,6 @@
       if(maxCluster > 0x10000u) {
 
         maxCluster = 0x10000u;
-
       }
 
       searchStart = (startHint_ >= 3u) ? startHint_ : 3u;
@@ -1147,7 +1059,6 @@
             __ReturnOk__();
 
             found = true;
-
           }
 
         } else {
@@ -1155,9 +1066,7 @@
           __AssertOnElse__();
 
           continueSearch = false;
-
         }
-
       }
 
       if(!found && continueSearch && (searchStart > 3u)) {
@@ -1173,7 +1082,6 @@
               __ReturnOk__();
 
               found = true;
-
             }
 
           } else {
@@ -1181,27 +1089,21 @@
             __AssertOnElse__();
 
             continueSearch = false;
-
           }
-
         }
-
       }
 
       if(!found && continueSearch) {
 
         __AssertOnElse__();
-
       }
 
     } else {
 
       __AssertOnElse__();
-
     }
 
     FUNCTION_EXIT;
-
   }
 
 
@@ -1221,26 +1123,23 @@
 
       if(mountedDevices[i] == blockDeviceUID_) {
 
-        return(true);
-
+        return (true);
       }
-
     }
 
-    return(false);
-
+    return (false);
   }
 
 
-  /**
-   * @brief Adds device to mounted list
-   * @details Internal function to track mounted devices.
-   *
-   * @param[in] blockDeviceUID_ Block device UID to add
-   *
-   * @return                    ReturnOK if device was added successfully
-   * @return                    ReturnError if operation failed
-   */
+/**
+ * @brief Adds device to mounted list
+ * @details Internal function to track mounted devices.
+ *
+ * @param[in] blockDeviceUID_ Block device UID to add
+ *
+ * @return                    ReturnOK if device was added successfully
+ * @return                    ReturnError if operation failed
+ */
   Return_t __AddMountedDevice__(const HalfWord_t blockDeviceUID_) {
 
     if(mountedDeviceCount < MAX_MOUNTED_VOLUMES) {
@@ -1249,24 +1148,22 @@
 
       mountedDeviceCount++;
 
-      return(ReturnOK);
-
+      return (ReturnOK);
     }
 
-    return(ReturnError);
-
+    return (ReturnError);
   }
 
 
-  /**
-   * @brief Removes device from mounted list
-   * @details Internal function to untrack mounted devices.
-   *
-   * @param[in] blockDeviceUID_ Block device UID to remove
-   *
-   * @return                    ReturnOK if device was removed successfully
-   * @return                    ReturnError if operation failed
-   */
+/**
+ * @brief Removes device from mounted list
+ * @details Internal function to untrack mounted devices.
+ *
+ * @param[in] blockDeviceUID_ Block device UID to remove
+ *
+ * @return                    ReturnOK if device was removed successfully
+ * @return                    ReturnError if operation failed
+ */
   Return_t __RemoveMountedDevice__(const HalfWord_t blockDeviceUID_) {
 
     Byte_t i = 0x0u;
@@ -1280,19 +1177,15 @@
         for(j = i; j < mountedDeviceCount - 1; j++) {
 
           mountedDevices[j] = mountedDevices[j + 1];
-
         }
 
         mountedDeviceCount--;
 
-        return(ReturnOK);
-
+        return (ReturnOK);
       }
-
     }
 
-    return(ReturnError);
-
+    return (ReturnError);
   }
 
 
@@ -1302,7 +1195,6 @@
       mountedDeviceCount = 0x0u;
 
       return;
-
     }
 
 

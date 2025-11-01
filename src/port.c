@@ -54,7 +54,9 @@ Ticks_t __PortGetSysTicks__(void) {
 
 #elif defined(POSIX_ARCH_OTHER)
 
-    struct timeval t = {0};
+    struct timeval t = {
+      0
+    };
 
     gettimeofday(&t, null);
 

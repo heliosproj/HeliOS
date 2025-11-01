@@ -25,17 +25,17 @@
 
 
   #include "fat.h"
-  /**
-   * @brief Mounts a FAT32 filesystem volume
-   * @details Allocates and initializes a volume structure by reading the boot sector and FAT.
-   *
-   * @param[out] volume_ Pointer to store the created volume handle
-   *
-   * @return             ReturnOK if volume was mounted successfully
-   * @return             ReturnError if mount failed, allocation failed, or invalid filesystem
-   *
-   * @warning Caller is responsible for unmounting with xFSUnmount()
-   */
+/**
+ * @brief Mounts a FAT32 filesystem volume
+ * @details Allocates and initializes a volume structure by reading the boot sector and FAT.
+ *
+ * @param[out] volume_ Pointer to store the created volume handle
+ *
+ * @return             ReturnOK if volume was mounted successfully
+ * @return             ReturnError if mount failed, allocation failed, or invalid filesystem
+ *
+ * @warning Caller is responsible for unmounting with xFSUnmount()
+ */
   Return_t xFSMount(Volume_t **volume_) {
 
     FUNCTION_ENTER;
@@ -95,7 +95,6 @@
                 } else {
 
                   __AssertOnElse__();
-
                 }
 
               } else {
@@ -107,7 +106,6 @@
                 __KernelFreeMemory__(vol);
 
                 __AssertOnElse__();
-
               }
 
             } else {
@@ -119,7 +117,6 @@
               __KernelFreeMemory__(vol);
 
               __AssertOnElse__();
-
             }
 
           } else {
@@ -129,43 +126,38 @@
             __KernelFreeMemory__(vol);
 
             __AssertOnElse__();
-
           }
 
         } else {
 
           __AssertOnElse__();
-
         }
 
       } else {
 
         __AssertOnElse__();
-
       }
 
     } else {
 
       __AssertOnElse__();
-
     }
 
     FUNCTION_EXIT;
-
   }
 
 
-  /**
-   * @brief Unmounts a FAT32 filesystem volume
-   * @details Flushes any pending writes and frees the volume structure.
-   *
-   * @param[in,out] volume_ Pointer to the volume to unmount
-   *
-   * @return                ReturnOK if volume was unmounted successfully
-   * @return                ReturnError if volume is invalid or deallocation failed
-   *
-   * @warning All open files and directories must be closed before unmounting
-   */
+/**
+ * @brief Unmounts a FAT32 filesystem volume
+ * @details Flushes any pending writes and frees the volume structure.
+ *
+ * @param[in,out] volume_ Pointer to the volume to unmount
+ *
+ * @return                ReturnOK if volume was unmounted successfully
+ * @return                ReturnError if volume is invalid or deallocation failed
+ *
+ * @warning All open files and directories must be closed before unmounting
+ */
   Return_t xFSUnmount(Volume_t *volume_) {
 
     FUNCTION_ENTER;
@@ -185,32 +177,29 @@
       } else {
 
         __AssertOnElse__();
-
       }
 
     } else {
 
       __AssertOnElse__();
-
     }
 
     FUNCTION_EXIT;
-
   }
 
 
-  /**
-   * @brief Gets volume information and statistics
-   * @details Allocates and returns detailed information about the volume including capacity and free space.
-   *
-   * @param[in]  volume_ Pointer to the volume to query
-   * @param[out] info_   Pointer to store allocated volume information structure
-   *
-   * @return             ReturnOK if information was retrieved successfully
-   * @return             ReturnError if volume is invalid, allocation failed, or invalid parameter
-   *
-   * @warning Caller is responsible for freeing the allocated structure
-   */
+/**
+ * @brief Gets volume information and statistics
+ * @details Allocates and returns detailed information about the volume including capacity and free space.
+ *
+ * @param[in]  volume_ Pointer to the volume to query
+ * @param[out] info_   Pointer to store allocated volume information structure
+ *
+ * @return             ReturnOK if information was retrieved successfully
+ * @return             ReturnError if volume is invalid, allocation failed, or invalid parameter
+ *
+ * @warning Caller is responsible for freeing the allocated structure
+ */
   Return_t xFSGetVolumeInfo(const Volume_t *volume_, VolumeInfo_t **info_) {
 
     FUNCTION_ENTER;
@@ -246,7 +235,6 @@
           if(maxCluster > 0x1000u) {
 
             maxCluster = 0x1000u;
-
           }
 
           for(cluster = 2u; cluster < maxCluster; cluster++) {
@@ -258,15 +246,12 @@
               if(fatEntry == FAT32_FREE_CLUSTER) {
 
                 freeClusters++;
-
               }
 
             } else {
 
               break;
-
             }
-
           }
 
           info->totalClusters = totalClusters;
@@ -284,42 +269,40 @@
         } else {
 
           __AssertOnElse__();
-
         }
 
       } else {
 
         __AssertOnElse__();
-
       }
 
     } else {
 
       __AssertOnElse__();
-
     }
 
     FUNCTION_EXIT;
-
   }
 
 
-  /**
-   * @brief Formats a volume with FAT32 filesystem
-   * @details Creates a new FAT32 filesystem on the default block device.
-   *
-   * @param[in] volumeLabel_ Volume label string (11 characters max)
-   *
-   * @return                 ReturnOK if format was successful
-   * @return                 ReturnError if format failed or device unavailable
-   *
-   * @warning This operation destroys all existing data on the volume
-   */
+/**
+ * @brief Formats a volume with FAT32 filesystem
+ * @details Creates a new FAT32 filesystem on the default block device.
+ *
+ * @param[in] volumeLabel_ Volume label string (11 characters max)
+ *
+ * @return                 ReturnOK if format was successful
+ * @return                 ReturnError if format failed or device unavailable
+ *
+ * @warning This operation destroys all existing data on the volume
+ */
   Return_t xFSFormat(const Byte_t *volumeLabel_) {
 
     FUNCTION_ENTER;
 
-    Volume_t tempVol = {0x0u};
+    Volume_t tempVol = {
+      0x0u
+    };
 
     Byte_t *bootSector = null;
 
@@ -454,11 +437,8 @@
                 if(ERROR(__WriteSector__(&tempVol, fatStartSector + sector, fatSector))) {
 
                   fatInitSuccess = false;
-
                 }
-
               }
-
             }
 
             if(fatInitSuccess) {
@@ -474,9 +454,7 @@
                   if(ERROR(__WriteSector__(&tempVol, rootFirstSector + sector, fatSector))) {
 
                     fatInitSuccess = false;
-
                   }
-
                 }
 
                 xMemFree((Addr_t *) fatSector);
@@ -488,7 +466,6 @@
                 } else {
 
                   __AssertOnElse__();
-
                 }
 
               } else {
@@ -496,7 +473,6 @@
                 xMemFree((Addr_t *) fatSector);
 
                 __AssertOnElse__();
-
               }
 
             } else {
@@ -504,13 +480,11 @@
               xMemFree((Addr_t *) fatSector);
 
               __AssertOnElse__();
-
             }
 
           } else {
 
             __AssertOnElse__();
-
           }
 
         } else {
@@ -518,40 +492,36 @@
           xMemFree((Addr_t *) bootSector);
 
           __AssertOnElse__();
-
         }
 
       } else {
 
         __AssertOnElse__();
-
       }
 
     } else {
 
       __AssertOnElse__();
-
     }
 
     FUNCTION_EXIT;
-
   }
 
 
-  /**
-   * @brief Opens a file
-   * @details Allocates and initializes a file handle for the specified path with the given mode.
-   *
-   * @param[out] file_   Pointer to store the created file handle
-   * @param[in]  volume_ Pointer to the mounted volume
-   * @param[in]  path_   File path (null-terminated string)
-   * @param[in]  mode_   Access mode flags (FS_MODE_READ, FS_MODE_WRITE, FS_MODE_APPEND, FS_MODE_CREATE)
-   *
-   * @return             ReturnOK if file was opened successfully
-   * @return             ReturnError if file not found, allocation failed, or invalid parameters
-   *
-   * @warning Caller is responsible for closing the file with xFileClose()
-   */
+/**
+ * @brief Opens a file
+ * @details Allocates and initializes a file handle for the specified path with the given mode.
+ *
+ * @param[out] file_   Pointer to store the created file handle
+ * @param[in]  volume_ Pointer to the mounted volume
+ * @param[in]  path_   File path (null-terminated string)
+ * @param[in]  mode_   Access mode flags (FS_MODE_READ, FS_MODE_WRITE, FS_MODE_APPEND, FS_MODE_CREATE)
+ *
+ * @return             ReturnOK if file was opened successfully
+ * @return             ReturnError if file not found, allocation failed, or invalid parameters
+ *
+ * @warning Caller is responsible for closing the file with xFileClose()
+ */
   Return_t xFileOpen(File_t **file_, Volume_t *volume_, const Byte_t *path_, const Byte_t mode_) {
 
     FUNCTION_ENTER;
@@ -578,20 +548,22 @@
 
           const Byte_t *lastSlash = null;
 
-          Byte_t parentPath[256] = {0x0u};
+          Byte_t parentPath[256] = {
+            0x0u
+          };
 
           Word_t parentPathLen = 0x0u;
 
-          FAT32DirEntry_t parentEntry = {0x0u};
+          FAT32DirEntry_t parentEntry = {
+            0x0u
+          };
 
           for(i = 0x0u; path_[i] != '\0'; i++) {
 
             if(path_[i] == '/') {
 
               lastSlash = &path_[i];
-
             }
-
           }
 
           if(__PointerIsNotNull__(lastSlash)) {
@@ -615,17 +587,13 @@
               } else {
 
                 parentCluster = volume_->rootDirCluster;
-
               }
-
             }
 
           } else {
 
             parentCluster = volume_->rootDirCluster;
-
           }
-
         }
 
         if(OK(__KernelAllocateMemory__((volatile Addr_t **) &file, sizeof(File_t)))) {
@@ -647,7 +615,6 @@
           for(i = 0x0u; path_[i] != '\0' && i < 255; i++) {
 
             file->path[i] = path_[i];
-
           }
 
           file->path[i] = '\0';
@@ -681,7 +648,6 @@
                     if(nextCluster >= FAT32_EOC_MIN) {
 
                       break;
-
                     }
 
                     file->currentCluster = nextCluster;
@@ -689,13 +655,9 @@
                   } else {
 
                     break;
-
                   }
-
                 }
-
               }
-
             }
 
             *file_ = file;
@@ -721,43 +683,37 @@
               __KernelFreeMemory__(file);
 
               __AssertOnElse__();
-
             }
-
           }
 
         } else {
 
           __AssertOnElse__();
-
         }
 
       } else {
 
         __AssertOnElse__();
-
       }
 
     } else {
 
       __AssertOnElse__();
-
     }
 
     FUNCTION_EXIT;
-
   }
 
 
-  /**
-   * @brief Closes a file
-   * @details Flushes any pending writes and frees the file handle.
-   *
-   * @param[in,out] file_ Pointer to the file to close
-   *
-   * @return              ReturnOK if file was closed successfully
-   * @return              ReturnError if file is invalid or deallocation failed
-   */
+/**
+ * @brief Closes a file
+ * @details Flushes any pending writes and frees the file handle.
+ *
+ * @param[in,out] file_ Pointer to the file to close
+ *
+ * @return              ReturnOK if file was closed successfully
+ * @return              ReturnError if file is invalid or deallocation failed
+ */
   Return_t xFileClose(File_t *file_) {
 
     FUNCTION_ENTER;
@@ -778,7 +734,9 @@
 
     const Byte_t *fileName = null;
 
-    Byte_t name83[11] = {0x0u};
+    Byte_t name83[11] = {
+      0x0u
+    };
 
     if(__ObjectIsValid__(file_)) {
 
@@ -791,15 +749,12 @@
           if(file_->path[i] == '/') {
 
             lastSlash = &file_->path[i];
-
           }
-
         }
 
         if(__PointerIsNotNull__(lastSlash)) {
 
           fileName = lastSlash + 1;
-
         }
 
         if(OK(__ConvertToFAT83__(fileName, name83))) {
@@ -821,21 +776,16 @@
               for(i = 0x0u; i < file_->volume->sectorsPerCluster; i++) {
 
                 __WriteSector__(file_->volume, firstSector + i, clusterData + (i * file_->volume->bytesPerSector));
-
               }
 
               __KernelFreeMemory__(clusterData);
-
             }
 
           } else {
 
             __CreateDirEntry__(file_->volume, file_->parentDirCluster, name83, FAT_ATTR_ARCHIVE, file_->firstCluster, file_->fileSize);
-
           }
-
         }
-
       }
 
       file_->isOpen = false;
@@ -849,31 +799,28 @@
       } else {
 
         __AssertOnElse__();
-
       }
 
     } else {
-
     }
 
     FUNCTION_EXIT;
-
   }
 
 
-  /**
-   * @brief Reads data from a file
-   * @details Allocates and returns data read from the current file position.
-   *
-   * @param[in,out] file_ Pointer to the file to read from
-   * @param[in]     size_ Number of bytes to read
-   * @param[out]    data_ Pointer to store allocated data buffer
-   *
-   * @return              ReturnOK if read was successful
-   * @return              ReturnError if read failed, allocation failed, or invalid parameters
-   *
-   * @warning Caller is responsible for freeing the allocated buffer
-   */
+/**
+ * @brief Reads data from a file
+ * @details Allocates and returns data read from the current file position.
+ *
+ * @param[in,out] file_ Pointer to the file to read from
+ * @param[in]     size_ Number of bytes to read
+ * @param[out]    data_ Pointer to store allocated data buffer
+ *
+ * @return              ReturnOK if read was successful
+ * @return              ReturnError if read failed, allocation failed, or invalid parameters
+ *
+ * @warning Caller is responsible for freeing the allocated buffer
+ */
   Return_t xFileRead(File_t *file_, const Size_t size_, Byte_t **data_) {
 
     FUNCTION_ENTER;
@@ -905,7 +852,6 @@
       if((file_->position + bytesToRead) > file_->fileSize) {
 
         bytesToRead = file_->fileSize - file_->position;
-
       }
 
       if(0x0u != bytesToRead) {
@@ -915,7 +861,6 @@
           if(file_->currentCluster == 0x0u) {
 
             file_->currentCluster = file_->firstCluster;
-
           }
 
           success = true;
@@ -931,7 +876,6 @@
               if(bytesFromCluster > (bytesToRead - bytesRead)) {
 
                 bytesFromCluster = bytesToRead - bytesRead;
-
               }
 
               __memcpy__(buffer + bytesRead, clusterData + offsetInCluster, bytesFromCluster);
@@ -949,7 +893,6 @@
                   if(nextCluster >= FAT32_EOC_MIN) {
 
                     break;
-
                   }
 
                   file_->currentCluster = nextCluster;
@@ -961,9 +904,7 @@
                   success = false;
 
                   __AssertOnElse__();
-
                 }
-
               }
 
             } else {
@@ -973,9 +914,7 @@
               success = false;
 
               __AssertOnElse__();
-
             }
-
           }
 
           if(success) {
@@ -987,43 +926,38 @@
           } else {
 
             __AssertOnElse__();
-
           }
 
         } else {
 
           __AssertOnElse__();
-
         }
 
       } else {
 
         __AssertOnElse__();
-
       }
 
     } else {
 
       __AssertOnElse__();
-
     }
 
     FUNCTION_EXIT;
-
   }
 
 
-  /**
-   * @brief Writes data to a file
-   * @details Writes data to the file at the current position.
-   *
-   * @param[in,out] file_ Pointer to the file to write to
-   * @param[in]     size_ Number of bytes to write
-   * @param[in]     data_ Pointer to data buffer
-   *
-   * @return              ReturnOK if write was successful
-   * @return              ReturnError if write failed, disk full, or invalid parameters
-   */
+/**
+ * @brief Writes data to a file
+ * @details Writes data to the file at the current position.
+ *
+ * @param[in,out] file_ Pointer to the file to write to
+ * @param[in]     size_ Number of bytes to write
+ * @param[in]     data_ Pointer to data buffer
+ *
+ * @return              ReturnOK if write was successful
+ * @return              ReturnError if write failed, disk full, or invalid parameters
+ */
   Return_t xFileWrite(File_t *file_, const Size_t size_, const Byte_t *data_) {
 
     FUNCTION_ENTER;
@@ -1057,7 +991,6 @@
         if((file_->mode & FS_MODE_APPEND) != 0x0u) {
 
           file_->position = file_->fileSize;
-
         }
 
         success = true;
@@ -1081,9 +1014,7 @@
             success = false;
 
             __AssertOnElse__();
-
           }
-
         }
 
         if(success && (file_->currentCluster == 0x0u)) {
@@ -1103,7 +1034,6 @@
                 if(nextCluster >= FAT32_EOC_MIN) {
 
                   break;
-
                 }
 
                 file_->currentCluster = nextCluster;
@@ -1115,13 +1045,9 @@
                 success = false;
 
                 __AssertOnElse__();
-
               }
-
             }
-
           }
-
         }
 
         while(bytesWritten < bytesToWrite && success) {
@@ -1135,7 +1061,6 @@
             if(bytesToCluster > (bytesToWrite - bytesWritten)) {
 
               bytesToCluster = bytesToWrite - bytesWritten;
-
             }
 
             __memcpy__(clusterData + offsetInCluster, data_ + bytesWritten, bytesToCluster);
@@ -1145,7 +1070,6 @@
             for(i = 0x0u; i < file_->volume->sectorsPerCluster; i++) {
 
               __WriteSector__(file_->volume, firstSector + i, clusterData + (i * file_->volume->bytesPerSector));
-
             }
 
             bytesWritten += bytesToCluster;
@@ -1157,7 +1081,6 @@
               file_->fileSize = file_->position;
 
               file_->isDirty = true;
-
             }
 
             __KernelFreeMemory__(clusterData);
@@ -1183,9 +1106,7 @@
                     success = false;
 
                     __AssertOnElse__();
-
                   }
-
                 }
 
                 file_->currentCluster = nextCluster;
@@ -1195,9 +1116,7 @@
                 success = false;
 
                 __AssertOnElse__();
-
               }
-
             }
 
           } else {
@@ -1205,9 +1124,7 @@
             success = false;
 
             __AssertOnElse__();
-
           }
-
         }
 
         if(success) {
@@ -1217,37 +1134,33 @@
         } else {
 
           __AssertOnElse__();
-
         }
 
       } else {
 
         __AssertOnElse__();
-
       }
 
     } else {
 
       __AssertOnElse__();
-
     }
 
     FUNCTION_EXIT;
-
   }
 
 
-  /**
-   * @brief Seeks to a position in a file
-   * @details Changes the file position for subsequent read/write operations.
-   *
-   * @param[in,out] file_   Pointer to the file
-   * @param[in]     offset_ Byte offset for the seek operation
-   * @param[in]     origin_ Seek origin (FS_SEEK_SET, FS_SEEK_CUR, FS_SEEK_END)
-   *
-   * @return                ReturnOK if seek was successful
-   * @return                ReturnError if seek failed or invalid parameters
-   */
+/**
+ * @brief Seeks to a position in a file
+ * @details Changes the file position for subsequent read/write operations.
+ *
+ * @param[in,out] file_   Pointer to the file
+ * @param[in]     offset_ Byte offset for the seek operation
+ * @param[in]     origin_ Seek origin (FS_SEEK_SET, FS_SEEK_CUR, FS_SEEK_END)
+ *
+ * @return                ReturnOK if seek was successful
+ * @return                ReturnError if seek failed or invalid parameters
+ */
   Return_t xFileSeek(File_t *file_, const Word_t offset_, const Byte_t origin_) {
 
     FUNCTION_ENTER;
@@ -1272,15 +1185,18 @@
 
       switch(origin_) {
 
-      case FS_SEEK_SET: newPosition = offset_;
+      case FS_SEEK_SET:
+        newPosition = offset_;
 
         break;
 
-      case FS_SEEK_CUR: newPosition = file_->position + offset_;
+      case FS_SEEK_CUR:
+        newPosition = file_->position + offset_;
 
         break;
 
-      case FS_SEEK_END: newPosition = file_->fileSize + offset_;
+      case FS_SEEK_END:
+        newPosition = file_->fileSize + offset_;
 
         break;
 
@@ -1291,7 +1207,6 @@
         __AssertOnElse__();
 
         break;
-
       }
 
       if(validOrigin) {
@@ -1299,7 +1214,6 @@
         if((newPosition > file_->fileSize) && ((file_->mode & FS_MODE_WRITE) == 0x0u) && ((file_->mode & FS_MODE_APPEND) == 0x0u)) {
 
           newPosition = file_->fileSize;
-
         }
 
         file_->position = newPosition;
@@ -1315,7 +1229,6 @@
             if(nextCluster >= FAT32_EOC_MIN) {
 
               break;
-
             }
 
             file_->currentCluster = nextCluster;
@@ -1325,9 +1238,7 @@
             success = false;
 
             __AssertOnElse__();
-
           }
-
         }
 
         if(success) {
@@ -1337,36 +1248,32 @@
         } else {
 
           __AssertOnElse__();
-
         }
 
       } else {
 
         __AssertOnElse__();
-
       }
 
     } else {
 
       __AssertOnElse__();
-
     }
 
     FUNCTION_EXIT;
-
   }
 
 
-  /**
-   * @brief Gets the current file position
-   * @details Returns the byte offset of the current read/write position.
-   *
-   * @param[in]  file_     Pointer to the file
-   * @param[out] position_ Pointer to store the current position
-   *
-   * @return               ReturnOK if position was retrieved successfully
-   * @return               ReturnError if file is invalid or invalid parameter
-   */
+/**
+ * @brief Gets the current file position
+ * @details Returns the byte offset of the current read/write position.
+ *
+ * @param[in]  file_     Pointer to the file
+ * @param[out] position_ Pointer to store the current position
+ *
+ * @return               ReturnOK if position was retrieved successfully
+ * @return               ReturnError if file is invalid or invalid parameter
+ */
   Return_t xFileTell(const File_t *file_, Word_t *position_) {
 
     FUNCTION_ENTER;
@@ -1380,24 +1287,22 @@
     } else {
 
       __AssertOnElse__();
-
     }
 
     FUNCTION_EXIT;
-
   }
 
 
-  /**
-   * @brief Gets the size of a file
-   * @details Returns the total size of the file in bytes.
-   *
-   * @param[in]  file_ Pointer to the file
-   * @param[out] size_ Pointer to store the file size
-   *
-   * @return           ReturnOK if size was retrieved successfully
-   * @return           ReturnError if file is invalid or invalid parameter
-   */
+/**
+ * @brief Gets the size of a file
+ * @details Returns the total size of the file in bytes.
+ *
+ * @param[in]  file_ Pointer to the file
+ * @param[out] size_ Pointer to store the file size
+ *
+ * @return           ReturnOK if size was retrieved successfully
+ * @return           ReturnError if file is invalid or invalid parameter
+ */
   Return_t xFileGetSize(const File_t *file_, Word_t *size_) {
 
     FUNCTION_ENTER;
@@ -1411,23 +1316,21 @@
     } else {
 
       __AssertOnElse__();
-
     }
 
     FUNCTION_EXIT;
-
   }
 
 
-  /**
-   * @brief Synchronizes file data to disk
-   * @details Flushes all pending writes to ensure data is written to the storage device.
-   *
-   * @param[in,out] file_ Pointer to the file to sync
-   *
-   * @return              ReturnOK if sync was successful
-   * @return              ReturnError if sync failed or file is invalid
-   */
+/**
+ * @brief Synchronizes file data to disk
+ * @details Flushes all pending writes to ensure data is written to the storage device.
+ *
+ * @param[in,out] file_ Pointer to the file to sync
+ *
+ * @return              ReturnOK if sync was successful
+ * @return              ReturnError if sync failed or file is invalid
+ */
   Return_t xFileSync(File_t *file_) {
 
     FUNCTION_ENTER;
@@ -1448,7 +1351,9 @@
 
     const Byte_t *fileName = null;
 
-    Byte_t name83[11] = {0x0u};
+    Byte_t name83[11] = {
+      0x0u
+    };
 
     Base_t writeSuccess = true;
 
@@ -1463,15 +1368,12 @@
           if(file_->path[i] == '/') {
 
             lastSlash = &file_->path[i];
-
           }
-
         }
 
         if(__PointerIsNotNull__(lastSlash)) {
 
           fileName = lastSlash + 1;
-
         }
 
         if(OK(__ConvertToFAT83__(fileName, name83))) {
@@ -1497,9 +1399,7 @@
                 if(ERROR(__WriteSector__(file_->volume, firstSector + i, clusterData + (i * file_->volume->bytesPerSector)))) {
 
                   writeSuccess = false;
-
                 }
-
               }
 
               __KernelFreeMemory__(clusterData);
@@ -1513,54 +1413,47 @@
               } else {
 
                 __AssertOnElse__();
-
               }
 
             } else {
 
               __AssertOnElse__();
-
             }
 
           } else {
 
             __ReturnOk__();
-
           }
 
         } else {
 
           __AssertOnElse__();
-
         }
 
       } else {
 
         __ReturnOk__();
-
       }
 
     } else {
 
       __AssertOnElse__();
-
     }
 
     FUNCTION_EXIT;
-
   }
 
 
-  /**
-   * @brief Truncates a file to specified size
-   * @details Resizes the file, either expanding or shrinking it.
-   *
-   * @param[in,out] file_ Pointer to the file to truncate
-   * @param[in]     size_ New file size in bytes
-   *
-   * @return              ReturnOK if truncate was successful
-   * @return              ReturnError if truncate failed or file is invalid
-   */
+/**
+ * @brief Truncates a file to specified size
+ * @details Resizes the file, either expanding or shrinking it.
+ *
+ * @param[in,out] file_ Pointer to the file to truncate
+ * @param[in]     size_ New file size in bytes
+ *
+ * @return              ReturnOK if truncate was successful
+ * @return              ReturnError if truncate failed or file is invalid
+ */
   Return_t xFileTruncate(File_t *file_, const Word_t size_) {
 
     FUNCTION_ENTER;
@@ -1602,7 +1495,6 @@
             if(nextCluster >= FAT32_EOC_MIN) {
 
               break;
-
             }
 
             currentCluster = nextCluster;
@@ -1612,9 +1504,7 @@
             success = false;
 
             __AssertOnElse__();
-
           }
-
         }
 
         if(success) {
@@ -1630,9 +1520,7 @@
               __GetFATEntry__(file_->volume, nextCluster, &nextCluster);
 
               __SetFATEntry__(file_->volume, clusterToFree, FAT32_FREE_CLUSTER);
-
             }
-
           }
 
           file_->fileSize = size_;
@@ -1644,32 +1532,28 @@
         } else {
 
           __AssertOnElse__();
-
         }
-
       }
 
     } else {
 
       __AssertOnElse__();
-
     }
 
     FUNCTION_EXIT;
-
   }
 
 
-  /**
-   * @brief Checks if file position is at end-of-file
-   * @details Returns true if the current position is at or beyond the end of the file.
-   *
-   * @param[in]  file_ Pointer to the file to check
-   * @param[out] eof_  Pointer to store the result (true if at EOF, false otherwise)
-   *
-   * @return           ReturnOK if check was successful
-   * @return           ReturnError if file is invalid or invalid parameter
-   */
+/**
+ * @brief Checks if file position is at end-of-file
+ * @details Returns true if the current position is at or beyond the end of the file.
+ *
+ * @param[in]  file_ Pointer to the file to check
+ * @param[out] eof_  Pointer to store the result (true if at EOF, false otherwise)
+ *
+ * @return           ReturnOK if check was successful
+ * @return           ReturnError if file is invalid or invalid parameter
+ */
   Return_t xFileEOF(const File_t *file_, Base_t *eof_) {
 
     FUNCTION_ENTER;
@@ -1683,27 +1567,25 @@
     } else {
 
       __AssertOnElse__();
-
     }
 
     FUNCTION_EXIT;
-
   }
 
 
-  /**
-   * @brief Opens a directory for reading
-   * @details Allocates and initializes a directory handle for iteration.
-   *
-   * @param[out] dir_    Pointer to store the created directory handle
-   * @param[in]  volume_ Pointer to the mounted volume
-   * @param[in]  path_   Directory path (null-terminated string)
-   *
-   * @return             ReturnOK if directory was opened successfully
-   * @return             ReturnError if directory not found, allocation failed, or invalid parameters
-   *
-   * @warning Caller is responsible for closing with xDirClose()
-   */
+/**
+ * @brief Opens a directory for reading
+ * @details Allocates and initializes a directory handle for iteration.
+ *
+ * @param[out] dir_    Pointer to store the created directory handle
+ * @param[in]  volume_ Pointer to the mounted volume
+ * @param[in]  path_   Directory path (null-terminated string)
+ *
+ * @return             ReturnOK if directory was opened successfully
+ * @return             ReturnError if directory not found, allocation failed, or invalid parameters
+ *
+ * @warning Caller is responsible for closing with xDirClose()
+ */
   Return_t xDirOpen(Dir_t **dir_, Volume_t *volume_, const Byte_t *path_) {
 
     FUNCTION_ENTER;
@@ -1739,15 +1621,12 @@
             } else {
 
               __AssertOnElse__();
-
             }
 
           } else {
 
             __AssertOnElse__();
-
           }
-
         }
 
         if(validPath) {
@@ -1771,41 +1650,36 @@
           } else {
 
             __AssertOnElse__();
-
           }
 
         } else {
 
           __AssertOnElse__();
-
         }
 
       } else {
 
         __AssertOnElse__();
-
       }
 
     } else {
 
       __AssertOnElse__();
-
     }
 
     FUNCTION_EXIT;
-
   }
 
 
-  /**
-   * @brief Closes a directory
-   * @details Frees the directory handle.
-   *
-   * @param[in,out] dir_ Pointer to the directory to close
-   *
-   * @return             ReturnOK if directory was closed successfully
-   * @return             ReturnError if directory is invalid or deallocation failed
-   */
+/**
+ * @brief Closes a directory
+ * @details Frees the directory handle.
+ *
+ * @param[in,out] dir_ Pointer to the directory to close
+ *
+ * @return             ReturnOK if directory was closed successfully
+ * @return             ReturnError if directory is invalid or deallocation failed
+ */
   Return_t xDirClose(Dir_t *dir_) {
 
     FUNCTION_ENTER;
@@ -1823,30 +1697,27 @@
       } else {
 
         __AssertOnElse__();
-
       }
 
     } else {
-
     }
 
     FUNCTION_EXIT;
-
   }
 
 
-  /**
-   * @brief Reads the next directory entry
-   * @details Allocates and returns the next entry in the directory.
-   *
-   * @param[in,out] dir_   Pointer to the directory
-   * @param[out]    entry_ Pointer to store allocated directory entry
-   *
-   * @return               ReturnOK if entry was read successfully
-   * @return               ReturnError if end of directory, allocation failed, or invalid parameters
-   *
-   * @warning Caller is responsible for freeing the allocated entry
-   */
+/**
+ * @brief Reads the next directory entry
+ * @details Allocates and returns the next entry in the directory.
+ *
+ * @param[in,out] dir_   Pointer to the directory
+ * @param[out]    entry_ Pointer to store allocated directory entry
+ *
+ * @return               ReturnOK if entry was read successfully
+ * @return               ReturnError if end of directory, allocation failed, or invalid parameters
+ *
+ * @warning Caller is responsible for freeing the allocated entry
+ */
   Return_t xDirRead(Dir_t *dir_, DirEntry_t **entry_) {
 
     FUNCTION_ENTER;
@@ -1910,25 +1781,19 @@
                   } else {
 
                     endOfDirectory = true;
-
                   }
-
                 }
 
               } else {
 
                 endOfDirectory = true;
-
               }
 
             } else {
 
               fatEntry = (FAT32DirEntry_t *) (clusterData + (entryOffsetInCluster * sizeof(FAT32DirEntry_t)));
-
             }
-
           }
-
         }
 
         if(!endOfDirectory) {
@@ -1950,7 +1815,6 @@
               for(i = 0x0u; i < 8 && fatEntry->name[i] != ' '; i++) {
 
                 dirEntry->name[j++] = fatEntry->name[i];
-
               }
 
               if(fatEntry->name[8] != ' ') {
@@ -1960,9 +1824,7 @@
                 for(i = 8; i < 11 && fatEntry->name[i] != ' '; i++) {
 
                   dirEntry->name[j++] = fatEntry->name[i];
-
                 }
-
               }
 
               dirEntry->name[j] = '\0';
@@ -1984,11 +1846,8 @@
               *entry_ = dirEntry;
 
               success = true;
-
             }
-
           }
-
         }
 
         __KernelFreeMemory__(clusterData);
@@ -2000,35 +1859,31 @@
         } else {
 
           __AssertOnElse__();
-
         }
 
       } else {
 
         __AssertOnElse__();
-
       }
 
     } else {
 
       __AssertOnElse__();
-
     }
 
     FUNCTION_EXIT;
-
   }
 
 
-  /**
-   * @brief Rewinds directory to first entry
-   * @details Resets the directory position to the beginning.
-   *
-   * @param[in,out] dir_ Pointer to the directory to rewind
-   *
-   * @return             ReturnOK if rewind was successful
-   * @return             ReturnError if directory is invalid
-   */
+/**
+ * @brief Rewinds directory to first entry
+ * @details Resets the directory position to the beginning.
+ *
+ * @param[in,out] dir_ Pointer to the directory to rewind
+ *
+ * @return             ReturnOK if rewind was successful
+ * @return             ReturnError if directory is invalid
+ */
   Return_t xDirRewind(Dir_t *dir_) {
 
     FUNCTION_ENTER;
@@ -2042,24 +1897,22 @@
     } else {
 
       __AssertOnElse__();
-
     }
 
     FUNCTION_EXIT;
-
   }
 
 
-  /**
-   * @brief Creates a new directory
-   * @details Creates a directory at the specified path.
-   *
-   * @param[in] volume_ Pointer to the mounted volume
-   * @param[in] path_   Directory path to create (null-terminated string)
-   *
-   * @return            ReturnOK if directory was created successfully
-   * @return            ReturnError if creation failed, path exists, or invalid parameters
-   */
+/**
+ * @brief Creates a new directory
+ * @details Creates a directory at the specified path.
+ *
+ * @param[in] volume_ Pointer to the mounted volume
+ * @param[in] path_   Directory path to create (null-terminated string)
+ *
+ * @return            ReturnOK if directory was created successfully
+ * @return            ReturnError if creation failed, path exists, or invalid parameters
+ */
   Return_t xDirMake(Volume_t *volume_, const Byte_t *path_) {
 
     FUNCTION_ENTER;
@@ -2068,7 +1921,9 @@
 
     Word_t newDirCluster = 0x0u;
 
-    Byte_t dirName83[11] = {0x0u};
+    Byte_t dirName83[11] = {
+      0x0u
+    };
 
     Byte_t *clusterData = null;
 
@@ -2107,9 +1962,7 @@
           if(path_[i] == '/') {
 
             lastSlash = &path_[i];
-
           }
-
         }
 
         if(__PointerIsNotNull__(lastSlash)) {
@@ -2129,7 +1982,6 @@
             __memcpy__(parentPath, path_, parentPathLen);
 
             parentPath[parentPathLen] = '\0';
-
           }
 
         } else {
@@ -2137,7 +1989,6 @@
           parentPath[0] = '/';
 
           parentPath[1] = '\0';
-
         }
 
         if(OK(__FindFileByPath__(volume_, parentPath, null, &parentCluster, null, null))) {
@@ -2183,9 +2034,7 @@
                     if(ERROR(__WriteSector__(volume_, firstSector + i, clusterData + (i * volume_->bytesPerSector)))) {
 
                       writeSuccess = false;
-
                     }
-
                   }
 
                   __KernelFreeMemory__(clusterData);
@@ -2201,13 +2050,11 @@
                       __SetFATEntry__(volume_, newDirCluster, FAT32_FREE_CLUSTER);
 
                       __AssertOnElse__();
-
                     }
 
                   } else {
 
                     __AssertOnElse__();
-
                   }
 
                 } else {
@@ -2215,58 +2062,50 @@
                   __SetFATEntry__(volume_, newDirCluster, FAT32_FREE_CLUSTER);
 
                   __AssertOnElse__();
-
                 }
 
               } else {
 
                 __AssertOnElse__();
-
               }
 
             } else {
 
               __AssertOnElse__();
-
             }
 
           } else {
 
             __AssertOnElse__();
-
           }
 
         } else {
 
           __AssertOnElse__();
-
         }
 
       } else {
 
         __AssertOnElse__();
-
       }
 
     } else {
-
     }
 
     FUNCTION_EXIT;
-
   }
 
 
-  /**
-   * @brief Removes a directory
-   * @details Deletes an empty directory at the specified path.
-   *
-   * @param[in] volume_ Pointer to the mounted volume
-   * @param[in] path_   Directory path to remove (null-terminated string)
-   *
-   * @return            ReturnOK if directory was removed successfully
-   * @return            ReturnError if removal failed, directory not empty, or invalid parameters
-   */
+/**
+ * @brief Removes a directory
+ * @details Deletes an empty directory at the specified path.
+ *
+ * @param[in] volume_ Pointer to the mounted volume
+ * @param[in] path_   Directory path to remove (null-terminated string)
+ *
+ * @return            ReturnOK if directory was removed successfully
+ * @return            ReturnError if removal failed, directory not empty, or invalid parameters
+ */
   Return_t xDirRemove(Volume_t *volume_, const Byte_t *path_) {
 
     FUNCTION_ENTER;
@@ -2326,21 +2165,19 @@
                   if(fatEntry->name[0x0u] == 0x00u) {
 
                     break;
-
                   }
 
                   if((fatEntry->name[0x0u] == 0xE5u) || __ByteCompare__(fatEntry->name, (const Byte_t *) ".          ", 0xB) || __ByteCompare__(fatEntry->name,
 
                     (
 
-                    const Byte_t *) "..         ", 0xB)) {
+                    const Byte_t *) "..         ",
+                    0xB)) {
 
                     continue;
-
                   }
 
                   isEmpty = false;
-
                 }
 
                 __KernelFreeMemory__(clusterData);
@@ -2348,7 +2185,6 @@
                 if(!isEmpty) {
 
                   break;
-
                 }
 
                 if(OK(__GetFATEntry__(volume_, currentCluster, &nextCluster))) {
@@ -2358,15 +2194,12 @@
                 } else {
 
                   break;
-
                 }
 
               } else {
 
                 break;
-
               }
-
             }
 
             if(isEmpty) {
@@ -2382,9 +2215,7 @@
                   if(ERROR(__WriteSector__(volume_, firstSector + i, clusterData + (i * volume_->bytesPerSector)))) {
 
                     writeSuccess = false;
-
                   }
-
                 }
 
                 __KernelFreeMemory__(clusterData);
@@ -2400,69 +2231,59 @@
                     } else {
 
                       __AssertOnElse__();
-
                     }
 
                   } else {
 
                     __ReturnOk__();
-
                   }
 
                 } else {
 
                   __AssertOnElse__();
-
                 }
 
               } else {
 
                 __AssertOnElse__();
-
               }
 
             } else {
 
               __AssertOnElse__();
-
             }
 
           } else {
 
             __AssertOnElse__();
-
           }
 
         } else {
-
         }
 
       } else {
 
         __AssertOnElse__();
-
       }
 
     } else {
-
     }
 
     FUNCTION_EXIT;
-
   }
 
 
-  /**
-   * @brief Checks if a file exists
-   * @details Returns true if a file or directory exists at the specified path.
-   *
-   * @param[in]  volume_ Pointer to the mounted volume
-   * @param[in]  path_   File path to check (null-terminated string)
-   * @param[out] exists_ Pointer to store the result (true if exists, false otherwise)
-   *
-   * @return             ReturnOK if check was successful
-   * @return             ReturnError if volume is invalid or invalid parameters
-   */
+/**
+ * @brief Checks if a file exists
+ * @details Returns true if a file or directory exists at the specified path.
+ *
+ * @param[in]  volume_ Pointer to the mounted volume
+ * @param[in]  path_   File path to check (null-terminated string)
+ * @param[out] exists_ Pointer to store the result (true if exists, false otherwise)
+ *
+ * @return             ReturnOK if check was successful
+ * @return             ReturnError if volume is invalid or invalid parameters
+ */
   Return_t xFileExists(Volume_t *volume_, const Byte_t *path_, Base_t *exists_) {
 
     FUNCTION_ENTER;
@@ -2484,7 +2305,6 @@
           *exists_ = false;
 
           __ReturnOk__();
-
         }
 
       } else {
@@ -2492,30 +2312,27 @@
         *exists_ = false;
 
         __AssertOnElse__();
-
       }
 
     } else {
 
       __AssertOnElse__();
-
     }
 
     FUNCTION_EXIT;
-
   }
 
 
-  /**
-   * @brief Deletes a file
-   * @details Removes the file at the specified path.
-   *
-   * @param[in] volume_ Pointer to the mounted volume
-   * @param[in] path_   File path to delete (null-terminated string)
-   *
-   * @return            ReturnOK if file was deleted successfully
-   * @return            ReturnError if deletion failed, file not found, or invalid parameters
-   */
+/**
+ * @brief Deletes a file
+ * @details Removes the file at the specified path.
+ *
+ * @param[in] volume_ Pointer to the mounted volume
+ * @param[in] path_   File path to delete (null-terminated string)
+ *
+ * @return            ReturnOK if file was deleted successfully
+ * @return            ReturnError if deletion failed, file not found, or invalid parameters
+ */
   Return_t xFileUnlink(Volume_t *volume_, const Byte_t *path_) {
 
     FUNCTION_ENTER;
@@ -2557,9 +2374,7 @@
                 if(ERROR(__WriteSector__(volume_, firstSector + i, clusterData + (i * volume_->bytesPerSector)))) {
 
                   writeSuccess = false;
-
                 }
-
               }
 
               __KernelFreeMemory__(clusterData);
@@ -2575,68 +2390,61 @@
                   } else {
 
                     __AssertOnElse__();
-
                   }
 
                 } else {
 
                   __ReturnOk__();
-
                 }
 
               } else {
 
                 __AssertOnElse__();
-
               }
 
             } else {
 
               __AssertOnElse__();
-
             }
 
           } else {
 
             __AssertOnElse__();
-
           }
 
         } else {
-
         }
 
       } else {
 
         __AssertOnElse__();
-
       }
 
     } else {
-
     }
 
     FUNCTION_EXIT;
-
   }
 
 
-  /**
-   * @brief Renames or moves a file
-   * @details Changes the path of a file or directory.
-   *
-   * @param[in] volume_  Pointer to the mounted volume
-   * @param[in] oldPath_ Current file path (null-terminated string)
-   * @param[in] newPath_ New file path (null-terminated string)
-   *
-   * @return             ReturnOK if rename was successful
-   * @return             ReturnError if rename failed, file not found, or invalid parameters
-   */
+/**
+ * @brief Renames or moves a file
+ * @details Changes the path of a file or directory.
+ *
+ * @param[in] volume_  Pointer to the mounted volume
+ * @param[in] oldPath_ Current file path (null-terminated string)
+ * @param[in] newPath_ New file path (null-terminated string)
+ *
+ * @return             ReturnOK if rename was successful
+ * @return             ReturnError if rename failed, file not found, or invalid parameters
+ */
   Return_t xFileRename(Volume_t *volume_, const Byte_t *oldPath_, const Byte_t *newPath_) {
 
     FUNCTION_ENTER;
 
-    FAT32DirEntry_t oldEntry = {0x0u};
+    FAT32DirEntry_t oldEntry = {
+      0x0u
+    };
 
     Word_t oldEntryCluster = 0x0u;
 
@@ -2644,7 +2452,9 @@
 
     Word_t newParentCluster = 0x0u;
 
-    Byte_t newName83[11] = {0x0u};
+    Byte_t newName83[11] = {
+      0x0u
+    };
 
     Byte_t *clusterData = null;
 
@@ -2679,15 +2489,12 @@
             if(newPath_[i] == '/') {
 
               lastSlash = &newPath_[i];
-
             }
-
           }
 
           if(__PointerIsNotNull__(lastSlash)) {
 
             fileName = lastSlash + 1;
-
           }
 
           if(OK(__ConvertToFAT83__(fileName, newName83))) {
@@ -2713,9 +2520,7 @@
                     if(ERROR(__WriteSector__(volume_, firstSector + i, clusterData + (i * volume_->bytesPerSector)))) {
 
                       writeSuccess = false;
-
                     }
-
                   }
 
                   __KernelFreeMemory__(clusterData);
@@ -2727,70 +2532,63 @@
                   } else {
 
                     __AssertOnElse__();
-
                   }
 
                 } else {
 
                   __AssertOnElse__();
-
                 }
 
               } else {
 
                 __AssertOnElse__();
-
               }
 
             } else {
 
               __AssertOnElse__();
-
             }
 
           } else {
 
             __AssertOnElse__();
-
           }
 
         } else {
-
         }
 
       } else {
 
         __AssertOnElse__();
-
       }
 
     } else {
-
     }
 
     FUNCTION_EXIT;
-
   }
 
 
-  /**
-   * @brief Gets file or directory information
-   * @details Allocates and returns metadata about a file or directory.
-   *
-   * @param[in]  volume_ Pointer to the mounted volume
-   * @param[in]  path_   File or directory path (null-terminated string)
-   * @param[out] entry_  Pointer to store allocated directory entry
-   *
-   * @return             ReturnOK if information was retrieved successfully
-   * @return             ReturnError if file not found, allocation failed, or invalid parameters
-   *
-   * @warning Caller is responsible for freeing the allocated entry
-   */
+/**
+ * @brief Gets file or directory information
+ * @details Allocates and returns metadata about a file or directory.
+ *
+ * @param[in]  volume_ Pointer to the mounted volume
+ * @param[in]  path_   File or directory path (null-terminated string)
+ * @param[out] entry_  Pointer to store allocated directory entry
+ *
+ * @return             ReturnOK if information was retrieved successfully
+ * @return             ReturnError if file not found, allocation failed, or invalid parameters
+ *
+ * @warning Caller is responsible for freeing the allocated entry
+ */
   Return_t xFileGetInfo(Volume_t *volume_, const Byte_t *path_, DirEntry_t **entry_) {
 
     FUNCTION_ENTER;
 
-    FAT32DirEntry_t fatEntry = {0x0u};
+    FAT32DirEntry_t fatEntry = {
+      0x0u
+    };
 
     DirEntry_t *dirEntry = null;
 
@@ -2811,7 +2609,6 @@
             for(i = 0x0u; i < 8 && fatEntry.name[i] != ' '; i++) {
 
               dirEntry->name[j++] = fatEntry.name[i];
-
             }
 
             if(fatEntry.name[8] != ' ') {
@@ -2821,9 +2618,7 @@
               for(i = 8; i < 11 && fatEntry.name[i] != ' '; i++) {
 
                 dirEntry->name[j++] = fatEntry.name[i];
-
               }
-
             }
 
             dirEntry->name[j] = '\0';
@@ -2847,27 +2642,22 @@
           } else {
 
             __AssertOnElse__();
-
           }
 
         } else {
 
           __AssertOnElse__();
-
         }
 
       } else {
 
         __AssertOnElse__();
-
       }
 
     } else {
-
     }
 
     FUNCTION_EXIT;
-
   }
 
 

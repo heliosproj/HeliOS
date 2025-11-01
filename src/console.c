@@ -633,9 +633,13 @@
 
     Size_t len = 0x0u;
 
-    Byte_t temp[CONFIG_FS_MAX_PATH_LENGTH] = {0x0u};
+    Byte_t temp[CONFIG_FS_MAX_PATH_LENGTH] = {
+      0x0u
+    };
 
-    Byte_t segments[CONFIG_FS_MAX_PATH_LENGTH / 2][CONFIG_FS_MAX_PATH_LENGTH] = {{0x0u}};
+    Byte_t segments[CONFIG_FS_MAX_PATH_LENGTH / 2][CONFIG_FS_MAX_PATH_LENGTH] = {{
+                                                                                   0x0u
+                                                                                 }};
 
     Size_t segmentCount = 0x0u;
 
@@ -1073,7 +1077,9 @@
 
           if(consoleState.echoEnabled) {
 
-            Byte_t echoChar[0x2] = {0x0u};
+            Byte_t echoChar[0x2] = {
+              0x0u
+            };
 
             echoChar[0x0u] = ch;
 
@@ -1185,7 +1191,9 @@
 
     Device_t *device = null;
 
-    CharDeviceCommand_t cmd = {0x0u};
+    CharDeviceCommand_t cmd = {
+      0x0u
+    };
 
     Base_t success = false;
 
@@ -1319,7 +1327,9 @@
 
     Device_t *device = null;
 
-    CharDeviceCommand_t cmd = {0x0u};
+    CharDeviceCommand_t cmd = {
+      0x0u
+    };
 
     Base_t success = false;
 
@@ -1644,7 +1654,9 @@
 
     Base_t i = 0x0u;
 
-    Byte_t numBuf[0x10] = {0x0u};
+    Byte_t numBuf[0x10] = {
+      0x0u
+    };
 
     (void) args_;
 
@@ -1732,7 +1744,9 @@
 
     MemoryRegionStats_t *memState = null;
 
-    Byte_t numBuf[0x10] = {0x0u};
+    Byte_t numBuf[0x10] = {
+      0x0u
+    };
 
     (void) args_;
 
@@ -1880,9 +1894,13 @@
 
     DirEntry_t *entry = null;
 
-    Byte_t path[CONFIG_FS_MAX_PATH_LENGTH] = {0x0u};
+    Byte_t path[CONFIG_FS_MAX_PATH_LENGTH] = {
+      0x0u
+    };
 
-    Byte_t numBuf[0x10] = {0x0u};
+    Byte_t numBuf[0x10] = {
+      0x0u
+    };
 
     Base_t success = false;
 
@@ -2000,7 +2018,9 @@
 
     Base_t exists = false;
 
-    Byte_t newPath[CONFIG_FS_MAX_PATH_LENGTH] = {0x0u};
+    Byte_t newPath[CONFIG_FS_MAX_PATH_LENGTH] = {
+      0x0u
+    };
 
     Base_t success = false;
 
@@ -2151,7 +2171,9 @@
 
     Word_t totalRead = 0x0u;
 
-    Byte_t path[CONFIG_FS_MAX_PATH_LENGTH] = {0x0u};
+    Byte_t path[CONFIG_FS_MAX_PATH_LENGTH] = {
+      0x0u
+    };
 
     Base_t success = false;
 
@@ -2339,9 +2361,13 @@
 
     FUNCTION_ENTER;
 
-    Byte_t oldPath[CONFIG_FS_MAX_PATH_LENGTH] = {0x0u};
+    Byte_t oldPath[CONFIG_FS_MAX_PATH_LENGTH] = {
+      0x0u
+    };
 
-    Byte_t newPath[CONFIG_FS_MAX_PATH_LENGTH] = {0x0u};
+    Byte_t newPath[CONFIG_FS_MAX_PATH_LENGTH] = {
+      0x0u
+    };
 
     const Byte_t *src = args_;
 
@@ -2439,7 +2465,9 @@
 
     FUNCTION_ENTER;
 
-    Byte_t path[CONFIG_FS_MAX_PATH_LENGTH] = {0x0u};
+    Byte_t path[CONFIG_FS_MAX_PATH_LENGTH] = {
+      0x0u
+    };
 
     Base_t success = false;
 
@@ -2529,7 +2557,9 @@
 
     FUNCTION_ENTER;
 
-    Byte_t path[CONFIG_FS_MAX_PATH_LENGTH] = {0x0u};
+    Byte_t path[CONFIG_FS_MAX_PATH_LENGTH] = {
+      0x0u
+    };
 
     Base_t success = false;
 
