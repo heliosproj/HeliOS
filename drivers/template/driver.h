@@ -17,9 +17,21 @@
   #include "sys.h"
   #include "task.h"
   #include "timer.h"
+  #if defined(DEVICE_NAME)
+    #undef DEVICE_NAME
+  #endif
   #define DEVICE_NAME DEVICENA
+  #if defined(DEVICE_UID)
+    #undef DEVICE_UID
+  #endif
   #define DEVICE_UID 0x0u
+  #if defined(DEVICE_MODE)
+    #undef DEVICE_MODE
+  #endif
   #define DEVICE_MODE DeviceModeReadWrite
+  #if defined(DEVICE_STATE)
+    #undef DEVICE_STATE
+  #endif
   #define DEVICE_STATE DeviceStateRunning
   #ifdef __cplusplus
     extern "C" {

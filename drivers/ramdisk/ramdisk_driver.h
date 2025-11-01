@@ -18,12 +18,33 @@
   #include "task.h"
   #include "timer.h"
   #include "../block/block_io_interface.h"
+  #if defined(DEVICE_NAME)
+    #undef DEVICE_NAME
+  #endif
   #define DEVICE_NAME RAMDISK0
+  #if defined(DEVICE_UID)
+    #undef DEVICE_UID
+  #endif
   #define DEVICE_UID 0x0100u
+  #if defined(DEVICE_MODE)
+    #undef DEVICE_MODE
+  #endif
   #define DEVICE_MODE DeviceModeReadWrite
+  #if defined(DEVICE_STATE)
+    #undef DEVICE_STATE
+  #endif
   #define DEVICE_STATE DeviceStateRunning
+  #if defined(RAMDISK_CMD_SET_POSITION)
+    #undef RAMDISK_CMD_SET_POSITION
+  #endif
   #define RAMDISK_CMD_SET_POSITION 0x01u
+  #if defined(RAMDISK_CMD_CLEAR_DISK)
+    #undef RAMDISK_CMD_CLEAR_DISK
+  #endif
   #define RAMDISK_CMD_CLEAR_DISK 0x02u
+  #if defined(RAMDISK_CMD_GET_STATS)
+    #undef RAMDISK_CMD_GET_STATS
+  #endif
   #define RAMDISK_CMD_GET_STATS 0x03u
   typedef struct RAMDiskPositionConfig_s {
     Byte_t command;

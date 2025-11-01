@@ -18,20 +18,65 @@
   #include "task.h"
   #include "timer.h"
   #include "char_io_interface.h"
+  #if defined(DEVICE_NAME)
+    #undef DEVICE_NAME
+  #endif
   #define DEVICE_NAME CHARDEV0
+  #if defined(DEVICE_UID)
+    #undef DEVICE_UID
+  #endif
   #define DEVICE_UID 0x2000u
+  #if defined(DEVICE_MODE)
+    #undef DEVICE_MODE
+  #endif
   #define DEVICE_MODE DeviceModeReadWrite
+  #if defined(DEVICE_STATE)
+    #undef DEVICE_STATE
+  #endif
   #define DEVICE_STATE DeviceStateRunning
+  #if defined(CHAR_CMD_CONFIG)
+    #undef CHAR_CMD_CONFIG
+  #endif
   #define CHAR_CMD_CONFIG 0x01u
+  #if defined(CHAR_CMD_SET_PARAMS)
+    #undef CHAR_CMD_SET_PARAMS
+  #endif
   #define CHAR_CMD_SET_PARAMS 0x02u
+  #if defined(CHAR_CMD_GET_INFO)
+    #undef CHAR_CMD_GET_INFO
+  #endif
   #define CHAR_CMD_GET_INFO 0x03u
+  #if defined(CHAR_PROTOCOL_UART)
+    #undef CHAR_PROTOCOL_UART
+  #endif
   #define CHAR_PROTOCOL_UART 0x01u
+  #if defined(CHAR_PROTOCOL_USART)
+    #undef CHAR_PROTOCOL_USART
+  #endif
   #define CHAR_PROTOCOL_USART 0x02u
+  #if defined(CHAR_PROTOCOL_USB_CDC)
+    #undef CHAR_PROTOCOL_USB_CDC
+  #endif
   #define CHAR_PROTOCOL_USB_CDC 0x03u
+  #if defined(CHAR_PROTOCOL_RAW)
+    #undef CHAR_PROTOCOL_RAW
+  #endif
   #define CHAR_PROTOCOL_RAW 0xFFu
+  #if defined(CHAR_LINE_RAW)
+    #undef CHAR_LINE_RAW
+  #endif
   #define CHAR_LINE_RAW 0x00u
+  #if defined(CHAR_LINE_COOKED)
+    #undef CHAR_LINE_COOKED
+  #endif
   #define CHAR_LINE_COOKED 0x01u
+  #if defined(CHAR_DEFAULT_TIMEOUT_MS)
+    #undef CHAR_DEFAULT_TIMEOUT_MS
+  #endif
   #define CHAR_DEFAULT_TIMEOUT_MS 0x3E8u
+  #if defined(CHAR_SINGLE_BYTE_COUNT)
+    #undef CHAR_SINGLE_BYTE_COUNT
+  #endif
   #define CHAR_SINGLE_BYTE_COUNT 0x1u
   typedef struct CharDeviceConfig_s {
     Byte_t command;

@@ -18,20 +18,65 @@
   #include "task.h"
   #include "timer.h"
   #include "block_io_interface.h"
+  #if defined(DEVICE_NAME)
+    #undef DEVICE_NAME
+  #endif
   #define DEVICE_NAME BLOCKDEV
+  #if defined(DEVICE_UID)
+    #undef DEVICE_UID
+  #endif
   #define DEVICE_UID 0x1000u
+  #if defined(DEVICE_MODE)
+    #undef DEVICE_MODE
+  #endif
   #define DEVICE_MODE DeviceModeReadWrite
+  #if defined(DEVICE_STATE)
+    #undef DEVICE_STATE
+  #endif
   #define DEVICE_STATE DeviceStateRunning
+  #if defined(BLOCK_CMD_CONFIG)
+    #undef BLOCK_CMD_CONFIG
+  #endif
   #define BLOCK_CMD_CONFIG 0x01u
+  #if defined(BLOCK_CMD_SET_ADDRESS)
+    #undef BLOCK_CMD_SET_ADDRESS
+  #endif
   #define BLOCK_CMD_SET_ADDRESS 0x02u
+  #if defined(BLOCK_CMD_GET_INFO)
+    #undef BLOCK_CMD_GET_INFO
+  #endif
   #define BLOCK_CMD_GET_INFO 0x03u
+  #if defined(BLOCK_PROTOCOL_SD_CARD)
+    #undef BLOCK_PROTOCOL_SD_CARD
+  #endif
   #define BLOCK_PROTOCOL_SD_CARD 0x01u
+  #if defined(BLOCK_PROTOCOL_MMC)
+    #undef BLOCK_PROTOCOL_MMC
+  #endif
   #define BLOCK_PROTOCOL_MMC 0x02u
+  #if defined(BLOCK_PROTOCOL_EMMC)
+    #undef BLOCK_PROTOCOL_EMMC
+  #endif
   #define BLOCK_PROTOCOL_EMMC 0x03u
+  #if defined(BLOCK_PROTOCOL_RAW)
+    #undef BLOCK_PROTOCOL_RAW
+  #endif
   #define BLOCK_PROTOCOL_RAW 0xFFu
+  #if defined(BLOCK_CMD_READ_SINGLE)
+    #undef BLOCK_CMD_READ_SINGLE
+  #endif
   #define BLOCK_CMD_READ_SINGLE 0x01u
+  #if defined(BLOCK_CMD_READ_MULTIPLE)
+    #undef BLOCK_CMD_READ_MULTIPLE
+  #endif
   #define BLOCK_CMD_READ_MULTIPLE 0x02u
+  #if defined(BLOCK_CMD_WRITE_SINGLE)
+    #undef BLOCK_CMD_WRITE_SINGLE
+  #endif
   #define BLOCK_CMD_WRITE_SINGLE 0x03u
+  #if defined(BLOCK_CMD_WRITE_MULTIPLE)
+    #undef BLOCK_CMD_WRITE_MULTIPLE
+  #endif
   #define BLOCK_CMD_WRITE_MULTIPLE 0x04u
   typedef struct BlockDeviceState_s {
   HalfWord_t ioDriverUID;

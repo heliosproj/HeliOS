@@ -20,9 +20,21 @@
   #include "../char/char_io_interface.h"
   #if !defined(POSIX_ARCH_OTHER)
   #endif
+  #if defined(DEVICE_NAME)
+    #undef DEVICE_NAME
+  #endif
   #define DEVICE_NAME USART_TX
+  #if defined(DEVICE_UID)
+    #undef DEVICE_UID
+  #endif
   #define DEVICE_UID 0x0200u
+  #if defined(DEVICE_MODE)
+    #undef DEVICE_MODE
+  #endif
   #define DEVICE_MODE DeviceModeReadWrite
+  #if defined(DEVICE_STATE)
+    #undef DEVICE_STATE
+  #endif
   #define DEVICE_STATE DeviceStateRunning
   #if defined(USART_RX_BUFFER_SIZE)
     #undef USART_RX_BUFFER_SIZE
@@ -52,9 +64,21 @@
     #undef USART_ERROR_OVERRUN
   #endif
   #define USART_ERROR_OVERRUN 0x08u
+  #if defined(USART_MAX_BAUD_RATE)
+    #undef USART_MAX_BAUD_RATE
+  #endif
   #define USART_MAX_BAUD_RATE 0x1C200u
+  #if defined(USART_IRQ_PRIORITY)
+    #undef USART_IRQ_PRIORITY
+  #endif
   #define USART_IRQ_PRIORITY 0x5u
+  #if defined(USART_SINGLE_BYTE_TRANSFER)
+    #undef USART_SINGLE_BYTE_TRANSFER
+  #endif
   #define USART_SINGLE_BYTE_TRANSFER 0x1u
+  #if defined(USART_DEFAULT_TIMEOUT_MS)
+    #undef USART_DEFAULT_TIMEOUT_MS
+  #endif
   #define USART_DEFAULT_TIMEOUT_MS 0x3E8u
   typedef struct USARTSTMInitConfig_s {
   #if !defined(POSIX_ARCH_OTHER)

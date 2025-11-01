@@ -31,6 +31,9 @@
       #undef TO_LITERAL
     #endif
     #define TO_LITERAL(a_) QUOTE(a_)
+    #if defined(__DeviceUidNonZero__)
+      #undef __DeviceUidNonZero__
+    #endif
     #define __DeviceUidNonZero__() (0x0u < uid_)
     #ifdef __cplusplus
       extern "C" {

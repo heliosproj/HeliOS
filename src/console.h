@@ -42,20 +42,65 @@
       #undef CONSOLE_NOT_READY
     #endif
     #define CONSOLE_NOT_READY 0x02u
+    #if defined(CHAR_NULL)
+      #undef CHAR_NULL
+    #endif
     #define CHAR_NULL 0x00u
+    #if defined(CHAR_TAB)
+      #undef CHAR_TAB
+    #endif
     #define CHAR_TAB 0x09u
+    #if defined(CHAR_LF)
+      #undef CHAR_LF
+    #endif
     #define CHAR_LF 0x0Au
+    #if defined(CHAR_CR)
+      #undef CHAR_CR
+    #endif
     #define CHAR_CR 0x0Du
+    #if defined(CHAR_SPACE)
+      #undef CHAR_SPACE
+    #endif
     #define CHAR_SPACE 0x20u
+    #if defined(CHAR_SLASH)
+      #undef CHAR_SLASH
+    #endif
     #define CHAR_SLASH 0x2Fu
+    #if defined(CHAR_DOT)
+      #undef CHAR_DOT
+    #endif
     #define CHAR_DOT 0x2Eu
+    #if defined(CHAR_ZERO)
+      #undef CHAR_ZERO
+    #endif
     #define CHAR_ZERO 0x30u
+    #if defined(CHAR_LOWERCASE_X)
+      #undef CHAR_LOWERCASE_X
+    #endif
     #define CHAR_LOWERCASE_X 0x78u
+    #if defined(CHAR_BACKSPACE)
+      #undef CHAR_BACKSPACE
+    #endif
     #define CHAR_BACKSPACE 0x08u
+    #if defined(CHAR_DEL)
+      #undef CHAR_DEL
+    #endif
     #define CHAR_DEL 0x7Fu
+    #if defined(CHAR_PRINTABLE_MIN)
+      #undef CHAR_PRINTABLE_MIN
+    #endif
     #define CHAR_PRINTABLE_MIN 0x20u
+    #if defined(CHAR_PRINTABLE_MAX)
+      #undef CHAR_PRINTABLE_MAX
+    #endif
     #define CHAR_PRINTABLE_MAX 0x7Eu
+    #if defined(HEX_DIGIT_MASK)
+      #undef HEX_DIGIT_MASK
+    #endif
     #define HEX_DIGIT_MASK 0xFu
+    #if defined(PATH_SEGMENTS_DIVISOR)
+      #undef PATH_SEGMENTS_DIVISOR
+    #endif
     #define PATH_SEGMENTS_DIVISOR 0x2u
     typedef struct ConsoleState_s {
       Base_t deviceReady;

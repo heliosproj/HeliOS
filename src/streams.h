@@ -16,7 +16,13 @@
   #include "sys.h"
   #include "task.h"
   #include "timer.h"
+  #if defined(__StreamLengthNonZero__)
+    #undef __StreamLengthNonZero__
+  #endif
   #define __StreamLengthNonZero__() (0x0u < stream_->length)
+  #if defined(__StreamLengthAtLimit__)
+    #undef __StreamLengthAtLimit__
+  #endif
   #define __StreamLengthAtLimit__() (stream_->length == CONFIG_STREAM_BUFFER_BYTES)
   #ifdef __cplusplus
     extern "C" {
