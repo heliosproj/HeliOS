@@ -24,6 +24,7 @@
   #include "stream_harness.h"
   #include "device_harness.h"
   #include "fs_harness.h"
+  #include "fs_internal_harness.h"
   #include "console_harness.h"
 
   #ifdef __cplusplus
