@@ -71,7 +71,45 @@
     #define FAT32_EOC_MAX 0x0FFFFFFFu
     #define FAT32_BAD_CLUSTER 0x0FFFFFF7u
     #define FAT32_FREE_CLUSTER 0x00000000u
+    #define FAT32_ENTRY_MASK 0x0FFFFFFFu
+    #define FAT32_RESERVED_BITS_MASK 0xF0000000u
+    #define FAT32_MEDIA_DESCRIPTOR_ENTRY 0x0FFFFFF8u
+    #define FAT32_ENTRY_SIZE_BYTES 0x4u
     #define MAX_MOUNTED_VOLUMES 0x8u
+    #define FAT_83_NAME_LENGTH 0xBu
+    #define FAT_83_BASENAME_LENGTH 0x8u
+    #define FAT_83_EXTENSION_LENGTH 0x3u
+    #define FAT_83_EXTENSION_OFFSET 0x8u
+    #define FAT_ENTRY_DELETED 0xE5u
+    #define FAT_BYTE_MASK 0xFFu
+    #define FAT_BYTE_SHIFT_8 0x8
+    #define FAT_BYTE_SHIFT_16 0x10
+    #define FAT_BYTE_SHIFT_24 0x18
+    #define FAT_CLUSTER_HIGH_SHIFT 0x10u
+    #define FAT_CLUSTER_LOW_MASK 0xFFFFu
+    #define FAT_MIN_VALID_CLUSTER 0x2u
+    #define FAT_CLUSTER_DATA_OFFSET 0x2u
+    #define FAT_CLUSTER_INCREMENT 0x1u
+    #define FAT_MIN_SEARCH_CLUSTER 0x3u
+    #define FAT_MAX_SEARCHABLE_CLUSTERS 0x10000u
+    #define FAT_MAX_PATH_COMPONENT 0x100u
+    #define FAT_DEFAULT_SECTOR_SIZE 0x200u
+    #define FAT_OEM_NAME_SIZE 0x8u
+    #define FAT_VOLUME_LABEL_SIZE 0xBu
+    #define FAT_FS_TYPE_SIZE 0x8u
+    #define FAT_BOOT_JMP_EB 0xEBu
+    #define FAT_BOOT_JMP_58 0x58u
+    #define FAT_BOOT_JMP_90 0x90u
+    #define FAT_BOOT_SIG_55 0x55u
+    #define FAT_BOOT_SIG_AA 0xAAu
+    #define FAT_MEDIA_TYPE_HARD_DISK 0xF8u
+    #define FAT_DEFAULT_SECTORS_PER_TRACK 0x3Fu
+    #define FAT_DEFAULT_NUM_HEADS 0x10u
+    #define FAT_DRIVE_NUMBER_HDD 0x80u
+    #define FAT_EXTENDED_BOOT_SIG 0x29u
+    #define FAT_FSINFO_SECTOR 0x1u
+    #define FAT_BACKUP_BOOT_SECTOR 0x6u
+    #define FAT_LE16_HIGH_BYTE_OFFSET 0x1
     #ifdef __cplusplus
       extern "C" {
     #endif

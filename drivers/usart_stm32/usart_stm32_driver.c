@@ -94,7 +94,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Add
         info->supportsDMA = true;
         info->supportsInterrupt = true;
         info->isFullDuplex = true;
-        info->maxBaudRate = 0x1C200u;
+        info->maxBaudRate = USART_MAX_BAUD_RATE;
         __ReturnOk__();
       } else {
         __AssertOnElse__();
@@ -160,9 +160,9 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Add
           state.huart.Init.HwFlowCtl = UART_HWCONTROL_NONE;
           state.huart.Init.OverSampling = UART_OVERSAMPLING_16;
           if(HAL_OK == HAL_UART_Init(&state.huart)) {
-            HAL_NVIC_SetPriority(initCfg->irqNumber, 0x5u, 0x0u);
+            HAL_NVIC_SetPriority(initCfg->irqNumber, USART_IRQ_PRIORITY, 0x0u);
             HAL_NVIC_EnableIRQ(initCfg->irqNumber);
-            HAL_UART_Receive_IT(&state.huart, &state.rxSingleByte, 0x1u);
+            HAL_UART_Receive_IT(&state.huart, &state.rxSingleByte, USART_SINGLE_BYTE_TRANSFER);
             state.initialized = true;
             __ReturnOk__();
           } else {
@@ -282,7 +282,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _simple_read)(Device_t *device_, Byte_t *data_
       __ReturnOk__();
     } else {
 #if !defined(POSIX_ARCH_OTHER)
-        if(HAL_OK == HAL_UART_Receive(&state.huart, data_, 0x1u, 0x3E8u)) {
+        if(HAL_OK == HAL_UART_Receive(&state.huart, data_, USART_SINGLE_BYTE_TRANSFER, USART_DEFAULT_TIMEOUT_MS)) {
           __ReturnOk__();
         } else {
           __AssertOnElse__();
@@ -300,13 +300,13 @@ Return_t TO_FUNCTION(DEVICE_NAME, _simple_write)(Device_t *device_, Byte_t data_
   FUNCTION_ENTER;
   if(state.initialized) {
 #if !defined(POSIX_ARCH_OTHER)
-      if(HAL_OK == HAL_UART_Transmit(&state.huart, &data_, 0x1u, 0x3E8u)) {
+      if(HAL_OK == HAL_UART_Transmit(&state.huart, &data_, USART_SINGLE_BYTE_TRANSFER, USART_DEFAULT_TIMEOUT_MS)) {
         __ReturnOk__();
       } else {
         __AssertOnElse__();
       }
 #else
-      write(STDOUT_FILENO, &data_, 0x1u);
+      write(STDOUT_FILENO, &data_, USART_SINGLE_BYTE_TRANSFER);
       __ReturnOk__();
 #endif
   } else {
@@ -328,7 +328,7 @@ void USART_TX_IRQHandler(void) {
   void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
     if(huart == &state.huart) {
       __CircularBufferPut__(state.rxBuffer, &state.rxHead, USART_RX_BUFFER_SIZE, state.rxSingleByte);
-      HAL_UART_Receive_IT(&state.huart, &state.rxSingleByte, 0x1u);
+      HAL_UART_Receive_IT(&state.huart, &state.rxSingleByte, USART_SINGLE_BYTE_TRANSFER);
     }
   }
   void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) {
@@ -348,7 +348,7 @@ void USART_TX_IRQHandler(void) {
       }
       state.txBusy = false;
       state.rxBusy = false;
-      HAL_UART_Receive_IT(&state.huart, &state.rxSingleByte, 0x1u);
+      HAL_UART_Receive_IT(&state.huart, &state.rxSingleByte, USART_SINGLE_BYTE_TRANSFER);
     }
   }
 #endif
@@ -356,9 +356,9 @@ static HalfWord_t __CircularBufferSpace__(const HalfWord_t head_,
   const HalfWord_t tail_,
   const HalfWord_t size_) {
   if(head_ >= tail_) {
-    return (size_ - (head_ - tail_) - 0x1u);
+    return (size_ - (head_ - tail_) - USART_SINGLE_BYTE_TRANSFER);
   } else {
-    return (tail_ - head_ - 0x1u);
+    return (tail_ - head_ - USART_SINGLE_BYTE_TRANSFER);
   }
 }
 static HalfWord_t __CircularBufferAvailable__(const HalfWord_t head_,
@@ -375,13 +375,13 @@ static void __CircularBufferPut__(Byte_t *buffer_,
   const HalfWord_t size_,
   const Byte_t data_) {
   buffer_[*head_] = data_;
-  *head_ = (*head_ + 0x1u) % size_;
+  *head_ = (*head_ + USART_SINGLE_BYTE_TRANSFER) % size_;
 }
 static Byte_t __CircularBufferGet__(const Byte_t *buffer_,
   HalfWord_t *tail_,
   const HalfWord_t size_) {
   Byte_t data = buffer_[*tail_];
-  *tail_ = (*tail_ + 0x1u) % size_;
+  *tail_ = (*tail_ + USART_SINGLE_BYTE_TRANSFER) % size_;
   return(data);
 }
 #if !defined(POSIX_ARCH_OTHER)

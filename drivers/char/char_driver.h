@@ -33,6 +33,7 @@
   #define CHAR_LINE_COOKED 0x01u
   #define CHAR_DEFAULT_RX_BUFFER_SIZE 0x100u
   #define CHAR_DEFAULT_TX_BUFFER_SIZE 0x100u
+  #define CHAR_DEFAULT_TIMEOUT_MS 0x3E8u
   typedef struct CharDeviceConfig_s {
     Byte_t command;
     HalfWord_t ioDriverUID;

@@ -52,6 +52,10 @@
     #undef USART_ERROR_OVERRUN
   #endif
   #define USART_ERROR_OVERRUN 0x08u
+  #define USART_MAX_BAUD_RATE 0x1C200u
+  #define USART_IRQ_PRIORITY 0x5u
+  #define USART_SINGLE_BYTE_TRANSFER 0x1u
+  #define USART_DEFAULT_TIMEOUT_MS 0x3E8u
   typedef struct USARTSTMInitConfig_s {
   #if !defined(POSIX_ARCH_OTHER)
       USART_TypeDef *usartInstance;

@@ -22,7 +22,7 @@ Ticks_t __PortGetSysTicks__(void) {
       0x0u
     };
     gettimeofday(&t, null);
-    return((t.tv_sec) * 0x3E8 + (t.tv_usec) / 0x3E8);
+    return((t.tv_sec) * MS_PER_SECOND + (t.tv_usec) / MS_PER_SECOND);
 #endif
 }
 Return_t __PortInit__(void) {

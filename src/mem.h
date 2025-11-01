@@ -40,6 +40,13 @@
     #undef FREE
   #endif
   #define FREE 0x55u
+  #define FLETCHER_INIT_VALUE 0xFFFFu
+  #define FLETCHER_MASK 0xFFFFu
+  #define CHECKSUM_WORD_SHIFT 0x10u
+  #define CHECKSUM_DWORD_SHIFT 0x20u
+  #define CHECKSUM_XOR_CONSTANT 0xB16B00B5u
+  #define MEM_ALIGN_SHIFT_4BIT 0x4
+  #define BYTE_ORDER_TEST_VALUE 0x100
   #ifndef BLOCKHEADER_T_
     #define BLOCKHEADER_T_
     typedef struct BlockHeader_s {

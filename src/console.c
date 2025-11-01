@@ -214,7 +214,7 @@
     Byte_t temp[CONFIG_FS_MAX_PATH_LENGTH] = {
       0x0u
     };
-    Byte_t segments[CONFIG_FS_MAX_PATH_LENGTH / 0x2u][CONFIG_FS_MAX_PATH_LENGTH] = {{
+    Byte_t segments[CONFIG_FS_MAX_PATH_LENGTH / PATH_SEGMENTS_DIVISOR][CONFIG_FS_MAX_PATH_LENGTH] = {{
                                                                                    0x0u
                                                                                  }};
     Size_t segmentCount = 0x0u;
@@ -236,7 +236,7 @@
           if((CHAR_SLASH == temp[i]) || (CHAR_NULL == temp[i])) {
             if(segIdx > 0x0u) {
               segments[segmentCount][segIdx] = CHAR_NULL;
-              if((segments[segmentCount][0x0u] == '.') && (segments[segmentCount][0x1u] == '.') && (segments[segmentCount][0x2u] == CHAR_NULL)) {
+              if((segments[segmentCount][0x0u] == '.') && (segments[segmentCount][0x1u] == '.') && (segments[segmentCount][PATH_SEGMENTS_DIVISOR] == CHAR_NULL)) {
                 if(segmentCount > 0x0u) {
                   segmentCount--;
                 }
@@ -416,7 +416,7 @@
         if(consoleState.bufferPosition < (CONFIG_CONSOLE_MAX_COMMAND_LENGTH - 0x1u)) {
           consoleState.commandBuffer[consoleState.bufferPosition++] = ch;
           if(consoleState.echoEnabled) {
-            Byte_t echoChar[0x2] = {
+            Byte_t echoChar[CONSOLE_ECHO_BUFFER_SIZE] = {
               0x0u
             };
             echoChar[0x0u] = ch;
@@ -670,7 +670,7 @@
     TaskInfo_t *taskList = null;
     Base_t taskCount = 0x0u;
     Base_t i = 0x0u;
-    Byte_t numBuf[0x10] = {
+    Byte_t numBuf[CONSOLE_NUM_BUFFER_SIZE] = {
       0x0u
     };
     (void) args_;
@@ -715,7 +715,7 @@
   Return_t __ConsoleCmdMem__(const Byte_t *args_) {
     FUNCTION_ENTER;
     MemoryRegionStats_t *memState = null;
-    Byte_t numBuf[0x10] = {
+    Byte_t numBuf[CONSOLE_NUM_BUFFER_SIZE] = {
       0x0u
     };
     (void) args_;
@@ -779,7 +779,7 @@
     Byte_t path[CONFIG_FS_MAX_PATH_LENGTH] = {
       0x0u
     };
-    Byte_t numBuf[0x10] = {
+    Byte_t numBuf[CONSOLE_NUM_BUFFER_SIZE] = {
       0x0u
     };
     Base_t success = false;
@@ -934,7 +934,7 @@
                   bytesToRead = (fileSize - totalRead) > CAT_BUFFER_SIZE ? CAT_BUFFER_SIZE : (fileSize - totalRead);
                   if(OK(xFileRead(file, bytesToRead, &buffer))) {
                     Word_t i = 0x0u;
-                    Byte_t ch[0x2] = {
+                    Byte_t ch[CONSOLE_ECHO_BUFFER_SIZE] = {
                       0x00u, 0x00u
                     };
                     for(i = 0x0u; i < bytesToRead; i++) {
@@ -1157,7 +1157,7 @@
       Word_t end = 0x0u;
       Byte_t tmpChar = CHAR_NULL;
       while(temp > 0x0u && i < bufferSize_ - 0x1u) {
-        buffer_[i++] = hexDigits[temp & 0xFu];
+        buffer_[i++] = hexDigits[temp & HEX_DIGIT_MASK];
         temp >>= 0x4;
       }
       end = i - 0x1u;

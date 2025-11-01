@@ -6,41 +6,41 @@ static volatile MemoryRegion_t kernel = {
   0x0u
 };
 Word_t __checksum__(const BlockHeader_t *header_) {
-  Word_t sum1 = 0xFFFFu;
-  Word_t sum2 = 0xFFFFu;
+  Word_t sum1 = FLETCHER_MASK;
+  Word_t sum2 = FLETCHER_MASK;
   Word_t temp = 0x0u;
 #if UINTPTR_MAX == 0xFF
-    sum1 = (sum1 + (Word_t) (uintptr_t) header_->next) & 0xFFFFu;
-    sum2 = (sum2 + sum1) & 0xFFFFu;
+    sum1 = (sum1 + (Word_t) (uintptr_t) header_->next) & FLETCHER_MASK;
+    sum2 = (sum2 + sum1) & FLETCHER_MASK;
 #elif UINTPTR_MAX == 0xFFFF
     temp = (Word_t) (uintptr_t) header_->next;
-    sum1 = (sum1 + temp) & 0xFFFFu;
-    sum2 = (sum2 + sum1) & 0xFFFFu;
+    sum1 = (sum1 + temp) & FLETCHER_MASK;
+    sum2 = (sum2 + sum1) & FLETCHER_MASK;
 #elif UINTPTR_MAX == 0xFFFFFFFF
     temp = (Word_t) (uintptr_t) header_->next;
-    sum1 = (sum1 + (temp & 0xFFFFu)) & 0xFFFFu;
-    sum2 = (sum2 + sum1) & 0xFFFFu;
-    sum1 = (sum1 + (temp >> 0x10u)) & 0xFFFFu;
-    sum2 = (sum2 + sum1) & 0xFFFFu;
+    sum1 = (sum1 + (temp & FLETCHER_MASK)) & FLETCHER_MASK;
+    sum2 = (sum2 + sum1) & FLETCHER_MASK;
+    sum1 = (sum1 + (temp >> CHECKSUM_WORD_SHIFT)) & FLETCHER_MASK;
+    sum2 = (sum2 + sum1) & FLETCHER_MASK;
 #elif UINTPTR_MAX == 0xFFFFFFFFFFFFFFFF
     temp = (Word_t) ((uintptr_t) header_->next & 0xFFFFFFFFu);
-    sum1 = (sum1 + (temp & 0xFFFFu)) & 0xFFFFu;
-    sum2 = (sum2 + sum1) & 0xFFFFu;
-    sum1 = (sum1 + (temp >> 0x10u)) & 0xFFFFu;
-    sum2 = (sum2 + sum1) & 0xFFFFu;
-    temp = (Word_t) ((uintptr_t) header_->next >> 0x20u);
-    sum1 = (sum1 + (temp & 0xFFFFu)) & 0xFFFFu;
-    sum2 = (sum2 + sum1) & 0xFFFFu;
-    sum1 = (sum1 + (temp >> 0x10u)) & 0xFFFFu;
-    sum2 = (sum2 + sum1) & 0xFFFFu;
+    sum1 = (sum1 + (temp & FLETCHER_MASK)) & FLETCHER_MASK;
+    sum2 = (sum2 + sum1) & FLETCHER_MASK;
+    sum1 = (sum1 + (temp >> CHECKSUM_WORD_SHIFT)) & FLETCHER_MASK;
+    sum2 = (sum2 + sum1) & FLETCHER_MASK;
+    temp = (Word_t) ((uintptr_t) header_->next >> CHECKSUM_DWORD_SHIFT);
+    sum1 = (sum1 + (temp & FLETCHER_MASK)) & FLETCHER_MASK;
+    sum2 = (sum2 + sum1) & FLETCHER_MASK;
+    sum1 = (sum1 + (temp >> CHECKSUM_WORD_SHIFT)) & FLETCHER_MASK;
+    sum2 = (sum2 + sum1) & FLETCHER_MASK;
 #endif
-  sum1 = (sum1 + (header_->size & 0xFFFFu)) & 0xFFFFu;
-  sum2 = (sum2 + sum1) & 0xFFFFu;
-  sum1 = (sum1 + (header_->size >> 0x10u)) & 0xFFFFu;
-  sum2 = (sum2 + sum1) & 0xFFFFu;
-  sum1 = (sum1 + header_->free) & 0xFFFFu;
-  sum2 = (sum2 + sum1) & 0xFFFFu;
-  return (((sum2 << 0x10u) | sum1) ^ 0xB16B00B5u);
+  sum1 = (sum1 + (header_->size & FLETCHER_MASK)) & FLETCHER_MASK;
+  sum2 = (sum2 + sum1) & FLETCHER_MASK;
+  sum1 = (sum1 + (header_->size >> CHECKSUM_WORD_SHIFT)) & FLETCHER_MASK;
+  sum2 = (sum2 + sum1) & FLETCHER_MASK;
+  sum1 = (sum1 + header_->free) & FLETCHER_MASK;
+  sum2 = (sum2 + sum1) & FLETCHER_MASK;
+  return (((sum2 << CHECKSUM_WORD_SHIFT) | sum1) ^ CHECKSUM_XOR_CONSTANT);
 }
 Return_t __ValidateBlockHeader__(const BlockHeader_t *header_, const volatile MemoryRegion_t *region_) {
   FUNCTION_ENTER;
@@ -541,7 +541,7 @@ Return_t __memcmp__(const volatile Addr_t *s1_, const volatile Addr_t *s2_, cons
 Return_t __DetectByteOrder__(ByteOrder_t *order_) {
   FUNCTION_ENTER;
   if(__PointerIsNotNull__(order_)) {
-    if((*(uint16_t *) "\xFF\x00") < 0x100) {
+    if((*(uint16_t *) "\xFF\x00") < BYTE_ORDER_TEST_VALUE) {
       *order_ = ByteOrderLittleEndian;
       __ReturnOk__();
     } else {
