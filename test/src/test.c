@@ -62,6 +62,8 @@ int main(int argc, char **argv) {
   fs_internal_harness();
   reset();
   console_harness();
+  reset();
+  console_internal_harness();
   unit_exit();
 
   return(0);

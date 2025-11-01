@@ -26,6 +26,7 @@
   #include "fs_harness.h"
   #include "fs_internal_harness.h"
   #include "console_harness.h"
+  #include "console_internal_harness.h"
 
   #ifdef __cplusplus
     extern "C" {
