@@ -131,7 +131,7 @@
     Byte_t name83[FAT_83_NAME_LENGTH] = {
       0x0u
     };
-    Byte_t component[FAT_MAX_PATH_COMPONENT] = {
+    Byte_t component[CONFIG_FAT_MAX_PATH_COMPONENT] = {
       0x0u
     };
     Word_t pathIdx = 0x0u;

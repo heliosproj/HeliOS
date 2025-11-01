@@ -416,7 +416,7 @@
         if(consoleState.bufferPosition < (CONFIG_CONSOLE_MAX_COMMAND_LENGTH - 0x1u)) {
           consoleState.commandBuffer[consoleState.bufferPosition++] = ch;
           if(consoleState.echoEnabled) {
-            Byte_t echoChar[CONSOLE_ECHO_BUFFER_SIZE] = {
+            Byte_t echoChar[CONFIG_CONSOLE_ECHO_BUFFER_SIZE] = {
               0x0u
             };
             echoChar[0x0u] = ch;
@@ -470,7 +470,7 @@
     };
     Base_t success = false;
     if(__PointerIsNotNull__(str_)) {
-      len = __strnlen__(str_, 0xFFFFu);
+      len = __strnlen__(str_, CONFIG_CONSOLE_MAX_STRING_LENGTH);
       if(0x0u < len) {
         if(__PointerIsNotNull__(cachedDevice) && (CONFIG_CHAR_DEVICE_UID == cachedDeviceUID)) {
           device = cachedDevice;
@@ -670,7 +670,7 @@
     TaskInfo_t *taskList = null;
     Base_t taskCount = 0x0u;
     Base_t i = 0x0u;
-    Byte_t numBuf[CONSOLE_NUM_BUFFER_SIZE] = {
+    Byte_t numBuf[CONFIG_CONSOLE_NUM_BUFFER_SIZE] = {
       0x0u
     };
     (void) args_;
@@ -715,7 +715,7 @@
   Return_t __ConsoleCmdMem__(const Byte_t *args_) {
     FUNCTION_ENTER;
     MemoryRegionStats_t *memState = null;
-    Byte_t numBuf[CONSOLE_NUM_BUFFER_SIZE] = {
+    Byte_t numBuf[CONFIG_CONSOLE_NUM_BUFFER_SIZE] = {
       0x0u
     };
     (void) args_;
@@ -779,7 +779,7 @@
     Byte_t path[CONFIG_FS_MAX_PATH_LENGTH] = {
       0x0u
     };
-    Byte_t numBuf[CONSOLE_NUM_BUFFER_SIZE] = {
+    Byte_t numBuf[CONFIG_CONSOLE_NUM_BUFFER_SIZE] = {
       0x0u
     };
     Base_t success = false;
@@ -896,7 +896,6 @@
     __ReturnOk__();
     FUNCTION_EXIT;
   }
-  #define CAT_BUFFER_SIZE 0x100u
   Return_t __ConsoleCmdCat__(const Byte_t *args_) {
     FUNCTION_ENTER;
     File_t *file = null;
@@ -928,13 +927,13 @@
           fileOpened = true;
           if(OK(xFileGetSize(file, &fileSize))) {
             if(0x0u < fileSize) {
-              if(OK(xMemAlloc((volatile Addr_t **) &buffer, CAT_BUFFER_SIZE))) {
+              if(OK(xMemAlloc((volatile Addr_t **) &buffer, CONFIG_CONSOLE_CAT_BUFFER_SIZE))) {
                 Base_t readError = false;
                 while((totalRead < fileSize) && !readError) {
-                  bytesToRead = (fileSize - totalRead) > CAT_BUFFER_SIZE ? CAT_BUFFER_SIZE : (fileSize - totalRead);
+                  bytesToRead = (fileSize - totalRead) > CONFIG_CONSOLE_CAT_BUFFER_SIZE ? CONFIG_CONSOLE_CAT_BUFFER_SIZE : (fileSize - totalRead);
                   if(OK(xFileRead(file, bytesToRead, &buffer))) {
                     Word_t i = 0x0u;
-                    Byte_t ch[CONSOLE_ECHO_BUFFER_SIZE] = {
+                    Byte_t ch[CONFIG_CONSOLE_ECHO_BUFFER_SIZE] = {
                       0x00u, 0x00u
                     };
                     for(i = 0x0u; i < bytesToRead; i++) {

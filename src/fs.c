@@ -134,7 +134,7 @@
     Byte_t sectorsPerCluster = FAT_83_BASENAME_LENGTH;
     HalfWord_t reservedSectors = 0x20u;
     Byte_t numFATs = FAT_MIN_VALID_CLUSTER;
-    Word_t sectorsPerFAT = FS_PATH_BUFFER_SIZE;
+    Word_t sectorsPerFAT = CONFIG_FS_PATH_BUFFER_SIZE;
     Word_t rootDirCluster = FAT_MIN_VALID_CLUSTER;
     Word_t fatStart = reservedSectors;
     Word_t dataStart = reservedSectors + (numFATs * sectorsPerFAT);
@@ -249,7 +249,7 @@
           fileExists = true;
         } else {
           const Byte_t *lastSlash = null;
-          Byte_t parentPath[FS_PATH_BUFFER_SIZE] = {
+          Byte_t parentPath[CONFIG_FS_PATH_BUFFER_SIZE] = {
             0x0u
           };
           Word_t parentPathLen = 0x0u;
@@ -286,7 +286,7 @@
           file->isOpen = true;
           file->isDirty = false;
           file->parentDirCluster = parentCluster;
-          for(i = 0x0u; path_[i] != '\0' && i < 0xFFu; i++) {
+          for(i = 0x0u; path_[i] != '\0' && i < CONFIG_FS_MAX_PATH_COPY_LENGTH; i++) {
             file->path[i] = path_[i];
           }
           file->path[i] = '\0';
@@ -935,7 +935,7 @@
     Word_t i = 0x0u;
     const Byte_t *lastSlash = null;
     const Byte_t *dirName = null;
-    Byte_t parentPath[FS_PATH_BUFFER_SIZE] = {
+    Byte_t parentPath[CONFIG_FS_PATH_BUFFER_SIZE] = {
       0x0u
     };
     Word_t parentPathLen = 0x0u;

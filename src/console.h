@@ -55,10 +55,6 @@
     #define CHAR_DEL 0x7Fu
     #define CHAR_PRINTABLE_MIN 0x20u
     #define CHAR_PRINTABLE_MAX 0x7Eu
-    #define CONSOLE_NUM_BUFFER_SIZE 0x10
-    #define CONSOLE_ECHO_BUFFER_SIZE 0x2
-    #define CONSOLE_CHAR_BUFFER_SIZE 0x2
-    #define HEX_OUTPUT_MIN_BUFFER 0x3u
     #define HEX_DIGIT_MASK 0xFu
     #define PATH_SEGMENTS_DIVISOR 0x2u
     typedef struct ConsoleState_s {

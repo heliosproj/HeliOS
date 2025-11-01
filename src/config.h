@@ -738,4 +738,271 @@
     #define CONFIG_FS_MAX_PATH_LENGTH 0xFFu /* 255 characters */
   #endif /* if !defined(CONFIG_FS_MAX_PATH_LENGTH) */
 
+
+/**
+ * @brief Define the default RX buffer size for character devices
+ *
+ * Setting CONFIG_CHAR_DEFAULT_RX_BUFFER_SIZE specifies the default receive
+ * buffer size for character devices (UART, USART, etc.) when no custom buffer
+ * size is specified during device initialization. The default is 256 bytes.
+ *
+ * This buffer holds incoming data from the character device until it can be
+ * read by the application. Larger buffers reduce the risk of data loss during
+ * burst transfers but consume more RAM.
+ *
+ * @note The value should be set as a hexadecimal constant with the 'u' suffix
+ * (e.g., 0x100u for 256 bytes).
+ *
+ * @note Each character device instance allocates this amount of memory for its
+ * receive buffer.
+ *
+ * @sa CONFIG_CHAR_DEFAULT_TX_BUFFER_SIZE
+ *
+ */
+  #if !defined(CONFIG_CHAR_DEFAULT_RX_BUFFER_SIZE)
+    #define CONFIG_CHAR_DEFAULT_RX_BUFFER_SIZE 0x100u /* 256 bytes */
+  #endif /* if !defined(CONFIG_CHAR_DEFAULT_RX_BUFFER_SIZE) */
+
+
+/**
+ * @brief Define the default TX buffer size for character devices
+ *
+ * Setting CONFIG_CHAR_DEFAULT_TX_BUFFER_SIZE specifies the default transmit
+ * buffer size for character devices (UART, USART, etc.) when no custom buffer
+ * size is specified during device initialization. The default is 256 bytes.
+ *
+ * This buffer holds outgoing data to be transmitted by the character device.
+ * Larger buffers allow more data to be queued for transmission but consume
+ * more RAM.
+ *
+ * @note The value should be set as a hexadecimal constant with the 'u' suffix
+ * (e.g., 0x100u for 256 bytes).
+ *
+ * @note Each character device instance allocates this amount of memory for its
+ * transmit buffer.
+ *
+ * @sa CONFIG_CHAR_DEFAULT_RX_BUFFER_SIZE
+ *
+ */
+  #if !defined(CONFIG_CHAR_DEFAULT_TX_BUFFER_SIZE)
+    #define CONFIG_CHAR_DEFAULT_TX_BUFFER_SIZE 0x100u /* 256 bytes */
+  #endif /* if !defined(CONFIG_CHAR_DEFAULT_TX_BUFFER_SIZE) */
+
+
+/**
+ * @brief Define the maximum FAT path component length
+ *
+ * Setting CONFIG_FAT_MAX_PATH_COMPONENT specifies the maximum length of a
+ * single path component (directory or filename) during FAT filesystem path
+ * parsing operations. The default is 256 bytes.
+ *
+ * This buffer is used internally when parsing and extracting individual
+ * components from full file paths. It must be large enough to accommodate the
+ * longest expected directory or filename.
+ *
+ * @note The value should be set as a hexadecimal constant with the 'u' suffix
+ * (e.g., 0x100u for 256 bytes).
+ *
+ * @note This is separate from CONFIG_FS_MAX_PATH_LENGTH which limits the
+ * entire path string length.
+ *
+ * @sa CONFIG_FS_MAX_PATH_LENGTH
+ * @sa CONFIG_FS_PATH_BUFFER_SIZE
+ *
+ */
+  #if !defined(CONFIG_FAT_MAX_PATH_COMPONENT)
+    #define CONFIG_FAT_MAX_PATH_COMPONENT 0x100u /* 256 bytes */
+  #endif /* if !defined(CONFIG_FAT_MAX_PATH_COMPONENT) */
+
+
+/**
+ * @brief Define the console numeric buffer size
+ *
+ * Setting CONFIG_CONSOLE_NUM_BUFFER_SIZE specifies the internal buffer size
+ * for numeric string formatting operations in the console. The default is 16
+ * bytes, sufficient for formatting 64-bit integers in decimal or hexadecimal.
+ *
+ * This buffer is used temporarily during number-to-string conversion for
+ * console output.
+ *
+ * @note The value should be set as a hexadecimal constant with the 'u' suffix
+ * (e.g., 0x10 for 16 bytes).
+ *
+ * @note This is an internal working buffer; most applications should not need
+ * to change this value.
+ *
+ * @sa CONFIG_CONSOLE_ECHO_BUFFER_SIZE
+ * @sa CONFIG_CONSOLE_CHAR_BUFFER_SIZE
+ *
+ */
+  #if !defined(CONFIG_CONSOLE_NUM_BUFFER_SIZE)
+    #define CONFIG_CONSOLE_NUM_BUFFER_SIZE 0x10 /* 16 bytes */
+  #endif /* if !defined(CONFIG_CONSOLE_NUM_BUFFER_SIZE) */
+
+
+/**
+ * @brief Define the console echo buffer size
+ *
+ * Setting CONFIG_CONSOLE_ECHO_BUFFER_SIZE specifies the internal buffer size
+ * for character echo operations in the console. The default is 2 bytes,
+ * sufficient for single character echo plus null terminator.
+ *
+ * This buffer is used when echoing user input back to the terminal.
+ *
+ * @note The value should be set as a hexadecimal constant with the 'u' suffix
+ * (e.g., 0x2 for 2 bytes).
+ *
+ * @note This is an internal working buffer; most applications should not need
+ * to change this value.
+ *
+ * @sa CONFIG_CONSOLE_NUM_BUFFER_SIZE
+ * @sa CONFIG_CONSOLE_CHAR_BUFFER_SIZE
+ *
+ */
+  #if !defined(CONFIG_CONSOLE_ECHO_BUFFER_SIZE)
+    #define CONFIG_CONSOLE_ECHO_BUFFER_SIZE 0x2 /* 2 bytes */
+  #endif /* if !defined(CONFIG_CONSOLE_ECHO_BUFFER_SIZE) */
+
+
+/**
+ * @brief Define the console character buffer size
+ *
+ * Setting CONFIG_CONSOLE_CHAR_BUFFER_SIZE specifies the internal buffer size
+ * for single character operations in the console. The default is 2 bytes,
+ * sufficient for a single character plus null terminator.
+ *
+ * This buffer is used for temporary character storage during console
+ * operations.
+ *
+ * @note The value should be set as a hexadecimal constant with the 'u' suffix
+ * (e.g., 0x2 for 2 bytes).
+ *
+ * @note This is an internal working buffer; most applications should not need
+ * to change this value.
+ *
+ * @sa CONFIG_CONSOLE_NUM_BUFFER_SIZE
+ * @sa CONFIG_CONSOLE_ECHO_BUFFER_SIZE
+ *
+ */
+  #if !defined(CONFIG_CONSOLE_CHAR_BUFFER_SIZE)
+    #define CONFIG_CONSOLE_CHAR_BUFFER_SIZE 0x2 /* 2 bytes */
+  #endif /* if !defined(CONFIG_CONSOLE_CHAR_BUFFER_SIZE) */
+
+
+/**
+ * @brief Define the filesystem path buffer size
+ *
+ * Setting CONFIG_FS_PATH_BUFFER_SIZE specifies the size of internal path
+ * buffers used during filesystem operations. The default is 256 bytes.
+ *
+ * This buffer is allocated on the stack during certain filesystem operations
+ * for path manipulation and processing.
+ *
+ * @note The value should be set as a hexadecimal constant with the 'u' suffix
+ * (e.g., 0x100u for 256 bytes).
+ *
+ * @note This should typically match or exceed CONFIG_FS_MAX_PATH_LENGTH to
+ * ensure all valid paths can be processed.
+ *
+ * @sa CONFIG_FS_MAX_PATH_LENGTH
+ * @sa CONFIG_FAT_MAX_PATH_COMPONENT
+ *
+ */
+  #if !defined(CONFIG_FS_PATH_BUFFER_SIZE)
+    #define CONFIG_FS_PATH_BUFFER_SIZE 0x100u /* 256 bytes */
+  #endif /* if !defined(CONFIG_FS_PATH_BUFFER_SIZE) */
+
+
+/**
+ * @brief Define the console cat command buffer size
+ *
+ * Setting CONFIG_CONSOLE_CAT_BUFFER_SIZE specifies the size of the buffer used
+ * by the console 'cat' command for reading file contents. The default is 256
+ * bytes.
+ *
+ * The cat command reads files in chunks of this size and outputs them to the
+ * console. Larger buffers reduce the number of read operations for large files
+ * but consume more stack space.
+ *
+ * @note The value should be set as a hexadecimal constant with the 'u' suffix
+ * (e.g., 0x100u for 256 bytes).
+ *
+ * @note This buffer is allocated on the stack when the cat command executes.
+ *
+ * @sa CONFIG_ENABLE_CONSOLE
+ *
+ */
+  #if !defined(CONFIG_CONSOLE_CAT_BUFFER_SIZE)
+    #define CONFIG_CONSOLE_CAT_BUFFER_SIZE 0x100u /* 256 bytes */
+  #endif /* if !defined(CONFIG_CONSOLE_CAT_BUFFER_SIZE) */
+
+
+/**
+ * @brief Define the maximum file path length for operations
+ *
+ * Setting CONFIG_FS_MAX_PATH_COPY_LENGTH specifies the maximum number of
+ * characters that will be copied when storing file paths in file structures.
+ * The default is 255 bytes.
+ *
+ * This limit prevents buffer overruns when copying path strings into fixed-
+ * size buffers within file control structures.
+ *
+ * @note The value should be set as a hexadecimal constant with the 'u' suffix
+ * (e.g., 0xFFu for 255 bytes).
+ *
+ * @note This should be less than or equal to CONFIG_FS_MAX_PATH_LENGTH.
+ *
+ * @sa CONFIG_FS_MAX_PATH_LENGTH
+ *
+ */
+  #if !defined(CONFIG_FS_MAX_PATH_COPY_LENGTH)
+    #define CONFIG_FS_MAX_PATH_COPY_LENGTH 0xFFu /* 255 bytes */
+  #endif /* if !defined(CONFIG_FS_MAX_PATH_COPY_LENGTH) */
+
+
+/**
+ * @brief Define the maximum console string length
+ *
+ * Setting CONFIG_CONSOLE_MAX_STRING_LENGTH specifies the maximum length of
+ * strings that can be processed by console write operations. The default is
+ * 65535 bytes (64 KB).
+ *
+ * This value provides an upper bound for string length calculations to prevent
+ * infinite loops on improperly terminated strings.
+ *
+ * @note The value should be set as a hexadecimal constant with the 'u' suffix
+ * (e.g., 0xFFFFu for 65535 bytes).
+ *
+ * @note This is a safety limit; normal console output should be much shorter.
+ *
+ * @sa CONFIG_ENABLE_CONSOLE
+ *
+ */
+  #if !defined(CONFIG_CONSOLE_MAX_STRING_LENGTH)
+    #define CONFIG_CONSOLE_MAX_STRING_LENGTH 0xFFFFu /* 65535 bytes */
+  #endif /* if !defined(CONFIG_CONSOLE_MAX_STRING_LENGTH) */
+
+
+/**
+ * @brief Define the minimum buffer size for hex output
+ *
+ * Setting CONFIG_CONSOLE_HEX_OUTPUT_MIN_BUFFER specifies the minimum buffer
+ * size required for hexadecimal number formatting in console output. The
+ * default is 3 bytes.
+ *
+ * This accommodates a two-digit hex value plus null terminator (e.g., "FF\0").
+ *
+ * @note The value should be set as a hexadecimal constant with the 'u' suffix
+ * (e.g., 0x3u for 3 bytes).
+ *
+ * @note This is an internal constant; most applications should not need to
+ * change this value.
+ *
+ * @sa CONFIG_CONSOLE_NUM_BUFFER_SIZE
+ *
+ */
+  #if !defined(CONFIG_CONSOLE_HEX_OUTPUT_MIN_BUFFER)
+    #define CONFIG_CONSOLE_HEX_OUTPUT_MIN_BUFFER 0x3u /* 3 bytes */
+  #endif /* if !defined(CONFIG_CONSOLE_HEX_OUTPUT_MIN_BUFFER) */
+
 #endif /* ifndef CONFIG_H_ */

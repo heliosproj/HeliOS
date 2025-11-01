@@ -31,8 +31,6 @@
   #define CHAR_PROTOCOL_RAW 0xFFu
   #define CHAR_LINE_RAW 0x00u
   #define CHAR_LINE_COOKED 0x01u
-  #define CHAR_DEFAULT_RX_BUFFER_SIZE 0x100u
-  #define CHAR_DEFAULT_TX_BUFFER_SIZE 0x100u
   #define CHAR_DEFAULT_TIMEOUT_MS 0x3E8u
   #define CHAR_SINGLE_BYTE_COUNT 0x1u
   typedef struct CharDeviceConfig_s {

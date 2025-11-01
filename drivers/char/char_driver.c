@@ -52,8 +52,8 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Add
         state.protocol = cfg->protocol;
         state.lineMode = cfg->lineMode;
         state.baudRate = cfg->baudRate;
-        state.rxBufferSize = (0x0u == cfg->rxBufferSize) ? CHAR_DEFAULT_RX_BUFFER_SIZE : cfg->rxBufferSize;
-        state.txBufferSize = (0x0u == cfg->txBufferSize) ? CHAR_DEFAULT_TX_BUFFER_SIZE : cfg->txBufferSize;
+        state.rxBufferSize = (0x0u == cfg->rxBufferSize) ? CONFIG_CHAR_DEFAULT_RX_BUFFER_SIZE : cfg->rxBufferSize;
+        state.txBufferSize = (0x0u == cfg->txBufferSize) ? CONFIG_CHAR_DEFAULT_TX_BUFFER_SIZE : cfg->txBufferSize;
         if((CHAR_PROTOCOL_RAW == state.protocol) && (CHAR_LINE_RAW == state.lineMode)) {
           state.initialized = true;
           cfg->rxBufferSize = state.rxBufferSize;

@@ -54,7 +54,6 @@
     #define FS_FORMAT_NUM_FATS 0x2u
     #define FS_FORMAT_SECTORS_PER_FAT 0x100u
     #define FS_FORMAT_ROOT_CLUSTER 0x2u
-    #define FS_PATH_BUFFER_SIZE 0x100u
     #define FAT_DEFAULT_TOTAL_SECTORS 0x800u
     #define FAT_DEFAULT_VOLUME_ID 0x12345678u
     #ifdef __cplusplus
