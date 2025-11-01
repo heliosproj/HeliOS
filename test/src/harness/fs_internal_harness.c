@@ -555,7 +555,8 @@ static void test_byte_compare_basic(void) {
 
   /* Test 4.1.4: Partial match - compare only matching portion */
   unit_begin("__ByteCompare__ - Partial match within longer strings");
-  unit_assert_true(__ByteCompare__(pattern1, pattern3, BYTE_CMP_LEN_MEDIUM - 1));
+  /* pattern1 = "TESTDATA", pattern3 = "TESTDATX" - first 7 chars match */
+  unit_assert_true(__ByteCompare__(pattern1, pattern3, 7));
   unit_end();
 
   /* Test 4.1.5: Single byte comparison - equal */
