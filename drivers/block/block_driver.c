@@ -10,7 +10,7 @@ typedef struct BlockDeviceState_s {
   Byte_t currentTransferMode;
 } BlockDeviceState_t;
 static BlockDeviceState_t state = {
-  0
+  0x0u
 };
 static Return_t __PrepareBlockIORequest__(const Byte_t operation_, BlockIORequest_t **request_, Size_t *configSize_);
 static Return_t __BlockDeviceReadBlockRAW__(Byte_t **data_);

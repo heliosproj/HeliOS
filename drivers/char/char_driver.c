@@ -17,7 +17,7 @@ typedef struct CharDeviceState_s {
   Byte_t currentTransferMode;
 } CharDeviceState_t;
 static CharDeviceState_t state = {
-  0
+  0x0u
 };
 static Return_t __PrepareCharIORequest__(const Byte_t operation_, CharIORequest_t **request_, Size_t *configSize_);
 static Return_t __CharDeviceReadRAW__(Byte_t **data_, Size_t *bytesRead_);
@@ -74,8 +74,8 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Add
         state.protocol = cfg->protocol;
         state.lineMode = cfg->lineMode;
         state.baudRate = cfg->baudRate;
-        state.rxBufferSize = (0 == cfg->rxBufferSize) ? CHAR_DEFAULT_RX_BUFFER_SIZE : cfg->rxBufferSize;
-        state.txBufferSize = (0 == cfg->txBufferSize) ? CHAR_DEFAULT_TX_BUFFER_SIZE : cfg->txBufferSize;
+        state.rxBufferSize = (0x0u == cfg->rxBufferSize) ? CHAR_DEFAULT_RX_BUFFER_SIZE : cfg->rxBufferSize;
+        state.txBufferSize = (0x0u == cfg->txBufferSize) ? CHAR_DEFAULT_TX_BUFFER_SIZE : cfg->txBufferSize;
         if((CHAR_PROTOCOL_RAW == state.protocol) && (CHAR_LINE_RAW == state.lineMode)) {
           state.initialized = true;
           cfg->rxBufferSize = state.rxBufferSize;
@@ -194,10 +194,10 @@ Return_t TO_FUNCTION(DEVICE_NAME, _simple_read)(Device_t *device_, Byte_t *data_
   if(__PointerIsNotNull__(data_) && state.initialized) {
     Byte_t *byteData = null;
     Size_t bytesRead = 0x0u;
-    state.currentByteCount = 1;
+    state.currentByteCount = 0x1u;
     if(OK(__CharDeviceReadRAW__(&byteData, &bytesRead))) {
-      if(bytesRead > 0) {
-        *data_ = byteData[0];
+      if(bytesRead > 0x0u) {
+        *data_ = byteData[0x0u];
         __KernelFreeMemory__(byteData);
         __ReturnOk__();
       } else {
@@ -215,7 +215,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _simple_read)(Device_t *device_, Byte_t *data_
 Return_t TO_FUNCTION(DEVICE_NAME, _simple_write)(Device_t *device_, Byte_t data_) {
   FUNCTION_ENTER;
   if(state.initialized) {
-    state.currentByteCount = 1;
+    state.currentByteCount = 0x1u;
     if(OK(__CharDeviceWriteRAW__(&data_))) {
       __ReturnOk__();
     } else {
@@ -237,7 +237,7 @@ static Return_t __PrepareCharIORequest__(const Byte_t operation_,
     request->operation = operation_;
     request->byteCount = state.currentByteCount;
     request->transferMode = state.currentTransferMode;
-    request->timeoutMs = 1000;
+    request->timeoutMs = 0x3E8u;
     *request_ = request;
     *configSize_ = sizeof(CharIORequest_t);
     __ReturnOk__();
@@ -294,9 +294,9 @@ static HalfWord_t __CircularBufferSpace__(const HalfWord_t head_,
   const HalfWord_t tail_,
   const HalfWord_t size_) {
   if(head_ >= tail_) {
-    return (size_ - (head_ - tail_) - 1);
+    return (size_ - (head_ - tail_) - 0x1u);
   } else {
-    return (tail_ - head_ - 1);
+    return (tail_ - head_ - 0x1u);
   }
 }
 static HalfWord_t __CircularBufferAvailable__(const HalfWord_t head_,

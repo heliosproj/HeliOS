@@ -1,6 +1,6 @@
 #include "ramdisk_driver.h"
 static Byte_t ramdisk[RAMDISK_SIZE_BYTES] = {
-  0
+  0x0u
 };
 typedef struct RAMDiskState_s {
   Word_t currentPosition;
@@ -11,20 +11,20 @@ typedef struct RAMDiskState_s {
   Base_t initialized;
 } RAMDiskState_t;
 static RAMDiskState_t state = {
-  0
+  0x0u
 };
 #define __UpdateReadStats__(bytes_) \
         do { \
           state.currentPosition += (bytes_); \
           state.bytesRead += (bytes_); \
           state.readOperations++; \
-        } while (0)
+        } while (0x0u)
 #define __UpdateWriteStats__(bytes_) \
         do { \
           state.currentPosition += (bytes_); \
           state.bytesWritten += (bytes_); \
           state.writeOperations++; \
-        } while (0)
+        } while (0x0u)
 #define __ValidateBufferParams__(size_, data_) \
         (__PointerIsNotNull__(size_) && __PointerIsNotNull__(data_) && (0x0u < *(size_)))
 static Return_t __ValidateAndTruncateSize__(Size_t requested_, Size_t *actual_);
@@ -79,7 +79,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Add
         BlockIOInfo_t *info = (BlockIOInfo_t *) config_;
         info->command = BLOCK_IO_CMD_GET_INFO;
         info->totalSizeBytes = RAMDISK_SIZE_BYTES;
-        info->nativeBlockSize = 1;
+        info->nativeBlockSize = 0x1u;
         info->supportsRandomAccess = true;
         info->requiresErase = false;
         __ReturnOk__();
@@ -168,7 +168,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _simple_read)(Device_t *device_, Byte_t *data_
   if(__PointerIsNotNull__(data_)) {
     if(state.currentPosition < RAMDISK_SIZE_BYTES) {
       *data_ = ramdisk[state.currentPosition];
-      __UpdateReadStats__(1);
+      __UpdateReadStats__(0x1u);
       __ReturnOk__();
     } else {
       __AssertOnElse__();
@@ -182,7 +182,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _simple_write)(Device_t *device_, Byte_t data_
   FUNCTION_ENTER;
   if(state.currentPosition < RAMDISK_SIZE_BYTES) {
     ramdisk[state.currentPosition] = data_;
-    __UpdateWriteStats__(1);
+    __UpdateWriteStats__(0x1u);
     __ReturnOk__();
   } else {
     __AssertOnElse__();

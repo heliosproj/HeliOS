@@ -27,11 +27,11 @@
   #if defined(USART_RX_BUFFER_SIZE)
     #undef USART_RX_BUFFER_SIZE
   #endif
-  #define USART_RX_BUFFER_SIZE 512u
+  #define USART_RX_BUFFER_SIZE 0x200u
   #if defined(USART_TX_BUFFER_SIZE)
     #undef USART_TX_BUFFER_SIZE
   #endif
-  #define USART_TX_BUFFER_SIZE 512u
+  #define USART_TX_BUFFER_SIZE 0x200u
   #if defined(USART_ERROR_NONE)
     #undef USART_ERROR_NONE
   #endif

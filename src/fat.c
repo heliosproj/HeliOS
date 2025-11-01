@@ -36,7 +36,7 @@
     Word_t extLen = 0x0u;
     const Byte_t *dotPos = null;
     if(__PointerIsNotNull__(path_) && __PointerIsNotNull__(fat83_)) {
-      for(i = 0x0u; i < 11; i++) {
+      for(i = 0x0u; i < 0xBu; i++) {
         fat83_[i] = ' ';
       }
       for(i = 0x0u; path_[i] != '\0'; i++) {
@@ -45,7 +45,7 @@
         }
       }
       nameLen = 0x0u;
-      for(i = 0x0u; path_[i] != '\0' && path_[i] != '.' && nameLen < 8; i++) {
+      for(i = 0x0u; path_[i] != '\0' && path_[i] != '.' && nameLen < 0x8u; i++) {
         Byte_t c = path_[i];
         if((c >= 'a') && (c <= 'z')) {
           c = c - 'a' + 'A';
@@ -54,12 +54,12 @@
       }
       if(__PointerIsNotNull__(dotPos)) {
         extLen = 0x0u;
-        for(j = 1; dotPos[j] != '\0' && extLen < 3; j++) {
+        for(j = 0x1u; dotPos[j] != '\0' && extLen < 0x3u; j++) {
           Byte_t c = dotPos[j];
           if((c >= 'a') && (c <= 'z')) {
             c = c - 'a' + 'A';
           }
-          fat83_[8 + extLen++] = c;
+          fat83_[0x8u + extLen++] = c;
         }
       }
       __ReturnOk__();
@@ -90,7 +90,7 @@
               break;
             } else {
               if((fatEntry->name[0x0u] != 0xE5u) && ((fatEntry->attr & FAT_ATTR_LONG_NAME) != FAT_ATTR_LONG_NAME)) {
-                if(__ByteCompare__(fatEntry->name, name83_, 11)) {
+                if(__ByteCompare__(fatEntry->name, name83_, 0xBu)) {
                   if(__PointerIsNotNull__(entry_)) {
                     __memcpy__(entry_, fatEntry, sizeof(FAT32DirEntry_t));
                   }
@@ -128,10 +128,10 @@
   Return_t __FindFileByPath__(const Volume_t *vol_, const Byte_t *path_, FAT32DirEntry_t *entry_, Word_t *parentCluster_, Word_t *entryCluster_, Word_t *
     entryOffset_) {
     FUNCTION_ENTER;
-    Byte_t name83[11] = {
+    Byte_t name83[0xBu] = {
       0x0u
     };
-    Byte_t component[256] = {
+    Byte_t component[0x100u] = {
       0x0u
     };
     Word_t pathIdx = 0x0u;
@@ -143,8 +143,8 @@
     Base_t continueProcessing = true;
     if(__PointerIsNotNull__(vol_) && __PointerIsNotNull__(path_)) {
       currentCluster = vol_->rootDirCluster;
-      if(path_[0] == '/') {
-        pathIdx = 1;
+      if(path_[0x0u] == '/') {
+        pathIdx = 0x1u;
       }
       if(path_[pathIdx] == '\0') {
         if(__PointerIsNotNull__(entry_)) {
@@ -164,7 +164,7 @@
       } else {
         while(continueProcessing && path_[pathIdx] != '\0') {
           componentIdx = 0x0u;
-          while(path_[pathIdx] != '\0' && path_[pathIdx] != '/' && componentIdx < 255) {
+          while(path_[pathIdx] != '\0' && path_[pathIdx] != '/' && componentIdx < 0xFFu) {
             component[componentIdx++] = path_[pathIdx++];
           }
           component[componentIdx] = '\0';
@@ -211,7 +211,7 @@
     if(__PointerIsNull__(vol_)) {
       return (ReturnError);
     }
-    while(currentCluster >= 2 && currentCluster < FAT32_EOC_MIN) {
+    while(currentCluster >= 0x2u && currentCluster < FAT32_EOC_MIN) {
       if(ERROR(__GetFATEntry__(vol_, currentCluster, &nextCluster))) {
         return (ReturnError);
       }
@@ -247,12 +247,12 @@
           fatEntry->attr = attr_;
           fatEntry->ntReserved = 0x0u;
           fatEntry->createTimeTenth = 0x0u;
-          __WriteLE16__(fatEntry->createTime, 0);
-          __WriteLE16__(fatEntry->createDate, 0);
-          __WriteLE16__(fatEntry->lastAccessDate, 0);
-          __WriteLE16__(fatEntry->firstClusterHigh, (HalfWord_t) (firstCluster_ >> 16));
-          __WriteLE16__(fatEntry->writeTime, 0);
-          __WriteLE16__(fatEntry->writeDate, 0);
+          __WriteLE16__(fatEntry->createTime, 0x0u);
+          __WriteLE16__(fatEntry->createDate, 0x0u);
+          __WriteLE16__(fatEntry->lastAccessDate, 0x0u);
+          __WriteLE16__(fatEntry->firstClusterHigh, (HalfWord_t) (firstCluster_ >> 0x10u));
+          __WriteLE16__(fatEntry->writeTime, 0x0u);
+          __WriteLE16__(fatEntry->writeDate, 0x0u);
           __WriteLE16__(fatEntry->firstClusterLow, (HalfWord_t) (firstCluster_ & 0xFFFFu));
           __WriteLE32__(fatEntry->fileSize, size_);
           firstSector = __ClusterToSector__(vol_, currentCluster);
@@ -270,7 +270,7 @@
       if(OK(__GetFATEntry__(vol_, currentCluster, &nextCluster))) {
         if(nextCluster >= FAT32_EOC_MIN) {
           Word_t newCluster = 0x0u;
-          if(OK(__FindFreeCluster__(vol_, currentCluster + 1u, &newCluster))) {
+          if(OK(__FindFreeCluster__(vol_, currentCluster + 0x1u, &newCluster))) {
             __SetFATEntry__(vol_, currentCluster, newCluster);
             __SetFATEntry__(vol_, newCluster, FAT32_EOC_MAX);
             if(OK(__ReadCluster__(vol_, newCluster, &clusterData))) {
@@ -303,7 +303,7 @@
       if(OK(__KernelAllocateMemory__((volatile Addr_t **) &cmd, blockSize))) {
         cmd->command = BLOCK_CMD_SET_ADDRESS;
         cmd->blockNumber = sector_;
-        cmd->blockCount = 1;
+        cmd->blockCount = 0x1u;
         cmd->transferMode = BLOCK_IO_MODE_BLOCKING;
         if(OK(__DeviceConfigDevice__(vol_->blockDeviceUID, &blockSize, (Addr_t *) cmd))) {
           readSize = (Size_t) vol_->bytesPerSector;
@@ -335,7 +335,7 @@
       if(OK(__KernelAllocateMemory__((volatile Addr_t **) &cmd, blockSize))) {
         cmd->command = BLOCK_CMD_SET_ADDRESS;
         cmd->blockNumber = sector_;
-        cmd->blockCount = 1;
+        cmd->blockCount = 0x1u;
         cmd->transferMode = BLOCK_IO_MODE_BLOCKING;
         if(OK(__DeviceConfigDevice__(vol_->blockDeviceUID, &blockSize, (Addr_t *) cmd))) {
           writeSize = (Size_t) vol_->bytesPerSector;
@@ -359,7 +359,7 @@
     FUNCTION_EXIT;
   }
   Word_t __ClusterToSector__(const Volume_t *vol_, Word_t cluster_) {
-    return (vol_->dataStartSector + ((cluster_ - 2u) * vol_->sectorsPerCluster));
+    return (vol_->dataStartSector + ((cluster_ - 0x2u) * vol_->sectorsPerCluster));
   }
   Return_t __ReadCluster__(const Volume_t *vol_, Word_t cluster_, Byte_t **data_) {
     FUNCTION_ENTER;
@@ -403,7 +403,7 @@
     Byte_t *sectorData = null;
     Word_t fatEntry = 0x0u;
     if(__ObjectIsValid__(vol_) && __PointerIsNotNull__(nextCluster_)) {
-      fatOffset = cluster_ * 4u;
+      fatOffset = cluster_ * 0x4u;
       fatSector = vol_->fatStartSector + (fatOffset / vol_->bytesPerSector);
       entryOffset = fatOffset % vol_->bytesPerSector;
       if(OK(__ReadSector__(vol_, fatSector, &sectorData))) {
@@ -427,13 +427,13 @@
     Byte_t *sectorData = null;
     Byte_t i = 0x0u;
     if(__ObjectIsValid__(vol_)) {
-      fatOffset = cluster_ * 4u;
+      fatOffset = cluster_ * 0x4u;
       fatSector = vol_->fatStartSector + (fatOffset / vol_->bytesPerSector);
       entryOffset = fatOffset % vol_->bytesPerSector;
       if(OK(__ReadSector__(vol_, fatSector, &sectorData))) {
         __WriteLE32__(sectorData + entryOffset, (value_ & 0x0FFFFFFFu) | (__ReadLE32__(sectorData + entryOffset) & 0xF0000000u));
         if(OK(__WriteSector__(vol_, fatSector, sectorData))) {
-          for(i = 1; i < vol_->numFATs; i++) {
+          for(i = 0x1u; i < vol_->numFATs; i++) {
             __WriteSector__(vol_, fatSector + (i * vol_->sectorsPerFAT), sectorData);
           }
           __KernelFreeMemory__(sectorData);
@@ -459,11 +459,11 @@
     Base_t found = false;
     Base_t continueSearch = true;
     if(__ObjectIsValid__(vol_) && __PointerIsNotNull__(freeCluster_)) {
-      maxCluster = (vol_->sectorsPerFAT * vol_->bytesPerSector) / 4u;
+      maxCluster = (vol_->sectorsPerFAT * vol_->bytesPerSector) / 0x4u;
       if(maxCluster > 0x10000u) {
         maxCluster = 0x10000u;
       }
-      searchStart = (startHint_ >= 3u) ? startHint_ : 3u;
+      searchStart = (startHint_ >= 0x3u) ? startHint_ : 0x3u;
       for(cluster = searchStart; cluster < maxCluster && continueSearch && !found; cluster++) {
         if(OK(__GetFATEntry__(vol_, cluster, &fatEntry))) {
           if(fatEntry == FAT32_FREE_CLUSTER) {
@@ -476,8 +476,8 @@
           continueSearch = false;
         }
       }
-      if(!found && continueSearch && (searchStart > 3u)) {
-        for(cluster = 3u; cluster < searchStart && continueSearch && !found; cluster++) {
+      if(!found && continueSearch && (searchStart > 0x3u)) {
+        for(cluster = 0x3u; cluster < searchStart && continueSearch && !found; cluster++) {
           if(OK(__GetFATEntry__(vol_, cluster, &fatEntry))) {
             if(fatEntry == FAT32_FREE_CLUSTER) {
               *freeCluster_ = cluster;
@@ -520,8 +520,8 @@
     Byte_t j = 0x0u;
     for(i = 0x0u; i < mountedDeviceCount; i++) {
       if(mountedDevices[i] == blockDeviceUID_) {
-        for(j = i; j < mountedDeviceCount - 1; j++) {
-          mountedDevices[j] = mountedDevices[j + 1];
+        for(j = i; j < mountedDeviceCount - 0x1u; j++) {
+          mountedDevices[j] = mountedDevices[j + 0x1u];
         }
         mountedDeviceCount--;
         return (ReturnOK);

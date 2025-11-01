@@ -22,7 +22,7 @@ typedef struct USARTDriverState_s {
   Byte_t rxSingleByte;
 } USARTDriverState_t;
 static USARTDriverState_t state = {
-  0
+  0x0u
 };
 static HalfWord_t __CircularBufferSpace__(const HalfWord_t head_, const HalfWord_t tail_, const HalfWord_t size_);
 static HalfWord_t __CircularBufferAvailable__(const HalfWord_t head_, const HalfWord_t tail_, const HalfWord_t size_);
@@ -94,7 +94,7 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Add
         info->supportsDMA = true;
         info->supportsInterrupt = true;
         info->isFullDuplex = true;
-        info->maxBaudRate = 115200;
+        info->maxBaudRate = 0x1C200u;
         __ReturnOk__();
       } else {
         __AssertOnElse__();
@@ -160,9 +160,9 @@ Return_t TO_FUNCTION(DEVICE_NAME, _config)(Device_t *device_, Size_t *size_, Add
           state.huart.Init.HwFlowCtl = UART_HWCONTROL_NONE;
           state.huart.Init.OverSampling = UART_OVERSAMPLING_16;
           if(HAL_OK == HAL_UART_Init(&state.huart)) {
-            HAL_NVIC_SetPriority(initCfg->irqNumber, 5, 0);
+            HAL_NVIC_SetPriority(initCfg->irqNumber, 0x5u, 0x0u);
             HAL_NVIC_EnableIRQ(initCfg->irqNumber);
-            HAL_UART_Receive_IT(&state.huart, &state.rxSingleByte, 1);
+            HAL_UART_Receive_IT(&state.huart, &state.rxSingleByte, 0x1u);
             state.initialized = true;
             __ReturnOk__();
           } else {
@@ -277,12 +277,12 @@ Return_t TO_FUNCTION(DEVICE_NAME, _write)(Device_t *device_, Size_t *size_, Addr
 Return_t TO_FUNCTION(DEVICE_NAME, _simple_read)(Device_t *device_, Byte_t *data_) {
   FUNCTION_ENTER;
   if(__PointerIsNotNull__(data_) && state.initialized) {
-    if(__CircularBufferAvailable__(state.rxHead, state.rxTail, USART_RX_BUFFER_SIZE) > 0) {
+    if(__CircularBufferAvailable__(state.rxHead, state.rxTail, USART_RX_BUFFER_SIZE) > 0x0u) {
       *data_ = __CircularBufferGet__(state.rxBuffer, &state.rxTail, USART_RX_BUFFER_SIZE);
       __ReturnOk__();
     } else {
 #if !defined(POSIX_ARCH_OTHER)
-        if(HAL_OK == HAL_UART_Receive(&state.huart, data_, 1, 1000)) {
+        if(HAL_OK == HAL_UART_Receive(&state.huart, data_, 0x1u, 0x3E8u)) {
           __ReturnOk__();
         } else {
           __AssertOnElse__();
@@ -300,13 +300,13 @@ Return_t TO_FUNCTION(DEVICE_NAME, _simple_write)(Device_t *device_, Byte_t data_
   FUNCTION_ENTER;
   if(state.initialized) {
 #if !defined(POSIX_ARCH_OTHER)
-      if(HAL_OK == HAL_UART_Transmit(&state.huart, &data_, 1, 1000)) {
+      if(HAL_OK == HAL_UART_Transmit(&state.huart, &data_, 0x1u, 0x3E8u)) {
         __ReturnOk__();
       } else {
         __AssertOnElse__();
       }
 #else
-      write(STDOUT_FILENO, &data_, 1);
+      write(STDOUT_FILENO, &data_, 0x1u);
       __ReturnOk__();
 #endif
   } else {
@@ -328,7 +328,7 @@ void USART_TX_IRQHandler(void) {
   void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
     if(huart == &state.huart) {
       __CircularBufferPut__(state.rxBuffer, &state.rxHead, USART_RX_BUFFER_SIZE, state.rxSingleByte);
-      HAL_UART_Receive_IT(&state.huart, &state.rxSingleByte, 1);
+      HAL_UART_Receive_IT(&state.huart, &state.rxSingleByte, 0x1u);
     }
   }
   void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) {
@@ -348,7 +348,7 @@ void USART_TX_IRQHandler(void) {
       }
       state.txBusy = false;
       state.rxBusy = false;
-      HAL_UART_Receive_IT(&state.huart, &state.rxSingleByte, 1);
+      HAL_UART_Receive_IT(&state.huart, &state.rxSingleByte, 0x1u);
     }
   }
 #endif
@@ -356,9 +356,9 @@ static HalfWord_t __CircularBufferSpace__(const HalfWord_t head_,
   const HalfWord_t tail_,
   const HalfWord_t size_) {
   if(head_ >= tail_) {
-    return (size_ - (head_ - tail_) - 1);
+    return (size_ - (head_ - tail_) - 0x1u);
   } else {
-    return (tail_ - head_ - 1);
+    return (tail_ - head_ - 0x1u);
   }
 }
 static HalfWord_t __CircularBufferAvailable__(const HalfWord_t head_,
@@ -375,13 +375,13 @@ static void __CircularBufferPut__(Byte_t *buffer_,
   const HalfWord_t size_,
   const Byte_t data_) {
   buffer_[*head_] = data_;
-  *head_ = (*head_ + 1) % size_;
+  *head_ = (*head_ + 0x1u) % size_;
 }
 static Byte_t __CircularBufferGet__(const Byte_t *buffer_,
   HalfWord_t *tail_,
   const HalfWord_t size_) {
   Byte_t data = buffer_[*tail_];
-  *tail_ = (*tail_ + 1) % size_;
+  *tail_ = (*tail_ + 0x1u) % size_;
   return(data);
 }
 #if !defined(POSIX_ARCH_OTHER)

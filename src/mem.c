@@ -1,9 +1,9 @@
 #include "mem.h"
 static volatile MemoryRegion_t heap = {
-  0
+  0x0u
 };
 static volatile MemoryRegion_t kernel = {
-  0
+  0x0u
 };
 Word_t __checksum__(const BlockHeader_t *header_) {
   Word_t sum1 = 0xFFFFu;
@@ -20,27 +20,27 @@ Word_t __checksum__(const BlockHeader_t *header_) {
     temp = (Word_t) (uintptr_t) header_->next;
     sum1 = (sum1 + (temp & 0xFFFFu)) & 0xFFFFu;
     sum2 = (sum2 + sum1) & 0xFFFFu;
-    sum1 = (sum1 + (temp >> 16)) & 0xFFFFu;
+    sum1 = (sum1 + (temp >> 0x10u)) & 0xFFFFu;
     sum2 = (sum2 + sum1) & 0xFFFFu;
 #elif UINTPTR_MAX == 0xFFFFFFFFFFFFFFFF
     temp = (Word_t) ((uintptr_t) header_->next & 0xFFFFFFFFu);
     sum1 = (sum1 + (temp & 0xFFFFu)) & 0xFFFFu;
     sum2 = (sum2 + sum1) & 0xFFFFu;
-    sum1 = (sum1 + (temp >> 16)) & 0xFFFFu;
+    sum1 = (sum1 + (temp >> 0x10u)) & 0xFFFFu;
     sum2 = (sum2 + sum1) & 0xFFFFu;
-    temp = (Word_t) ((uintptr_t) header_->next >> 32);
+    temp = (Word_t) ((uintptr_t) header_->next >> 0x20u);
     sum1 = (sum1 + (temp & 0xFFFFu)) & 0xFFFFu;
     sum2 = (sum2 + sum1) & 0xFFFFu;
-    sum1 = (sum1 + (temp >> 16)) & 0xFFFFu;
+    sum1 = (sum1 + (temp >> 0x10u)) & 0xFFFFu;
     sum2 = (sum2 + sum1) & 0xFFFFu;
 #endif
   sum1 = (sum1 + (header_->size & 0xFFFFu)) & 0xFFFFu;
   sum2 = (sum2 + sum1) & 0xFFFFu;
-  sum1 = (sum1 + (header_->size >> 16)) & 0xFFFFu;
+  sum1 = (sum1 + (header_->size >> 0x10u)) & 0xFFFFu;
   sum2 = (sum2 + sum1) & 0xFFFFu;
   sum1 = (sum1 + header_->free) & 0xFFFFu;
   sum2 = (sum2 + sum1) & 0xFFFFu;
-  return (((sum2 << 16) | sum1) ^ 0xB16B00B5u);
+  return (((sum2 << 0x10u) | sum1) ^ 0xB16B00B5u);
 }
 Return_t __ValidateBlockHeader__(const BlockHeader_t *header_, const volatile MemoryRegion_t *region_) {
   FUNCTION_ENTER;
@@ -74,7 +74,7 @@ Return_t __ValidateBlockHeader__(const BlockHeader_t *header_, const volatile Me
 Return_t __MemoryInit__(void) {
   FUNCTION_ENTER;
   ByteOrder_t order = ByteOrderLittleEndian;
-  if((CONFIG_MEMORY_ALIGNMENT != 0) && ((CONFIG_MEMORY_ALIGNMENT & (CONFIG_MEMORY_ALIGNMENT - 1)) == 0)) {
+  if((CONFIG_MEMORY_ALIGNMENT != 0x0u) && ((CONFIG_MEMORY_ALIGNMENT & (CONFIG_MEMORY_ALIGNMENT - 0x1u)) == 0x0u)) {
     if(OK(__MemoryRegionInit__(&heap))) {
       if(OK(__MemoryRegionInit__(&kernel))) {
         if(OK(__DetectByteOrder__(&order))) {
@@ -130,7 +130,7 @@ Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **addr_, c
   BlockHeader_t *candidate = null;
   BlockHeader_t *next = null;
   BlockHeader_t *first = null;
-  Size_t candidateSize = (Size_t) -1;
+  Size_t candidateSize = (Size_t) -0x1u;
   Size_t traversedSize = 0x0u;
   __DisableInterrupts__();
   requested = __AlignUp__(size_, CONFIG_MEMORY_ALIGNMENT);
@@ -252,7 +252,7 @@ Return_t __DefragMemoryRegion__(volatile MemoryRegion_t *region_) {
             while(__PointerIsNotNull__(cursor->next) && __BlockHeaderIsFree__(cursor->next) && !headForExit) {
               nextBlock = cursor->next;
               if(OK(__ValidateBlockHeader__(nextBlock, region_))) {
-                if(cursor->size <= ((Size_t) -1) - ALIGNED_HEADER_SIZE - nextBlock->size) {
+                if(cursor->size <= ((Size_t) -0x1u) - ALIGNED_HEADER_SIZE - nextBlock->size) {
                   mergedSize = ALIGNED_HEADER_SIZE + nextBlock->size;
                   if(traversedSize + mergedSize <= MEMORY_REGION_SIZE) {
                     cursor->size += ALIGNED_HEADER_SIZE + nextBlock->size;
@@ -415,7 +415,7 @@ Return_t __MemGetRegionStats__(const volatile MemoryRegion_t *region_, MemoryReg
   MemoryRegionStats_t *stats = null;
   BlockHeader_t *cursor = null;
   Word_t largestFree = 0x0u;
-  Word_t smallestFree = (Word_t) -1;
+  Word_t smallestFree = (Word_t) -0x1u;
   Word_t freeBlocks = 0x0u;
   Word_t availableBytes = 0x0u;
   Size_t traversedSize = 0x0u;
@@ -448,7 +448,7 @@ Return_t __MemGetRegionStats__(const volatile MemoryRegion_t *region_, MemoryReg
       }
       if(__PointerIsNotNull__(stats)) {
         stats->largestFreeEntryInBytes = largestFree;
-        stats->smallestFreeEntryInBytes = (smallestFree == (Word_t) -1) ? 0 : smallestFree;
+        stats->smallestFreeEntryInBytes = (smallestFree == (Word_t) -0x1u) ? 0x0u : smallestFree;
         stats->numberOfFreeBlocks = freeBlocks;
         stats->availableSpaceInBytes = availableBytes;
         stats->successfulAllocations = region_->allocations;

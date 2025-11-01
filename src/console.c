@@ -214,7 +214,7 @@
     Byte_t temp[CONFIG_FS_MAX_PATH_LENGTH] = {
       0x0u
     };
-    Byte_t segments[CONFIG_FS_MAX_PATH_LENGTH / 2][CONFIG_FS_MAX_PATH_LENGTH] = {{
+    Byte_t segments[CONFIG_FS_MAX_PATH_LENGTH / 0x2u][CONFIG_FS_MAX_PATH_LENGTH] = {{
                                                                                    0x0u
                                                                                  }};
     Size_t segmentCount = 0x0u;
@@ -615,7 +615,7 @@
       success = true;
     } else {
       for(i = 0x0u; __PointerIsNotNull__(commandTable[i].name) && !commandFound; i++) {
-        if(0 == __strncmp__(cmdName, commandTable[i].name, CONFIG_CONSOLE_MAX_COMMAND_LENGTH)) {
+        if(0x0u == __strncmp__(cmdName, commandTable[i].name, CONFIG_CONSOLE_MAX_COMMAND_LENGTH)) {
           if(__PointerIsNotNull__(commandTable[i].handler)) {
             if(OK(commandTable[i].handler((const Byte_t *) cmdArgs))) {
               success = true;
@@ -844,7 +844,7 @@
       if(!__PointerIsNotNull__(args_) || (CHAR_NULL == args_[0x0u])) {
         __strcpy__(newPath, (const Byte_t *) "/", CONFIG_FS_MAX_PATH_LENGTH);
         pathBuilt = true;
-      } else if(0 == __strncmp__(args_, (const Byte_t *) "..", CONFIG_CONSOLE_MAX_COMMAND_LENGTH)) {
+      } else if(0x0u == __strncmp__(args_, (const Byte_t *) "..", CONFIG_CONSOLE_MAX_COMMAND_LENGTH)) {
         if(OK(__path_dirname__(newPath, consoleState.currentWorkingDirectory, CONFIG_FS_MAX_PATH_LENGTH, CONFIG_FS_MAX_PATH_LENGTH))) {
           pathBuilt = true;
         } else {

@@ -19,7 +19,7 @@ Ticks_t __PortGetSysTicks__(void) {
     return(sysTicks);
 #elif defined(POSIX_ARCH_OTHER)
     struct timeval t = {
-      0
+      0x0u
     };
     gettimeofday(&t, null);
     return((t.tv_sec) * 0x3E8 + (t.tv_usec) / 0x3E8);

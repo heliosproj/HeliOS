@@ -1,10 +1,10 @@
 #include "sys.h"
 Flags_t flag = {
   VALID,
-  0,
-  0,
-  0,
-  0
+  0x0u,
+  0x0u,
+  0x0u,
+  0x0u
 };
 Return_t xSystemAssert(const char *file_, const int line_) {
   FUNCTION_ENTER;

@@ -44,7 +44,7 @@
     #endif
     #define FS_SEEK_END 0x02u
     #if !defined(CONFIG_FS_MAX_PATH_LENGTH)
-      #define CONFIG_FS_MAX_PATH_LENGTH 256u
+      #define CONFIG_FS_MAX_PATH_LENGTH 0x100u
     #endif
     #ifdef __cplusplus
       extern "C" {

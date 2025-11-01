@@ -5,7 +5,7 @@
   #include <stdint.h>
   #include <stddef.h>
   #if defined(CHAR_BIT)
-    #if CHAR_BIT != 8
+    #if CHAR_BIT != 0x8u
       #pragma message("WARNING: System may not have an 8-bit wide byte!")
     #endif
   #else

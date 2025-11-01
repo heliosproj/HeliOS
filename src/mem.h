@@ -19,13 +19,13 @@
   #include <stdint.h>
   #include <stddef.h>
   #define __AlignUp__(value_, alignment_) \
-          (((value_) + ((alignment_) - 1)) & ~((alignment_) - 1))
+          (((value_) + ((alignment_) - 0x1u)) & ~((alignment_) - 0x1u))
   #define __AlignDown__(value_, alignment_) \
-          ((value_) & ~((alignment_) - 1))
+          ((value_) & ~((alignment_) - 0x1u))
   #define __IsAligned__(value_, alignment_) \
-          (((value_) & ((alignment_) - 1)) == 0x0u)
+          (((value_) & ((alignment_) - 0x1u)) == 0x0u)
   #define ALIGNED_HEADER_SIZE \
-          (((sizeof(BlockHeader_t)) + (CONFIG_MEMORY_ALIGNMENT - 1)) & ~(CONFIG_MEMORY_ALIGNMENT - 1))
+          (((sizeof(BlockHeader_t)) + (CONFIG_MEMORY_ALIGNMENT - 0x1u)) & ~(CONFIG_MEMORY_ALIGNMENT - 0x1u))
   #define __OffsetPointerToBlockHeader__(ptr_) \
           ((BlockHeader_t *) (((Byte_t *) (ptr_)) - ALIGNED_HEADER_SIZE))
   #define __OffsetBlockHeaderToPointer__(header_) \

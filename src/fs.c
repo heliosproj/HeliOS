@@ -92,11 +92,11 @@
           info->bytesPerSector = volume_->bytesPerSector;
           info->sectorsPerCluster = volume_->sectorsPerCluster;
           info->bytesPerCluster = (Word_t) volume_->bytesPerSector * volume_->sectorsPerCluster;
-          maxCluster = (volume_->sectorsPerFAT * volume_->bytesPerSector) / 4u;
+          maxCluster = (volume_->sectorsPerFAT * volume_->bytesPerSector) / 0x4u;
           if(maxCluster > 0x1000u) {
             maxCluster = 0x1000u;
           }
-          for(cluster = 2u; cluster < maxCluster; cluster++) {
+          for(cluster = 0x2u; cluster < maxCluster; cluster++) {
             if(OK(__GetFATEntry__(volume_, cluster, &fatEntry))) {
               totalClusters++;
               if(fatEntry == FAT32_FREE_CLUSTER) {
@@ -153,9 +153,9 @@
       if(OK(xMemAlloc((volatile Addr_t **) &bootSector, bytesPerSector))) {
         __memset__(bootSector, 0x00u, bytesPerSector);
         bs = (FAT32BootSector_t *) bootSector;
-        bs->jumpBoot[0] = 0xEBu;
-        bs->jumpBoot[1] = 0x58u;
-        bs->jumpBoot[2] = 0x90u;
+        bs->jumpBoot[0x0u] = 0xEBu;
+        bs->jumpBoot[0x1u] = 0x58u;
+        bs->jumpBoot[0x2u] = 0x90u;
         __memcpy__(bs->oemName, "HELIOS  ", 0x8u);
         __WriteLE16__(bs->bytesPerSector, bytesPerSector);
         bs->sectorsPerCluster = sectorsPerCluster;
@@ -249,7 +249,7 @@
           fileExists = true;
         } else {
           const Byte_t *lastSlash = null;
-          Byte_t parentPath[256] = {
+          Byte_t parentPath[0x100u] = {
             0x0u
           };
           Word_t parentPathLen = 0x0u;
@@ -286,7 +286,7 @@
           file->isOpen = true;
           file->isDirty = false;
           file->parentDirCluster = parentCluster;
-          for(i = 0x0u; path_[i] != '\0' && i < 255; i++) {
+          for(i = 0x0u; path_[i] != '\0' && i < 0xFFu; i++) {
             file->path[i] = path_[i];
           }
           file->path[i] = '\0';
@@ -348,11 +348,11 @@
     Word_t i = 0x0u;
     const Byte_t *lastSlash = null;
     const Byte_t *fileName = null;
-    Byte_t name83[11] = {
+    Byte_t name83[0xBu] = {
       0x0u
     };
     if(__ObjectIsValid__(file_)) {
-      if(file_->isDirty && (file_->path[0] != '\0')) {
+      if(file_->isDirty && (file_->path[0x0u] != '\0')) {
         fileName = file_->path;
         for(i = 0x0u; file_->path[i] != '\0'; i++) {
           if(file_->path[i] == '/') {
@@ -360,14 +360,14 @@
           }
         }
         if(__PointerIsNotNull__(lastSlash)) {
-          fileName = lastSlash + 1;
+          fileName = lastSlash + 0x1u;
         }
         if(OK(__ConvertToFAT83__(fileName, name83))) {
           if(OK(__FindFileByPath__(file_->volume, file_->path, &entry, null, &entryCluster, &entryOffset))) {
             if(OK(__ReadCluster__(file_->volume, entryCluster, &clusterData))) {
               FAT32DirEntry_t *fatEntry = (FAT32DirEntry_t *) (clusterData + entryOffset);
               __WriteLE32__(fatEntry->fileSize, file_->fileSize);
-              __WriteLE16__(fatEntry->firstClusterHigh, (HalfWord_t) (file_->firstCluster >> 16));
+              __WriteLE16__(fatEntry->firstClusterHigh, (HalfWord_t) (file_->firstCluster >> 0x10u));
               __WriteLE16__(fatEntry->firstClusterLow, (HalfWord_t) (file_->firstCluster & 0xFFFFu));
               firstSector = __ClusterToSector__(file_->volume, entryCluster);
               for(i = 0x0u; i < file_->volume->sectorsPerCluster; i++) {
@@ -481,7 +481,7 @@
         success = true;
         if(file_->firstCluster == 0x0u) {
           Word_t freeCluster = 0x0u;
-          if(OK(__FindFreeCluster__(file_->volume, 3u, &freeCluster))) {
+          if(OK(__FindFreeCluster__(file_->volume, 0x3u, &freeCluster))) {
             file_->firstCluster = freeCluster;
             file_->currentCluster = freeCluster;
             __SetFATEntry__(file_->volume, freeCluster, FAT32_EOC_MAX);
@@ -493,7 +493,7 @@
         }
         if(success && (file_->currentCluster == 0x0u)) {
           file_->currentCluster = file_->firstCluster;
-          if(file_->position > 0) {
+          if(file_->position > 0x0u) {
             Word_t targetCluster = file_->position / clusterSize;
             Word_t currentClusterIdx = 0x0u;
             while(currentClusterIdx < targetCluster && success) {
@@ -533,7 +533,7 @@
               if(OK(__GetFATEntry__(file_->volume, file_->currentCluster, &nextCluster))) {
                 if(nextCluster >= FAT32_EOC_MIN) {
                   Word_t newCluster = 0x0u;
-                  if(OK(__FindFreeCluster__(file_->volume, file_->currentCluster + 1u, &newCluster))) {
+                  if(OK(__FindFreeCluster__(file_->volume, file_->currentCluster + 0x1u, &newCluster))) {
                     __SetFATEntry__(file_->volume, file_->currentCluster, newCluster);
                     __SetFATEntry__(file_->volume, newCluster, FAT32_EOC_MAX);
                     nextCluster = newCluster;
@@ -653,12 +653,12 @@
     Word_t i = 0x0u;
     const Byte_t *lastSlash = null;
     const Byte_t *fileName = null;
-    Byte_t name83[11] = {
+    Byte_t name83[0xBu] = {
       0x0u
     };
     Base_t writeSuccess = true;
     if(__ObjectIsValid__(file_)) {
-      if(file_->isDirty && (file_->path[0] != '\0')) {
+      if(file_->isDirty && (file_->path[0x0u] != '\0')) {
         fileName = file_->path;
         for(i = 0x0u; file_->path[i] != '\0'; i++) {
           if(file_->path[i] == '/') {
@@ -666,13 +666,13 @@
           }
         }
         if(__PointerIsNotNull__(lastSlash)) {
-          fileName = lastSlash + 1;
+          fileName = lastSlash + 0x1u;
         }
         if(OK(__ConvertToFAT83__(fileName, name83))) {
           if(OK(__FindDirEntry__(file_->volume, file_->parentDirCluster, name83, &entry, &entryCluster, &entryOffset))) {
             __WriteLE32__(entry.fileSize, file_->fileSize);
             __WriteLE16__(entry.firstClusterLow, (HalfWord_t) (file_->firstCluster & 0xFFFFu));
-            __WriteLE16__(entry.firstClusterHigh, (HalfWord_t) ((file_->firstCluster >> 16) & 0xFFFFu));
+            __WriteLE16__(entry.firstClusterHigh, (HalfWord_t) ((file_->firstCluster >> 0x10u) & 0xFFFFu));
             if(OK(__ReadCluster__(file_->volume, entryCluster, &clusterData))) {
               __memcpy__(clusterData + entryOffset, &entry, sizeof(FAT32DirEntry_t));
               firstSector = __ClusterToSector__(file_->volume, entryCluster);
@@ -721,9 +721,9 @@
         file_->isDirty = true;
         __ReturnOk__();
       } else {
-        clustersNeeded = (size_ + clusterSize - 1) / clusterSize;
+        clustersNeeded = (size_ + clusterSize - 0x1u) / clusterSize;
         currentCluster = file_->firstCluster;
-        for(i = 1; i < clustersNeeded && currentCluster != 0x0u && success; i++) {
+        for(i = 0x1u; i < clustersNeeded && currentCluster != 0x0u && success; i++) {
           if(OK(__GetFATEntry__(file_->volume, currentCluster, &nextCluster))) {
             if(nextCluster >= FAT32_EOC_MIN) {
               break;
@@ -773,7 +773,7 @@
     Base_t validPath = false;
     if(__PointerIsNotNull__(dir_) && __ObjectIsValid__(volume_) && __PointerIsNotNull__(path_)) {
       if(volume_->mounted) {
-        if((path_[0] == '/') && (path_[1] == '\0')) {
+        if((path_[0x0u] == '/') && (path_[0x1u] == '\0')) {
           dirCluster = volume_->rootDirCluster;
           validPath = true;
         } else {
@@ -875,12 +875,12 @@
               Word_t i = 0x0u;
               Word_t j = 0x0u;
               dirEntry->valid = VALID;
-              for(i = 0x0u; i < 8 && fatEntry->name[i] != ' '; i++) {
+              for(i = 0x0u; i < 0x8u && fatEntry->name[i] != ' '; i++) {
                 dirEntry->name[j++] = fatEntry->name[i];
               }
-              if(fatEntry->name[8] != ' ') {
+              if(fatEntry->name[0x8u] != ' ') {
                 dirEntry->name[j++] = '.';
-                for(i = 8; i < 11 && fatEntry->name[i] != ' '; i++) {
+                for(i = 0x8u; i < 0xBu && fatEntry->name[i] != ' '; i++) {
                   dirEntry->name[j++] = fatEntry->name[i];
                 }
               }
@@ -925,7 +925,7 @@
     FUNCTION_ENTER;
     Word_t parentCluster = 0x0u;
     Word_t newDirCluster = 0x0u;
-    Byte_t dirName83[11] = {
+    Byte_t dirName83[0xBu] = {
       0x0u
     };
     Byte_t *clusterData = null;
@@ -935,8 +935,8 @@
     Word_t i = 0x0u;
     const Byte_t *lastSlash = null;
     const Byte_t *dirName = null;
-    Byte_t parentPath[256] = {
-      0
+    Byte_t parentPath[0x100u] = {
+      0x0u
     };
     Word_t parentPathLen = 0x0u;
     Base_t writeSuccess = true;
@@ -950,37 +950,37 @@
           }
         }
         if(__PointerIsNotNull__(lastSlash)) {
-          dirName = lastSlash + 1;
+          dirName = lastSlash + 0x1u;
           parentPathLen = lastSlash - path_;
           if(parentPathLen == 0x0u) {
-            parentPath[0] = '/';
-            parentPath[1] = '\0';
+            parentPath[0x0u] = '/';
+            parentPath[0x1u] = '\0';
           } else {
             __memcpy__(parentPath, path_, parentPathLen);
             parentPath[parentPathLen] = '\0';
           }
         } else {
-          parentPath[0] = '/';
-          parentPath[1] = '\0';
+          parentPath[0x0u] = '/';
+          parentPath[0x1u] = '\0';
         }
         if(OK(__FindFileByPath__(volume_, parentPath, null, &parentCluster, null, null))) {
           if(OK(__ConvertToFAT83__(dirName, dirName83))) {
-            if(OK(__FindFreeCluster__(volume_, 3u, &newDirCluster))) {
+            if(OK(__FindFreeCluster__(volume_, 0x3u, &newDirCluster))) {
               if(OK(__SetFATEntry__(volume_, newDirCluster, FAT32_EOC_MAX))) {
                 if(OK(__ReadCluster__(volume_, newDirCluster, &clusterData))) {
                   __memset__(clusterData, 0x00u, (Word_t) volume_->bytesPerSector * volume_->sectorsPerCluster);
                   dotEntry = (FAT32DirEntry_t *) clusterData;
-                  __memcpy__(dotEntry->name, ".          ", 11);
+                  __memcpy__(dotEntry->name, ".          ", 0xBu);
                   dotEntry->attr = FAT_ATTR_DIRECTORY;
-                  __WriteLE16__(dotEntry->firstClusterHigh, (HalfWord_t) (newDirCluster >> 16));
+                  __WriteLE16__(dotEntry->firstClusterHigh, (HalfWord_t) (newDirCluster >> 0x10u));
                   __WriteLE16__(dotEntry->firstClusterLow, (HalfWord_t) (newDirCluster & 0xFFFFu));
-                  __WriteLE32__(dotEntry->fileSize, 0);
+                  __WriteLE32__(dotEntry->fileSize, 0x0u);
                   dotdotEntry = (FAT32DirEntry_t *) (clusterData + sizeof(FAT32DirEntry_t));
-                  __memcpy__(dotdotEntry->name, "..         ", 11);
+                  __memcpy__(dotdotEntry->name, "..         ", 0xBu);
                   dotdotEntry->attr = FAT_ATTR_DIRECTORY;
-                  __WriteLE16__(dotdotEntry->firstClusterHigh, (HalfWord_t) (parentCluster >> 16));
+                  __WriteLE16__(dotdotEntry->firstClusterHigh, (HalfWord_t) (parentCluster >> 0x10u));
                   __WriteLE16__(dotdotEntry->firstClusterLow, (HalfWord_t) (parentCluster & 0xFFFFu));
-                  __WriteLE32__(dotdotEntry->fileSize, 0);
+                  __WriteLE32__(dotdotEntry->fileSize, 0x0u);
                   firstSector = __ClusterToSector__(volume_, newDirCluster);
                   for(i = 0x0u; i < volume_->sectorsPerCluster && writeSuccess; i++) {
                     if(ERROR(__WriteSector__(volume_, firstSector + i, clusterData + (i * volume_->bytesPerSector)))) {
@@ -989,7 +989,7 @@
                   }
                   __KernelFreeMemory__(clusterData);
                   if(writeSuccess) {
-                    if(OK(__CreateDirEntry__(volume_, parentCluster, dirName83, FAT_ATTR_DIRECTORY, newDirCluster, 0))) {
+                    if(OK(__CreateDirEntry__(volume_, parentCluster, dirName83, FAT_ATTR_DIRECTORY, newDirCluster, 0x0u))) {
                       __ReturnOk__();
                     } else {
                       __SetFATEntry__(volume_, newDirCluster, FAT32_FREE_CLUSTER);
@@ -1041,11 +1041,11 @@
       if(volume_->mounted) {
         if(OK(__FindFileByPath__(volume_, path_, &entry, null, &entryCluster, &entryOffset))) {
           if((entry.attr & FAT_ATTR_DIRECTORY) != 0x0u) {
-            dirCluster = ((Word_t) __ReadLE16__(entry.firstClusterHigh) << 16) | __ReadLE16__(entry.firstClusterLow);
+            dirCluster = ((Word_t) __ReadLE16__(entry.firstClusterHigh) << 0x10u) | __ReadLE16__(entry.firstClusterLow);
             entriesPerCluster = ((Word_t) volume_->bytesPerSector * volume_->sectorsPerCluster) / sizeof(FAT32DirEntry_t);
             currentCluster = dirCluster;
             nextCluster = 0x0u;
-            while(isEmpty && currentCluster >= 2 && currentCluster < FAT32_EOC_MIN) {
+            while(isEmpty && currentCluster >= 0x2u && currentCluster < FAT32_EOC_MIN) {
               if(OK(__ReadCluster__(volume_, currentCluster, &clusterData))) {
                 for(entryIdx = 0x0u; entryIdx < entriesPerCluster && isEmpty; entryIdx++) {
                   fatEntry = (FAT32DirEntry_t *) (clusterData + (entryIdx * sizeof(FAT32DirEntry_t)));
@@ -1195,7 +1195,7 @@
     Word_t oldEntryCluster = 0x0u;
     Word_t oldEntryOffset = 0x0u;
     Word_t newParentCluster = 0x0u;
-    Byte_t newName83[11] = {
+    Byte_t newName83[0xBu] = {
       0x0u
     };
     Byte_t *clusterData = null;
@@ -1218,7 +1218,7 @@
             }
           }
           if(__PointerIsNotNull__(lastSlash)) {
-            fileName = lastSlash + 1;
+            fileName = lastSlash + 0x1u;
           }
           if(OK(__ConvertToFAT83__(fileName, newName83))) {
             if(OK(__FindFileByPath__(volume_, oldPath_, null, &newParentCluster, null, null))) {
@@ -1274,12 +1274,12 @@
             Word_t i = 0x0u;
             Word_t j = 0x0u;
             dirEntry->valid = VALID;
-            for(i = 0x0u; i < 8 && fatEntry.name[i] != ' '; i++) {
+            for(i = 0x0u; i < 0x8u && fatEntry.name[i] != ' '; i++) {
               dirEntry->name[j++] = fatEntry.name[i];
             }
-            if(fatEntry.name[8] != ' ') {
+            if(fatEntry.name[0x8u] != ' ') {
               dirEntry->name[j++] = '.';
-              for(i = 8; i < 11 && fatEntry.name[i] != ' '; i++) {
+              for(i = 0x8u; i < 0xBu && fatEntry.name[i] != ' '; i++) {
                 dirEntry->name[j++] = fatEntry.name[i];
               }
             }
