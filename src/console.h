@@ -162,10 +162,10 @@
  * @details Maintains the state of the console subsystem including buffer and settings.
  */
     typedef struct ConsoleState_s {
-      Base_t deviceReady;                                    /**< Flag indicating if console device is ready for I/O */
-      Base_t echoEnabled;                                    /**< Flag indicating if character echo is enabled */
+      Base_t deviceReady; /**< Flag indicating if console device is ready for I/O */
+      Base_t echoEnabled; /**< Flag indicating if character echo is enabled */
       Byte_t commandBuffer[CONFIG_CONSOLE_MAX_COMMAND_LENGTH]; /**< Command input buffer */
-      HalfWord_t bufferPosition;                             /**< Current position in command buffer */
+      HalfWord_t bufferPosition; /**< Current position in command buffer */
       Byte_t currentWorkingDirectory[CONFIG_FS_MAX_PATH_LENGTH]; /**< Current working directory path */
     } ConsoleState_t;
 
@@ -189,19 +189,18 @@
     #if defined(POSIX_ARCH_OTHER)
       void __ConsoleStateClear__(void);
     #endif /* if defined(POSIX_ARCH_OTHER) */
-    Size_t __strlen__(const Byte_t *str_, const Size_t maxLen_);
-    Return_t __strcpy__(Byte_t *dest_, const Byte_t *src_, const Size_t destSize_);
-    Return_t __strncpy__(Byte_t *dest_, const Byte_t *src_, const Size_t n_);
-    Base_t __strcmp__(const Byte_t *s1_, const Byte_t *s2_, const Size_t maxLen_);
-    Base_t __strncmp__(const Byte_t *s1_, const Byte_t *s2_, const Size_t n_);
-    Return_t __strcat__(Byte_t *dest_, const Byte_t *src_, const Size_t destSize_);
-    Byte_t * __strchr__(const Byte_t *str_, const Byte_t ch_, const Size_t maxLen_);
-    Byte_t * __strrchr__(const Byte_t *str_, const Byte_t ch_, const Size_t maxLen_);
-    Return_t __path_join__(Byte_t *dest_, const Byte_t *base_, const Byte_t *path_, const Size_t destSize_, const Size_t baseSize_, const Size_t pathSize_);
-    Return_t __path_normalize__(Byte_t *path_, const Size_t pathSize_);
-    Base_t __path_is_absolute__(const Byte_t *path_, const Size_t pathSize_);
-    Return_t __path_dirname__(Byte_t *dest_, const Byte_t *path_, const Size_t destSize_, const Size_t pathSize_);
-    Return_t __path_basename__(Byte_t *dest_, const Byte_t *path_, const Size_t destSize_, const Size_t pathSize_);
+    Size_t __strnlen__(const Byte_t *str_, const Size_t size_);
+    Return_t __strcpy__(Byte_t *dest_, const Byte_t *src_, const Size_t size_);
+    Return_t __strncpy__(Byte_t *dest_, const Byte_t *src_, const Size_t size_);
+    Base_t __strncmp__(const Byte_t *s1_, const Byte_t *s2_, const Size_t size_);
+    Return_t __strcat__(Byte_t *dest_, const Byte_t *src_, const Size_t size_);
+    Byte_t * __strnchr__(const Byte_t *str_, const Byte_t ch_, const Size_t size_);
+    Byte_t * __strnrchr__(const Byte_t *str_, const Byte_t ch_, const Size_t size_);
+    Return_t __path_join__(Byte_t *dest_, const Byte_t *base_, const Byte_t *path_, Size_t destSize, Size_t baseSize, Size_t pathSize);
+    Return_t __path_normalize__(Byte_t *path_, Size_t size_);
+    Base_t __path_is_absolute__(const Byte_t *path_, Size_t size_);
+    Return_t __path_dirname__(Byte_t *dest_, const Byte_t *path_, Size_t destSize, Size_t pathSize);
+    Return_t __path_basename__(Byte_t *dest_, const Byte_t *path_, Size_t destSize, Size_t pathSize);
     Return_t __ConsoleCmdHelp__(const Byte_t *args_);
     Return_t __ConsoleCmdVersion__(const Byte_t *args_);
     Return_t __ConsoleCmdTasks__(const Byte_t *args_);

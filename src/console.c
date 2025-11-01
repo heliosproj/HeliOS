@@ -140,13 +140,13 @@
 
 
                                                   }};
-  Size_t __strlen__(const Byte_t *str_, const Size_t maxLen_) {
+  Size_t __strnlen__(const Byte_t *str_, const Size_t size_) {
 
     Size_t len = 0x0u;
 
-    if(__PointerIsNotNull__(str_) && (maxLen_ > 0x0u)) {
+    if(__PointerIsNotNull__(str_) && (size_ > 0x0u)) {
 
-      while((len < maxLen_) && (CHAR_NULL != str_[len])) {
+      while((len < size_) && (CHAR_NULL != str_[len])) {
 
         len++;
       }
@@ -154,30 +154,28 @@
 
     return (len);
   }
-
-
 /**
  * @brief Copies a string with bounds checking
  * @details Internal string copy with destination size limit.
  *
- * @param[out] dest_     Destination buffer
- * @param[in]  src_      Source string
- * @param[in]  destSize_ Size of destination buffer
+ * @param[out] dest_ Destination buffer
+ * @param[in]  src_  Source string
+ * @param[in]  size_ Size of destination buffer
  *
- * @return               ReturnOK if copy was successful
- * @return               ReturnError if destination too small or invalid parameters
+ * @return           ReturnOK if copy was successful
+ * @return           ReturnError if destination too small or invalid parameters
  *
  * @note This is an internal function similar to strncpy with safety checks
  */
-  Return_t __strcpy__(Byte_t *dest_, const Byte_t *src_, const Size_t destSize_) {
+  Return_t __strcpy__(Byte_t *dest_, const Byte_t *src_, const Size_t size_) {
 
     FUNCTION_ENTER;
 
     Size_t i = 0x0u;
 
-    if(__PointerIsNotNull__(dest_) && __PointerIsNotNull__(src_) && (0x0u < destSize_)) {
+    if(__PointerIsNotNull__(dest_) && __PointerIsNotNull__(src_) && (0x0u < size_)) {
 
-      while((i < (destSize_ - 0x1u)) && (CHAR_NULL != src_[i])) {
+      while((i < (size_ - 0x1u)) && (CHAR_NULL != src_[i])) {
 
         dest_[i] = src_[i];
 
@@ -195,35 +193,33 @@
 
     FUNCTION_EXIT;
   }
-
-
 /**
  * @brief Copies at most n characters from a string
  * @details Internal bounded string copy implementation.
  *
  * @param[out] dest_ Destination buffer
  * @param[in]  src_  Source string
- * @param[in]  n_    Maximum number of characters to copy
+ * @param[in]  size_ Maximum number of characters to copy
  *
  * @return           ReturnOK if copy was successful
  * @return           ReturnError if invalid parameters
  *
  * @note This is an internal function similar to standard strncpy
  */
-  Return_t __strncpy__(Byte_t *dest_, const Byte_t *src_, const Size_t n_) {
+  Return_t __strncpy__(Byte_t *dest_, const Byte_t *src_, const Size_t size_) {
 
     FUNCTION_ENTER;
 
     Size_t i = 0x0u;
 
-    if(__PointerIsNotNull__(dest_) && __PointerIsNotNull__(src_) && (0x0u < n_)) {
+    if(__PointerIsNotNull__(dest_) && __PointerIsNotNull__(src_) && (0x0u < size_)) {
 
-      for(i = 0x0u; (i < n_) && (CHAR_NULL != src_[i]); i++) {
+      for(i = 0x0u; (i < size_) && (CHAR_NULL != src_[i]); i++) {
 
         dest_[i] = src_[i];
       }
 
-      for(; i < n_; i++) {
+      for(; i < size_; i++) {
 
         dest_[i] = CHAR_NULL;
       }
@@ -237,18 +233,16 @@
 
     FUNCTION_EXIT;
   }
-
-
-  Base_t __strcmp__(const Byte_t *s1_, const Byte_t *s2_, const Size_t maxLen_) {
+  Base_t __strncmp__(const Byte_t *s1_, const Byte_t *s2_, const Size_t size_) {
 
     Size_t i = 0x0u;
 
-    if(__PointerIsNull__(s1_) || __PointerIsNull__(s2_) || (0x0u == maxLen_)) {
+    if(__PointerIsNull__(s1_) || __PointerIsNull__(s2_) || (0x0u == size_)) {
 
       return (0x0u);
     }
 
-    while((i < maxLen_) && (CHAR_NULL != s1_[i]) && (CHAR_NULL != s2_[i])) {
+    while((i < size_) && (CHAR_NULL != s1_[i]) && (CHAR_NULL != s2_[i])) {
 
       if(s1_[i] != s2_[i]) {
 
@@ -258,50 +252,27 @@
       i++;
     }
 
-    if((i < maxLen_) && (s1_[i] == s2_[i])) {
+    if((i < size_) && (s1_[i] == s2_[i])) {
 
       return (0x0u);
     }
 
-    return ((i < maxLen_) ? ((s1_[i] < s2_[i]) ? -0x1 : 0x1) : 0x0u);
+    return ((i < size_) ? ((s1_[i] < s2_[i]) ? -0x1 : 0x1) : 0x0u);
   }
-
-
-  Base_t __strncmp__(const Byte_t *s1_, const Byte_t *s2_, const Size_t n_) {
-
-    Size_t i = 0x0u;
-
-    if(__PointerIsNull__(s1_) || __PointerIsNull__(s2_) || (0x0u == n_)) {
-
-      return (0x0u);
-    }
-
-    for(i = 0x0u; i < n_; i++) {
-
-      if((CHAR_NULL == s1_[i]) || (s1_[i] != s2_[i])) {
-
-        return ((s1_[i] < s2_[i]) ? (Base_t) -0x1 : ((s1_[i] > s2_[i]) ? (Base_t) 0x1 : (Base_t) 0x0u));
-      }
-    }
-
-    return (0x0u);
-  }
-
-
 /**
  * @brief Concatenates two strings with bounds checking
  * @details Internal string concatenation with destination size limit.
  *
- * @param[in,out] dest_     Destination buffer
- * @param[in]     src_      Source string to append
- * @param[in]     destSize_ Size of destination buffer
+ * @param[in,out] dest_ Destination buffer
+ * @param[in]     src_  Source string to append
+ * @param[in]     size_ Size of destination buffer
  *
- * @return                  ReturnOK if concatenation was successful
- * @return                  ReturnError if destination too small or invalid parameters
+ * @return              ReturnOK if concatenation was successful
+ * @return              ReturnError if destination too small or invalid parameters
  *
  * @note This is an internal function similar to strncat with safety checks
  */
-  Return_t __strcat__(Byte_t *dest_, const Byte_t *src_, const Size_t destSize_) {
+  Return_t __strcat__(Byte_t *dest_, const Byte_t *src_, const Size_t size_) {
 
     FUNCTION_ENTER;
 
@@ -309,13 +280,13 @@
 
     Size_t i = 0x0u;
 
-    if(__PointerIsNotNull__(dest_) && __PointerIsNotNull__(src_) && (0x0u < destSize_)) {
+    if(__PointerIsNotNull__(dest_) && __PointerIsNotNull__(src_) && (0x0u < size_)) {
 
-      destLen = __strlen__(dest_, destSize_);
+      destLen = __strnlen__(dest_, size_);
 
-      if(destLen < destSize_) {
+      if(destLen < size_) {
 
-        while(((destLen + i) < (destSize_ - 0x1u)) && (CHAR_NULL != src_[i])) {
+        while(((destLen + i) < (size_ - 0x1u)) && (CHAR_NULL != src_[i])) {
 
           dest_[destLen + i] = src_[i];
 
@@ -338,18 +309,16 @@
 
     FUNCTION_EXIT;
   }
-
-
-  Byte_t * __strchr__(const Byte_t *str_, const Byte_t ch_, const Size_t maxLen_) {
+  Byte_t * __strnchr__(const Byte_t *str_, const Byte_t ch_, const Size_t size_) {
 
     Size_t i = 0x0u;
 
-    if(__PointerIsNull__(str_) || (0x0u == maxLen_)) {
+    if(__PointerIsNull__(str_) || (0x0u == size_)) {
 
       return (null);
     }
 
-    for(i = 0x0u; i < maxLen_; i++) {
+    for(i = 0x0u; i < size_; i++) {
 
       if(str_[i] == ch_) {
 
@@ -364,20 +333,18 @@
 
     return (null);
   }
-
-
-  Byte_t * __strrchr__(const Byte_t *str_, const Byte_t ch_, const Size_t maxLen_) {
+  Byte_t * __strnrchr__(const Byte_t *str_, const Byte_t ch_, const Size_t size_) {
 
     Size_t len = 0x0u;
 
     Size_t i = 0x0u;
 
-    if(__PointerIsNull__(str_) || (0x0u == maxLen_)) {
+    if(__PointerIsNull__(str_) || (0x0u == size_)) {
 
       return (null);
     }
 
-    len = __strlen__(str_, maxLen_);
+    len = __strnlen__(str_, size_);
 
     for(i = len; i > 0x0u; i--) {
 
@@ -387,30 +354,28 @@
       }
     }
 
-    if((CHAR_NULL == ch_) && (len < maxLen_)) {
+    if((CHAR_NULL == ch_) && (len < size_)) {
 
       return ((Byte_t *) &str_[len]);
     }
 
     return (null);
   }
-
-
 /**
  * @brief Joins two path components
  * @details Internal path joining with proper separator handling.
  *
- * @param[out] dest_     Destination buffer for joined path
- * @param[in]  base_     Base path component
- * @param[in]  path_     Path component to append
- * @param[in]  destSize_ Size of destination buffer
+ * @param[out] dest_ Destination buffer for joined path
+ * @param[in]  base_ Base path component
+ * @param[in]  path_ Path component to append
+ * @param[in]  size_ Size of destination buffer
  *
- * @return               ReturnOK if join was successful
- * @return               ReturnError if destination too small or invalid parameters
+ * @return           ReturnOK if join was successful
+ * @return           ReturnError if destination too small or invalid parameters
  *
  * @note This is an internal function for filesystem path manipulation
  */
-  Return_t __path_join__(Byte_t *dest_, const Byte_t *base_, const Byte_t *path_, const Size_t destSize_, const Size_t baseSize_, const Size_t pathSize_) {
+  Return_t __path_join__(Byte_t *dest_, const Byte_t *base_, const Byte_t *path_, Size_t destSize, Size_t baseSize, Size_t pathSize) {
 
     FUNCTION_ENTER;
 
@@ -420,19 +385,20 @@
 
     Base_t needSlash = false;
 
-    if(__PointerIsNotNull__(dest_) && __PointerIsNotNull__(base_) && __PointerIsNotNull__(path_) && (0x0u != destSize_) && (0x0u != baseSize_) && (0x0u != pathSize_)) {
+    if(__PointerIsNotNull__(dest_) && __PointerIsNotNull__(base_) && __PointerIsNotNull__(path_) && (0x0u != destSize) && (0x0u != baseSize) && (0x0u !=
+      pathSize)) {
 
-      baseLen = __strlen__(base_, baseSize_);
+      baseLen = __strnlen__(base_, baseSize);
 
-      pathLen = __strlen__(path_, pathSize_);
+      pathLen = __strnlen__(path_, pathSize);
 
       if((0x0u != baseLen) && (0x0u != pathLen)) {
 
         if(CHAR_SLASH == path_[0x0u]) {
 
-          if(pathLen < destSize_) {
+          if(pathLen < destSize) {
 
-            if(OK(__strcpy__(dest_, path_, destSize_))) {
+            if(OK(__strcpy__(dest_, path_, destSize))) {
 
               __ReturnOk__();
 
@@ -450,9 +416,9 @@
 
           needSlash = (CHAR_SLASH != base_[baseLen - 0x1u]) && (CHAR_SLASH != path_[0x0u]);
 
-          if((baseLen + pathLen + (needSlash ? 0x1u : 0x0u)) < destSize_) {
+          if((baseLen + pathLen + (needSlash ? 0x1u : 0x0u)) < destSize) {
 
-            if(OK(__strcpy__(dest_, base_, destSize_))) {
+            if(OK(__strcpy__(dest_, base_, destSize))) {
 
               if(needSlash) {
 
@@ -461,7 +427,7 @@
                 dest_[baseLen + 0x1u] = CHAR_NULL;
               }
 
-              if(OK(__strcat__(dest_, path_, destSize_))) {
+              if(OK(__strcat__(dest_, path_, destSize))) {
 
                 __ReturnOk__();
 
@@ -493,21 +459,19 @@
 
     FUNCTION_EXIT;
   }
-
-
 /**
  * @brief Normalizes a filesystem path
  * @details Internal path normalization removing "." and ".." components.
  *
- * @param[in,out] path_     Path to normalize
- * @param[in]     pathSize_ Size of path buffer
+ * @param[in,out] path_ Path to normalize
+ * @param[in]     size_ Size of path buffer
  *
- * @return                  ReturnOK if normalization was successful
- * @return                  ReturnError if invalid parameters
+ * @return              ReturnOK if normalization was successful
+ * @return              ReturnError if invalid parameters
  *
  * @note This is an internal function for filesystem path manipulation
  */
-  Return_t __path_normalize__(Byte_t *path_, const Size_t pathSize_) {
+  Return_t __path_normalize__(Byte_t *path_, Size_t size_) {
 
     FUNCTION_ENTER;
 
@@ -533,9 +497,9 @@
 
     Size_t segIdx = 0x0u;
 
-    if(__PointerIsNotNull__(path_) && (0x0u != pathSize_)) {
+    if(__PointerIsNotNull__(path_) && (0x0u != size_)) {
 
-      len = __strlen__(path_, pathSize_);
+      len = __strnlen__(path_, size_);
 
       if((0x0u != len) && (len < CONFIG_FS_MAX_PATH_LENGTH)) {
 
@@ -593,7 +557,7 @@
 
           Size_t m = 0x0u;
 
-          segLen = __strlen__(segments[k], CONFIG_FS_MAX_PATH_LENGTH);
+          segLen = __strnlen__(segments[k], CONFIG_FS_MAX_PATH_LENGTH);
 
           if(k > 0x0u) {
 
@@ -629,33 +593,29 @@
 
     FUNCTION_EXIT;
   }
+  Base_t __path_is_absolute__(const Byte_t *path_, Size_t size_) {
 
-
-  Base_t __path_is_absolute__(const Byte_t *path_, const Size_t pathSize_) {
-
-    if(__PointerIsNull__(path_) || (0x0u == pathSize_)) {
+    if(__PointerIsNull__(path_) || (0x0u == size_)) {
 
       return (false);
     }
 
     return ((CHAR_SLASH == path_[0x0u]) ? true : false);
   }
-
-
 /**
  * @brief Extracts directory portion of path
  * @details Internal path parsing to get parent directory.
  *
- * @param[out] dest_     Destination buffer for directory path
- * @param[in]  path_     Source path
- * @param[in]  destSize_ Size of destination buffer
+ * @param[out] dest_ Destination buffer for directory path
+ * @param[in]  path_ Source path
+ * @param[in]  size_ Size of destination buffer
  *
- * @return               ReturnOK if extraction was successful
- * @return               ReturnError if destination too small or invalid parameters
+ * @return           ReturnOK if extraction was successful
+ * @return           ReturnError if destination too small or invalid parameters
  *
  * @note This is an internal function similar to dirname
  */
-  Return_t __path_dirname__(Byte_t *dest_, const Byte_t *path_, const Size_t destSize_, const Size_t pathSize_) {
+  Return_t __path_dirname__(Byte_t *dest_, const Byte_t *path_, Size_t destSize, Size_t pathSize) {
 
     FUNCTION_ENTER;
 
@@ -663,13 +623,13 @@
 
     Size_t i = 0x0u;
 
-    if(__PointerIsNotNull__(dest_) && __PointerIsNotNull__(path_) && (0x0u != destSize_) && (0x0u != pathSize_)) {
+    if(__PointerIsNotNull__(dest_) && __PointerIsNotNull__(path_) && (0x0u != destSize) && (0x0u != pathSize)) {
 
-      len = __strlen__(path_, pathSize_);
+      len = __strnlen__(path_, pathSize);
 
       if(0x0u == len) {
 
-        if(OK(__strcpy__(dest_, (const Byte_t *) ".", destSize_))) {
+        if(OK(__strcpy__(dest_, (const Byte_t *) ".", destSize))) {
 
           __ReturnOk__();
 
@@ -690,7 +650,7 @@
 
         if(0x0u == i) {
 
-          if(OK(__strcpy__(dest_, (const Byte_t *) ".", destSize_))) {
+          if(OK(__strcpy__(dest_, (const Byte_t *) ".", destSize))) {
 
             __ReturnOk__();
 
@@ -701,7 +661,7 @@
 
         } else {
 
-          if(i <= destSize_) {
+          if(i <= destSize) {
 
             if(OK(__strncpy__(dest_, path_, i - 0x1u))) {
 
@@ -728,22 +688,20 @@
 
     FUNCTION_EXIT;
   }
-
-
 /**
  * @brief Extracts filename portion of path
  * @details Internal path parsing to get final component.
  *
- * @param[out] dest_     Destination buffer for filename
- * @param[in]  path_     Source path
- * @param[in]  destSize_ Size of destination buffer
+ * @param[out] dest_ Destination buffer for filename
+ * @param[in]  path_ Source path
+ * @param[in]  size_ Size of destination buffer
  *
- * @return               ReturnOK if extraction was successful
- * @return               ReturnError if destination too small or invalid parameters
+ * @return           ReturnOK if extraction was successful
+ * @return           ReturnError if destination too small or invalid parameters
  *
  * @note This is an internal function similar to basename
  */
-  Return_t __path_basename__(Byte_t *dest_, const Byte_t *path_, const Size_t destSize_, const Size_t pathSize_) {
+  Return_t __path_basename__(Byte_t *dest_, const Byte_t *path_, Size_t destSize, Size_t pathSize) {
 
     FUNCTION_ENTER;
 
@@ -753,13 +711,13 @@
 
     Size_t start = 0x0u;
 
-    if(__PointerIsNotNull__(dest_) && __PointerIsNotNull__(path_) && (0x0u != destSize_) && (0x0u != pathSize_)) {
+    if(__PointerIsNotNull__(dest_) && __PointerIsNotNull__(path_) && (0x0u != destSize) && (0x0u != pathSize)) {
 
-      len = __strlen__(path_, pathSize_);
+      len = __strnlen__(path_, pathSize);
 
       if(0x0u == len) {
 
-        if(OK(__strcpy__(dest_, (const Byte_t *) ".", destSize_))) {
+        if(OK(__strcpy__(dest_, (const Byte_t *) ".", destSize))) {
 
           __ReturnOk__();
 
@@ -780,9 +738,9 @@
           }
         }
 
-        if((len - start) < destSize_) {
+        if((len - start) < destSize) {
 
-          if(OK(__strcpy__(dest_, &path_[start], destSize_))) {
+          if(OK(__strcpy__(dest_, &path_[start], destSize))) {
 
             __ReturnOk__();
 
@@ -804,8 +762,6 @@
 
     FUNCTION_EXIT;
   }
-
-
 /**
  * @brief Initializes the console subsystem
  * @details Sets up console device and internal state for command processing.
@@ -841,8 +797,6 @@
 
     FUNCTION_EXIT;
   }
-
-
   void vConsoleTask(Task_t *task_, TaskParm_t *parm_) {
 
     Byte_t ch = 0x00u;
@@ -933,8 +887,6 @@
       }
     }
   }
-
-
 /**
  * @brief Checks and initializes the console device
  * @details Internal helper that verifies the console device is available and initializes it if needed.
@@ -1000,8 +952,6 @@
 
     FUNCTION_EXIT;
   }
-
-
 /**
  * @brief Writes a string to the console device
  * @details Internal helper that writes a null-terminated string to the console output device.
@@ -1029,7 +979,7 @@
 
     if(__PointerIsNotNull__(str_)) {
 
-      len = __strlen__(str_, 0xFFFFu);
+      len = __strnlen__(str_, 0xFFFFu);
 
       if(0x0u < len) {
 
@@ -1125,8 +1075,6 @@
 
     FUNCTION_EXIT;
   }
-
-
 /**
  * @brief Reads a single character from the console device
  * @details Internal helper that reads one character from the console input device with buffering support.
@@ -1233,14 +1181,10 @@
 
     FUNCTION_EXIT;
   }
-
-
   void __ConsolePrintPrompt__(void) {
 
     __ConsoleWriteString__((const Byte_t *) CONFIG_CONSOLE_PROMPT);
   }
-
-
 /**
  * @brief Handles backspace character in console input
  * @details Internal helper that processes backspace input by removing the last character from the input buffer and updating the display.
@@ -1270,8 +1214,6 @@
 
     FUNCTION_EXIT;
   }
-
-
 /**
  * @brief Processes and executes a console command
  * @details Internal helper that parses the input buffer and dispatches to the appropriate command handler.
@@ -1317,7 +1259,7 @@
 
       for(i = 0x0u; __PointerIsNotNull__(commandTable[i].name) && !commandFound; i++) {
 
-        if(0 == __strcmp__(cmdName, commandTable[i].name, CONFIG_CONSOLE_MAX_COMMAND_LENGTH)) {
+        if(0 == __strncmp__(cmdName, commandTable[i].name, CONFIG_CONSOLE_MAX_COMMAND_LENGTH)) {
 
           if(__PointerIsNotNull__(commandTable[i].handler)) {
 
@@ -1358,8 +1300,6 @@
 
     FUNCTION_EXIT;
   }
-
-
 /**
  * @brief Implements the help command
  * @details Internal command handler that displays available console commands and their descriptions.
@@ -1396,8 +1336,6 @@
 
     FUNCTION_EXIT;
   }
-
-
 /**
  * @brief Implements the version command
  * @details Internal command handler that displays the HeliOS version information.
@@ -1425,8 +1363,6 @@
 
     FUNCTION_EXIT;
   }
-
-
 /**
  * @brief Implements the tasks command
  * @details Internal command handler that displays information about all registered tasks including their states and runtime statistics.
@@ -1518,8 +1454,6 @@
 
     FUNCTION_EXIT;
   }
-
-
 /**
  * @brief Implements the mem command
  * @details Internal command handler that displays memory usage statistics and available memory regions.
@@ -1597,8 +1531,6 @@
 
     FUNCTION_EXIT;
   }
-
-
 /**
  * @brief Implements the clear command
  * @details Internal command handler that clears the console screen.
@@ -1620,8 +1552,6 @@
 
     FUNCTION_EXIT;
   }
-
-
 /**
  * @brief Implements the echo command
  * @details Internal command handler that echoes text back to the console output or toggles echo mode.
@@ -1659,8 +1589,6 @@
 
     FUNCTION_EXIT;
   }
-
-
 /**
  * @brief Implements the ls command
  * @details Internal command handler that lists directory contents in the filesystem.
@@ -1776,8 +1704,6 @@
 
     FUNCTION_EXIT;
   }
-
-
 /**
  * @brief Implements the cd command
  * @details Internal command handler that changes the current working directory.
@@ -1809,7 +1735,7 @@
 
         pathBuilt = true;
 
-      } else if(0 == __strcmp__(args_, (const Byte_t *) "..", CONFIG_CONSOLE_MAX_COMMAND_LENGTH)) {
+      } else if(0 == __strncmp__(args_, (const Byte_t *) "..", CONFIG_CONSOLE_MAX_COMMAND_LENGTH)) {
 
         if(OK(__path_dirname__(newPath, consoleState.currentWorkingDirectory, CONFIG_FS_MAX_PATH_LENGTH, CONFIG_FS_MAX_PATH_LENGTH))) {
 
@@ -1830,7 +1756,8 @@
 
       } else {
 
-        if(OK(__path_join__(newPath, consoleState.currentWorkingDirectory, args_, CONFIG_FS_MAX_PATH_LENGTH, CONFIG_FS_MAX_PATH_LENGTH, CONFIG_CONSOLE_MAX_COMMAND_LENGTH))) {
+        if(OK(__path_join__(newPath, consoleState.currentWorkingDirectory, args_, CONFIG_FS_MAX_PATH_LENGTH, CONFIG_FS_MAX_PATH_LENGTH,
+          CONFIG_CONSOLE_MAX_COMMAND_LENGTH))) {
 
           pathBuilt = true;
 
@@ -1885,8 +1812,6 @@
 
     FUNCTION_EXIT;
   }
-
-
 /**
  * @brief Implements the pwd command
  * @details Internal command handler that displays the current working directory path.
@@ -1956,7 +1881,8 @@
 
       } else {
 
-        if(OK(__path_join__(path, consoleState.currentWorkingDirectory, args_, CONFIG_FS_MAX_PATH_LENGTH, CONFIG_FS_MAX_PATH_LENGTH, CONFIG_CONSOLE_MAX_COMMAND_LENGTH))) {
+        if(OK(__path_join__(path, consoleState.currentWorkingDirectory, args_, CONFIG_FS_MAX_PATH_LENGTH, CONFIG_FS_MAX_PATH_LENGTH,
+          CONFIG_CONSOLE_MAX_COMMAND_LENGTH))) {
 
           pathBuilt = true;
 
@@ -2093,8 +2019,6 @@
 
     FUNCTION_EXIT;
   }
-
-
 /**
  * @brief Implements the mv command
  * @details Internal command handler that moves or renames files and directories.
@@ -2189,8 +2113,6 @@
 
     FUNCTION_EXIT;
   }
-
-
 /**
  * @brief Implements the rm command
  * @details Internal command handler that removes files from the filesystem.
@@ -2222,7 +2144,8 @@
 
       } else {
 
-        if(OK(__path_join__(path, consoleState.currentWorkingDirectory, args_, CONFIG_FS_MAX_PATH_LENGTH, CONFIG_FS_MAX_PATH_LENGTH, CONFIG_CONSOLE_MAX_COMMAND_LENGTH))) {
+        if(OK(__path_join__(path, consoleState.currentWorkingDirectory, args_, CONFIG_FS_MAX_PATH_LENGTH, CONFIG_FS_MAX_PATH_LENGTH,
+          CONFIG_CONSOLE_MAX_COMMAND_LENGTH))) {
 
           pathBuilt = true;
 
@@ -2273,8 +2196,6 @@
 
     FUNCTION_EXIT;
   }
-
-
 /**
  * @brief Implements the mkdir command
  * @details Internal command handler that creates a new directory.
@@ -2306,7 +2227,8 @@
 
       } else {
 
-        if(OK(__path_join__(path, consoleState.currentWorkingDirectory, args_, CONFIG_FS_MAX_PATH_LENGTH, CONFIG_FS_MAX_PATH_LENGTH, CONFIG_CONSOLE_MAX_COMMAND_LENGTH))) {
+        if(OK(__path_join__(path, consoleState.currentWorkingDirectory, args_, CONFIG_FS_MAX_PATH_LENGTH, CONFIG_FS_MAX_PATH_LENGTH,
+          CONFIG_CONSOLE_MAX_COMMAND_LENGTH))) {
 
           pathBuilt = true;
 
@@ -2357,8 +2279,6 @@
 
     FUNCTION_EXIT;
   }
-
-
   void __SkipWhitespace__(const Byte_t **str_) {
 
     if(__PointerIsNotNull__(str_) && __PointerIsNotNull__(*str_)) {
@@ -2369,8 +2289,6 @@
       }
     }
   }
-
-
   void __uitoah__(Word_t value_, Byte_t *buffer_, Word_t bufferSize_) {
 
     const Byte_t *hexDigits = (const Byte_t *) "0123456789ABCDEF";

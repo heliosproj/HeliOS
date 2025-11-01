@@ -33,19 +33,19 @@
 #define STRCMP_LESS_THAN 255  /* -1 as unsigned byte (0xFF) */
 #define STRCMP_GREATER_THAN 1
 /* External function declarations */
-extern Size_t __strlen__(const Byte_t *str_, const Size_t maxLen_);
-extern Return_t __strcpy__(Byte_t *dest_, const Byte_t *src_, const Size_t destSize_);
-extern Return_t __strncpy__(Byte_t *dest_, const Byte_t *src_, const Size_t n_);
-extern Base_t __strcmp__(const Byte_t *s1_, const Byte_t *s2_, const Size_t maxLen_);
-extern Base_t __strncmp__(const Byte_t *s1_, const Byte_t *s2_, const Size_t n_);
-extern Return_t __strcat__(Byte_t *dest_, const Byte_t *src_, const Size_t destSize_);
-extern Byte_t * __strchr__(const Byte_t *str_, const Byte_t ch_, const Size_t maxLen_);
-extern Byte_t * __strrchr__(const Byte_t *str_, const Byte_t ch_, const Size_t maxLen_);
-extern Return_t __path_join__(Byte_t *dest_, const Byte_t *base_, const Byte_t *path_, const Size_t destSize_, const Size_t baseSize_, const Size_t pathSize_);
-extern Return_t __path_normalize__(Byte_t *path_, const Size_t pathSize_);
-extern Base_t __path_is_absolute__(const Byte_t *path_, const Size_t pathSize_);
-extern Return_t __path_dirname__(Byte_t *dest_, const Byte_t *path_, const Size_t destSize_, const Size_t pathSize_);
-extern Return_t __path_basename__(Byte_t *dest_, const Byte_t *path_, const Size_t destSize_, const Size_t pathSize_);
+extern Size_t __strnlen__(const Byte_t *str_, const Size_t size_);
+extern Return_t __strcpy__(Byte_t *dest_, const Byte_t *src_, const Size_t size_);
+extern Return_t __strncpy__(Byte_t *dest_, const Byte_t *src_, const Size_t size_);
+extern Base_t __strncmp__(const Byte_t *s1_, const Byte_t *s2_, const Size_t size_);
+extern Base_t __strncmp__(const Byte_t *s1_, const Byte_t *s2_, const Size_t size_);
+extern Return_t __strcat__(Byte_t *dest_, const Byte_t *src_, const Size_t size_);
+extern Byte_t * __strnchr__(const Byte_t *str_, const Byte_t ch_, const Size_t size_);
+extern Byte_t * __strnrchr__(const Byte_t *str_, const Byte_t ch_, const Size_t size_);
+extern Return_t __path_join__(Byte_t *dest_, const Byte_t *base_, const Byte_t *path_, const Size_t destSize, const Size_t baseSize, const Size_t pathSize);
+extern Return_t __path_normalize__(Byte_t *path_, const Size_t size_);
+extern Base_t __path_is_absolute__(const Byte_t *path_, const Size_t size_);
+extern Return_t __path_dirname__(Byte_t *dest_, const Byte_t *path_, const Size_t destSize, const Size_t pathSize);
+extern Return_t __path_basename__(Byte_t *dest_, const Byte_t *path_, const Size_t destSize, const Size_t pathSize);
 extern void __ConsoleStateClear__(void);
 /* Helper function prototypes */
 static void test_strlen_basic(void);
@@ -169,41 +169,41 @@ void console_internal_harness(void) {
 
 
 /* ============================================================================
- * SECTION 1: STRING LENGTH (__strlen__) TESTS
+ * SECTION 1: STRING LENGTH (__strnlen__) TESTS
  * ============================================================================
  */
 static void test_strlen_basic(void) {
   Size_t len;
 
-  unit_print("--- Section 1.1: __strlen__ Basic Tests ---");
+  unit_print("--- Section 1.1: __strnlen__ Basic Tests ---");
 
   /* Test 1.1.1: Empty string */
-  unit_begin("__strlen__ - Empty string");
-  len = __strlen__((const Byte_t *) "", 1);
+  unit_begin("__strnlen__ - Empty string");
+  len = __strnlen__((const Byte_t *) "", 1);
   unit_assert_equal(len, 0);
   unit_end();
 
   /* Test 1.1.2: Single character */
-  unit_begin("__strlen__ - Single character");
-  len = __strlen__((const Byte_t *) "a", 2);
+  unit_begin("__strnlen__ - Single character");
+  len = __strnlen__((const Byte_t *) "a", 2);
   unit_assert_equal(len, 1);
   unit_end();
 
   /* Test 1.1.3: Short string */
-  unit_begin("__strlen__ - Short string 'hello'");
-  len = __strlen__((const Byte_t *) "hello", 6);
+  unit_begin("__strnlen__ - Short string 'hello'");
+  len = __strnlen__((const Byte_t *) "hello", 6);
   unit_assert_equal(len, 5);
   unit_end();
 
   /* Test 1.1.4: Medium string */
-  unit_begin("__strlen__ - Medium string");
-  len = __strlen__((const Byte_t *) "The quick brown fox", 20);
+  unit_begin("__strnlen__ - Medium string");
+  len = __strnlen__((const Byte_t *) "The quick brown fox", 20);
   unit_assert_equal(len, 19);
   unit_end();
 
   /* Test 1.1.5: String with spaces */
-  unit_begin("__strlen__ - String with spaces");
-  len = __strlen__((const Byte_t *) "   spaces   ", 13);
+  unit_begin("__strnlen__ - String with spaces");
+  len = __strnlen__((const Byte_t *) "   spaces   ", 13);
   unit_assert_equal(len, 12);
   unit_end();
 }
@@ -214,37 +214,37 @@ static void test_strlen_edge_cases(void) {
   Byte_t longString[256];
   Size_t i;
 
-  unit_print("--- Section 1.2: __strlen__ Edge Cases ---");
+  unit_print("--- Section 1.2: __strnlen__ Edge Cases ---");
 
   /* Test 1.2.1: String with only null terminator */
-  unit_begin("__strlen__ - Only null terminator");
+  unit_begin("__strnlen__ - Only null terminator");
   Byte_t nullOnly[1] = {
     '\0'
   };
-  len = __strlen__(nullOnly, 1);
+  len = __strnlen__(nullOnly, 1);
   unit_assert_equal(len, 0);
   unit_end();
 
   /* Test 1.2.2: Long string */
-  unit_begin("__strlen__ - Long string (255 chars)");
+  unit_begin("__strnlen__ - Long string (255 chars)");
   for(i = 0; i < 255; i++) {
     longString[i] = 'x';
   }
 
   longString[255] = '\0';
-  len = __strlen__(longString, 256);
+  len = __strnlen__(longString, 256);
   unit_assert_equal(len, 255);
   unit_end();
 
   /* Test 1.2.3: String with special characters */
-  unit_begin("__strlen__ - String with special characters");
-  len = __strlen__((const Byte_t *) "!@#$%^&*()", 11);
+  unit_begin("__strnlen__ - String with special characters");
+  len = __strnlen__((const Byte_t *) "!@#$%^&*()", 11);
   unit_assert_equal(len, 10);
   unit_end();
 
   /* Test 1.2.4: String with numbers */
-  unit_begin("__strlen__ - String with numbers");
-  len = __strlen__((const Byte_t *) "1234567890", 11);
+  unit_begin("__strnlen__ - String with numbers");
+  len = __strnlen__((const Byte_t *) "1234567890", 11);
   unit_assert_equal(len, 10);
   unit_end();
 }
@@ -253,11 +253,11 @@ static void test_strlen_edge_cases(void) {
 static void test_strlen_null_pointer(void) {
   Size_t len;
 
-  unit_print("--- Section 1.3: __strlen__ Null Pointer Tests ---");
+  unit_print("--- Section 1.3: __strnlen__ Null Pointer Tests ---");
 
   /* Test 1.3.1: Null pointer parameter */
-  unit_begin("__strlen__ - Null pointer parameter");
-  len = __strlen__(null, 1);
+  unit_begin("__strnlen__ - Null pointer parameter");
+  len = __strnlen__(null, 1);
   unit_assert_equal(len, 0); /* Should return 0 for null */
   unit_end();
 }
@@ -277,28 +277,28 @@ static void test_strcpy_basic(void) {
   unit_begin("__strcpy__ - Copy empty string");
   result = __strcpy__(dest, (const Byte_t *) "", TEST_BUFFER_SIZE_MEDIUM);
   unit_assert_ok(result);
-  unit_assert_equal(__strlen__(dest, TEST_BUFFER_SIZE_SMALL), 0);
+  unit_assert_equal(__strnlen__(dest, TEST_BUFFER_SIZE_SMALL), 0);
   unit_end();
 
   /* Test 2.1.2: Copy single character */
   unit_begin("__strcpy__ - Copy single character");
   result = __strcpy__(dest, (const Byte_t *) "a", TEST_BUFFER_SIZE_MEDIUM);
   unit_assert_ok(result);
-  unit_assert_equal(__strcmp__(dest, (const Byte_t *) "a", TEST_BUFFER_SIZE_SMALL), 0);
+  unit_assert_equal(__strncmp__(dest, (const Byte_t *) "a", TEST_BUFFER_SIZE_SMALL), 0);
   unit_end();
 
   /* Test 2.1.3: Copy short string */
   unit_begin("__strcpy__ - Copy short string");
   result = __strcpy__(dest, (const Byte_t *) "hello", TEST_BUFFER_SIZE_MEDIUM);
   unit_assert_ok(result);
-  unit_assert_equal(__strcmp__(dest, (const Byte_t *) "hello", TEST_BUFFER_SIZE_SMALL), 0);
+  unit_assert_equal(__strncmp__(dest, (const Byte_t *) "hello", TEST_BUFFER_SIZE_SMALL), 0);
   unit_end();
 
   /* Test 2.1.4: Copy medium string */
   unit_begin("__strcpy__ - Copy medium string");
   result = __strcpy__(dest, (const Byte_t *) "The quick brown fox", TEST_BUFFER_SIZE_MEDIUM);
   unit_assert_ok(result);
-  unit_assert_equal(__strcmp__(dest, (const Byte_t *) "The quick brown fox", TEST_BUFFER_SIZE_SMALL), 0);
+  unit_assert_equal(__strncmp__(dest, (const Byte_t *) "The quick brown fox", TEST_BUFFER_SIZE_SMALL), 0);
   unit_end();
 }
 
@@ -313,14 +313,14 @@ static void test_strcpy_edge_cases(void) {
   unit_begin("__strcpy__ - Buffer exactly fits string");
   result = __strcpy__(dest, (const Byte_t *) "123456789012345", 16); /* 15 chars + null */
   unit_assert_ok(result);
-  unit_assert_equal(__strlen__(dest, TEST_BUFFER_SIZE_SMALL), 15);
+  unit_assert_equal(__strnlen__(dest, TEST_BUFFER_SIZE_SMALL), 15);
   unit_end();
 
   /* Test 2.2.2: String too long for buffer - should truncate */
   unit_begin("__strcpy__ - String truncated to fit buffer");
   result = __strcpy__(dest, (const Byte_t *) "This string is too long for buffer", TEST_BUFFER_SIZE_SMALL);
   unit_assert_ok(result);
-  unit_assert_equal(__strlen__(dest, TEST_BUFFER_SIZE_SMALL), TEST_BUFFER_SIZE_SMALL - 1);
+  unit_assert_equal(__strnlen__(dest, TEST_BUFFER_SIZE_SMALL), TEST_BUFFER_SIZE_SMALL - 1);
   unit_assert_equal(dest[TEST_BUFFER_SIZE_SMALL - 1], '\0'); /* Null terminated */
   unit_end();
 
@@ -335,7 +335,7 @@ static void test_strcpy_edge_cases(void) {
   result = __strcpy__(dest, (const Byte_t *) "test", 1);
   unit_assert_ok(result);
   unit_assert_equal(dest[0], '\0');
-  unit_assert_equal(__strlen__(dest, TEST_BUFFER_SIZE_SMALL), 0);
+  unit_assert_equal(__strnlen__(dest, TEST_BUFFER_SIZE_SMALL), 0);
   unit_end();
 
   /* Test 2.2.5: Overwrite existing string */
@@ -343,7 +343,7 @@ static void test_strcpy_edge_cases(void) {
   __strcpy__(dest, (const Byte_t *) "original", TEST_BUFFER_SIZE_SMALL);
   result = __strcpy__(dest, (const Byte_t *) "new", TEST_BUFFER_SIZE_SMALL);
   unit_assert_ok(result);
-  unit_assert_equal(__strcmp__(dest, (const Byte_t *) "new", TEST_BUFFER_SIZE_SMALL), 0);
+  unit_assert_equal(__strncmp__(dest, (const Byte_t *) "new", TEST_BUFFER_SIZE_SMALL), 0);
   unit_end();
 }
 
@@ -396,7 +396,7 @@ static void test_strncpy_basic(void) {
   __memset__(dest, 'X', TEST_BUFFER_SIZE_MEDIUM);
   result = __strncpy__(dest, (const Byte_t *) "hello", 10);
   unit_assert_ok(result);
-  unit_assert_equal(__strcmp__(dest, (const Byte_t *) "hello", TEST_BUFFER_SIZE_SMALL), 0);
+  unit_assert_equal(__strncmp__(dest, (const Byte_t *) "hello", TEST_BUFFER_SIZE_SMALL), 0);
   /* Verify padding with nulls */
   for(i = 5; i < 10; i++) {
     unit_assert_equal(dest[i], '\0');
@@ -512,47 +512,47 @@ static void test_strncpy_null_pointers(void) {
 
 
 /* ============================================================================
- * SECTION 4: STRING COMPARE (__strcmp__) TESTS
+ * SECTION 4: STRING COMPARE (__strncmp__) TESTS
  * ============================================================================
  */
 static void test_strcmp_basic(void) {
   Base_t cmp;
 
-  unit_print("--- Section 4.1: __strcmp__ Basic Tests ---");
+  unit_print("--- Section 4.1: __strncmp__ Basic Tests ---");
 
   /* Test 4.1.1: Equal strings */
-  unit_begin("__strcmp__ - Equal strings");
-  cmp = __strcmp__((const Byte_t *) "hello", (const Byte_t *) "hello", 6);
+  unit_begin("__strncmp__ - Equal strings");
+  cmp = __strncmp__((const Byte_t *) "hello", (const Byte_t *) "hello", 6);
   unit_assert_equal(cmp, STRCMP_EQUAL);
   unit_end();
 
   /* Test 4.1.2: First less than second */
-  unit_begin("__strcmp__ - First less than second");
-  cmp = __strcmp__((const Byte_t *) "abc", (const Byte_t *) "xyz", 4);
+  unit_begin("__strncmp__ - First less than second");
+  cmp = __strncmp__((const Byte_t *) "abc", (const Byte_t *) "xyz", 4);
   unit_assert_equal(cmp, STRCMP_LESS_THAN);
   unit_end();
 
   /* Test 4.1.3: First greater than second */
-  unit_begin("__strcmp__ - First greater than second");
-  cmp = __strcmp__((const Byte_t *) "xyz", (const Byte_t *) "abc", 4);
+  unit_begin("__strncmp__ - First greater than second");
+  cmp = __strncmp__((const Byte_t *) "xyz", (const Byte_t *) "abc", 4);
   unit_assert_equal(cmp, STRCMP_GREATER_THAN);
   unit_end();
 
   /* Test 4.1.4: Empty strings */
-  unit_begin("__strcmp__ - Both empty strings");
-  cmp = __strcmp__((const Byte_t *) "", (const Byte_t *) "", 1);
+  unit_begin("__strncmp__ - Both empty strings");
+  cmp = __strncmp__((const Byte_t *) "", (const Byte_t *) "", 1);
   unit_assert_equal(cmp, STRCMP_EQUAL);
   unit_end();
 
   /* Test 4.1.5: Empty vs non-empty */
-  unit_begin("__strcmp__ - Empty vs non-empty");
-  cmp = __strcmp__((const Byte_t *) "", (const Byte_t *) "a", 2);
+  unit_begin("__strncmp__ - Empty vs non-empty");
+  cmp = __strncmp__((const Byte_t *) "", (const Byte_t *) "a", 2);
   unit_assert_equal(cmp, STRCMP_LESS_THAN);
   unit_end();
 
   /* Test 4.1.6: Non-empty vs empty */
-  unit_begin("__strcmp__ - Non-empty vs empty");
-  cmp = __strcmp__((const Byte_t *) "a", (const Byte_t *) "", 2);
+  unit_begin("__strncmp__ - Non-empty vs empty");
+  cmp = __strncmp__((const Byte_t *) "a", (const Byte_t *) "", 2);
   unit_assert_equal(cmp, STRCMP_GREATER_THAN);
   unit_end();
 }
@@ -561,40 +561,40 @@ static void test_strcmp_basic(void) {
 static void test_strcmp_edge_cases(void) {
   Base_t cmp;
 
-  unit_print("--- Section 4.2: __strcmp__ Edge Cases ---");
+  unit_print("--- Section 4.2: __strncmp__ Edge Cases ---");
 
   /* Test 4.2.1: Same prefix, different length */
-  unit_begin("__strcmp__ - Same prefix, different length");
-  cmp = __strcmp__((const Byte_t *) "test", (const Byte_t *) "testing", 8);
+  unit_begin("__strncmp__ - Same prefix, different length");
+  cmp = __strncmp__((const Byte_t *) "test", (const Byte_t *) "testing", 8);
   unit_assert_equal(cmp, STRCMP_LESS_THAN);
   unit_end();
 
   /* Test 4.2.2: Differ by one character */
-  unit_begin("__strcmp__ - Differ by one character");
-  cmp = __strcmp__((const Byte_t *) "test", (const Byte_t *) "text", 5);
+  unit_begin("__strncmp__ - Differ by one character");
+  cmp = __strncmp__((const Byte_t *) "test", (const Byte_t *) "text", 5);
   unit_assert_equal(cmp, STRCMP_LESS_THAN); /* 's' < 'x' */
   unit_end();
 
   /* Test 4.2.3: Case sensitivity */
-  unit_begin("__strcmp__ - Case sensitivity");
-  cmp = __strcmp__((const Byte_t *) "Test", (const Byte_t *) "test", 5);
+  unit_begin("__strncmp__ - Case sensitivity");
+  cmp = __strncmp__((const Byte_t *) "Test", (const Byte_t *) "test", 5);
   unit_assert_equal(cmp, STRCMP_LESS_THAN); /* 'T' < 't' in ASCII */
   unit_end();
 
   /* Test 4.2.4: Numbers in strings */
-  unit_begin("__strcmp__ - Numbers in strings");
-  cmp = __strcmp__((const Byte_t *) "file1", (const Byte_t *) "file2", 6);
+  unit_begin("__strncmp__ - Numbers in strings");
+  cmp = __strncmp__((const Byte_t *) "file1", (const Byte_t *) "file2", 6);
   unit_assert_equal(cmp, STRCMP_LESS_THAN);
   unit_end();
 
   /* Test 4.2.5: Special characters */
-  unit_begin("__strcmp__ - Special characters");
-  cmp = __strcmp__((const Byte_t *) "file!", (const Byte_t *) "file@", 6);
+  unit_begin("__strncmp__ - Special characters");
+  cmp = __strncmp__((const Byte_t *) "file!", (const Byte_t *) "file@", 6);
   unit_assert_equal(cmp, STRCMP_LESS_THAN); /* '!' < '@' */
   unit_end();
 
   /* Test 4.2.6: Very long strings */
-  unit_begin("__strcmp__ - Very long equal strings");
+  unit_begin("__strncmp__ - Very long equal strings");
   Byte_t long1[128];
   Byte_t long2[128];
   Size_t i;
@@ -606,7 +606,7 @@ static void test_strcmp_edge_cases(void) {
 
   long1[127] = '\0';
   long2[127] = '\0';
-  cmp = __strcmp__(long1, long2, 256);
+  cmp = __strncmp__(long1, long2, 256);
   unit_assert_equal(cmp, STRCMP_EQUAL);
   unit_end();
 }
@@ -615,29 +615,29 @@ static void test_strcmp_edge_cases(void) {
 static void test_strcmp_null_pointers(void) {
   Base_t cmp;
 
-  unit_print("--- Section 4.3: __strcmp__ Null Pointer Tests ---");
+  unit_print("--- Section 4.3: __strncmp__ Null Pointer Tests ---");
 
   /* Test 4.3.1: First parameter null */
-  unit_begin("__strcmp__ - First parameter null");
-  cmp = __strcmp__(null, (const Byte_t *) "test", 5);
+  unit_begin("__strncmp__ - First parameter null");
+  cmp = __strncmp__(null, (const Byte_t *) "test", 5);
   unit_assert_equal(cmp, 0); /* Returns 0 for null */
   unit_end();
 
   /* Test 4.3.2: Second parameter null */
-  unit_begin("__strcmp__ - Second parameter null");
-  cmp = __strcmp__((const Byte_t *) "test", null, 5);
+  unit_begin("__strncmp__ - Second parameter null");
+  cmp = __strncmp__((const Byte_t *) "test", null, 5);
   unit_assert_equal(cmp, 0); /* Returns 0 for null */
   unit_end();
 
   /* Test 4.3.3: Both parameters null */
-  unit_begin("__strcmp__ - Both parameters null");
-  cmp = __strcmp__(null, null, 1);
+  unit_begin("__strncmp__ - Both parameters null");
+  cmp = __strncmp__(null, null, 1);
   unit_assert_equal(cmp, 0);
   unit_end();
 
   /* Test 4.3.4: Valid parameters (reference) */
-  unit_begin("__strcmp__ - Valid parameters (reference test)");
-  cmp = __strcmp__((const Byte_t *) "valid", (const Byte_t *) "valid", 6);
+  unit_begin("__strncmp__ - Valid parameters (reference test)");
+  cmp = __strncmp__((const Byte_t *) "valid", (const Byte_t *) "valid", 6);
   unit_assert_equal(cmp, 0);
   unit_end();
 }
@@ -773,7 +773,7 @@ static void test_strcat_basic(void) {
   __strcpy__(dest, (const Byte_t *) "", TEST_BUFFER_SIZE_MEDIUM);
   result = __strcat__(dest, (const Byte_t *) "hello", TEST_BUFFER_SIZE_MEDIUM);
   unit_assert_ok(result);
-  unit_assert_equal(__strcmp__(dest, (const Byte_t *) "hello", TEST_BUFFER_SIZE_SMALL), 0);
+  unit_assert_equal(__strncmp__(dest, (const Byte_t *) "hello", TEST_BUFFER_SIZE_SMALL), 0);
   unit_end();
 
   /* Test 6.1.2: Concatenate to existing string */
@@ -781,7 +781,7 @@ static void test_strcat_basic(void) {
   __strcpy__(dest, (const Byte_t *) "hello", TEST_BUFFER_SIZE_MEDIUM);
   result = __strcat__(dest, (const Byte_t *) " world", TEST_BUFFER_SIZE_MEDIUM);
   unit_assert_ok(result);
-  unit_assert_equal(__strcmp__(dest, (const Byte_t *) "hello world", TEST_BUFFER_SIZE_SMALL), 0);
+  unit_assert_equal(__strncmp__(dest, (const Byte_t *) "hello world", TEST_BUFFER_SIZE_SMALL), 0);
   unit_end();
 
   /* Test 6.1.3: Concatenate empty string */
@@ -789,7 +789,7 @@ static void test_strcat_basic(void) {
   __strcpy__(dest, (const Byte_t *) "test", TEST_BUFFER_SIZE_MEDIUM);
   result = __strcat__(dest, (const Byte_t *) "", TEST_BUFFER_SIZE_MEDIUM);
   unit_assert_ok(result);
-  unit_assert_equal(__strcmp__(dest, (const Byte_t *) "test", TEST_BUFFER_SIZE_SMALL), 0);
+  unit_assert_equal(__strncmp__(dest, (const Byte_t *) "test", TEST_BUFFER_SIZE_SMALL), 0);
   unit_end();
 
   /* Test 6.1.4: Multiple concatenations */
@@ -797,7 +797,7 @@ static void test_strcat_basic(void) {
   __strcpy__(dest, (const Byte_t *) "a", TEST_BUFFER_SIZE_MEDIUM);
   __strcat__(dest, (const Byte_t *) "b", TEST_BUFFER_SIZE_MEDIUM);
   __strcat__(dest, (const Byte_t *) "c", TEST_BUFFER_SIZE_MEDIUM);
-  unit_assert_equal(__strcmp__(dest, (const Byte_t *) "abc", TEST_BUFFER_SIZE_SMALL), 0);
+  unit_assert_equal(__strncmp__(dest, (const Byte_t *) "abc", TEST_BUFFER_SIZE_SMALL), 0);
   unit_end();
 }
 
@@ -813,7 +813,7 @@ static void test_strcat_edge_cases(void) {
   __strcpy__(dest, (const Byte_t *) "12345678901234", TEST_BUFFER_SIZE_SMALL); /* 14 chars */
   result = __strcat__(dest, (const Byte_t *) "5", TEST_BUFFER_SIZE_SMALL); /* Fits exactly */
   unit_assert_ok(result);
-  unit_assert_equal(__strlen__(dest, TEST_BUFFER_SIZE_SMALL), 15);
+  unit_assert_equal(__strnlen__(dest, TEST_BUFFER_SIZE_SMALL), 15);
   unit_end();
 
   /* Test 6.2.2: Truncation when almost full */
@@ -821,7 +821,7 @@ static void test_strcat_edge_cases(void) {
   __strcpy__(dest, (const Byte_t *) "123456789012345", TEST_BUFFER_SIZE_SMALL); /* 15 chars (max) */
   result = __strcat__(dest, (const Byte_t *) "x", TEST_BUFFER_SIZE_SMALL); /* No room to append */
   unit_assert_ok(result); /* Succeeds but truncates - appends nothing */
-  unit_assert_equal(__strlen__(dest, TEST_BUFFER_SIZE_SMALL), 15); /* Still 15 chars */
+  unit_assert_equal(__strnlen__(dest, TEST_BUFFER_SIZE_SMALL), 15); /* Still 15 chars */
   unit_end();
 
   /* Test 6.2.3: Zero destination size */
@@ -836,7 +836,7 @@ static void test_strcat_edge_cases(void) {
   __strcpy__(fullDest, (const Byte_t *) "1234", 5); /* Exactly 4 chars + null */
   result = __strcat__(fullDest, (const Byte_t *) "x", 5);
   unit_assert_ok(result); /* Succeeds but appends nothing */
-  unit_assert_equal(__strlen__(fullDest, 5), 4); /* Still just "1234" */
+  unit_assert_equal(__strnlen__(fullDest, 5), 4); /* Still just "1234" */
   unit_end();
 }
 
@@ -876,56 +876,56 @@ static void test_strcat_null_pointers(void) {
 
 
 /* ============================================================================
- * SECTION 7: STRING CHARACTER SEARCH (__strchr__) TESTS
+ * SECTION 7: STRING CHARACTER SEARCH (__strnchr__) TESTS
  * ============================================================================
  */
 static void test_strchr_basic(void) {
   Byte_t *result;
   const Byte_t *testStr = (const Byte_t *) "hello world";
 
-  unit_print("--- Section 7.1: __strchr__ Basic Tests ---");
+  unit_print("--- Section 7.1: __strnchr__ Basic Tests ---");
 
   /* Test 7.1.1: Find character at beginning */
-  unit_begin("__strchr__ - Find character at beginning");
-  result = __strchr__(testStr, 'h', TEST_BUFFER_SIZE_LARGE);
+  unit_begin("__strnchr__ - Find character at beginning");
+  result = __strnchr__(testStr, 'h', TEST_BUFFER_SIZE_LARGE);
   unit_assert_not_null(result);
   unit_assert_equal(*result, 'h');
   unit_assert_equal(result - testStr, 0);
   unit_end();
 
   /* Test 7.1.2: Find character in middle */
-  unit_begin("__strchr__ - Find character in middle");
-  result = __strchr__(testStr, ' ', TEST_BUFFER_SIZE_LARGE);
+  unit_begin("__strnchr__ - Find character in middle");
+  result = __strnchr__(testStr, ' ', TEST_BUFFER_SIZE_LARGE);
   unit_assert_not_null(result);
   unit_assert_equal(*result, ' ');
   unit_assert_equal(result - testStr, 5);
   unit_end();
 
   /* Test 7.1.3: Find character at end */
-  unit_begin("__strchr__ - Find character at end");
-  result = __strchr__(testStr, 'd', TEST_BUFFER_SIZE_LARGE);
+  unit_begin("__strnchr__ - Find character at end");
+  result = __strnchr__(testStr, 'd', TEST_BUFFER_SIZE_LARGE);
   unit_assert_not_null(result);
   unit_assert_equal(*result, 'd');
   unit_assert_equal(result - testStr, 10);
   unit_end();
 
   /* Test 7.1.4: Find null terminator */
-  unit_begin("__strchr__ - Find null terminator");
-  result = __strchr__(testStr, '\0', TEST_BUFFER_SIZE_LARGE);
+  unit_begin("__strnchr__ - Find null terminator");
+  result = __strnchr__(testStr, '\0', TEST_BUFFER_SIZE_LARGE);
   unit_assert_not_null(result);
   unit_assert_equal(*result, '\0');
   unit_assert_equal(result - testStr, 11);
   unit_end();
 
   /* Test 7.1.5: Character not found */
-  unit_begin("__strchr__ - Character not found");
-  result = __strchr__(testStr, 'z', TEST_BUFFER_SIZE_LARGE);
+  unit_begin("__strnchr__ - Character not found");
+  result = __strnchr__(testStr, 'z', TEST_BUFFER_SIZE_LARGE);
   unit_assert_null(result);
   unit_end();
 
   /* Test 7.1.6: Empty string */
-  unit_begin("__strchr__ - Search in empty string");
-  result = __strchr__((const Byte_t *) "", 'a', 1);
+  unit_begin("__strnchr__ - Search in empty string");
+  result = __strnchr__((const Byte_t *) "", 'a', 1);
   unit_assert_null(result);
   unit_end();
 }
@@ -934,38 +934,38 @@ static void test_strchr_basic(void) {
 static void test_strchr_edge_cases(void) {
   Byte_t *result;
 
-  unit_print("--- Section 7.2: __strchr__ Edge Cases ---");
+  unit_print("--- Section 7.2: __strnchr__ Edge Cases ---");
 
   /* Test 7.2.1: Find first occurrence (multiple matches) */
-  unit_begin("__strchr__ - Find first occurrence (multiple)");
-  result = __strchr__((const Byte_t *) "hello", 'l', 6);
+  unit_begin("__strnchr__ - Find first occurrence (multiple)");
+  result = __strnchr__((const Byte_t *) "hello", 'l', 6);
   unit_assert_not_null(result);
   unit_assert_equal(result - (const Byte_t *) "hello", 2); /* First 'l' */
   unit_end();
 
   /* Test 7.2.2: Search for null in empty string */
-  unit_begin("__strchr__ - Search for null in empty string");
-  result = __strchr__((const Byte_t *) "", '\0', 1);
+  unit_begin("__strnchr__ - Search for null in empty string");
+  result = __strnchr__((const Byte_t *) "", '\0', 1);
   unit_assert_not_null(result);
   unit_assert_equal(*result, '\0');
   unit_end();
 
   /* Test 7.2.3: Single character string - match */
-  unit_begin("__strchr__ - Single character string - match");
-  result = __strchr__((const Byte_t *) "a", 'a', 2);
+  unit_begin("__strnchr__ - Single character string - match");
+  result = __strnchr__((const Byte_t *) "a", 'a', 2);
   unit_assert_not_null(result);
   unit_assert_equal(*result, 'a');
   unit_end();
 
   /* Test 7.2.4: Single character string - no match */
-  unit_begin("__strchr__ - Single character string - no match");
-  result = __strchr__((const Byte_t *) "a", 'b', 2);
+  unit_begin("__strnchr__ - Single character string - no match");
+  result = __strnchr__((const Byte_t *) "a", 'b', 2);
   unit_assert_null(result);
   unit_end();
 
   /* Test 7.2.5: Search for special characters */
-  unit_begin("__strchr__ - Search for special characters");
-  result = __strchr__((const Byte_t *) "test@example.com", '@', 17);
+  unit_begin("__strnchr__ - Search for special characters");
+  result = __strnchr__((const Byte_t *) "test@example.com", '@', 17);
   unit_assert_not_null(result);
   unit_assert_equal(*result, '@');
   unit_end();
@@ -975,69 +975,69 @@ static void test_strchr_edge_cases(void) {
 static void test_strchr_null_pointer(void) {
   Byte_t *result;
 
-  unit_print("--- Section 7.3: __strchr__ Null Pointer Tests ---");
+  unit_print("--- Section 7.3: __strnchr__ Null Pointer Tests ---");
 
   /* Test 7.3.1: Null string pointer */
-  unit_begin("__strchr__ - Null string pointer");
-  result = __strchr__(null, 'a', 1);
+  unit_begin("__strnchr__ - Null string pointer");
+  result = __strnchr__(null, 'a', 1);
   unit_assert_null(result);
   unit_end();
 
   /* Test 7.3.2: Valid pointer (reference) */
-  unit_begin("__strchr__ - Valid pointer (reference test)");
-  result = __strchr__((const Byte_t *) "test", 't', 5);
+  unit_begin("__strnchr__ - Valid pointer (reference test)");
+  result = __strnchr__((const Byte_t *) "test", 't', 5);
   unit_assert_not_null(result);
   unit_end();
 }
 
 
 /* ============================================================================
- * SECTION 8: STRING REVERSE CHARACTER SEARCH (__strrchr__) TESTS
+ * SECTION 8: STRING REVERSE CHARACTER SEARCH (__strnrchr__) TESTS
  * ============================================================================
  */
 static void test_strrchr_basic(void) {
   Byte_t *result;
   const Byte_t *testStr = (const Byte_t *) "hello world";
 
-  unit_print("--- Section 8.1: __strrchr__ Basic Tests ---");
+  unit_print("--- Section 8.1: __strnrchr__ Basic Tests ---");
 
   /* Test 8.1.1: Find last occurrence */
-  unit_begin("__strrchr__ - Find last occurrence");
-  result = __strrchr__((const Byte_t *) "hello", 'l', 6);
+  unit_begin("__strnrchr__ - Find last occurrence");
+  result = __strnrchr__((const Byte_t *) "hello", 'l', 6);
   unit_assert_not_null(result);
   unit_assert_equal(result - (const Byte_t *) "hello", 3); /* Last 'l' */
   unit_end();
 
   /* Test 8.1.2: Find character at end */
-  unit_begin("__strrchr__ - Find character at end");
-  result = __strrchr__(testStr, 'd', TEST_BUFFER_SIZE_LARGE);
+  unit_begin("__strnrchr__ - Find character at end");
+  result = __strnrchr__(testStr, 'd', TEST_BUFFER_SIZE_LARGE);
   unit_assert_not_null(result);
   unit_assert_equal(*result, 'd');
   unit_end();
 
   /* Test 8.1.3: Find character at beginning (only occurrence) */
-  unit_begin("__strrchr__ - Find character at beginning");
-  result = __strrchr__(testStr, 'h', TEST_BUFFER_SIZE_LARGE);
+  unit_begin("__strnrchr__ - Find character at beginning");
+  result = __strnrchr__(testStr, 'h', TEST_BUFFER_SIZE_LARGE);
   unit_assert_not_null(result);
   unit_assert_equal(result - testStr, 0);
   unit_end();
 
   /* Test 8.1.4: Find null terminator */
-  unit_begin("__strrchr__ - Find null terminator");
-  result = __strrchr__(testStr, '\0', TEST_BUFFER_SIZE_LARGE);
+  unit_begin("__strnrchr__ - Find null terminator");
+  result = __strnrchr__(testStr, '\0', TEST_BUFFER_SIZE_LARGE);
   unit_assert_not_null(result);
   unit_assert_equal(*result, '\0');
   unit_end();
 
   /* Test 8.1.5: Character not found */
-  unit_begin("__strrchr__ - Character not found");
-  result = __strrchr__(testStr, 'z', TEST_BUFFER_SIZE_LARGE);
+  unit_begin("__strnrchr__ - Character not found");
+  result = __strnrchr__(testStr, 'z', TEST_BUFFER_SIZE_LARGE);
   unit_assert_null(result);
   unit_end();
 
   /* Test 8.1.6: Empty string */
-  unit_begin("__strrchr__ - Search in empty string");
-  result = __strrchr__((const Byte_t *) "", 'a', 1);
+  unit_begin("__strnrchr__ - Search in empty string");
+  result = __strnrchr__((const Byte_t *) "", 'a', 1);
   unit_assert_null(result);
   unit_end();
 }
@@ -1046,38 +1046,38 @@ static void test_strrchr_basic(void) {
 static void test_strrchr_edge_cases(void) {
   Byte_t *result;
 
-  unit_print("--- Section 8.2: __strrchr__ Edge Cases ---");
+  unit_print("--- Section 8.2: __strnrchr__ Edge Cases ---");
 
   /* Test 8.2.1: Multiple occurrences */
-  unit_begin("__strrchr__ - Multiple occurrences returns last");
-  result = __strrchr__((const Byte_t *) "ababab", 'a', 7);
+  unit_begin("__strnrchr__ - Multiple occurrences returns last");
+  result = __strnrchr__((const Byte_t *) "ababab", 'a', 7);
   unit_assert_not_null(result);
   unit_assert_equal(result - (const Byte_t *) "ababab", 4); /* Last 'a' */
   unit_end();
 
   /* Test 8.2.2: All same character */
-  unit_begin("__strrchr__ - All same character");
-  result = __strrchr__((const Byte_t *) "aaaa", 'a', 5);
+  unit_begin("__strnrchr__ - All same character");
+  result = __strnrchr__((const Byte_t *) "aaaa", 'a', 5);
   unit_assert_not_null(result);
   unit_assert_equal(result - (const Byte_t *) "aaaa", 3); /* Last position */
   unit_end();
 
   /* Test 8.2.3: Single character string - match */
-  unit_begin("__strrchr__ - Single character string - match");
-  result = __strrchr__((const Byte_t *) "x", 'x', 2);
+  unit_begin("__strnrchr__ - Single character string - match");
+  result = __strnrchr__((const Byte_t *) "x", 'x', 2);
   unit_assert_not_null(result);
   unit_assert_equal(*result, 'x');
   unit_end();
 
   /* Test 8.2.4: Single character string - no match */
-  unit_begin("__strrchr__ - Single character string - no match");
-  result = __strrchr__((const Byte_t *) "x", 'y', 2);
+  unit_begin("__strnrchr__ - Single character string - no match");
+  result = __strnrchr__((const Byte_t *) "x", 'y', 2);
   unit_assert_null(result);
   unit_end();
 
   /* Test 8.2.5: Search for null in empty string */
-  unit_begin("__strrchr__ - Search for null in empty string");
-  result = __strrchr__((const Byte_t *) "", '\0', 1);
+  unit_begin("__strnrchr__ - Search for null in empty string");
+  result = __strnrchr__((const Byte_t *) "", '\0', 1);
   unit_assert_not_null(result); /* Should find the null terminator at position 0 */
   unit_assert_equal(*result, '\0');
   unit_end();
@@ -1087,17 +1087,17 @@ static void test_strrchr_edge_cases(void) {
 static void test_strrchr_null_pointer(void) {
   Byte_t *result;
 
-  unit_print("--- Section 8.3: __strrchr__ Null Pointer Tests ---");
+  unit_print("--- Section 8.3: __strnrchr__ Null Pointer Tests ---");
 
   /* Test 8.3.1: Null string pointer */
-  unit_begin("__strrchr__ - Null string pointer");
-  result = __strrchr__(null, 'a', 1);
+  unit_begin("__strnrchr__ - Null string pointer");
+  result = __strnrchr__(null, 'a', 1);
   unit_assert_null(result);
   unit_end();
 
   /* Test 8.3.2: Valid pointer (reference) */
-  unit_begin("__strrchr__ - Valid pointer (reference test)");
-  result = __strrchr__((const Byte_t *) "test", 't', 5);
+  unit_begin("__strnrchr__ - Valid pointer (reference test)");
+  result = __strnrchr__((const Byte_t *) "test", 't', 5);
   unit_assert_not_null(result);
   unit_end();
 }
@@ -1117,28 +1117,28 @@ static void test_path_join_basic(void) {
   unit_begin("__path_join__ - Join simple paths");
   result = __path_join__(dest, (const Byte_t *) "/home", (const Byte_t *) "user", TEST_PATH_BUFFER_SIZE, 6, 5);
   unit_assert_ok(result);
-  unit_assert_equal(__strcmp__(dest, (const Byte_t *) "/home/user", TEST_BUFFER_SIZE_LARGE), 0);
+  unit_assert_equal(__strncmp__(dest, (const Byte_t *) "/home/user", TEST_BUFFER_SIZE_LARGE), 0);
   unit_end();
 
   /* Test 9.1.2: Base with trailing slash */
   unit_begin("__path_join__ - Base with trailing slash");
   result = __path_join__(dest, (const Byte_t *) "/home/", (const Byte_t *) "user", TEST_PATH_BUFFER_SIZE, 7, 5);
   unit_assert_ok(result);
-  unit_assert_equal(__strcmp__(dest, (const Byte_t *) "/home/user", TEST_BUFFER_SIZE_LARGE), 0);
+  unit_assert_equal(__strncmp__(dest, (const Byte_t *) "/home/user", TEST_BUFFER_SIZE_LARGE), 0);
   unit_end();
 
   /* Test 9.1.3: Path with leading slash (absolute path) */
   unit_begin("__path_join__ - Path with leading slash (absolute)");
   result = __path_join__(dest, (const Byte_t *) "/home/user", (const Byte_t *) "/etc/config", TEST_PATH_BUFFER_SIZE, 11, 12);
   unit_assert_ok(result);
-  unit_assert_equal(__strcmp__(dest, (const Byte_t *) "/etc/config", TEST_BUFFER_SIZE_LARGE), 0); /* Absolute path replaces base */
+  unit_assert_equal(__strncmp__(dest, (const Byte_t *) "/etc/config", TEST_BUFFER_SIZE_LARGE), 0); /* Absolute path replaces base */
   unit_end();
 
   /* Test 9.1.4: Join multiple levels */
   unit_begin("__path_join__ - Join multiple directory levels");
   result = __path_join__(dest, (const Byte_t *) "/a", (const Byte_t *) "b/c/d", TEST_PATH_BUFFER_SIZE, 3, 6);
   unit_assert_ok(result);
-  unit_assert_equal(__strcmp__(dest, (const Byte_t *) "/a/b/c/d", TEST_BUFFER_SIZE_LARGE), 0);
+  unit_assert_equal(__strncmp__(dest, (const Byte_t *) "/a/b/c/d", TEST_BUFFER_SIZE_LARGE), 0);
   unit_end();
 }
 
@@ -1153,14 +1153,14 @@ static void test_path_join_edge_cases(void) {
   unit_begin("__path_join__ - Both with slashes");
   result = __path_join__(dest, (const Byte_t *) "/home/", (const Byte_t *) "/path", TEST_PATH_BUFFER_SIZE, 7, 6);
   unit_assert_ok(result);
-  unit_assert_equal(__strcmp__(dest, (const Byte_t *) "/path", TEST_BUFFER_SIZE_LARGE), 0); /* Absolute path */
+  unit_assert_equal(__strncmp__(dest, (const Byte_t *) "/path", TEST_BUFFER_SIZE_LARGE), 0); /* Absolute path */
   unit_end();
 
   /* Test 9.2.2: Root base path */
   unit_begin("__path_join__ - Root base path");
   result = __path_join__(dest, (const Byte_t *) "/", (const Byte_t *) "file.txt", TEST_PATH_BUFFER_SIZE, 2, 9);
   unit_assert_ok(result);
-  unit_assert_equal(__strcmp__(dest, (const Byte_t *) "/file.txt", TEST_BUFFER_SIZE_LARGE), 0);
+  unit_assert_equal(__strncmp__(dest, (const Byte_t *) "/file.txt", TEST_BUFFER_SIZE_LARGE), 0);
   unit_end();
 
   /* Test 9.2.3: Empty base - should fail */
@@ -1243,7 +1243,7 @@ static void test_path_normalize_basic(void) {
   __strcpy__(path, (const Byte_t *) "/home/./user", TEST_PATH_BUFFER_SIZE);
   result = __path_normalize__(path, TEST_PATH_BUFFER_SIZE);
   unit_assert_ok(result);
-  unit_assert_equal(__strcmp__(path, (const Byte_t *) "/home/user", TEST_PATH_BUFFER_SIZE), 0);
+  unit_assert_equal(__strncmp__(path, (const Byte_t *) "/home/user", TEST_PATH_BUFFER_SIZE), 0);
   unit_end();
 
   /* Test 10.1.2: Remove double dot */
@@ -1251,7 +1251,7 @@ static void test_path_normalize_basic(void) {
   __strcpy__(path, (const Byte_t *) "/home/user/../data", TEST_PATH_BUFFER_SIZE);
   result = __path_normalize__(path, TEST_PATH_BUFFER_SIZE);
   unit_assert_ok(result);
-  unit_assert_equal(__strcmp__(path, (const Byte_t *) "/home/data", TEST_PATH_BUFFER_SIZE), 0);
+  unit_assert_equal(__strncmp__(path, (const Byte_t *) "/home/data", TEST_PATH_BUFFER_SIZE), 0);
   unit_end();
 
   /* Test 10.1.3: Already normalized */
@@ -1259,7 +1259,7 @@ static void test_path_normalize_basic(void) {
   __strcpy__(path, (const Byte_t *) "/home/user/file.txt", TEST_PATH_BUFFER_SIZE);
   result = __path_normalize__(path, TEST_PATH_BUFFER_SIZE);
   unit_assert_ok(result);
-  unit_assert_equal(__strcmp__(path, (const Byte_t *) "/home/user/file.txt", TEST_PATH_BUFFER_SIZE), 0);
+  unit_assert_equal(__strncmp__(path, (const Byte_t *) "/home/user/file.txt", TEST_PATH_BUFFER_SIZE), 0);
   unit_end();
 
   /* Test 10.1.4: Root path */
@@ -1267,7 +1267,7 @@ static void test_path_normalize_basic(void) {
   __strcpy__(path, (const Byte_t *) "/", TEST_PATH_BUFFER_SIZE);
   result = __path_normalize__(path, TEST_PATH_BUFFER_SIZE);
   unit_assert_ok(result);
-  unit_assert_equal(__strcmp__(path, (const Byte_t *) "/", TEST_PATH_BUFFER_SIZE), 0);
+  unit_assert_equal(__strncmp__(path, (const Byte_t *) "/", TEST_PATH_BUFFER_SIZE), 0);
   unit_end();
 }
 
@@ -1283,7 +1283,7 @@ static void test_path_normalize_edge_cases(void) {
   __strcpy__(path, (const Byte_t *) "/a/b/c/../../d", TEST_PATH_BUFFER_SIZE);
   result = __path_normalize__(path, TEST_PATH_BUFFER_SIZE);
   unit_assert_ok(result);
-  unit_assert_equal(__strcmp__(path, (const Byte_t *) "/a/d", TEST_PATH_BUFFER_SIZE), 0);
+  unit_assert_equal(__strncmp__(path, (const Byte_t *) "/a/d", TEST_PATH_BUFFER_SIZE), 0);
   unit_end();
 
   /* Test 10.2.2: Parent at root */
@@ -1291,7 +1291,7 @@ static void test_path_normalize_edge_cases(void) {
   __strcpy__(path, (const Byte_t *) "/../home", TEST_PATH_BUFFER_SIZE);
   result = __path_normalize__(path, TEST_PATH_BUFFER_SIZE);
   unit_assert_ok(result);
-  unit_assert_equal(__strcmp__(path, (const Byte_t *) "/home", TEST_PATH_BUFFER_SIZE), 0);
+  unit_assert_equal(__strncmp__(path, (const Byte_t *) "/home", TEST_PATH_BUFFER_SIZE), 0);
   unit_end();
 
   /* Test 10.2.3: Multiple consecutive dots */
@@ -1299,7 +1299,7 @@ static void test_path_normalize_edge_cases(void) {
   __strcpy__(path, (const Byte_t *) "/./././home", TEST_PATH_BUFFER_SIZE);
   result = __path_normalize__(path, TEST_PATH_BUFFER_SIZE);
   unit_assert_ok(result);
-  unit_assert_equal(__strcmp__(path, (const Byte_t *) "/home", TEST_PATH_BUFFER_SIZE), 0);
+  unit_assert_equal(__strncmp__(path, (const Byte_t *) "/home", TEST_PATH_BUFFER_SIZE), 0);
   unit_end();
 
   /* Test 10.2.4: Dot and parent dot mixed */
@@ -1307,7 +1307,7 @@ static void test_path_normalize_edge_cases(void) {
   __strcpy__(path, (const Byte_t *) "/home/./user/../data/./file", TEST_PATH_BUFFER_SIZE);
   result = __path_normalize__(path, TEST_PATH_BUFFER_SIZE);
   unit_assert_ok(result);
-  unit_assert_equal(__strcmp__(path, (const Byte_t *) "/home/data/file", TEST_PATH_BUFFER_SIZE), 0);
+  unit_assert_equal(__strncmp__(path, (const Byte_t *) "/home/data/file", TEST_PATH_BUFFER_SIZE), 0);
   unit_end();
 
   /* Test 10.2.5: All parent references */
@@ -1315,7 +1315,7 @@ static void test_path_normalize_edge_cases(void) {
   __strcpy__(path, (const Byte_t *) "/a/b/c/../../../", TEST_PATH_BUFFER_SIZE);
   result = __path_normalize__(path, TEST_PATH_BUFFER_SIZE);
   unit_assert_ok(result);
-  unit_assert_equal(__strcmp__(path, (const Byte_t *) "/", TEST_PATH_BUFFER_SIZE), 0);
+  unit_assert_equal(__strncmp__(path, (const Byte_t *) "/", TEST_PATH_BUFFER_SIZE), 0);
   unit_end();
 }
 
@@ -1453,7 +1453,7 @@ static void test_path_dirname_basic(void) {
   unit_begin("__path_dirname__ - Simple path");
   result = __path_dirname__(dest, (const Byte_t *) "/home/user/file.txt", TEST_PATH_BUFFER_SIZE, 20);
   unit_assert_ok(result);
-  unit_assert_equal(__strcmp__(dest, (const Byte_t *) "/home/user", TEST_BUFFER_SIZE_LARGE), 0);
+  unit_assert_equal(__strncmp__(dest, (const Byte_t *) "/home/user", TEST_BUFFER_SIZE_LARGE), 0);
   unit_end();
 
   /* Test 12.1.2: Root level file */
@@ -1466,7 +1466,7 @@ static void test_path_dirname_basic(void) {
   unit_begin("__path_dirname__ - Deep nested path");
   result = __path_dirname__(dest, (const Byte_t *) "/a/b/c/d/e/f.txt", TEST_PATH_BUFFER_SIZE, 17);
   unit_assert_ok(result);
-  unit_assert_equal(__strcmp__(dest, (const Byte_t *) "/a/b/c/d/e", TEST_BUFFER_SIZE_LARGE), 0);
+  unit_assert_equal(__strncmp__(dest, (const Byte_t *) "/a/b/c/d/e", TEST_BUFFER_SIZE_LARGE), 0);
   unit_end();
 
   /* Test 12.1.4: Directory path (with trailing slash) */
@@ -1494,14 +1494,14 @@ static void test_path_dirname_edge_cases(void) {
   unit_begin("__path_dirname__ - No slashes (relative file)");
   result = __path_dirname__(dest, (const Byte_t *) "file.txt", TEST_PATH_BUFFER_SIZE, 9);
   unit_assert_ok(result);
-  unit_assert_equal(__strcmp__(dest, (const Byte_t *) ".", TEST_BUFFER_SIZE_LARGE), 0);
+  unit_assert_equal(__strncmp__(dest, (const Byte_t *) ".", TEST_BUFFER_SIZE_LARGE), 0);
   unit_end();
 
   /* Test 12.2.3: Empty path */
   unit_begin("__path_dirname__ - Empty path");
   result = __path_dirname__(dest, (const Byte_t *) "", TEST_PATH_BUFFER_SIZE, 1);
   unit_assert_ok(result);
-  unit_assert_equal(__strcmp__(dest, (const Byte_t *) ".", TEST_BUFFER_SIZE_LARGE), 0);
+  unit_assert_equal(__strncmp__(dest, (const Byte_t *) ".", TEST_BUFFER_SIZE_LARGE), 0);
   unit_end();
 
   /* Test 12.2.4: Buffer too small */
@@ -1565,28 +1565,28 @@ static void test_path_basename_basic(void) {
   unit_begin("__path_basename__ - Simple path");
   result = __path_basename__(dest, (const Byte_t *) "/home/user/file.txt", TEST_PATH_BUFFER_SIZE, 20);
   unit_assert_ok(result);
-  unit_assert_equal(__strcmp__(dest, (const Byte_t *) "file.txt", TEST_BUFFER_SIZE_LARGE), 0);
+  unit_assert_equal(__strncmp__(dest, (const Byte_t *) "file.txt", TEST_BUFFER_SIZE_LARGE), 0);
   unit_end();
 
   /* Test 13.1.2: Root level file */
   unit_begin("__path_basename__ - Root level file");
   result = __path_basename__(dest, (const Byte_t *) "/file.txt", TEST_PATH_BUFFER_SIZE, 10);
   unit_assert_ok(result);
-  unit_assert_equal(__strcmp__(dest, (const Byte_t *) "file.txt", TEST_BUFFER_SIZE_LARGE), 0);
+  unit_assert_equal(__strncmp__(dest, (const Byte_t *) "file.txt", TEST_BUFFER_SIZE_LARGE), 0);
   unit_end();
 
   /* Test 13.1.3: Just filename */
   unit_begin("__path_basename__ - Just filename (no path)");
   result = __path_basename__(dest, (const Byte_t *) "file.txt", TEST_PATH_BUFFER_SIZE, 9);
   unit_assert_ok(result);
-  unit_assert_equal(__strcmp__(dest, (const Byte_t *) "file.txt", TEST_BUFFER_SIZE_LARGE), 0);
+  unit_assert_equal(__strncmp__(dest, (const Byte_t *) "file.txt", TEST_BUFFER_SIZE_LARGE), 0);
   unit_end();
 
   /* Test 13.1.4: Deep nested path */
   unit_begin("__path_basename__ - Deep nested path");
   result = __path_basename__(dest, (const Byte_t *) "/a/b/c/d/e/file.txt", TEST_PATH_BUFFER_SIZE, 20);
   unit_assert_ok(result);
-  unit_assert_equal(__strcmp__(dest, (const Byte_t *) "file.txt", TEST_BUFFER_SIZE_LARGE), 0);
+  unit_assert_equal(__strncmp__(dest, (const Byte_t *) "file.txt", TEST_BUFFER_SIZE_LARGE), 0);
   unit_end();
 }
 
@@ -1615,14 +1615,14 @@ static void test_path_basename_edge_cases(void) {
   unit_begin("__path_basename__ - Empty path");
   result = __path_basename__(dest, (const Byte_t *) "", TEST_PATH_BUFFER_SIZE, 1);
   unit_assert_ok(result);
-  unit_assert_equal(__strcmp__(dest, (const Byte_t *) ".", TEST_BUFFER_SIZE_LARGE), 0);
+  unit_assert_equal(__strncmp__(dest, (const Byte_t *) ".", TEST_BUFFER_SIZE_LARGE), 0);
   unit_end();
 
   /* Test 13.2.4: Filename with no extension */
   unit_begin("__path_basename__ - Filename with no extension");
   result = __path_basename__(dest, (const Byte_t *) "/home/user/readme", TEST_PATH_BUFFER_SIZE, 18);
   unit_assert_ok(result);
-  unit_assert_equal(__strcmp__(dest, (const Byte_t *) "readme", TEST_BUFFER_SIZE_LARGE), 0);
+  unit_assert_equal(__strncmp__(dest, (const Byte_t *) "readme", TEST_BUFFER_SIZE_LARGE), 0);
   unit_end();
 
   /* Test 13.2.5: Buffer too small */
@@ -1692,12 +1692,12 @@ static void test_path_basename_null_pointers(void) {
  * after the buffer to detect if functions read past the boundary.
  *
  * EXPECTED FAILURES (functions that WILL read past buffer):
- * - __strlen__()     - searches for null, will read past buffer
- * - __strcmp__()     - searches for null in both strings, will read past
+ * - __strnlen__()     - searches for null, will read past buffer
+ * - __strncmp__()     - searches for null in both strings, will read past
  * - __strcpy__()     - searches for null in source, will read past
  * - __strcat__()     - searches for null in both dest and src
- * - __strchr__()     - searches for character or null, will read past
- * - __strrchr__()    - searches for character or null, will read past
+ * - __strnchr__()     - searches for character or null, will read past
+ * - __strnrchr__()    - searches for character or null, will read past
  * - __path_*()       - all path functions likely use strlen/strcmp internally
  *
  * EXPECTED SAFE (functions with explicit length parameters):
@@ -1751,13 +1751,13 @@ static void test_non_null_terminated_strings(void) {
   unit_print("--- Testing functions that accept string parameters ---");
 
   /* ========================================================================
-   * TEST 14.1: __strlen__() with non-null-terminated string
+   * TEST 14.1: __strnlen__() with non-null-terminated string
    * EXPECTED: FAIL - will read past buffer and find the null at position 9
    * If strlen returns 8, it means it stopped at the buffer boundary (SAFE - unexpected!)
    * If strlen returns 9+, it means it read past the boundary (UNSAFE - expected!)
    * ======================================================================== */
-  unit_begin("__strlen__() should handle (NOW SAFE) non-null-terminated buffer");
-  len = __strlen__(nonterm_buffer, 8);
+  unit_begin("__strnlen__() should handle (NOW SAFE) non-null-terminated buffer");
+  len = __strnlen__(nonterm_buffer, 8);
   /* Buffer is 8 bytes "ABCDEFGH" with NO null terminator */
   /* A proper implementation would either:
    * 1. Take a length parameter (like strnlen)
@@ -1767,21 +1767,21 @@ static void test_non_null_terminated_strings(void) {
    * We placed null at position 8 - if strlen finds it, test FAILS */
   unit_assert_equal(len, 8);  /* FAIL if it read past buffer and found our null */
   if(len != 8) {
-    unit_print("      PASS: __strlen__() stopped at 8-byte boundary (SAFE)!");
+    unit_print("      PASS: __strnlen__() stopped at 8-byte boundary (SAFE)!");
   }
   unit_end();
 
   /* ========================================================================
-   * TEST 14.2: __strcmp__() with non-null-terminated strings
+   * TEST 14.2: __strncmp__() with non-null-terminated strings
    * NOW SAFE - function has maxLen parameter
    * ======================================================================== */
-  unit_begin("__strcmp__() should handle non-null-terminated strings");
-  cmp = __strcmp__(nonterm_buffer, nonterm_buffer2, 8);
+  unit_begin("__strncmp__() should handle non-null-terminated strings");
+  cmp = __strncmp__(nonterm_buffer, nonterm_buffer2, 8);
   /* If strcmp completes and returns EQUAL, it read both buffers to find nulls */
   /* We placed nulls at position 8 for both. If it found them, test FAILS */
   unit_assert_equal(cmp, STRCMP_EQUAL);  /* FAIL - it shouldn't find equality */
   if(cmp != STRCMP_EQUAL) {
-    unit_print("      PASS: __strcmp__() safely compared 8-byte buffers!");
+    unit_print("      PASS: __strncmp__() safely compared 8-byte buffers!");
   }
   unit_end();
 
@@ -1802,7 +1802,7 @@ static void test_non_null_terminated_strings(void) {
   for(i = 0; i < 32; i++) dest_buffer[i] = 0xCC;  /* Clear dest */
   result = __strcpy__(dest_buffer, nonterm_buffer, 32);
   /* If strcpy copied exactly 8 bytes and added null, it read past to find null */
-  len = __strlen__(dest_buffer, 32);
+  len = __strnlen__(dest_buffer, 32);
   unit_assert_equal(len, 8);  /* FAIL if it copied all 8 bytes (read past buffer) */
   if(len != 8) {
     unit_print("      PASS: __strcpy__() safely stopped at buffer boundary!");
@@ -1847,7 +1847,7 @@ static void test_non_null_terminated_strings(void) {
   for(i = 2; i < 32; i++) dest_buffer[i] = 0xCC;
   result = __strcat__(dest_buffer, nonterm_buffer, 32);
   /* Check if it copied all 8 bytes (meaning it read to the null at position 8) */
-  len = __strlen__(dest_buffer, 32);
+  len = __strnlen__(dest_buffer, 32);
   unit_assert_equal(len, 9);  /* FAIL if len=9 (1 + 8 bytes copied) */
   if(len != 9) {
     unit_print("      PASS: __strcat__() safely handled source!");
@@ -1855,28 +1855,28 @@ static void test_non_null_terminated_strings(void) {
   unit_end();
 
   /* ========================================================================
-   * TEST 14.8: __strchr__() with non-null-terminated string
+   * TEST 14.8: __strnchr__() with non-null-terminated string
    * Should not search past buffer boundary
    * ======================================================================== */
-  unit_begin("__strchr__() should handle non-null-terminated string");
-  ptr = __strchr__(nonterm_buffer, 'Z', 8);  /* Search for 'Z' (not in "ABCDEFGH") */
+  unit_begin("__strnchr__() should handle non-null-terminated string");
+  ptr = __strnchr__(nonterm_buffer, 'Z', 8);  /* Search for 'Z' (not in "ABCDEFGH") */
   /* If strchr returns NULL after searching, it read through buffer to null at pos 8 */
   unit_assert_null(ptr);  /* FAIL if it returned NULL (read past buffer) */
   if(ptr != null) {
-    unit_print("      PASS: __strchr__() safely returned NULL!");
+    unit_print("      PASS: __strnchr__() safely returned NULL!");
   }
   unit_end();
 
   /* ========================================================================
-   * TEST 14.9: __strrchr__() with non-null-terminated string
+   * TEST 14.9: __strnrchr__() with non-null-terminated string
    * Should not search past buffer boundary
    * ======================================================================== */
-  unit_begin("__strrchr__() should handle non-null-terminated string");
-  ptr = __strrchr__(nonterm_buffer, 'Z', 8);  /* Search for 'Z' (not present) */
+  unit_begin("__strnrchr__() should handle non-null-terminated string");
+  ptr = __strnrchr__(nonterm_buffer, 'Z', 8);  /* Search for 'Z' (not present) */
   /* If strrchr returns NULL, it searched through buffer to null at position 8 */
   unit_assert_null(ptr);  /* FAIL if it returned NULL (read past buffer) */
   if(ptr != null) {
-    unit_print("      PASS: __strrchr__() safely returned NULL!");
+    unit_print("      PASS: __strnrchr__() safely returned NULL!");
   }
   unit_end();
 
@@ -1967,12 +1967,12 @@ static void test_non_null_terminated_strings(void) {
 
   unit_print("=== SECTION 14 COMPLETE: NON-NULL-TERMINATED TESTS ===");
   unit_print("=== SUMMARY: ALL FUNCTIONS NOW SAFE WITH BUFFER SIZE PARAMETERS ===");
-  unit_print("    - __strlen__()         : NOW SAFE with maxLen parameter");
-  unit_print("    - __strcmp__()         : NOW SAFE with maxLen parameter");
+  unit_print("    - __strnlen__()         : NOW SAFE with maxLen parameter");
+  unit_print("    - __strncmp__()         : NOW SAFE with maxLen parameter");
   unit_print("    - __strcpy__()         : SAFE - checks bounds before array access");
   unit_print("    - __strcat__()         : SAFE - checks bounds before array access");
-  unit_print("    - __strchr__()         : NOW SAFE with maxLen parameter");
-  unit_print("    - __strrchr__()        : NOW SAFE with maxLen parameter");
+  unit_print("    - __strnchr__()         : NOW SAFE with maxLen parameter");
+  unit_print("    - __strnrchr__()        : NOW SAFE with maxLen parameter");
   unit_print("    - __path_join__()      : SAFE - uses safe string functions");
   unit_print("    - __path_normalize__() : SAFE - uses safe string functions");
   unit_print("    - __path_is_absolute__(): SAFE - uses safe string functions");
