@@ -68,6 +68,10 @@
 
   #include "timer.h"
 
+  #define __StreamLengthNonZero__() (0x0u < stream_->length)
+
+
+  #define __StreamLengthAtLimit__() (stream_->length == CONFIG_STREAM_BUFFER_BYTES)
 
   #ifdef __cplusplus
 

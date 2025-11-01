@@ -154,6 +154,8 @@
 
     return (len);
   }
+
+
 /**
  * @brief Copies a string with bounds checking
  * @details Internal string copy with destination size limit.
@@ -193,6 +195,8 @@
 
     FUNCTION_EXIT;
   }
+
+
 /**
  * @brief Copies at most n characters from a string
  * @details Internal bounded string copy implementation.
@@ -233,6 +237,8 @@
 
     FUNCTION_EXIT;
   }
+
+
   Base_t __strncmp__(const Byte_t *s1_, const Byte_t *s2_, const Size_t size_) {
 
     Size_t i = 0x0u;
@@ -259,6 +265,8 @@
 
     return ((i < size_) ? ((s1_[i] < s2_[i]) ? -0x1 : 0x1) : 0x0u);
   }
+
+
 /**
  * @brief Concatenates two strings with bounds checking
  * @details Internal string concatenation with destination size limit.
@@ -309,6 +317,8 @@
 
     FUNCTION_EXIT;
   }
+
+
   Byte_t * __strnchr__(const Byte_t *str_, const Byte_t ch_, const Size_t size_) {
 
     Size_t i = 0x0u;
@@ -333,6 +343,8 @@
 
     return (null);
   }
+
+
   Byte_t * __strnrchr__(const Byte_t *str_, const Byte_t ch_, const Size_t size_) {
 
     Size_t len = 0x0u;
@@ -361,6 +373,8 @@
 
     return (null);
   }
+
+
 /**
  * @brief Joins two path components
  * @details Internal path joining with proper separator handling.
@@ -459,6 +473,8 @@
 
     FUNCTION_EXIT;
   }
+
+
 /**
  * @brief Normalizes a filesystem path
  * @details Internal path normalization removing "." and ".." components.
@@ -593,6 +609,8 @@
 
     FUNCTION_EXIT;
   }
+
+
   Base_t __path_is_absolute__(const Byte_t *path_, Size_t size_) {
 
     if(__PointerIsNull__(path_) || (0x0u == size_)) {
@@ -602,6 +620,8 @@
 
     return ((CHAR_SLASH == path_[0x0u]) ? true : false);
   }
+
+
 /**
  * @brief Extracts directory portion of path
  * @details Internal path parsing to get parent directory.
@@ -688,6 +708,8 @@
 
     FUNCTION_EXIT;
   }
+
+
 /**
  * @brief Extracts filename portion of path
  * @details Internal path parsing to get final component.
@@ -762,6 +784,8 @@
 
     FUNCTION_EXIT;
   }
+
+
 /**
  * @brief Initializes the console subsystem
  * @details Sets up console device and internal state for command processing.
@@ -797,6 +821,8 @@
 
     FUNCTION_EXIT;
   }
+
+
   void vConsoleTask(Task_t *task_, TaskParm_t *parm_) {
 
     Byte_t ch = 0x00u;
@@ -887,6 +913,8 @@
       }
     }
   }
+
+
 /**
  * @brief Checks and initializes the console device
  * @details Internal helper that verifies the console device is available and initializes it if needed.
@@ -952,6 +980,8 @@
 
     FUNCTION_EXIT;
   }
+
+
 /**
  * @brief Writes a string to the console device
  * @details Internal helper that writes a null-terminated string to the console output device.
@@ -1075,6 +1105,8 @@
 
     FUNCTION_EXIT;
   }
+
+
 /**
  * @brief Reads a single character from the console device
  * @details Internal helper that reads one character from the console input device with buffering support.
@@ -1181,10 +1213,14 @@
 
     FUNCTION_EXIT;
   }
+
+
   void __ConsolePrintPrompt__(void) {
 
     __ConsoleWriteString__((const Byte_t *) CONFIG_CONSOLE_PROMPT);
   }
+
+
 /**
  * @brief Handles backspace character in console input
  * @details Internal helper that processes backspace input by removing the last character from the input buffer and updating the display.
@@ -1214,6 +1250,8 @@
 
     FUNCTION_EXIT;
   }
+
+
 /**
  * @brief Processes and executes a console command
  * @details Internal helper that parses the input buffer and dispatches to the appropriate command handler.
@@ -1300,6 +1338,8 @@
 
     FUNCTION_EXIT;
   }
+
+
 /**
  * @brief Implements the help command
  * @details Internal command handler that displays available console commands and their descriptions.
@@ -1336,6 +1376,8 @@
 
     FUNCTION_EXIT;
   }
+
+
 /**
  * @brief Implements the version command
  * @details Internal command handler that displays the HeliOS version information.
@@ -1363,6 +1405,8 @@
 
     FUNCTION_EXIT;
   }
+
+
 /**
  * @brief Implements the tasks command
  * @details Internal command handler that displays information about all registered tasks including their states and runtime statistics.
@@ -1454,6 +1498,8 @@
 
     FUNCTION_EXIT;
   }
+
+
 /**
  * @brief Implements the mem command
  * @details Internal command handler that displays memory usage statistics and available memory regions.
@@ -1531,6 +1577,8 @@
 
     FUNCTION_EXIT;
   }
+
+
 /**
  * @brief Implements the clear command
  * @details Internal command handler that clears the console screen.
@@ -1552,6 +1600,8 @@
 
     FUNCTION_EXIT;
   }
+
+
 /**
  * @brief Implements the echo command
  * @details Internal command handler that echoes text back to the console output or toggles echo mode.
@@ -1589,6 +1639,8 @@
 
     FUNCTION_EXIT;
   }
+
+
 /**
  * @brief Implements the ls command
  * @details Internal command handler that lists directory contents in the filesystem.
@@ -1704,6 +1756,8 @@
 
     FUNCTION_EXIT;
   }
+
+
 /**
  * @brief Implements the cd command
  * @details Internal command handler that changes the current working directory.
@@ -1812,6 +1866,8 @@
 
     FUNCTION_EXIT;
   }
+
+
 /**
  * @brief Implements the pwd command
  * @details Internal command handler that displays the current working directory path.
@@ -2019,6 +2075,8 @@
 
     FUNCTION_EXIT;
   }
+
+
 /**
  * @brief Implements the mv command
  * @details Internal command handler that moves or renames files and directories.
@@ -2113,6 +2171,8 @@
 
     FUNCTION_EXIT;
   }
+
+
 /**
  * @brief Implements the rm command
  * @details Internal command handler that removes files from the filesystem.
@@ -2196,6 +2256,8 @@
 
     FUNCTION_EXIT;
   }
+
+
 /**
  * @brief Implements the mkdir command
  * @details Internal command handler that creates a new directory.
@@ -2279,6 +2341,8 @@
 
     FUNCTION_EXIT;
   }
+
+
   void __SkipWhitespace__(const Byte_t **str_) {
 
     if(__PointerIsNotNull__(str_) && __PointerIsNotNull__(*str_)) {
@@ -2289,6 +2353,8 @@
       }
     }
   }
+
+
   void __uitoah__(Word_t value_, Byte_t *buffer_, Word_t bufferSize_) {
 
     const Byte_t *hexDigits = (const Byte_t *) "0123456789ABCDEF";

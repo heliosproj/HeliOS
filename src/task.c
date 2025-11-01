@@ -35,10 +35,6 @@
 
 
 static TaskList_t *tlist = null;
-static void __RunTimeReset__(void);
-static Return_t __TaskListFindTask__(const Task_t *task_);
-
-
 static SchedulerState_t scheduler = SchedulerStateRunning;
 
 
@@ -1390,7 +1386,7 @@ Return_t xTaskGetPeriod(const Task_t *task_, Ticks_t *period_) {
  * @return          ReturnOK if task was found
  * @return          ReturnError if task was not found or invalid
  */
-static Return_t __TaskListFindTask__(const Task_t *task_) {
+Return_t __TaskListFindTask__(const Task_t *task_) {
 
   FUNCTION_ENTER;
 
@@ -1595,7 +1591,7 @@ Return_t xTaskStartScheduler(void) {
   FUNCTION_EXIT;
 
 }
-static void __RunTimeReset__(void) {
+void __RunTimeReset__(void) {
 
   Task_t *cursor = null;
 

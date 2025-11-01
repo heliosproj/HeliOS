@@ -113,6 +113,7 @@
 
     #define TO_LITERAL(a_) QUOTE(a_)
 
+    #define __DeviceUidNonZero__() (0x0u < uid_)
 
     #ifdef __cplusplus
 

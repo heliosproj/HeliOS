@@ -34,55 +34,7 @@ static volatile MemoryRegion_t kernel = {
 
 
 };
-
-
-#define __AlignUp__(value_, alignment_) \
-        (((value_) + ((alignment_) - 1)) & ~((alignment_) - 1))
-
-
-#define __AlignDown__(value_, alignment_) \
-        ((value_) & ~((alignment_) - 1))
-
-
-#define __IsAligned__(value_, alignment_) \
-        (((value_) & ((alignment_) - 1)) == 0x0u)
-
-
-#define ALIGNED_HEADER_SIZE \
-        (((sizeof(BlockHeader_t)) + (CONFIG_MEMORY_ALIGNMENT - 1)) & ~(CONFIG_MEMORY_ALIGNMENT - 1))
-
-
-#define __OffsetPointerToBlockHeader__(ptr_) \
-        ((BlockHeader_t *) (((Byte_t *) (ptr_)) - ALIGNED_HEADER_SIZE))
-
-
-#define __OffsetBlockHeaderToPointer__(header_) \
-        ((Addr_t *) (((Byte_t *) (header_)) + ALIGNED_HEADER_SIZE))
-
-
-#define __BlockHeaderIsInUse__(header_) (INUSE == (header_)->free)
-
-
-#define __BlockHeaderIsFree__(header_) (FREE == (header_)->free)
-static Return_t __ValidateBlockHeader__(const BlockHeader_t *header_, const volatile MemoryRegion_t *region_);
-static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **addr_, const Size_t size_);
-static Return_t __free__(volatile MemoryRegion_t *region_, const volatile Addr_t *addr_);
-/**
- * @brief Gets statistics for a memory region
- * @details Internal helper that calculates usage statistics for a specific memory region.
- *
- * @param[in] region_ Pointer to memory region
- * @param[in] stats_  Pointer to store statistics
- *
- * @return            ReturnOK if statistics were retrieved successfully
- * @return            ReturnError if operation failed
- */
-static Return_t __MemGetRegionStats__(const volatile MemoryRegion_t *region_, MemoryRegionStats_t **stats_);
-static Return_t __DefragMemoryRegion__(volatile MemoryRegion_t *region_);
-static Return_t __MemoryRegionInit__(volatile MemoryRegion_t *region_);
-static Return_t __DetectByteOrder__(ByteOrder_t *order_);
-static Word_t __checksum__(const BlockHeader_t *header_);
-static Word_t __checksum__(const BlockHeader_t *header_) {
+Word_t __checksum__(const BlockHeader_t *header_) {
 
   Word_t sum1 = 0xFFFFu;
 
@@ -167,7 +119,7 @@ static Word_t __checksum__(const BlockHeader_t *header_) {
  * @return            ReturnOK if header is valid
  * @return            ReturnError if header is corrupted or invalid
  */
-static Return_t __ValidateBlockHeader__(const BlockHeader_t *header_, const volatile MemoryRegion_t *region_) {
+Return_t __ValidateBlockHeader__(const BlockHeader_t *header_, const volatile MemoryRegion_t *region_) {
 
   FUNCTION_ENTER;
 
@@ -301,7 +253,7 @@ Return_t __MemoryInit__(void) {
  * @return                ReturnOK if region was initialized successfully
  * @return                ReturnError if initialization failed
  */
-static Return_t __MemoryRegionInit__(volatile MemoryRegion_t *region_) {
+Return_t __MemoryRegionInit__(volatile MemoryRegion_t *region_) {
 
   FUNCTION_ENTER;
 
@@ -359,7 +311,7 @@ static Return_t __MemoryRegionInit__(volatile MemoryRegion_t *region_) {
  * @return                ReturnOK if allocation was successful
  * @return                ReturnError if allocation failed
  */
-static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **addr_, const Size_t size_) {
+Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **addr_, const Size_t size_) {
 
   FUNCTION_ENTER;
 
@@ -528,7 +480,7 @@ static Return_t __calloc__(volatile MemoryRegion_t *region_, volatile Addr_t **a
  * @return                ReturnOK if memory was freed successfully
  * @return                ReturnError if pointer is invalid or already freed
  */
-static Return_t __free__(volatile MemoryRegion_t *region_, const volatile Addr_t *addr_) {
+Return_t __free__(volatile MemoryRegion_t *region_, const volatile Addr_t *addr_) {
 
   FUNCTION_ENTER;
 
@@ -604,7 +556,7 @@ static Return_t __free__(volatile MemoryRegion_t *region_, const volatile Addr_t
  * @return            ReturnOK if defragmentation was successful
  * @return            ReturnError if operation failed
  */
-static Return_t __DefragMemoryRegion__(volatile MemoryRegion_t *region_) {
+Return_t __DefragMemoryRegion__(volatile MemoryRegion_t *region_) {
 
   FUNCTION_ENTER;
 
@@ -1074,7 +1026,7 @@ Return_t __HeapFreeMemory__(const volatile Addr_t *addr_) {
  * @return             ReturnOK if statistics were retrieved successfully
  * @return             ReturnError if operation failed
  */
-static Return_t __MemGetRegionStats__(const volatile MemoryRegion_t *region_, MemoryRegionStats_t **stats_) {
+Return_t __MemGetRegionStats__(const volatile MemoryRegion_t *region_, MemoryRegionStats_t **stats_) {
 
   FUNCTION_ENTER;
 
@@ -1406,7 +1358,7 @@ Return_t __memcmp__(const volatile Addr_t *s1_, const volatile Addr_t *s2_, cons
  *
  * @return            ReturnOK always returns OK after detection
  */
-static Return_t __DetectByteOrder__(ByteOrder_t *order_) {
+Return_t __DetectByteOrder__(ByteOrder_t *order_) {
 
   FUNCTION_ENTER;
 

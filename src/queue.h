@@ -88,7 +88,8 @@
   Return_t xQueueReceive(Queue_t *queue_, QueueMessage_t **message_);
   Return_t xQueueLockQueue(Queue_t *queue_);
   Return_t xQueueUnLockQueue(Queue_t *queue_);
-
+  Return_t __QueueDropmessage__(Queue_t *queue_);
+  Return_t __QueuePeek__(const Queue_t *queue_, QueueMessage_t **message_);
 
   #ifdef __cplusplus
 

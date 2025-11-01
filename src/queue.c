@@ -16,9 +16,6 @@
 
 
 #include "queue.h"
-static Return_t __QueueDropmessage__(Queue_t *queue_);
-static Return_t __QueuePeek__(const Queue_t *queue_, QueueMessage_t **message_);
-
 
 #define __GetQueueLength__() \
         cursor = queue_->head; \
@@ -503,7 +500,7 @@ Return_t xQueuePeek(const Queue_t *queue_, QueueMessage_t **message_) {
  * @return             ReturnOK if message was retrieved successfully
  * @return             ReturnError if queue is empty or invalid parameter
  */
-static Return_t __QueuePeek__(const Queue_t *queue_, QueueMessage_t **message_) {
+Return_t __QueuePeek__(const Queue_t *queue_, QueueMessage_t **message_) {
 
   FUNCTION_ENTER;
 
@@ -607,7 +604,7 @@ Return_t xQueueDropMessage(Queue_t *queue_) {
  * @return               ReturnOK if message was dropped successfully
  * @return               ReturnError if operation failed
  */
-static Return_t __QueueDropmessage__(Queue_t *queue_) {
+Return_t __QueueDropmessage__(Queue_t *queue_) {
 
   FUNCTION_ENTER;
 

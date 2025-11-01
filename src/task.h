@@ -104,7 +104,8 @@
   Return_t xTaskSuspendAll(void);
   Return_t xTaskGetSchedulerState(SchedulerState_t *state_);
   Return_t xTaskGetWDPeriod(const Task_t *task_, Ticks_t *period_);
-
+  void __RunTimeReset__(void);
+  Return_t __TaskListFindTask__(const Task_t *task_);
 
   #if defined(POSIX_ARCH_OTHER)
     void __TaskStateClear__(void);

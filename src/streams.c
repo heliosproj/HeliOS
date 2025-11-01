@@ -16,12 +16,6 @@
 
 
 #include "streams.h"
-
-
-#define __StreamLengthNonZero__() (0x0u < stream_->length)
-
-
-#define __StreamLengthAtLimit__() (stream_->length == CONFIG_STREAM_BUFFER_BYTES)
 /**
  * @brief Creates a new stream buffer
  * @details Allocates memory for a stream buffer structure and initializes it.

@@ -25,9 +25,6 @@
 
 
   static DeviceList_t *dlist = null;
-
-
-  #define __DeviceUidNonZero__() (0x0u < uid_)
 /**
  * @brief Registers a device driver with the system
  * @details Calls the device's self-registration function to add it to the device list.
