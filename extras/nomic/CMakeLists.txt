@@ -79,9 +79,26 @@ target_link_libraries(nomic_core PUBLIC
     ${LLVM_LIBS}
 )
 
+# Find SQLite3 and JsonCpp using pkg-config
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(SQLITE3 REQUIRED sqlite3)
+pkg_check_modules(JSONCPP REQUIRED jsoncpp)
+
 # Query library (static)
 add_library(nomic_query STATIC ${QUERY_SOURCES})
-target_link_libraries(nomic_query PUBLIC nomic_core)
+target_link_libraries(nomic_query PUBLIC
+    nomic_core
+    ${SQLITE3_LIBRARIES}
+    ${JSONCPP_LIBRARIES}
+)
+target_include_directories(nomic_query PUBLIC
+    ${SQLITE3_INCLUDE_DIRS}
+    ${JSONCPP_INCLUDE_DIRS}
+)
+target_compile_options(nomic_query PUBLIC
+    ${SQLITE3_CFLAGS_OTHER}
+    ${JSONCPP_CFLAGS_OTHER}
+)
 
 # Analysis library (static)
 add_library(nomic_analysis STATIC ${ANALYSIS_SOURCES})

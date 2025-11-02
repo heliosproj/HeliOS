@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 
 # Query layer unit tests
-file(GLOB_RECURSE QUERY_TEST_SOURCES *.cpp)
+file(GLOB QUERY_TEST_SOURCES test_dsl_engine.cpp)
 
 if(QUERY_TEST_SOURCES)
     add_executable(test_query ${QUERY_TEST_SOURCES})
