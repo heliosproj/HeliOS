@@ -253,6 +253,10 @@ private:
     DSLExpressionPtr parseFunctionCall();
     DSLExpressionPtr parseLambda();
     DSLExpressionPtr parseIfElse();
+    DSLExpressionPtr parseWhile();
+    DSLExpressionPtr parseFor();
+    DSLExpressionPtr parseSwitch();
+    DSLExpressionPtr parseMatch();
     DSLExpressionPtr parseNumber();
     DSLExpressionPtr parseString();
     DSLExpressionPtr parseIdentifier();
@@ -438,6 +442,197 @@ public:
 
     DSLValue evaluate(DSLContextPtr context) override;
     std::string toString() const override;
+};
+
+/**
+ * @brief While loop expression
+ */
+class WhileExpression : public DSLExpression {
+private:
+    DSLExpressionPtr condition_;
+    DSLExpressionPtr body_;
+
+public:
+    WhileExpression(DSLExpressionPtr condition, DSLExpressionPtr body)
+        : DSLExpression(ExpressionType::WHILE_LOOP),
+          condition_(condition), body_(body) {}
+
+    DSLValue evaluate(DSLContextPtr context) override {
+        DSLValue result = nullptr;
+        while (true) {
+            auto condVal = condition_->evaluate(context);
+            bool cond = false;
+            if (std::holds_alternative<bool>(condVal)) {
+                cond = std::get<bool>(condVal);
+            } else if (std::holds_alternative<int>(condVal)) {
+                cond = std::get<int>(condVal) != 0;
+            } else {
+                throw std::runtime_error("While condition must be boolean or integer");
+            }
+
+            if (!cond) break;
+            result = body_->evaluate(context);
+        }
+        return result;
+    }
+
+    std::string toString() const override {
+        return "while (" + condition_->toString() + ") { " + body_->toString() + " }";
+    }
+};
+
+/**
+ * @brief For loop expression
+ */
+class ForExpression : public DSLExpression {
+private:
+    DSLExpressionPtr init_;
+    DSLExpressionPtr condition_;
+    DSLExpressionPtr increment_;
+    DSLExpressionPtr body_;
+
+public:
+    ForExpression(DSLExpressionPtr init, DSLExpressionPtr condition,
+                  DSLExpressionPtr increment, DSLExpressionPtr body)
+        : DSLExpression(ExpressionType::FOR_LOOP),
+          init_(init), condition_(condition), increment_(increment), body_(body) {}
+
+    DSLValue evaluate(DSLContextPtr context) override {
+        DSLValue result = nullptr;
+
+        // Initialize
+        if (init_) init_->evaluate(context);
+
+        // Loop
+        while (true) {
+            // Check condition
+            if (condition_) {
+                auto condVal = condition_->evaluate(context);
+                bool cond = false;
+                if (std::holds_alternative<bool>(condVal)) {
+                    cond = std::get<bool>(condVal);
+                } else if (std::holds_alternative<int>(condVal)) {
+                    cond = std::get<int>(condVal) != 0;
+                } else {
+                    throw std::runtime_error("For condition must be boolean or integer");
+                }
+                if (!cond) break;
+            }
+
+            // Execute body
+            result = body_->evaluate(context);
+
+            // Increment
+            if (increment_) increment_->evaluate(context);
+        }
+        return result;
+    }
+
+    std::string toString() const override {
+        std::string initStr = init_ ? init_->toString() : "";
+        std::string condStr = condition_ ? condition_->toString() : "";
+        std::string incStr = increment_ ? increment_->toString() : "";
+        return "for (" + initStr + "; " + condStr + "; " + incStr + ") { " + body_->toString() + " }";
+    }
+};
+
+/**
+ * @brief Switch expression
+ */
+class SwitchExpression : public DSLExpression {
+private:
+    DSLExpressionPtr value_;
+    std::vector<std::pair<DSLExpressionPtr, DSLExpressionPtr>> cases_;
+    DSLExpressionPtr defaultCase_;
+
+public:
+    SwitchExpression(DSLExpressionPtr value,
+                     std::vector<std::pair<DSLExpressionPtr, DSLExpressionPtr>> cases,
+                     DSLExpressionPtr defaultCase)
+        : DSLExpression(ExpressionType::SWITCH),
+          value_(value), cases_(cases), defaultCase_(defaultCase) {}
+
+    DSLValue evaluate(DSLContextPtr context) override {
+        auto val = value_->evaluate(context);
+
+        // Try each case
+        for (const auto& [caseVal, caseBody] : cases_) {
+            auto caseResult = caseVal->evaluate(context);
+
+            // Compare values
+            bool match = false;
+            if (std::holds_alternative<int>(val) && std::holds_alternative<int>(caseResult)) {
+                match = std::get<int>(val) == std::get<int>(caseResult);
+            } else if (std::holds_alternative<std::string>(val) && std::holds_alternative<std::string>(caseResult)) {
+                match = std::get<std::string>(val) == std::get<std::string>(caseResult);
+            } else if (std::holds_alternative<bool>(val) && std::holds_alternative<bool>(caseResult)) {
+                match = std::get<bool>(val) == std::get<bool>(caseResult);
+            }
+
+            if (match) {
+                return caseBody->evaluate(context);
+            }
+        }
+
+        // Default case
+        if (defaultCase_) {
+            return defaultCase_->evaluate(context);
+        }
+
+        return nullptr;
+    }
+
+    std::string toString() const override {
+        return "switch (" + value_->toString() + ") { ... }";
+    }
+};
+
+/**
+ * @brief Pattern matching expression
+ */
+class MatchExpression : public DSLExpression {
+private:
+    DSLExpressionPtr value_;
+    std::vector<std::pair<std::string, DSLExpressionPtr>> patterns_;
+
+public:
+    MatchExpression(DSLExpressionPtr value,
+                    std::vector<std::pair<std::string, DSLExpressionPtr>> patterns)
+        : DSLExpression(ExpressionType::MATCH),
+          value_(value), patterns_(patterns) {}
+
+    DSLValue evaluate(DSLContextPtr context) override {
+        auto val = value_->evaluate(context);
+
+        for (const auto& [pattern, body] : patterns_) {
+            // Simple pattern matching - underscore matches anything
+            if (pattern == "_") {
+                return body->evaluate(context);
+            }
+
+            // Match literal values
+            if (std::holds_alternative<int>(val)) {
+                try {
+                    int patternVal = std::stoi(pattern);
+                    if (std::get<int>(val) == patternVal) {
+                        return body->evaluate(context);
+                    }
+                } catch (...) {
+                    // Not a number pattern, skip
+                }
+            } else if (std::holds_alternative<std::string>(val)) {
+                if (std::get<std::string>(val) == pattern) {
+                    return body->evaluate(context);
+                }
+            }
+        }
+
+        return nullptr;
+    }
+
+    std::string toString() const override {
+        return "match " + value_->toString() + " { ... }";
+    }
 };
 
 // ===================================
@@ -2253,6 +2448,30 @@ DSLExpressionPtr DSLEngine::parseExpression() {
         return ifElse;
     }
 
+    // Check for while loop
+    auto whileLoop = parseWhile();
+    if (whileLoop) {
+        return whileLoop;
+    }
+
+    // Check for for loop
+    auto forLoop = parseFor();
+    if (forLoop) {
+        return forLoop;
+    }
+
+    // Check for switch expression
+    auto switchExpr = parseSwitch();
+    if (switchExpr) {
+        return switchExpr;
+    }
+
+    // Check for match expression
+    auto matchExpr = parseMatch();
+    if (matchExpr) {
+        return matchExpr;
+    }
+
     // Parse binary expressions
     auto left = parseUnary();
     if (!left) {
@@ -2615,6 +2834,240 @@ DSLExpressionPtr DSLEngine::parseIfElse() {
     }
 
     return std::make_shared<IfElseExpression>(condition, thenBranch, elseBranch);
+}
+
+DSLExpressionPtr DSLEngine::parseWhile() {
+    if (!consume("while")) {
+        return nullptr;
+    }
+
+    skipWhitespace();
+    if (!consume("(")) {
+        throw std::runtime_error("Expected '(' after 'while'");
+    }
+
+    auto condition = parseExpression();
+    skipWhitespace();
+
+    if (!consume(")")) {
+        throw std::runtime_error("Expected ')' after while condition");
+    }
+
+    skipWhitespace();
+
+    // Parse body - could be a block or single expression
+    DSLExpressionPtr body;
+    if (consume("{")) {
+        skipWhitespace();
+        body = parseExpression();
+        skipWhitespace();
+        if (!consume("}")) {
+            throw std::runtime_error("Expected '}' after while body");
+        }
+    } else {
+        body = parseExpression();
+    }
+
+    return std::make_shared<WhileExpression>(condition, body);
+}
+
+DSLExpressionPtr DSLEngine::parseFor() {
+    if (!consume("for")) {
+        return nullptr;
+    }
+
+    skipWhitespace();
+    if (!consume("(")) {
+        throw std::runtime_error("Expected '(' after 'for'");
+    }
+
+    // Parse init (optional)
+    DSLExpressionPtr init = nullptr;
+    skipWhitespace();
+    if (!peek(";")) {
+        init = parseExpression();
+    }
+
+    skipWhitespace();
+    if (!consume(";")) {
+        throw std::runtime_error("Expected ';' after for init");
+    }
+
+    // Parse condition (optional)
+    DSLExpressionPtr condition = nullptr;
+    skipWhitespace();
+    if (!peek(";")) {
+        condition = parseExpression();
+    }
+
+    skipWhitespace();
+    if (!consume(";")) {
+        throw std::runtime_error("Expected ';' after for condition");
+    }
+
+    // Parse increment (optional)
+    DSLExpressionPtr increment = nullptr;
+    skipWhitespace();
+    if (!peek(")")) {
+        increment = parseExpression();
+    }
+
+    skipWhitespace();
+    if (!consume(")")) {
+        throw std::runtime_error("Expected ')' after for increment");
+    }
+
+    skipWhitespace();
+
+    // Parse body
+    DSLExpressionPtr body;
+    if (consume("{")) {
+        skipWhitespace();
+        body = parseExpression();
+        skipWhitespace();
+        if (!consume("}")) {
+            throw std::runtime_error("Expected '}' after for body");
+        }
+    } else {
+        body = parseExpression();
+    }
+
+    return std::make_shared<ForExpression>(init, condition, increment, body);
+}
+
+DSLExpressionPtr DSLEngine::parseSwitch() {
+    if (!consume("switch")) {
+        return nullptr;
+    }
+
+    skipWhitespace();
+    if (!consume("(")) {
+        throw std::runtime_error("Expected '(' after 'switch'");
+    }
+
+    auto value = parseExpression();
+    skipWhitespace();
+
+    if (!consume(")")) {
+        throw std::runtime_error("Expected ')' after switch value");
+    }
+
+    skipWhitespace();
+    if (!consume("{")) {
+        throw std::runtime_error("Expected '{' after switch");
+    }
+
+    std::vector<std::pair<DSLExpressionPtr, DSLExpressionPtr>> cases;
+    DSLExpressionPtr defaultCase = nullptr;
+
+    while (!peek("}")) {
+        skipWhitespace();
+
+        if (consume("case")) {
+            skipWhitespace();
+            auto caseValue = parseExpression();
+            skipWhitespace();
+
+            if (!consume(":")) {
+                throw std::runtime_error("Expected ':' after case value");
+            }
+
+            skipWhitespace();
+            auto caseBody = parseExpression();
+            cases.push_back({caseValue, caseBody});
+
+            // Optional semicolon
+            consume(";");
+        }
+        else if (consume("default")) {
+            skipWhitespace();
+            if (!consume(":")) {
+                throw std::runtime_error("Expected ':' after default");
+            }
+
+            skipWhitespace();
+            defaultCase = parseExpression();
+
+            // Optional semicolon
+            consume(";");
+        }
+        else {
+            break;
+        }
+    }
+
+    skipWhitespace();
+    if (!consume("}")) {
+        throw std::runtime_error("Expected '}' after switch cases");
+    }
+
+    return std::make_shared<SwitchExpression>(value, cases, defaultCase);
+}
+
+DSLExpressionPtr DSLEngine::parseMatch() {
+    if (!consume("match")) {
+        return nullptr;
+    }
+
+    skipWhitespace();
+    auto value = parseExpression();
+
+    skipWhitespace();
+    if (!consume("{")) {
+        throw std::runtime_error("Expected '{' after match value");
+    }
+
+    std::vector<std::pair<std::string, DSLExpressionPtr>> patterns;
+
+    while (!peek("}")) {
+        skipWhitespace();
+
+        // Parse pattern (simple identifier or literal for now)
+        std::string pattern;
+        if (peekChar() == '_') {
+            consumeChar();
+            pattern = "_";
+        } else if (peekChar() == '"') {
+            // String pattern
+            pos_++; // skip opening quote
+            while (peekChar() != '"' && pos_ < input_.length()) {
+                pattern += consumeChar();
+            }
+            if (!consume("\"")) {
+                throw std::runtime_error("Expected closing '\"' in pattern");
+            }
+        } else if (std::isdigit(peekChar()) || peekChar() == '-') {
+            // Number pattern
+            while (std::isdigit(peekChar()) || peekChar() == '-' || peekChar() == '.') {
+                pattern += consumeChar();
+            }
+        } else {
+            // Identifier pattern
+            while (std::isalnum(peekChar()) || peekChar() == '_') {
+                pattern += consumeChar();
+            }
+        }
+
+        skipWhitespace();
+        if (!consume("=>")) {
+            throw std::runtime_error("Expected '=>' after match pattern");
+        }
+
+        skipWhitespace();
+        auto body = parseExpression();
+        patterns.push_back({pattern, body});
+
+        // Optional comma
+        skipWhitespace();
+        consume(",");
+    }
+
+    skipWhitespace();
+    if (!consume("}")) {
+        throw std::runtime_error("Expected '}' after match patterns");
+    }
+
+    return std::make_shared<MatchExpression>(value, patterns);
 }
 
 // ===================================
