@@ -299,6 +299,7 @@ struct BuiltinFunctions {
     static constexpr const char* GET_SYMBOL = "getSymbol";
     static constexpr const char* GET_SCOPE = "getScope";
     static constexpr const char* FIND_SYMBOL = "findSymbol";
+    static constexpr const char* FIND_SYMBOLS_BY_KIND = "findSymbolsByKind";
     static constexpr const char* FIND_TYPE = "findType";
     static constexpr const char* FIND_CALLS = "findCalls";
     static constexpr const char* FIND_REFS = "findRefs";
