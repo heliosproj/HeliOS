@@ -567,7 +567,7 @@ TEST_F(DSLEngineTest, DivisionByZero) {
 }
 
 TEST_F(DSLEngineTest, NullHandling) {
-    context->setVariable("nullVar", nullptr);
+    context->setVariable("nullVar", DSLValue(nullptr));
 
     // Operations on null
     auto nullOpExpr = engine->parse("nullVar + 1");

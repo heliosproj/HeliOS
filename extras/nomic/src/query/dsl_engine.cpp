@@ -74,6 +74,45 @@ public:
 };
 
 /**
+ * @brief Object literal expression {key: value, ...}
+ */
+class ObjectLiteralExpression : public DSLExpression {
+private:
+    std::vector<std::pair<std::string, DSLExpressionPtr>> properties_;
+
+public:
+    explicit ObjectLiteralExpression(const std::vector<std::pair<std::string, DSLExpressionPtr>>& properties)
+        : DSLExpression(ExpressionType::LITERAL), properties_(properties) {}
+
+    DSLValue evaluate(DSLContextPtr context) override {
+        auto map = std::make_shared<std::unordered_map<std::string, std::any>>();
+
+        for (const auto& [key, valueExpr] : properties_) {
+            auto val = valueExpr->evaluate(context);
+
+            // Convert DSLValue to std::any
+            if (std::holds_alternative<int>(val)) {
+                (*map)[key] = std::any(std::get<int>(val));
+            } else if (std::holds_alternative<double>(val)) {
+                (*map)[key] = std::any(std::get<double>(val));
+            } else if (std::holds_alternative<std::string>(val)) {
+                (*map)[key] = std::any(std::get<std::string>(val));
+            } else if (std::holds_alternative<bool>(val)) {
+                (*map)[key] = std::any(std::get<bool>(val));
+            } else {
+                (*map)[key] = std::any(val);
+            }
+        }
+
+        return DSLValue(DSLMap(map));
+    }
+
+    std::string toString() const override {
+        return "{...}";
+    }
+};
+
+/**
  * @brief Identifier expression
  */
 class IdentifierExpression : public DSLExpression {
@@ -249,6 +288,7 @@ private:
     char consumeChar();
     DSLExpressionPtr parseExpression();
     DSLExpressionPtr parsePrimary();
+    DSLExpressionPtr parsePostfix();
     DSLExpressionPtr parseBinary(DSLExpressionPtr left, int minPrecedence);
     DSLExpressionPtr parseUnary();
     DSLExpressionPtr parseFunctionCall();
@@ -382,6 +422,54 @@ public:
 };
 
 /**
+ * @brief Member access expression (obj.field)
+ */
+class MemberAccessExpression : public DSLExpression {
+private:
+    DSLExpressionPtr object_;
+    std::string member_;
+
+public:
+    MemberAccessExpression(DSLExpressionPtr object, const std::string& member)
+        : DSLExpression(ExpressionType::IDENTIFIER), object_(object), member_(member) {}
+
+    DSLValue evaluate(DSLContextPtr context) override {
+        auto objValue = object_->evaluate(context);
+
+        // Access member from DSLMap
+        if (std::holds_alternative<DSLMap>(objValue)) {
+            auto map = std::get<DSLMap>(objValue);
+            auto it = map->find(member_);
+            if (it == map->end()) {
+                throw std::runtime_error("Object does not have member: " + member_);
+            }
+
+            // Convert std::any back to DSLValue
+            auto& anyVal = it->second;
+            if (anyVal.type() == typeid(int)) {
+                return DSLValue(std::any_cast<int>(anyVal));
+            } else if (anyVal.type() == typeid(double)) {
+                return DSLValue(std::any_cast<double>(anyVal));
+            } else if (anyVal.type() == typeid(std::string)) {
+                return DSLValue(std::any_cast<std::string>(anyVal));
+            } else if (anyVal.type() == typeid(bool)) {
+                return DSLValue(std::any_cast<bool>(anyVal));
+            } else if (anyVal.type() == typeid(DSLValue)) {
+                return std::any_cast<DSLValue>(anyVal);
+            } else {
+                throw std::runtime_error("Unsupported member type");
+            }
+        }
+
+        throw std::runtime_error("Member access requires an object");
+    }
+
+    std::string toString() const override {
+        return object_->toString() + "." + member_;
+    }
+};
+
+/**
  * @brief Lambda expression
  */
 class LambdaExpression : public DSLExpression, public std::enable_shared_from_this<LambdaExpression> {
@@ -479,6 +567,126 @@ public:
 
     std::string toString() const override {
         return "while (" + condition_->toString() + ") { " + body_->toString() + " }";
+    }
+};
+
+/**
+ * @brief User-defined function
+ */
+class UserDefinedFunction : public DSLFunction {
+private:
+    std::vector<std::string> params_;
+    DSLExpressionPtr body_;
+
+public:
+    UserDefinedFunction(const std::string& name, const std::vector<std::string>& params, DSLExpressionPtr body)
+        : DSLFunction(FunctionKind::USER_DEFINED, name, params.size(), "User-defined function"),
+          params_(params), body_(body) {}
+
+    DSLValue call(const std::vector<DSLValue>& args, DSLContextPtr context) override {
+        if (args.size() != params_.size()) {
+            throw std::runtime_error(name_ + " expects " + std::to_string(params_.size()) +
+                                   " arguments, got " + std::to_string(args.size()));
+        }
+
+        // Create new scope
+        context->pushScope();
+
+        // Bind parameters
+        for (size_t i = 0; i < params_.size(); ++i) {
+            context->setVariable(params_[i], args[i]);
+        }
+
+        // Execute body
+        DSLValue result;
+        try {
+            result = body_->evaluate(context);
+        } catch (...) {
+            context->popScope();
+            throw;
+        }
+
+        context->popScope();
+        return result;
+    }
+};
+
+/**
+ * @brief Function definition expression
+ */
+class FunctionDefExpression : public DSLExpression {
+private:
+    std::string name_;
+    std::vector<std::string> params_;
+    DSLExpressionPtr body_;
+
+public:
+    FunctionDefExpression(const std::string& name, const std::vector<std::string>& params, DSLExpressionPtr body)
+        : DSLExpression(ExpressionType::IDENTIFIER), name_(name), params_(params), body_(body) {}
+
+    DSLValue evaluate(DSLContextPtr context) override {
+        // Create the function and register it in the context
+        auto func = std::make_shared<UserDefinedFunction>(name_, params_, body_);
+        context->registerFunction(name_, func);
+        return nullptr;  // Function definitions don't return a value
+    }
+
+    std::string toString() const override {
+        return "function " + name_ + "()";
+    }
+};
+
+/**
+ * @brief Return statement expression
+ */
+class ReturnExpression : public DSLExpression {
+private:
+    DSLExpressionPtr value_;
+
+public:
+    explicit ReturnExpression(DSLExpressionPtr value)
+        : DSLExpression(ExpressionType::IDENTIFIER), value_(value) {}
+
+    DSLValue evaluate(DSLContextPtr context) override {
+        if (value_) {
+            return value_->evaluate(context);
+        }
+        return nullptr;
+    }
+
+    std::string toString() const override {
+        return value_ ? "return " + value_->toString() : "return";
+    }
+};
+
+/**
+ * @brief Block expression (sequence of statements)
+ */
+class BlockExpression : public DSLExpression {
+private:
+    std::vector<DSLExpressionPtr> statements_;
+
+public:
+    explicit BlockExpression(const std::vector<DSLExpressionPtr>& statements)
+        : DSLExpression(ExpressionType::IDENTIFIER), statements_(statements) {}
+
+    DSLValue evaluate(DSLContextPtr context) override {
+        DSLValue result = nullptr;
+        for (const auto& stmt : statements_) {
+            result = stmt->evaluate(context);
+            // If it's a return statement, we should break (but we don't have a way to detect this yet)
+        }
+        return result;
+    }
+
+    std::string toString() const override {
+        std::string result = "{ ";
+        for (size_t i = 0; i < statements_.size(); ++i) {
+            if (i > 0) result += "; ";
+            result += statements_[i]->toString();
+        }
+        result += " }";
+        return result;
     }
 };
 
@@ -756,6 +964,13 @@ DSLValue BinaryOpExpression::evaluate(DSLContextPtr context) {
     auto leftVal = left_->evaluate(context);
     auto rightVal = right_->evaluate(context);
 
+    // Check for null operands in arithmetic operations
+    if (op_ == "+" || op_ == "-" || op_ == "*" || op_ == "/" || op_ == "%") {
+        if (std::holds_alternative<std::nullptr_t>(leftVal) || std::holds_alternative<std::nullptr_t>(rightVal)) {
+            throw std::runtime_error("Cannot perform arithmetic on null values");
+        }
+    }
+
     // Arithmetic operators
     if (op_ == "+") {
         if (std::holds_alternative<int>(leftVal) && std::holds_alternative<int>(rightVal)) {
@@ -953,7 +1168,18 @@ DSLValue FunctionCallExpression::evaluate(DSLContextPtr context) {
         // Check if it's a variable containing a lambda
         if (context->hasVariable(name_)) {
             auto val = context->getVariable(name_);
-            // TODO: Handle lambda stored in variable
+            // Check if it's a lambda expression
+            if (std::holds_alternative<std::shared_ptr<LambdaExpression>>(val)) {
+                auto lambda = std::get<std::shared_ptr<LambdaExpression>>(val);
+                // Evaluate arguments
+                std::vector<DSLValue> argValues;
+                argValues.reserve(args_.size());
+                for (const auto& arg : args_) {
+                    argValues.push_back(arg->evaluate(context));
+                }
+                // Invoke the lambda
+                return lambda->invoke(argValues, context);
+            }
         }
         throw std::runtime_error("Undefined function: " + name_);
     }
@@ -2481,7 +2707,34 @@ DSLExpressionPtr DSLEngine::parse(const std::string& expression) {
     parseError_.clear();
 
     try {
-        return parseExpression();
+        // Parse multiple statements if present
+        std::vector<DSLExpressionPtr> statements;
+        skipWhitespace();
+
+        while (pos_ < input_.length()) {
+            auto stmt = parseExpression();
+            if (stmt) {
+                statements.push_back(stmt);
+            }
+
+            skipWhitespace();
+            consume(";");  // Optional semicolon
+            skipWhitespace();
+
+            // If we've consumed everything, break
+            if (pos_ >= input_.length()) {
+                break;
+            }
+        }
+
+        // If we have multiple statements, wrap them in a block
+        if (statements.size() == 0) {
+            return nullptr;
+        } else if (statements.size() == 1) {
+            return statements[0];
+        } else {
+            return std::make_shared<BlockExpression>(statements);
+        }
     } catch (const std::exception& e) {
         parseError_ = e.what();
         return nullptr;
@@ -2515,8 +2768,23 @@ bool DSLEngine::validate(const std::string& expression) {
 }
 
 void DSLEngine::skipWhitespace() {
-    while (pos_ < input_.length() && std::isspace(input_[pos_])) {
-        pos_++;
+    while (pos_ < input_.length()) {
+        // Skip whitespace
+        if (std::isspace(input_[pos_])) {
+            pos_++;
+            continue;
+        }
+        // Skip single-line comments
+        if (pos_ + 1 < input_.length() && input_[pos_] == '/' && input_[pos_+1] == '/') {
+            pos_ += 2;
+            // Skip until end of line
+            while (pos_ < input_.length() && input_[pos_] != '\n') {
+                pos_++;
+            }
+            continue;
+        }
+        // No more whitespace or comments
+        break;
     }
 }
 
@@ -2603,6 +2871,121 @@ DSLExpressionPtr DSLEngine::parseExpression() {
         return matchExpr;
     }
 
+    // Check for function definition
+    if (consumeKeyword("function")) {
+        skipWhitespace();
+
+        // Parse function name
+        std::string funcName;
+        while (pos_ < input_.length() && (std::isalnum(input_[pos_]) || input_[pos_] == '_')) {
+            funcName += input_[pos_++];
+        }
+
+        if (funcName.empty()) {
+            throw std::runtime_error("Expected function name after 'function'");
+        }
+
+        skipWhitespace();
+        if (!consume("(")) {
+            throw std::runtime_error("Expected '(' after function name");
+        }
+
+        // Parse parameters
+        std::vector<std::string> params;
+        skipWhitespace();
+        while (!peek(")")) {
+            std::string param;
+            while (pos_ < input_.length() && (std::isalnum(input_[pos_]) || input_[pos_] == '_')) {
+                param += input_[pos_++];
+            }
+            if (!param.empty()) {
+                params.push_back(param);
+            }
+            skipWhitespace();
+            if (!consume(",")) {
+                break;
+            }
+            skipWhitespace();
+        }
+
+        if (!consume(")")) {
+            throw std::runtime_error("Expected ')' after function parameters");
+        }
+
+        skipWhitespace();
+
+        // Parse body (must be a block)
+        if (!peek("{")) {
+            throw std::runtime_error("Expected '{' for function body");
+        }
+        auto body = parseExpression();  // This will parse the block
+
+        return std::make_shared<FunctionDefExpression>(funcName, params, body);
+    }
+
+    // Check for return statement
+    if (consumeKeyword("return")) {
+        skipWhitespace();
+        // Check if there's an expression after return
+        if (peek(";") || peek("}")) {
+            return std::make_shared<ReturnExpression>(nullptr);
+        }
+        auto returnValue = parseExpression();
+        return std::make_shared<ReturnExpression>(returnValue);
+    }
+
+    // Check for block expression or object literal
+    // Disambiguate: {identifier: value} is object, {statements} is block
+    if (peek("{")) {
+        size_t savedPos = pos_;
+        consume("{");
+        skipWhitespace();
+
+        // Check if this looks like an object literal
+        bool isObjectLiteral = false;
+        if (!peek("}")) {
+            // Look for pattern: identifier followed by ':'
+            size_t checkPos = pos_;
+            if (std::isalpha(input_[checkPos]) || input_[checkPos] == '_') {
+                while (checkPos < input_.length() &&
+                       (std::isalnum(input_[checkPos]) || input_[checkPos] == '_')) {
+                    checkPos++;
+                }
+                // Skip whitespace
+                while (checkPos < input_.length() && std::isspace(input_[checkPos])) {
+                    checkPos++;
+                }
+                // Check for colon
+                if (checkPos < input_.length() && input_[checkPos] == ':') {
+                    isObjectLiteral = true;
+                }
+            }
+        }
+
+        // Restore position and let parsePrimary handle object literals
+        if (isObjectLiteral) {
+            pos_ = savedPos;
+            // Fall through to parseUnary/parsePrimary
+        } else {
+            // Parse as block expression
+            std::vector<DSLExpressionPtr> statements;
+            skipWhitespace();
+            while (!peek("}")) {
+                auto stmt = parseExpression();
+                if (stmt) {
+                    statements.push_back(stmt);
+                }
+                skipWhitespace();
+                consume(";");  // Optional semicolon
+                skipWhitespace();
+            }
+            if (!consume("}")) {
+                throw std::runtime_error("Expected '}' at end of block");
+            }
+            return std::make_shared<BlockExpression>(statements);
+        }
+    }
+
     // Parse binary expressions
     auto left = parseUnary();
     if (!left) {
@@ -2625,16 +3008,16 @@ DSLExpressionPtr DSLEngine::parsePrimary() {
         return parseString();
     }
 
-    // Boolean literals
-    if (consume("true")) {
+    // Boolean literals (use consumeKeyword to ensure word boundaries)
+    if (consumeKeyword("true")) {
         return std::make_shared<LiteralExpression>(DSLValue(true));
     }
-    if (consume("false")) {
+    if (consumeKeyword("false")) {
         return std::make_shared<LiteralExpression>(DSLValue(false));
     }
 
-    // Null literal
-    if (consume("null")) {
+    // Null literal (use consumeKeyword to ensure word boundaries)
+    if (consumeKeyword("null")) {
         return std::make_shared<LiteralExpression>(DSLValue(nullptr));
     }
 
@@ -2678,6 +3061,50 @@ DSLExpressionPtr DSLEngine::parsePrimary() {
             throw std::runtime_error("Expected ']'");
         }
         return std::make_shared<LiteralExpression>(DSLValue(elements));
+    }
+
+    // Object literal: {key: value, ...}
+    if (consume("{")) {
+        std::vector<std::pair<std::string, DSLExpressionPtr>> properties;
+
+        skipWhitespace();
+        if (!peek("}")) {
+            do {
+                skipWhitespace();
+
+                // Parse key (identifier)
+                std::string key;
+                if (std::isalpha(peekChar()) || peekChar() == '_') {
+                    while (std::isalnum(peekChar()) || peekChar() == '_') {
+                        key += consumeChar();
+                    }
+                } else {
+                    throw std::runtime_error("Expected identifier for object key");
+                }
+
+                skipWhitespace();
+                if (!consume(":")) {
+                    throw std::runtime_error("Expected ':' after object key");
+                }
+                skipWhitespace();
+
+                // Parse value expression (don't evaluate yet!)
+                auto valueExpr = parseExpression();
+                if (!valueExpr) {
+                    throw std::runtime_error("Expected value expression");
+                }
+
+                properties.push_back({key, valueExpr});
+
+                skipWhitespace();
+            } while (consume(","));
+        }
+
+        if (!consume("}")) {
+            throw std::runtime_error("Expected '}'");
+        }
+
+        return std::make_shared<ObjectLiteralExpression>(properties);
     }
 
     // Identifier or function call
@@ -2772,6 +3199,32 @@ DSLExpressionPtr DSLEngine::parseString() {
     return std::make_shared<LiteralExpression>(DSLValue(str));
 }
 
+DSLExpressionPtr DSLEngine::parsePostfix() {
+    auto expr = parsePrimary();
+
+    // Handle member access: obj.field
+    while (true) {
+        skipWhitespace();
+        if (consume(".")) {
+            skipWhitespace();
+            // Parse member name
+            std::string member;
+            if (std::isalpha(peekChar()) || peekChar() == '_') {
+                while (std::isalnum(peekChar()) || peekChar() == '_') {
+                    member += consumeChar();
+                }
+                expr = std::make_shared<MemberAccessExpression>(expr, member);
+            } else {
+                throw std::runtime_error("Expected identifier after '.'");
+            }
+        } else {
+            break;
+        }
+    }
+
+    return expr;
+}
+
 DSLExpressionPtr DSLEngine::parseUnary() {
     skipWhitespace();
 
@@ -2785,7 +3238,7 @@ DSLExpressionPtr DSLEngine::parseUnary() {
         return std::make_shared<UnaryOpExpression>("+", parseUnary());
     }
 
-    return parsePrimary();
+    return parsePostfix();
 }
 
 DSLExpressionPtr DSLEngine::parseBinary(DSLExpressionPtr left, int minPrecedence) {
