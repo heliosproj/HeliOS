@@ -45,12 +45,17 @@ public:
     ~ClangParser();
 
     /**
+     * @brief Default parse options
+     */
+    static const ParseOptions DefaultOptions;
+
+    /**
      * @brief Parse a single C source file
      * @param filePath Path to C source file
      * @param options Parse options
      * @return Parse result with AST and semantic model
      */
-    ParseResult parseFile(const std::string& filePath, const ParseOptions& options = ParseOptions());
+    ParseResult parseFile(const std::string& filePath, const ParseOptions& options = DefaultOptions);
 
     /**
      * @brief Parse multiple C source files
@@ -58,7 +63,7 @@ public:
      * @param options Parse options
      * @return Parse result with combined AST
      */
-    ParseResult parseFiles(const std::vector<std::string>& filePaths, const ParseOptions& options = ParseOptions());
+    ParseResult parseFiles(const std::vector<std::string>& filePaths, const ParseOptions& options = DefaultOptions);
 
     /**
      * @brief Parse C source code from string
@@ -67,7 +72,7 @@ public:
      * @param options Parse options
      * @return Parse result
      */
-    ParseResult parseString(const std::string& source, const std::string& filename = "input.c", const ParseOptions& options = ParseOptions());
+    ParseResult parseString(const std::string& source, const std::string& filename = "input.c", const ParseOptions& options = DefaultOptions);
 
 private:
     class Impl;

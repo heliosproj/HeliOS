@@ -33,7 +33,7 @@ namespace core {
  */
 class ClangASTVisitor : public clang::RecursiveASTVisitor<ClangASTVisitor> {
 public:
-    ClangASTVisitor(clang::ASTContext& context, ASTFactory& factory, SemanticModel& model)
+    ClangASTVisitor(clang::ASTContext& context, ASTFactory& factory, ISemanticModel& model)
         : context_(context), factory_(factory), model_(model) {}
 
     bool VisitTranslationUnitDecl(clang::TranslationUnitDecl* decl) {
@@ -54,14 +54,15 @@ public:
         std::string funcName = decl->getNameAsString();
 
         // Create function symbol
-        auto funcSymbol = std::make_shared<Symbol>(funcName, ISymbol::SymbolKind::FUNCTION);
+        auto funcSymbol = std::make_shared<Symbol>(ISymbol::SymbolKind::FUNCTION);
+        funcSymbol->setName(funcName);
 
         // Map Clang type to Nomic type
         auto funcType = convertType(decl->getType());
         funcSymbol->setType(funcType);
 
         // Add to semantic model
-        model_.addSymbol(funcSymbol);
+        dynamic_cast<SemanticModel&>(model_).addSymbol(funcSymbol);
 
         // Store node mapping
         nodeMap_[decl] = funcNode;
@@ -75,12 +76,13 @@ public:
         setSourceLocation(varNode, decl->getLocation());
 
         std::string varName = decl->getNameAsString();
-        auto varSymbol = std::make_shared<Symbol>(varName, ISymbol::SymbolKind::VARIABLE);
+        auto varSymbol = std::make_shared<Symbol>(ISymbol::SymbolKind::VARIABLE);
+        varSymbol->setName(varName);
 
         auto varType = convertType(decl->getType());
         varSymbol->setType(varType);
 
-        model_.addSymbol(varSymbol);
+        dynamic_cast<SemanticModel&>(model_).addSymbol(varSymbol);
 
         nodeMap_[decl] = varNode;
 
@@ -93,12 +95,13 @@ public:
         setSourceLocation(paramNode, decl->getLocation());
 
         std::string paramName = decl->getNameAsString();
-        auto paramSymbol = std::make_shared<Symbol>(paramName, ISymbol::SymbolKind::PARAMETER);
+        auto paramSymbol = std::make_shared<Symbol>(ISymbol::SymbolKind::PARAMETER);
+        paramSymbol->setName(paramName);
 
         auto paramType = convertType(decl->getType());
         paramSymbol->setType(paramType);
 
-        model_.addSymbol(paramSymbol);
+        dynamic_cast<SemanticModel&>(model_).addSymbol(paramSymbol);
 
         nodeMap_[decl] = paramNode;
 
@@ -111,12 +114,13 @@ public:
         setSourceLocation(fieldNode, decl->getLocation());
 
         std::string fieldName = decl->getNameAsString();
-        auto fieldSymbol = std::make_shared<Symbol>(fieldName, ISymbol::SymbolKind::FIELD);
+        auto fieldSymbol = std::make_shared<Symbol>(ISymbol::SymbolKind::FIELD);
+        fieldSymbol->setName(fieldName);
 
         auto fieldType = convertType(decl->getType());
         fieldSymbol->setType(fieldType);
 
-        model_.addSymbol(fieldSymbol);
+        dynamic_cast<SemanticModel&>(model_).addSymbol(fieldSymbol);
 
         nodeMap_[decl] = fieldNode;
 
@@ -144,12 +148,13 @@ public:
                           decl->isUnion() ? ISymbol::SymbolKind::UNION :
                           ISymbol::SymbolKind::STRUCT;
 
-        auto recordSymbol = std::make_shared<Symbol>(recordName, symbolKind);
+        auto recordSymbol = std::make_shared<Symbol>(symbolKind);
+        recordSymbol->setName(recordName);
 
         auto recordType = convertType(context_.getRecordType(decl));
         recordSymbol->setType(recordType);
 
-        model_.addSymbol(recordSymbol);
+        dynamic_cast<SemanticModel&>(model_).addSymbol(recordSymbol);
 
         nodeMap_[decl] = recordNode;
 
@@ -166,12 +171,13 @@ public:
             enumName = "<anonymous>";
         }
 
-        auto enumSymbol = std::make_shared<Symbol>(enumName, ISymbol::SymbolKind::ENUM);
+        auto enumSymbol = std::make_shared<Symbol>(ISymbol::SymbolKind::ENUM);
+        enumSymbol->setName(enumName);
 
         auto enumType = convertType(context_.getEnumType(decl));
         enumSymbol->setType(enumType);
 
-        model_.addSymbol(enumSymbol);
+        dynamic_cast<SemanticModel&>(model_).addSymbol(enumSymbol);
 
         nodeMap_[decl] = enumNode;
 
@@ -184,12 +190,13 @@ public:
         setSourceLocation(typedefNode, decl->getLocation());
 
         std::string typedefName = decl->getNameAsString();
-        auto typedefSymbol = std::make_shared<Symbol>(typedefName, ISymbol::SymbolKind::TYPEDEF);
+        auto typedefSymbol = std::make_shared<Symbol>(ISymbol::SymbolKind::TYPEDEF);
+        typedefSymbol->setName(typedefName);
 
         auto underlyingType = convertType(decl->getUnderlyingType());
         typedefSymbol->setType(underlyingType);
 
-        model_.addSymbol(typedefSymbol);
+        dynamic_cast<SemanticModel&>(model_).addSymbol(typedefSymbol);
 
         nodeMap_[decl] = typedefNode;
 
@@ -318,71 +325,94 @@ private:
         const clang::Type* type = baseType.getTypePtr();
 
         if (type->isVoidType()) {
-            nomicType = std::make_shared<TypeInfo>(ITypeInfo::TypeKind::VOID, "void");
+            auto typeInfo = std::make_shared<TypeInfo>(ITypeInfo::TypeKind::VOID);
+            typeInfo->setTypeName("void");
+            nomicType = typeInfo;
         }
         else if (type->isBooleanType()) {
-            nomicType = std::make_shared<TypeInfo>(ITypeInfo::TypeKind::BOOL, "_Bool");
-            nomicType->setSize(1);
-            nomicType->setAlignment(1);
+            auto typeInfo = std::make_shared<TypeInfo>(ITypeInfo::TypeKind::BOOL);
+            typeInfo->setTypeName("_Bool");
+            typeInfo->setSize(1);
+            typeInfo->setAlignment(1);
+            nomicType = typeInfo;
         }
         else if (type->isCharType()) {
-            nomicType = std::make_shared<TypeInfo>(ITypeInfo::TypeKind::CHAR, "char");
-            nomicType->setSize(1);
-            nomicType->setAlignment(1);
+            auto typeInfo = std::make_shared<TypeInfo>(ITypeInfo::TypeKind::CHAR);
+            typeInfo->setTypeName("char");
+            typeInfo->setSize(1);
+            typeInfo->setAlignment(1);
+            nomicType = typeInfo;
         }
         else if (type->isIntegerType()) {
-            std::string typeName = qualType.getAsString();
-            nomicType = std::make_shared<TypeInfo>(ITypeInfo::TypeKind::INT, typeName);
+            auto typeInfo = std::make_shared<TypeInfo>(ITypeInfo::TypeKind::INT);
+            typeInfo->setTypeName(qualType.getAsString());
             auto typeSize = context_.getTypeSize(qualType) / 8;  // bits to bytes
             auto typeAlign = context_.getTypeAlign(qualType) / 8;
-            nomicType->setSize(typeSize);
-            nomicType->setAlignment(typeAlign);
+            typeInfo->setSize(typeSize);
+            typeInfo->setAlignment(typeAlign);
+            nomicType = typeInfo;
         }
         else if (type->isFloatingType()) {
-            std::string typeName = qualType.getAsString();
-            nomicType = std::make_shared<TypeInfo>(ITypeInfo::TypeKind::FLOAT, typeName);
+            auto typeInfo = std::make_shared<TypeInfo>(ITypeInfo::TypeKind::FLOAT);
+            typeInfo->setTypeName(qualType.getAsString());
             auto typeSize = context_.getTypeSize(qualType) / 8;
             auto typeAlign = context_.getTypeAlign(qualType) / 8;
-            nomicType->setSize(typeSize);
-            nomicType->setAlignment(typeAlign);
+            typeInfo->setSize(typeSize);
+            typeInfo->setAlignment(typeAlign);
+            nomicType = typeInfo;
         }
         else if (type->isPointerType()) {
             clang::QualType pointeeType = type->getPointeeType();
             auto pointeeNomicType = convertType(pointeeType);
-            nomicType = std::make_shared<TypeInfo>(ITypeInfo::TypeKind::POINTER, qualType.getAsString());
-            nomicType->setSize(context_.getTypeSize(qualType) / 8);
-            nomicType->setAlignment(context_.getTypeAlign(qualType) / 8);
-            // Note: TypeInfo doesn't have setPointeeType, would need to extend interface
+            auto typeInfo = std::make_shared<TypeInfo>(ITypeInfo::TypeKind::POINTER);
+            typeInfo->setTypeName(qualType.getAsString());
+            typeInfo->setSize(context_.getTypeSize(qualType) / 8);
+            typeInfo->setAlignment(context_.getTypeAlign(qualType) / 8);
+            typeInfo->setPointeeType(pointeeNomicType);
+            nomicType = typeInfo;
         }
         else if (type->isArrayType()) {
             const clang::ArrayType* arrayType = type->getAsArrayTypeUnsafe();
             clang::QualType elementType = arrayType->getElementType();
             auto elementNomicType = convertType(elementType);
-            nomicType = std::make_shared<TypeInfo>(ITypeInfo::TypeKind::ARRAY, qualType.getAsString());
-            nomicType->setSize(context_.getTypeSize(qualType) / 8);
-            nomicType->setAlignment(context_.getTypeAlign(qualType) / 8);
+            auto typeInfo = std::make_shared<TypeInfo>(ITypeInfo::TypeKind::ARRAY);
+            typeInfo->setTypeName(qualType.getAsString());
+            typeInfo->setSize(context_.getTypeSize(qualType) / 8);
+            typeInfo->setAlignment(context_.getTypeAlign(qualType) / 8);
+            typeInfo->setElementType(elementNomicType);
+            nomicType = typeInfo;
         }
         else if (type->isStructureType()) {
-            nomicType = std::make_shared<TypeInfo>(ITypeInfo::TypeKind::STRUCT, qualType.getAsString());
-            nomicType->setSize(context_.getTypeSize(qualType) / 8);
-            nomicType->setAlignment(context_.getTypeAlign(qualType) / 8);
+            auto typeInfo = std::make_shared<TypeInfo>(ITypeInfo::TypeKind::STRUCT);
+            typeInfo->setTypeName(qualType.getAsString());
+            typeInfo->setSize(context_.getTypeSize(qualType) / 8);
+            typeInfo->setAlignment(context_.getTypeAlign(qualType) / 8);
+            nomicType = typeInfo;
         }
         else if (type->isUnionType()) {
-            nomicType = std::make_shared<TypeInfo>(ITypeInfo::TypeKind::UNION, qualType.getAsString());
-            nomicType->setSize(context_.getTypeSize(qualType) / 8);
-            nomicType->setAlignment(context_.getTypeAlign(qualType) / 8);
+            auto typeInfo = std::make_shared<TypeInfo>(ITypeInfo::TypeKind::UNION);
+            typeInfo->setTypeName(qualType.getAsString());
+            typeInfo->setSize(context_.getTypeSize(qualType) / 8);
+            typeInfo->setAlignment(context_.getTypeAlign(qualType) / 8);
+            nomicType = typeInfo;
         }
         else if (type->isEnumeralType()) {
-            nomicType = std::make_shared<TypeInfo>(ITypeInfo::TypeKind::ENUM, qualType.getAsString());
-            nomicType->setSize(context_.getTypeSize(qualType) / 8);
-            nomicType->setAlignment(context_.getTypeAlign(qualType) / 8);
+            auto typeInfo = std::make_shared<TypeInfo>(ITypeInfo::TypeKind::ENUM);
+            typeInfo->setTypeName(qualType.getAsString());
+            typeInfo->setSize(context_.getTypeSize(qualType) / 8);
+            typeInfo->setAlignment(context_.getTypeAlign(qualType) / 8);
+            nomicType = typeInfo;
         }
         else if (type->isFunctionType()) {
-            nomicType = std::make_shared<TypeInfo>(ITypeInfo::TypeKind::FUNCTION, qualType.getAsString());
+            auto typeInfo = std::make_shared<TypeInfo>(ITypeInfo::TypeKind::FUNCTION);
+            typeInfo->setTypeName(qualType.getAsString());
+            nomicType = typeInfo;
         }
         else {
             // Unknown type
-            nomicType = std::make_shared<TypeInfo>(ITypeInfo::TypeKind::VOID, qualType.getAsString());
+            auto typeInfo = std::make_shared<TypeInfo>(ITypeInfo::TypeKind::VOID);
+            typeInfo->setTypeName(qualType.getAsString());
+            nomicType = typeInfo;
         }
 
         // Cache the type
@@ -393,7 +423,7 @@ private:
 
     clang::ASTContext& context_;
     ASTFactory& factory_;
-    SemanticModel& model_;
+    ISemanticModel& model_;
     ASTNodePtr rootNode_;
     ASTNodePtr currentNode_;
     std::map<const void*, ASTNodePtr> nodeMap_;
@@ -405,7 +435,7 @@ private:
  */
 class ClangASTConsumer : public clang::ASTConsumer {
 public:
-    ClangASTConsumer(ASTFactory& factory, SemanticModel& model)
+    ClangASTConsumer(ASTFactory& factory, ISemanticModel& model)
         : factory_(factory), model_(model), visitor_(nullptr) {}
 
     void HandleTranslationUnit(clang::ASTContext& context) override {
@@ -419,7 +449,7 @@ public:
 
 private:
     ASTFactory& factory_;
-    SemanticModel& model_;
+    ISemanticModel& model_;
     std::unique_ptr<ClangASTVisitor> visitor_;
 };
 
@@ -428,7 +458,7 @@ private:
  */
 class ClangFrontendAction : public clang::ASTFrontendAction {
 public:
-    ClangFrontendAction(ASTFactory& factory, SemanticModel& model)
+    ClangFrontendAction(ASTFactory& factory, ISemanticModel& model)
         : factory_(factory), model_(model) {}
 
     std::unique_ptr<clang::ASTConsumer> CreateASTConsumer(
@@ -443,7 +473,7 @@ public:
 
 private:
     ASTFactory& factory_;
-    SemanticModel& model_;
+    ISemanticModel& model_;
     std::unique_ptr<ClangASTConsumer> consumer_;
 };
 
@@ -562,6 +592,9 @@ private:
 };
 
 // ClangParser implementation
+
+// Define static default options
+const ClangParser::ParseOptions ClangParser::DefaultOptions = {};
 
 ClangParser::ClangParser() : pImpl(std::make_unique<Impl>()) {}
 

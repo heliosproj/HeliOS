@@ -1,9 +1,11 @@
+*.md
+/.claude
+/.claude/**
+/extras/nomic/.claude
+/extras/nomic/.claude/**
 /.vscode/**
 /test/bin/**
-/.claude/**
-__pycache__
-.check_cache
-.claude
+/extras/nomic/build/**
 /test/analysis-report.json
 /test/test-report.json
 !.gitignore
@@ -11,4 +13,8 @@ __pycache__
 !/.vscode/settings.json
 !/.vscode/tasks.json
 !/.vscode/launch.json
-!/test/bin/.gitkeep
+!/README.md
+!/BUILD_GUIDE_ST.md
+!/CONTRIBUTING.md
+!/CODE_OF_CONDUCT.md
+!/LICENSE

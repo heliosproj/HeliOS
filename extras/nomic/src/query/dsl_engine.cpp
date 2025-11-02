@@ -244,6 +244,7 @@ private:
     void skipWhitespace();
     bool peek(const std::string& str);
     bool consume(const std::string& str);
+    bool consumeKeyword(const std::string& keyword);
     char peekChar();
     char consumeChar();
     DSLExpressionPtr parseExpression();
@@ -500,6 +501,43 @@ public:
     DSLValue evaluate(DSLContextPtr context) override {
         DSLValue result = nullptr;
 
+        // Check if this is foreach style (init is identifier, condition is collection, increment is null)
+        if (init_ && condition_ && !increment_ &&
+            init_->getType() == ExpressionType::IDENTIFIER) {
+            // Foreach: for (item in collection)
+            auto collection = condition_->evaluate(context);
+
+            // Get the variable name from init
+            std::string varName = init_->toString();
+
+            // Handle array/vector
+            if (std::holds_alternative<std::vector<std::any>>(collection)) {
+                auto& vec = std::get<std::vector<std::any>>(collection);
+                for (const auto& item : vec) {
+                    // Try to convert std::any to DSLValue
+                    DSLValue itemValue;
+                    if (item.type() == typeid(int)) {
+                        itemValue = std::any_cast<int>(item);
+                    } else if (item.type() == typeid(double)) {
+                        itemValue = std::any_cast<double>(item);
+                    } else if (item.type() == typeid(bool)) {
+                        itemValue = std::any_cast<bool>(item);
+                    } else if (item.type() == typeid(std::string)) {
+                        itemValue = std::any_cast<std::string>(item);
+                    } else {
+                        // Fallback: store vector of one any element
+                        itemValue = std::vector<std::any>{item};
+                    }
+                    context->setVariable(varName, itemValue);
+                    result = body_->evaluate(context);
+                }
+            } else {
+                throw std::runtime_error("For-in requires a collection (array)");
+            }
+            return result;
+        }
+
+        // C-style for loop
         // Initialize
         if (init_) init_->evaluate(context);
 
@@ -640,6 +678,81 @@ public:
 // ===================================
 
 DSLValue BinaryOpExpression::evaluate(DSLContextPtr context) {
+    // Handle assignment operators specially - don't evaluate left side
+    if (op_ == "=" || op_ == "+=" || op_ == "-=" || op_ == "*=" || op_ == "/=") {
+        if (left_->getType() != ExpressionType::IDENTIFIER) {
+            throw std::runtime_error("Left side of assignment must be a variable");
+        }
+        std::string varName = left_->toString();
+        auto rightVal = right_->evaluate(context);
+
+        if (op_ == "=") {
+            context->setVariable(varName, rightVal);
+            return rightVal;
+        }
+        else if (op_ == "+=") {
+            auto currentVal = context->getVariable(varName);
+            if (std::holds_alternative<int>(currentVal) && std::holds_alternative<int>(rightVal)) {
+                auto result = std::get<int>(currentVal) + std::get<int>(rightVal);
+                context->setVariable(varName, result);
+                return result;
+            } else if (std::holds_alternative<double>(currentVal) || std::holds_alternative<double>(rightVal)) {
+                double l = std::holds_alternative<double>(currentVal) ? std::get<double>(currentVal) : std::get<int>(currentVal);
+                double r = std::holds_alternative<double>(rightVal) ? std::get<double>(rightVal) : std::get<int>(rightVal);
+                auto result = l + r;
+                context->setVariable(varName, result);
+                return result;
+            } else if (std::holds_alternative<std::string>(currentVal) && std::holds_alternative<std::string>(rightVal)) {
+                auto result = std::get<std::string>(currentVal) + std::get<std::string>(rightVal);
+                context->setVariable(varName, result);
+                return result;
+            }
+            throw std::runtime_error("Invalid operands for +=");
+        }
+        else if (op_ == "-=") {
+            auto currentVal = context->getVariable(varName);
+            if (std::holds_alternative<int>(currentVal) && std::holds_alternative<int>(rightVal)) {
+                auto result = std::get<int>(currentVal) - std::get<int>(rightVal);
+                context->setVariable(varName, result);
+                return result;
+            }
+            double l = std::holds_alternative<double>(currentVal) ? std::get<double>(currentVal) : std::get<int>(currentVal);
+            double r = std::holds_alternative<double>(rightVal) ? std::get<double>(rightVal) : std::get<int>(rightVal);
+            auto result = l - r;
+            context->setVariable(varName, result);
+            return result;
+        }
+        else if (op_ == "*=") {
+            auto currentVal = context->getVariable(varName);
+            if (std::holds_alternative<int>(currentVal) && std::holds_alternative<int>(rightVal)) {
+                auto result = std::get<int>(currentVal) * std::get<int>(rightVal);
+                context->setVariable(varName, result);
+                return result;
+            }
+            double l = std::holds_alternative<double>(currentVal) ? std::get<double>(currentVal) : std::get<int>(currentVal);
+            double r = std::holds_alternative<double>(rightVal) ? std::get<double>(rightVal) : std::get<int>(rightVal);
+            auto result = l * r;
+            context->setVariable(varName, result);
+            return result;
+        }
+        else if (op_ == "/=") {
+            auto currentVal = context->getVariable(varName);
+            if (std::holds_alternative<int>(currentVal) && std::holds_alternative<int>(rightVal)) {
+                if (std::get<int>(rightVal) == 0) throw std::runtime_error("Division by zero");
+                auto result = std::get<int>(currentVal) / std::get<int>(rightVal);
+                context->setVariable(varName, result);
+                return result;
+            }
+            double l = std::holds_alternative<double>(currentVal) ? std::get<double>(currentVal) : std::get<int>(currentVal);
+            double r = std::holds_alternative<double>(rightVal) ? std::get<double>(rightVal) : std::get<int>(rightVal);
+            if (r == 0.0) throw std::runtime_error("Division by zero");
+            auto result = l / r;
+            context->setVariable(varName, result);
+            return result;
+        }
+    }
+
+    // For non-assignment operators, evaluate both sides
     auto leftVal = left_->evaluate(context);
     auto rightVal = right_->evaluate(context);
 
@@ -2423,6 +2536,24 @@ bool DSLEngine::consume(const std::string& str) {
     return false;
 }
 
+// Consume a keyword (must be followed by non-alphanumeric)
+bool DSLEngine::consumeKeyword(const std::string& keyword) {
+    skipWhitespace();
+    if (pos_ + keyword.length() > input_.length()) {
+        return false;
+    }
+    if (input_.substr(pos_, keyword.length()) == keyword) {
+        // Check that next char is not alphanumeric (word boundary)
+        size_t nextPos = pos_ + keyword.length();
+        if (nextPos < input_.length() && (std::isalnum(input_[nextPos]) || input_[nextPos] == '_')) {
+            return false;  // Not a complete keyword
+        }
+        pos_ += keyword.length();
+        return true;
+    }
+    return false;
+}
+
 char DSLEngine::peekChar() {
     skipWhitespace();
     return (pos_ < input_.length()) ? input_[pos_] : '\0';
@@ -2520,12 +2651,23 @@ DSLExpressionPtr DSLEngine::parsePrimary() {
     if (consume("[")) {
         std::vector<std::any> elements;
         while (!peek("]")) {
-            if (std::isdigit(peekChar())) {
-                auto numExpr = parseNumber();
-                elements.push_back(numExpr->evaluate(getCurrentContext()));
-            } else if (peekChar() == '"') {
-                auto strExpr = parseString();
-                elements.push_back(strExpr->evaluate(getCurrentContext()));
+            // Parse any expression and convert DSLValue to std::any
+            auto expr = parseExpression();
+            if (expr) {
+                auto val = expr->evaluate(getCurrentContext());
+                // Convert DSLValue to std::any by extracting the actual value
+                if (std::holds_alternative<int>(val)) {
+                    elements.push_back(std::any(std::get<int>(val)));
+                } else if (std::holds_alternative<double>(val)) {
+                    elements.push_back(std::any(std::get<double>(val)));
+                } else if (std::holds_alternative<std::string>(val)) {
+                    elements.push_back(std::any(std::get<std::string>(val)));
+                } else if (std::holds_alternative<bool>(val)) {
+                    elements.push_back(std::any(std::get<bool>(val)));
+                } else {
+                    // For complex types, store the DSLValue itself
+                    elements.push_back(std::any(val));
+                }
             }
 
             if (!consume(",")) {
@@ -2652,7 +2794,7 @@ DSLExpressionPtr DSLEngine::parseBinary(DSLExpressionPtr left, int minPrecedence
     while (true) {
         std::string op;
 
-        // Check for operators
+        // Check for operators (check compound operators first!)
         if (peek("==")) op = "==";
         else if (peek("!=")) op = "!=";
         else if (peek("<=")) op = "<=";
@@ -2660,6 +2802,11 @@ DSLExpressionPtr DSLEngine::parseBinary(DSLExpressionPtr left, int minPrecedence
         else if (peek("&&")) op = "&&";
         else if (peek("||")) op = "||";
         else if (peek("??")) op = "??";
+        else if (peek("+=")) op = "+=";
+        else if (peek("-=")) op = "-=";
+        else if (peek("*=")) op = "*=";
+        else if (peek("/=")) op = "/=";
+        else if (peek("=")) op = "=";
         else if (peek("+")) op = "+";
         else if (peek("-")) op = "-";
         else if (peek("*")) op = "*";
@@ -2722,6 +2869,7 @@ DSLExpressionPtr DSLEngine::parseBinary(DSLExpressionPtr left, int minPrecedence
 }
 
 int DSLEngine::getPrecedence(const std::string& op) {
+    if (op == "=" || op == "+=" || op == "-=" || op == "*=" || op == "/=") return 0;  // Assignment (lowest)
     if (op == "||") return 1;
     if (op == "&&") return 2;
     if (op == "==" || op == "!=") return 3;
@@ -2735,57 +2883,96 @@ int DSLEngine::getPrecedence(const std::string& op) {
 DSLExpressionPtr DSLEngine::parseLambda() {
     std::vector<std::string> params;
 
-    // Single parameter without parens: x => ...
-    if (std::isalpha(peekChar())) {
-        size_t savedPos = pos_;  // Save position before consuming
-        std::string param;
-        while (std::isalnum(peekChar()) || peekChar() == '_') {
-            param += consumeChar();
+    // Save position BEFORE any modifications
+    size_t savedPos = pos_;
+    skipWhitespace();  // Skip whitespace once at start
+    size_t afterWhitespace = pos_;
+
+    // Multiple parameters with parens: (x, y) => ...
+    // Check this FIRST because it's unambiguous - starts with (
+    if (pos_ < input_.length() && input_[pos_] == '(') {
+        pos_++;  // consume '('
+
+        while (true) {
+            skipWhitespace();
+            if (pos_ < input_.length() && input_[pos_] == ')') {
+                break;  // empty param list or end of list
+            }
+
+            std::string param;
+            while (pos_ < input_.length() && (std::isalnum(input_[pos_]) || input_[pos_] == '_')) {
+                param += input_[pos_++];
+            }
+
+            // If we didn't get a valid identifier, this isn't a lambda
+            if (param.empty()) {
+                pos_ = savedPos;
+                return nullptr;
+            }
+
+            params.push_back(param);
+
+            skipWhitespace();
+            if (pos_ < input_.length() && input_[pos_] == ',') {
+                pos_++;  // consume ','
+            } else {
+                break;
+            }
         }
 
         skipWhitespace();
-        if (consume("=>")) {
+        if (pos_ >= input_.length() || input_[pos_] != ')') {
+            pos_ = savedPos;
+            return nullptr;
+        }
+        pos_++;  // consume ')'
+
+        skipWhitespace();
+        if (pos_ + 1 < input_.length() && input_[pos_] == '=' && input_[pos_+1] == '>') {
+            pos_ += 2;  // consume '=>'
+            auto body = parseExpression();
+            return std::make_shared<LambdaExpression>(params, body);
+        }
+
+        // Had parens and params but no =>, not a lambda
+        pos_ = savedPos;
+        return nullptr;
+    }
+
+    // Single parameter without parens: x => ...
+    // This is ambiguous with function calls, so we need to carefully lookahead
+    if (pos_ < input_.length() && std::isalpha(input_[pos_])) {
+        std::string param;
+        size_t paramStart = pos_;
+        while (pos_ < input_.length() && (std::isalnum(input_[pos_]) || input_[pos_] == '_')) {
+            param += input_[pos_++];
+        }
+
+        // Now look for => (must be immediately after parameter, possibly with whitespace)
+        size_t afterParam = pos_;
+        while (pos_ < input_.length() && std::isspace(input_[pos_])) {
+            pos_++;
+        }
+
+        if (pos_ + 1 < input_.length() && input_[pos_] == '=' && input_[pos_+1] == '>') {
+            pos_ += 2;  // consume '=>'
             params.push_back(param);
             auto body = parseExpression();
             return std::make_shared<LambdaExpression>(params, body);
         }
 
         // Not a lambda, restore position
-        pos_ = savedPos;  // Restore position since it's not a lambda
+        pos_ = savedPos;
         return nullptr;
     }
 
-    // Multiple parameters with parens: (x, y) => ...
-    if (consume("(")) {
-        while (!peek(")")) {
-            std::string param;
-            skipWhitespace();
-            while (std::isalnum(peekChar()) || peekChar() == '_') {
-                param += consumeChar();
-            }
-            params.push_back(param);
-
-            if (!consume(",")) {
-                break;
-            }
-        }
-
-        if (!consume(")")) {
-            return nullptr;
-        }
-
-        skipWhitespace();
-        if (consume("=>")) {
-            auto body = parseExpression();
-            return std::make_shared<LambdaExpression>(params, body);
-        }
-    }
-
+    // Not a lambda pattern
+    pos_ = savedPos;
     return nullptr;
 }
 
 DSLExpressionPtr DSLEngine::parseIfElse() {
-    if (!consume("if")) {
+    if (!consumeKeyword("if")) {
         return nullptr;
     }
 
@@ -2818,7 +3005,7 @@ DSLExpressionPtr DSLEngine::parseIfElse() {
 
     skipWhitespace();
     DSLExpressionPtr elseBranch = nullptr;
-    if (consume("else")) {
+    if (consumeKeyword("else")) {
         skipWhitespace();
         // else branch could also be a block or single expression
         if (consume("{")) {
@@ -2837,7 +3024,7 @@ DSLExpressionPtr DSLEngine::parseIfElse() {
 }
 
 DSLExpressionPtr DSLEngine::parseWhile() {
-    if (!consume("while")) {
+    if (!consumeKeyword("while")) {
         return nullptr;
     }
 
@@ -2872,7 +3059,7 @@ DSLExpressionPtr DSLEngine::parseWhile() {
 }
 
 DSLExpressionPtr DSLEngine::parseFor() {
-    if (!consume("for")) {
+    if (!consumeKeyword("for")) {
         return nullptr;
     }
 
@@ -2880,6 +3067,49 @@ DSLExpressionPtr DSLEngine::parseFor() {
     if (!consume("(")) {
         throw std::runtime_error("Expected '(' after 'for'");
     }
+
+    // Try to detect foreach style: for (item in collection)
+    // Look ahead for pattern: identifier 'in' expression
+    size_t savedPos = pos_;
+    std::string varName;
+
+    // Try to read an identifier
+    while (pos_ < input_.length() && (std::isalnum(input_[pos_]) || input_[pos_] == '_')) {
+        varName += input_[pos_++];
+    }
+
+    if (!varName.empty()) {
+        skipWhitespace();
+        if (consumeKeyword("in")) {
+            // This is foreach style
+            skipWhitespace();
+            auto varExpr = std::make_shared<IdentifierExpression>(varName);
+            auto collection = parseExpression();
+            skipWhitespace();
+            if (!consume(")")) {
+                throw std::runtime_error("Expected ')' after for-in collection");
+            }
+
+            skipWhitespace();
+            DSLExpressionPtr body;
+            if (consume("{")) {
+                skipWhitespace();
+                body = parseExpression();
+                skipWhitespace();
+                if (!consume("}")) {
+                    throw std::runtime_error("Expected '}' after for body");
+                }
+            } else {
+                body = parseExpression();
+            }
+
+            // Return foreach-style for expression
+            return std::make_shared<ForExpression>(varExpr, collection, nullptr, body);
+        }
+    }
+
+    // Not foreach, restore position and parse as C-style for
+    pos_ = savedPos;
 
     // Parse init (optional)
     DSLExpressionPtr init = nullptr;
@@ -2936,7 +3166,7 @@ DSLExpressionPtr DSLEngine::parseFor() {
 }
 
 DSLExpressionPtr DSLEngine::parseSwitch() {
-    if (!consume("switch")) {
+    if (!consumeKeyword("switch")) {
         return nullptr;
     }
 
@@ -2963,7 +3193,7 @@ DSLExpressionPtr DSLEngine::parseSwitch() {
     while (!peek("}")) {
         skipWhitespace();
 
-        if (consume("case")) {
+        if (consumeKeyword("case")) {
             skipWhitespace();
             auto caseValue = parseExpression();
             skipWhitespace();
@@ -2979,7 +3209,7 @@ DSLExpressionPtr DSLEngine::parseSwitch() {
             // Optional semicolon
             consume(";");
         }
-        else if (consume("default")) {
+        else if (consumeKeyword("default")) {
             skipWhitespace();
             if (!consume(":")) {
                 throw std::runtime_error("Expected ':' after default");
@@ -3005,7 +3235,7 @@ DSLExpressionPtr DSLEngine::parseSwitch() {
 }
 
 DSLExpressionPtr DSLEngine::parseMatch() {
-    if (!consume("match")) {
+    if (!consumeKeyword("match")) {
         return nullptr;
     }
 

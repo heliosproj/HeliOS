@@ -395,6 +395,9 @@ TEST_F(DSLEngineTest, StringOperations) {
 
     // Test format() function
     auto formatExpr = engine->parse("format(\"Hello {0}!\", \"World\")");
+    if (!formatExpr) {
+        std::cerr << "Format parse failed: " << engine->getParseError() << std::endl;
+    }
     ASSERT_THAT(formatExpr, NotNull());
     EXPECT_EQ(std::get<std::string>(formatExpr->evaluate(context)), "Hello World!");
 
@@ -440,6 +443,9 @@ TEST_F(DSLEngineTest, IfElseExpression) {
 TEST_F(DSLEngineTest, LoopExpressions) {
     // For loop
     auto forExpr = engine->parse("for (i in [1,2,3]) sum += i");
+    if (!forExpr) {
+        std::cerr << "For-in parse failed: " << engine->getParseError() << std::endl;
+    }
     ASSERT_THAT(forExpr, NotNull());
 
     context->setVariable("sum", 0);
