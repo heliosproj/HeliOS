@@ -90,7 +90,11 @@ test: $(TARGET)
 
 # Run Nomic semantic source code analyzer
 analyze: nomic compile_commands
-	@$(NOMIC_BIN) analyze $(BASE_DIR)/src/*.c \
+	@$(NOMIC_BIN) analyze \
+		$(BASE_DIR)/src/*.c \
+		$(BASE_DIR)/drivers/ramdisk/*.c \
+		$(BASE_DIR)/drivers/block/*.c \
+		$(BASE_DIR)/drivers/char/*.c \
 		--compilation-database $(BASE_DIR) \
 		--rules $(BASE_DIR)/extras/code_standard/code_standard.yaml \
 		--format json \
@@ -98,7 +102,7 @@ analyze: nomic compile_commands
 
 # Generate compilation database for nomic
 compile_commands:
-	@python3 -c "import json, glob, os; base = os.path.abspath('$(BASE_DIR)'); commands = [{'directory': base, 'command': 'gcc -std=c11 -Wall $(INCLUDES_ABS) $(DEFINES) -c ' + os.path.abspath(f), 'file': os.path.abspath(f)} for f in glob.glob('$(BASE_DIR)/src/*.c')]; json.dump(commands, open(os.path.join(base, 'compile_commands.json'), 'w'), indent=2)"
+	@python3 -c "import json, glob, os; base = os.path.abspath('$(BASE_DIR)'); files = glob.glob('$(BASE_DIR)/src/*.c') + glob.glob('$(BASE_DIR)/drivers/ramdisk/*.c') + glob.glob('$(BASE_DIR)/drivers/block/*.c') + glob.glob('$(BASE_DIR)/drivers/char/*.c'); commands = [{'directory': base, 'command': 'gcc -std=c11 -Wall $(INCLUDES_ABS) $(DEFINES) -c ' + os.path.abspath(f), 'file': os.path.abspath(f)} for f in files]; json.dump(commands, open(os.path.join(base, 'compile_commands.json'), 'w'), indent=2)"
 
 # Run tests with gdb for debugging
 debug: $(TARGET)
@@ -161,7 +165,7 @@ uncrustify: config
 help:
 	@echo "  all        - Build the unit test binary (default)"
 	@echo "  test       - Run unit tests and generate test-report.json"
-	@echo "  analyze    - Run Nomic semantic analyzer and generate analysis-report.json"
+	@echo "  analyze    - Run Nomic semantic analyzer on src/ and drivers/ and generate analysis-report.json"
 	@echo "  nomic      - Build the Nomic C semantic analyzer"
 	@echo "  version    - Sync version from VERSION file to all project files"
 	@echo "  config     - Generate uncrustify helios.cfg from defaults.cfg"
